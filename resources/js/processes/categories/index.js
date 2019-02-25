@@ -21,7 +21,7 @@ new Vue({
         deleteCategory (data) {
             ProcessMaker.apiClient.delete(`process_categories/${data.id}`)
                 .then((response) => {
-                    ProcessMaker.alert("Category Successfully Deleted", "success");
+                    ProcessMaker.alert("The category was deleted.", "success");
                     this.reload();
                 });
         },

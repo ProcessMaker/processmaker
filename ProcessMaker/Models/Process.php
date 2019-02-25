@@ -302,7 +302,7 @@ class Process extends Model implements HasMedia
     public function getNextUser(ActivityInterface $activity, ProcessRequestToken $token)
     {
         $default = $activity instanceof ScriptTaskInterface
-        || $activity instanceof ServiceTaskInterface ? 'script' : 'requestor';
+        || $activity instanceof ServiceTaskInterface ? 'script' : 'requester';
         $assignmentType = $activity->getProperty('assignment', $default);
 
         $userByRule = $this->getNextUserByRule($activity, $token);
@@ -317,7 +317,7 @@ class Process extends Model implements HasMedia
             case 'user':
                 $user = $this->getNextUserAssignment($activity->getId());
                 break;
-            case 'requestor':
+            case 'requester':
                 $user = $token->getInstance()->user_id;
                 break;
             case 'previous_task_assignee':
@@ -422,7 +422,7 @@ class Process extends Model implements HasMedia
                         case 'user':
                             $user = $item->assignee;
                             break;
-                        case 'requestor':
+                        case 'requester':
                             $user = $token->getInstance()->user_id;
                             break;
                         case 'manual':

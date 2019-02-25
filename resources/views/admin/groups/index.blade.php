@@ -43,7 +43,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5>{{__('Create New Group')}}</h5>
+                        <h5>{{__('Create Group')}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -118,7 +118,7 @@
                         this.resetErrors();
                         ProcessMaker.apiClient.post('groups', this.formData)
                             .then(response => {
-                                ProcessMaker.alert('{{__('Create Group Successfully')}}', 'success');
+                                ProcessMaker.alert('{{__('The group was created.')}}', 'success');
                                 //redirect show group
                                 window.location = "/admin/groups/" + response.data.id + "/edit"
                             })

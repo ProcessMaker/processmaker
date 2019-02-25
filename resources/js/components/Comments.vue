@@ -4,7 +4,7 @@
       <div class="px-2 py-3" v-for="value in comments">
         <avatar-image v-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
         <avatar-image v-else size="24" :input-data="systemCommentUser" hide-name="true"></avatar-image>
-        <strong>{{moment(value.updated_at).format()}}</strong>
+        <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
         &nbsp;-
         {{value.body}}
       </div>
