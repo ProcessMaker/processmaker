@@ -28,9 +28,8 @@ class GroupController extends Controller
     public function edit(Group $group)
     {
         $permissionNames = $group->permissions()->pluck('name')->toArray();
-        $users = User::where('status', 'ACTIVE')->get();
         $all_permissions = Permission::all();
-        return view('admin.groups.edit', compact('group', 'users', 'permissionNames', 'all_permissions'));
+        return view('admin.groups.edit', compact('group', 'permissionNames', 'all_permissions'));
     }
 
     public function show(Group $group)

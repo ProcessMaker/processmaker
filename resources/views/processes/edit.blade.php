@@ -103,20 +103,6 @@
                     <div class="invalid-feedback" v-if="errors.screens">@{{errors.screens[0]}}</div>
                 </div>
                 <div class="form-group p-0">
-                    {!! Form::label('cancelRequest', __('Cancel Request')) !!}
-                    <multiselect
-                        v-model="canCancel"
-                        :options="activeUsersAndGroups"
-                        :multiple="true"
-                        placeholder="Type to search"
-                        track-by="fullname"
-                        label="fullname"
-                        group-values="items"
-                        group-label="label">
-                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
-                    </multiselect>
-                </div>
-                <div class="form-group p-0">
                             {!! Form::label('editData', __('Edit Data')) !!}
                             <multiselect
                                 v-model="canEditData"
