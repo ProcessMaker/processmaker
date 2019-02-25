@@ -81,6 +81,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $dates = [
+        'completed_at',
         'due_at',
         'initiated_at',
         'riskchanges_at',
