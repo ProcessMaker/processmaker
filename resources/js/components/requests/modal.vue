@@ -33,11 +33,12 @@
           ></process-card>
         </div>
       </div>
-      <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
-        <h4>You don't have any Processes.</h4>
-        <a href="/processes">Please visit the Processes page</a> and click on +Process to get started.
-      </div>
-      <div v-if="loading" class="loading">Finding Requests available to you</div>
+            <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
+                <h4>You don't have any Processes.</h4>
+                <span v-if="permission.includes('create-processes')"><a href="/processes">Please visit the Processes page</a> and click on +Process to get started.</span>
+                <span v-else>Please contact your administrator to get started.</span>
+            </div>
+      <div v-if="loading" class="loading">Finding Requests available to you...</div>
     </b-modal>
   </div>
 </template>
@@ -47,6 +48,9 @@ import card from "./card";
 import _ from "lodash";
 
 export default {
+  props: {
+    permission: Array
+  },
   components: {
     "process-card": card
   },

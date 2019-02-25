@@ -43,7 +43,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{__('Create New Process Category')}}</h5>
+                        <h5 class="modal-title">{{__('Create Category')}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -53,7 +53,7 @@
                             {!!Form::label('name', __('Category Name'))!!}
                             {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                            <small class="form-text text-muted">{{ __('Category Name must be distinct') }}</small>
+                            <small class="form-text text-muted" v-if="! errors.name">{{ __('The category name must be distinct.') }}</small>
                             <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                             status: this.status
                         })
                             .then(response => {
-                                ProcessMaker.alert('{{__('Category successfully added ')}}', 'success');
+                                ProcessMaker.alert('{{__('The category was created.')}}', 'success');
                                 window.location = '/processes/categories/' + response.data.id + '/edit';
                             })
                             .catch(error => {

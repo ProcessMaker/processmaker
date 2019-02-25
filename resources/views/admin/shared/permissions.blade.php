@@ -1,10 +1,10 @@
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#requests">
-                {{__('Requests')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#requests">
+             <div>{{__('Requests')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div>  
             </button>
-        </h5>
+        </div>
     </div>
     <div id="requests" class="collapse" >
         <div class="card-body">
@@ -16,11 +16,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#scripts">
-                {{__('Scripts')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#scripts">
+             <div>{{__('Scripts')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div>  
             </button>
-        </h5>
+        </div>
     </div>
     <div id="scripts" class="collapse" >
         <div class="card-body">
@@ -33,11 +33,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#categories">
-                {{__('Categories')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#categories">
+              <div>{{__('Categories')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div>
             </button>
-        </h5>
+        </div>
     </div>
     <div id="categories" class="collapse" >
         <div class="card-body">
@@ -50,11 +50,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#screens">
-                {{__('Screens')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#screens">
+             <div>{{__('Screens')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div> 
             </button>
-        </h5>
+        </div>
     </div>
     <div id="screens" class="collapse" >
         <div class="card-body">
@@ -67,11 +67,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#environment_variables">
-                {{__('Environment Variables')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#environment_variables">
+              <div>{{__('Environment Variables')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div> 
             </button>
-        </h5>
+        </div>
     </div>
     <div id="environment_variables" class="collapse" >
         <div class="card-body">
@@ -84,11 +84,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#users">
-                {{__('Users')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#users">
+              <div>{{__('Users')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div> 
             </button>
-        </h5>
+        </div>
     </div>
     <div id="users" class="collapse" >
         <div class="card-body">
@@ -101,11 +101,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#groups">
-                {{__('Groups')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#groups">
+              <div>{{__('Groups')}}</div><div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div> 
             </button>
-        </h5>
+        </div>
     </div>
     <div id="groups" class="collapse" >
         <div class="card-body">
@@ -118,11 +118,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#processes">
-                {{__('Processes')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#processes">
+              <div>{{__('Processes')}}</div>  <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div>
             </button>
-        </h5>
+        </div>
     </div>
     <div id="processes" class="collapse" >
         <div class="card-body">
@@ -137,11 +137,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#comments">
-                {{__('Comments')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#comments">
+              <div>{{__('Comments')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div> 
             </button>
-        </h5>
+        </div>
     </div>
     <div id="comments" class="collapse" >
         <div class="card-body">
@@ -154,11 +154,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#auth_clients">
-                {{__('Auth-Clients')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#auth_clients">
+             <div>{{__('Auth-Clients')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div> 
             </button>
-        </h5>
+        </div>
     </div>
     <div id="auth_clients" class="collapse" >
         <div class="card-body">
@@ -171,11 +171,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#files">
-                {{__('Files (API)')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#files">
+               <div>{{__('Files (API)')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div>
             </button>
-        </h5>
+        </div>
     </div>
     <div id="files" class="collapse" >
         <div class="card-body">
@@ -188,11 +188,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#notifications">
-                {{__('Notifications (API)')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#notifications">
+             <div>{{__('Notifications (API)')}} </div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div> 
             </button>
-        </h5>
+        </div>
     </div>
     <div id="notifications" class="collapse" >
         <div class="card-body">
@@ -205,11 +205,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#task_assignments">
-                {{__('Task Assignments (API)')}}
+        <div class="mb-0">
+            <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#task_assignments">
+              <div>{{__('Task Assignments (API)')}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div> 
             </button>
-        </h5>
+        </div>
     </div>
     <div id="task_assignments" class="collapse" >
         <div class="card-body">
@@ -225,6 +225,18 @@
     <style scoped>
         .card-body label {
             display: block;
+        }
+        .arrow-open {
+            display:inline-block;
+        }
+        .arrow-closed {
+            display:none;
+        }
+       .collapsed .arrow-open {
+            display: none;
+        }
+       .collapsed .arrow-closed {
+            display: inline-block;
         }
     </style>
 @endsection

@@ -11,9 +11,7 @@ import {
     scriptTask,
     pool,
     poolLane,
-    textAnnotation,
-    startTimerEvent,
-    intermediateTimerEvent,
+    textAnnotation
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
@@ -31,6 +29,7 @@ Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('Webhook', Webhook);
 
 let nodeTypes = [
+    startEvent,
     endEvent,
     task,
     scriptTask,
@@ -54,29 +53,6 @@ task.definition = function definition(moddle) {
 };
 
 ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
-    // Register start events
-    registerNode(startEvent, definition => {
-        const eventDefinitions = definition.get('eventDefinitions');
-        console.log(definition);
-        if (eventDefinitions.length === 0) {
-            console.log('processmaker-modeler-start-event');
-            return 'processmaker-modeler-start-event';
-        }
-    });
-    registerNode(startTimerEvent, definition => {
-        const eventDefinitions = definition.get('eventDefinitions');
-        console.log(definition);
-        if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-            console.log('processmaker-modeler-start-timer-event');
-            return 'processmaker-modeler-start-timer-event';
-        }
-    });
-    registerNode(intermediateTimerEvent, definition => {
-        const eventDefinitions = definition.get('eventDefinitions');
-        if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-            return 'processmaker-modeler-intermediate-catch-timer-event';
-        }
-    });
     /* Register basic node types */
     for (const node of nodeTypes) {
         registerNode(node);

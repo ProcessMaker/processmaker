@@ -49,10 +49,10 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('name', __('Variable Name'))!!}
+                            {!!Form::label('name', __('Name'))!!}
                             {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                            <small class="form-text text-muted">{{ __('Variable Name must be distinct') }}</small>
+                            <small class="form-text text-muted" v-if="! errors.name">{{ __('The environment variable name must be distinct.') }}</small>
                             <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                         </div>
                         <div class="form-group">
@@ -109,7 +109,7 @@
                             value: this.value
                         })
                             .then(response => {
-                                ProcessMaker.alert('{{__('Variable successfully added ')}}', 'success');
+                                ProcessMaker.alert('{{__('The environment variable was created.')}}', 'success');
                                 window.location = '/processes/environment-variables';
                             })
                             .catch(error => {
