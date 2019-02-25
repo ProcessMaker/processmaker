@@ -7,22 +7,21 @@
       </div>
     </div>
     <div class="modeler-container">
-      <modeler ref="modeler" />
+      <modeler ref="modeler" @validate="validationErrors = $event" />
     </div>
-    <status-bar>
-        <template slot="secondary">
-            Last Saved: {{lastSaved}}
-        </template>
-      {{statusText}}
-      <font-awesome-icon :style="{color: statusColor}" :icon="statusIcon" />
-    </status-bar>
+    <statusbar>
+      <template slot="secondary">
+        Last Saved: {{lastSaved}}
+      </template>
 
-  </div>    
+      <validation-status :validation-errors="validationErrors"/>
+    </statusbar>
+  </div>
 </template>
 
 
 <script>
-import {Modeler, StatusBar} from "@processmaker/modeler";
+import { Modeler, Statusbar, ValidationStatus } from "@processmaker/modeler";
 import { library } from "@fortawesome/fontawesome-svg-core";
 
 import {
@@ -39,21 +38,20 @@ export default {
   name: "ModelerApp",
   components: {
     Modeler,
-    StatusBar,
-    FontAwesomeIcon
+    Statusbar,
+    FontAwesomeIcon,
+    ValidationStatus
   },
   data() {
     return {
       process: window.ProcessMaker.modeler.process,
-      statusText: "No errors detected",
-      statusIcon: faCheckCircle,
-      statusColor: "green"
+      validationErrors: {},
     };
   },
   computed: {
-      lastSaved() {
-          return moment(this.process.updated_at).fromNow()
-      }
+    lastSaved() {
+      return moment(this.process.updated_at).fromNow();
+    }
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
@@ -74,7 +72,7 @@ export default {
           .then((response) => {
             this.process.updated_at = response.data.updated_at;
             // Now show alert
-            ProcessMaker.alert('Process Successfully Updated', 'success');
+            ProcessMaker.alert('The process was saved.', 'success');
           })
           .catch((err) => {
             const message = err.response.data.message;

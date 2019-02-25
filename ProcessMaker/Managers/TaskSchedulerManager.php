@@ -90,26 +90,14 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         }
     }
 
-    private function buildInterval($parts, $timeEventType)
-    {
-        $result = null;
-        switch ($timeEventType) {
-            case 'TimeDate':
-                $result = $parts['firstDate'];
-                break;
-            case 'TimeCycle':
-                $result = $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval'];
-                break;
-            case 'TimeDuration':
-                $result = $parts['interval'];
-                break;
-        }
-        return $result;
-    }
 
+    /**
+     * Register in the database Intermediate events of a request
+     *
+     * @param ProcessRequest $request
+     */
     public function registerIntermediateTimerEvents(ProcessRequest $request)
     {
-
         $process = $request->process;
 
         ScheduledTask::where('process_id', $process->id)
@@ -175,6 +163,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         }
     }
 
+    /**
+     * Checks the schedule_tasks table to execute jobs
+     *
+     * @param Schedule $schedule
+     */
     public function scheduleTasks(Schedule $schedule)
     {
        try {
@@ -266,7 +259,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
         $catch = $request->tokens()->where('element_id', $config->element_id)->first();
 
-        WorkflowManager::completeCatchEvent($process, $request, $catch, []);
+        if ($catch) {
+            WorkflowManager::completeCatchEvent($process, $request, $catch, []);
+        }
    }
 
    public function nextDate($currentDate, $intervalConfig, $firstOccurrenceDate = null)
@@ -351,8 +346,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         return $currentDate->add($parts['period']);
     }
 
-   private function getIntervalParts($nayraInterval)
-   {
+    private function getIntervalParts($nayraInterval)
+    {
        $result = [];
        $parts = explode('/', $nayraInterval);
 
@@ -401,7 +396,24 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
        $result['recurrences'] = $result['period']->recurrences;
        return $result;
-   }
+    }
+
+    private function buildInterval($parts, $timeEventType)
+    {
+        $result = null;
+        switch ($timeEventType) {
+            case 'TimeDate':
+                $result = $parts['firstDate'];
+                break;
+            case 'TimeCycle':
+                $result = $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval'];
+                break;
+            case 'TimeDuration':
+                $result = $parts['interval'];
+                break;
+        }
+        return $result;
+    }
 
     /**
      * Schedule a job for a specific date and time for the given BPMN element,

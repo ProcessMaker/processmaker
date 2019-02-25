@@ -30,7 +30,7 @@ class CatchEvent extends BpmnAction
     }
 
     /**
-     * Start a $process from start event $element.
+     * Start a $process from catch event $element.
      *
      * @param TokenInterface $token
      * @param CatchEventInterface $element
@@ -39,10 +39,6 @@ class CatchEvent extends BpmnAction
     public function action(TokenInterface $token, CatchEventInterface $element)
     {
         $dataStore = $token->getInstance()->getDataStore();
-
-//        foreach ($data as $key => $value) {
-//            $dataStore->putData($key, $value);
-//        }
 
         $element->execute($element->getEventDefinitions()->item(0), $token->getInstance());
     }
