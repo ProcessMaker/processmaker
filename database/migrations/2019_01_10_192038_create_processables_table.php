@@ -15,6 +15,7 @@ class CreateProcessablesTable extends Migration
     {
         Schema::create('processables', function (Blueprint $table) {
             $table->unsignedInteger('process_id');
+            $table->string('node')->nullable();
             $table->unsignedInteger('processable_id');
             $table->string('processable_type');
             $table->enum('method', ['START', 'CANCEL', 'EDIT_DATA']);

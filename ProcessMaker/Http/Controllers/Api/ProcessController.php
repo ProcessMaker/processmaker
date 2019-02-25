@@ -243,25 +243,6 @@ class ProcessController extends Controller
         );
         $process->versions()->create($original_attributes);
 
-        //If we are specifying start assignments...
-        if ($request->has('start_request')) {    
-            //Adding method to users array
-            $startUsers = [];
-            foreach ($request->input('start_request')['users'] as $item) {
-                $startUsers[$item] = ['method' => 'START'];
-            }
-            
-            //Adding method to groups array
-            $startGroups = [];
-            foreach ($request->input('start_request')['groups'] as $item) {
-                $startGroups[$item] = ['method' => 'START'];
-            }
-
-            //Syncing users and groups that can start this process
-            $process->usersCanStart()->sync($startUsers, ['method' => 'START']);
-            $process->groupsCanStart()->sync($startGroups, ['method' => 'START']);    
-        }
-
         //If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
             //Adding method to users array
@@ -354,9 +335,11 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy)
             ->get();
 
-        $processes = $processes->filter(function($process) {
-            return Auth::user()->can('start', $process);
-        });
+        foreach($processes as $key => $process) {
+            if (count($process->events) === 0) {
+                $processes->forget($key);
+            }
+        };
 
         return new ApiCollection($processes);
     }
