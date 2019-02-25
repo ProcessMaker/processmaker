@@ -25,6 +25,8 @@ Route::group(
     // Group Members
     Route::get('group_members', 'GroupMemberController@index')->name('group_members.index'); //Already filtered in controller
     Route::get('group_members/{group_member}', 'GroupMemberController@show')->name('group_members.show')->middleware('can:view-groups');
+    Route::get('group_members_available', 'GroupMemberController@groupsAvailable')->name('group_members_available.show')->middleware('can:view-groups');
+    Route::get('user_members_available', 'GroupMemberController@usersAvailable')->name('user_members_available.show')->middleware('can:view-groups');
     Route::post('group_members', 'GroupMemberController@store')->name('group_members.store')->middleware('can:edit-groups');
     Route::delete('group_members/{group_member}', 'GroupMemberController@destroy')->name('group_members.destroy')->middleware('can:edit-groups');
 

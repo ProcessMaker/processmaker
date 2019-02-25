@@ -13,162 +13,233 @@ use Illuminate\Support\Facades\Hash;
 class GroupMembersTest extends TestCase
 {
 
-  use RequestHelper;
+    use RequestHelper;
 
-  const API_TEST_URL = '/group_members';
+    const API_TEST_URL = '/group_members';
 
-  const STRUCTURE = [
-      'id',
-      'group_id',
-      'member_id',
-      'member_type',
-      'updated_at',
-      'created_at'
-  ];
+    const STRUCTURE = [
+        'id',
+        'group_id',
+        'member_id',
+        'member_type',
+        'updated_at',
+        'created_at'
+    ];
 
-  /**
-   * List group memberships
-   */
+    /**
+     * List group memberships
+     */
 
-   public function testGetGroupMemberList()
-   {
-     $response = $this->apiCall('GET', self::API_TEST_URL);
-     $response->assertStatus(200);
+    public function testGetGroupMemberList()
+    {
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertStatus(200);
 
-     $group1 = factory(Group::class)->create(['name' => 'Group that admin belongs to']);
-     $group2 = factory(Group::class)->create(['name' => 'Group that other user belongs to']);
+        $group1 = factory(Group::class)->create(['name' => 'Group that admin belongs to']);
+        $group2 = factory(Group::class)->create(['name' => 'Group that other user belongs to']);
 
-     $other_user = factory(User::class)->create(['status' => 'ACTIVE']);
+        $other_user = factory(User::class)->create(['status' => 'ACTIVE']);
 
-     factory(GroupMember::class)->create([
-         'member_type' => User::class,
-         'member_id' => $this->user->id,
-         'group_id' => $group1->id
-     ]);
-     
-     factory(GroupMember::class)->create([
-         'member_type' => User::class,
-         'member_id' => $other_user->id,
-         'group_id' => $group2->id
-     ]);
+        factory(GroupMember::class)->create([
+            'member_type' => User::class,
+            'member_id' => $this->user->id,
+            'group_id' => $group1->id
+        ]);
 
-     $response = $this->apiCall('GET', self::API_TEST_URL);
-     $json = $response->json('data');
-     $this->assertCount(2, $json);
-     $this->assertEquals('Group that admin belongs to', $json[0]['name']);
-     $this->assertEquals('Group that other user belongs to', $json[1]['name']);
+        factory(GroupMember::class)->create([
+            'member_type' => User::class,
+            'member_id' => $other_user->id,
+            'group_id' => $group2->id
+        ]);
 
-     //when user is regular user they can only get the groups that they belong to
-     $this->user = $other_user;
-     $response = $this->apiCall('GET', self::API_TEST_URL);
-     $json = $response->json('data');
-     $this->assertCount(1, $json);
-     $this->assertEquals('Group that other user belongs to', $json[0]['name']);
-   }
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $json = $response->json('data');
+        $this->assertCount(2, $json);
+        $this->assertEquals('Group that admin belongs to', $json[0]['name']);
+        $this->assertEquals('Group that other user belongs to', $json[1]['name']);
 
-  /**
-   * Test verify the parameter required for create form
-   */
-  public function testNotCreatedForParameterRequired()
-  {
-      //Post should have the parameter required
-      $response = $this->apiCall('POST', self::API_TEST_URL, []);
+        //when user is regular user they can only get the groups that they belong to
+        $this->user = $other_user;
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $json = $response->json('data');
+        $this->assertCount(1, $json);
+        $this->assertEquals('Group that other user belongs to', $json[0]['name']);
+    }
 
-      //Validate the header status code
-      $response->assertStatus(422);
-      $this->assertArrayHasKey('message', $response->json());
-  }
+    /**
+     * Test verify the parameter required for create form
+     */
+    public function testNotCreatedForParameterRequired()
+    {
+        //Post should have the parameter required
+        $response = $this->apiCall('POST', self::API_TEST_URL, []);
 
-  /**
-   * Create new group successfully
-   */
-  public function testCreateGroupMembershipForUser()
-  {
-      $user = factory(User::class)->create();
-      $group = factory(Group::class)->create();
+        //Validate the header status code
+        $response->assertStatus(422);
+        $this->assertArrayHasKey('message', $response->json());
+    }
 
-      $response = $this->apiCall('POST', self::API_TEST_URL, [
-          'group_id' => $group->id,
-          'member_id' => $user->id,
-          'member_type' => User::class,
-      ]);
+    /**
+     * Create new group successfully
+     */
+    public function testCreateGroupMembershipForUser()
+    {
+        $user = factory(User::class)->create();
+        $group = factory(Group::class)->create();
 
-      //Validate the header status code
-      $response->assertStatus(201);
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'group_id' => $group->id,
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
 
-      // make sure it saved the relationship
-      $related_group = $user->groupMembersFromMemberable()->first()->group;
-      $this->assertTrue($related_group->is($group));
+        //Validate the header status code
+        $response->assertStatus(201);
 
-      $member_user = $group->groupMembers()->first()->member;
-      $this->assertTrue($member_user->is($user));
-  }
+        // make sure it saved the relationship
+        $related_group = $user->groupMembersFromMemberable()->first()->group;
+        $this->assertTrue($related_group->is($group));
 
-  public function testCreateGroupMembershipForGroup()
-  {
-      $this->withoutExceptionHandling();
-      $group1 = factory(Group::class)->create();
-      $group2 = factory(Group::class)->create();
+        $member_user = $group->groupMembers()->first()->member;
+        $this->assertTrue($member_user->is($user));
+    }
 
-      $response = $this->apiCall('POST', self::API_TEST_URL, [
-          'group_id' => $group1->id,
-          'member_id' => $group2->id,
-          'member_type' => Group::class,
-      ]);
+    public function testCreateGroupMembershipForGroup()
+    {
+        $this->withoutExceptionHandling();
+        $group1 = factory(Group::class)->create();
+        $group2 = factory(Group::class)->create();
 
-      //Validate the header status code
-      $response->assertStatus(201);
+        $response = $this->apiCall('POST', self::API_TEST_URL, [
+            'group_id' => $group1->id,
+            'member_id' => $group2->id,
+            'member_type' => Group::class,
+        ]);
 
-      // make sure it saved the relationship
-      $related_group = $group1->groupMembers()->first()->member;
-      $this->assertTrue($related_group->is($group2));
+        //Validate the header status code
+        $response->assertStatus(201);
 
-      $member_group = $group2->groupMembersFromMemberable()->first()->group;
-      $this->assertTrue($member_group->is($group1));
-  }
+        // make sure it saved the relationship
+        $related_group = $group1->groupMembers()->first()->member;
+        $this->assertTrue($related_group->is($group2));
 
-  /**
-   * Get a group
-   */
-  public function testGetGroupMember()
-  {
-      //get the id from the factory
-      $group = factory(GroupMember::class)->create()->id;
+        $member_group = $group2->groupMembersFromMemberable()->first()->group;
+        $this->assertTrue($member_group->is($group1));
+    }
 
-      //load api
-      $response = $this->apiCall('GET', self::API_TEST_URL. '/' . $group);
+    /**
+     * Get a group
+     */
+    public function testGetGroupMember()
+    {
+        //get the id from the factory
+        $group = factory(GroupMember::class)->create()->id;
 
-      //Validate the status is correct
-      $response->assertStatus(200);
+        //load api
+        $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $group);
 
-      //verify structure
-      $response->assertJsonStructure(self::STRUCTURE);
-  }
+        //Validate the status is correct
+        $response->assertStatus(200);
 
-  /**
-   * Delete group in process
-   */
-  public function testDeleteGroupMember()
-  {
-      //Remove group
-      $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->create()->id;
-      $response = $this->apiCall('DELETE', $url);
+        //verify structure
+        $response->assertJsonStructure(self::STRUCTURE);
+    }
 
-      //Validate the header status code
-      $response->assertStatus(204);
-  }
+    /**
+     * Delete group in process
+     */
+    public function testDeleteGroupMember()
+    {
+        //Remove group
+        $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->create()->id;
+        $response = $this->apiCall('DELETE', $url);
 
-  /**
-   * The group does not exist in process
-   */
-  public function testDeleteGroupMemberNotExist()
-  {
-      //GroupMember not exist
-      $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->make()->id;
-      $response = $this->apiCall('DELETE', $url);
+        //Validate the header status code
+        $response->assertStatus(204);
+    }
 
-      //Validate the header status code
-      $response->assertStatus(405);
-  }
+    /**
+     * The group does not exist in process
+     */
+    public function testDeleteGroupMemberNotExist()
+    {
+        //GroupMember not exist
+        $url = self::API_TEST_URL . '/' . factory(GroupMember::class)->make()->id;
+        $response = $this->apiCall('DELETE', $url);
+
+        //Validate the header status code
+        $response->assertStatus(405);
+    }
+
+    /**
+     * List group available to assigned
+     */
+    public function testMembersAllGroupAvailable()
+    {
+        //The new user does not have groups assigned.
+        factory(Group::class, 15)->create(['status' => 'ACTIVE']);
+        $user = factory(User::class)->create(['status' => 'ACTIVE']);
+        $response = $this->apiCall('GET', '/group_members_available', [
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
+        $this->assertEquals(15, $response->json('meta')['total']);
+        $response->assertStatus(200);
+    }
+
+    /**
+     * List group available to assigned
+     */
+    public function testMembersOnlyGroupAvailable()
+    {
+        $user = factory(User::class)->create(['status' => 'ACTIVE']);
+        factory(GroupMember::class, 10)->create(['member_id' => $user->id, 'member_type' => User::class]);
+        factory(Group::class, 15)->create(['status' => 'ACTIVE']);
+        $response = $this->apiCall('GET', '/group_members_available', [
+            'member_id' => $user->id,
+            'member_type' => User::class,
+        ]);
+        $this->assertEquals(15, $response->json('meta')['total']);
+        $response->assertStatus(200);
+    }
+
+    /**
+     * List group available to assigned
+     */
+    public function testMembersAllUsersAvailable()
+    {
+        //The new group does not have groups assigned.
+        factory(User::class, 15)->create(['status' => 'ACTIVE']);
+        $group = factory(Group::class)->create(['status' => 'ACTIVE']);
+        $count = User::where('status', 'ACTIVE')->count();
+        $response = $this->apiCall('GET', '/user_members_available', [
+            'group_id' => $group->id
+        ]);
+        $this->assertEquals($count, $response->json('meta')['total']);
+        $response->assertStatus(200);
+    }
+
+    /**
+     * List group available to assigned
+     */
+    public function testMembersOnlyUsersAvailable()
+    {
+        //The new group does not have groups assigned.
+        $group = factory(Group::class)->create(['status' => 'ACTIVE']);
+        factory(GroupMember::class)->create([
+            'group_id' => $group->id,
+            'member_id' => factory(User::class)->create(['status' => 'ACTIVE'])->getKey(),
+            'member_type' => User::class
+        ]);
+        factory(User::class, 15)->create(['status' => 'ACTIVE']);
+
+
+        $count = User::where('status', 'ACTIVE')->count() - 1;
+        $response = $this->apiCall('GET', '/user_members_available', [
+            'group_id' => $group->id
+        ]);
+        $this->assertEquals($count, $response->json('meta')['total']);
+        $response->assertStatus(200);
+    }
 
 }
