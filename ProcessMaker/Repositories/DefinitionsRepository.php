@@ -5,6 +5,7 @@ use ProcessMaker\Models\DataStore;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Message;
 use ProcessMaker\Models\MessageEventDefinition;
+use ProcessMaker\Models\TimerExpression;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
 use ProcessMaker\Repositories\ExecutionInstanceRepository;
@@ -34,6 +35,11 @@ class DefinitionsRepository implements RepositoryInterface
     public function createFormalExpression()
     {
         return new FormalExpression();
+    }
+
+    public function createTimerExpression()
+    {
+        return new TimerExpression();
     }
 
     /**

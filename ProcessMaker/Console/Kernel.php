@@ -3,6 +3,10 @@ namespace ProcessMaker\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use ProcessMaker\Managers\TaskSchedulerManager;
+use ProcessMaker\Managers\WorkflowEventManager;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ScheduledTask;
 
 class Kernel extends ConsoleKernel
 {
@@ -27,6 +31,9 @@ class Kernel extends ConsoleKernel
          * Currently no scheduled tasks exists, however once scheduled cron tasks are required, they should
          * be placed here.
          */
+
+        $scheduleManager = new TaskSchedulerManager();
+        $scheduleManager->scheduleTasks($schedule);
     }
 
     /**
