@@ -44,7 +44,7 @@ class ProcessEvents extends Relation
      */
     public function getResults()
     {
-        return $this->parent->getStartEvents();
+        return $this->parent->getStartEvents(true);
     }
 
     /**
@@ -70,7 +70,7 @@ class ProcessEvents extends Relation
     public function match(array $models, Collection $results, $relation)
     {
         foreach ($models as $model) {
-            $events = collect($model->getStartEvents());
+            $events = collect($model->getStartEvents(true));
             $model->setRelation($relation, $events);
         }
         return $models;

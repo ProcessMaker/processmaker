@@ -203,6 +203,7 @@ class ProcessExecutionTest extends TestCase
      */
     public function testGetListProcessesToStart()
     {
+        $this->actingAs($this->user);
         //Create two additional processes
         $this->createTestProcess();
         $uncProcess = $this->createTestProcess(['process_category_id' => null]);

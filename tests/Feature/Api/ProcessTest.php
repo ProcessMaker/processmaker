@@ -18,6 +18,7 @@ use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Providers\WorkflowServiceProvider as PM;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -87,8 +88,9 @@ class ProcessTest extends TestCase
         $initialCount = Process::count();
 
         // Create some processes
-        $process = factory(Process::class)->create();
-        $process->usersCanStart()->attach($this->user->id);
+        $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $process = factory(Process::class)->create(['bpmn' => $bpmn]);
+        $process->usersCanStart('StartEventUID')->attach($this->user->id);
 
         //Get a page of processes
         $page = 1;
@@ -140,8 +142,9 @@ class ProcessTest extends TestCase
         $initialCount = Process::count();
 
         // Create a process
-        $process = factory(Process::class)->create();
-        $process->groupsCanStart()->attach($group->id);
+        $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $process = factory(Process::class)->create(['bpmn' => $bpmn]);
+        $process->groupsCanStart('StartEventUID')->attach($group->id);
 
         //Get a page of processes
         $page = 1;
@@ -174,7 +177,9 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(403, $response);
 
-        $process->usersCanStart()->attach($this->user->id);
+        $process->usersCanStart('StartEventUID')->attach([
+            $this->user->id => ['method' => 'START', 'node' => 'StartEventUID']
+        ]);
         
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(201, $response);
@@ -623,5 +628,80 @@ class ProcessTest extends TestCase
         // Assert that the process is not listed in the archive
         $response = $this->apiCall('GET', '/processes?status=inactive');
         $response->assertJsonMissing(['id' => $id]);
+    }
+
+    /**
+     * Tests updating a start permission for a node
+     */
+    public function testStartPermissionForNode()
+    {
+        $user = factory(User::class)->create();
+        $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $node = 'StartEventUID';
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => $bpmn,
+        ]);
+        
+        $definitions = $process->getDefinitions();
+        $element = $definitions->findElementById($node);
+        $element->setAttributeNS(PM::PROCESS_MAKER_NS, 'assignment', 'user');
+        $element->setAttributeNS(PM::PROCESS_MAKER_NS, 'assignedUsers', $user->id);
+        $process->bpmn = $definitions->saveXML();
+        $process->save();
+
+        $this->assertEquals(1, $process->usersCanStart($node)->count());
+        $this->assertEquals(
+            $user->id,
+            $process->usersCanStart($node)->first()->id
+        );
+        
+        // test that they are removed
+        $definitions = $process->getDefinitions();
+        $element = $definitions->findElementById($node);
+        $element->removeAttributeNS(PM::PROCESS_MAKER_NS, 'assignment');
+        $element->removeAttributeNS(PM::PROCESS_MAKER_NS, 'assignedUsers');
+        $process->bpmn = $definitions->saveXML();
+        $process->save();
+        
+        $this->assertEquals(0, $process->usersCanStart($node)->count());
+    }
+
+    /**
+     * Tests we only return processes that have nodes that the user can start
+     */
+    public function testStartProcessesWithPermission()
+    {
+        $this->user = factory(User::class)->create();
+
+        // Add process permission to user
+        $this->user->permissions()->attach(Permission::byName('view-processes'));
+        
+        // Prepare a process
+        $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
+        $node = 'StartEventUID';
+
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => $bpmn,
+        ]);
+        // Need to check that sync works with param.....
+        $process->usersCanStart($node)->sync([$this->user->id => ['method' => 'START', 'node' => $node]]);
+
+        $other_process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+        ]);
+
+        $route = route('api.' . $this->resource . '.index', ['include' => 'events']);
+        $response = $this->actingAs($this->user)->apiCall('GET', $route);
+        $response->assertStatus(200);
+
+        $json = $response->json();
+        $events = [];
+        foreach ($json['data'] as $process) {
+            $events = array_merge($process['events']);
+        }
+        
+        $this->assertEquals(1, count($events));
     }
 }
