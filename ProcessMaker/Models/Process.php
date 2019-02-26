@@ -4,11 +4,13 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -17,6 +19,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
+use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -56,6 +59,7 @@ class Process extends Model implements HasMedia
     use SerializeToIso8601;
     use SoftDeletes;
     use ProcessTaskAssignmentsTrait;
+    use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
 
     /**
@@ -510,6 +514,29 @@ class Process extends Model implements HasMedia
         return $response;
     }
 
+    public function getIntermediateCatchEvents()
+    {
+        $definitions = $this->getDefinitions();
+        $response = [];
+        $catchEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'intermediateCatchEvent');
+        foreach ($catchEvents as $catchEvent) {
+            $response[] = $catchEvent->getBpmnElementInstance()->getProperties();
+        }
+        return $response;
+    }
+
+
+    /**
+     * Update BPMN content and reset bpmnDefinitions
+     *
+     * @param string $value
+     */
+    public function setBpmnAttribute($value)
+    {
+        $this->bpmnDefinitions  = null;
+        $this->attributes['bpmn'] = $value;
+    }
+
     /**
      * Get permissions by start event.
      *
@@ -528,17 +555,6 @@ class Process extends Model implements HasMedia
             $permissions[$group->pivot->node] = $permissions[$group->pivot->node] + $users;
         }
         return $permissions;
-    }
-
-    /**
-     * Update BPMN content and reset bpmnDefinitions
-     *
-     * @param string $value
-     */
-    public function setBpmnAttribute($value)
-    {
-        $this->bpmnDefinitions  = null;
-        $this->attributes['bpmn'] = $value;
     }
 
     /**
