@@ -122,6 +122,43 @@ let initialControls =  [
         }
     },
     {
+        builderComponent: FormText,
+        builderBinding: 'FormText',
+        rendererComponent: FormText,
+        rendererBinding: 'FormText',
+        control: {
+            label: 'HTML Text',
+            component: 'FormText',
+            'editor-component': 'HtmlEditor',
+            'editor-icon': require('@processmaker/vue-form-builder/src/assets/icons/font-solid.svg'),
+            config: {
+                label: 'Modify This Text Directly In The Editor',
+                interactive: true,
+            },
+            inspector: [
+                {
+                    type: "FormInput",
+                    field: "name",
+                    config: {
+                        label: "Field Name",
+                        name: 'Field Name',
+                        validation: 'required',
+                        helper: "The data name for this field"
+                    }
+                },
+                {
+                    type: "FormTextArea",
+                    field: "label",
+                    config: {
+                        rows: 5,
+                        label: "Text Content",
+                        helper: "HTML",
+                    }
+                }
+            ]
+        }
+    },
+    {
         editorComponent: FormMultiColumn,
         editorBinding: 'FormMultiColumn',
         rendererComponent: FormMultiColumn,
