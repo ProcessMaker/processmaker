@@ -526,6 +526,11 @@ class Process extends Model implements HasMedia
     }
 
 
+    /**
+     * Update BPMN content and reset bpmnDefinitions
+     *
+     * @param string $value
+     */
     public function setBpmnAttribute($value)
     {
         $this->bpmnDefinitions  = null;
@@ -550,17 +555,6 @@ class Process extends Model implements HasMedia
             $permissions[$group->pivot->node] = $permissions[$group->pivot->node] + $users;
         }
         return $permissions;
-    }
-
-    /**
-     * Update BPMN content and reset bpmnDefinitions
-     *
-     * @param string $value
-     */
-    public function setBpmnAttribute($value)
-    {
-        $this->bpmnDefinitions  = null;
-        $this->attributes['bpmn'] = $value;
     }
 
     /**
