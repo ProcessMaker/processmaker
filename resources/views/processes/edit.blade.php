@@ -54,20 +54,6 @@
                     <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
                 </div>
                 <div class="form-group p-0">
-                    {!! Form::label('startRequest', __('Start Request')) !!}
-                    <multiselect
-                        v-model="canStart"
-                        :options="activeUsersAndGroups"
-                        :multiple="true"
-                        placeholder="Type to search"
-                        track-by="fullname"
-                        label="fullname"
-                        group-values="items"
-                        group-label="label">
-                            <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
-                    </multiselect>
-                </div>
-                <div class="form-group p-0">
                     {!! Form::label('cancelRequest', __('Cancel Request')) !!}
                     <multiselect
                         v-model="canCancel"
@@ -150,7 +136,6 @@
                         screen: null
                     },
                     screens: @json($screens),
-                    canStart: @json($canStart),
                     canCancel: @json($canCancel),
                     canEditData: @json($canEditData),
                     activeUsersAndGroups: @json($list),
@@ -190,7 +175,6 @@
                 onUpdate() {
                     this.resetErrors();
                     let that = this;
-                    this.formData.start_request = this.formatAssigneePermissions(this.canStart);
                     this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
                     this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
                     this.formData.cancel_screen_id = this.formData.cancel_screen_id
