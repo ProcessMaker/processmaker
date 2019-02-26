@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
