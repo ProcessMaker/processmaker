@@ -107,6 +107,11 @@
                     </multiselect>
                 </div>
 
+                <div class="form-group p-0">
+                    {!! Form::label('pauseTimerStartEvents', __('Pause Timer Start Events')) !!}
+                    <input type="checkbox" v-model="formData.pause_timer_start" >
+                </div>
+
                 <div class="d-flex justify-content-end mt-2">
                     {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                     {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
@@ -148,7 +153,8 @@
                     canStart: @json($canStart),
                     canCancel: @json($canCancel),
                     canEditData: @json($canEditData),
-                    activeUsersAndGroups: @json($list)
+                    activeUsersAndGroups: @json($list),
+                    pause_timer_start_events: false
                 }
             },
             methods: {
