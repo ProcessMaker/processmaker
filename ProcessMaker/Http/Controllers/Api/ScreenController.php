@@ -19,6 +19,7 @@ class ScreenController extends Controller
      */
     public $doNotSanitize = [
         'config',
+        'label'
     ];
 
     /**
