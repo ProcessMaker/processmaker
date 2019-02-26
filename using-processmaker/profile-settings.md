@@ -71,7 +71,7 @@ After clicking the avatar, that person's profile information displays. Each user
 ![Viewing a user&apos;s profile information](../.gitbook/assets/profile-displayed-after-clicking-avatar.png)
 
 {% hint style="info" %}
-Hover your mouse over a user's avatar to view that person's full name.
+Hover your cursor over a user's avatar to view that person's full name.
 {% endhint %}
 
 ## Related Topics

@@ -37,7 +37,7 @@ The **Process Archive** page displays the following information in tabular forma
 * **Name:** The **Name** column displays the Process name.
 * **Category:** The **Category** column displays in which Process Category the Process is assigned. See [Process Categories](../process-categories.md).
 * **Status:** The **Status** column displays that the Process is inactive and is represented by the![](../../../.gitbook/assets/inactive-status-icon-processes.png)icon.
-* **Owner:** The **Owner** column displays the Process Owner who maintains the Process. See [Profile Settings](../../../using-processmaker/profile-settings.md#view-another-users-profile-information) for information how to view the Process Owner's profile information.
+* **Owner:** The **Owner** column displays the Process Owner who maintains the Process. Hover your cursor over a user's avatar to view that person's full name.
 * **Modified:** The **Modified** column displays the date and time the Process was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the Process was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
