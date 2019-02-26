@@ -224,7 +224,7 @@ class ProcessController extends Controller
                 422);
         }
 
-        $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
+        $process->fill($request->except('cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
 
         // Catch errors to send more specific status
         try {
