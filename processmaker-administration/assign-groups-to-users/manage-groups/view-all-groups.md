@@ -22,7 +22,7 @@ Follow these steps to view all ProcessMaker groups in your organization:
 
 ![&quot;Groups&quot; page displays all groups in your organization](../../../.gitbook/assets/groups-page-admin.png)
 
-The **Groups** page displays the following information about ProcessMaker groups in tabular format:
+The **Groups** page displays the following information in tabular format about ProcessMaker groups:
 
 * **Name:** The **Name** column displays the name of the ProcessMaker group.
 * **Description:** The **Description** column displays the description for the ProcessMaker group.

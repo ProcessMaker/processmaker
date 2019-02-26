@@ -19,7 +19,7 @@ Click the **Started By Me** icon![](../../.gitbook/assets/started-by-me-icon-req
 
 ![&quot;My Requests&quot; page displays Requests that you started](../../.gitbook/assets/started-by-me-request.png)
 
-The **My Requests** page displays the following information about Requests you started in tabular format:
+The **My Requests** page displays the following information in tabular format about Requests you started:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md) about that Request.
 * **Status:** The **Status** column displays the status of the Process associated with the Request. The following are possible statuses:

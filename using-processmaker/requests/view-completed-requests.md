@@ -1,5 +1,5 @@
 ---
-description: View complebusiness ped Requests in which you started or participated.
+description: View completed Requests in which you started or participated.
 ---
 
 # View Completed Requests
@@ -17,7 +17,7 @@ Follow these steps to view completed Requests: ~~UPDATE SCREENSHOT AFTER "COMPLE
 
 ![&quot;Completed&quot; page displays completed Requests in which participated](../../.gitbook/assets/completed-request.png)
 
-The **Completed** page displays the following information about completed Requests in tabular format:
+The **Completed** page displays the following information in tabular format about completed Requests:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-completed-requests) about that Request.
 * **Status:** The **Status** column displays the **Completed** status.

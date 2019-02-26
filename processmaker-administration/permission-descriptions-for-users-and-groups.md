@@ -21,8 +21,8 @@ In ProcessMaker 4, a permission allows a ProcessMaker user member to view a type
 
 While permissions apply to ProcessMaker users, those permissions can be assigned from a user account or a ProcessMaker group:
 
-* **User-level permissions:** Permissions can be assigned to a ProcessMaker user account. These permission assignments only apply to that user account.
-* **Group-level permissions:** Permissions can be assigned to a ProcessMaker group. A group assigns permissions to all ProcessMaker user account members. ProcessMaker groups make it easy to manage permissions for multiple ProcessMaker user accounts with identical permission assignments.
+* **User-level permissions:** Permissions can be assigned to a ProcessMaker user account. These permission assignments only apply to that user account. See [Edit a User Account](add-users/manage-user-accounts/edit-a-user-account.md#edit-a-processmaker-user-account).
+* **Group-level permissions:** Permissions can be assigned to a ProcessMaker group. A group assigns permissions to all ProcessMaker user account members. ProcessMaker groups make it easy to manage permissions for multiple ProcessMaker user accounts with identical permission assignments. See [Edit a Group](assign-groups-to-users/manage-groups/edit-a-group.md#edit-a-processmaker-group).
 
 ### User and Group Permissions are Cumulative
 

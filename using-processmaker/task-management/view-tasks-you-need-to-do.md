@@ -17,7 +17,7 @@ If you are viewing your completed Tasks, click the **To Do** icon![](../../.gitb
 
 ![&quot;To Do Tasks&quot; page displays your assigned Tasks](../../.gitbook/assets/to-do-tasks-tasks.png)
 
-The **To Do Tasks** page displays the following information about your assigned Tasks in tabular format:
+The **To Do Tasks** page displays the following information in tabular format about your assigned Tasks:
 
 * **Name:** The **Name** column displays the name of the assigned Task. Click the Task name to open the selected Task.
 * **Request:** The **Request** column displays the Process name associated with the Request for the assigned Task. Click the Process name to [view information about that Request](../requests/request-details.md).

@@ -23,7 +23,7 @@
   * [View Completed Requests](using-processmaker/requests/view-completed-requests.md)
   * [View All Requests](using-processmaker/requests/view-all-requests.md)
   * [Search for a Request](using-processmaker/requests/search-for-a-request.md)
-  * [View Request Information](using-processmaker/requests/request-details.md)
+  * [View a Request Summary](using-processmaker/requests/request-details.md)
 * [Task Management](using-processmaker/task-management/README.md)
   * [What is a Task?](using-processmaker/task-management/what-is-a-task.md)
   * [View Tasks You Need to Do](using-processmaker/task-management/view-tasks-you-need-to-do.md)

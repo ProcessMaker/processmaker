@@ -28,7 +28,7 @@ Follow these steps to view Process Categories:
 
 ![&quot;Process Categories&quot; page displays categories by which to organize Processes for Requesters](../../.gitbook/assets/process-categories-page-processes.png)
 
-The **Categories** page displays the following information about Process Categories in tabular format:
+The **Categories** page displays the following information in tabular format about Process Categories:
 
 * **Name:** The **Name** column displays the name of the Process Category.
 * **Status:** The **Status** column displays the status of the Process Category. Below is a description of each status:

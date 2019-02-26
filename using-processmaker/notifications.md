@@ -48,7 +48,7 @@ Click the **Unread Notifications** icon![](../.gitbook/assets/unread-notificatio
 
 ![&quot;Unread Notifications&quot; page displays your unread notifications](../.gitbook/assets/all-notifications-page.png)
 
-The **Unread Notifications** page displays the following information about your unread notifications in tabular format:
+The **Unread Notifications** page displays the following information in tabular format about your unread notifications:
 
 * **Status:** The **Status** column displays the unread status icon![](../.gitbook/assets/unread-notification-icon-notifications.png)to indicate the notification is unread.
 * **User:** The **User** column displays to whom the notification applies. This user is often you, but it might also include others such as a person who canceled a Request.
@@ -75,7 +75,7 @@ Follow these steps to view all your notifications:
 
 ![&quot;All Notifications&quot; page displays your read and unread notifications](../.gitbook/assets/all-notifications-page-notifications.png)
 
-The **All Notifications** page displays the following information about all your notifications in tabular format:
+The **All Notifications** page displays the following information in tabular format about all your notifications:
 
 * **Status:** The **Status** column displays the status of the notification using one of the following icons:
   * **Unread status**![](../.gitbook/assets/unread-notification-icon-notifications.png)**:** The notification is unread.

@@ -14,7 +14,7 @@ Follow these steps to view all completed Tasks from all users in your organizati
 
 ![&quot;Completed Tasks&quot; page displays Tasks you have completed](../../.gitbook/assets/completed-tasks-tasks.png)
 
-The **Completed Tasks** page displays the following information about all completed Tasks in your organization in tabular format:
+The **Completed Tasks** page displays the following information in tabular format about all completed Tasks in your organization:
 
 * **Task:** The **Task** column displays the name of the completed Task. If you click the Task name, the Task title displays with the following message: **Task Completed** along with [information about the completed Task](view-completed-tasks.md#view-information-about-a-completed-task).
 * **Request:** The **Request** column displays the name of the Process associated with the Request. Click the Process name to [view information about that Request](../requests/request-details.md).

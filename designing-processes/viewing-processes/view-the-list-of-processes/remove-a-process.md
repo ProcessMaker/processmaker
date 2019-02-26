@@ -32,7 +32,7 @@ Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-proce
 
 ![&quot;Process Archive&quot; page contains all archived Processes in your organization](../../../.gitbook/assets/process-archive-page-processes.png)
 
-The **Process Archive** page displays the following information about archived Processes in tabular format:
+The **Process Archive** page displays the following information in tabular format about archived Processes:
 
 * **Name:** The **Name** column displays the Process name.
 * **Category:** The **Category** column displays in which Process Category the Process is assigned. See [Process Categories](../process-categories.md).

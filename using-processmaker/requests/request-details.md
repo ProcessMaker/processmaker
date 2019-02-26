@@ -1,17 +1,17 @@
 ---
-description: View information about a Request in which you started or participated.
+description: View the summary for a Request.
 ---
 
-# View Request Information
+# View a Request Summary
 
 ## Overview
 
-A ProcessMaker Administrator can create a custom format and style for how Request information displays for your organization. This topic discusses how ProcessMaker 4 displays Request information by default.
+A ProcessMaker Administrator can create a custom format and style for how the Request summary displays for your organization. This topic discusses how ProcessMaker 4 displays the Request summary by default.
 
-To view information about a Request, do one of the following:
+To view the summary for a Request, do one of the following:
 
-* From the **Name** column, click the Process name associated with the Request that you want to view.
-* Click the Open Request icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request in which you want to view information.
+* From the **Name** column, click the Process name associated with the Request summary that you want to view.
+* Click the Open Request icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request to view its summary.
 
 ## Information for In-Progress Requests
 
@@ -23,7 +23,7 @@ The **Tasks** tab displays summary information for all upcoming Tasks in the Req
 
 ![&quot;Tasks&quot; tab displaying an in-progress Request&apos;s information](../../.gitbook/assets/tasks-tab-request-information-request.png)
 
-The **Tasks** tab displays the following information about assigned Tasks in tabular format:
+The **Tasks** tab displays the following information in tabular format about assigned Tasks:
 
 * **Task:** The **Task** column displays the name of each Task to be completed for the selected Request for all Request participants. If a Task is assigned to you, a hyperlink displays in the Task name.
 * **Assigned:** The **Assigned** column displays the avatar for the username to whom the Task is assigned.
@@ -67,7 +67,7 @@ The **Summary** tab displays a summary of all information entered into the compl
 
 ![&quot;Summary&quot; tab in a completed Request&apos;s information](../../.gitbook/assets/summary-tab-request-information-request.png)
 
-~~Process Owners can specify how information displays in the **Summary** tab. By default,~~ the **Summary** tab displays the JSON-formatted key/value pairs that represent ProcessMaker Screen control data. Information is displayed in tabular format:
+~~Process Owners can specify how information displays in the **Summary** tab. By default,~~ the **Summary** tab displays the JSON-formatted key/value pairs in tabular format that represent ProcessMaker Screen control data. Information is displayed:
 
 * **KEY:** The **KEY** column displays the JSON key name that represents the ProcessMaker Screen control name the Request participant entered data or specified through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation). For example, a Text control to enter your name could be named `Full Name` which would be displayed in the **Key** column here.
 * **VALUE:** The **VALUE** column displays that key's value as entered by a person manually interacting with a form or specified through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation). For example, a Text control to enter your name could have the value `John Doe` which would be displayed in the **Value** column here.
@@ -106,7 +106,7 @@ The **Completed** tab displays a summary of all tasks for the selected completed
 
 ![&quot;Completed&quot; tab for a completed Request&apos;s information](../../.gitbook/assets/completed-tab-request-information-request.png)
 
-The **Completed** tab displays the following information about completed Requests in tabular format:
+The **Completed** tab displays the following information in tabular format about completed Requests:
 
 * **Task:** The **Task** column displays the name of each completed Task in the selected Request. 
 * **Assigned:** The **Assigned** column displays the avatar for the username to whom the Task was assigned.
@@ -146,7 +146,7 @@ The **Errors** tab displays summary information about an error for a selected Re
 
 ![&quot;Errors&quot; tab displays information about a Request error](../../.gitbook/assets/error-tab-information-requests.png)
 
-The **Errors** tab displays the following information about Request errors in tabular format:
+The **Errors** tab displays the following information in tabular format about Request errors:
 
 * **Error:** The **Error** column displays the error description. 
 * **Time:** The **Time** column displays how long ago the error occurred.

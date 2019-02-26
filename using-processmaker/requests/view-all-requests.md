@@ -1,12 +1,12 @@
 ---
-description: View all Requests that you've started or in which you're a participant.
+description: View all Requests in your organization.
 ---
 
 # View All Requests
 
 ## View All Requests You Started or in Which You Are a Participant
 
-The **All Requests** page displays all Requests in the organization. This includes Requests that you may not have participated in as well as in-progress and completed Requests. Request information displays in tabular format.
+The **All Requests** page displays all Requests in your organization. This includes Requests that you may not have participated in as well as in-progress and completed Requests. Request information displays in tabular format.
 
 Follow these steps to view the **All Requests** page:
 
@@ -17,7 +17,7 @@ Follow these steps to view the **All Requests** page:
 
 ![&quot;All Requests&quot; page displays all Requests in which you are a participant](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
 
-The **All Requests** page displays the following information about all Requests in tabular format:
+The **All Requests** page displays the following information in tabular format about all Requests:
 
 * **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md) about that Request.
 * **Status:** The **Status** column displays the status of the Process associated with the Request. The following are possible statuses:

@@ -22,7 +22,7 @@ Follow these steps to view all client authentication keys granted access to the 
 
 ![&quot;Auth Clients&quot; page displays all client authentication keys that can access the ProcessMaker 4 REST API](../../../.gitbook/assets/auth-client-page-admin.png)
 
-The **Auth Clients** page displays the following information about client authentication keys that can access the ProcessMaker 4 REST API in tabular format:
+The **Auth Clients** page displays the following information in tabular format about client authentication keys that can access the ProcessMaker 4 REST API:
 
 * **Client ID:** The **Client ID** column displays the Client ID for the key. ProcessMaker 4 automatically generates the Client ID value when the key is created and represents a sequential number of how many keys have been created at that time.
 * **Name:** The **Name** column displays the name of the key. See [Create a New Client Authentication Key](../create-a-new-client-authentication-key.md).

@@ -25,7 +25,7 @@ Click the **Users** ![](../../../.gitbook/assets/users-icon-admin.png) icon when
 
 ![&quot;Users&quot; page displays all users in your organization](../../../.gitbook/assets/users-page-admin%20%281%29.png)
 
-The **Users** page displays the following information about ProcessMaker user accounts in tabular format:
+The **Users** page displays the following information in tabular format about ProcessMaker user accounts:
 
 * **Username:** The **Username** column displays the username associated with the ProcessMaker user account.
 * **Full Name:** The **Full Name** column displays the full name associated with ProcessMaker user account.

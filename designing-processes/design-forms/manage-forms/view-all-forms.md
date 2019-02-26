@@ -24,7 +24,7 @@ Follow these steps to view all ProcessMaker Screens in your organization:
 
 ![&quot;Screens&quot; page displays all ProcessMaker Screens in your organization](../../../.gitbook/assets/screens-page-processes.png)
 
-The **Screens** page displays the following information about ProcessMaker Screens:
+The **Screens** page displays the following information in tabular format about ProcessMaker Screens:
 
 * **Name:** The **Name** column displays the name of the ProcessMaker Screen. Click the name to edit the ProcessMaker Screen in [Screens Builder](../screens-builder/).
 * **Description:** The **Description** column displays the description of the ProcessMaker Screen. See [Edit Script Configuration](../../scripts/manage-scripts/edit-script-configuration.md#edit-configuration-information-about-a-processmaker-script) for more information.

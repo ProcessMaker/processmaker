@@ -24,7 +24,7 @@ Follow these steps to view all ProcessMaker Environment Variables in your organi
 
 ![Environment Variables page displays all Environment Variables in your organization](../../../.gitbook/assets/environment-variables-screen-processes.png)
 
-The **Environment Variables** page displays the following information about ProcessMaker Environment Variables in tabular format:
+The **Environment Variables** page displays the following information in tabular format about ProcessMaker Environment Variables:
 
 * **Name:** The **Name** column displays the name of the ProcessMaker Environment Variable.
 * **Description:** The **Description** column displays the description about the ProcessMaker Environment Variable. For information how to edit the ProcessMaker Environment Variable description, see [Edit an Environmental Variable](edit-an-environmental-variable.md).
