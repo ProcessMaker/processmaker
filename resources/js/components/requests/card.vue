@@ -1,11 +1,11 @@
 <template>
     <span>
-        <div v-for="event in process.events" class="processes">
+        <div v-for="event in process.startEvents" class="processes">
             <div @click="newRequestLink(process, event)" class="process-card">
                 <div class="inner">
                     <div>
                         <span class="name" v-html="transformedName"></span>
-                        <span v-if="process.events.length > 1">: {{event.name}}</span>
+                        <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
                         <i v-show="spin===process.id + '.' + event.id" class="fa fa-spinner fa-spin fa-fw"></i>
                     </div>
                     <div ref="description" class="description" v-html="truncatedDescription"></div>
@@ -14,7 +14,7 @@
         </div>
 
         <!-- Temporary until modeler validations are in place -->
-        <div v-if="process.events.length == 0" class="processes">
+        <div v-if="process.startEvents.length == 0" class="processes">
             <div class="process-card">
                 <div class="inner">
                     <div>
