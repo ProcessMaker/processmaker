@@ -55,8 +55,9 @@ class BpmnSubscriber
         //client events
         $user = $event->instance->user;
         $notification = new ProcessCompletedNotification($event->instance);
-        $user->notify($notification);
-
+        if (!empty($user)) {
+            $user->notify($notification);
+        }
     }
 
     /**
