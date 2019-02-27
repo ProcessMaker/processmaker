@@ -4,9 +4,15 @@ description: View all Requests in your organization.
 
 # View All Requests
 
-## View All Requests You Started or in Which You Are a Participant
+## View All Requests in Your Organization
 
-The **All Requests** page displays all Requests in your organization. This includes Requests that you may not have participated in as well as in-progress and completed Requests. Request information displays in tabular format.
+The **All Requests** page displays all Requests in your organization including those in which you have not participated. Request information displays in tabular format.
+
+{% hint style="info" %}
+Your user account or group membership must have the "Requests: View All Requests" permission to view the list of all Requests.
+
+Ask your ProcessMaker Administrator for assistance if necessary.
+{% endhint %}
 
 Follow these steps to view the **All Requests** page:
 
@@ -14,9 +20,9 @@ Follow these steps to view the **All Requests** page:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
    * Click the Home breadcrumb icon![](../../.gitbook/assets/home-breadcrumb-icon.png)if the **Requests** page is not currently displayed. The **My Requests** page displays.
-2. Click the **All Requests** tab or click the **All** icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar. The **All Requests** page displays. ~~UPDATE SCREENSHOT AFTER NUMBER OF "COMPLETED" NUMBER AND THE "ALL REQUESTS" BREADCRUMBS LABEL BUGS ARE FIXED.~~
+2. Click the **All Requests** tab or click the **All** icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar. The **All Requests** page displays.
 
-![&quot;All Requests&quot; page displays all Requests in which you are a participant](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
+![&quot;All Requests&quot; page displays all Requests in your organization](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
 
 The **All Requests** page displays the following information in tabular format about all Requests:
 
@@ -40,7 +46,7 @@ To [view a Request summary](request-details.md), do one of the following:
 
 ### Search for a Request
 
-Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
+Use the [Search](search-for-a-request.md) field to filter Requests that display in this page.
 
 ### No Requests?
 

@@ -8,15 +8,15 @@ description: View completed Requests in which you started or participated.
 
 The **Completed** page displays all Requests that have completed in which you participated. Request information displays in tabular format.
 
-Follow these steps to view completed Requests: ~~UPDATE SCREENSHOT AFTER "COMPLETED" COUNT INDICATOR BUG IS FIXED~~
+Follow these steps to view completed Requests:
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
    * Click the Home breadcrumb icon![](../../.gitbook/assets/home-breadcrumb-icon.png)if the **Requests** page is not currently displayed. The **My Requests** page displays.
-2. Click the **Completed** tab or click the **Completed** icon![](../../.gitbook/assets/completed-icon-request.png)from the left sidebar. The **Completed** page displays. ~~UPDATE THE SCREENSHOT AFTER THE "COMPLETED" NUMBER BUG IS FIXED.~~
+2. Click the **Completed** tab or click the **Completed** icon![](../../.gitbook/assets/completed-icon-request.png)from the left sidebar. The **Completed** page displays.
 
-![&quot;Completed&quot; page displays completed Requests in which participated](../../.gitbook/assets/completed-request.png)
+![&quot;Completed Requests&quot; page displays completed Requests in which you participated](../../.gitbook/assets/chrome_2019-02-27_16-22-31.png)
 
 The **Completed** page displays the following information in tabular format about completed Requests:
 
@@ -36,7 +36,7 @@ To [view a Request summary](request-details.md), do one of the following:
 
 ### Search for a Request
 
-Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
+Use the [Search](search-for-a-request.md) field to filter Requests that display in this page.
 
 ### No Requests?
 

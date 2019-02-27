@@ -17,7 +17,9 @@ Ask your ProcessMaker Administrator for assistance if necessary.
 Follow these steps to search for a Process:
 
 1. [View your processes.](./#view-your-processes) The **Processes** page displays.
-2. Click the **Search** field and then enter text to filter the list of Processes.
+2. Click the **Search** field and then enter text to filter Processes using any of the following criteria:
+   * **Name:** Filter by the Process name.
+   * **Category:** Filter by the Process [Category](../process-categories.md) name.
 
 As you enter text into the **Search** field, Processes display that match your entered text.
 

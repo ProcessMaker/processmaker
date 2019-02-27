@@ -16,7 +16,7 @@ Follow these steps to view in-progress Requests:
    * Click the Home breadcrumb icon![](../../.gitbook/assets/home-breadcrumb-icon.png)if the **Requests** page is not currently displayed. The **My Requests** page displays.
 2. Click the **In Progress** tab or click the **In Progress** icon![](../../.gitbook/assets/in-progress-icon-request.png)from the left sidebar. The **Requests In Progress** page displays.
 
-![&quot;In Progress&quot; page displays in-progress Requests in which you participated](../../.gitbook/assets/in-progress-request.png)
+![&quot;Requests In Progress&quot; page displays in-progress Requests in which you participated](../../.gitbook/assets/in-progress-request.png)
 
 The **In Progress** page displays the following information in tabular format about in-progress Requests:
 
@@ -36,7 +36,7 @@ To [view a Request summary](request-details.md), do one of the following:
 
 ### Search for a Request
 
-Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
+Use the [Search](search-for-a-request.md) field to filter Requests that display in this page.
 
 ### No Requests?
 

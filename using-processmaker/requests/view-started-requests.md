@@ -42,7 +42,7 @@ To [view a Request summary](request-details.md), do one of the following:
 
 ### Search for a Request
 
-Use the [Search](search-for-a-request.md) field to filter Requests that display in this tab.
+Use the [Search](search-for-a-request.md) field to filter Requests that display in this page.
 
 ### No Requests?
 
