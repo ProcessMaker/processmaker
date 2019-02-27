@@ -20,6 +20,7 @@ use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 
 class ProcessController extends Controller
 {
@@ -335,8 +336,18 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy)
             ->get();
 
+
         foreach($processes as $key => $process) {
-            if (count($process->events) === 0) {
+            //filter he start events that can be used manually (no timer start events);
+            $process->startEvents = $process->events->filter(function($event) {
+                $eventIsTimerStart = collect($event['eventDefinitions'])
+                                        ->filter(function($eventDefinition){
+                                            return get_class($eventDefinition) == TimerEventDefinition::class;
+                                        })->count() > 0;
+                return !$eventIsTimerStart;
+            });
+
+            if (count($process->startEvents) === 0) {
                 $processes->forget($key);
             }
         };
