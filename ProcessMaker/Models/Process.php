@@ -4,11 +4,13 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -17,6 +19,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
+use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -56,6 +59,7 @@ class Process extends Model implements HasMedia
     use SerializeToIso8601;
     use SoftDeletes;
     use ProcessTaskAssignmentsTrait;
+    use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
 
     /**
@@ -97,6 +101,29 @@ class Process extends Model implements HasMedia
      */
     private $bpmnDefinitions;
 
+    public $requestNotifiableTypes = [
+        'requester',
+        'assignee',
+        'participants',
+    ];
+    
+    public $requestNotificationTypes = [
+        'started',
+        'canceled',
+        'completed',
+    ];
+
+    public $taskNotifiableTypes = [
+        'requester',
+        'assignee',
+        'participants',
+    ];
+    
+    public $taskNotificationTypes = [
+        'assigned',
+        'completed',
+    ];
+
     /**
      * Category of the process.
      *
@@ -105,6 +132,81 @@ class Process extends Model implements HasMedia
     public function category()
     {
         return $this->belongsTo(ProcessCategory::class, 'process_category_id');
+    }
+
+    /**
+     * Notification settings of the process.
+     *
+     * @return HasMany
+     */
+    public function notification_settings()
+    {
+        return $this->hasMany(ProcessNotificationSetting::class);
+    }
+
+    /**
+     * Notification settings of the process.
+     *
+     * @return object
+     */
+    public function getNotificationsAttribute()
+    {
+        $array = [];
+        
+        foreach ($this->requestNotifiableTypes as $notifiable) {
+            foreach ($this->requestNotificationTypes as $notification) {
+                
+                $setting = $this->notification_settings()
+                    ->whereNull('element_id')
+                    ->where('notifiable_type', $notifiable)
+                    ->where('notification_type', $notification)->get();
+                
+                if ($setting->count()) {
+                    $value = true;
+                } else {
+                    $value = false;
+                }
+                
+                $array[$notifiable][$notification] = $value;
+            }
+        }
+
+        return (object) $array;
+    }
+
+    /**
+     * Task notification settings of the process.
+     *
+     * @return object
+     */
+    public function getTaskNotificationsAttribute()
+    {
+        $array = [];
+        
+        $elements = $this->notification_settings()
+            ->whereNotNull('element_id')
+            ->get();
+            
+        foreach ($elements->groupBy('element_id') as $group) {
+            $elementId = $group->first()->element_id;
+            foreach ($this->taskNotifiableTypes as $notifiable) {
+                foreach ($this->taskNotificationTypes as $notification) {
+                    
+                    $setting = $group->where('notifiable_type', $notifiable)
+                                     ->where('notification_type', $notification);
+                    
+                    if ($setting->count()) {
+                        $value = true;
+                    } else {
+                        $value = false;
+                    }
+                    
+                    $array[$elementId][$notifiable][$notification] = $value;
+                }
+            }
+        }
+
+        return (object) $array;
     }
 
     /**
@@ -510,6 +612,29 @@ class Process extends Model implements HasMedia
         return $response;
     }
 
+    public function getIntermediateCatchEvents()
+    {
+        $definitions = $this->getDefinitions();
+        $response = [];
+        $catchEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'intermediateCatchEvent');
+        foreach ($catchEvents as $catchEvent) {
+            $response[] = $catchEvent->getBpmnElementInstance()->getProperties();
+        }
+        return $response;
+    }
+
+
+    /**
+     * Update BPMN content and reset bpmnDefinitions
+     *
+     * @param string $value
+     */
+    public function setBpmnAttribute($value)
+    {
+        $this->bpmnDefinitions  = null;
+        $this->attributes['bpmn'] = $value;
+    }
+
     /**
      * Get permissions by start event.
      *
@@ -528,17 +653,6 @@ class Process extends Model implements HasMedia
             $permissions[$group->pivot->node] = $permissions[$group->pivot->node] + $users;
         }
         return $permissions;
-    }
-
-    /**
-     * Update BPMN content and reset bpmnDefinitions
-     *
-     * @param string $value
-     */
-    public function setBpmnAttribute($value)
-    {
-        $this->bpmnDefinitions  = null;
-        $this->attributes['bpmn'] = $value;
     }
 
     /**

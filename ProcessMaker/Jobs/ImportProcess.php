@@ -11,6 +11,7 @@ use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use Illuminate\Queue\SerializesModels;
@@ -356,6 +357,37 @@ class ImportProcess implements ShouldQueue
         $new->created_at = $this->formatDate($process->created_at);
         $new->deleted_at = $this->formatDate($process->deleted_at);
         $new->save();
+        
+        if (property_exists($process, 'notifications')) {
+            foreach ($process->notifications as $notifiable => $notificationTypes) {
+                foreach ($notificationTypes as $notificationType => $wanted) {
+                    if ($wanted === true) {
+                        $newNotification = new ProcessNotificationSetting;
+                        $newNotification->process_id = $new->id;
+                        $newNotification->notifiable_type = $notifiable;
+                        $newNotification->notification_type = $notificationType;
+                        $newNotification->save();
+                    }
+                }
+            }
+        }
+
+        if (property_exists($process, 'task_notifications')) {
+            foreach ($process->task_notifications as $elementId => $notifiables) {
+                foreach ($notifiables as $notifiable => $notificationTypes) {
+                    foreach ($notificationTypes as $notificationType => $wanted) {
+                        if ($wanted === true) {
+                            $newNotification = new ProcessNotificationSetting;
+                            $newNotification->process_id = $new->id;
+                            $newNotification->element_id = $elementId;
+                            $newNotification->notifiable_type = $notifiable;
+                            $newNotification->notification_type = $notificationType;
+                            $newNotification->save();
+                        }
+                    }
+                }
+            }            
+        }
 
         $this->definitions = $new->getDefinitions();       
         $this->new['process'] = $new;

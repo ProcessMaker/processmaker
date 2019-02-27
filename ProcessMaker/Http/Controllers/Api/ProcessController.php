@@ -20,6 +20,7 @@ use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 
 class ProcessController extends Controller
 {
@@ -224,7 +225,7 @@ class ProcessController extends Controller
                 422);
         }
 
-        $process->fill($request->except('cancel_request', 'start_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
+        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings','cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
 
         // Catch errors to send more specific status
         try {
@@ -280,9 +281,101 @@ class ProcessController extends Controller
             $process->usersCanEditData()->sync($editDataUsers, ['method' => 'EDIT_DATA']);
             $process->groupsCanEditData()->sync($editDataGroups, ['method' => 'EDIT_DATA']);
         }
+        
+        //Save any request notification settings...
+        if ($request->has('notifications')) {
+            $this->saveRequestNotifications($process, $request);            
+        }
+
+        //Save any task notification settings...
+        if ($request->has('task_notifications')) {
+            $this->saveTaskNotifications($process, $request);            
+        }
 
         return new Resource($process->refresh());
     }
+    
+    private function saveRequestNotifications($process, $request) 
+    {
+        //Retrieve input
+        $input = $request->input('notifications');
+        
+        //For each notifiable type...
+        foreach ($process->requestNotifiableTypes as $notifiable) {
+            
+            //And for each notification type...
+            foreach ($process->requestNotificationTypes as $notification) {
+                
+                //If this input has been set
+                if (isset($input[$notifiable][$notification])) {
+                    
+                    //Determine if this notification is wanted
+                    $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
+                    
+                    //If we want the notification, find or create it
+                    if ($notificationWanted === true) {
+                        $process->notification_settings()->firstOrCreate([
+                            'element_id' => null,
+                            'notifiable_type' => $notifiable,
+                            'notification_type' => $notification,
+                        ]);
+                    }
+                        
+                    //If we do not want the notification, delete it
+                    if ($notificationWanted === false) {
+                        $process->notification_settings()
+                            ->whereNull('element_id')
+                            ->where('notifiable_type', $notifiable)
+                            ->where('notification_type', $notification)
+                            ->delete();
+                    }                                            
+                }                
+            }
+        }        
+    }
+
+    private function saveTaskNotifications($process, $request) 
+    {
+        //Retrieve input
+        $inputs = $request->input('task_notifications');
+        
+        //For each node...
+        foreach ($inputs as $nodeId => $input) {
+            
+            //For each notifiable type...
+            foreach ($process->taskNotifiableTypes as $notifiable) {
+                
+                //And for each notification type...
+                foreach ($process->taskNotificationTypes as $notification) {
+                    
+                    //If this input has been set
+                    if (isset($input[$notifiable][$notification])) {
+                        
+                        //Determine if this notification is wanted
+                        $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
+                        
+                        //If we want the notification, find or create it
+                        if ($notificationWanted === true) {
+                            $process->notification_settings()->firstOrCreate([
+                                'element_id' => $nodeId,
+                                'notifiable_type' => $notifiable,
+                                'notification_type' => $notification,
+                            ]);
+                        }
+                            
+                        //If we do not want the notification, delete it
+                        if ($notificationWanted === false) {
+                            $process->notification_settings()
+                                ->where('element_id', $nodeId)
+                                ->where('notifiable_type', $notifiable)
+                                ->where('notification_type', $notification)
+                                ->delete();
+                        }                                            
+                    }                
+                }
+            }        
+        }
+    }    
 
     /**
      * Returns the list of processes that the user can start.
@@ -335,8 +428,18 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy)
             ->get();
 
+
         foreach($processes as $key => $process) {
-            if (count($process->events) === 0) {
+            //filter he start events that can be used manually (no timer start events);
+            $process->startEvents = $process->events->filter(function($event) {
+                $eventIsTimerStart = collect($event['eventDefinitions'])
+                                        ->filter(function($eventDefinition){
+                                            return get_class($eventDefinition) == TimerEventDefinition::class;
+                                        })->count() > 0;
+                return !$eventIsTimerStart;
+            });
+
+            if (count($process->startEvents) === 0) {
                 $processes->forget($key);
             }
         };

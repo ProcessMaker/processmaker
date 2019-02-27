@@ -699,7 +699,7 @@ class ProcessTest extends TestCase
         $json = $response->json();
         $events = [];
         foreach ($json['data'] as $process) {
-            $events = array_merge($process['events']);
+            $events = array_merge($events, $process['events']);
         }
         
         $this->assertEquals(1, count($events));

@@ -8,6 +8,7 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
+use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use ProcessMaker\Providers\WorkflowServiceProvider;
@@ -99,7 +100,17 @@ class ProcessSeeder extends Seeder
                     }
                 }
             }
-
+            
+            //Add notifications to request events
+            $notificationTypes = ['started', 'canceled', 'completed'];
+            foreach ($notificationTypes as $notificationType) {
+                factory(ProcessNotificationSetting::class)->create([
+                    'process_id' => $process->getKey(),
+                    'notifiable_type' => 'requester',
+                    'notification_type' => $notificationType,
+                ]);
+            }
+            
             //Add screens to the process
             $admin = User::where('username', 'admin')->firstOrFail();
             $humanTasks = ['task', 'userTask'];
@@ -124,6 +135,19 @@ class ProcessSeeder extends Seeder
                             'assignment_type' => User::class,
                         ]);
                     }
+                    //Add notifications to task events
+                    factory(ProcessNotificationSetting::class)->create([
+                        'process_id' => $process->getKey(),
+                        'element_id' => $id,
+                        'notifiable_type' => 'assignee',
+                        'notification_type' => 'assigned',
+                    ]);
+                    factory(ProcessNotificationSetting::class)->create([
+                        'process_id' => $process->getKey(),
+                        'element_id' => $id,
+                        'notifiable_type' => 'requester',
+                        'notification_type' => 'completed',
+                    ]);
                 }
             }
 

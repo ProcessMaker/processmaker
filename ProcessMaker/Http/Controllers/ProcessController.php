@@ -68,6 +68,8 @@ class ProcessController extends Controller
         
         $list = $this->listUsersAndGroups();
         
+        $process->append('notifications', 'task_notifications');
+        
         $canStart = $this->listCan('Start', $process);
         $canCancel = $this->listCan('Cancel', $process);
         $canEditData = $this->listCan('EditData', $process);
