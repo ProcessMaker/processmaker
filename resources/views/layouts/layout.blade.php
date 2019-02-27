@@ -9,6 +9,7 @@
     @if(Auth::user())
     <meta name="user-id" content="{{ Auth::user()->id }}">
     <meta name="datetime-format" content="{{ Auth::user()->datetime_format ?: config('app.dateformat') }}">
+    <meta name="calendar-format" content="{{ Auth::user()->calendar_format ?: config('app.calendarFormat') }}">
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
     @endif
