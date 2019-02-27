@@ -406,7 +406,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 $result = $parts['firstDate'];
                 break;
             case 'TimeCycle':
-                $result = $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval'];
+                $result = $parts['repetitions']. '/'. $parts['firstDate'] . '/' . $parts['interval']. '/' . $parts['endDate'];
                 break;
             case 'TimeDuration':
                 $result = $parts['interval'];
