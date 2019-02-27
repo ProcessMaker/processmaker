@@ -23,7 +23,7 @@ class ModelerController extends Controller
          */
         event(new ModelerStarting($manager));
         return view('processes.modeler.index', [
-            'process' => $process,
+            'process' => $process->append('notifications', 'task_notifications'),
             'manager' => $manager
         ]);
     }

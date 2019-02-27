@@ -98,8 +98,8 @@ class ExportProcess implements ShouldQueue
      */    
     private function packageProcess()
     {
-        $this->package['process'] = $this->process->toArray();
-        $this->package['process']['bpmn'] = $this->process->bpmn;    
+        $this->package['process'] = $this->process->append('notifications', 'task_notifications')->toArray();
+        $this->package['process']['bpmn'] = $this->process->bpmn;
     }
 
     /**
