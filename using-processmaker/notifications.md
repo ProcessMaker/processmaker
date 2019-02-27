@@ -82,8 +82,12 @@ The **All Notifications** page displays the following information in tabular for
   * **Read status**![](../.gitbook/assets/read-notification-icon-notifications.png)**:** The notification is either read or dismissed when the notification was viewed.
 * **User:** The **User** column displays to whom the notification applies. This user is often you, but it might also include others such as a person who canceled a Request.
 * **Subject:** The **Subject** column displays the subject of the notification. If the subject pertains to an assigned Task, the subject includes the following:
-  * The name of the Task displays in blue-colored text. Select the Task name to open the Task.
-  * The name of the Request associated with the Task displays in parentheses.
+  * **Action icon:** An icon displays what action is associated with the notification so you can prioritize which notification to read first. These are the action icon indicators:
+    * **Assigned Task:** The Assigned Task icon![](../.gitbook/assets/notification-action-task-icon-requests.png)indicates that the notification is associated with an assigned task.
+    * **Completed Request:** The Completed Request icon![](../.gitbook/assets/notification-action-completed-request-icon-requests.png)indicates that the notification is associated with a completed Request.
+    * **Canceled Request:** The Canceled Request icon![](../.gitbook/assets/notification-action-cancel-request-icon-requests.png)indicates that the notification is associated with a canceled Request.
+  * **Task name:** The name of the Task displays in blue-colored text. Select the Task name to open the Task.
+  * **Request name:** The name of the Request associated with the Task displays in parentheses.
 * **Date Created:** The **Date Created** column displays when the notification was sent to you. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 ### Search for a Notification
