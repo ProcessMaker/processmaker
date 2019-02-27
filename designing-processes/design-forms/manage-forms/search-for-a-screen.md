@@ -19,7 +19,9 @@ Ask your ProcessMaker Administrator for assistance if necessary.
 Follow these steps to search for a ProcessMaker Screen:
 
 1. [View your ProcessMaker Screens.](view-all-forms.md) The **Screens** page displays.
-2. Click the **Search** field and then enter text to filter the list of ProcessMaker Screens.
+2. Click the **Search** field and then enter text to filter ProcessMaker Screens using any of the following criteria:
+   * **Name:** Filter by the ProcessMaker Screen name.
+   * **Description:** Filter by the ProcessMaker Screen description.
 
 As you enter text into the **Search** field, ProcessMaker Screens display that match your entered text.
 
