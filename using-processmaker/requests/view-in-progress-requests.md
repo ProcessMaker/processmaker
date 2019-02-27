@@ -19,19 +19,19 @@ Follow these steps to view in-progress Requests:
 
 The **In Progress** page displays the following information in tabular format about in-progress Requests:
 
-* **Name:** The **Name** column displays the name of the Process associated with the Request. Click the Process name to [view information](request-details.md#information-for-in-progress-requests) about that Request.
-* **Status:** The **Status** column displays the **In Progress** status.
+* **Name:** The **Name** column displays the Process name associated with the Request. Click the Process name to [view the Request summary](request-details.md#information-for-in-progress-requests).
+* **Status:** The **Status** column displays the **In Progress** status for all Requests in this view.
 * **Participants:** The **Participants** column displays avatars of each participant in the Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Started:** The **Started** column displays the date and time you made the Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. Since Requests in this tab are in-progress, this column is empty.
 
 {% hint style="info" %}
-### View Information About A Request
+### View a Request Summary
 
-To [view summary information about a Request](request-details.md), do one of the following:
+To [view a Request summary](request-details.md), do one of the following:
 
 * From the **Name** column, click the Process name associated with the Request that you want to view.
-* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request in which you want to view information.
+* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request that you want to view its summary.
 
 ### Search for a Request
 
