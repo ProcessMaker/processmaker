@@ -28,7 +28,7 @@ The **My Requests** page displays the following information in tabular format ab
   * **Completed:** The Request is completed and is represented by the![](../../.gitbook/assets/completed-status-icon-requests.png)icon.
   * **Canceled:** The Request has been canceled and is represented by the![](../../.gitbook/assets/error-status-icon-requests.png)icon. See [Cancel a Request](delete-a-request.md).
   * **Error:** An error occurred with the Request and is represented by the![](../../.gitbook/assets/error-status-icon-requests.png)icon. [View the Request summary](request-details.md#error-information-for-a-request) to see the error.
-* **Participants:** The **Participants** column displays avatars of each participant in the Request. Hover your cursor over a user's avatar to view that person's full name.
+* **Participants:** The **Participants** column displays each Request participant's avatar. Hover your cursor over a user's avatar to view that person's full name.
 * **Started:** The **Started** column displays the date and time you started the Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. If the Request is not completed, this field displays no value for that Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 

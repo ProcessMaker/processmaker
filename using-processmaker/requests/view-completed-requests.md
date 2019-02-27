@@ -22,7 +22,7 @@ The **Completed** page displays the following information in tabular format abou
 
 * **Name:** The **Name** column displays the Process name associated with the Request. Click the Process name to [view the Request summary](request-details.md#information-for-completed-requests).
 * **Status:** The **Status** column displays the **Completed** status for all Requests in this view.
-* **Participants:** The **Participants** column displays avatars of each participant in the Request. Hover your cursor over a user's avatar to view that person's full name.
+* **Participants:** The **Participants** column displays each Request participant's avatar. Hover your cursor over a user's avatar to view that person's full name.
 * **Started:** The **Started** column displays the date and time you made the Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Completed:** The **Completed** column displays the date and time the Request was completed. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 

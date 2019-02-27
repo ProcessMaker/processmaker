@@ -26,7 +26,7 @@ The **Tasks** tab displays summary information for all upcoming Tasks in the Req
 The **Tasks** tab displays the following information in tabular format about assigned Tasks:
 
 * **Task:** The **Task** column displays the name of each Task to be completed for the selected Request for all Request participants. If a Task is assigned to you, a hyperlink displays in the Task name.
-* **Assigned:** The **Assigned** column displays the avatar for the username to whom the Task is assigned.
+* **Assigned:** The **Assigned** column displays the username's avatar to whom the Task is assigned.
 * **Due Date:** The **Due Date** column displays the date the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
@@ -51,7 +51,7 @@ The following information displays about participants in a selected in-progress 
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 * **Cancel Request:** The **Cancel Request** field allows a Request participant or ProcessMaker Administrator to cancel the Request if that Request participant's user account has the appropriate permission to cancel Requests for that process. If your user account does not have the permission\(s\) to cancel Requests for that process, the **Cancel Request** field does not display. See [Cancel a Request](delete-a-request.md) for more information.
-* **Participants:** The **Participants** field displays the avatars of all participants in the selected Request to that time. Hover your cursor over a user's avatar to view that person's full name.
+* **Participants:** The **Participants** field displays each Request participant's avatar in the selected Request to that time. Hover your cursor over a user's avatar to view that person's full name.
 * **Request creation date:** The date and time the Request was created displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 ## Information for Completed Requests
@@ -109,7 +109,7 @@ The **Completed** tab displays a summary of all tasks for the selected completed
 The **Completed** tab displays the following information in tabular format about completed Requests:
 
 * **Task:** The **Task** column displays the name of each completed Task in the selected Request. 
-* **Assigned:** The **Assigned** column displays the avatar for the username to whom the Task was assigned.
+* **Assigned:** The **Assigned** column displays the username's avatar to whom the Task was assigned.
 * **Due Date:** The **Due Date** column displays the date the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
@@ -133,7 +133,7 @@ Completed Requests display information about the participants for a selected Req
 The following information displays about participants in a selected completed Request:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Participants:** The **Participants** field displays the avatars of all participants in the selected Request. Hover your cursor over a user's avatar to view that person's full name.
+* **Participants:** The **Participants** field displays each Request participant's avatar in the selected Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Request completion date:** The date and time the Request was completed displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
@@ -163,7 +163,7 @@ Requests in which an error occurs display information about the participants for
 The following information displays about participants in a selected Request in which an error occurred:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. The Request may have been started from a person manually interacting with a form or as an authenticated user to the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
-* **Participants:** The **Participants** field displays the avatars of all participants in the selected Request. Hover your cursor over a user's avatar to view that person's full name.
+* **Participants:** The **Participants** displays each Request participant's avatar in the selected Request to the time of the error. Hover your cursor over a user's avatar to view that person's full name.
 * **Request error date:** The date and time in which the Request error occurred displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 ## Request History
@@ -174,9 +174,9 @@ Below the **Error**/**Task**/**Summary**/**Data**/**Completed** tables, the hist
 
 The following information displays about each event in the Request history:
 
-* **Request participant:** The Request participant who performed the action is represented by his or her user avatar. If the ProcessMaker system performed an action by running a ProcessMaker Script or other automatic function, that action is represented by "S" avatar.
+* **Request participant:** The Request participant who performed the action is represented by his or her avatar. If the ProcessMaker system performed an action by running a ProcessMaker Script or other automatic function, that action is represented by "S" avatar.
 * **Date and time the action occurred:** To the right of the Request participant displays the date and time the Request action occurred. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
-* **Description of the action:** To the right of the when the Request action occurred displays a description of that action. The ProcessMaker system generates this action description.
+* **Description of the action:** To the right of when the Request action occurred displays a description of that action. The ProcessMaker system generates this action description.
 
 ## Related Topics
 
