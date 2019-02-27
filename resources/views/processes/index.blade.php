@@ -65,7 +65,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body" v-if="processCategories">
+          <div class="modal-body" v-if="Object.keys(processCategories).length > 0">
             <div class="form-group">
     			{!! Form::label('name', 'Name') !!}
     			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
