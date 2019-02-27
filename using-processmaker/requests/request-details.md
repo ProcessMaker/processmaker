@@ -10,8 +10,8 @@ A ProcessMaker Administrator can create a custom format and style for how the Re
 
 To view the summary for a Request, do one of the following:
 
-* From the **Name** column, click the Process name associated with the Request summary that you want to view.
-* Click the Open Request icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request to view its summary.
+* From the **Name** column, click the Process name associated with the Request that you want to view.
+* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request that you want to view its summary.
 
 ## Information for In-Progress Requests
 

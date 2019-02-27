@@ -12,7 +12,8 @@ Follow these steps to view in-progress Requests:
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
-   * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
+   * Click the **Requests** option from the top menu if the **Requests** page is not currently displayed. The **My Requests** page displays.
+   * Click the Home breadcrumb icon![](../../.gitbook/assets/home-breadcrumb-icon.png)if the **Requests** page is not currently displayed. The **My Requests** page displays.
 2. Click the **In Progress** tab or click the **In Progress** icon![](../../.gitbook/assets/in-progress-icon-request.png)from the left sidebar. The **Requests In Progress** page displays.
 
 ![&quot;In Progress&quot; page displays in-progress Requests in which you participated](../../.gitbook/assets/in-progress-request.png)
@@ -26,12 +27,12 @@ The **In Progress** page displays the following information in tabular format ab
 * **Completed:** The **Completed** column displays the date and time the Request was completed. Since Requests in this tab are in-progress, this column is empty.
 
 {% hint style="info" %}
-### View the Request Summary
+### View a Request Summary
 
-To [view the Request summary](request-details.md), do one of the following:
+To [view a Request summary](request-details.md), do one of the following:
 
 * From the **Name** column, click the Process name associated with the Request that you want to view.
-* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request in which you want to view information.
+* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request that you want to view its summary.
 
 ### Search for a Request
 

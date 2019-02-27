@@ -21,7 +21,8 @@ Follow these steps to cancel a Request:
 
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
-   * Click the **Requests** page if it is not currently displayed. The **My Requests** page displays.
+   * Click the **Requests** page if the **Requests** page is not currently displayed. The **My Requests** page displays.
+   * Click the Home breadcrumb icon![](../../.gitbook/assets/home-breadcrumb-icon.png). The **My Requests** page displays.
 2. Click the **In Progress** tab or click the **In Progress** icon![](../../.gitbook/assets/in-progress-icon-request.png)from the left sidebar. The **In Progress** page displays all Requests that are in progress.  
 
    ![](../../.gitbook/assets/in-progress-request.png)

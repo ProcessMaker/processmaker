@@ -13,6 +13,7 @@ Follow these steps to view the **All Requests** page:
 1. Do one of the following:
    * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
+   * Click the Home breadcrumb icon![](../../.gitbook/assets/home-breadcrumb-icon.png)if the **Requests** page is not currently displayed. The **My Requests** page displays.
 2. Click the **All Requests** tab or click the **All** icon![](../../.gitbook/assets/all-icon-request.png)from the left sidebar. The **All Requests** page displays. ~~UPDATE SCREENSHOT AFTER NUMBER OF "COMPLETED" NUMBER AND THE "ALL REQUESTS" BREADCRUMBS LABEL BUGS ARE FIXED.~~
 
 ![&quot;All Requests&quot; page displays all Requests in which you are a participant](../../.gitbook/assets/canceled-request-in-all-requests-tab-requests.png)
@@ -30,12 +31,12 @@ The **All Requests** page displays the following information in tabular format a
 * **Completed:** The **Completed** column displays the date and time the Request was completed. If the Request is not completed, this field displays no value for that Request. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-### View the Request Summary
+### View a Request Summary
 
-To [view the Request summary](request-details.md), do one of the following:
+To [view a Request summary](request-details.md), do one of the following:
 
 * From the **Name** column, click the Process name associated with the Request that you want to view.
-* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request in which you want to view information.
+* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request that you want to view its summary.
 
 ### Search for a Request
 
