@@ -71,15 +71,12 @@ LOGIN_LOGO_PATH={{LOGIN PAGE LOGO PATH HERE}}
 1. Run npm run dev
 
 #### Scheduled tasks/events
-To run time based BPMN events like Timer Start Events or Intermediate Timer Events, the laravel scheduler should be 
-enabled. To do this open a console and:
-1. Execute crontab -e
-2. Add to the cron tab the following line (replacing the upper cased text with the directory where your proyecto is 
-located ):
+
+To run time based BPMN events like Timer Start Events or Intermediate Timer Events, the laravel scheduler should be enabled. To do this open a console and: 1. Execute crontab -e 2. Add to the cron tab the following line \(replacing the upper cased text with the directory where your proyecto is located \):
+
 ```text
 * * * * * cd YOUR_BPM_PROJECT && php artisan schedule:run >> /dev/null 2>&1
 ```
-
 
 #### API
 
