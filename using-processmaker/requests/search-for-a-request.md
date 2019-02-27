@@ -27,12 +27,12 @@ As you enter text into the **Search** field, Requests display that match your en
 
 Search results display only for Requests within the Request page you are viewing. For example, performing a search from within the **My Requests** page displays results only for Requests within that page.
 
-### View a Request Summary <a id="view-information-about-a-request"></a>
+### View the Request Summary <a id="view-information-about-a-request"></a>
 
-To [view a Request summary](request-details.md), do one of the following:
+To [view the Request summary](request-details.md), do one of the following:
 
 * From the **Name** column, click the Process name associated with the Request that you want to view.
-* Click the **Open Request** icon![](https://firebasestorage.googleapis.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-LJ0aNaVW1m7sNsxVJLV%2F-LVEg50XN0-PSaV6jG0a%2F-LVEzGdlTxxh1B2FNuS7%2FOpen%20Request%20Icon%20-%20Requests.png?alt=media&token=006d03ea-98dd-4227-b702-31f7e709df10)for the Request that you want to view its summary.
+* Click the **Open Request** icon![](https://firebasestorage.googleapis.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-LJ0aNaVW1m7sNsxVJLV%2F-LVEg50XN0-PSaV6jG0a%2F-LVEzGdlTxxh1B2FNuS7%2FOpen%20Request%20Icon%20-%20Requests.png?alt=media&token=006d03ea-98dd-4227-b702-31f7e709df10)for the Request in which you want to view information.
 
 ### No Search Results?
 

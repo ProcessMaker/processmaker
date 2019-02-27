@@ -26,12 +26,12 @@ The **Completed** page displays the following information in tabular format abou
 * **Completed:** The **Completed** column displays the date and time the Request was completed. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
-### View a Request Summary
+### View the Request Summary
 
-To [view a Request summary](request-details.md), do one of the following:
+To [view the Request summary](request-details.md), do one of the following:
 
 * From the **Name** column, click the Process name associated with the Request that you want to view.
-* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request that you want to view its summary.
+* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request in which you want to view information.
 
 ### Search for a Request
 
