@@ -176,6 +176,10 @@ class Install extends Command
         $this->info(__('Installing scheduled tasks...'));
         $this->installCronJob();
         
+        // Install Docker executors
+        $this->info(__('Installing Docker executors...'));        
+        $this->installDockerImages();
+        
         // Restart services so they pick up the new settings
         $this->info(__('Restarting Services...'));
         $this->info(
@@ -284,6 +288,13 @@ class Install extends Command
         $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your Mailtrap inbox username"));
         $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your Mailtrap inbox password (input hidden)"));    
     }    
+
+    private function installDockerImages()
+    {
+        $this->info(system('sudo docker pull processmaker/executor:php'));
+        $this->info(system('sudo docker pull processmaker/executor:lua'));
+        $this->info(system('sudo mkdir -m777 /opt/executor'));
+    }
 
     private function installCronJob()
     {
