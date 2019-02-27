@@ -65,7 +65,8 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body" v-if="hasProcessCategories">
+          @if (!empty($processCategories))
+          <div class="modal-body">
             <div class="form-group">
     			{!! Form::label('name', 'Name') !!}
     			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
@@ -83,15 +84,19 @@
     			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
             </div>
           </div>
-            <div class="modal-body" v-else>
+          @else
+            <div class="modal-body">
               <div>{{__('Categories are required to create a process')}}</div>
                 <a  href="{{ url('processes/categories') }}" class="btn btn-primary container mt-2">
                          {{__('Add Category')}}
                 </a>
             </div>
+          @endif
         	<div class="modal-footer">
-    			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
-    			<button type="button" class="btn btn-secondary ml-2" @click="onSubmit" v-if="hasProcessCategories">{{__('Save')}}</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
+                @if (!empty($processCategories))
+                    <button type="button" class="btn btn-secondary ml-2" @click="onSubmit">{{__('Save')}}</button>
+                @endif
             </div>
         </div>
         </div>
@@ -113,11 +118,6 @@
                 addError: {},
                 status: '',
                 processCategories: @json($processCategories)
-            },
-            computed: {
-                hasProcessCategories() {
-                    return Object.keys(this.processCategories).length > 0;
-                }
             },
             methods: {
                 onClose() {
