@@ -130,7 +130,6 @@ if (userID) {
         timezone: timezone.content
     };
     datetime_format.forEach(value => {
-        console.log(value.format);
         if (formatDate.content === value.format) {
             window.ProcessMaker.user.datetime_format = value.momentFormat;
             window.ProcessMaker.user.calendar_format = value.calendarFormat;
