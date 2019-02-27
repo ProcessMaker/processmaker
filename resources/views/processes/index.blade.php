@@ -65,7 +65,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body" v-if="Object.keys(processCategories).length > 0">
+          <div class="modal-body" v-if="hasProcessCategories">
             <div class="form-group">
     			{!! Form::label('name', 'Name') !!}
     			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
@@ -90,8 +90,8 @@
                 </a>
             </div>
         	<div class="modal-footer">
-    			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" v-if='processCategories' @click="onClose">{{__('Close')}}</button>
-    			<button type="button" class="btn btn-secondary ml-2" @click="onSubmit" v-if='processCategories'>{{__('Save')}}</button>
+    			<button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
+    			<button type="button" class="btn btn-secondary ml-2" @click="onSubmit" v-if="hasProcessCategories">{{__('Save')}}</button>
             </div>
         </div>
         </div>
@@ -113,6 +113,11 @@
                 addError: {},
                 status: '',
                 processCategories: @json($processCategories)
+            },
+            computed: {
+                hasProcessCategories() {
+                    return Object.keys(this.processCategories).length > 0;
+                }
             },
             methods: {
                 onClose() {
