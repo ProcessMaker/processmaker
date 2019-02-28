@@ -57,6 +57,16 @@ export default {
     ProcessMaker.$modeler = this.$refs.modeler;
   },
   methods: {
+    getTaskNotifications() {
+      var notifications = {};
+      this.$refs.modeler.nodes.forEach(function(node) {
+        let id = node.definition.id;
+        if (node.notifications !== undefined) {
+          notifications[id] = node.notifications;
+        }
+      });
+      return notifications;
+    },
     saveBpmn() {
       this.$refs.modeler.toXML((err, xml) => {
         if(err) {
@@ -64,11 +74,13 @@ export default {
         } else {
           // lets save
           // Call process update
-          ProcessMaker.apiClient.put('/processes/' + this.process.id, {
+          var data = {
             name: this.process.name,
             description: this.process.description,
+            task_notifications: this.getTaskNotifications(),
             bpmn: xml
-          })
+          };
+          ProcessMaker.apiClient.put('/processes/' + this.process.id, data)
           .then((response) => {
             this.process.updated_at = response.data.updated_at;
             // Now show alert

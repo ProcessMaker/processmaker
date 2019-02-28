@@ -91,6 +91,19 @@ $table-border-color: $grey-bg !default;
 $custom-checkbox-indicator-indeterminate-bg: #788793;
 $custom-checkbox-indicator-indeterminate-color: #ffffff;
 
+
+////custom switch
+
+//Background color when checked
+$custom-control-indicator-checked-bg: #307df6;
+
+//Background color when being clicked
+$custom-control-indicator-active-bg: #b9d6fb;
+
+//Background color unchecked; switch color checked
+$custom-control-indicator-bg: white;
+
+
 //footer
 $footer-text: white;
 

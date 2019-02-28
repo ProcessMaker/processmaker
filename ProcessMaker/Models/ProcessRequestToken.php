@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Log;
 use Carbon\Carbon;
+use ProcessMaker\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
@@ -81,6 +83,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $dates = [
+        'completed_at',
         'due_at',
         'initiated_at',
         'riskchanges_at',
@@ -95,6 +98,55 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         parent::__construct($argument);
         $this->bootElement([]);
+    }
+
+    /**
+     * Notification settings of the process.
+     *
+     * @param string $entity
+     * @param string $notificationType
+     * 
+     * @return array
+     */    
+    public function getNotifiables($notificationType)
+    {
+        $userIds = collect([]);
+        
+        $process = $this->process()->first();
+        
+        $notifiableTypes = $process->notification_settings()
+                                   ->where('notification_type', $notificationType)
+                                   ->where('element_id', $this->element_id)
+                                   ->get()->pluck('notifiable_type');
+
+        foreach ($notifiableTypes as $notifiableType) {
+            $userIds = $userIds->merge($this->getNotifiableUserIds($notifiableType));
+        }
+
+        $userIds = $userIds->unique();
+        
+        $notifiables = $notifiableTypes->implode(', ');
+        $users = $userIds->implode(', ');
+        Log::debug("Sending task $notificationType notification to $notifiables (users: $users)");
+        
+        return User::whereIn('id', $userIds)->get();
+    }
+
+    public function getNotifiableUserIds($notifiableType)
+    {
+        switch ($notifiableType) {
+            case 'requester':
+                return collect([$this->processRequest->user_id]);
+                break;
+            case 'assignee':
+                return collect([$this->user_id]);
+                break;
+            case 'participants':
+                return $this->processRequest->participants()->get()->pluck('id');
+                break;
+            default:
+                return collect([]);
+        }
     }
 
     /**

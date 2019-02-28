@@ -2,10 +2,11 @@
 
 namespace ProcessMaker\Models;
 
+use Log;
 use Carbon\Carbon;
+use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -129,16 +130,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->bootElement([]);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saved(function ($model) {
-            $manager = new TaskSchedulerManager();
-            $manager->registerIntermediateTimerEvents($model);
-        });
-
-    }
+//    protected static function boot()
+//    {
+//        parent::boot();
+//
+//        static::created(function ($model) {
+//            $manager = new TaskSchedulerManager();
+//            $manager->registerIntermediateTimerEvents($model);
+//        });
+//
+//    }
 
     /**
      * Validation rules.
@@ -159,6 +160,52 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             'process_collaboration_id' => 'nullable|exists:process_collaborations,id',
             'user_id' => 'exists:users,id',
         ];
+    }
+
+    /**
+     * Notification settings of the process.
+     *
+     * @param string $entity
+     * @param string $notificationType
+     * 
+     * @return array
+     */    
+    public function getNotifiables($notificationType)
+    {
+        $userIds = collect([]);
+        
+        $process = $this->process()->first();
+        
+        $notifiableTypes = $process->notification_settings()
+                                   ->where('notification_type', $notificationType)
+                                   ->whereNull('element_id')
+                                   ->get()->pluck('notifiable_type');
+
+        foreach ($notifiableTypes as $notifiableType) {
+            $userIds = $userIds->merge($this->getNotifiableUserIds($notifiableType));
+        }
+        
+        $userIds = $userIds->unique();
+        
+        $notifiables = $notifiableTypes->implode(', ');
+        $users = $userIds->implode(', ');
+        Log::debug("Sending request $notificationType notification to $notifiables (users: $users)");
+        
+        return User::whereIn('id', $userIds)->get();
+    }
+
+    public function getNotifiableUserIds($notifiableType)
+    {
+        switch ($notifiableType) {
+            case 'requester':
+                return collect([$this->user_id]);
+                break;
+            case 'participants':
+                return $this->participants()->get()->pluck('id');
+                break;
+            default:
+                return collect([]);
+        }
     }
 
     /**
@@ -232,7 +279,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function process()
     {
-        return $this->belongsTo(Process::class);
+        return $this->belongsTo(Process::class, 'process_id');
     }
 
     /**

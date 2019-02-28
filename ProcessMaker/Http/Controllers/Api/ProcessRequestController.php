@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Notification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
@@ -279,7 +280,8 @@ class ProcessRequestController extends Controller
     private function cancelRequestToken(ProcessRequest $request)
     {
         //notify to the user that started the request, its cancellation
-        $request->user->notify(new ProcessCanceledNotification($request));
+        $notifiables = $request->getNotifiables('canceled');
+        Notification::send($notifiables, new ProcessCanceledNotification($request));
 
         //cancel request
         $request->status = 'CANCELED';
