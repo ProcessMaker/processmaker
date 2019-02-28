@@ -326,7 +326,6 @@ class Install extends Command
         try {
             $pdo = DB::connection('install')->getPdo();
         } catch(Exception $e) {
-            dd($e);
             $this->error(__("Failed to connect to MySQL database. Check your credentials and try again. Note, the database must also exist."));
             return false;
         }
