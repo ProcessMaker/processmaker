@@ -65,7 +65,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          @if (!empty($processCategories))
+          @if (count($processCategories) > 1)
           <div class="modal-body">
             <div class="form-group">
     			{!! Form::label('name', 'Name') !!}
@@ -94,7 +94,7 @@
           @endif
         	<div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
-                @if (!empty($processCategories))
+                @if (count($processCategories) > 1)
                     <button type="button" class="btn btn-secondary ml-2" @click="onSubmit">{{__('Save')}}</button>
                 @endif
             </div>
