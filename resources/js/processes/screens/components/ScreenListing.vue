@@ -97,7 +97,7 @@
         </div>
       </form>
       <div slot="modal-footer" class="w-100" align="right">
-        <button type="button" class="btn btn-outline-secondary" @click="hideModal">Close</button>
+        <button type="button" class="btn btn-outline-secondary" @click="hideModal">Cancel</button>
         <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">Save</button>
       </div>
     </b-modal>

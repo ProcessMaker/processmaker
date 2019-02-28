@@ -134,7 +134,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         parent::boot();
 
-        static::saved(function ($model) {
+        static::created(function ($model) {
             $manager = new TaskSchedulerManager();
             $manager->registerIntermediateTimerEvents($model);
         });

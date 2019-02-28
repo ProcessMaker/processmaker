@@ -93,7 +93,7 @@
             </div>
           @endif
         	<div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Cancel')}}</button>
                 @if (count($processCategories) > 1)
                     <button type="button" class="btn btn-secondary ml-2" @click="onSubmit">{{__('Save')}}</button>
                 @endif
