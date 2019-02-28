@@ -42,7 +42,7 @@
             class="btn btn-sm btn-outline-info"
             @click="removeAll"
           >Dismiss All</button>
-          <button class="btn btn-sm btn-info" href="/notifications">View All</button>
+          <a class="btn btn-sm btn-info" href="/notifications">View All</a>
         </li>
       </ul>
     </b-popover>
