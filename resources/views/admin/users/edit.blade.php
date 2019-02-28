@@ -32,7 +32,7 @@
 
                     </div>
                 </nav>
-                <div class="card card-body mt-3">
+                <div class="container mt-3">
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
                              aria-labelledby="nav-home-tab">
@@ -196,6 +196,10 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="text-right">
+                                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-4">
@@ -250,10 +254,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
-                            </div>
+
                         </div>
                         <div class="tab-pane fade show" id="nav-groups" role="tabpanel"
                              aria-labelledby="nav-groups-tab">
