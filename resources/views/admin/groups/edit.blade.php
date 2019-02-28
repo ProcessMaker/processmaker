@@ -158,7 +158,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary"
-                                    data-dismiss="modal" @click="onCloseAddUser">{{__('Close')}}</button>
+                                    data-dismiss="modal" @click="onCloseAddUser">{{__('Cancel')}}</button>
                             <button type="button" class="btn btn-secondary ml-2" @click="onSave">{{__('Save')}}</button>
                         </div>
                     </div>
