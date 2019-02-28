@@ -198,10 +198,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                            $task->save();
                            break;
                        case 'INTERMEDIATE_TIMER_EVENT':
-                           $this->executeIntermediateTimerEvent($task, $config);
+                           $executed = $this->executeIntermediateTimerEvent($task, $config);
                            $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
                            $task->last_execution = $today->format('Y-m-d H:i:s');
-                           $task->save();
+                           if ($executed) {
+                               $task->save();
+                           }
                            break;
                    }
                })->when(function() use($nextDate, $today) {
@@ -259,9 +261,13 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
         $catch = $request->tokens()->where('element_id', $config->element_id)->first();
 
+        $executed = false;
         if ($catch) {
             WorkflowManager::completeCatchEvent($process, $request, $catch, []);
+            $executed = true;
         }
+
+        return $executed;
    }
 
    public function nextDate($currentDate, $intervalConfig, $firstOccurrenceDate = null)
