@@ -70,7 +70,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Close')}}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Cancel')}}</button>
                         <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
                     </div>
                 </div>

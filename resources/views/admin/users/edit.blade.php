@@ -392,7 +392,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                                 @click="onCloseAddUserToGroup">
-                            {{__('Close')}}
+                            {{__('Cancel')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="saveUserToGroup">
                             {{__('Save')}}
