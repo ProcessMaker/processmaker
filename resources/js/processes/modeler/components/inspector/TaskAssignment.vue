@@ -22,10 +22,10 @@
         :value="assignmentGetter"
         @input="assignmentSetter"
       >
-                <option value="requester">To requester</option>
-                <option value="user">To user</option>
-                <option value="group">To group</option>
-                <option value="previous_task_assignee">Previous task assignee</option>
+                <option value="requester">Requester</option>
+                <option value="user">User</option>
+                <option value="group">Group</option>
+                <option value="previous_task_assignee">Previous Task Assignee</option>
             </select>
         </div>
 
@@ -62,73 +62,98 @@
     ></form-checkbox>
 
     <div class="form-group">
-      <label>Special Assignments</label>
-      <div v-if="loadingGroups">Loading...</div>
 
-      <button
-        type="button"
-        @click="addSpecialAssignment"
-        class="float-right btn btn-primary btn-sm"
-      >+</button>
-      <label>Expression</label>
-      
-      <input class="form-control" type="text" v-model="assignmentExpression">
-
-      <div class="form-group">
-        <label>Task Assignment</label>
-        <select
-                <select ref="specialAssignmentsDropDownList"
-                        class="form-control"
-                        v-model="typeAssignmentExpression"
-                >
-                    <option value=""></option>
-                    <option value="requester">To requester</option>
-                    <option value="user">To user</option>
-                    <option value="group">To group</option>
-                </select>
-            </div>
-
-      <div class="form-group" v-if="showSpecialAssignOneUser">
-        <label>Assigned User</label>
-        <div v-if="loadingUsers">Loading...</div>
-        <select v-else class="form-control" v-model="userAssignmentExpression">
-          <option></option>
-          <option
-            v-for="(row, index) in users"
-            v-bind:value="row.id"
-            :selected="row.id == this.userAssignmentExpression"
-          >{{row.fullname}}</option>
-        </select>
+      <div class="form-group special-assignment-header">
+          <label>Assign by Expression</label>
+          <button
+            type="button"
+            @click="addingSpecialAssignment = true"
+            class="float-right btn-special-assignment-action btn btn-secondary btn-sm"
+            :class="{inactive: addingSpecialAssignment}"
+          ><i class="fa fa-plus"></i> Rule</button>
       </div>
 
-      <div class="form-group" v-if="showSpecialAssignGroup">
-        <label>Assigned Group</label>
-        <div v-if="loadingGroups">Loading...</div>
-        <select v-else class="form-control" v-model="groupAssignmentExpression">
-          <option></option>
-          <option
-            v-for="(row, index) in groups"
-            v-bind:value="row.id"
-            :selected="row.id == groupAssignmentExpression"
-          >{{row.name}}</option>
-        </select>
+      <div class="special-assignment-wrapper" ref="specialAssignmentWrapper" @transitionend="transitionEnded">
+        <div class="special-assignment-form">
+          
+          <div class="form-group">
+            <label>Expression</label>
+            <input class="form-control" ref="specialAssignmentsInput" type="text" v-model="assignmentExpression">
+          </div>
+
+          <div class="form-group">
+            <label>Task Assignment</label>
+            <select
+                    <select ref="specialAssignmentsDropDownList"
+                            class="form-control"
+                            v-model="typeAssignmentExpression"
+                    >
+                        <option value=""></option>
+                        <option value="requester">Requester</option>
+                        <option value="user">User</option>
+                        <option value="group">Group</option>
+                    </select>
+                </div>
+
+          <div class="form-group" v-if="showSpecialAssignOneUser">
+            <label>Assigned User</label>
+            <div v-if="loadingUsers">Loading...</div>
+            <select v-else class="form-control" v-model="userAssignmentExpression">
+              <option></option>
+              <option
+                v-for="(row, index) in users"
+                v-bind:value="row.id"
+                :selected="row.id == this.userAssignmentExpression"
+              >{{row.fullname}}</option>
+            </select>
+          </div>
+
+          <div class="form-group" v-if="showSpecialAssignGroup">
+            <label>Assigned Group</label>
+            <div v-if="loadingGroups">Loading...</div>
+            <select v-else class="form-control" v-model="groupAssignmentExpression">
+              <option></option>
+              <option
+                v-for="(row, index) in groups"
+                v-bind:value="row.id"
+                :selected="row.id == groupAssignmentExpression"
+              >{{row.name}}</option>
+            </select>
+          </div>
+          
+          <div class="form-group form-group-actions">
+            <button
+              type="button"
+              @click="addingSpecialAssignment = false"
+              class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm"
+            >Cancel</button><button
+              type="button"
+              @click="saveSpecialAssignment"
+              class="btn-special-assignment-action btn btn-secondary btn-sm"
+            >Save</button>
+          </div>
+
+        </div>
       </div>
 
-      <span
+      <div
         v-for="(row, index) in specialAssignments"
         class="list-group-item list-group-item-action pt-0 pb-0"
         :class="{'bg-primary': false}"
       >
         <template>
-          <span class="text-center text-nowrap m-1">{{row.expression}}</span>
-          &nbsp; to &nbsp;
-          <span
-            class="text-center text-capitalize text-nowrap m-1"
-          >{{row.type}}</span>
-          <span class="text-center text-nowrap m-1">{{getAssigneeName(row)}}</span>
-          <i class="fa fa-trash" aria-hidden="true" @click="removeSpecialAssignment(row)"></i>
+          <div class="special-assignment-section">
+            <div class="special-assignment-value" :title="row.expression"><strong>{{row.expression}}</strong></div>
+            <div class="btn-special-assignment-delete" @click="removeSpecialAssignment(row)"><i class="fa fa-trash"></i></div>
+          </div>
+          <div class="special-assignment-section">
+            <div class="special-assignment-value">Assigned to
+              <strong v-if="row.type == 'requester'">{{row.type}}</strong>
+              <strong v-else>{{getAssigneeName(row)}}</strong>
+            </div>
+          </div>
         </template>
-      </span>
+      </div>
     </div>
   </div>
 </template>
@@ -143,6 +168,7 @@ export default {
       specialAssignments: [],
       loadingUsers: true,
       loadingGroups: true,
+      addingSpecialAssignment: false,
       assignmentExpression: "",
       userAssignmentExpression: "",
       userNameAssignmentExpression: "",
@@ -300,7 +326,21 @@ export default {
       );
     },
 
-    addSpecialAssignment() {
+    transitionEnded(event) {
+      if (this.addingSpecialAssignment) {
+        if (event.propertyName == 'height') {
+          this.$refs.specialAssignmentsInput.focus();
+          this.$refs.specialAssignmentWrapper.style.height = 'auto';
+        }
+      } else {
+        this.assignmentExpression = "";
+        this.typeAssignmentExpression = "";
+        this.userAssignmentExpression = "";
+        this.groupAssignmentExpression = "";
+      }
+    },
+
+    saveSpecialAssignment() {
       let selectedAssignee = this.userAssignmentExpression
         ? this.userAssignmentExpression
         : this.groupAssignmentExpression;
@@ -323,6 +363,8 @@ export default {
         this.userAssignmentExpression = "";
         this.groupAssignmentExpression = "";
       }
+      
+      this.addingSpecialAssignment = false;
     },
 
     loadSpecialAssignments() {
@@ -360,20 +402,126 @@ export default {
   watch: {
     value() {
       this.loadSpecialAssignments();
+    },
+    addingSpecialAssignment(value) {
+      let wrapper = this.$refs.specialAssignmentWrapper;
+      let height = wrapper.scrollHeight;
+
+      if (value === true) {
+        wrapper.style.height = height + 'px';
+        wrapper.style.opacity = 1;
+      }
+      
+      if (value === false) {
+        wrapper.style.height = height + 'px';
+        setTimeout(() => {
+          wrapper.style.height = 0;
+          wrapper.style.opacity = 0;
+        }, 0);
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.list-users-groups {
-  width: 100%;
-  height: 24em;
-  overflow-y: auto;
-  font-size: 0.75rem;
-  background: white;
-}
-.list-users-groups.small {
-  height: 8em;
-}
+
+  $transition: .25s;
+
+  .list-users-groups {
+    width: 100%;
+    height: 24em;
+    overflow-y: auto;
+    font-size: 0.75rem;
+    background: white;
+  }
+
+  .list-users-groups.small {
+    height: 8em;
+  }
+  
+  .special-assignment-header {
+    label {
+      padding-top: 4px;
+    }
+  }
+  
+  .special-assignment-wrapper {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: height $transition, opacity $transition;
+  }
+  
+  .special-assignment-form {
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    padding: 4px 9px 2px 9px;
+    margin-bottom: 9px;
+  }
+  
+  .form-group-actions {
+    text-align: right;
+  }
+  
+  .btn-special-assignment-action {
+    border-radius: 2px;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 4px;
+    transition: opacity $transition;
+    
+    &.inactive {
+      opacity: 0;
+    }
+  }
+    
+  .list-group-item {
+    padding: 0;
+    margin-bottom: 9px;
+
+    .btn-special-assignment-delete {
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 75%);
+      border: 0;
+      color: gray;
+      cursor: pointer;
+      margin: 0;
+      outline: 0;
+      padding: 4px 4px 4px 60px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      
+      &:hover {
+        color: #ed4757;
+      }
+    }
+    
+    &:hover {
+      .btn-special-assignment-delete {
+        background: linear-gradient(90deg, rgba(247,248,249,0) 0%, rgba(247,248,249,1) 75%);
+      }
+    }
+  }
+  
+  .special-assignment-section {
+    padding: 4px 1px 4px 4px;
+    
+    &:first-child {
+      border-bottom: 1px solid #eee;
+    }
+  }
+  
+  .special-assignment-value {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  
+  .btn-special-assignment-close {
+    margin-right: 9px;
+  }
+  
+  .fa-trash {
+    cursor: pointer;
+  }
 </style>
