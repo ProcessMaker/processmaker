@@ -6,9 +6,9 @@ description: View the summary for a Request.
 
 ## Overview
 
-A ProcessMaker Administrator can create a custom format and style for how the Request summary displays for your organization. This topic discusses how ProcessMaker 4 displays the Request summary by default.
+~~A ProcessMaker Administrator can create a custom format and style for how the Request summary displays for your organization.~~ This topic discusses how ProcessMaker 4 displays the Request summary ~~by default~~.
 
-To view a Request summary, follow these steps:
+Follow these steps to view a Request summary:
 
 1. View any of the following Request pages:
    * [My Requests](view-started-requests.md#view-requests-you-started)
@@ -53,7 +53,7 @@ In-progress Requests display the summary of the participants for a selected Requ
 
 ![Request participant summary for an in-progress Request](../../.gitbook/assets/in-progress-request-participants-request.png)
 
-The following summary displays about participants in a selected in-progress Request:
+The following summary displays about participants in an in-progress Request:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Cancel Request:** The **Cancel Request** field allows a Request participant or ProcessMaker Administrator to cancel the Request if that Request participant's user account has the appropriate permission to cancel Requests for that Process. If your user account does not have the permission\(s\) to cancel Requests for that Process, the **Cancel Request** field does not display. See [Cancel a Request](delete-a-request.md) for more information.
@@ -136,7 +136,7 @@ Completed Requests display the summary of the participants for a selected Reques
 
 ![Request participant summary for a completed Request](../../.gitbook/assets/completed-request-participants-request.png)
 
-The following summary displays about participants in a selected completed Request:
+The following summary displays about participants in a completed Request:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Participants:** The **Participants** field displays each Request participant's avatar in the selected Request. Hover your cursor over a user's avatar to view that person's full name.
@@ -166,7 +166,7 @@ Requests in which an error occurred display the summary of the participants for 
 
 ![Request participant summary for a Request in which an error occurred](../../.gitbook/assets/error-request-information-requests.png)
 
-The following summary displays about participants in a selected Request in which an error occurred:
+The following summary displays about participants in a Request in which an error occurred:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Participants:** The **Participants** displays each Request participant's avatar in the selected Request to the time of the error. Hover your cursor over a user's avatar to view that person's full name.

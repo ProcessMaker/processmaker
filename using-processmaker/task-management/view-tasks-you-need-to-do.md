@@ -19,7 +19,7 @@ If you are viewing your completed Tasks, click the **To Do** icon![](../../.gitb
 
 The **To Do Tasks** page displays the following information in tabular format about your assigned Tasks:
 
-* **Name:** The **Name** column displays the name of the assigned Task. Click the Task name to open the selected Task and [view its summary](view-a-task-summary.md).
+* **Name:** The **Name** column displays the name of the assigned Task. Click the Task name to [open the selected Task and view its summary](view-a-task-summary.md#summary-for-an-assigned-task).
 * **Request:** The **Request** column displays the Process name associated with the Request for the assigned Task. Click the Process name to [view the Request summary](../requests/request-details.md).
 * **Assignee:** The **Assignee** column displays your avatar since all Tasks in this display are assigned to you. Hover your cursor over a user's avatar to view that person's full name.
 * **Due:** The **Due** column displays the date and time the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
