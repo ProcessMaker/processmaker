@@ -100,7 +100,7 @@ The **Data** tab displays the summary of values from a completed Request similar
 
 Follow these steps to edit and save the values in the completed Request from those values that were submitted in the Request:
 
-1. View the **Data** tab. Note that the Data tab does not display until the Request is completed.
+1. View the **Data** tab. Note that the **Data** tab does not display until the Request is completed.
 2. From the editable fields in the **Value** column, change the values that were submitted during the Request to those that you want.
 3. Click **Save**. The following message displays when the Request values are changed: **Request data successfully updated**.
 

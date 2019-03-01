@@ -22,6 +22,20 @@ The **Completed Tasks** page displays the following information in tabular forma
 * **Due:** The **Due** column displays the date the Task was due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
+### View a Completed Task and Its Summary
+
+To view a [completed Task and its summary](view-a-task-summary.md#summary-for-a-completed-task), do one of the following:
+
+* From the **Name** column, click the Task name that you want to view.
+* Click the **Open Task** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Task name that you want to view.
+
+### View a Request Summary Associated with a Task
+
+To [view a Request summary](../requests/request-details.md), do one of the following:
+
+* From the **Request** column, click the Process name associated with the Task that you want to view.
+* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-assigned-tasks.png)for the Request associated with the Task.
+
 ### No Completed Tasks?
 
 If there are no completed Tasks by anyone in your organization, the following message displays: **No data available**.
@@ -30,27 +44,6 @@ If there are no completed Tasks by anyone in your organization, the following me
 
 [Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
-
-## View Information About a Completed Task
-
-Follow these steps to view information about a completed Task:
-
-1. [View all completed tasks.](view-completed-tasks.md#view-completed-tasks) The **Tasks** screen displays.
-2. Click the name of the Task from the **Tasks** column. The following message displays to the left of the completed Task: **Task Completed**.  
-
-   ![](../../.gitbook/assets/task-completed-message-tasks.png)
-
-   Information displays about the selected completed Task.
-
-![Information about a completed Task](../../.gitbook/assets/completed-task-information-tasks.png)
-
-The following information displays about the completed Task:
-
-* **Completed on:** The **Completed on** field displays the date and time the Task was completed.
-* **Assigned To:** The **Assigned To** field displays the avatar and full name of the person assigned the Task.
-* **Assigned:** The date and time the Task was assigned displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
-* **Request:** The **Request** field displays the name of the Process associated with the Request. Click the Process name to [view information about that Request](../requests/request-details.md).
-* **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the Request.
 
 ## Related Topics
 

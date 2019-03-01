@@ -25,13 +25,29 @@ The **To Do Tasks** page displays the following information in tabular format ab
 * **Due:** The **Due** column displays the date and time the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
+### View an Assigned Task and Its Summary
+
+To view an [assigned Task and its summary](view-a-task-summary.md#summary-for-an-assigned-task), do one of the following:
+
+* From the **Name** column, click the Task name that you want to view.
+* Click the **Open Task** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Task name that you want to view.
+
+### View a Request Summary Associated with a Task
+
+To [view a Request summary](../requests/request-details.md), do one of the following:
+
+* From the **Request** column, click the Process name associated with the Task that you want to view.
+* Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-assigned-tasks.png)for the Request associated with the Task.
+
+### Be Reminded of Overdue Tasks
+
+A message displays above your assigned Tasks how many of those Tasks are overdue.  
+
+![](../../.gitbook/assets/assigned-to-do-tasks-overdue-tasks.png)
+
 ### No Assigned Tasks?
 
 If there are no assigned Tasks, the following message displays: **No data available**.
-
-### Get Reminded of Overdue Tasks
-
-
 
 ### Display Information the Way You Want It
 
