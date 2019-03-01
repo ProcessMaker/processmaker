@@ -275,7 +275,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                            <div class="accordion" id="accordionExample">
+                            <div class="accordion card card-body" id="accordionPermissions">
                                 <label>
                                     <input type="checkbox" v-model="formData.is_administrator"
                                            @input="adminHasChanged = true">
