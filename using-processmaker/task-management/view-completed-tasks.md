@@ -17,7 +17,7 @@ Follow these steps to view all completed Tasks from all users in your organizati
 The **Completed Tasks** page displays the following information in tabular format about all completed Tasks in your organization:
 
 * **Task:** The **Task** column displays the name of the completed Task. If you click the Task name, the Task title displays with the following message: **Task Completed** along with [information about the completed Task](view-completed-tasks.md#view-information-about-a-completed-task).
-* **Request:** The **Request** column displays the name of the Process associated with the Request. Click the Process name to [view information about that Request](../requests/request-details.md).
+* **Request:** The **Request** column displays the name of the Process associated with the Request. Click the Process name to [view the Request summary](../requests/request-details.md).
 * **Assignee:** The **Assignee** column displays the avatar for the username to whom the Task was assigned. Hover your cursor over a user's avatar to view that person's full name.
 * **Due:** The **Due** column displays the date the Task was due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 

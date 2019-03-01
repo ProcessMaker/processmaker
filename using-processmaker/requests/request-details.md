@@ -19,17 +19,17 @@ To view a Request summary, follow these steps:
    * From the **Name** column in the Request page, click the Process name associated with the Request that you want to view.
    * Click the **Open Request** icon![](../../.gitbook/assets/open-request-icon-requests.png)for the Request that you want to view its summary.
 
-## Information for In-Progress Requests
+## Summary for In-Progress Requests
 
-This section discusses how information displays for in-progress Requests.
+This section discusses how the summary displays for in-progress Requests.
 
 ### Tasks
 
-The **Tasks** tab displays summary information for all upcoming Tasks in the Request.
+The **Tasks** tab displays the summary for all upcoming Tasks in the Request.
 
-![&quot;Tasks&quot; tab displaying an in-progress Request&apos;s information](../../.gitbook/assets/tasks-tab-request-information-request.png)
+![&quot;Tasks&quot; tab displaying an in-progress Request&apos;s summary](../../.gitbook/assets/tasks-tab-request-information-request.png)
 
-The **Tasks** tab displays the following information in tabular format about assigned Tasks:
+The **Tasks** tab displays the following summary in tabular format about assigned Tasks:
 
 * **Task:** The **Task** column displays the name of each Task to be completed for the selected Request for all Request participants. If a Task is assigned to you, a hyperlink displays in the Task name.
 * **Assigned:** The **Assigned** column displays the username's avatar to whom the Task is assigned. Hover your cursor over a user's avatar to view that person's full name.
@@ -49,24 +49,24 @@ If there are no Tasks for the selected Request, the following message displays: 
 
 ### Request Participants
 
-In-progress Requests display information about the participants in a selected Request.
+In-progress Requests display the summary of the participants for a selected Request.
 
-![Request participant information for an in-progress Request](../../.gitbook/assets/in-progress-request-participants-request.png)
+![Request participant summary for an in-progress Request](../../.gitbook/assets/in-progress-request-participants-request.png)
 
-The following information displays about participants in a selected in-progress Request:
+The following summary displays about participants in a selected in-progress Request:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Cancel Request:** The **Cancel Request** field allows a Request participant or ProcessMaker Administrator to cancel the Request if that Request participant's user account has the appropriate permission to cancel Requests for that Process. If your user account does not have the permission\(s\) to cancel Requests for that Process, the **Cancel Request** field does not display. See [Cancel a Request](delete-a-request.md) for more information.
 * **Participants:** The **Participants** field displays each Request participant's avatar in the selected Request to that time. Hover your cursor over a user's avatar to view that person's full name.
 * **Request creation date:** The date and time the Request was created displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
-## Information for Completed Requests
+## Summary for Completed Requests
 
-This section discusses how information displays for completed Requests.
+This section discusses how the summary displays for completed Requests.
 
 ### Summary
 
-The **Summary** tab displays a summary of all information entered into the completed Request. Request information may be entered in the following ways:
+The **Summary** tab displays the summary of information entered into the completed Request. Request information may be entered in the following ways:
 
 * Request participants manually enter information into ProcessMaker Screens. ProcessMaker Screens are digital forms.
 * Authenticated users submit data through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
@@ -108,11 +108,11 @@ Below the table, the history of the Request displays all Request actions. [See R
 
 ### Summary of Tasks for the Completed Request
 
-The **Completed** tab displays a summary of all tasks for the selected completed Request.
+The **Completed** tab displays the summary of all Tasks for the selected completed Request.
 
-![&quot;Completed&quot; tab for a completed Request&apos;s information](../../.gitbook/assets/completed-tab-request-information-request.png)
+![&quot;Completed&quot; tab for a completed Request&apos;s summary](../../.gitbook/assets/completed-tab-request-information-request.png)
 
-The **Completed** tab displays the following information in tabular format about completed Requests:
+The **Completed** tab displays the following summary in tabular format about completed Requests:
 
 * **Task:** The **Task** column displays the name of each completed Task in the selected Request. 
 * **Assigned:** The **Assigned** column displays the username's avatar to whom the Task was assigned. Hover your cursor over a user's avatar to view that person's full name.
@@ -132,11 +132,11 @@ If the selected Request is not completed, the following message displays: **No D
 
 ### Request Participants
 
-Completed Requests display information about the participants for a selected Request.
+Completed Requests display the summary of the participants for a selected Request.
 
-![Request participant information for a completed Request](../../.gitbook/assets/completed-request-participants-request.png)
+![Request participant summary for a completed Request](../../.gitbook/assets/completed-request-participants-request.png)
 
-The following information displays about participants in a selected completed Request:
+The following summary displays about participants in a selected completed Request:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Participants:** The **Participants** field displays each Request participant's avatar in the selected Request. Hover your cursor over a user's avatar to view that person's full name.
@@ -144,15 +144,15 @@ The following information displays about participants in a selected completed Re
 
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
-## Error Information for a Request
+## Error Summary for a Request
 
 ### Summary of the Error
 
-The **Errors** tab displays summary information about an error for a selected Request if an error occurred. If a Request error has not occurred, the **Errors** tab does not display.
+The **Errors** tab displays the summary about an error for a selected Request if an error occurred. If a Request error has not occurred, the **Errors** tab does not display.
 
 ![&quot;Errors&quot; tab displays information about a Request error](../../.gitbook/assets/error-tab-information-requests.png)
 
-The **Errors** tab displays the following information in tabular format about Request errors:
+The **Errors** tab displays the following summary in tabular format about Request errors:
 
 * **Error:** The **Error** column displays the error description. 
 * **Time:** The **Time** column displays how long ago the error occurred.
@@ -162,11 +162,11 @@ Below the table, the history of the Request displays all Request actions. [See R
 
 ### Request Participants
 
-Requests in which an error occurs display information about the participants for that Request.
+Requests in which an error occurred display the summary of the participants for that Request to that time.
 
-![Request participant information for a Request in which an error occurred](../../.gitbook/assets/error-request-information-requests.png)
+![Request participant summary for a Request in which an error occurred](../../.gitbook/assets/error-request-information-requests.png)
 
-The following information displays about participants in a selected Request in which an error occurred:
+The following summary displays about participants in a selected Request in which an error occurred:
 
 * **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Participants:** The **Participants** displays each Request participant's avatar in the selected Request to the time of the error. Hover your cursor over a user's avatar to view that person's full name.
@@ -174,7 +174,7 @@ The following information displays about participants in a selected Request in w
 
 ## Request History
 
-Below the **Error**/**Task**/**Summary**/**Data**/**Completed** tables, the history of the Request displays all Request actions to date: what each Request participant and ProcessMaker Script performed for this Request. The oldest Request actions display at the top of the Request history.
+Below the **Error**/**Task**/**Summary**/**Data**/**Completed** tables, the history of the Request displays all Request actions to that time: what each Request participant and ProcessMaker Script performed for this Request. The oldest Request actions display at the top of the Request history.
 
 ![Request history displays all actions in a Request, with the oldest actions at the top](../../.gitbook/assets/request-history-requests.png)
 
