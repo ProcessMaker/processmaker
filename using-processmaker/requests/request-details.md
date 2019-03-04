@@ -23,13 +23,13 @@ Follow these steps to view a Request summary:
 
 This section discusses how the summary displays for in-progress Requests.
 
-### Tasks
+### Assigned Participant Tasks
 
-The **Tasks** tab displays the summary for all upcoming Tasks in the Request.
+The **Tasks** tab displays the summary for all assigned Tasks to Request participants to that time.
 
 ![&quot;Tasks&quot; tab displaying an in-progress Request&apos;s summary](../../.gitbook/assets/tasks-tab-request-information-request.png)
 
-The **Tasks** tab displays the following summary in tabular format about assigned Tasks:
+The **Tasks** tab displays the following summary in tabular format about assigned Tasks to Request participants to that time:
 
 * **Task:** The **Task** column displays the name of each Task to be completed for the selected Request for all Request participants. If a Task is assigned to you, a hyperlink displays in the Task name.
 * **Assigned:** The **Assigned** column displays the username's avatar to whom the Task is assigned. Hover your cursor over a user's avatar to view that person's full name.
@@ -38,9 +38,39 @@ The **Tasks** tab displays the following summary in tabular format about assigne
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
 {% hint style="info" %}
-### No Tasks?
+### No Assigned Tasks?
 
-If there are no Tasks for the selected Request, the following message displays: **No Data Available**.
+If there are no assigned Tasks for the selected Request, the following message displays: **No Data Available**.
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
+{% endhint %}
+
+### Values in the Request
+
+The **Summary** tab displays the summary of information entered into the Request when a Request completes. However, because the Request is in progress, there are no Request values to display. The Summary tab displays the following message: **This Request is currently in progress. This screen will be populated once the Request is completed**.
+
+![&quot;Summary&quot; tab displays a message that this tab displays Request values after the Request completes](../../.gitbook/assets/summary-tab-in-progress-request-message-requests.png)
+
+### Completed Tasks Summary
+
+The **Completed** tab displays the summary of all Tasks Request participants completed to that time. ~~Verify this is accurate.~~
+
+~~ADD SCREEN SHOT~~
+
+The **Completed** tab displays the following summary in tabular format about completed Tasks Request participants completed to that time:
+
+* **Task:** The **Task** column displays the name of each completed Task in the selected Request. 
+* **Assigned:** The **Assigned** column displays the username's avatar to whom the Task was assigned. Hover your cursor over a user's avatar to view that person's full name.
+* **Due:** The **Due** column displays the date the Task was due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
+{% hint style="info" %}
+### There Are No Completed Tasks?
+
+If the selected Request has no completed Tasks, the following message displays: **No Data Available**.
 
 ### Display Information the Way You Want It
 
@@ -49,7 +79,7 @@ If there are no Tasks for the selected Request, the following message displays: 
 
 ### Request Participants
 
-In-progress Requests display the summary of the participants for a selected Request.
+Each in-progress Request displays a summary of the Request participants to that time.
 
 ![Request participant summary for an in-progress Request](../../.gitbook/assets/in-progress-request-participants-request.png)
 
@@ -64,14 +94,14 @@ The following summary displays about participants in an in-progress Request:
 
 This section discusses how the summary displays for completed Requests.
 
-### Summary
+### Values in the Request
 
 The **Summary** tab displays the summary of information entered into the completed Request. Request information may be entered in the following ways:
 
 * Request participants manually enter information into ProcessMaker Screens. ProcessMaker Screens are digital forms.
 * Authenticated users submit data through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 
-![&quot;Summary&quot; tab in a completed Request&apos;s information](../../.gitbook/assets/summary-tab-request-information-request.png)
+![&quot;Summary&quot; tab in a completed Request&apos;s summary](../../.gitbook/assets/summary-tab-request-information-request.png)
 
 ~~Process Owners can specify how information displays in the **Summary** tab. By default,~~ the **Summary** tab displays the JSON-formatted key/value pairs in tabular format that represent ProcessMaker Screen control data. Information is displayed:
 
@@ -92,7 +122,7 @@ The **Summary** tab only displays information for completed Requests. If you sel
 [Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
-### Data
+### Editable Request Values
 
 The **Data** tab displays the summary of values from a completed Request similarly to the [**Summary**](request-details.md#summary) tab.  However, values in the **Data** tab can be changed from the values submitted in the Request. The **Data** column only displays when that Request is completed.
 
@@ -106,17 +136,17 @@ Follow these steps to edit and save the values in the completed Request from tho
 
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
-### Summary of Tasks for the Completed Request
+### Completed Tasks Summary
 
-The **Completed** tab displays the summary of all Tasks for the selected completed Request.
+The **Completed** tab displays the summary of all assigned Tasks to Request participants for the selected completed Request.
 
 ![&quot;Completed&quot; tab for a completed Request&apos;s summary](../../.gitbook/assets/completed-tab-request-information-request.png)
 
-The **Completed** tab displays the following summary in tabular format about completed Requests:
+The **Completed** tab displays the following summary in tabular format about assigned Tasks to Request participants for the completed Requests:
 
 * **Task:** The **Task** column displays the name of each completed Task in the selected Request. 
 * **Assigned:** The **Assigned** column displays the username's avatar to whom the Task was assigned. Hover your cursor over a user's avatar to view that person's full name.
-* **Due:** The **Due** column displays the date the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Due:** The **Due** column displays the date the Task was due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
@@ -132,7 +162,7 @@ If the selected Request is not completed, the following message displays: **No D
 
 ### Request Participants
 
-Completed Requests display the summary of the participants for a selected Request.
+Each completed Request displays a summary of the Request participants.
 
 ![Request participant summary for a completed Request](../../.gitbook/assets/completed-request-participants-request.png)
 
@@ -142,9 +172,67 @@ The following summary displays about participants in a completed Request:
 * **Participants:** The **Participants** field displays each Request participant's avatar in the selected Request. Hover your cursor over a user's avatar to view that person's full name.
 * **Request completion date:** The date and time the Request was completed displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
+## Summary for Canceled Requests
+
+This section discusses how the summary displays for canceled Requests.
+
+### Values in the Request
+
+The **Summary** tab displays the summary of information entered into the Request to the time of its cancellation. Request information may be entered in the following ways:
+
+* Request participants manually enter information into ProcessMaker Screens. ProcessMaker Screens are digital forms.
+* Authenticated users submit data through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+
+![&quot;Summary&quot; tab in a canceled Request&apos;s summary](../../.gitbook/assets/summary-tab-canceled-request-information-requests.png)
+
+~~Process Owners can specify how information displays in the **Summary** tab. By default,~~ the **Summary** tab displays the JSON-formatted key/value pairs in tabular format that represent ProcessMaker Screen control data. Information is displayed:
+
+* **KEY:** The **KEY** column displays the JSON key name that represents the ProcessMaker Screen control name the Request participant entered data or specified through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation). For example, a Text control to enter your name could be named `Full Name` which would display in the **Key** column here.
+* **VALUE:** The **VALUE** column displays that key's value as entered by a person manually interacting with a form or specified through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation). For example, a Text control to enter your name could have the value `John Doe` which would display in the **Value** column here.
+
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
-## Error Summary for a Request
+{% hint style="info" %}
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
+{% endhint %}
+
+### Completed Tasks Summary
+
+The **Completed** tab displays the summary of all Tasks Request participants completed to the time the selected Request was canceled.
+
+![&quot;Completed&quot; tab for a canceled Request&apos;s summary](../../.gitbook/assets/completed-tab-canceled-request-information-requests.png)
+
+The **Completed** tab displays the following summary in tabular format about completed Tasks Request participants completed to the time the Request was canceled:
+
+* **Task:** The **Task** column displays the name of each completed Task in the selected Request. 
+* **Assigned:** The **Assigned** column displays the username's avatar to whom the Task was assigned. Hover your cursor over a user's avatar to view that person's full name.
+* **Due:** The **Due** column displays the date the Task was due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
+{% hint style="info" %}
+### There Are No Completed Tasks?
+
+If the selected Request has no completed Tasks, the following message displays: **No Data Available**.
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
+{% endhint %}
+
+### Request Participants
+
+Each canceled Request displays a summary of the Request participants to the time the Request was canceled.
+
+![Request participant summary for a canceled Request](../../.gitbook/assets/canceled-request-information-requests.png)
+
+The following summary displays about participants in a canceled Request:
+
+* **Requested By:** The **Requested By** field displays the avatar and full name of the person who started the selected Request. Hover your cursor over a user's avatar to view that person's full name.
+* **Participants:** The **Participants** field displays each Request participant's avatar in the selected Request to the time the Request was canceled. Hover your cursor over a user's avatar to view that person's full name.
+* **Request completion date:** ~~The date and time the Request was completed displays below the **Participants** field. The time zone setting to display the time is according to the ProcessMaker 4 server unless your~~ [~~user profile's~~](../profile-settings.md#change-your-profile-settings) ~~**Time zone** setting is specified. THIS IS A BUG, ISN'T IT?~~
+
+## Error Summary for Requests
 
 ### Summary of the Error
 
@@ -160,9 +248,77 @@ The **Errors** tab displays the following summary in tabular format about Reques
 
 Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
+### Assigned Participant Tasks
+
+The **Tasks** tab displays the summary for all assigned Tasks to Request participants to the time the error occurred.
+
+~~NEED SCREEN SHOT OF TASK TAB WITH AN ERROR~~
+
+The **Tasks** tab displays the following summary in tabular format about assigned Tasks to Request participants to the time the error occurred:
+
+* **Task:** The **Task** column displays the name of each Task to be completed for the selected Request for all Request participants. If a Task is assigned to you, a hyperlink displays in the Task name.
+* **Assigned:** The **Assigned** column displays the username's avatar to whom the Task is assigned. Hover your cursor over a user's avatar to view that person's full name.
+* **Due:** The **Due** column displays the date the Task is due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
+{% hint style="info" %}
+### No Assigned Tasks?
+
+If there are no assigned Tasks for the selected Request, the following message displays: **No Data Available**.
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
+{% endhint %}
+
+### Values in the Request
+
+The **Summary** tab displays the summary of information entered into the Request to the time the error occurred. Request information may be entered in the following ways:
+
+* Request participants manually enter information into ProcessMaker Screens. ProcessMaker Screens are digital forms.
+* Authenticated users submit data through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
+
+~~NEED SCREEN SHOT OF SUMMARY TAB WITH AN ERROR~~
+
+~~Process Owners can specify how information displays in the **Summary** tab. By default,~~ the **Summary** tab displays the JSON-formatted key/value pairs in tabular format that represent ProcessMaker Screen control data. Information is displayed:
+
+* **KEY:** The **KEY** column displays the JSON key name that represents the ProcessMaker Screen control name the Request participant entered data or specified through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation). For example, a Text control to enter your name could be named `Full Name` which would display in the **Key** column here.
+* **VALUE:** The **VALUE** column displays that key's value as entered by a person manually interacting with a form or specified through the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation). For example, a Text control to enter your name could have the value `John Doe` which would display in the **Value** column here.
+
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
+{% hint style="info" %}
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
+{% endhint %}
+
+### Completed Tasks Summary
+
+The **Completed** tab displays the summary of all Tasks Request participants completed to the time the Request error occurred.
+
+~~NEED SCREEN SHOT OF COMPLETED TAB WITH AN ERROR~~
+
+The **Completed** tab displays the following summary in tabular format about completed Tasks Request participants completed to the time the Request error occurred:
+
+* **Task:** The **Task** column displays the name of each completed Task in the selected Request. 
+* **Assigned:** The **Assigned** column displays the username's avatar to whom the Task was assigned. Hover your cursor over a user's avatar to view that person's full name.
+* **Due:** The **Due** column displays the date the Task was due. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+
+Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+
+{% hint style="info" %}
+### There Are No Completed Tasks?
+
+If the selected Request has no completed Tasks, the following message displays: **No Data Available**.
+
+### Display Information the Way You Want It
+
+[Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
+{% endhint %}
+
 ### Request Participants
 
-Requests in which an error occurred display the summary of the participants for that Request to that time.
+Each Request that has an error displays a summary of the Request participants to the time of the error.
 
 ![Request participant summary for a Request in which an error occurred](../../.gitbook/assets/error-request-information-requests.png)
 

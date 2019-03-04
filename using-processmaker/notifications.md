@@ -8,27 +8,29 @@ description: Receive updates about Requests and your assigned Tasks.
 
 Request participants receive notifications when the following events occur:
 
-* A Request participant is assigned a Task with information about that Task.
-* The Requester's Request is completed with information about who completed the Request and when.
-* The Requester's Request is canceled with information about who canceled the Request and when.
+* A Request participant is assigned a Task. Selecting a notification for an assigned Task opens that [Task's summary](task-management/view-a-task-summary.md#summary-for-an-assigned-task).
+* The Requester's Request is completed. Selecting a notification for a completed Request opens that [Request's summary](requests/request-details.md#summary-for-completed-requests).
+* The Requester's Request is canceled. Selecting a notification for a canceled Request opens that [Request's summary](requests/request-details.md#summary-for-canceled-requests).
 
 ## View New Notifications
 
-The notifications screen displays your newly assigned Tasks. To view new notifications, click the Notifications icon![](../.gitbook/assets/notification-icon-notifications.png)when it indicates you have one or more notifications.
+The notifications screen displays your notifications. To view new notifications, click the Notifications icon![](../.gitbook/assets/notification-icon-notifications.png)when it indicates you have one or more notifications.
 
 ![View notifications by selecting the Notifications icon](../.gitbook/assets/notifications-drop-down.png)
 
 Notifications remain visible until you do one of the following:
 
-* Select an assigned Task represented by the blue-colored text. Doing so opens the Task.
-* Click the **Dismiss** button to hide the selected notification.
+* Select the notification represented by the blue-colored text.
+* Click the **Dismiss** button for a notification to hide it.
 
-Each notification displays the following information:
+A notification may contain the following information:
 
 * **Task name:** The name of the assigned Task displays as a hyperlink to that Task.
 * **Task assignment date:** To the right of the Task name displays the date and time in which the notification was sent to you. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Request name:** Below the assigned Task displays the name of the Request associated with that Task.
 * **Requester:** Below the Request name is the full name of the person who started the Request.
+* **Request completed:** If you are a Request participant when a Request completes, a notification displays **Request completed:** followed by the name of the completed Request.
+* **Request canceled:** If you are a Request participant when a Request is canceled, a notification displays **Request canceled:** followed by the name of the canceled Request.
 * **Dismiss button:** The **Dismiss** button displays at the bottom-right of the notification.
 
 {% hint style="info" %}
