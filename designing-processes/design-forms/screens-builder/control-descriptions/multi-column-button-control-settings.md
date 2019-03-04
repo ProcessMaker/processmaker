@@ -19,16 +19,17 @@ Your user account or group membership must have the following permissions to add
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to add this control to the ProcessMaker Screen:
 
-1. View the ProcessMaker Screen page to which to add the control.
-2. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
-3. Drag the **Multi Column Button** icon![](../../../../.gitbook/assets/multi-column-control-screens-builder-processes.png)from the **Controls** panel anywhere within the ProcessMaker Screen canvas represented by the dotted-lined box. Existing controls on the ProcessMaker Screen canvas adjust positioning based on where you drag the control.
-4. Drop into the ProcessMaker Screen where you want the control to display on the page.​![](../../../../.gitbook/assets/multi-column-control-placed-screens-builder-processes.png)
-5. Drag-and-drop others controls into either column. Configure each control's settings. 
+1. [Create](../../create-a-new-form.md) or [open](../../manage-forms/view-all-forms.md) the ProcessMaker Screen. The ProcessMaker Screen is in [Editor mode](../screens-builder-modes.md#editor-mode).
+2. View the ProcessMaker Screen page to which to add the control.
+3. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
+4. Drag the **Multi Column Button** icon![](../../../../.gitbook/assets/multi-column-control-screens-builder-processes.png)from the **Controls** panel anywhere within the ProcessMaker Screen canvas represented by the dotted-lined box. Existing controls on the ProcessMaker Screen canvas adjust positioning based on where you drag the control.
+5. Drop into the ProcessMaker Screen where you want the control to display on the page.​![](../../../../.gitbook/assets/multi-column-control-placed-screens-builder-processes.png)
+6. Drag-and-drop others controls into either column. Configure each control's settings. 
 
 Below is a Multi Column control in Preview mode. 
 
@@ -48,7 +49,7 @@ Your user account or group membership must have the following permissions to edi
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 The Multi Column control does not have Inspector settings.

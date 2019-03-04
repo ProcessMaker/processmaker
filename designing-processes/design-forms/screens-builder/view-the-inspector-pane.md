@@ -18,7 +18,7 @@ Your user account or group membership must have the following permissions to vie
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view the **Inspector** panel:

@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to nav
 * Processes: View Processes
 * Processes: Edit Processes
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these to navigate around a Process model that to too large to display in your browser window:

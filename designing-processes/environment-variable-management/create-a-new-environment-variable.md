@@ -14,7 +14,7 @@ Your user account or group membership must have the following permissions to cre
 * Environment Variables: View Environment Variables
 * Environment Variables: Create Environment Variables
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Environment Variable](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#environment-variables) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to create a new ProcessMaker Environment Variable:

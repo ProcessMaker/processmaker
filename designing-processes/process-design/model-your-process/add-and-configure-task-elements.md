@@ -18,7 +18,7 @@ Your user account or group membership must have the following permissions to add
 * Processes: View Processes
 * Processes: Edit Processes
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to add a Task element to the Process model:
@@ -43,7 +43,7 @@ Your user account or group membership must have the following permissions to con
 * Processes: View Processes
 * Processes: Edit Processes
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 ### Edit the Identifier Value

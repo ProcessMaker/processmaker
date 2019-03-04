@@ -6,6 +6,12 @@ description: Delete a client authentication key.
 
 ## Delete a Client Authentication Key
 
+{% hint style="info" %}
+~~Your user account or group membership must have the "Auth Client: View Auth Client" permission to delete authentication keys.~~
+
+~~See the Auth Client permissions or ask your ProcessMaker Administrator for assistance.~~
+{% endhint %}
+
 {% hint style="warning" %}
 When a client authentication key is deleted, it can no longer be used to access the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation).
 

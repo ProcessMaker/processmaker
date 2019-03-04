@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to del
 * Scripts: View Scripts
 * Scripts: Delete Scripts
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Scripts](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#scripts) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 {% hint style="warning" %}

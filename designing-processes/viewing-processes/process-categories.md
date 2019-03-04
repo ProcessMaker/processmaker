@@ -17,7 +17,7 @@ A Process can be assigned to only one Category. See [Edit Process Configuration]
 {% hint style="info" %}
 Your user account or group membership must have the "Categories: View Categories" permission to view the list of Process Categories.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the Process [Categories](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#categories) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view Process Categories:
@@ -56,7 +56,7 @@ Your user account or group membership must have the following permissions to add
 * Categories: View Categories
 * Categories: Create Categories
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the Process [Categories](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#categories) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to add a new Process Category:
@@ -78,7 +78,7 @@ Your user account or group membership must have the following permissions to edi
 * Categories: Create Categories
 * Categories: Edit Categories
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the Process [Categories](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#categories) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to edit a Process Category:
@@ -103,7 +103,7 @@ Your user account or group membership must have the following permissions to del
 * Categories: Edit Categories
 * Categories: Delete Categories
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the Process [Categories](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#categories) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 {% hint style="warning" %}

@@ -17,7 +17,7 @@ An archived Process has the following attributes:
 {% hint style="info" %}
 Your user account or group membership must have the "Processes: View Processes" permission to view the list of Processes.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view all archived Processes in your organization:
@@ -59,7 +59,7 @@ Your user account or group membership must have the following permissions to arc
 * Processes: View Processes
 * Processes: Edit Processes
 
-Ask your ProcessMaker Administrator for assistance.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 {% hint style="warning" %}

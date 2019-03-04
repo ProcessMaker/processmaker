@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to del
 * Screens: View Screens
 * Screens: Delete Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 {% hint style="warning" %}

@@ -11,7 +11,7 @@ The **All Requests** page displays all Requests in your organization including t
 {% hint style="info" %}
 Your user account or group membership must have the "Requests: View All Requests" permission to view the list of all Requests.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Request permission](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#requests) or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view the **All Requests** page:

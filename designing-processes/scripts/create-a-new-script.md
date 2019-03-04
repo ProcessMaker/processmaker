@@ -14,7 +14,7 @@ Your user account or group membership must have the following permissions to cre
 * Scripts: View Scripts
 * Scripts: Create Scripts
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Scripts](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#scripts) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to create a new ProcessMaker Script:

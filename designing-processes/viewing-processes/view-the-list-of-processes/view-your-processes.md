@@ -13,7 +13,7 @@ ProcessMaker displays all active and inactive Processes in one table that Proces
 {% hint style="info" %}
 Your user account or group membership must have the "Processes: View Processes" permission to view the list of Processes.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view all active and inactive Processes in your organization:
@@ -58,66 +58,14 @@ Do one of the following:
 
 Click the **Archive** icon![](../../../.gitbook/assets/archive-process-icon-processes-page-processes.png). See [Archive a Process](remove-a-process.md).
 
+### Restore a Process
+
+Click the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png). See [Restore a Process](restore-a-process.md#restore-an-archived-process).
+
 ### Display Information the Way You Want It
 
 [Control how tabular information displays](../../../using-processmaker/control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
-
-## Manage Your Processes
-
-If your user account or group membership has the appropriate permission\(s\), use the **Processes** page to manage Processes. If a function described below is not visible~~/enabled~~ to~~/for~~ you, ask your ProcessMaker Administrator for the appropriate permission\(s\).
-
-### Edit the Process Model
-
-{% hint style="info" %}
-Your user account or group membership must have the following permissions to edit a Process model:
-
-* Processes: List
-* Processes: View
-
-Ask your ProcessMaker Administrator for assistance if necessary.
-{% endhint %}
-
-Click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. See [Process Modeling](../../process-design/) for topics.
-
-### Edit Process Information
-
-{% hint style="info" %}
-Your user account or group membership must have the following permissions to edit Process information:
-
-* Processes: List
-* Processes: Edit
-
-Ask your ProcessMaker Administrator for assistance if necessary.
-{% endhint %}
-
-Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)to edit the general information for the selected Process. See [Edit Process Information](edit-the-name-description-category-or-status-of-a-process.md#edit-general-information-about-a-process).
-
-### Archive a Process
-
-{% hint style="info" %}
-Your user account or group membership must have the following permissions to archive a Process:
-
-* Processes: List
-* Processes: ~~Archive~~
-
-Ask your ProcessMaker Administrator for assistance if necessary.
-{% endhint %}
-
-Click the **Archive** icon![](../../../.gitbook/assets/archive-process-icon-processes-page-processes.png)to archive the selected Process. See [Archive a Process](remove-a-process.md#archive-a-process).
-
-### Restore a Process
-
-{% hint style="info" %}
-Your user account or group membership must have the following permissions to restore a Process:
-
-* Processes: List
-* Processes: ~~Restore~~
-
-Ask your ProcessMaker Administrator for assistance if necessary.
-{% endhint %}
-
-Click the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png)to restore the selected Process. See [Restore a Process](restore-a-process.md#restore-a-process).
 
 ## Related Topics
 
@@ -133,9 +81,9 @@ Click the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-proc
 
 {% page-ref page="restore-a-process.md" %}
 
-{% page-ref page="../../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
-
 {% page-ref page="../create-a-process.md" %}
 
 {% page-ref page="../../process-design/model-your-process/" %}
+
+{% page-ref page="../../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
 

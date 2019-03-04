@@ -13,7 +13,7 @@ ProcessMaker displays all ProcessMaker Scripts in one location. Any ProcessMaker
 {% hint style="info" %}
 Your user account or group membership must have the "Scripts: View Scripts" permission to view the list of ProcessMaker Scripts.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Scripts](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#scripts) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view all ProcessMaker Scripts in your organization:

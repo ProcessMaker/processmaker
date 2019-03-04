@@ -6,6 +6,12 @@ description: Edit a client authentication key.
 
 ## Edit a Client Authentication Key
 
+{% hint style="info" %}
+~~Your user account or group membership must have the "Auth Client: View Auth Client" permission to edit authentication keys.~~
+
+~~See the Auth Client permissions or ask your ProcessMaker Administrator for assistance.~~
+{% endhint %}
+
 Follow these steps to edit a client authentication key that grants access to the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation):
 
 1. [View all client authentication keys.](view-all-client-authentication-keys.md#view-all-scripts) The **Auth Clients** page displays.

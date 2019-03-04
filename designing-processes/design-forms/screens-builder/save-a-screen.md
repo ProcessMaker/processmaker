@@ -14,10 +14,13 @@ Your user account or group membership must have the following permissions to sav
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
-Click the **Save** icon![](../../../.gitbook/assets/save-icon-processes.png)to save the ProcessMaker Screen. The following message displays: **Successfully saved**.
+Follow these steps to save a ProcessMaker Screen:
+
+1. [Create](../create-a-new-form.md) or [open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
+2. Click the **Save** icon![](../../../.gitbook/assets/save-icon-processes.png)to save the ProcessMaker Screen. The following message displays: **Successfully saved**.
 
 ## Related Topics
 

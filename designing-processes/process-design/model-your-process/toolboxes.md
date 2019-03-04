@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to sav
 * Processes: View Processes
 * Processes: Edit Processes
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Process Modeler displays the **Save** icon![](../../../.gitbook/assets/save-icon-processes.png)on the same bar as the Process name.

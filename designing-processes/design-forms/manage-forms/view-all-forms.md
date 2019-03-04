@@ -13,7 +13,7 @@ ProcessMaker displays all Screens in one location. Any ProcessMaker Screen devel
 {% hint style="info" %}
 Your user account or group membership must have the "Screens: View Screens" permission to view the list of ProcessMaker Screens.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view all ProcessMaker Screens in your organization:

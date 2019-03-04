@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to edi
 * Groups: View Groups
 * Groups: Edit Groups
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Group](../../permission-descriptions-for-users-and-groups.md#groups) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to edit a ProcessMaker group:

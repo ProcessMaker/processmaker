@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to edi
 * Processes: View Processes
 * Processes: Edit Processes
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Process Modeler assigns an identifier to the Process model. The default Process model identifier value can be changed.
@@ -32,7 +32,7 @@ Your user account or group membership must have the following permissions to edi
 * Processes: View Processes
 * Processes: Edit Processes
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Process Modeler assigns a name to the Process model that has no association with the Process name. This name has no affect on the Process model or Requests, so its name is not relevant. The default Process model name can be changed.

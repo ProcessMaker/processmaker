@@ -24,12 +24,12 @@ Your user account or group membership must have the following permissions to add
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to add a computed Property:
 
-1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property.
+1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
 2. Click the **Computed Properties** option from Screen Builder's top menu. The **Computed Properties** screen displays to show all Properties configured for this ProcessMaker Screen. All Properties configured in this screen display their computed values in the JSON data model from the [**Data Preview** panel when previewing the ProcessMaker Screen](preview-a-screen.md). If no Properties have been configured for this ProcessMaker Screen, **Property Name** displays as a placeholder for the first Property.  
 
    ![](../../../.gitbook/assets/computed-properties-screen-screens-builder-processes.png)
@@ -52,12 +52,12 @@ Your user account or group membership must have the following permissions to vie
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view a computed Property:
 
-1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property.
+1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
 2. [Open the **Computed Properties** screen.](manage-computed-properties.md#add-a-computed-property)
 3. Click the **Details** icon![](../../../.gitbook/assets/computed-properties-details-icon-screens-builder-processes.png). The **Computed Properties** screen displays how the selected Property is named and computed.  
 
@@ -73,12 +73,12 @@ Your user account or group membership must have the following permissions to edi
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to edit a computed Property:
 
-1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property.
+1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
 2. [Open the **Computed Properties** screen.](manage-computed-properties.md#add-a-computed-property)
 3. Click the **Edit** icon![](../../../.gitbook/assets/computed-properties-edit-icon-screens-builder-processes.png). The **Computed Properties** screen displays how the selected Property is named and computed.  
 
@@ -97,12 +97,12 @@ Your user account or group membership must have the following permissions to del
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to edit a computed Property:
 
-1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a computed Property.
+1. [Open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to delete a computed Property. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
 2. [Open the **Computed Properties** screen.](manage-computed-properties.md#add-a-computed-property)
 3. Click the **Delete** icon![](../../../.gitbook/assets/computed-property-delete-icon-screens-builder-processes.png). The Property is deleted, and the following message displays: **Property deleted**.
 

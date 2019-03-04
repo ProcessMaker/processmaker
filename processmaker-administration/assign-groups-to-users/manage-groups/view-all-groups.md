@@ -11,7 +11,7 @@ ProcessMaker displays all ProcessMaker groups in one table that ProcessMaker Adm
 {% hint style="info" %}
 Your user account or group membership must have the "Groups: View Groups" permission to view the list of groups.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Group](../../permission-descriptions-for-users-and-groups.md#groups) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view all ProcessMaker groups in your organization:

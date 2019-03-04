@@ -13,7 +13,7 @@ Use the **Search** function to filter all ProcessMaker groups from the **Groups*
 {% hint style="info" %}
 Your user account or group membership must have the "Groups: View Groups" permission to view the list of groups.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Group](../../permission-descriptions-for-users-and-groups.md#groups) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to search for a ProcessMaker group:

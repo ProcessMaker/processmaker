@@ -9,9 +9,9 @@ description: View all client authentication keys in your organization.
 ProcessMaker displays all client authentication keys to access the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation) in one table that ProcessMaker Administrators throughout your organization have created. This makes it easy to manage client authentication keys. Client authentication keys display the most recently created keys at the top of the table.
 
 {% hint style="info" %}
-Your user account or group membership must have the "Auth Client: View Auth Client" permission to view the list of authentication keys.
+~~Your user account or group membership must have the "Auth Client: View Auth Client" permission to view the list of authentication keys.~~
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+~~See the Auth Client permissions or ask your ProcessMaker Administrator for assistance.~~
 {% endhint %}
 
 Follow these steps to view all client authentication keys granted access to the ProcessMaker 4 REST API:

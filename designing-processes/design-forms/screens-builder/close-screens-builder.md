@@ -12,10 +12,13 @@ Your user account or group membership must have the following permissions to clo
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
-Click the **Close** icon![](../../../.gitbook/assets/close-icon-processes.png)to close the ProcessMaker Screen.
+Follow these steps to close a ProcessMaker Screen:
+
+1. [Create](../create-a-new-form.md) or [open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
+2. Click the **Close** icon![](../../../.gitbook/assets/close-icon-processes.png)to close the ProcessMaker Screen.
 
 ## Related Topics
 

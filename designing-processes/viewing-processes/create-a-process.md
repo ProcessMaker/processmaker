@@ -12,7 +12,7 @@ Your user account or group membership must have the following permissions to cre
 * Processes: View Processes
 * Processes: Create Processes
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [Process](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to create a new Process:

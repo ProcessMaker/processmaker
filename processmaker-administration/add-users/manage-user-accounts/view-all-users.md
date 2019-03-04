@@ -11,7 +11,7 @@ ProcessMaker displays all ProcessMaker user accounts in one table that ProcessMa
 {% hint style="info" %}
 Your user account or group membership must have the "Users: View Users" permission to view the list of users.
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the [User](../../permission-descriptions-for-users-and-groups.md#users) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these steps to view all ProcessMaker user accounts in your organization:

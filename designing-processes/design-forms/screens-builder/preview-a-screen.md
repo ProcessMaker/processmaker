@@ -30,7 +30,7 @@ Your user account or group membership must have the following permissions to pre
 * Screens: View Screens
 * Screens: Edit Screens
 
-Ask your ProcessMaker Administrator for assistance if necessary.
+See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
 Follow these guidelines to preview a ProcessMaker Screen and view its JSON data model:
