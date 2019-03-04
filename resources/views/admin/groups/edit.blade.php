@@ -34,18 +34,18 @@
                          aria-labelledby="nav-home-tab">
                         {!! Form::open() !!}
                         <div class="form-group">
-                            {!! Form::label('name', 'Name') !!}
+                            {!! Form::label('name', __('Name')) !!}
                             {!! Form::text('name', null, [
                             'id' => 'name',
                             'class'=> 'form-control',
                             'maxlength' => '255',
                             'v-model' => 'formData.name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-                            <small class="form-text text-muted">{{_('Group name must be distinct')}}</small>
+                            <small class="form-text text-muted">{{__('Group name must be distinct')}}</small>
                             <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('description', 'Description') !!}
+                            {!! Form::label('description', __('Description')) !!}
                             {!! Form::textarea('description', null, [
                             'id' => 'description',
                             'rows' => 4,
@@ -55,7 +55,7 @@
                             <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('status', 'Status') !!}
+                            {!! Form::label('status', __('Status')) !!}
                             {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, [
                             'id' => 'status',
                             'class' => 'form-control',
@@ -65,8 +65,8 @@
                         </div>
                         <br>
                         <div class="text-right">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                         {!! Form::close() !!}
                     </div>
@@ -103,8 +103,8 @@
                                 </label>
                                 @include('admin.shared.permissions')
                                 <div class="text-right mt-2">
-                                    {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
-                                    {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
+                                    {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
+                                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
                                 </div>
                             </div>
                         </div>
