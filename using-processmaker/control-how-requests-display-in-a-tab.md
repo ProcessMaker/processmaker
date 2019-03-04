@@ -8,12 +8,12 @@ description: Set how you want tabular information to display.
 
 Use these tips to control how tabular information displays:
 
-* Click the column header in which to sort the records to adjust the sort order of tabular information. When the sort arrow points down, sort order is in descending order. When the sort arrow points up, sort order is in ascending order.
-* Click the **Next** or **Previous** pagination buttons to view the next or previous page of table rows, respectively. If the first page is displayed, the **Previous** pagination button is disabled. If the last page is displayed, the **Next** pagination button is disabled.
-* Click the drop-down beside the pagination buttons to adjust how many table rows display on each page, and then select to display 10, 25 or 50 rows per page. Ten rows per page is the default.
+* Click the sort arrows![](../.gitbook/assets/sort-arrows.png)in a column header to sort the records in that page by that sort preference. Columns that display alphanumeric data sort in alphanumeric order![](../.gitbook/assets/sort-ascending-arrow.png)or inversely![](../.gitbook/assets/sort-descending-arrow.png). Columns that display dates/times sort in chronological order![](../.gitbook/assets/sort-ascending-arrow.png)or inversely![](../.gitbook/assets/sort-descending-arrow.png). When the sort arrow points down![](../.gitbook/assets/sort-ascending-arrow.png), sort order is in descending order. When the sort arrow points up![](../.gitbook/assets/sort-descending-arrow.png), sort order is in ascending order.
+* Click the **Next** or **Previous** pagination buttons to view the next or previous page of records, respectively. If the first page is displayed, the **Previous** pagination button is disabled. If the last page is displayed, the **Next** pagination button is disabled.
+* Click the drop-down beside the pagination buttons to adjust how many records display on each page, and then select to display 10, 25 or 50 rows per page. Ten records per page is the default.
 
 {% hint style="info" %}
-If there are fewer than 10 rows to display in the table, pagination functions do not display.
+If there are fewer than 10 records to display in the table, pagination functions do not display.
 {% endhint %}
 
 ## Related Topics

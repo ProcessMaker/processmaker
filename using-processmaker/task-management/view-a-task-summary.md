@@ -15,7 +15,7 @@ Below is an example assigned Task.
 
 ![An assigned Task](../../.gitbook/assets/assigned-to-do-task-summary-tasks.png)
 
-### Form
+### Task Form
 
 The assigned Task displays in the **Form** tab. The Request participant enters, reviews, and/or makes decisions based on information in the form. These forms are [ProcessMaker Screens](../../designing-processes/design-forms/what-is-a-form.md) designed in [Screens Builder](../../designing-processes/design-forms/screens-builder/).
 
@@ -23,7 +23,7 @@ The **Form** tab displays by default when an assigned Task is opened. Below is a
 
 ![Assigned Task displayed in the &quot;Forms&quot; tab](../../.gitbook/assets/forms-tab-assigned-to-do-summary-tasks.png)
 
-### Data
+### Values in the Request
 
 The **Data** tab displays the summary of values as entered into a Task from a previous participant of this Request. However, values in the **Data** tab can be changed from those entered by the previous Request participant.
 
