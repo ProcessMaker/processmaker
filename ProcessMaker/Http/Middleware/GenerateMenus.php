@@ -21,50 +21,50 @@ class GenerateMenus
 
         Menu::make('topnav', function ($menu) {
             $menu->group(['prefix' => 'requests'], function($request_items) {
-                $request_items->add(__('menus.topnav.requests'), ['route' => 'requests.index'])->active('requests/*');
+                $request_items->add(__('Requests'), ['route' => 'requests.index'])->active('requests/*');
             });
             //@TODO change the index to the correct blade
             $menu->group(['prefix' => 'tasks'], function($request_items) {
-                $request_items->add(__('menus.topnav.tasks'), ['route' => 'tasks.index'])->active('tasks/*');
+                $request_items->add(__('Tasks'), ['route' => 'tasks.index'])->active('tasks/*');
             });
             if (\Auth::check() && \Auth::user()->canAny('view-processes|view-categories|view-scripts|view-screens|view-environment_variables')) {
                 $menu->group(['prefix' => 'processes'], function($request_items) {
-                    $request_items->add(__('menus.topnav.processes'), ['route' => 'processes.index'])->active('processes/*');
+                    $request_items->add(__('Processes'), ['route' => 'processes.index'])->active('processes/*');
                 });
             }
             if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients')) {
                 $menu->group(['prefix' => 'admin'], function($admin_items) {
-                    $admin_items->add(__('menus.topnav.admin'), ['route' => 'admin.index'])->active('admin/*');
+                    $admin_items->add(__('Admin'), ['route' => 'admin.index'])->active('admin/*');
                 });
             }
         });
 
         // Build the menus
         Menu::make('sidebar_admin', function ($menu) {
-            $submenu = $menu->add(__('menus.sidebar_admin.organization'));
+            $submenu = $menu->add(__('organization'));
             if (\Auth::check() && \Auth::user()->can('view-users')) {
-                $submenu->add(__('menus.sidebar_admin.users'), [
+                $submenu->add(__('Users'), [
                 'route' => 'users.index',
                 'icon' => 'fa-user',
                 'id' => 'homeid'
                 ]);
             }
             if(\Auth::check() && \Auth::user()->can('view-groups')) {
-                $submenu->add(__('menus.sidebar_admin.groups'), [
+                $submenu->add(__('Groups'), [
                 'route' => 'groups.index',
                 'icon' => 'fa-users',
                 'id' => 'homeid'
                 ]);
             }
             if(\Auth::check() && \Auth::user()->can('view-auth_clients')) {
-                $submenu->add(__('menus.sidebar_admin.auth-clients'), [
+                $submenu->add(__('Auth Clients'), [
                     'route' => 'auth-clients.index',
                     'icon' => 'fa-key',
                     'id' => 'auth-login'
                 ]);
             }
             if(\Auth::check() && \Auth::user()->is_administrator) {
-                $submenu->add(__('menus.sidebar_admin.queue_management'), [
+                $submenu->add(__('Queue Management'), [
                     'route' => 'horizon.index',
                     'icon' => 'fa-infinity',
                 ]);
@@ -84,21 +84,21 @@ class GenerateMenus
           ]);
         });
         Menu::make('sidebar_request', function ($menu) {
-          $submenu = $menu->add(__('menus.sidebar_request.request'));
-          $submenu->add(__('menus.sidebar_request.started_me'), [
+          $submenu = $menu->add(__('Request'));
+          $submenu->add(__('Started By Me'), [
               'route' => ['requests_by_type', ''],
               'icon' => 'fa-id-badge',
           ]);
-          $submenu->add(__('menus.sidebar_request.in_progress'), [
+          $submenu->add(__('In Progress'), [
                 'route' => ['requests_by_type', 'in_progress'],
                 'icon' => 'fa-clipboard-list',
           ]);
-          $submenu->add(__('menus.sidebar_request.completed'), [
+          $submenu->add(__('Completed'), [
               'route' => ['requests_by_type', 'completed'],
               'icon' => 'fa-clipboard-check',
           ]);
           if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
-              $submenu->add(__('menus.sidebar_request.all'), [
+              $submenu->add(__('Request All'), [
                   'route' => ['requests_by_type', 'all'],
                   'icon' => 'fa-clipboard',
               ]);
@@ -106,44 +106,44 @@ class GenerateMenus
         });
 
         Menu::make('sidebar_processes', function ($menu) {
-          $submenu = $menu->add(__('menus.sidebar_processes.processes'));
+          $submenu = $menu->add(__('Processes'));
           if(\Auth::check() && \Auth::user()->can('view-processes')) {
-            $submenu->add(__('menus.sidebar_processes.processes'), [
+            $submenu->add(__('Processes'), [
                 'route' => 'processes.index',
                 'icon' => 'fa-play-circle',
                 'id' => 'processes'
             ]);
           }
           if(\Auth::check() && \Auth::user()->can('view-categories')) {
-              $submenu->add(__('menus.sidebar_processes.categories'), [
+              $submenu->add(__('Categories'), [
                   'route' => 'categories.index',
                   'icon' => 'fa-sitemap',
                   'id' => 'process-categories'
               ]);
           }
           if(\Auth::check() && \Auth::user()->can('archive-processes')) {
-            $submenu->add(__('menus.sidebar_processes.archived_processes'), [
+            $submenu->add(__('Archived Processes'), [
                 'route' => ['processes.index', 'status' => 'inactive'],
                 'icon' => 'fa-archive',
                 'id' => 'process-environment'
             ]);
           }
           if(\Auth::check() && \Auth::user()->can('view-scripts')) {
-              $submenu->add(__('menus.sidebar_processes.scripts'), [
+              $submenu->add(__('Scripts'), [
                   'route' => 'scripts.index',
                   'icon' => 'fa-code',
                   'id' => 'process-scripts'
               ]);
           }
           if(\Auth::check() && \Auth::user()->can('view-screens')) {
-              $submenu->add(__('menus.sidebar_processes.screens'), [
+              $submenu->add(__('Screens'), [
                   'route' => 'screens.index',
                   'icon' => 'fa-file-alt',
                   'id' => 'process-screens'
               ]);
           }
           if(\Auth::check() && \Auth::user()->can('view-environment_variables')) {
-              $submenu->add(__('menus.sidebar_processes.environment_variables'), [
+              $submenu->add(__('Environment Variables'), [
                   'route' => 'environment-variables.index',
                   'icon' => 'fa-cogs',
                   'id' => 'process-environment'
@@ -155,7 +155,7 @@ class GenerateMenus
         Menu::make('sidebar_designer', function ($menu) {});
 
         Menu::make('sidebar_notifications', function ($menu) {
-            $submenu = $menu->add(__('menus.sidebar_notifications.notifications'));
+            $submenu = $menu->add(__('Notifications'));
             $submenu->add(__('Unread Notifications'), [
                 'route' => ['notifications.index', 'status' => 'unread'],
                 'icon' => 'fa-inbox',
