@@ -69,7 +69,7 @@
                                 v-model="canCancel"
                                 :options="activeUsersAndGroups"
                                 :multiple="true"
-                                placeholder="Type to search"
+                                placeholder="{{__('Type to search')}}"
                                 track-by="fullname"
                                 label="fullname"
                                 group-values="items"
@@ -94,7 +94,7 @@
                                 v-model="canEditData"
                                 :options="activeUsersAndGroups"
                                 :multiple="true"
-                                placeholder="Type to search"
+                                placeholder="{{__('Type to search')}}"
                                 track-by="fullname"
                                 label="fullname"
                                 group-values="items"
@@ -107,8 +107,8 @@
                             <input type="checkbox" v-model="formData.pause_timer_start" >
                         </div>
                         <div class="d-flex justify-content-end mt-2">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                     </div>
                     <div class="tab-pane fade show" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
@@ -170,8 +170,8 @@
                             </table>
                         </div>
                         <div class="d-flex justify-content-end mt-2">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                     </div>
                 </div>

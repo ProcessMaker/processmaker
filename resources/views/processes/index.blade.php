@@ -68,18 +68,18 @@
           @if (count($processCategories) > 1)
           <div class="modal-body">
             <div class="form-group">
-    			{!! Form::label('name', 'Name') !!}
+    			{!! Form::label('name', __('Name')) !!}
     			{!! Form::text('name', null, ['autocomplete' => 'off', 'class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.name}']) !!}
 				<small class="form-text text-muted" v-if="! addError.name">{{ __('The process name must be distinct.') }}</small>
     			<div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
             </div>
             <div class="form-group">
-    			{!! Form::label('description', 'Description') !!}
+    			{!! Form::label('description', __('Description')) !!}
     			{!! Form::textarea('description', null, ['class'=> 'form-control', 'rows' => '3', 'v-model'=> 'description', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}']) !!}
     			<div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
             </div>
             <div class="form-group">
-    			{!! Form::label('process_category_id', 'Category')!!}
+    			{!! Form::label('process_category_id', __('Category'))!!}
     			{!! Form::select('process_category_id', [null => ''] + $processCategories, null, ['class'=> 'form-control', 'v-model'=> 'process_category_id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
     			<div class="invalid-feedback" v-for="category in addError.process_category_id">@{{category}}</div>
             </div>

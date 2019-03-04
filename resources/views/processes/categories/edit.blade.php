@@ -20,22 +20,22 @@
                 <div class="card card-body">
                     {!! Form::open() !!}
                     <div class="form-group">
-                        {!! Form::label('name', 'Category Name') !!}
+                        {!! Form::label('name', __('Category Name')) !!}
                         {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.name}']) !!}
                         <small class="form-text text-muted" v-if="! errors.name">{{__('The category name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('status', 'Status') !!}
+                        {!! Form::label('status', __('Status')) !!}
                         {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, ['id' => 'status',
                         'class' => 'form-control', 'v-model' => 'formData.status', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.status}']) !!}
                         <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
                     </div>
                     <br>
                     <div class="text-right">
-                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                        {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                        {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                     </div>
                     {!! Form::close() !!}
                 </div>
