@@ -1,6 +1,8 @@
 # ProcessMaker 4.1 Community Edition Documentation
+<p align="center">
+  <img src="https://www.processmaker.com/assets/PartnerArea/new_logos/sample200_whitebg.png">
+</p>
 
-![ProcessMaker](http://www.processmaker.com/sites/all/themes/pmthemev2/img/processmaker-logo-500x-v2.png)
 
 [![CircleCI](https://circleci.com/gh/ProcessMaker/bpm/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/bpm/tree/develop)
 
