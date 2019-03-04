@@ -23,7 +23,7 @@
                         {!! Form::label('title', 'Name') !!}
                         {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                        <small class="form-text text-muted" v-if="! errors.title">{{ __('The screen name must be distinct.') }}</small>
+                        <small class="form-text text-muted" v-if="! errors.title">{{__('The screen name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
                     <div class="form-group">

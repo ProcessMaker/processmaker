@@ -20,9 +20,9 @@
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config" role="tab"
-                        aria-controls="nav-config" aria-selected="true">Configuration</a>
+                        aria-controls="nav-config" aria-selected="true">{{__('Configuration')}}</a>
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications" role="tab"
-                           aria-controls="nav-notifications" aria-selected="true">Notifications</a>
+                           aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
                 </div>
             </nav>
             <div class="card card-body card-body-nav-tabs">
@@ -74,7 +74,7 @@
                                 label="fullname"
                                 group-values="items"
                                 group-label="label">
-                                    <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                             </multiselect>
                         </div>
                         <div class="form-group p-0">
@@ -99,7 +99,7 @@
                                 label="fullname"
                                 group-values="items"
                                 group-label="label">
-                                    <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                             </multiselect>
                         </div>
                         <div class="form-group p-0">
@@ -118,14 +118,14 @@
                                 <thead>
                                     <tr>
                                         <th class="notify"></th>
-                                        <th class="action">Request Started</th>
-                                        <th class="action">Request Canceled</th>
-                                        <th class="action">Request Completed</th>
+                                        <th class="action">{{__('Request Started')}}</th>
+                                        <th class="action">{{__('Request Canceled')}}</th>
+                                        <th class="action">{{__('Request Completed')}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="notify">Notify Requester</td>
+                                        <td class="notify">{{__('Notify Requester')}}</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
                                                 <input v-model="formData.notifications.requester.started" type="checkbox" class="custom-control-input" id="notify-requester-started">
@@ -146,7 +146,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="notify">Notify Participants</td>
+                                        <td class="notify">{{__('Notify Participants')}}</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
                                                 <input v-model="formData.notifications.participants.started" type="checkbox" class="custom-control-input" id="notify-participants-started">

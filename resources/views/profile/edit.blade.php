@@ -155,7 +155,7 @@
                     </div>
                     <div class="form-group">
                         <small class="form-text text-muted">
-                            Leave the password blank to keep the current password:
+                            {{__('Leave the password blank to keep the current password:')}}
                         </small>
                     </div>
                     <div class="form-group">
