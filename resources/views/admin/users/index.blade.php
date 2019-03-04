@@ -71,7 +71,7 @@
                             <div class="invalid-feedback" v-for="lastname in addError.lastname">@{{lastname}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('status', 'Status');!!}
+                            {!!Form::label('status', __('Status'));!!}
                             {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'Active', ['class'=> 'form-control', 'v-model'=> 'status',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}']);!!}
                             <div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
