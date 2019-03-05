@@ -184,7 +184,7 @@ export default {
       ProcessMaker.apiClient
         .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
         .then(response => {
-          ProcessMaker.alert("The script was duplicated.", "success");
+          ProcessMaker.alert(__('The script was duplicated.'), "success");
           this.hideModal();
           this.fetch();
         })
@@ -212,10 +212,10 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            "Caution!",
-            "<b>Are you sure you want to delete the script </b>" +
+            __("Caution!"),
+            __("Are you sure you want to delete the script ") +
               data.title +
-              "?",
+              __("?"),
             "",
             () => {
               this.$emit("delete", data);

@@ -75,7 +75,7 @@
     <b-modal ref="myModalRef" title="Duplicate Screen" centered>
       <form>
         <div class="form-group">
-          <label for="title">Name</label>
+          <label for="title">{{__('Name')}}</label>
           <input
             type="text"
             class="form-control"
@@ -86,19 +86,19 @@
           <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
-          <label for="type">Type</label>
+          <label for="type">{{__('Type')}}</label>
           <select class="form-control" id="type" disabled>
             <option>{{dupScreen.type}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="description">Description</label>
+          <label for="description">{{__('Description')}}</label>
           <textarea class="form-control" id="description" rows="3" v-model="dupScreen.description"></textarea>
         </div>
       </form>
       <div slot="modal-footer" class="w-100" align="right">
-        <button type="button" class="btn btn-outline-secondary" @click="hideModal">Cancel</button>
-        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">Save</button>
+        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{__('Cancel')}}</button>
+        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
       </div>
     </b-modal>
   </div>
@@ -179,7 +179,7 @@ export default {
       ProcessMaker.apiClient
         .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
         .then(response => {
-          ProcessMaker.alert("The screen was duplicated.", "success");
+          ProcessMaker.alert(__('The screen was duplicated.'), "success");
           this.hideModal();
           this.fetch();
         })
@@ -208,16 +208,16 @@ export default {
         case "remove-item":
           let that = this;
           ProcessMaker.confirmModal(
-            "Caution!",
-            "<b>Are you sure you want to delete the screen </b>" +
+            __("Caution!"),
+            __("Are you sure you want to delete the screen ") +
               data.title +
-              "?",
+              __("?"),
             "",
             function() {
               ProcessMaker.apiClient
                 .delete("screens/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("The screen was deleted.", "success");
+                  ProcessMaker.alert(__('The screen was deleted.'),"success");
                   that.fetch();
                 });
             }

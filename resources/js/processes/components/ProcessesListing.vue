@@ -171,14 +171,17 @@ export default {
           ProcessMaker.apiClient
             .put("processes/" + data.id + "/restore")
             .then(response => {
-              ProcessMaker.alert("The process was restored.", "success");
+              ProcessMaker.alert(
+                "{{__('The process was restored.')}}",
+                "success"
+              );
               this.$emit("reload");
             });
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            "Caution!",
-            "<b>Are you sure you want to archive the process </b>'" +
+            __("Caution!"),
+            __("Are you sure you want to archive the process '") +
               data.name +
               "'?",
             "",
@@ -186,7 +189,10 @@ export default {
               ProcessMaker.apiClient
                 .delete("processes/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("The process was archived.", "warning");
+                  ProcessMaker.alert(
+                    "{{__('The process was archived.')}}",
+                    "warning"
+                  );
                   this.$emit("reload");
                 });
             }
