@@ -4,7 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 class BuildSdk {
     private $client;
     private $debug;
-    private $image = "openapitools/openapi-generator-online:v3.3.4";
+    private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = "php";
 
     public function __construct($debug = false)
@@ -20,7 +20,7 @@ class BuildSdk {
 
     public function run()
     {
-        $running = $this->runCmd("docker container ls -aq --filter='ancestor=$this->image'");
+        $running = $this->runCmd("docker container ls -aq --filter='ancestor={$this->image}'");
         if (!empty($running)) {
             $running = str_replace("\n", " ", $running);
             $this->runCmd("docker container stop $running");
@@ -29,16 +29,12 @@ class BuildSdk {
 
         $this->runCmd('docker pull ' . $this->image);
         $cid = $this->runCmd('docker run -d -p 8888:8080 -e GENERATOR_HOST=http://localhost:8888 ' . $this->image);
-        $this->log("sleeping 5....");
-
-
-        // i=0; while [ $(docker inspect -f {{.State.Running}} $CID) != "true" ]; do if (($i > 10)); then exit 1; fi; sleep 1; ((i=$i+1)); done
 
         $i = 0;
         while(true) {
             sleep(2);
             try {
-                $this->client->get("http://localhost:8888/api/gen/clients/$this->lang");
+                $this->client->get("http://localhost:8888/api/gen/clients/{$this->lang}");
                 break;
             } catch(GuzzleHttp\Exception\RequestException $e) {
                 $this->log("Not ready, trying again in 2 seconds");
@@ -55,8 +51,6 @@ class BuildSdk {
         $json = json_decode($response->getBody(), true);
         $link = $json['link'];
 
-        print_r($json['link']);
-
         $getter = new GuzzleHttp\Client();
         $getter->get($link, ['sink' => 'api.zip']);
 
@@ -66,8 +60,8 @@ class BuildSdk {
         $zip->close();
         unlink('api.zip');
 
-        $this->runCmd("rm -rf storage/api && mkdir -p storage/api");
-        $this->runCmd("mv {$this->lang}-client storage/api/SwaggerClient-php");
+        $this->runCmd("mkdir -p storage/api");
+        $this->runCmd("mv -f {$this->lang}-client storage/api/{$this->lang}-client");
     }
 
     
