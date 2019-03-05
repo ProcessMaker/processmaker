@@ -230,6 +230,7 @@
     "Queue Management": "",
     "organization": "",
     "Username": "",
+    "Full Name": "",
     "First Name": "",
     "Last Name": "",
     "Status": "",
@@ -255,5 +256,11 @@
     "Screen": "",
     "Type": "",
     "Configure": "",
-    "Environment Variable": ""
+    "Environment Variable": "",
+    "My Requests": "",
+    "To Do Tasks": "",
+    "Completed Tasks": "",
+    "Modified": "",
+    "Created": "",
+    "Last Login": ""
 }
