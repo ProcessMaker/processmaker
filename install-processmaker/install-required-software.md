@@ -2,7 +2,7 @@
 description: Install required software and ProcessMaker 4 Community edition.
 ---
 
-# Install Required Software and ProcessMaker 4
+# Install Required Software and ProcessMaker 4 \(OLD -TO BE REMOVED\)
 
 The following instructions describe how to install required software and ProcessMaker on CentOS Linux 7.x. However, ProcessMaker 4 can be installed on any Linux distribution that supports PHP 7.2.
 
