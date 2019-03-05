@@ -19,7 +19,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
                 v-if="permission.includes('edit-environment_variables')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -28,7 +28,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Delete"
+                :title="__('Delete')"
                 v-if="permission.includes('delete-environment_variables')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -51,6 +51,7 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -68,23 +69,23 @@ export default {
       ],
       fields: [
         {
-          title: "Name",
+          title: __("Name"),
           name: "name",
           sortField: "name"
         },
         {
-          title: "Description",
+          title: __("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: "Modified",
+          title: __("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: "Created",
+          title: __("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -97,6 +98,9 @@ export default {
     };
   },
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":

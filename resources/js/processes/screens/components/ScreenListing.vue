@@ -27,7 +27,7 @@
                 variant="link"
                 @click="onAction('edit-screen', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
                 v-if="permission.includes('edit-screens')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -36,7 +36,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Configure"
+                :title="__('Configure')"
                 v-if="permission.includes('edit-screens')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -45,7 +45,7 @@
                 variant="link"
                 @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Duplicate"
+                :title="__('Duplicate')"
                 v-if="permission.includes('create-screens')"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>
@@ -54,7 +54,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Delete"
+                :title="__('Delete')"
                 v-if="permission.includes('delete-screens')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -106,6 +106,7 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -129,29 +130,29 @@ export default {
 
       fields: [
         {
-          title: "Name",
+          title: __("Name"),
           name: "__slot:title",
           field: "title",
           sortField: "title"
         },
         {
-          title: "Description",
+          title: __("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: "Type",
+          title: __("Type"),
           name: "type",
           sortField: "type"
         },
         {
-          title: "Modified",
+          title: __("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: "Created",
+          title: __("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -165,6 +166,9 @@ export default {
   },
 
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     showModal() {
       this.$refs.myModalRef.show();
     },
@@ -205,7 +209,9 @@ export default {
           let that = this;
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure you want to delete the screen </b>" + data.title + "?",
+            "<b>Are you sure you want to delete the screen </b>" +
+              data.title +
+              "?",
             "",
             function() {
               ProcessMaker.apiClient

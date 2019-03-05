@@ -27,7 +27,7 @@
                 variant="link"
                 @click="onAction('edit-script', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
                 v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -36,7 +36,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Configure"
+                :title="__('Configure')"
                 v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -45,7 +45,7 @@
                 variant="link"
                 @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Duplicate"
+                :title="__('Duplicate')"
                 v-if="permission.includes('create-scripts')"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>
@@ -54,7 +54,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Delete"
+                :title="__('Delete')"
                 v-if="permission.includes('delete-scripts')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -97,8 +97,8 @@
         </div>
       </form>
       <div slot="modal-footer" class="w-100" align="right">
-        <button type="button" class="btn btn-outline-secondary" @click="hideModal">Cancel</button>
-        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">Save</button>
+        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{__('Cancel')}}</button>
+        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
       </div>
     </b-modal>
   </div>
@@ -106,6 +106,7 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -130,30 +131,30 @@ export default {
 
       fields: [
         {
-          title: "Name",
+          title: __("Name"),
           name: "__slot:title",
           field: "title",
           sortField: "title"
         },
         {
-          title: "Description",
+          title: __("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: "Language",
+          title: __("Language"),
           name: "language",
           sortField: "language",
           callback: this.formatLanguage
         },
         {
-          title: "Modified",
+          title: __("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: "Created",
+          title: __("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -167,6 +168,9 @@ export default {
   },
 
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     goToEdit(data) {
       window.location = "/processes/scripts/" + data + "/edit";
     },
@@ -209,7 +213,9 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure you want to delete the script </b>" + data.title + "?",
+            "<b>Are you sure you want to delete the script </b>" +
+              data.title +
+              "?",
             "",
             () => {
               this.$emit("delete", data);

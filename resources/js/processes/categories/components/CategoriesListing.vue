@@ -19,7 +19,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
                 v-if="permission.includes('edit-categories')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -28,7 +28,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Remove"
+                :title="__('Remove')"
                 v-if="permission.includes('delete-categories') && props.rowData.processes_count == 0"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -51,6 +51,7 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -67,29 +68,29 @@ export default {
       ],
       fields: [
         {
-          title: "Name",
+          title: __("Name"),
           name: "name",
           sortField: "name"
         },
         {
-          title: "Status",
+          title: __("Status"),
           name: "status",
           sortField: "status",
           callback: this.formatStatus
         },
         {
-          title: "# Processes",
+          title: __("# Processes"),
           name: "processes_count",
           sortField: "processes_count"
         },
         {
-          title: "Modified",
+          title: __("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: "Created",
+          title: __("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -102,6 +103,9 @@ export default {
     };
   },
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     fetch() {
       this.loading = true;
 
@@ -139,7 +143,9 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             "Caution!",
-            "<b>Are you sure you want to delete the process </b>" + data.name + "?",
+            "<b>Are you sure you want to delete the process </b>" +
+              data.name +
+              "?",
             "",
             () => {
               this.$emit("delete", data);

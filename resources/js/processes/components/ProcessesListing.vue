@@ -30,7 +30,7 @@
                 variant="link"
                 @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
                 v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -39,7 +39,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Configure"
+                :title="__('Configure')"
                 v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -48,7 +48,7 @@
                 variant="link"
                 @click="onAction('export-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Export"
+                :title="__('Export')"
                 v-if="permission.includes('export-processes')"
               >
                 <i class="fas fa-file-export fa-lg fa-fw"></i>
@@ -57,7 +57,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Archive"
+                :title="__('Archive')"
                 v-if="permission.includes('archive-processes') && props.rowData.status === 'ACTIVE'"
               >
                 <i class="fas fa-download fa-lg fa-fw"></i>
@@ -66,7 +66,7 @@
                 variant="link"
                 @click="onAction('restore-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Restore"
+                :title="__('Restore')"
                 v-if="permission.includes('archive-processes') && props.rowData.status === 'INACTIVE'"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
@@ -90,6 +90,7 @@
 
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
+import __ from "../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -107,29 +108,29 @@ export default {
 
       fields: [
         {
-          title: "Name",
+          title: __("Name"),
           name: "__slot:name",
           field: "name",
           sortField: "name"
         },
         {
-          title: "Category",
+          title: __("Category"),
           name: "category.name",
           sortField: "category.name"
         },
         {
-          title: "Owner",
+          title: __("Owner"),
           name: "__slot:owner",
           callback: this.formatUserName
         },
         {
-          title: "Modified",
+          title: __("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: "Created",
+          title: __("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -143,6 +144,9 @@ export default {
   },
 
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     goToEdit(data) {
       window.location = "/processes/" + data + "/edit";
     },
@@ -167,10 +171,7 @@ export default {
           ProcessMaker.apiClient
             .put("processes/" + data.id + "/restore")
             .then(response => {
-              ProcessMaker.alert(
-                "The process was restored.",
-                "success"
-              );
+              ProcessMaker.alert("The process was restored.", "success");
               this.$emit("reload");
             });
           break;
