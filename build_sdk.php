@@ -1,87 +1,128 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
+# TODO: Make artisan command
+
+use \Exception;
 
 class BuildSdk {
-    private $client;
-    private $debug;
+    private $rebuild = false;
+    private $debug = true;
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = "php";
 
-    public function __construct($debug = false)
-    {
-        $this->client = new GuzzleHttp\Client([
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-            ]
-        ]);
-        $this->debug = $debug;
-    }
-
     public function run()
     {
-        $running = $this->runCmd("docker container ls -aq --filter='ancestor={$this->image}'");
-        if (!empty($running)) {
-            $running = str_replace("\n", " ", $running);
-            $this->runCmd("docker container stop $running");
-            $this->runCmd("docker container rm $running");
+        $existing = $this->existingContainers();
+        if (!empty($existing) && $this->rebuild) {
+            $existing = str_replace("\n", " ", $existing);
+            $this->runCmd("docker container stop $existing");
+            $this->runCmd("docker container rm $existing");
+            $existing = [];
         }
 
-        $this->runCmd('docker pull ' . $this->image);
-        $cid = $this->runCmd('docker run -d -p 8888:8080 -e GENERATOR_HOST=http://localhost:8888 ' . $this->image);
-
-        $i = 0;
-        while(true) {
-            sleep(2);
-            try {
-                $this->client->get("http://localhost:8888/api/gen/clients/{$this->lang}");
-                break;
-            } catch(GuzzleHttp\Exception\RequestException $e) {
-                $this->log("Not ready, trying again in 2 seconds");
-            }
-            if ($i > 30) { 
-                die("ERROR: Took too long to start up.");
-            }
-            $i++;
+        if (empty($existing) || $this->rebuild) {
+            $this->runCmd('docker pull ' . $this->image);
+            $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
+            sleep(5);
+            $this->docker('apk add --update curl && rm -rf /var/cache/apk/*');
         }
 
-        $response = $this->client->post("http://localhost:8888/api/gen/clients/{$this->lang}", [
-            GuzzleHttp\RequestOptions::JSON => $this->requestBody(),
-        ]);
-        $json = json_decode($response->getBody(), true);
+        $this->waitForBoot();
+
+        $response = $this->docker($this->curlPost());
+
+        $json = json_decode($response, true);
         $link = $json['link'];
 
-        $getter = new GuzzleHttp\Client();
-        $getter->get($link, ['sink' => 'api.zip']);
-
-        $zip = new ZipArchive;
-        $res = $zip->open('api.zip');
-        $zip->extractTo('.');
-        $zip->close();
-        unlink('api.zip');
+        $zip = $this->getZip($link);
+        $folder = $this->unzip($zip);
 
         $this->runCmd("mkdir -p storage/api");
-        $this->runCmd("mv -f {$this->lang}-client storage/api/{$this->lang}-client");
+        $dest = "storage/api/{$this->lang}-client";
+        $this->runCmd("mv -f $folder $dest");
+        $this->log("DONE. Api is at $dest");
     }
 
+    private function waitForBoot()
+    {
+        $i = 0;
+        while(true) {
+            try {
+                $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients/{$this->lang}");
+                break;
+            } catch(Exception $e) {
+                if (strpos($e->getMessage(), 'Connection refused') !== false) {
+                    $this->log("Not ready, trying again in 2 seconds. " . $e->getMessage());
+                } else {
+                    throw $e;
+                }
+            }
+            if ($i > 20) { 
+                throw new Exception("Took too long to start up.");
+            }
+            sleep(2);
+            $i++;
+        }
+    }
+
+    private function getZip($url)
+    {
+        $filename = 'api.zip';
+        $this->docker("curl -s -S $url > $filename");
+        return $filename;
+    }
+
+    private function unzip($file)
+    {
+        $zip = new ZipArchive;
+        $res = $zip->open($file);
+        $folder = explode('/', $zip->statIndex(0)['name'])[0];
+        $zip->extractTo('.');
+        $zip->close();
+        unlink($file);
+        return $folder;
+    }
+
+    private function existingContainers()
+    {
+        return $this->runCmd("docker container ls -aq --filter='name=generator'");
+    }
+
+    private function curlPost()
+    {
+        return 'curl -s -S '
+            . '-H "Accept: application/json" '
+            . '-H "Content-Type: application/json" '
+            . '-X POST -d ' . $this->cliBody() . ' '
+            . 'http://127.0.0.1:8080/api/gen/clients/php';
+    }
+
+    private function docker($cmd)
+    {
+        return $this->runCmd('docker exec generator ' . $cmd);
+    }
+
+    private function cliBody()
+    {
+        return escapeshellarg(
+            str_replace('"API-DOCS-JSON"', $this->apiJsonRaw(), $this->requestBody())
+        );
+    }
     
     private function requestBody()
     {
-        # get all available options with curl http://locahost:8888/api/gen/clients/php
-        return [
+        # get all available options with curl http://127.0.0.1:8080/api/gen/clients/php
+        return json_encode([
             "options" => [
                 "gitUserId" => "ProcessMaker",
                 "gitRepoId" => "bpm-php-sdk",
             ],
-            "spec" => $this->apiJsonDoc(),
-        ];
+            "spec" => "API-DOCS-JSON",
+        ]);
     }
 
-    private function apiJsonDoc()
+    private function apiJsonRaw()
     {
-        return json_decode(
-            file_get_contents(__DIR__ . "/storage/api-docs/api-docs.json")
-        );
+        return file_get_contents(__DIR__ . "/storage/api-docs/api-docs.json");
     }
 
     private function runCmd($cmd)
@@ -90,7 +131,7 @@ class BuildSdk {
         exec($cmd . " 2>&1", $output, $returnVal);
         $output = implode("\n", $output);
         if ($returnVal) {
-            die("ERROR: " . $output);
+            throw new Exception("Cmd returned: $returnVal " . $output);
         }
         $this->log("Got: '$output'");
         return $output;
@@ -103,8 +144,9 @@ class BuildSdk {
         }
     }
 }
-
-(new BuildSdk(true))->run();
-
-
-
+try {
+    (new BuildSdk(true))->run();
+} catch(Exception $e) {
+    echo "ERROR: {$e->getMessage()}\n";
+    exit(1);
+}

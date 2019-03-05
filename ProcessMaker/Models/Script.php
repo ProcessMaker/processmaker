@@ -115,7 +115,7 @@ class Script extends Model
                         'response' => '/opt/executor/output.json'
                     ],
                     'folders' => [
-                        base_path('storage/api/SwaggerClient-php') => '/opt/executor/SwaggerClient-php',
+                        base_path('storage/api/php-client') => '/opt/executor/php-client',
                     ]
                 ];
                 break;
