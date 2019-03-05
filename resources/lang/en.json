@@ -291,5 +291,15 @@
     "Dismiss": "Dismiss",
     "Dismiss All": "Dismiss All",
     "View All": "View All",
-    "Help": "Help"
+    "Help": "Help",
+    "Assigned To": "Assigned To",
+    "The script was saved.": "The script was saved.",
+    "The category was saved.": "The category was saved.",
+    "Are you sure you want to archive the process": "Are you sure you want to archive the process ",
+    "'?": "'?",
+    "Are you sure you want to delete the script ": "Are you sure you want to delete the script ",
+    "The screen was saved.": "The screen was saved.",
+    "Are you sure you want to delete the screen ": "Are you sure you want to delete the screen ",
+    "The screen was deleted.": "The screen was deleted.",
+    "The screen was duplicated.": "The screen was duplicated."
 }
