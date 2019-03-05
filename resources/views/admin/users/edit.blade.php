@@ -326,7 +326,7 @@
                                 <div class="form-group" v-if="newToken != null">
                                     <div class="alert alert-warning">
                                         <i class="fas fa-exclamation-triangle"></i>
-                                        {{__('Make sure you copy your access token now. You won\'t be able to see it again.')}}
+                                        {{__("Make sure you copy your access token now. You won't be able to see it again.")}}
                                     </div>
                                     <button @click="copyTextArea" class="btn btn-secondary">
                                         <i class="fas fa-paste"></i>
@@ -678,7 +678,7 @@
               .then((result) => {
                 this.newToken = result.data;
                 this.loadTokens();
-                ProcessMaker.alert("Access token generated successfully", "success");
+                ProcessMaker.alert("{{__('Access token generated successfully')}}", "success");
               })
           },
           deleteToken(tokenId) {

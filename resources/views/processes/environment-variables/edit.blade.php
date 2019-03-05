@@ -85,7 +85,7 @@
                     this.resetErrors();
                     ProcessMaker.apiClient.put('environment_variables/' + this.formData.id, this.formData)
                         .then(response => {
-                            ProcessMaker.alert('The environment variable was saved.', 'success');
+                            ProcessMaker.alert('{{__('The environment variable was saved.')}}', 'success');
                             this.onClose();
                         })
                         .catch(error => {

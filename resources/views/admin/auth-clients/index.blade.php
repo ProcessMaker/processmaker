@@ -103,7 +103,7 @@
                         $('#createEditAuthClient').modal('hide')
                         this.$refs.authClientList.fetch()
                         this.loading = false
-                        ProcessMaker.alert("The auth client was " + verb + ".", "success")
+                        ProcessMaker.alert(__("The auth client was ") + verb + ".", __("success"))
                     }).catch(error => {
                         this.errors = error.response.data.errors;
                     });
