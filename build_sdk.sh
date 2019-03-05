@@ -1,5 +1,13 @@
+set -e
+set -x
+
 SWAGGER_DIR=$(mktemp -d)
 BPM_DIR=${PWD}
+
+pushd $BPM_DIR
+    php artisan l5-swagger:generate
+popd
+
 pushd $SWAGGER_DIR
     docker pull swaggerapi/swagger-codegen-cli-v3:3.0.5
     mkdir -p out/php

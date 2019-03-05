@@ -124,6 +124,10 @@ jobs:
       - run:
           name: "Media Storage Link"
           command: "php artisan storage:link"
+      
+      - run:
+          name: Build our application SDKs
+          command: ./build_sdk.sh
 
       # run tests!
       - run:
@@ -150,10 +154,6 @@ jobs:
 
       - store_artifacts:
           path: tests/js/coverage
-
-      - run:
-          name: Build our application SDKs
-          command: ./build_sdk.sh
 
       # Prepare for packaging for QA environment
 
