@@ -1,5 +1,5 @@
 <?php
-
+define("API_HOST", getenv("APP_URL") . '/api/1.0');
 return [
     'api' => [
         /*
