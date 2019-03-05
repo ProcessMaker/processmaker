@@ -359,11 +359,11 @@ class ScriptsTest extends TestCase
         }
         
         //Test Lua Scripts
-        $this->assertTimeoutExceeded(['data' => '{}', 'code' => 'os.execute("sleep 60") return {response=1}', 'language' => 'lua', 'timeout' => 5]);
+        $this->assertTimeoutExceeded(['data' => '{}', 'code' => 'os.execute("sleep 10") return {response=1}', 'language' => 'lua', 'timeout' => 5]);
         $this->assertTimeoutNotExceeded(['data' => '{}', 'code' => 'os.execute("sleep 1") return {response=1}', 'language' => 'lua', 'timeout' => 5]);
 
         //Test PHP Scripts
-        $this->assertTimeoutExceeded(['data' => '{}', 'code' => '<?php sleep(60); return ["response"=>1];', 'language' => 'php', 'timeout' => 5]);
+        $this->assertTimeoutExceeded(['data' => '{}', 'code' => '<?php sleep(10); return ["response"=>1];', 'language' => 'php', 'timeout' => 5]);
         $this->assertTimeoutNotExceeded(['data' => '{}', 'code' => '<?php sleep(1); return ["response"=>1];', 'language' => 'php', 'timeout' => 5]);
     }
 
