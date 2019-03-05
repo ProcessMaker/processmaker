@@ -16,8 +16,6 @@ class GenerateMenus
      */
     public function handle(Request $request, Closure $next)
     {
-        //set’s application’s locale
-        app()->setLocale('en');
 
         Menu::make('topnav', function ($menu) {
             $menu->group(['prefix' => 'requests'], function($request_items) {

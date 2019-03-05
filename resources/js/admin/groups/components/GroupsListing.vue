@@ -19,7 +19,7 @@
                 variant="link"
                 @click="onEdit(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
                 v-if="permission.includes('edit-groups')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -28,7 +28,7 @@
                 variant="link"
                 @click="onDelete( props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Delete"
+                :title="__('Delete')"
                 v-if="permission.includes('delete-groups')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -51,6 +51,7 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -68,34 +69,34 @@ export default {
       ],
       fields: [
         {
-          title: "Name",
+          title: __("Name"),
           name: "name",
           sortField: "Name"
         },
         {
-          title: "Description",
+          title: __("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: "Status",
+          title: __("Status"),
           name: "status",
           sortField: "status",
           callback: this.formatStatus
         },
         {
-          title: "# Users",
+          title: __("# Users"),
           name: "group_members_count",
           sortField: "group_members_count"
         },
         {
-          title: "Modified",
+          title: __("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: "Created",
+          title: __("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -109,6 +110,9 @@ export default {
     };
   },
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     formatStatus(status) {
       status = status.toLowerCase();
       let bubbleColor = {
