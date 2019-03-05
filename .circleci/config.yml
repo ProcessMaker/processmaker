@@ -127,7 +127,7 @@ jobs:
       
       - run:
           name: Build our application SDKs
-          command: ./build_sdk.sh
+          command: php build_sdk.php
 
       # run tests!
       - run:
