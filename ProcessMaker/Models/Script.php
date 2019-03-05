@@ -103,7 +103,7 @@ class Script extends Model
         switch (strtolower($language)) {
             case 'php':
                 $dockerConfig = [
-                    'image' => 'processmaker/executor:php',
+                    'image' => 'nolanpro/executor:php',
                     'command' => 'php /opt/executor/bootstrap.php',
                     'parameters' => $variablesParameter,
                     'inputs' => [
@@ -113,6 +113,9 @@ class Script extends Model
                     ],
                     'outputs' => [
                         'response' => '/opt/executor/output.json'
+                    ],
+                    'folders' => [
+                        base_path('storage/api/SwaggerClient-php') => '/opt/executor/SwaggerClient-php',
                     ]
                 ];
                 break;

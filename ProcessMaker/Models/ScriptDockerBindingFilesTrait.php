@@ -31,6 +31,13 @@ trait ScriptDockerBindingFilesTrait
         foreach ($options['outputs'] as $name => $guestFile) {
             $bindings .= $this->bindOutput($guestFile, $name);
         }
+
+        if (array_key_exists('folders', $options)) {
+            foreach ($options['folders'] as $source => $dest) {
+                $bindings .= $this->bindFile($source, $dest);
+            }
+        }
+
         $response = $this->runContainer($options['image'], $options['command'],
             $options['parameters'], $bindings);
         return $response;

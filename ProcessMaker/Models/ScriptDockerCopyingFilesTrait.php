@@ -25,11 +25,22 @@ trait ScriptDockerCopyingFilesTrait
         foreach ($options['inputs'] as $path => $data) {
             $this->putInContainer($container, $path, $data);
         }
+
+        if (array_key_exists('folders', $options)) {
+            foreach ($options['folders'] as $source => $dest) {
+                list($returnCode, $output) = $this->execCopy($source, $container, $dest);
+                if ($returnCode) {
+                    throw new RuntimeException('Unable to send data to container: ' . implode("\n", $output));
+                }
+            }
+        }
+
         $response = $this->startContainer($container);
         $outputs = [];
         foreach ($options['outputs'] as $name => $path) {
             $outputs[$name] = $this->getFromContainer($container, $path);
         }
+
         exec(config('app.bpm_scripts_docker') . ' rm ' . $container);
         $response['outputs'] = $outputs;
         return $response;
@@ -75,13 +86,28 @@ trait ScriptDockerCopyingFilesTrait
     {
         $source = tempnam(config('app.bpm_scripts_home'), 'put');
         file_put_contents($source, $content);
-        $cmd = config('app.bpm_scripts_docker')
-            . sprintf(' cp %s %s:%s 2>&1', $source, $container, $path);
-        $line = exec($cmd, $output, $returnCode);
+        list($returnCode, $output) = $this->execCopy($source, $container, $path);
         unlink($source);
         if ($returnCode) {
             throw new RuntimeException('Unable to send data to container: ' . implode("\n", $output));
         }
+    }
+    
+    /**
+     * Runs the docker copy command
+     *
+     * @param string $source
+     * @param string $container
+     * @param string $dest
+     *
+     * @throws \RuntimeException
+     */
+    private function execCopy($source, $container, $dest)
+    {
+        $cmd = config('app.bpm_scripts_docker')
+            . sprintf(' cp %s %s:%s 2>&1', $source, $container, $dest);
+        $output = exec($cmd, $output, $returnCode);
+        return [$returnCode, $output];
     }
 
     /**
