@@ -106,7 +106,7 @@ trait ScriptDockerCopyingFilesTrait
     {
         $cmd = config('app.bpm_scripts_docker')
             . sprintf(' cp %s %s:%s 2>&1', $source, $container, $dest);
-        $output = exec($cmd, $output, $returnCode);
+        exec($cmd, $output, $returnCode);
         return [$returnCode, $output];
     }
 
