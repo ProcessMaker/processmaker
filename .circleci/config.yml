@@ -93,8 +93,8 @@ jobs:
           - v1-npm-dependencies-
 
       - run: composer install -n --prefer-dist
-
-      - run: npm install
+      
+      - run: sudo npm install -g npm@6.4.1 && npm ci
 
       - save_cache:
           paths:
@@ -109,7 +109,7 @@ jobs:
       - run:
           name: Configure scripts executor
           command: |
-            docker pull processmaker/executor:php
+            docker pull nolanpro/executor:php
             docker pull processmaker/executor:lua
             sudo mkdir -m777 /opt/executor
 
@@ -150,6 +150,10 @@ jobs:
 
       - store_artifacts:
           path: tests/js/coverage
+
+      - run:
+          name: Build our application SDKs
+          command: ./build_sdk.sh
 
       # Prepare for packaging for QA environment
 
