@@ -346,6 +346,27 @@ class ScriptsTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure(['output' => ['response']]);
     }
+
+    /**
+     * Test our script timeout functionality
+     */
+    public function testScriptTimeouts()
+    {
+        if (!file_exists(config('app.bpm_scripts_home')) || !file_exists(config('app.bpm_scripts_docker'))) {
+            $this->markTestSkipped(
+                'This test requires docker'
+            );
+        }
+        
+        //Test Lua Scripts
+        $this->assertTimeoutExceeded(['data' => '{}', 'code' => 'os.execute("sleep 60") return {response=1}', 'language' => 'lua', 'timeout' => 5]);
+        $this->assertTimeoutNotExceeded(['data' => '{}', 'code' => 'os.execute("sleep 1") return {response=1}', 'language' => 'lua', 'timeout' => 5]);
+
+        //Test PHP Scripts
+        $this->assertTimeoutExceeded(['data' => '{}', 'code' => '<?php sleep(60); return ["response"=>1];', 'language' => 'php', 'timeout' => 5]);
+        $this->assertTimeoutNotExceeded(['data' => '{}', 'code' => '<?php sleep(1); return ["response"=>1];', 'language' => 'php', 'timeout' => 5]);
+    }
+
     /**
      * Test the preview function
      */
