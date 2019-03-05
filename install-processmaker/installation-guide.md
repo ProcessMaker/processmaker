@@ -41,7 +41,7 @@ RewriteRule ^ index.php [L]
 ```
 {% endtab %}
 
-{% tab title="NGINX 1.x or later" %}
+{% tab title="NGINX 1.x" %}
 The following directive in your site configuration will direct all requests to the `index.php` front controller:
 
 ```text
@@ -56,9 +56,29 @@ location / {
 
 Redirect to the `/opt` directory, and then download the ProcessMaker installer from the following URL: [https://github.com/ProcessMaker/bpm/releases/download/beta2/bpm-beta4.tar.gz](https://github.com/ProcessMaker/bpm/releases/download/beta2/bpm-beta4.tar.gz).
 
-### Extract the ProcessMaker 4 Installer
+### Untarnish the ProcessMaker 4 Installer
 
-Extract the ProcessMaker 4 installer based on which web server application you intend to use with ProcessMaker 4.
+Untarnish the ProcessMaker 4 tar file based on which web server application you intend to use with ProcessMaker 4. Change the ownership to the dedicated ProcessMaker user you created when you [configured the web server](installation-guide.md#web-server-configuration).
+
+Consider the following examples for Apache and NGINX web servers.
+
+{% tabs %}
+{% tab title="Apache2.4.x" %}
+```text
+tar -xzvf bpm4_version.tar.gz
+mv bpm_version processmaker
+chown -R apache:apache processmaker
+```
+{% endtab %}
+
+{% tab title="NGINX 1.x" %}
+```text
+tar -xzvf bpm4_version.tar.gz
+mv bpm_version processmaker
+chown -R nginx:nginx processmaker
+```
+{% endtab %}
+{% endtabs %}
 
 ### Run the ProcessMaker 4 Installer
 
