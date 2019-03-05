@@ -66,7 +66,7 @@ class ProcessController extends Controller
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -545,7 +545,7 @@ class ProcessController extends Controller
      * @OA\Get(
      *     path="/processes/processId/export",
      *     summary="Export a single process by ID",
-     *     operationId="getProcessById",
+     *     operationId="exportProcess",
      *     tags={"Process"},
      *     @OA\Parameter(
      *         description="ID of process to return",
@@ -585,7 +585,7 @@ class ProcessController extends Controller
      * @OA\Get(
      *     path="/processes/import",
      *     summary="Import a process",
-     *     operationId="getProcessById",
+     *     operationId="importProcess",
      *     tags={"Process"},
      *     @OA\Parameter(
      *         description="ID of process to return",
