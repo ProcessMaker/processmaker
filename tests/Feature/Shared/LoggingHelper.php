@@ -16,7 +16,25 @@ trait LoggingHelper
     public function assertLogEntryExists($data)
     {
         $records = app('log')->getHandlers()[0]->getRecords();
-        return $this->assertArraySubset([$data], $records, false);
+        $count = count($data);
+
+        foreach ($records as $record) {
+            $matches = 0;
+            
+            foreach ($data as $key => $value) {
+                if (array_key_exists($key, $record)) {
+                    if ($record[$key] == $value) {
+                        $matches++;
+                    }
+                }
+            }
+            
+            if ($matches === $count) {
+                break;
+            }
+        }
+        
+        return $this->assertEquals($count, $matches, 'Failed asserting that a log entry exists.');
     }
 
     /**
@@ -40,7 +58,7 @@ trait LoggingHelper
     public function assertLogIsEmpty()
     {
         $records = app('log')->getHandlers()[0]->getRecords();
-        return $this->assertEquals(0, count($records));
+        return $this->assertEquals(0, count($records), 'Failed asserting that the log is empty.');
     }
     
     /**
@@ -51,6 +69,6 @@ trait LoggingHelper
     public function assertLogNotEmpty()
     {
         $records = app('log')->getHandlers()[0]->getRecords();
-        return $this->assertGreaterThan(0, count($records));
+        return $this->assertGreaterThan(0, count($records), 'Failed asserting that the log is not empty.');
     }
 }
