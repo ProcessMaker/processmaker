@@ -117,7 +117,7 @@ php artisan bpm:install
 {% endcode-tabs %}
 
 {% hint style="info" %}
-If the `.env` file is found during the installation procedure, stop the installation, remove the `.env` file, and then start the installation procedure again.
+If the `.env` file is found during the installation procedure, stop the installation, remove the `.env` file, and then start the installation procedure again. The `.env` file stores ProcessMaker  environment configuration settings.
 {% endhint %}
 
 ## Monitor the Queue Management Service
