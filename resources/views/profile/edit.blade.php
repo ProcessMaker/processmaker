@@ -16,13 +16,13 @@
                     <h2>{{__('Name')}}</h2>
                     <div class="row">
                         <div class="form-group col">
-                            {!! Form::label('firstname', 'First Name') !!}
+                            {!! Form::label('firstname', __('First Name')) !!}
                             {!! Form::text('firstname', null, ['id' => 'firstname','class'=> 'form-control', 'v-model' => 'formData.firstname',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}']) !!}
                             <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname}}</div>
                         </div>
                         <div class="form-group col">
-                            {!! Form::label('lastname', 'Last Name') !!}
+                            {!! Form::label('lastname', __('Last Name')) !!}
                             {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}']) !!}
                             <div class="invalid-feedback" v-if="errors.lastname">@{{errors.description}}</div>
@@ -31,13 +31,13 @@
                     <h2 class="mt-2">{{__('Contact Information')}}</h2>
                     <div class="row">
                         <div class="form-group col">
-                            {!! Form::label('email', 'Email') !!}
+                            {!! Form::label('email', __('Email')) !!}
                             {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.email', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.email}']) !!}
                             <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}</div>
                         </div>
                         <div class="form-group col">
-                            {!! Form::label('phone', 'Phone') !!}
+                            {!! Form::label('phone', __('Phone')) !!}
                             {!! Form::text('phone', null, ['id' => 'phone','class'=> 'form-control', 'v-model' => 'formData.phone',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.phone}']) !!}
                             <div class="invalid-feedback" v-if="errors.phone">@{{errors.phone}}</div>
@@ -46,7 +46,7 @@
                     <h2 class="mt-2">{{__('Address')}}</h2>
                     <div class="row">
                         <div class="form-group col">
-                            {!! Form::label('address', 'Address') !!}
+                            {!! Form::label('address', __('Address')) !!}
                             {!! Form::text('address', null, ['id' => 'address','class'=> 'form-control', 'v-model' => 'formData.address',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.address}']) !!}
                             <div class="invalid-feedback" v-if="errors.address">@{{errors.address}}</div>
@@ -54,13 +54,13 @@
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            {!! Form::label('city', 'City') !!}
+                            {!! Form::label('city', __('City')) !!}
                             {!! Form::text('city', null, ['id' => 'city', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.city', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.city}']) !!}
                             <div class="invalid-feedback" v-if="errors.city">@{{errors.city}}</div>
                         </div>
                         <div class="form-group col">
-                            {!! Form::label('state', 'State or Region') !!}
+                            {!! Form::label('state', __('State or Region')) !!}
                             {!! Form::select('state',
                                     $states,
                                     'formData.state',
@@ -75,13 +75,13 @@
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            {!! Form::label('postal', 'Postal Code') !!}
+                            {!! Form::label('postal', __('Postal Code')) !!}
                             {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.postal', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.postal}']) !!}
                             <div class="invalid-feedback" v-if="errors.postal">@{{errors.postal}}</div>
                         </div>
                         <div class="form-group col">
-                            {!! Form::label('country', 'Country') !!}
+                            {!! Form::label('country', __('Country')) !!}
                             {!! Form::select('country',
                                 $countries,
                                 'formData.country',
@@ -97,7 +97,7 @@
                     <h2 class="mt-2">{{__('Localization')}}</h2>
                     <div class="row">
                         <div class="form-group col">
-                            {!!Form::label('datetime_format', 'Date Format');!!}
+                            {!!Form::label('datetime_format', __('Date Format'));!!}
                             {!!Form::select('datetime_format',
                                 $datetimeFormats,
                                 'formData.datetime_format',
@@ -112,7 +112,7 @@
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            {!!Form::label('timezone', 'Time Zone');!!}
+                            {!!Form::label('timezone', __('Time Zone'));!!}
                             {!!Form::select('timezone',
                                 $timezones,
                                 'formData.timezone',
@@ -126,7 +126,7 @@
                         </div>
 
                         <div class="form-group col">
-                            {!! Form::label('language', 'Language') !!}
+                            {!! Form::label('language', __('Language')) !!}
                             {!! Form::select('language', ['us_en' => 'English (US)'], $currentUser->language, ['id' => 'language','class'=>
                             'form-control',
                             'v-model' => 'formData.language',
@@ -135,8 +135,8 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                        {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                        {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                     </div>
                 </div>
             </div>
@@ -148,7 +148,7 @@
                                       :input-data="options"></avatar-image>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('username', 'Username') !!}
+                        {!! Form::label('username', __('Username')) !!}
                         {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                         => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}']) !!}
                         <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
@@ -159,7 +159,7 @@
                         </small>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('password', 'New Password') !!}
+                        {!! Form::label('password', __('New Password')) !!}
 						<vue-password v-model="formData.password" :disable-toggle=true>
 							<div slot="password-input" slot-scope="props">
 								{!! Form::password('password', ['id' => 'password', 'rows' => 4, 'class'=> 'form-control', 'v-model'
@@ -169,7 +169,7 @@
 						</vue-password>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('confPassword', 'Confirm Password') !!}
+                        {!! Form::label('confPassword', __('Confirm Password')) !!}
                         {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                         => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
 						<div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" v-if="errors.password">@{{errors.password[0]}}</div>
