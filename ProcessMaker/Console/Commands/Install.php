@@ -145,11 +145,6 @@ class Install extends Command
             '--seed' => true,
         ]);
 
-        // Seed default user groups if desired
-        $this->call('db:seed', [
-            '--class' => 'DefaultGroupSeeder',
-        ]);
-
         // Generate passport secure keys and personal token oauth client
         $this->call('passport:install', [
             '--force' => true
