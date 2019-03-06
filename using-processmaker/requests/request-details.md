@@ -122,19 +122,25 @@ The **Summary** tab only displays information for completed Requests. If you sel
 [Control how tabular information displays](../control-how-requests-display-in-a-tab.md), including how to sort columns or how many items display per page.
 {% endhint %}
 
-### Editable Request Values
+### Editable Request Data
 
-The **Data** tab displays the summary of values from a completed Request similarly to the [**Summary**](request-details.md#summary) tab.  However, values in the **Data** tab can be changed from the values submitted in the Request. The **Data** column only displays when that Request is completed.
+{% hint style="info" %}
+Your user account or group membership must have the "Requests: Edit Request Data" permission to edit Request data.
+
+See the [Request permissions](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#requests) or ask your ProcessMaker Administrator for assistance.
+{% endhint %}
+
+The **Data** tab displays the data from a completed Request in JSON format. The **Data** column only displays when that Request is completed.
 
 ![&quot;Data&quot; tab displays editable values for a completed Request](../../.gitbook/assets/data-tab-completed-request-information-requests.png)
 
-Follow these steps to edit and save the values in the completed Request from those values that were submitted in the Request:
+Follow these steps to edit and save the completed Request data from those values that were submitted in the Request:
 
 1. View the **Data** tab. Note that the **Data** tab does not display until the Request is completed.
-2. From the editable fields in the **Value** column, change the values that were submitted during the Request to those that you want.
+2. From the editable JSON field, change the values that were submitted during the Request to those that you want.
 3. Click **Save**. The following message displays when the Request values are changed: **Request data successfully updated**.
 
-Below the table, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
+Below the editable JSON field, the history of the Request displays all Request actions. [See Request History](request-details.md#request-history).
 
 ### Completed Tasks Summary
 

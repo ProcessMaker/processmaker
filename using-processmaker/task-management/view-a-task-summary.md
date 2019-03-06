@@ -23,14 +23,22 @@ The **Form** tab displays by default when an assigned Task is opened. Below is a
 
 ![Assigned Task displayed in the &quot;Forms&quot; tab](../../.gitbook/assets/forms-tab-assigned-to-do-summary-tasks.png)
 
-### Values in the Request
+### Editable Task Data
 
-The **Data** tab displays the summary of values as entered into a Task from a previous participant of this Request. However, values in the **Data** tab can be changed from those entered by the previous Request participant.
+{% hint style="info" %}
+Your user account or group membership must have the "Requests: Edit Task Data" permission to edit Task data.
+
+See the [Request permissions](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#requests) or ask your ProcessMaker Administrator for assistance.
+{% endhint %}
+
+The **Data** tab displays data as entered into a Task from a previous participant of this Request in JSON format. Values in the **Data** tab can be changed from those entered by the previous Request participant.
+
+![&quot;Data&quot; tab displays editable values for a completed Task](../../.gitbook/assets/data-tab-completed-task-tasks.png)
 
 Follow these steps to edit and save the values from those entered by a previous Request participant:
 
 1. View the **Data** tab.
-2. From the editable fields in the **Value** column, change the values from those entered by the previous Request participant to those that you want.
+2. From the editable JSON field, change the values from those entered by the previous Request participant to those that you want.
 3. Click **Save**. The following message displays when the Request values are changed: **Request data successfully updated**.
 
 ### Summary
