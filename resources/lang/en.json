@@ -327,5 +327,16 @@
     "The environment variable was deleted.": "The environment variable was deleted.",
     "Are you sure you want to delete the user ": "Are you sure you want to delete the user ",
     "The user was deleted.": "The user was deleted.",
-    "An error occurred. Check the form for errors in red text.": "An error occurred. Check the form for errors in red text."
+    "An error occurred. Check the form for errors in red text.": "An error occurred. Check the form for errors in red text.",
+    "Date Format": "Date Format",
+    "Time Zone": "Time Zone",
+    "Postal Code": "Postal Code",
+    "Remember me": "Remember me",
+    "Forgot Password?": "Forgot Password?",
+    "Log In": "Log In",
+    "Forgot Your Password?": "Forgot Your Password?",
+    "Enter your email address and we'll send you a reset link.": "Enter your email address and we'll send you a reset link.",
+    "Email Address": "Email Address",
+    "Request Reset Link": "Request Reset Link",
+    "Back to Login": "Back to Login"
 }
