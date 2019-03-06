@@ -105,7 +105,7 @@ class Install extends Command
             if($invalid) {
                 $this->error(__("The url you provided was invalid. Please provide the scheme, host and path and have no trailing slashes."));
             }
-            $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker Installation? (Ex: https://pm.example.com, no trailing slash)'));
+            $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker installation? (Ex: https://pm.example.com, no trailing slash)'));
         } while($invalid = (!filter_var($this->env['APP_URL'],
                                         FILTER_VALIDATE_URL,
                                         FILTER_FLAG_SCHEME_REQUIRED |
@@ -124,7 +124,7 @@ class Install extends Command
         config(['app.url' => $this->env['APP_URL']]);
 
 
-        $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
+        $this->info(__("Installing ProcessMaker database, OAuth SSL keys and configuration file"));
 
         // The database should already exist and is tested by the fetchDatabaseCredentials call
         // Set the database default connection to install
@@ -156,8 +156,8 @@ class Install extends Command
         $this->call('storage:link');
 
         // Restart services so they pick up the new settings
-        $this->info(__('Restarting Services...'));
-        $this->info(
+        $this->info(__('Restarting services...'));
+        $this->info(e
             system('sudo supervisorctl restart all')
         );
 
