@@ -315,5 +315,8 @@
     "Access token generated successfully": "Access token generated successfully",
     "Are you sure to delete the token ": "Are you sure to delete the token ",
     "? Any services using it will no longer have access.": "? Any services using it will no longer have access.",
-    "User Updated Successfully ": "User Updated Successfully "
+    "User Updated Successfully ": "User Updated Successfully ",
+    "Open Task": "Open Task",
+    "Are you sure to delete the group ": "Are you sure to delete the group ",
+    "Are you sure you want to delete the group ": "Are you sure you want to delete the group "
 }
