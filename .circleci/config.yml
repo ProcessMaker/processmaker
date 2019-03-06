@@ -110,6 +110,7 @@ jobs:
           name: setup SDKs
           command: |
             rm -rf storage/api && mkdir storage/api
+            php artisan l5:generate
             php artisan bpm:sdk php
             php artisan bpm:sdk lua
 
