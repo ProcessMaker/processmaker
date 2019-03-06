@@ -26,5 +26,5 @@ Below are a few examples how to use ProcessMaker Environment Variables:
 
 {% page-ref page="manage-your-environment-variables/remove-an-environment-variable.md" %}
 
-{% page-ref page="create-a-new-environment-variable.md" %}
+{% page-ref page="manage-your-environment-variables/create-a-new-environment-variable.md" %}
 

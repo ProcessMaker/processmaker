@@ -38,7 +38,7 @@ Follow these steps to delete a ProcessMaker Screen:
 
 {% page-ref page="edit-a-screen.md" %}
 
-{% page-ref page="../create-a-new-form.md" %}
+{% page-ref page="create-a-new-form.md" %}
 
 {% page-ref page="../screens-builder/" %}
 

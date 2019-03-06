@@ -19,7 +19,7 @@ See the ProcessMaker [Screens](../../../processmaker-administration/permission-d
 
 Follow these steps to save a ProcessMaker Screen:
 
-1. [Create](../create-a-new-form.md) or [open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
+1. [Create](../manage-forms/create-a-new-form.md) or [open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
 2. Click the **Save** icon![](../../../.gitbook/assets/save-icon-processes.png)to save the ProcessMaker Screen. The following message displays: **Successfully saved**.
 
 ## Related Topics

@@ -194,5 +194,5 @@ Follow these steps to delete the Sequence Flow between two elements:
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 
-{% page-ref page="../../viewing-processes/create-a-process.md" %}
+{% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 

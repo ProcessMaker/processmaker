@@ -23,7 +23,7 @@ ProcessMaker groups make it easy to manage multiple ProcessMaker users in your o
 
 {% page-ref page="manage-groups/remove-a-group.md" %}
 
-{% page-ref page="create-a-group.md" %}
+{% page-ref page="manage-groups/create-a-group.md" %}
 
 {% page-ref page="../permission-descriptions-for-users-and-groups.md" %}
 

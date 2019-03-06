@@ -33,7 +33,7 @@ The **Categories** page displays the following information in tabular format abo
 * **Name:** The **Name** column displays the name of the Process Category.
 * **Status:** The **Status** column displays the status of the Process Category. Below is a description of each status:
   * **Active:** An active Process Category can have Processes assigned to it.
-  * **Inactive:** An inactive Process Category can no longer be selected when [assigning a Process to a Process Category](create-a-process.md#create-a-new-process). Furthermore, Processes assigned to an inactive Category [no longer display to Process requesters](../../using-processmaker/requests/make-a-request.md#start-a-request) even though such Processes may be active.
+  * **Inactive:** An inactive Process Category can no longer be selected when [assigning a Process to a Process Category](view-the-list-of-processes/create-a-process.md#create-a-new-process). Furthermore, Processes assigned to an inactive Category [no longer display to Process requesters](../../using-processmaker/requests/make-a-request.md#start-a-request) even though such Processes may be active.
 * **Processes:** The **\# Processes** column displays how many Processes in your organization have been assigned to that Process Category.
 * **Modified:** The **Modified** column displays the date and time the Process Category was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the Process Category was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
@@ -127,7 +127,7 @@ Follow these steps to delete a Process Category:
 
 {% page-ref page="../../using-processmaker/requests/make-a-request.md" %}
 
-{% page-ref page="create-a-process.md" %}
+{% page-ref page="view-the-list-of-processes/create-a-process.md" %}
 
 {% page-ref page="view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md" %}
 

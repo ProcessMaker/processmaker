@@ -36,10 +36,6 @@ The **Groups** page displays the following information in tabular format about P
 
 Use the [Search](search-for-a-group.md#search-for-a-processmaker-group) field to filter ProcessMaker groups that display.
 
-### No ProcessMaker Groups?
-
-If no ProcessMaker groups exist, the following message displays: **No Data Available**.
-
 ### Edit a ProcessMaker Group
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Group](edit-a-group.md#edit-a-processmaker-group).
@@ -47,6 +43,10 @@ Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a 
 ### Delete a ProcessMaker Group
 
 Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Group](remove-a-group.md#delete-a-processmaker-group).
+
+### No ProcessMaker Groups?
+
+If no ProcessMaker groups exist, the following message displays: **No Data Available**.
 
 ### Display Information the Way You Want It
 
@@ -63,5 +63,5 @@ Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler
 
 {% page-ref page="remove-a-group.md" %}
 
-{% page-ref page="../create-a-group.md" %}
+{% page-ref page="create-a-group.md" %}
 

@@ -27,7 +27,7 @@ There are many ways Process Owners design ProcessMaker Screens to meet the needs
 
 {% page-ref page="manage-forms/remove-a-screen.md" %}
 
-{% page-ref page="create-a-new-form.md" %}
+{% page-ref page="manage-forms/create-a-new-form.md" %}
 
 {% page-ref page="screens-builder/" %}
 

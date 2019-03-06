@@ -30,7 +30,7 @@ User-level and group-level permission assignments are cumulative. This means tha
 
 ### Best Practice to Assign Permissions
 
-ProcessMaker recommends [creating ProcessMaker groups](assign-groups-to-users/create-a-group.md#create-a-processmaker-group) based on how you define ProcessMaker usage roles in your organization. Based on usage roles you define, assign permissions to ProcessMaker groups so that all group members have the same permission set. Below is an example how you might create groups to assign permissions:
+ProcessMaker recommends [creating ProcessMaker groups](assign-groups-to-users/manage-groups/create-a-group.md#create-a-processmaker-group) based on how you define ProcessMaker usage roles in your organization. Based on usage roles you define, assign permissions to ProcessMaker groups so that all group members have the same permission set. Below is an example how you might create groups to assign permissions:
 
 * **ProcessMaker user:** Most ProcessMaker users start or participate in Requests and perform Tasks. Their permission assignments may be limited to [Requests](permission-descriptions-for-users-and-groups.md#requests). Note that if you want specific ProcessMaker users and/or groups to start and/or cancel Requests, that must be [configured for each Process](../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process).
 * **Process Owner:** Process Owners create Process models. Their permission assignments may be limited to [Requests](permission-descriptions-for-users-and-groups.md#requests), [Processes](permission-descriptions-for-users-and-groups.md#processes), Process [Categories](permission-descriptions-for-users-and-groups.md#categories), [Screens](permission-descriptions-for-users-and-groups.md#screens), and [Environment Variables](permission-descriptions-for-users-and-groups.md#environment-variables) categories.
@@ -52,7 +52,7 @@ The **Requests** category contains the following permission:
 The **Scripts** category contains the following permissions:
 
 * **View Scripts:** View the table of ProcessMaker Scripts on the **Scripts** page. See [View All Scripts](../designing-processes/scripts/manage-scripts/view-all-scripts.md).
-* **Create Scripts:** Create a ProcessMaker Script from the **Scripts** page. Selecting this permission also selects the **Edit Scripts** permission. See [Create a New Script](../designing-processes/scripts/create-a-new-script.md).
+* **Create Scripts:** Create a ProcessMaker Script from the **Scripts** page. Selecting this permission also selects the **Edit Scripts** permission. See [Create a New Script](../designing-processes/scripts/manage-scripts/create-a-new-script.md).
 * **Edit Scripts:** Edit a ProcessMaker Script and/or its configuration from the **Scripts** page. See [Edit a Script](../designing-processes/scripts/manage-scripts/edit-a-script.md) and [Edit Script Configuration](../designing-processes/scripts/manage-scripts/edit-script-configuration.md).
 * **Delete Scripts:** Delete a ProcessMaker Script from the **Scripts** page. See [Delete a Script](../designing-processes/scripts/manage-scripts/remove-a-script.md).
 
@@ -78,7 +78,7 @@ Select the **View Categories** permission to use any of the other permissions in
 The **Screens** category contains the following permissions:
 
 * **View Screens:** View the table of ProcessMaker Screens on the **Screens** page. See [View All Screens](../designing-processes/design-forms/manage-forms/view-all-forms.md).
-* **Create Screens:** Create a ProcessMaker Screen from the **Screens** page. Selecting this permission also selects the **Edit Screens** permission. See [Create a New Screen](../designing-processes/design-forms/create-a-new-form.md).
+* **Create Screens:** Create a ProcessMaker Screen from the **Screens** page. Selecting this permission also selects the **Edit Screens** permission. See [Create a New Screen](../designing-processes/design-forms/manage-forms/create-a-new-form.md).
 * **Edit Screens:** Edit a ProcessMaker Screen and/or its configuration from the **Screens** page. See [Edit a Screen](../designing-processes/design-forms/screens-builder/control-descriptions/) and [Edit Screen Configuration](../designing-processes/design-forms/manage-forms/edit-a-screen.md).
 * **Delete Screens:** Delete a ProcessMaker Screen from the **Screens** page. See [Delete a Screen](../designing-processes/design-forms/manage-forms/remove-a-screen.md).
 
@@ -91,7 +91,7 @@ Select the **View Screens** permission to use any of the other permissions in th
 The **Environment Variables** category contains the following permissions:
 
 * **View Environment Variables:** View the table of Environment Variables on the **Environment Variables** page. See [View All Environment Variables](../designing-processes/environment-variable-management/manage-your-environment-variables/view-all-environment-variables.md).
-* **Create Environment Variables:** Create an Environment Variable from the **Environment Variables** page. Selecting this permission also selects the **Edit Environment Variables** permission. See [Create a New Environment Variable](../designing-processes/environment-variable-management/create-a-new-environment-variable.md).
+* **Create Environment Variables:** Create an Environment Variable from the **Environment Variables** page. Selecting this permission also selects the **Edit Environment Variables** permission. See [Create a New Environment Variable](../designing-processes/environment-variable-management/manage-your-environment-variables/create-a-new-environment-variable.md).
 * **Edit Environment Variables:** Edit an Environment Variable from the **Environment Variables** page. See [Edit an Environmental Variable](../designing-processes/environment-variable-management/manage-your-environment-variables/edit-an-environmental-variable.md).
 * **Delete Environment Variables:** Delete an Environment Variable from the **Environment Variables** page. See [Delete an Environment Variable](../designing-processes/environment-variable-management/manage-your-environment-variables/remove-an-environment-variable.md).
 
@@ -104,7 +104,7 @@ Select the **View Environment Variables** permission to use any of the other per
 The **Users** category contains the following permissions:
 
 * **View Users:** View the table of ProcessMaker user accounts on the **Users** page. See [View All Users Accounts](add-users/manage-user-accounts/view-all-users.md).
-* **Create Users:** Create a ProcessMaker user account from the **Users** page. Selecting this permission also selects the **Edit Users** permission. See [Create a New User Account](add-users/create-a-user-account.md).
+* **Create Users:** Create a ProcessMaker user account from the **Users** page. Selecting this permission also selects the **Edit Users** permission. See [Create a New User Account](add-users/manage-user-accounts/create-a-user-account.md).
 * **Edit Users:** Edit a ProcessMaker user account from the **Users** page. See [Edit a User Account](add-users/manage-user-accounts/edit-a-user-account.md).
 * **Delete Users:** Delete a ProcessMaker user account from the **Users** page. See [Delete a User Account](add-users/manage-user-accounts/remove-a-user-account.md).
 
@@ -117,7 +117,7 @@ Select the **View Users** permission to use any of the other permissions in this
 The **Groups** category contains the following permissions:
 
 * **View Groups:** View the table of ProcessMaker groups on the **Groups** page. See [View All Groups](assign-groups-to-users/manage-groups/view-all-groups.md).
-* **Create Groups:** View a ProcessMaker group from the **Groups** page. Selecting this permission also selects the **Edit Groups** permission. See [Create a New Group](assign-groups-to-users/create-a-group.md).
+* **Create Groups:** View a ProcessMaker group from the **Groups** page. Selecting this permission also selects the **Edit Groups** permission. See [Create a New Group](assign-groups-to-users/manage-groups/create-a-group.md).
 * **Edit Groups:** Edit a ProcessMaker group from the **Groups** page. See [Edit a Group](assign-groups-to-users/manage-groups/edit-a-group.md).
 * **Delete Groups:** Delete a ProcessMaker group from the **Groups** page. See [Delete a Group](assign-groups-to-users/manage-groups/remove-a-group.md).
 
@@ -130,7 +130,7 @@ Select the **View Groups** permission to use any of the other permissions in thi
 The **Processes** category contains the following permissions:
 
 * **View Processes:** View the table of Processes on the **Processes** page. See [View All Processes](../designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md).
-* **Create Processes:** Create a Process from the **Processes** page. Selecting this permission also selects the **Edit Processes** permission. See [Create a New Process](../designing-processes/viewing-processes/create-a-process.md).
+* **Create Processes:** Create a Process from the **Processes** page. Selecting this permission also selects the **Edit Processes** permission. See [Create a New Process](../designing-processes/viewing-processes/view-the-list-of-processes/create-a-process.md).
 * **Edit Processes:** Edit a Process model and/or its configuration from the **Processes** page. See [Edit a Process Model](../designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md#edit-the-process-model) and [Edit Process Configuration](../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md).
 * **Archive Processes:** Archive a Process from the **Processes** page. See [Archive a Process](../designing-processes/viewing-processes/view-the-list-of-processes/remove-a-process.md).
 
@@ -188,7 +188,7 @@ The **Task Assignments \(API\)** category contains the following permissions:
 
 {% page-ref page="../designing-processes/scripts/manage-scripts/view-all-scripts.md" %}
 
-{% page-ref page="../designing-processes/scripts/create-a-new-script.md" %}
+{% page-ref page="../designing-processes/scripts/manage-scripts/create-a-new-script.md" %}
 
 {% page-ref page="../designing-processes/scripts/manage-scripts/edit-script-configuration.md" %}
 
@@ -200,7 +200,7 @@ The **Task Assignments \(API\)** category contains the following permissions:
 
 {% page-ref page="../designing-processes/design-forms/manage-forms/view-all-forms.md" %}
 
-{% page-ref page="../designing-processes/design-forms/create-a-new-form.md" %}
+{% page-ref page="../designing-processes/design-forms/manage-forms/create-a-new-form.md" %}
 
 {% page-ref page="../designing-processes/design-forms/manage-forms/edit-a-screen.md" %}
 
@@ -210,7 +210,7 @@ The **Task Assignments \(API\)** category contains the following permissions:
 
 {% page-ref page="../designing-processes/environment-variable-management/manage-your-environment-variables/view-all-environment-variables.md" %}
 
-{% page-ref page="../designing-processes/environment-variable-management/create-a-new-environment-variable.md" %}
+{% page-ref page="../designing-processes/environment-variable-management/manage-your-environment-variables/create-a-new-environment-variable.md" %}
 
 {% page-ref page="../designing-processes/environment-variable-management/manage-your-environment-variables/edit-an-environmental-variable.md" %}
 
@@ -218,7 +218,7 @@ The **Task Assignments \(API\)** category contains the following permissions:
 
 {% page-ref page="add-users/manage-user-accounts/view-all-users.md" %}
 
-{% page-ref page="add-users/create-a-user-account.md" %}
+{% page-ref page="add-users/manage-user-accounts/create-a-user-account.md" %}
 
 {% page-ref page="add-users/manage-user-accounts/edit-a-user-account.md" %}
 
@@ -226,7 +226,7 @@ The **Task Assignments \(API\)** category contains the following permissions:
 
 {% page-ref page="assign-groups-to-users/manage-groups/view-all-groups.md" %}
 
-{% page-ref page="assign-groups-to-users/create-a-group.md" %}
+{% page-ref page="assign-groups-to-users/manage-groups/create-a-group.md" %}
 
 {% page-ref page="assign-groups-to-users/manage-groups/edit-a-group.md" %}
 
@@ -234,7 +234,7 @@ The **Task Assignments \(API\)** category contains the following permissions:
 
 {% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 
-{% page-ref page="../designing-processes/viewing-processes/create-a-process.md" %}
+{% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 
 {% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md" %}
 

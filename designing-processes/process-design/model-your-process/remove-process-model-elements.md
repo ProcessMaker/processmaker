@@ -59,5 +59,5 @@ Follow these steps to delete a Lane element from a Pool element:
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 
-{% page-ref page="../../viewing-processes/create-a-process.md" %}
+{% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 

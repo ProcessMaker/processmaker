@@ -73,5 +73,5 @@ Follow these steps to edit a ProcessMaker group:
 
 {% page-ref page="remove-a-group.md" %}
 
-{% page-ref page="../create-a-group.md" %}
+{% page-ref page="create-a-group.md" %}
 

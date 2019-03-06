@@ -37,10 +37,6 @@ The **Screens** page displays the following information in tabular format about 
 
 Use the [Search](search-for-a-screen.md#search-for-a-processmaker-screen) field to filter ProcessMaker Screens that display.
 
-### No ProcessMaker Screens?
-
-If no ProcessMaker Screens exist, the following message displays: **No Data Available**.
-
 ### Edit a ProcessMaker Screen
 
 Do one of the following:
@@ -51,6 +47,10 @@ Do one of the following:
 ### Delete a ProcessMaker Screen
 
 Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Screen](remove-a-screen.md#delete-a-processmaker-screen).
+
+### No ProcessMaker Screens?
+
+If no ProcessMaker Screens exist, the following message displays: **No Data Available**.
 
 ### Display Information the Way You Want It
 
@@ -67,7 +67,7 @@ Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler
 
 {% page-ref page="remove-a-screen.md" %}
 
-{% page-ref page="../create-a-new-form.md" %}
+{% page-ref page="create-a-new-form.md" %}
 
 {% page-ref page="../screens-builder/" %}
 

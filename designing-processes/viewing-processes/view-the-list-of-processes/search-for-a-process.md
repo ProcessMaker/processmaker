@@ -47,7 +47,7 @@ See [View All Processes](view-your-processes.md#manage-your-processes) for ways 
 
 {% page-ref page="../process-categories.md" %}
 
-{% page-ref page="../create-a-process.md" %}
+{% page-ref page="create-a-process.md" %}
 
 {% page-ref page="../../process-design/model-your-process/" %}
 

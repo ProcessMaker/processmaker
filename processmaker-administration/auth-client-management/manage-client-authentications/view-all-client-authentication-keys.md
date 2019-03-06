@@ -25,15 +25,11 @@ Follow these steps to view all client authentication keys granted access to the 
 The **Auth Clients** page displays the following information in tabular format about client authentication keys that can access the ProcessMaker 4 REST API:
 
 * **Client ID:** The **Client ID** column displays the Client ID for the key. ProcessMaker 4 automatically generates the Client ID value when the key is created and represents a sequential number of how many keys have been created at that time.
-* **Name:** The **Name** column displays the name of the key. See [Create a New Client Authentication Key](../create-a-new-client-authentication-key.md).
-* **Redirect:** The **Redirect** column displays the URL that redirects the authenticated client back to the ProcessMaker 4 application. See [Create a New Client Authentication Key](../create-a-new-client-authentication-key.md).
+* **Name:** The **Name** column displays the name of the key. See [Create a New Client Authentication Key](create-a-new-client-authentication-key.md).
+* **Redirect:** The **Redirect** column displays the URL that redirects the authenticated client back to the ProcessMaker 4 application. See [Create a New Client Authentication Key](create-a-new-client-authentication-key.md).
 * **Client Secret:** The **Client Secret** column displays the Client Secret for the key. ProcessMaker 4 automatically generates the Client Secret value when the key is created. Click the **Copy Client Secret to Clipboard** icon![](../../../.gitbook/assets/copy-icon-admin.png)to copy the Client Secret. Paste the Client Secret into your application to access the ProcessMaker 4 REST API.
 
 {% hint style="info" %}
-### No Client Authentication Keys?
-
-If no Client authentication keys have been created, the following message displays: **No Data Available**.
-
 ### Edit a Client Authentication Key
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Client Authentication Key](edit-a-client-authentication-key.md).
@@ -41,6 +37,10 @@ Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a 
 ### Delete a Client Authentication Key
 
 Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Client Authentication Key](delete-a-client-authentication-key.md#delete-a-client-authentication-key).
+
+### No Client Authentication Keys?
+
+If no Client authentication keys have been created, the following message displays: **No Data Available**.
 
 ### Display Information the Way You Want It
 
@@ -55,5 +55,5 @@ Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler
 
 {% page-ref page="delete-a-client-authentication-key.md" %}
 
-{% page-ref page="../create-a-new-client-authentication-key.md" %}
+{% page-ref page="create-a-new-client-authentication-key.md" %}
 

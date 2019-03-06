@@ -2,7 +2,7 @@
 description: Archive a Process that is no longer needed in your organization.
 ---
 
-# Archive a Process
+# Archive an Inactive Process
 
 ## Overview
 
@@ -89,5 +89,5 @@ Follow these steps to archive a Process:
 
 {% page-ref page="../process-categories.md" %}
 
-{% page-ref page="../create-a-process.md" %}
+{% page-ref page="create-a-process.md" %}
 

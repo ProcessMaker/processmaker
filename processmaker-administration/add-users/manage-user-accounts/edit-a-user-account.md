@@ -53,7 +53,7 @@ Follow these steps to edit a ProcessMaker user account:
    * In the **New Password** field, edit the password to log in with the ProcessMaker user account. Leave the **New Password** field blank to keep the current password. Passwords must be at least eight \(8\) characters long. [Password special characters](https://www.owasp.org/index.php/Password_special_characters) are recommended. Password validation indicates how strong your password is if you enter a new password.
    * In the **Confirm Password** field, confirm that the password matches that entered into the **New Password** field if a new password was entered. If you entered a new password, password validation indicates if the **New Password** and **Confirm Password** values do not match.
 4. Click **Update** if you made any changes in the **Information** tab and do not need to make other changes in the ProcessMaker user account. Otherwise, continue.
-5. Click the **Groups** tab. The **Groups** tab displays the ProcessMaker [groups](../../assign-groups-to-users/what-is-a-group.md) of which that ProcessMaker user is a member. If no groups have been created, the following message displays: **No Data Available**. See [Create a Group](../../assign-groups-to-users/create-a-group.md#create-a-processmaker-group).  
+5. Click the **Groups** tab. The **Groups** tab displays the ProcessMaker [groups](../../assign-groups-to-users/what-is-a-group.md) of which that ProcessMaker user is a member. If no groups have been created, the following message displays: **No Data Available**. See [Create a Group](../../assign-groups-to-users/manage-groups/create-a-group.md#create-a-processmaker-group).  
 
    ![](../../../.gitbook/assets/groups-tab-edit-user-admin.png)
 
@@ -91,11 +91,11 @@ The **API Tokens** tab displays the API token that ProcessMaker user generated t
 
 {% page-ref page="remove-a-user-account.md" %}
 
-{% page-ref page="../create-a-user-account.md" %}
+{% page-ref page="create-a-user-account.md" %}
 
 {% page-ref page="../../assign-groups-to-users/what-is-a-group.md" %}
 
-{% page-ref page="../../assign-groups-to-users/create-a-group.md" %}
+{% page-ref page="../../assign-groups-to-users/manage-groups/create-a-group.md" %}
 
 {% page-ref page="../../permission-descriptions-for-users-and-groups.md" %}
 

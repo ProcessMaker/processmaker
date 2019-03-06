@@ -27,7 +27,7 @@ ProcessMaker Scripts are developed and tested in the same environment.
 {% hint style="info" %}
 Access Scripts Editor in the following ways:
 
-* [Create a new ProcessMaker Script.](create-a-new-script.md#create-a-new-processmaker-script)
+* [Create a new ProcessMaker Script.](manage-scripts/create-a-new-script.md#create-a-new-processmaker-script)
 * [Edit an existing ProcessMaker Script.](manage-scripts/edit-a-script.md#edit-a-processmaker-script)
 {% endhint %}
 
@@ -116,5 +116,5 @@ Follow these best practices when developing ProcessMaker Scripts.
 
 {% page-ref page="manage-scripts/remove-a-script.md" %}
 
-{% page-ref page="create-a-new-script.md" %}
+{% page-ref page="manage-scripts/create-a-new-script.md" %}
 

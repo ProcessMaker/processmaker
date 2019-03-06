@@ -37,10 +37,6 @@ The **Scripts** page displays the following information in tabular format about 
 
 Use the [Search](search-for-a-script.md#search-for-a-processmaker-script) field to filter ProcessMaker Scripts that display.
 
-### No ProcessMaker Scripts?
-
-If no ProcessMaker Scripts exist, the following message displays: **No Data Available**.
-
 ### Edit a ProcessMaker Script
 
 Do one of the following:
@@ -51,6 +47,10 @@ Do one of the following:
 ### Delete a ProcessMaker Script
 
 Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Script](remove-a-script.md#delete-a-processmaker-script).
+
+### No ProcessMaker Scripts?
+
+If no ProcessMaker Scripts exist, the following message displays: **No Data Available**.
 
 ### Display Information the Way You Want It
 
@@ -67,7 +67,7 @@ Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler
 
 {% page-ref page="remove-a-script.md" %}
 
-{% page-ref page="../create-a-new-script.md" %}
+{% page-ref page="create-a-new-script.md" %}
 
 {% page-ref page="../scripts-editor.md" %}
 

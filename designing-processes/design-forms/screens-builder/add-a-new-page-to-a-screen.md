@@ -21,7 +21,7 @@ See the ProcessMaker [Screens](../../../processmaker-administration/permission-d
 
 Follow these steps to add a new page to a ProcessMaker Screen:
 
-1. [Create](../create-a-new-form.md) or [open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
+1. [Create](../manage-forms/create-a-new-form.md) or [open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
 2. Click the **+ Add Page** button. The **Add New Page** screen displays.  
 
    ![](../../../.gitbook/assets/add-new-page-screen-screens-editor-processes.png)
@@ -62,7 +62,7 @@ See the ProcessMaker [Screens](../../../processmaker-administration/permission-d
 
 Follow these steps to rename a page on a ProcessMaker Screen:
 
-1. [Create](../create-a-new-form.md) or [open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
+1. [Create](../manage-forms/create-a-new-form.md) or [open](../manage-forms/view-all-forms.md) the ProcessMaker Screen in which to add a new page. The ProcessMaker Screen is in [Editor mode](screens-builder-modes.md#editor-mode).
 2. Click **Edit** on the tab in which to rename its page. The **Edit Page Title** screen displays.  
 
    ![](../../../.gitbook/assets/edit-page-title-screen-screens-builder-processes.png)
@@ -76,7 +76,7 @@ Follow these steps to rename a page on a ProcessMaker Screen:
 
 {% page-ref page="types-for-screens.md" %}
 
-{% page-ref page="../create-a-new-form.md" %}
+{% page-ref page="../manage-forms/create-a-new-form.md" %}
 
 {% page-ref page="../manage-forms/view-all-forms.md" %}
 

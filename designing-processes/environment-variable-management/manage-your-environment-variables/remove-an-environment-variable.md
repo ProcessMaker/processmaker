@@ -43,5 +43,5 @@ Follow these steps to delete a ProcessMaker Environment Variable:
 
 {% page-ref page="edit-an-environmental-variable.md" %}
 
-{% page-ref page="../create-a-new-environment-variable.md" %}
+{% page-ref page="create-a-new-environment-variable.md" %}
 

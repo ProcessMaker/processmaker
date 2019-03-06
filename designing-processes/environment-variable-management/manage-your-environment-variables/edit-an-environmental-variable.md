@@ -38,5 +38,5 @@ Follow these steps to edit a ProcessMaker Environment Variable:
 
 {% page-ref page="remove-an-environment-variable.md" %}
 
-{% page-ref page="../create-a-new-environment-variable.md" %}
+{% page-ref page="create-a-new-environment-variable.md" %}
 

@@ -39,5 +39,5 @@ If there are no search results, the following message displays: **No data availa
 
 {% page-ref page="remove-an-environment-variable.md" %}
 
-{% page-ref page="../create-a-new-environment-variable.md" %}
+{% page-ref page="create-a-new-environment-variable.md" %}
 

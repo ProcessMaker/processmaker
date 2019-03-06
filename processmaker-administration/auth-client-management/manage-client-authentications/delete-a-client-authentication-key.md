@@ -35,5 +35,5 @@ Follow these steps to delete a client authentication key:
 
 {% page-ref page="edit-a-client-authentication-key.md" %}
 
-{% page-ref page="../create-a-new-client-authentication-key.md" %}
+{% page-ref page="create-a-new-client-authentication-key.md" %}
 

@@ -39,10 +39,6 @@ The **Users** page displays the following information in tabular format about Pr
 
 Use the [Search](search-for-a-user.md#search-for-a-processmaker-user-account) field to filter ProcessMaker user accounts that display.
 
-### No ProcessMaker User Accounts?
-
-If no ProcessMaker user accounts exist, the following message displays: **No Data Available**.
-
 ### Edit a ProcessMaker User Account
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a User Account](edit-a-user-account.md#edit-a-processmaker-user-account).
@@ -50,6 +46,10 @@ Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a 
 ### Delete a ProcessMaker User Account
 
 Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a User Account](remove-a-user-account.md#delete-a-processmaker-user-account).
+
+### No ProcessMaker User Accounts?
+
+If no ProcessMaker user accounts exist, the following message displays: **No Data Available**.
 
 ### Display Information the Way You Want It
 
@@ -66,7 +66,7 @@ Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler
 
 {% page-ref page="remove-a-user-account.md" %}
 
-{% page-ref page="../create-a-user-account.md" %}
+{% page-ref page="create-a-user-account.md" %}
 
 {% page-ref page="../../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
 

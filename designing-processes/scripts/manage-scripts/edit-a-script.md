@@ -34,5 +34,5 @@ Follow these steps to edit a ProcessMaker Script:
 
 {% page-ref page="remove-a-script.md" %}
 
-{% page-ref page="../create-a-new-script.md" %}
+{% page-ref page="create-a-new-script.md" %}
 

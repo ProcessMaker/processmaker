@@ -26,7 +26,7 @@ See [Process Modeling Element Descriptions](process-modeling-element-description
 Follow these steps to filter which BPMN elements display in the **BPMN** panel:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
-2. [Create a new Process](../../viewing-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
+2. [Create a new Process](../../viewing-processes/view-the-list-of-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
 3. Select the **Filter** field![](../../../.gitbook/assets/filter-bpmn-field-process-modeler-processes.png).
 4. Begin entering the name of the Process model element\(s\) to display. Process model elements that do not match your entered text no longer display in the **BPMN** panel.
 
@@ -40,5 +40,5 @@ To display all Process elements in the **BPMN** panel, remove the text from the 
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 
-{% page-ref page="../../viewing-processes/create-a-process.md" %}
+{% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 

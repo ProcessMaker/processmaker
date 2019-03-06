@@ -40,5 +40,5 @@ Follow these steps to delete a ProcessMaker group:
 
 {% page-ref page="edit-a-group.md" %}
 
-{% page-ref page="../create-a-group.md" %}
+{% page-ref page="create-a-group.md" %}
 

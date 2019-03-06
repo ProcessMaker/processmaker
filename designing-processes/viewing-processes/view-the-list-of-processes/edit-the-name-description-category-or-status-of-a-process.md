@@ -51,5 +51,5 @@ Follow these steps to edit the configuration information about a Process:
 
 {% page-ref page="restore-a-process.md" %}
 
-{% page-ref page="../create-a-process.md" %}
+{% page-ref page="create-a-process.md" %}
 

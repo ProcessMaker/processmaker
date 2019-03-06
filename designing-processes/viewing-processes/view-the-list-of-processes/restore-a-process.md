@@ -4,9 +4,11 @@ description: Restore an archived Process to use again in your organization.
 
 # Restore a Process
 
-## Restore an Archived Process
+## Overview
 
 Restore an archived Process so Requests can be started against it. After a Process is restored, that Process moves from the **Process Archive** page to the **Processes** page. A restored Process is automatically set to active status.
+
+## Restore an Archived Process
 
 {% hint style="info" %}
 Your user account or group membership must have the following permissions to archive a Process:
@@ -34,5 +36,5 @@ Follow these steps to restore an archived Process:
 
 {% page-ref page="../process-categories.md" %}
 
-{% page-ref page="../create-a-process.md" %}
+{% page-ref page="create-a-process.md" %}
 

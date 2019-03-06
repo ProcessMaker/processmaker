@@ -16,7 +16,7 @@ In context with ProcessMaker 4, a job is any action in which ProcessMaker must p
 
 Below are examples of ProcessMaker 4 jobs:
 
-* A ProcessMaker 4 [user account is created](../add-users/create-a-user-account.md).
+* A ProcessMaker 4 [user account is created](../add-users/manage-user-accounts/create-a-user-account.md).
 * A ProcessMaker 4 [user profile is updated](../../using-processmaker/profile-settings.md#change-your-profile-settings).
 * A [Request](../../using-processmaker/requests/what-is-a-request.md) is started.
 * A [Task](../../using-processmaker/task-management/what-is-a-task.md) is created as part of a Request.

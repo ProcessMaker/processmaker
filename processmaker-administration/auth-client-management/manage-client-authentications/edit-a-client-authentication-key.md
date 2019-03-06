@@ -36,5 +36,5 @@ The **Client Secret** value cannot be changed.
 
 {% page-ref page="delete-a-client-authentication-key.md" %}
 
-{% page-ref page="../create-a-new-client-authentication-key.md" %}
+{% page-ref page="create-a-new-client-authentication-key.md" %}
 

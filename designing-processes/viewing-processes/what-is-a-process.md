@@ -22,7 +22,7 @@ Any Process designed in or exported from ProcessMaker 4 is BPMN 2.0 compliant. F
 
 {% page-ref page="process-categories.md" %}
 
-{% page-ref page="create-a-process.md" %}
+{% page-ref page="view-the-list-of-processes/create-a-process.md" %}
 
 {% page-ref page="../process-design/" %}
 

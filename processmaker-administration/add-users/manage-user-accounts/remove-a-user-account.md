@@ -40,7 +40,7 @@ Follow these steps to delete a ProcessMaker user account:
 
 {% page-ref page="edit-a-user-account.md" %}
 
-{% page-ref page="../create-a-user-account.md" %}
+{% page-ref page="create-a-user-account.md" %}
 
 
 

@@ -39,5 +39,5 @@ If there are no search results, the following message displays: **No data availa
 
 {% page-ref page="remove-a-user-account.md" %}
 
-{% page-ref page="../create-a-user-account.md" %}
+{% page-ref page="create-a-user-account.md" %}
 
