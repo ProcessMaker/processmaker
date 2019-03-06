@@ -116,6 +116,10 @@ php artisan bpm:install
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
+{% hint style="info" %}
+If the `.env` file is found during the installation procedure, stop the installation, remove the `.env` file, and then start the installation procedure again.
+{% endhint %}
+
 ## Monitor the Queue Management Service
 
 Monitor the `horizon` process that runs the [Queue Management service](../processmaker-administration/queue-management/what-is-queue-management.md) for the following reasons:
