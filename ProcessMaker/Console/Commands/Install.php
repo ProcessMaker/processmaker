@@ -155,12 +155,6 @@ class Install extends Command
 		//Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
 
-        // Restart services so they pick up the new settings
-        $this->info(__('Restarting services...'));
-        $this->info(
-            system('sudo supervisorctl restart all')
-        );
-
         $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
         return true;
     }
