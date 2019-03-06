@@ -157,7 +157,7 @@ class Install extends Command
 
         // Restart services so they pick up the new settings
         $this->info(__('Restarting services...'));
-        $this->info(e
+        $this->info(
             system('sudo supervisorctl restart all')
         );
 
