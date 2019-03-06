@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
 {
@@ -17,9 +18,10 @@ class ScriptController extends Controller
         return view('processes.scripts.index');
     }
 
-    public function edit(Script $script)
+    public function edit(Script $script, User $users)
     {
-        return view('processes.scripts.edit', ['script' => $script]);
+        $users = User::all();
+        return view('processes.scripts.edit', compact('script', 'users'));
     }
 
     public function builder(Script $script)
