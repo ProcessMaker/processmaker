@@ -1,13 +1,17 @@
 <?php
+namespace ProcessMaker;
+
 # TODO: Make artisan command
 
 use \Exception;
+use ZipArchive;
 
 class BuildSdk {
     private $rebuild = false;
     private $debug = true;
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = "php";
+    private $supportedLangs = ['php', 'lua'];
 
     public function run()
     {
@@ -40,6 +44,14 @@ class BuildSdk {
         $dest = "storage/api/{$this->lang}-client";
         $this->runCmd("mv -f $folder $dest");
         $this->log("DONE. Api is at $dest");
+    }
+
+    public function setLang($value) {
+        if (!in_array($value, $this->supportedLangs)) {
+            echo "ERROR: $value language is not supported\n";
+            exit(1);
+        }
+        $this->lang = $value;
     }
 
     private function waitForBoot()
@@ -93,7 +105,7 @@ class BuildSdk {
             . '-H "Accept: application/json" '
             . '-H "Content-Type: application/json" '
             . '-X POST -d ' . $this->cliBody() . ' '
-            . 'http://127.0.0.1:8080/api/gen/clients/php';
+            . 'http://127.0.0.1:8080/api/gen/clients/'.$this->lang;
     }
 
     private function docker($cmd)
@@ -114,7 +126,7 @@ class BuildSdk {
         return json_encode([
             "options" => [
                 "gitUserId" => "ProcessMaker",
-                "gitRepoId" => "bpm-php-sdk",
+                "gitRepoId" => "bpm-".$this->lang."-sdk",
             ],
             "spec" => "API-DOCS-JSON",
         ]);

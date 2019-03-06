@@ -61,7 +61,7 @@
       "database/factories"
     ],
     "psr-4": {
-      "ProcessMaker\\": "ProcessMaker/"
+      "ProcessMaker\\": ["ProcessMaker/", ""]
     }
   },
   "autoload-dev": {
