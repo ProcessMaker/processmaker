@@ -167,10 +167,6 @@ class Install extends Command
 		//Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
 
-        // Install Docker executors
-        $this->info(__('Installing Docker executors...'));
-        $this->installDockerImages();
-
         // Restart services so they pick up the new settings
         $this->info(__('Restarting Services...'));
         $this->info(
