@@ -140,16 +140,16 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            "Caution!",
-            "<b>Are you sure you want to delete the user </b>" +
+            __("Caution!"),
+            __("Are you sure you want to delete the user ") +
               data.fullname +
-              "?",
+              __("?"),
             "",
             () => {
               ProcessMaker.apiClient
                 .delete("users/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("The user was deleted.", "warning");
+                  ProcessMaker.alert(__("The user was deleted."), "danger");
                   this.$emit("reload");
                 });
             }
