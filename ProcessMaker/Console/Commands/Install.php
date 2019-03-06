@@ -197,94 +197,9 @@ class Install extends Command
         $this->info(__("Refer to the Installation Guide for more information on database best practices."));
         $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host"), ['localhost']);
         $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Usually 3306)"), [3306]);
-        $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL Database name"), ['workflow']);
-        $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL Username"));
-        $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL Password (Input hidden)"));
-    }
-
-    private function fetchEmailCredentials()
-    {
-        //Present multiple choice list of email drivers
-        $type = $this->choice(__('Which email driver would you like to use?'), ['SMTP', 'Mailgun', 'Sparkpost', 'Amazon SES', 'Mailtrap'], 0);
-        $method = camel_case('setup' . $type);
-        $this->{$method}();
-    }
-
-    private function fetchEmailFromInfo()
-    {
-        //Obtain from address and name from user
-        $this->env['MAIL_FROM_ADDRESS'] = $this->ask(__("Enter the email address you'd like emails to come from"), 'admin@example.com');
-        $this->env['MAIL_FROM_NAME'] = '"' . $this->ask(__("Enter the name you'd like emails to come from"), 'ProcessMaker') . '"';
-    }
-
-    private function setupSMTP()
-    {
-        //Ask for SMTP credentials
-        $this->env['MAIL_DRIVER'] = "smtp";
-        $this->env['MAIL_HOST'] = $this->ask(__("Enter your SMTP host"));
-        $this->env['MAIL_PORT'] = $this->anticipate(__("Enter your SMTP port"), [25, 465, 587, 2525]);
-        $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your SMTP username"));
-        $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your SMTP password (input hidden)"));
-    }
-
-    private function setupMailgun()
-    {
-        //Ask for Mailgun credentials
-        $this->env['MAIL_DRIVER'] = "mailgun";
-        $this->env['MAILGUN_DOMAIN'] = $this->ask(__("Enter your Mailgun domain"));
-        $this->env['MAILGUN_SECRET'] = $this->secret(__("Enter your Mailgun secret (input hidden)"));
-        $this->env['MAILGUN_ENDPOINT'] = $this->ask(__("Enter your Mailgun endpoint"), 'api.mailgun.net');
-    }
-
-    private function setupAmazonSES()
-    {
-        //Warn about dependency
-        $this->info(__("<comment>Please note that aws/aws-sdk-php must be installed for this driver to function.</comment>"));
-
-        //Ask for SES credentials
-        $this->env['MAIL_DRIVER'] = "ses";
-        $this->env['SES_KEY'] = $this->ask(__("Enter your Amazon SES key"));
-        $this->env['SES_SECRET'] = $this->secret(__("Enter your Amazon SES secret (input hidden)"));
-        $this->env['SES_REGION'] = $this->ask(__("Enter your Amazon SES region"), 'us-east-1');
-    }
-
-    private function setupSparkpost()
-    {
-        //Ask for Sparkpost credentials
-        $this->env['MAIL_DRIVER'] = "sparkpost";
-        $this->env['SPARKPOST_SECRET'] = $this->secret(__("Enter your Sparkpost secret (input hidden)"));
-    }
-
-    private function setupMailtrap()
-    {
-        //Ask for Mailtrap credentials
-        $this->env['MAIL_DRIVER'] = "smtp";
-        $this->env['MAIL_HOST'] = 'smtp.mailtrap.io';
-        $this->env['MAIL_PORT'] = 2525;
-        $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your Mailtrap inbox username"));
-        $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your Mailtrap inbox password (input hidden)"));
-    }
-
-    private function installDockerImages()
-    {
-        $this->info(system('sudo docker pull processmaker/executor:php'));
-        $this->info(system('sudo docker pull processmaker/executor:lua'));
-        $this->info(system('sudo mkdir -m777 /opt/executor'));
-    }
-
-    private function installCronJob()
-    {
-        $crontab = shell_exec('crontab -l');
-        $exists = stripos($crontab, 'php artisan schedule:run');
-
-        if ($exists === false) {
-            $this->info(
-                system('echo "$(echo \'* * * * * cd /home/vagrant/processmaker && php artisan schedule:run >> /dev/null 2>&1\' ; crontab -l)" | crontab -')
-            );
-            $this->info(__('Scheduled tasks installed.'));
-        } else {
-            $this->line(__('Scheduled tasks already installed.'));
-        }
+        $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL database name"), ['workflow']);
+        $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL username"));
+        $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL password (input hidden)"));
     }
 
     private function testDatabaseConnection()
