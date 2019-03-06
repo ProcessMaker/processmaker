@@ -144,18 +144,6 @@ stdout_logfile=/home/forge/app.com/horizon.log
 
 ProcessMaker 4 broadcasts real-time events. ProcessMaker's event broadcasting configuration is stored in the `config/broadcasting.php` configuration file. ProcessMaker 4 supports Pusher and Redis broadcast drivers as well as a `log` driver for local development and debugging. Furthermore, a `null` driver is included which allows you to disable all broadcasting. See the configuration example for each of these drivers in the `config/broadcasting.php` configuration file.
 
-**Broadcast Service Provider**
-
-Before broadcasting any events, you will first need to register the `App\Providers\BroadcastServiceProvider`. In fresh Laravel applications, you only need to uncomment this provider in the `providers` array of your `config/app.php` configuration file. This provider will allow you to register the broadcast authorization routes and callbacks.
-
-**CSRF Token**
-
-[Laravel Echo](https://laravel.com/docs/5.7/broadcasting#installing-laravel-echo) will need access to the current session's CSRF token. You should verify that your application's `head` HTML element defines a `meta` tag containing the CSRF token:
-
-```text
-<meta name="csrf-token" content="{{ csrf_token() }}">
-```
-
 ## Log In for the First Time
 
 Go to [https://localhost](https://localhost) or the IP address/domain name you specified. Use the following credentials to [log in](../using-processmaker/log-in.md#log-in):
