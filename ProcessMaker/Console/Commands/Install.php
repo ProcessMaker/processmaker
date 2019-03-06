@@ -35,7 +35,7 @@ class Install extends Command
      *
      * @var string
      */
-    protected $description = 'Install and configure ProcessMaker BPM';
+    protected $description = 'Install and configure ProcessMaker 4';
 
     /**
      * The values for our .env to populate
@@ -122,15 +122,12 @@ class Install extends Command
 
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
-        
-        // Confirm whether the user would like to seed default groups
-        $seedDefaultGroups = $this->confirm(__('Would you like default user groups to be set up?'), true);
 
         //Confirm the user would like to setup their email
         if ($this->confirm(__('Would you like to setup email options?'))) {
             //Fetch from name & email from the user
             $this->fetchEmailFromInfo();
-            
+
             //Explain and then fetch email credentials
             $this->info(__('ProcessMaker works with any SMTP server as well as several email APIs.'));
             $this->fetchEmailCredentials();
@@ -156,30 +153,28 @@ class Install extends Command
         $this->call('migrate:fresh', [
             '--seed' => true,
         ]);
-        
+
         // Seed default user groups if desired
-        if ($seedDefaultGroups) {
-            $this->call('db:seed', [
-                '--class' => 'DefaultGroupSeeder',
-            ]);        
-        }
+        $this->call('db:seed', [
+            '--class' => 'DefaultGroupSeeder',
+        ]);
 
         // Generate passport secure keys and personal token oauth client
         $this->call('passport:install', [
             '--force' => true
         ]);
-		
+
 		//Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
 
         // Install cron job for Laravel scheduled tasks
         $this->info(__('Installing scheduled tasks...'));
         $this->installCronJob();
-        
+
         // Install Docker executors
-        $this->info(__('Installing Docker executors...'));        
+        $this->info(__('Installing Docker executors...'));
         $this->installDockerImages();
-        
+
         // Restart services so they pick up the new settings
         $this->info(__('Restarting Services...'));
         $this->info(
@@ -225,7 +220,7 @@ class Install extends Command
         $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL Username"));
         $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL Password (Input hidden)"));
     }
-    
+
     private function fetchEmailCredentials()
     {
         //Present multiple choice list of email drivers
@@ -233,14 +228,14 @@ class Install extends Command
         $method = camel_case('setup' . $type);
         $this->{$method}();
     }
-    
+
     private function fetchEmailFromInfo()
     {
         //Obtain from address and name from user
         $this->env['MAIL_FROM_ADDRESS'] = $this->ask(__("Enter the email address you'd like emails to come from"), 'admin@example.com');
-        $this->env['MAIL_FROM_NAME'] = '"' . $this->ask(__("Enter the name you'd like emails to come from"), 'ProcessMaker') . '"';  
+        $this->env['MAIL_FROM_NAME'] = '"' . $this->ask(__("Enter the name you'd like emails to come from"), 'ProcessMaker') . '"';
     }
-    
+
     private function setupSMTP()
     {
         //Ask for SMTP credentials
@@ -278,7 +273,7 @@ class Install extends Command
         $this->env['MAIL_DRIVER'] = "sparkpost";
         $this->env['SPARKPOST_SECRET'] = $this->secret(__("Enter your Sparkpost secret (input hidden)"));
     }
-    
+
     private function setupMailtrap()
     {
         //Ask for Mailtrap credentials
@@ -286,8 +281,8 @@ class Install extends Command
         $this->env['MAIL_HOST'] = 'smtp.mailtrap.io';
         $this->env['MAIL_PORT'] = 2525;
         $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your Mailtrap inbox username"));
-        $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your Mailtrap inbox password (input hidden)"));    
-    }    
+        $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your Mailtrap inbox password (input hidden)"));
+    }
 
     private function installDockerImages()
     {
@@ -300,7 +295,7 @@ class Install extends Command
     {
         $crontab = shell_exec('crontab -l');
         $exists = stripos($crontab, 'php artisan schedule:run');
-        
+
         if ($exists === false) {
             $this->info(
                 system('echo "$(echo \'* * * * * cd /home/vagrant/processmaker && php artisan schedule:run >> /dev/null 2>&1\' ; crontab -l)" | crontab -')
