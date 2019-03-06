@@ -4,6 +4,7 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use ProcessMaker\BuildSdk;
+use \Exception;
 
 class GenerateSdk extends Command
 {
@@ -13,7 +14,7 @@ class GenerateSdk extends Command
      *
      * @var string
      */
-    protected $signature = 'bpm:sdk {language=php}';
+    protected $signature = 'bpm:sdk {language}';
 
     /**
      * The console command description.
@@ -39,8 +40,13 @@ class GenerateSdk extends Command
      */
     public function handle()
     {
-        $builder = new BuildSdk(true);
-        $builder->setLang($this->argument('language'));
-        $builder->run();
+        try {
+            $builder = new BuildSdk(base_path(), true);
+            $builder->setLang($this->argument('language'));
+            $builder->run();
+        } catch(Exception $e) {
+            echo "ERROR: {$e->getMessage()}\n";
+            exit(1);
+        }
     }
 }
