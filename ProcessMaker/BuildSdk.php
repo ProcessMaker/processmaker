@@ -1,20 +1,31 @@
 <?php
 namespace ProcessMaker;
 
-# TODO: Make artisan command
-
 use \Exception;
-use ZipArchive;
+use \ZipArchive;
 
 class BuildSdk {
     private $rebuild = false;
-    private $debug = true;
+    private $debug = false;
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
-    private $lang = "php";
+    private $lang = null;
     private $supportedLangs = ['php', 'lua'];
+    private $basePath = null;
+
+    public function __construct($basePath, $debug = false, $rebuild = false) {
+        if (!is_dir($basePath)) {
+            throw new Exception("$basePath is not a valid directory");
+        }
+        $this->basePath = $basePath;
+        $this->debug = $debug;
+        $this->rebuild = $debug;
+    }
 
     public function run()
     {
+        if (!$this->lang) {
+            throw new Exception("Language must be specified using setLang()");
+        }
         $existing = $this->existingContainers();
         if (!empty($existing) && $this->rebuild) {
             $existing = str_replace("\n", " ", $existing);
@@ -40,16 +51,15 @@ class BuildSdk {
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
 
-        $this->runCmd("mkdir -p storage/api");
-        $dest = "storage/api/{$this->lang}-client";
+        $this->runCmd("mkdir -p {$this->basePath}/storage/api");
+        $dest = "{$this->basePath}/storage/api/{$this->lang}-client";
         $this->runCmd("mv -f $folder $dest");
         $this->log("DONE. Api is at $dest");
     }
 
     public function setLang($value) {
         if (!in_array($value, $this->supportedLangs)) {
-            echo "ERROR: $value language is not supported\n";
-            exit(1);
+            throw new Exception("$value language is not supported");
         }
         $this->lang = $value;
     }
@@ -78,7 +88,7 @@ class BuildSdk {
 
     private function getZip($url)
     {
-        $filename = 'api.zip';
+        $filename = "{$this->basePath}/api.zip";
         $this->docker("curl -s -S $url > $filename");
         return $filename;
     }
@@ -88,10 +98,10 @@ class BuildSdk {
         $zip = new ZipArchive;
         $res = $zip->open($file);
         $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $zip->extractTo('.');
+        $zip->extractTo($this->basePath);
         $zip->close();
         unlink($file);
-        return $folder;
+        return "{$this->basePath}/$folder";
     }
 
     private function existingContainers()
@@ -134,7 +144,7 @@ class BuildSdk {
 
     private function apiJsonRaw()
     {
-        return file_get_contents(__DIR__ . "/storage/api-docs/api-docs.json");
+        return file_get_contents($this->basePath . "/storage/api-docs/api-docs.json");
     }
 
     private function runCmd($cmd)
@@ -155,10 +165,4 @@ class BuildSdk {
             echo "$message\n";
         }
     }
-}
-try {
-    (new BuildSdk(true))->run();
-} catch(Exception $e) {
-    echo "ERROR: {$e->getMessage()}\n";
-    exit(1);
 }
