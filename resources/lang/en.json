@@ -318,5 +318,14 @@
     "User Updated Successfully ": "User Updated Successfully ",
     "Open Task": "Open Task",
     "Are you sure to delete the group ": "Are you sure to delete the group ",
-    "Are you sure you want to delete the group ": "Are you sure you want to delete the group "
+    "Are you sure you want to delete the group ": "Are you sure you want to delete the group ",
+    "TASK": "TASK",
+    "ASSIGNED": "ASSIGNED",
+    "DUE": "DUE",
+    "The script was duplicated.": "The script was duplicated.",
+    "The script was deleted.": "The script was deleted.",
+    "The environment variable was deleted.": "The environment variable was deleted.",
+    "Are you sure you want to delete the user ": "Are you sure you want to delete the user ",
+    "The user was deleted.": "The user was deleted.",
+    "An error occurred. Check the form for errors in red text.": "An error occurred. Check the form for errors in red text."
 }
