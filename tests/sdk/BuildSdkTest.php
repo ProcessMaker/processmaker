@@ -16,6 +16,19 @@ class BuildSdkTest extends TestCase
             $this->assertEquals("foo language is not supported", $e->getMessage());
         }
     }
+    
+    public function testWithExistingFolder()
+    {   
+        exec('mkdir -p ' . base_path('storage/api/lua-client'));
+        $builder = new BuildSdk(base_path());
+        $builder->setLang('lua');
+        try {
+            $builder->run();
+            $this->fail('Exception was not thrown.');
+        } catch(\Exception $e) {
+            $this->assertContains("You must manually remove the destination", $e->getMessage());
+        }
+    }
 
     public function testBuildPhp()
     {

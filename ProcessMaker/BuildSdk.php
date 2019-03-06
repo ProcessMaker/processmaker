@@ -13,19 +13,15 @@ class BuildSdk {
     private $basePath = null;
 
     public function __construct($basePath, $debug = false, $rebuild = false) {
-        if (!is_dir($basePath)) {
-            throw new Exception("$basePath is not a valid directory");
-        }
         $this->basePath = $basePath;
         $this->debug = $debug;
-        $this->rebuild = $debug;
+        $this->rebuild = $rebuild;
     }
 
     public function run()
     {
-        if (!$this->lang) {
-            throw new Exception("Language must be specified using setLang()");
-        }
+        $this->runChecks();
+
         $existing = $this->existingContainers();
         if (!empty($existing) && $this->rebuild) {
             $existing = str_replace("\n", " ", $existing);
@@ -37,7 +33,6 @@ class BuildSdk {
         if (empty($existing) || $this->rebuild) {
             $this->runCmd('docker pull ' . $this->image);
             $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
-            sleep(5);
             $this->docker('apk add --update curl && rm -rf /var/cache/apk/*');
         }
 
@@ -51,10 +46,8 @@ class BuildSdk {
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
 
-        $this->runCmd("mkdir -p {$this->basePath}/storage/api");
-        $dest = "{$this->basePath}/storage/api/";
-        $this->runCmd("mv -f $folder $dest");
-        $this->log("DONE. Api is at $dest");
+        $this->runCmd("mv -f $folder {$this->outputBaseDir()}/");
+        $this->log("DONE. Api is at {$this->outputDir()}");
     }
 
     public function setLang($value) {
@@ -62,6 +55,35 @@ class BuildSdk {
             throw new Exception("$value language is not supported");
         }
         $this->lang = $value;
+    }
+
+    private function runChecks()
+    {
+        if (!$this->lang) {
+            throw new Exception("Language must be specified using setLang()");
+        }
+
+        if (!is_dir($this->basePath)) {
+            throw new Exception("$basePath is not a valid directory");
+        }
+
+        if (is_dir($this->outputDir())) {
+            throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
+        }
+
+        if (!is_writable($this->outputBaseDir())) {
+            throw new Exception("Folder is not writeable: " . $this->outputDir());
+        }
+    }
+
+    private function outputBaseDir()
+    {
+        return "{$this->basePath}/storage/api";
+    }
+    
+    private function outputDir()
+    {
+        return "{$this->outputBaseDir()}/{$this->lang}-client";
     }
 
     private function waitForBoot()
