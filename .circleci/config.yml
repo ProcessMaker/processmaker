@@ -107,9 +107,13 @@ jobs:
       - setup_remote_docker
 
       - run:
+          name: setup SDKs
+          command: php build_sdk.php
+
+      - run:
           name: Configure scripts executor
           command: |
-            docker pull processmaker/executor:php
+            docker pull nolanpro/executor:php
             docker pull processmaker/executor:lua
             sudo mkdir -m777 /opt/executor
 
