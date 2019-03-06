@@ -108,7 +108,7 @@ jobs:
 
       - run:
           name: setup SDKs
-          command: php build_sdk.php
+          command: php artisan bpm:sdk php
 
       - run:
           name: Configure scripts executor
