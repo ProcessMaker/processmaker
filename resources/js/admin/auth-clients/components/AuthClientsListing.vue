@@ -111,10 +111,10 @@ export default {
     },
     doDelete(item) {
       ProcessMaker.confirmModal(
-        "Caution!",
-        "<b>Are you sure you want to delete the auth client </b>" +
+        __("Caution!"),
+        __("Are you sure you want to delete the auth client ") +
           item.name +
-          "?",
+          __("?"),
         "",
         () => {
           ProcessMaker.apiClient
