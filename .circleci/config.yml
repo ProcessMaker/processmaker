@@ -86,15 +86,15 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      # - restore_cache:
-      #     keys:
-      #     - v1-npm-dependencies-{{ checksum "package.json" }}
-      #     # fallback to using the latest cache if no exact match is found
-      #     - v1-npm-dependencies-
+      - restore_cache:
+          keys:
+          - v1-npm-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-npm-dependencies-
 
       - run: composer install -n --prefer-dist
-      
-      # - run: sudo npm install -g npm@6.4.1 && npm ci
+
+      - run: npm install
 
       - save_cache:
           paths:
@@ -107,13 +107,9 @@ jobs:
       - setup_remote_docker
 
       - run:
-          name: setup SDKs
-          command: php build_sdk.php
-
-      - run:
           name: Configure scripts executor
           command: |
-            docker pull nolanpro/executor:php
+            docker pull processmaker/executor:php
             docker pull processmaker/executor:lua
             sudo mkdir -m777 /opt/executor
 
@@ -128,7 +124,7 @@ jobs:
       - run:
           name: "Media Storage Link"
           command: "php artisan storage:link"
-      
+
       # run tests!
       - run:
           name: "PHPUnit"
