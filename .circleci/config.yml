@@ -107,9 +107,17 @@ jobs:
       - setup_remote_docker
 
       - run:
+          name: setup SDKs
+          command: |
+            rm -rf storage/api && mkdir storage/api
+            php artisan l5:generate
+            php artisan bpm:sdk php
+            php artisan bpm:sdk lua
+
+      - run:
           name: Configure scripts executor
           command: |
-            docker pull processmaker/executor:php
+            docker pull nolanpro/executor:php
             docker pull processmaker/executor:lua
             sudo mkdir -m777 /opt/executor
 
