@@ -121,17 +121,8 @@ class Install extends Command
         $this->env['LARAVEL_ECHO_SERVER_DEBUG'] = 'false';
 
         // Set it as our url in our config
-        config(['app.url' => $this->env['APP_URL']]);ok t
+        config(['app.url' => $this->env['APP_URL']]);
 
-        //Confirm the user would like to setup their email
-        if ($this->confirm(__('Would you like to setup email options?'))) {
-            //Fetch from name & email from the user
-            $this->fetchEmailFromInfo();
-
-            //Explain and then fetch email credentials
-            $this->info(__('ProcessMaker works with any SMTP server as well as several email APIs.'));
-            $this->fetchEmailCredentials();
-        }
 
         $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
 
@@ -186,17 +177,18 @@ class Install extends Command
         $this->info(__("Dependencies Check"));
         $table = new Table($this->output);
         $table->setRows([
-            [__('PHP Version'), phpversion()],
-            [__('OpenSSL Extension'), phpversion('openssl')],
-            [__('PDO Extension'), phpversion('pdo')],
-            [__('PDO MySQL Extension'), phpversion('pdo_mysql')],
-            [__('mbstring Extension'), phpversion('mbstring')],
-            [__('Tokenizer Extension'), phpversion('tokenizer')],
-            [__('XML Extension'), phpversion('xml')],
-            [__('CType Extension'), phpversion('ctype')],
-            [__('JSON Extension'), phpversion('json')],
-            [__('GD Extension'), phpversion('gd')],
-            [__('SOAP Extension'), phpversion('soap')]
+          [__('CType Extension'), phpversion('ctype')],
+          [__('GD Extension'), phpversion('gd')],
+          [__('JSON Extension'), phpversion('json')],
+          [__('mbstring Extension'), phpversion('mbstring')],
+          [__('OpenSSL Extension'), phpversion('openssl')],
+          [__('PDO Extension'), phpversion('pdo')],
+          [__('PDO MySQL Extension'), phpversion('pdo_mysql')],
+          [__('PHP Version'), phpversion()],
+          [__('Tokenizer Extension'), phpversion('tokenizer')],
+          [__('XML Extension'), phpversion('xml')],
+          [__('ZIP Extension'), phpversion('zip')],
+
         ]);
         $table->render();
         return true;
