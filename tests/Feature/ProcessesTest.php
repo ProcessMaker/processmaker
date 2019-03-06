@@ -102,6 +102,7 @@ class ProcessesTest extends TestCase
         // Our user now has permissions, so this should return 200.
         $response = $this->webCall('GET', $url);
         $response->assertStatus(200);
+        $response->assertViewIs('processes.create');
     }
     
     public function testStore()
