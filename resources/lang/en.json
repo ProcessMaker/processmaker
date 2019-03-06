@@ -301,5 +301,19 @@
     "The screen was saved.": "The screen was saved.",
     "Are you sure you want to delete the screen ": "Are you sure you want to delete the screen ",
     "The screen was deleted.": "The screen was deleted.",
-    "The screen was duplicated.": "The screen was duplicated."
+    "The screen was duplicated.": "The screen was duplicated.",
+    "The environment variable was saved.": "The environment variable was saved.",
+    "Are you sure you want to delete the environment variable ": "Are you sure you want to delete the environment variable ",
+    "User has no tokens.": "User has no tokens.",
+    "The user was removed from the group.": "The user was removed from the group.",
+    "Are you sure you want to remove the user from the group ": "Are you sure you want to remove the user from the group ",
+    "Copy Token To Clipboard": "Copy Token To Clipboard",
+    "Are you sure you want to delete the auth client ": "Are you sure you want to delete the auth client ",
+    "The auth client was ": "The auth client was ",
+    "success": "success",
+    "Make sure you copy your access token now. You won't be able to see it again.": "Make sure you copy your access token now. You won't be able to see it again.",
+    "Access token generated successfully": "Access token generated successfully",
+    "Are you sure to delete the token ": "Are you sure to delete the token ",
+    "? Any services using it will no longer have access.": "? Any services using it will no longer have access.",
+    "User Updated Successfully ": "User Updated Successfully "
 }
