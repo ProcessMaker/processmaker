@@ -9,7 +9,7 @@ description: >-
 ## Server Requirements
 
 {% hint style="info" %}
-The following server requirements are only for ProcessMaker 4 Community Edition on-premises installation. Since ProcessMaker 4 is primarily an Enterprise cloud solution, these server requirements do not apply to ProcessMaker Enterprise.
+The following server requirements are only for ProcessMaker 4 Community Edition on-premises installation. Since ProcessMaker 4 is primarily an Enterprise cloud solution, these server requirements do not apply to ProcessMaker 4 Enterprise.
 {% endhint %}
 
 The following are server requirements to install ProcessMaker 4 Community Edition on-premises:
