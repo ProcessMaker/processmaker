@@ -4,7 +4,7 @@ description: >-
   on-premises.
 ---
 
-# Install Guide
+# On-Premises Install Guide
 
 ## Overview
 
@@ -143,6 +143,16 @@ stdout_logfile=/home/forge/app.com/horizon.log
 ## Configure Real-Time Broadcasting
 
 ProcessMaker 4 broadcasts real-time events. ProcessMaker's event broadcasting configuration is stored in the `config/broadcasting.php` configuration file. ProcessMaker 4 supports Pusher and Redis broadcast drivers as well as a `log` driver for local development and debugging. Furthermore, a `null` driver is included which allows you to disable all broadcasting. See the configuration example for each of these drivers in the `config/broadcasting.php` configuration file.
+
+## Start the Scheduler Service
+
+You only need to add the following Cron entry to your server:
+
+```text
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+This Cron calls the scheduler service every minute. When the `schedule:run`command runs, ProcessMaker evaluates your scheduled tasks and runs the tasks that are due.
 
 ## Log In for the First Time
 

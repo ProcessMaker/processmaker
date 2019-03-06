@@ -148,8 +148,8 @@
 
 ## Install ProcessMaker
 
-* [Server Requirements](install-processmaker/prerequisites.md)
-* [Install Guide](install-processmaker/installation-guide.md)
+* [On-Premises Server Requirements](install-processmaker/prerequisites.md)
+* [On-Premises Install Guide](install-processmaker/installation-guide.md)
 * [Install Required Software and ProcessMaker 4 \(OLD -TO BE REMOVED\)](install-processmaker/install-required-software.md)
 
 ## Script Central
