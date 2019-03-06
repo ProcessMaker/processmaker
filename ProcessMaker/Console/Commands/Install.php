@@ -141,9 +141,11 @@ class Install extends Command
         Storage::disk('install')->put('.env', $contents);
 
         // Install migrations
-        $this->call('migrate:fresh', [
+        $this->callSilent('migrate:fresh', [
             '--seed' => true,
         ]);
+
+        $this->info(__("ProcessMaker database installed successfully."));
 
         // Generate passport secure keys and personal token oauth client
         $this->call('passport:install', [
