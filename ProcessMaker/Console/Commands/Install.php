@@ -121,7 +121,7 @@ class Install extends Command
         $this->env['LARAVEL_ECHO_SERVER_DEBUG'] = 'false';
 
         // Set it as our url in our config
-        config(['app.url' => $this->env['APP_URL']]);
+        config(['app.url' => $this->env['APP_URL']]);ok t
 
         //Confirm the user would like to setup their email
         if ($this->confirm(__('Would you like to setup email options?'))) {
@@ -166,10 +166,6 @@ class Install extends Command
 
 		//Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
-
-        // Install cron job for Laravel scheduled tasks
-        $this->info(__('Installing scheduled tasks...'));
-        $this->installCronJob();
 
         // Install Docker executors
         $this->info(__('Installing Docker executors...'));
