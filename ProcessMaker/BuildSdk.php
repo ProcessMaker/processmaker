@@ -52,7 +52,7 @@ class BuildSdk {
         $folder = $this->unzip($zip);
 
         $this->runCmd("mkdir -p {$this->basePath}/storage/api");
-        $dest = "{$this->basePath}/storage/api/{$this->lang}-client";
+        $dest = "{$this->basePath}/storage/api/";
         $this->runCmd("mv -f $folder $dest");
         $this->log("DONE. Api is at $dest");
     }
