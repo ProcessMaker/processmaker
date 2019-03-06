@@ -1,14 +1,18 @@
 ---
 description: >-
-  Before installing ProcessMaker, understand which technologies ProcessMaker
-  requires.
+  Before installing ProcessMaker 4 on-premises, understand which technologies
+  ProcessMaker requires.
 ---
 
 # Server Requirements
 
 ## Server Requirements
 
-The following are server requirements for ProcessMaker 4 Community edition:
+{% hint style="info" %}
+The following server requirements are only for ProcessMaker 4 Community Edition on-premises installation. Since ProcessMaker 4 is primarily an Enterprise cloud solution, these server requirements do not apply to ProcessMaker Enterprise.
+{% endhint %}
+
+The following are server requirements to install ProcessMaker 4 Community Edition on-premises:
 
 * **Core server components:** Ensure your server has the following core components:
   * PHP 7.1.3 or later
