@@ -108,7 +108,10 @@ jobs:
 
       - run:
           name: setup SDKs
-          command: php artisan bpm:sdk php
+          command: |
+            rm -rf storage/api && mkdir storage/api
+            php artisan bpm:sdk php
+            php artisan bpm:sdk lua
 
       - run:
           name: Configure scripts executor
