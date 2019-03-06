@@ -7,12 +7,11 @@ use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
-use Tests\Feature\Shared\BenchmarkHelper;
 use Tests\Feature\Shared\RequestHelper;
 
 class ScriptsTest extends TestCase
 {
-    use BenchmarkHelper, RequestHelper;
+    use RequestHelper;
 
     const API_TEST_SCRIPT = '/scripts';
 
@@ -318,53 +317,6 @@ class ScriptsTest extends TestCase
 
         $response->assertJsonStructure(['output' => ['response']]);
 
-    }
-
-    /**
-     * Run a test script and assert that the specified timeout is exceeded
-     */
-    private function assertTimeoutExceeded($data)
-    {
-        $this->benchmarkStart();
-        $url = route('api.script.preview', $data);
-        $response = $this->apiCall('POST', $url, []);
-        $this->benchmarkEnd();
-        $this->assertLessThan(intval($data['timeout']) + 1, $this->benchmark());
-        $response->assertStatus(500);
-    }
-
-    /**
-     * Run a test script and assert that the specified timeout is not exceeded
-     */
-    private function assertTimeoutNotExceeded($data)
-    {
-        $this->benchmarkStart();
-        $url = route('api.script.preview', $data);
-        $response = $this->apiCall('POST', $url, []);
-        $this->benchmarkEnd();
-        $this->assertLessThan(intval($data['timeout']) + 1, $this->benchmark());
-        $response->assertStatus(200);
-        $response->assertJsonStructure(['output' => ['response']]);
-    }
-
-    /**
-     * Test our script timeout functionality
-     */
-    public function testScriptTimeouts()
-    {
-        if (!file_exists(config('app.bpm_scripts_home')) || !file_exists(config('app.bpm_scripts_docker'))) {
-            $this->markTestSkipped(
-                'This test requires docker'
-            );
-        }
-        
-        //Test Lua Scripts
-        $this->assertTimeoutExceeded(['data' => '{}', 'code' => 'os.execute("sleep 10") return {response=1}', 'language' => 'lua', 'timeout' => 5]);
-        $this->assertTimeoutNotExceeded(['data' => '{}', 'code' => 'os.execute("sleep 1") return {response=1}', 'language' => 'lua', 'timeout' => 5]);
-
-        //Test PHP Scripts
-        $this->assertTimeoutExceeded(['data' => '{}', 'code' => '<?php sleep(10); return ["response"=>1];', 'language' => 'php', 'timeout' => 5]);
-        $this->assertTimeoutNotExceeded(['data' => '{}', 'code' => '<?php sleep(1); return ["response"=>1];', 'language' => 'php', 'timeout' => 5]);
     }
 
     /**
