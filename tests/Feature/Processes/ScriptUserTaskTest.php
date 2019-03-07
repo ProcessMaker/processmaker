@@ -7,6 +7,8 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Shared\RequestHelper;
@@ -15,22 +17,6 @@ class ScriptsUserTaskTest extends TestCase
 {
     use RequestHelper;
     
-
-
-    public function testRunScriptTaskWithUser()
-    {
-        $data = [];
-        $data['bpmn'] = Process::getProcessTemplate('ScriptTasksWithUser.bpmn');
-        $process = factory(Process::class)->create($data);
-        $definitions = $process->getDefinitions();
-        $startEvent = $definitions->getEvent('_2');
-        $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
-
-        $request->refresh();
-
-        // If no exception has been thrown, this assertion will be executed
-        $this->assertTrue(true);
-    }
 
     public function testJobThatRunsAScriptTaskWithoutAUser()
     {
@@ -53,6 +39,15 @@ class ScriptsUserTaskTest extends TestCase
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('ScriptTasksWithUser.bpmn');
         $process = factory(Process::class)->create($data);
+
+        $user = factory(User::class)->create();
+
+        factory(Script::class)->create([
+            'id' => 10,
+            'title' => 'titletest',
+            'run_as_user_id' => $user->id
+        ]);
+
         $definitions = $process->getDefinitions();
         $startEvent = $definitions->getEvent('node_2');
         $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
