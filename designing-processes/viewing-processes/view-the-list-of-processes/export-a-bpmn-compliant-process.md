@@ -6,7 +6,16 @@ description: Export a ProcessMaker 4 Process that is BPMN 2.0 compliant.
 
 ## Overview
 
-Export Processes from ProcessMaker 4 that are BPMN 2.0 compliant. The exported Process may then be imported to the same or another ProcessMaker 4 instance of the same product version and/or imported to a third-party BPMN 2.0 compliant tool.
+Export Processes from ProcessMaker 4 that are BPMN 2.0 compliant. The exported Process may then be imported to the same or another ProcessMaker 4 instance of the same product version and/or imported to a third-party BPMN 2.0 compliant tool. If the exported Process is imported to a third-party tool, all ProcessMaker features that are not part of the BPMN 2.0 specification are ignored.
+
+The following ProcessMaker 4 components are exported if they are specified in the source Process:
+
+* ProcessMaker Scripts configured for Script Task elements as well as their Script configurations
+* ProcessMaker Screens configured for Task elements as well as routing rule expressions
+* Sequence Flows and their routing rule expressions
+* ProcessMaker Environment Variable containers, but not the sensitive data an Environment Variable contained in the original Process
+
+ProcessMaker 4 does not export users from the original ProcessMaker 4 Process. Therefore, Task element assignments are not exported and must be configured if the Process is imported to another ProcessMaker 4 instance.
 
 ## Export a BPMN-Compliant Process
 
