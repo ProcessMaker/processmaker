@@ -98,7 +98,7 @@ class TimeoutsTest extends TestCase
         $this->assertTimeoutExceeded([
             'data' => '{}',
             'code' => '<?php sleep(3); return ["response"=>1];',
-            'language' => 'lua',
+            'language' => 'php',
             'timeout' => 2
         ]);
     }
