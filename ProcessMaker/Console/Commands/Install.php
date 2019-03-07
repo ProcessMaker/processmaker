@@ -88,8 +88,8 @@ class Install extends Command
         // if exists, bail out with an error
         // If file does not exist, begin to generate it
         if(Storage::disk('install')->exists('.env')) {
-            $this->error(__("A .env file already exists"));
-            $this->error(__("Remove the .env file to perform a new installation"));
+            $this->error(__("A .env file already exists. Stop the installation procedure, delete the existing .env file, and then restart the installation."));
+            $this->error(__("Remove the .env file to perform a new installation."));
             return 255;
         }
         $this->info(__("This application installs a new version of ProcessMaker."));
@@ -103,9 +103,9 @@ class Install extends Command
         $invalid = false;
         do {
             if($invalid) {
-                $this->error(__("The url you provided was invalid. Please provide the scheme, host and path and have no trailing slashes."));
+                $this->error(__("The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes."));
             }
-            $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker installation? (Ex: https://pm.example.com, no trailing slash)'));
+            $this->env['APP_URL'] = $this->ask(__('What is the URL of this ProcessMaker installation? (Ex: https://pm.example.com, with no trailing slash)'));
         } while($invalid = (!filter_var($this->env['APP_URL'],
                                         FILTER_VALIDATE_URL,
                                         FILTER_FLAG_SCHEME_REQUIRED |
@@ -124,7 +124,7 @@ class Install extends Command
         config(['app.url' => $this->env['APP_URL']]);
 
 
-        $this->info(__("Installing ProcessMaker database, OAuth SSL keys and configuration file"));
+        $this->info(__("Installing ProcessMaker database, OAuth SSL keys and configuration file."));
 
         // The database should already exist and is tested by the fetchDatabaseCredentials call
         // Set the database default connection to install
@@ -155,7 +155,8 @@ class Install extends Command
 		//Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
 
-        $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
+        $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
+        $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
         return true;
     }
 
@@ -187,13 +188,13 @@ class Install extends Command
 
     private function fetchDatabaseCredentials()
     {
-        $this->info(__("ProcessMaker requires a MySQL database created with appropriate credentials configured."));
-        $this->info(__("Refer to the Installation Guide for more information on database best practices."));
-        $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host"), ['localhost']);
-        $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Usually 3306)"), [3306]);
-        $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL database name"), ['workflow']);
-        $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL username"));
-        $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL password (input hidden)"));
+        $this->info(__("ProcessMaker requires a MySQL database created with appropriate credentials."));
+        $this->info(__("Database connection failed. Check your database configuration and try again."));
+        $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host:"), ['localhost']);
+        $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (usually 3306):"), [3306]);
+        $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL database name:"), ['workflow']);
+        $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL username:"));
+        $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL password (input hidden):"));
     }
 
     private function testDatabaseConnection()
@@ -211,7 +212,7 @@ class Install extends Command
         try {
             $pdo = DB::connection('install')->getPdo();
         } catch(Exception $e) {
-            $this->error(__("Failed to connect to MySQL database. Check your credentials and try again. Note, the database must also exist."));
+            $this->error(__("Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again."));
             return false;
         }
         return true;
