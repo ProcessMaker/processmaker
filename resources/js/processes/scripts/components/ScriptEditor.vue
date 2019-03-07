@@ -98,6 +98,7 @@
                         this.preview.output = response.data.output;
                     })
                     .catch((err) => {
+                        ProcessMaker.alert(err.response.data.message, "danger");
                         this.preview.executing = false;
                     });
             },
