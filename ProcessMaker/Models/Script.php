@@ -20,6 +20,7 @@ use RuntimeException;
  * @property text description
  * @property string language
  * @property text code
+ * @property integer timeout
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
@@ -28,6 +29,7 @@ use RuntimeException;
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="code", type="string"),
+ *   @OA\Property(property="teimout", type="integer"),
  * ),
  * @OA\Schema(
  *   schema="scripts",
@@ -53,6 +55,10 @@ class Script extends Model
         'application/x-php' => 'php',
         'application/x-lua' => 'lua',
     ];
+    
+    protected $casts = [
+        'timeout' => 'integer',
+    ];
 
     /**
      * Validation rules
@@ -68,7 +74,8 @@ class Script extends Model
         return [
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique],
-            'language' => 'required|in:php,lua'
+            'language' => 'required|in:php,lua',
+            'timeout' => 'integer|min:0|max:65535',
         ];
     }
 
@@ -82,6 +89,7 @@ class Script extends Model
     {
         $code = $this->code;
         $language = $this->language;
+        $timeout = $this->timeout;
 
         $variablesParameter = [];
         EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
@@ -103,6 +111,7 @@ class Script extends Model
         switch (strtolower($language)) {
             case 'php':
                 $dockerConfig = [
+                    'timeout' => $timeout,
                     'image' => 'processmaker/executor:php',
                     'command' => 'php /opt/executor/bootstrap.php',
                     'parameters' => $variablesParameter,
@@ -118,6 +127,7 @@ class Script extends Model
                 break;
             case 'lua':
                 $dockerConfig = [
+                    'timeout' => $timeout,
                     'image' => 'processmaker/executor:lua',
                     'command' => 'lua5.3 /opt/executor/bootstrap.lua',
                     'parameters' => $variablesParameter,
