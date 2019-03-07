@@ -10,6 +10,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Throwable;
+use ProcessMaker\Models\User;
 
 class RunScriptTask extends BpmnAction implements ShouldQueue
 {
@@ -62,7 +63,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
 
         try {
-            $response = $script->runScript($data, $configuration);
+            $user = User::find(1); # temporary until scripts can set a user
+            $response = $script->runScript($data, $configuration, $user);
             // Update data
             foreach ($response['output'] as $key => $value) {
                 $dataStore->putData($key, $value);
