@@ -172,7 +172,7 @@ export default {
             .put("processes/" + data.id + "/restore")
             .then(response => {
               ProcessMaker.alert(
-                "{{__('The process was restored.')}}",
+                __("The process was restored."),
                 "success"
               );
               this.$emit("reload");
@@ -190,7 +190,7 @@ export default {
                 .delete("processes/" + data.id)
                 .then(response => {
                   ProcessMaker.alert(
-                    "{{__('The process was archived.')}}",
+                    __("The process was archived."),
                     "warning"
                   );
                   this.$emit("reload");
