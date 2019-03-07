@@ -7,6 +7,8 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Models\User;
 use RuntimeException;
 
 /**
@@ -78,7 +80,7 @@ class Script extends Model
      * @param array $data
      * @param array $config
      */
-    public function runScript(array $data, array $config)
+    public function runScript(array $data, array $config, User $asUser = null)
     {
         $code = $this->code;
         $language = $this->language;
@@ -92,6 +94,11 @@ class Script extends Model
 
         // Add the url to the host
         $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
+        
+        if ($asUser) {
+            $token = new GenerateAccessToken($asUser);
+            $variablesParameter[] = 'API_TOKEN=' . $token->getToken();
+        }
 
         if ($variablesParameter) {
             $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
@@ -141,6 +148,9 @@ class Script extends Model
         $executeMethod = config('app.bpm_scripts_docker_mode')==='binding'
             ? 'executeBinding' : 'executeCopying';
         $response = $this->$executeMethod($dockerConfig);
+        if ($asUser) {
+            $token->delete();
+        }
         $returnCode = $response['returnCode'];
         $stdOutput = $response['output'];
         $output = $response['outputs']['response'];

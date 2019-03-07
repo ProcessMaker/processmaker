@@ -6,18 +6,11 @@ use RuntimeException;
 
 class GenerateAccessTokenTest extends TestCase
 {
-    public function setUp()
+    public function setUpWithPersonalAccessClient()
     {
-        # TEST WITH POPULATE DB - SEEDER DOES THIS
-
-        $clients = app()->make('Laravel\Passport\ClientRepository');
-        try {
-            $clients->personalAccessClient();
-        } catch(RuntimeException $e) {
-            # Need to create a personal access client first
-            $clients->createPersonalAccessClient(null, 'api', 'http://localhost');
-        }
+        $this->withPersonalAccessClient();
     }
+
     public function testGetNewToken()
     {
         $user = factory(User::class)->create();

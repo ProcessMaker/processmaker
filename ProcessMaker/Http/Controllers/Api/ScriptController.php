@@ -87,7 +87,7 @@ class ScriptController extends Controller
      * Previews executing a script, with sample data/config data
      * 
      *     @OA\Get(
-     *     path="/scripts/ew",
+     *     path="/scripts/preview",
      *     summary="Returns all scripts that the user has access to",
      *     operationId="getScriptsPreview",
      *     tags={"Scripts"},
@@ -130,7 +130,7 @@ class ScriptController extends Controller
             'code' => $code,
             'language' => $language,
         ]);
-        return $script->runScript($data, $config);
+        return $script->runScript($data, $config, \Auth::user());
     }
 
     /**

@@ -1,8 +1,6 @@
 <?php
 namespace ProcessMaker;
 
-use Laravel\Passport\ClientRepository;
-
 class GenerateAccessToken {
 
     private $token;
