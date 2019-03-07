@@ -67,9 +67,9 @@ class TimeoutsTest extends TestCase
         
         $this->assertTimeoutExceeded([
             'data' => '{}',
-            'code' => 'os.execute("sleep 3") return {response=1}',
+            'code' => 'os.execute("sleep 5") return {response=1}',
             'language' => 'lua',
-            'timeout' => 2
+            'timeout' => 3
         ]);
     }
     
@@ -84,7 +84,7 @@ class TimeoutsTest extends TestCase
             'data' => '{}',
             'code' => 'os.execute("sleep 1") return {response=1}',
             'language' => 'lua',
-            'timeout' => 2
+            'timeout' => 3
         ]);
     }
     
@@ -97,9 +97,9 @@ class TimeoutsTest extends TestCase
         
         $this->assertTimeoutExceeded([
             'data' => '{}',
-            'code' => '<?php sleep(3); return ["response"=>1];',
+            'code' => '<?php sleep(5); return ["response"=>1];',
             'language' => 'php',
-            'timeout' => 2
+            'timeout' => 3
         ]);
     }
     
@@ -114,7 +114,7 @@ class TimeoutsTest extends TestCase
             'data' => '{}',
             'code' => '<?php sleep(1); return ["response"=>1];',
             'language' => 'php',
-            'timeout' => 2
+            'timeout' => 3
         ]);
     }
 }
