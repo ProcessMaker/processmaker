@@ -15,6 +15,15 @@ class TimeoutsTest extends TestCase
 {
     use BenchmarkHelper, LoggingHelper, RequestHelper;
 
+    // How long our test scripts should be allowed to run before timing out
+    const TIMEOUT_LENGTH = 3;
+
+    // How long to sleep our test scripts that should exceed timeout
+    const SLEEP_EXCEED = 6;
+    
+    // How long to sleep our test scripts that should not exceed timeout
+    const SLEEP_NOT_EXCEED = 1;
+    
     /**
      * Skip the test if Docker is not installed
      */
@@ -39,7 +48,7 @@ class TimeoutsTest extends TestCase
         $this->benchmarkEnd();
         
         $this->assertLogMessageExists('Script timed out');
-        $this->assertLessThan(intval($data['timeout']) + 1, $this->benchmark());
+        $this->assertLessThan(intval($data['timeout']) + 2, $this->benchmark());
         $response->assertStatus(500);
     }
 
@@ -53,7 +62,7 @@ class TimeoutsTest extends TestCase
         $response = $this->apiCall('POST', $url, []);
         $this->benchmarkEnd();
         
-        $this->assertLessThan(intval($data['timeout']) + 1, $this->benchmark());
+        $this->assertLessThan(intval($data['timeout']) + 2, $this->benchmark());
         $response->assertStatus(200);
         $response->assertJsonStructure(['output' => ['response']]);
     }
@@ -67,9 +76,9 @@ class TimeoutsTest extends TestCase
         
         $this->assertTimeoutExceeded([
             'data' => '{}',
-            'code' => 'os.execute("sleep 5") return {response=1}',
+            'code' => 'os.execute("sleep ' . self::SLEEP_EXCEED . '") return {response=1}',
             'language' => 'lua',
-            'timeout' => 3
+            'timeout' => self::TIMEOUT_LENGTH
         ]);
     }
     
@@ -82,9 +91,9 @@ class TimeoutsTest extends TestCase
         
         $this->assertTimeoutNotExceeded([
             'data' => '{}',
-            'code' => 'os.execute("sleep 1") return {response=1}',
+            'code' => 'os.execute("sleep ' . self::SLEEP_NOT_EXCEED . '") return {response=1}',
             'language' => 'lua',
-            'timeout' => 3
+            'timeout' => self::TIMEOUT_LENGTH
         ]);
     }
     
@@ -97,9 +106,9 @@ class TimeoutsTest extends TestCase
         
         $this->assertTimeoutExceeded([
             'data' => '{}',
-            'code' => '<?php sleep(5); return ["response"=>1];',
+            'code' => '<?php sleep(' . self::SLEEP_EXCEED . '); return ["response"=>1];',
             'language' => 'php',
-            'timeout' => 3
+            'timeout' => self::TIMEOUT_LENGTH
         ]);
     }
     
@@ -112,9 +121,9 @@ class TimeoutsTest extends TestCase
         
         $this->assertTimeoutNotExceeded([
             'data' => '{}',
-            'code' => '<?php sleep(1); return ["response"=>1];',
+            'code' => '<?php sleep(' . self::SLEEP_NOT_EXCEED . '); return ["response"=>1];',
             'language' => 'php',
-            'timeout' => 3
+            'timeout' => self::TIMEOUT_LENGTH
         ]);
     }
 }
