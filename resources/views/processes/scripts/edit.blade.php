@@ -45,9 +45,9 @@
                             'v-model' => 'formData.timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.timeout}']) !!}                        
                             {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
                             'v-model' => 'formData.timeout', 'min' => 0, 'max' => 300]) !!}
+                            <div class="invalid-feedback" v-if="errors.timeout">@{{errors.timeout[0]}}</div>
                         </div>
-                        <small class="form-text text-muted" v-if="! errors.title">{{ __('How long the script should be allowed to run in seconds (0 seconds is unlimited).') }}</small>
-                        <div class="invalid-feedback" v-if="errors.timeout">@{{errors.timeout[0]}}</div>
+                        <small class="form-text text-muted" v-if="! errors.timeout">{{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}</small>
                     </div>
                     <br>
                     <div class="text-right">
