@@ -133,7 +133,12 @@
                             window.location = "/processes/scripts/" + response.data.id + "/builder";
                         })
                         .catch(error => {
-                            this.addError = error.response.data.errors;
+                            if (error.response.status && error.response.status === 422) {
+                                if (error.response.data.errors.run_as_user_id !== undefined) {
+                                    ProcessMaker.alert(error.response.data.errors.run_as_user_id[0], 'danger');
+                                }
+                                this.addError = error.response.data.errors;
+                            }
                         })
                     }
                 }
