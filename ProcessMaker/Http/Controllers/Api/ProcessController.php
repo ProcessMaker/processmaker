@@ -616,6 +616,40 @@ class ProcessController extends Controller
      * @param Request $request
      *
      * @return \ProcessMaker\Http\Resources\ProcessRequests
+     *
+     * @OA\Post(
+     *     path="process_events/{process_id}",
+     *     summary="Start a new process",
+     *     operationId="triggerStartEvent",
+     *     tags={"Process"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="Node ID of the start event",
+     *         in="query",
+     *         name="event",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=false,
+     *       @OA\JsonContent()
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *     ),
+     * )
      */
     public function triggerStartEvent(Process $process, Request $request)
     {
