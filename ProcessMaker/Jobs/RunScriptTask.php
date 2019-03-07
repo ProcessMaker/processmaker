@@ -62,9 +62,9 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $script = Script::find($scriptRef);
         }
 
-//        if(empty($script->run_as_user_id)) {
-//            throw new ScriptTaskWithoutUser();
-//        }
+        if(empty($script->run_as_user_id)) {
+            throw new ScriptTaskWithoutUser();
+        }
 
         try {
             $response = $script->runScript($data, $configuration);

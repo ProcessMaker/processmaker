@@ -15,7 +15,8 @@ class ScriptController extends Controller
      */
     public function index()
     {
-        return view('processes.scripts.index');
+        $users = User::all();
+        return view('processes.scripts.index', compact('users'));
     }
 
     public function edit(Script $script, User $users)

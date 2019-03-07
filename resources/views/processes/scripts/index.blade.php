@@ -69,6 +69,13 @@
                         \'is-invalid\':addError.language}']);!!}
                         <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="typo__label">{{__('Run script as')}}</label>
+                        <multiselect v-model="selectedUser" label="fullname" :options="users"
+                                     :searchable="true"></multiselect>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary"
@@ -96,7 +103,9 @@
                     language: '',
                     description: '',
                     code: '',
-                    addError: {}
+                    addError: {},
+                    selectedUser:'',
+                    users:@json($users),
                 },
                 methods: {
                     onClose() {
@@ -116,6 +125,7 @@
                             title: this.title,
                             language: this.language,
                             description: this.description,
+                            run_as_user_id: this.selectedUser.id,
                             code: "[]"
                         })
                         .then(response => {

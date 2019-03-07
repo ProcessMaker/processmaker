@@ -34,8 +34,11 @@
                     </div>
                     <div class="form-group">
                         <label class="typo__label">{{__('Run script as')}}</label>
-                        <multiselect v-model="selectedUser" label="fullname" :options="options" :searchable="true"></multiselect>
+                        <multiselect v-model="selectedUser" label="fullname" :options="options"
+                                     :searchable="true"></multiselect>
                     </div>
+
+
                     <div class="form-group">
                         {!! Form::label('description', 'Description') !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
@@ -71,6 +74,9 @@
                     }
                 }
             },
+            mounted() {
+                this.selectedUser = this.options.filter(u => {return u.id === this.formData.run_as_user_id});
+            },
             methods: {
                 resetErrors() {
                     this.errors = Object.assign({}, {
@@ -89,13 +95,17 @@
                         title: this.formData.title,
                         language: this.formData.language,
                         description: this.formData.description,
+                        run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
                     })
                         .then(response => {
                             ProcessMaker.alert('The script was saved.', 'success');
-                            this.onClose();
+//                            this.onClose();
                         })
                         .catch(error => {
                             if (error.response.status && error.response.status === 422) {
+                                if (error.response.data.errors.run_as_user_id !== undefined) {
+                                    ProcessMaker.alert(error.response.data.errors.run_as_user_id[0], 'danger');
+                                }
                                 this.errors = error.response.data.errors;
                             }
                         });

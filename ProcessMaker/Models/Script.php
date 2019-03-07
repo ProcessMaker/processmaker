@@ -68,7 +68,8 @@ class Script extends Model
         return [
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique],
-            'language' => 'required|in:php,lua'
+            'language' => 'required|in:php,lua',
+            'run_as_user_id' => 'required'
         ];
     }
 

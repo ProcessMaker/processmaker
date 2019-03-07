@@ -3,10 +3,12 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
 {
@@ -235,9 +237,19 @@ class ScriptController extends Controller
     public function update(Script $script, Request $request)
     {
         $request->validate(Script::rules($script));
+
         $original_attributes = $script->getAttributes();
 
         $script->fill($request->input());
+
+        $userToRunAs = User::find($script->run_as_user_id);
+        if ($userToRunAs->tokens()->get()->count() === 0) {
+            return response(
+                ['message' => "The user doesn't have an access token",
+                    'errors' => ['run_as_user_id' => ["The user doesn't have an access token"]]],
+                422);
+        }
+
         $script->saveOrFail();
         
         unset(
