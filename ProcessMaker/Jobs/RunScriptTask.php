@@ -4,6 +4,7 @@ namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\ScriptTaskWithoutUser;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -60,6 +61,10 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         } else {
             $script = Script::find($scriptRef);
         }
+
+//        if(empty($script->run_as_user_id)) {
+//            throw new ScriptTaskWithoutUser();
+//        }
 
         try {
             $response = $script->runScript($data, $configuration);
