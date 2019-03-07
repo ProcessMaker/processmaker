@@ -44,6 +44,7 @@ trait ScriptDockerBindingFilesTrait
      * @param string $command
      * @param string $parameters
      * @param string $bindings
+     * @param integer $timeout
      *
      * @return array
      * @throws RuntimeException
@@ -52,12 +53,18 @@ trait ScriptDockerBindingFilesTrait
     {
         $cmd = '';
         
-        if ($timeout > 1) {
+        if ($timeout > 0) {
             $cmd .= "timeout -s 9 $timeout ";
         }
         
         $cmd .= config('app.bpm_scripts_docker') . sprintf(' run %s %s %s %s 2>&1',
                 $parameters, $bindings, $image, $command);        
+
+        Log::debug('Running Docker container', [
+            'timeout' => $timeout,
+            'cmd' => $cmd,
+        ]);
+
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
             

@@ -126,8 +126,9 @@ class ScriptController extends Controller
         $config = json_decode($request->get('config'), true) ?: [];
         $code = $request->get('code');
         $language = $request->get('language');
+        $timeout = $request->get('timeout');
         
-        if (! $timeout = $request->get('timeout')) {
+        if ($timeout === null) {
             $timeout = 60;
         }
         

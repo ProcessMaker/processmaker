@@ -29,7 +29,7 @@ class ScriptRunner
      * @return array
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config, int $timeout)
+    public function run($code, array $data, array $config, $timeout = 60)
     {
         return $this->runner->run($code, $data, $config, $timeout);
     }

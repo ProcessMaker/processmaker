@@ -34,7 +34,7 @@ abstract class Base
      * @return array
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config, int $timeout)
+    public function run($code, array $data, array $config, $timeout)
     {
         // Prepate the docker parameters
         $environmentVariables = $this->getEnvironmentVariables();

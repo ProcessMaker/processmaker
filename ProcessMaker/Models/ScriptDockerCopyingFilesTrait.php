@@ -108,6 +108,7 @@ trait ScriptDockerCopyingFilesTrait
      * Start the container.
      *
      * @param string $container
+     * @param integer $timeout
      *
      * @return array
      */
@@ -115,11 +116,16 @@ trait ScriptDockerCopyingFilesTrait
     {
         $cmd = '';
         
-        if ($timeout > 1) {
+        if ($timeout > 0) {
             $cmd .= "timeout -s 9 $timeout ";
         }
         
         $cmd .= config('app.bpm_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
+
+        Log::debug('Running Docker container', [
+            'timeout' => $timeout,
+            'cmd' => $cmd,
+        ]);
 
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
