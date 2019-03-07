@@ -647,7 +647,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
      * )
      */

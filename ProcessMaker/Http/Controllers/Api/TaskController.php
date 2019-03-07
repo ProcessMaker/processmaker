@@ -29,6 +29,43 @@ class TaskController extends Controller
      * @param Request $request
      *
      * @return Response
+     * 
+     * @OA\Get(
+     *     path="/tasks",
+     *     summary="Returns all tasks that the user has access to",
+     *     operationId="getTasks",
+     *     tags={"Tasks"},
+     *     @OA\Parameter(
+     *         description="Process request id",
+     *         in="query",
+     *         name="process_request_id",
+     *         required=false,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of tasks",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/processRequestToken"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 ref="#/components/schemas/metadata",
+     *             ),
+     *         ),
+     *     ),
+     * )
      */
     public function index(Request $request)
     {
@@ -103,6 +140,31 @@ class TaskController extends Controller
      *
      * @return Resource
      * @throws \Throwable
+     * 
+     * @OA\Put(
+     *     path="/tasks/{task_id}",
+     *     summary="Update a task",
+     *     operationId="updateTask",
+     *     tags={"Tasks"},
+     *     @OA\Parameter(
+     *         description="ID of task to update",
+     *         in="path",
+     *         name="task_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/processRequestTokenEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/processRequestToken")
+     *     ),
+     * )
      */
     public function update(Request $request, ProcessRequestToken $task)
     {

@@ -29,6 +29,30 @@ use \Illuminate\Auth\Access\AuthorizationException;
  * @property \Carbon\Carbon $created_at
  * @property ProcessRequest $request
  *
+ * @OA\Schema(
+ *   schema="processRequestTokenEditable",
+ *   @OA\Property(property="user_id", type="string", format="id"),
+ *   @OA\Property(property="status", type="string"),
+ *   @OA\Property(property="due_at", type="date-time"),
+ *   @OA\Property(property="initiated_at", type="string", format="date-time"),
+ *   @OA\Property(property="riskchanges_at", type="string", format="date-time"),
+ * ),
+ * @OA\Schema(
+ *   schema="processRequestToken",
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/processRequestTokenEditable"),
+ *       @OA\Schema(
+ *          @OA\Property(property="id", type="string", format="id"),
+ *          @OA\Property(property="process_id", type="string", format="id"),
+ *          @OA\Property(property="process_request_id", type="string", format="id"),
+ *          @OA\Property(property="element_id", type="string", format="id"),
+ *          @OA\Property(property="element_type", type="string", format="id"),
+ *          @OA\Property(property="created_at", type="string", format="date-time"),
+ *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *          @OA\Property(property="initiated_at", type="string", format="date-time"),
+ *       )
+ *   }
+ * )
  */
 class ProcessRequestToken extends Model implements TokenInterface
 {

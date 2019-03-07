@@ -101,9 +101,9 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      *
      *     @OA\Get(
-     *     path="/users/userId",
+     *     path="/users/{user_id}",
      *     summary="Get single user by ID",
-     *     operationId="getUsersById",
+     *     operationId="getUserById",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
