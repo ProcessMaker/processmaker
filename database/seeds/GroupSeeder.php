@@ -5,10 +5,10 @@ use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 
-class DefaultGroupSeeder extends Seeder
+class GroupSeeder extends Seeder
 {
     public $defaults = [];
-    
+
     public function setDefaults()
     {
         $this->defaults[] = [
@@ -23,7 +23,7 @@ class DefaultGroupSeeder extends Seeder
                 'edit-comments',
             ],
         ];
-        
+
         $this->defaults[] = [
             'name' => __('Process Designers'),
             'description' => __('Users can design processes.'),
@@ -50,7 +50,7 @@ class DefaultGroupSeeder extends Seeder
                 'view-groups',
             ],
         ];
-        
+
         $this->defaults[] = [
             'name' => __('Administrators'),
             'description' => __('Users can administrate users, groups, and auth clients.'),
@@ -69,7 +69,7 @@ class DefaultGroupSeeder extends Seeder
                 'delete-auth_clients',
                 'delete-comments'
             ],
-        ];    
+        ];
     }
 
     /**
@@ -80,7 +80,7 @@ class DefaultGroupSeeder extends Seeder
     public function run()
     {
         $this->setDefaults();
-                
+
         foreach ($this->defaults as $defaultGroup) {
             // Create the group
             $createdGroup = factory(Group::class)->create([
