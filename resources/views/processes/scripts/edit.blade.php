@@ -38,6 +38,17 @@
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
                         <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                     </div>
+                    <div class="form-group">
+                        {!! Form::label('timeout', 'Timeout') !!}
+                        <div class="form-row ml-0">
+                            {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-1',
+                            'v-model' => 'formData.timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.timeout}']) !!}                        
+                            {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
+                            'v-model' => 'formData.timeout', 'min' => 0, 'max' => 300]) !!}
+                        </div>
+                        <small class="form-text text-muted" v-if="! errors.title">{{ __('How long the script should be allowed to run in seconds (0 seconds is unlimited).') }}</small>
+                        <div class="invalid-feedback" v-if="errors.timeout">@{{errors.timeout[0]}}</div>
+                    </div>
                     <br>
                     <div class="text-right">
                         {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
@@ -61,6 +72,7 @@
                         'title': null,
                         'language': null,
                         'description': null,
+                        'timeout': null,
                         'status': null
                     }
                 }
@@ -83,6 +95,7 @@
                         title: this.formData.title,
                         language: this.formData.language,
                         description: this.formData.description,
+                        timeout: this.formData.timeout,
                     })
                         .then(response => {
                             ProcessMaker.alert('The script was saved.', 'success');
