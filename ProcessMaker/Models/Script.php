@@ -138,6 +138,9 @@ class Script extends Model
                     ],
                     'outputs' => [
                         'response' => '/opt/executor/output.json'
+                    ],
+                    'folders' => [
+                        base_path('storage/api/lua-client') => '/opt/executor/lua-client',
                     ]
                 ];
                 break;
