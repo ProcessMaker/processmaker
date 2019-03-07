@@ -32,7 +32,7 @@
 
                     </div>
                 </nav>
-                <div class="card card-body mt-3">
+                <div class="container mt-3">
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
                              aria-labelledby="nav-home-tab">
@@ -196,6 +196,10 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="text-right mt-2">
+                                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-4">
@@ -250,10 +254,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
-                            </div>
+
                         </div>
                         <div class="tab-pane fade show" id="nav-groups" role="tabpanel"
                              aria-labelledby="nav-groups-tab">
@@ -274,7 +275,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                            <div class="accordion" id="accordionExample">
+                            <div class="accordion card card-body" id="accordionPermissions">
                                 <label>
                                     <input type="checkbox" v-model="formData.is_administrator"
                                            @input="adminHasChanged = true">
@@ -286,10 +287,10 @@
                                     {{__('Assign all permissions to this user')}}
                                 </label>
                                 @include('admin.shared.permissions')
-                            </div>
-                            <div class="text-right mt-2">
+                                <div class="text-right mt-2">
                                 {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
                                 {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
+                            </div>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
@@ -391,7 +392,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                                 @click="onCloseAddUserToGroup">
-                            {{__('Close')}}
+                            {{__('Cancel')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="saveUserToGroup">
                             {{__('Save')}}

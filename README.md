@@ -1,6 +1,6 @@
 # ProcessMaker 4.1 Community Edition Documentation
 
-![ProcessMaker](http://www.processmaker.com/themes/processmaker/images/logo.jpg)
+![](https://www.processmaker.com/assets/PartnerArea/new_logos/sample200_whitebg.png)
 
 [![CircleCI](https://circleci.com/gh/ProcessMaker/bpm/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/bpm/tree/develop)
 
@@ -236,7 +236,9 @@ List of available assertions [https://laravel.com/docs/5.7/dusk\#available-asser
 
 #### License
 
-ProcessMaker - Automate your Workflow Copyright \(C\) 2002 - 2018 ProcessMaker Inc.
+Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)
+
+ProcessMaker \(C\) 2002 - 2019 ProcessMaker Inc.
 
 For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/)
 

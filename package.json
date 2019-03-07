@@ -46,7 +46,7 @@
   "dependencies": {
     "@processmaker/modeler": "^0.5.2",
     "@processmaker/processmaker-bpmn-moddle": "^0.2.0",
-    "@processmaker/vue-form-builder": "^0.8.0",
+    "@processmaker/vue-form-builder": "^0.10.2",
     "@tinymce/tinymce-vue": "^1.0.8",
     "babel-eslint": "^10.0.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",

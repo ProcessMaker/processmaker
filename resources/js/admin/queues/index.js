@@ -27,6 +27,16 @@ Vue.prototype.$http.interceptors.request.use((config) => {
     // Do something with request error
     Promise.reject(error));
 
+// HACK until horizon is fixed. Makes full page request.
+Vue.prototype.$http.interceptors.response.use(function (response, req) {
+    if (response.config.url.match('/admin/queues/api/jobs/recent')) {
+        response.data.jobs.forEach(job => {
+            job.id = "../../admin/queues/failed/" + job.id;
+        })
+    }
+    return response;
+});
+
 window.Bus = new Vue({name: "Bus"});
 
 Vue.component("loader", require("Horizon/components/Status/Loader.vue"));
