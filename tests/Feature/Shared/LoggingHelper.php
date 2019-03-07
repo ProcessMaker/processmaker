@@ -17,6 +17,7 @@ trait LoggingHelper
     {
         $records = app('log')->getHandlers()[0]->getRecords();
         $count = count($data);
+        $matches = 0;
 
         foreach ($records as $record) {
             $matches = 0;
