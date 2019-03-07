@@ -4,10 +4,8 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\SerializeToIso8601;
-use RuntimeException;
+use ProcessMaker\ScriptRunners\ScriptRunner;
 
 /**
  * Represents an Eloquent model of a Script
@@ -42,8 +40,6 @@ use RuntimeException;
 class Script extends Model
 {
     use SerializeToIso8601;
-    use ScriptDockerCopyingFilesTrait;
-    use ScriptDockerBindingFilesTrait;
 
     protected $guarded = [
         'id',
@@ -87,80 +83,8 @@ class Script extends Model
      */
     public function runScript(array $data, array $config)
     {
-        $code = $this->code;
-        $language = $this->language;
-        $timeout = $this->timeout;
-
-        $variablesParameter = [];
-        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
-            foreach ($variables as $variable) {
-                $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
-            }
-        });
-
-        // Add the url to the host
-        $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
-
-        if ($variablesParameter) {
-            $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
-        } else {
-            $variablesParameter = '';
-        }
-
-        // So we have the files, let's execute the docker container
-        switch (strtolower($language)) {
-            case 'php':
-                $dockerConfig = [
-                    'timeout' => $timeout,
-                    'image' => 'processmaker/executor:php',
-                    'command' => 'php /opt/executor/bootstrap.php',
-                    'parameters' => $variablesParameter,
-                    'inputs' => [
-                        '/opt/executor/data.json' => json_encode($data),
-                        '/opt/executor/config.json' => json_encode($config),
-                        '/opt/executor/script.php' => $code
-                    ],
-                    'outputs' => [
-                        'response' => '/opt/executor/output.json'
-                    ]
-                ];
-                break;
-            case 'lua':
-                $dockerConfig = [
-                    'timeout' => $timeout,
-                    'image' => 'processmaker/executor:lua',
-                    'command' => 'lua5.3 /opt/executor/bootstrap.lua',
-                    'parameters' => $variablesParameter,
-                    'inputs' => [
-                        '/opt/executor/data.json' => json_encode($data),
-                        '/opt/executor/config.json' => json_encode($config),
-                        '/opt/executor/script.lua' => $code
-                    ],
-                    'outputs' => [
-                        'response' => '/opt/executor/output.json'
-                    ]
-                ];
-                break;
-            default:
-                throw new ScriptLanguageNotSupported($language);
-        }
-
-        $executeMethod = config('app.bpm_scripts_docker_mode')==='binding'
-            ? 'executeBinding' : 'executeCopying';
-        $response = $this->$executeMethod($dockerConfig);
-        $returnCode = $response['returnCode'];
-        $stdOutput = $response['output'];
-        $output = $response['outputs']['response'];
-        if ($returnCode || $stdOutput) {
-            // Has an error code
-            throw new RuntimeException(implode("\n", $stdOutput));
-        } else {
-            // Success
-            $response = json_decode($output, true);
-            return [
-                'output' => $response
-            ];
-        }
+        $runner = new ScriptRunner($this->language);
+        return $runner->run($this->code, $data, $config, $this->timeout);
     }
 
     /**
@@ -174,7 +98,7 @@ class Script extends Model
     {
         return static::$scriptFormats[$format];
     }
-    
+
     /**
      * Get the associated versions
      */
