@@ -34,9 +34,21 @@
             </div>
             <div class="output">
                 <div class="p-1 bg-secondary border-bottom text-white">Script Output</div>
-                <button :disabled="preview.executing" @click="execute" class="btn btn-primary">Execute</button>
+                <div class="btn-group" role="group">
+                    <button :disabled="preview.executing" @click="execute" class="btn btn-primary"><i class="fas fa-play-circle"></i></button>
+                    <button type="button" class="btn btn-light"></button>
+                    <button type="button" class="btn btn-light text-right">
+                        <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
+                        <i v-if="preview.success" class="fas fa-check text-success"></i>
+                        <i v-if="preview.failure" class="fas fa-times-circle text-danger"></i>
+                    </button>
+                </div>
                 <div class="content" style="overflow: auto; width: 100%;">
-                    <pre v-text="preview.output"></pre>
+                    <pre v-if="preview.success" v-text="preview.output"></pre>
+                    <div v-if="preview.failure" class="w-100">
+                        <div class="text-light bg-danger">{{preview.error.exception}}</div>
+                        <div class="text-light text-monospace small">{{preview.error.message}}</div>
+                    </div>
                 </div>
 
             </div>
@@ -61,7 +73,9 @@
                     executing: false,
                     data: "{}",
                     config: "{}",
-                    output: ''
+                    output: '',
+                    success: false,
+                    failure: false,
                 }
             };
         },
@@ -85,6 +99,8 @@
             },
             execute() {
                 this.preview.executing = true;
+                this.preview.success = false;
+                this.preview.failure = false;
                 // Attempt to execute a script, using our temp variables
                 ProcessMaker.apiClient
                     .post("scripts/preview", {
@@ -96,9 +112,13 @@
                     .then(response => {
                         this.preview.executing = false;
                         this.preview.output = response.data.output;
+                        this.preview.success = true;
                     })
                     .catch((err) => {
                         this.preview.executing = false;
+                        this.preview.failure = true;
+                        this.preview.output = err.response;
+                        this.preview.error = err.response.data;
                     });
             },
             onClose() {
@@ -139,7 +159,7 @@
             }
         }
         .preview {
-            height: 200px;
+            height: 300px;
             display: flex;
 
             .content {
