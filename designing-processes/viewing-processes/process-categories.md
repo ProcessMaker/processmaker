@@ -127,9 +127,21 @@ Follow these steps to delete a Process Category:
 
 {% page-ref page="../../using-processmaker/requests/make-a-request.md" %}
 
+{% page-ref page="view-the-list-of-processes/view-your-processes.md" %}
+
 {% page-ref page="view-the-list-of-processes/create-a-process.md" %}
 
+{% page-ref page="view-the-list-of-processes/import-a-bpmn-compliant-process.md" %}
+
+{% page-ref page="view-the-list-of-processes/search-for-a-process.md" %}
+
 {% page-ref page="view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md" %}
+
+{% page-ref page="view-the-list-of-processes/export-a-bpmn-compliant-process.md" %}
+
+{% page-ref page="view-the-list-of-processes/remove-a-process.md" %}
+
+{% page-ref page="view-the-list-of-processes/restore-a-process.md" %}
 
 {% page-ref page="../../using-processmaker/control-how-requests-display-in-a-tab.md" %}
 

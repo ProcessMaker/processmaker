@@ -39,15 +39,19 @@ See [View All Processes](view-your-processes.md#manage-your-processes) for ways 
 
 {% page-ref page="view-your-processes.md" %}
 
+{% page-ref page="import-a-bpmn-compliant-process.md" %}
+
+{% page-ref page="create-a-process.md" %}
+
 {% page-ref page="edit-the-name-description-category-or-status-of-a-process.md" %}
+
+{% page-ref page="export-a-bpmn-compliant-process.md" %}
 
 {% page-ref page="remove-a-process.md" %}
 
 {% page-ref page="restore-a-process.md" %}
 
 {% page-ref page="../process-categories.md" %}
-
-{% page-ref page="create-a-process.md" %}
 
 {% page-ref page="../../process-design/model-your-process/" %}
 

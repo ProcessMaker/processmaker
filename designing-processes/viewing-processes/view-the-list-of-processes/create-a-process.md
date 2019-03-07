@@ -33,7 +33,19 @@ Follow these steps to create a new Process:
 
 {% page-ref page="view-your-processes.md" %}
 
+{% page-ref page="import-a-bpmn-compliant-process.md" %}
+
+{% page-ref page="search-for-a-process.md" %}
+
+{% page-ref page="export-a-bpmn-compliant-process.md" %}
+
 {% page-ref page="../process-categories.md" %}
+
+{% page-ref page="edit-the-name-description-category-or-status-of-a-process.md" %}
+
+{% page-ref page="remove-a-process.md" %}
+
+{% page-ref page="restore-a-process.md" %}
 
 {% page-ref page="../../process-design/model-your-process/" %}
 

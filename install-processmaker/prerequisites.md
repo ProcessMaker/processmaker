@@ -26,9 +26,9 @@ The following are server requirements to install ProcessMaker 4 Community Editio
   * JSON PHP Extension
   * BCMath PHP Extension
 * **Database:** MySQL 5.7.x or MariaDB 10.2.x
-* **Web server:** Apache 2.4.x or NGINX 1.x or later
+* **Web server:** Apache 2.4.x or NGINX 1.x or later \(preferred\)
 * **Container:** Docker runtime
-* **Data structure store:** Redis 5.0.3
+* **Data structure store:** Single-node Redis 5.0.3
 * **Queue Management Service:** Laravel Horizon
 
 ## Related Topics

@@ -80,17 +80,21 @@ If no active Processes exist, the following message displays: **No Data Availabl
 
 {% page-ref page="../what-is-a-process.md" %}
 
+{% page-ref page="create-a-process.md" %}
+
 {% page-ref page="../process-categories.md" %}
+
+{% page-ref page="import-a-bpmn-compliant-process.md" %}
 
 {% page-ref page="search-for-a-process.md" %}
 
 {% page-ref page="edit-the-name-description-category-or-status-of-a-process.md" %}
 
+{% page-ref page="export-a-bpmn-compliant-process.md" %}
+
 {% page-ref page="remove-a-process.md" %}
 
 {% page-ref page="restore-a-process.md" %}
-
-{% page-ref page="create-a-process.md" %}
 
 {% page-ref page="../../process-design/model-your-process/" %}
 

@@ -14,15 +14,21 @@ Any Process designed in or exported from ProcessMaker 4 is BPMN 2.0 compliant. F
 
 {% page-ref page="view-the-list-of-processes/view-your-processes.md" %}
 
+{% page-ref page="view-the-list-of-processes/create-a-process.md" %}
+
+{% page-ref page="view-the-list-of-processes/import-a-bpmn-compliant-process.md" %}
+
 {% page-ref page="view-the-list-of-processes/search-for-a-process.md" %}
 
 {% page-ref page="view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md" %}
 
+{% page-ref page="view-the-list-of-processes/export-a-bpmn-compliant-process.md" %}
+
 {% page-ref page="view-the-list-of-processes/remove-a-process.md" %}
 
-{% page-ref page="process-categories.md" %}
+{% page-ref page="view-the-list-of-processes/restore-a-process.md" %}
 
-{% page-ref page="view-the-list-of-processes/create-a-process.md" %}
+{% page-ref page="process-categories.md" %}
 
 {% page-ref page="../process-design/" %}
 
