@@ -42,7 +42,7 @@ class ScriptsTest extends TestCase
     public function testCreateScript()
     {
         $faker = Faker::create();
-        $user = factory(User::class)->create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
 
         //Post saved correctly
         $url = self::API_TEST_SCRIPT;
