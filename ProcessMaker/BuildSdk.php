@@ -20,6 +20,7 @@ class BuildSdk {
 
     public function run()
     {
+        $this->runCmd('mkdir -p ' . $this->outputBaseDir());
         $this->runChecks();
 
         $existing = $this->existingContainers();
@@ -28,6 +29,9 @@ class BuildSdk {
             $this->runCmd("docker container stop $existing");
             $this->runCmd("docker container rm $existing");
             $existing = [];
+        } elseif (count($existing) === 1) {
+            # start the existing container if it is stopped.
+            $this->runCmd('docker start generator || echo "Container already running"');
         }
 
         if (empty($existing) || $this->rebuild) {
@@ -128,7 +132,7 @@ class BuildSdk {
 
     private function existingContainers()
     {
-        return $this->runCmd("docker container ls -aq --filter='name=generator'");
+        return (array) $this->runCmd("docker container ls -aq --filter='name=generator'");
     }
 
     private function curlPost()
