@@ -23,22 +23,20 @@ class BuildSdk {
         $this->runCmd('mkdir -p ' . $this->outputBaseDir());
         $this->runChecks();
 
-        $existing = $this->existingContainers();
-        if (!empty($existing) && $this->rebuild) {
-            $existing = str_replace("\n", " ", $existing);
-            $this->runCmd("docker container stop $existing");
-            $this->runCmd("docker container rm $existing");
-            $existing = [];
-        } elseif (count($existing) === 1) {
-            # start the existing container if it is stopped.
-            $this->runCmd('docker start generator || echo "Container already running"');
-        }
+        $existing = $this->existingContainer();
 
-        if (empty($existing) || $this->rebuild) {
+        if ($this->rebuild && $existing !== "") {
+            $this->runCmd("docker container stop $existing || echo 'Container already stopped'");
+            $this->runCmd("docker container rm $existing");
+        }
+        
+        if ($existing === "" || $this->rebuild) {
             $this->runCmd('docker pull ' . $this->image);
             $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
             $this->docker('apk add --update curl && rm -rf /var/cache/apk/*');
         }
+        
+        $this->runCmd('docker start generator || echo "Container already running"');
 
         $this->waitForBoot();
 
@@ -130,9 +128,9 @@ class BuildSdk {
         return "{$this->basePath}/$folder";
     }
 
-    private function existingContainers()
+    private function existingContainer()
     {
-        return (array) $this->runCmd("docker container ls -aq --filter='name=generator'");
+        return $this->runCmd("docker container ls -aq --filter='name=generator'");
     }
 
     private function curlPost()
