@@ -243,7 +243,7 @@ class ScriptController extends Controller
         $script->fill($request->input());
 
         $userToRunAs = User::find($script->run_as_user_id);
-        if ($userToRunAs->tokens()->get()->count() === 0) {
+        if ($userToRunAs->tokens()->get()->count() === 0 && !$userToRunAs->is_administrator) {
             return response(
                 ['message' => "The user doesn't have an access token",
                     'errors' => ['run_as_user_id' => ["The user doesn't have an access token"]]],

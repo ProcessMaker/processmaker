@@ -234,7 +234,7 @@ class ScriptsTest extends TestCase
     public function testUpdateScript()
     {
         $faker = Faker::create();
-        $user = factory(User::class)->create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
 
         //Post saved success
         $yesterday = \Carbon\Carbon::now()->subDay();
