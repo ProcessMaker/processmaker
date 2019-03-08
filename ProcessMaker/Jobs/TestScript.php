@@ -21,6 +21,7 @@ class TestScript implements ShouldQueue
 
     protected $code;
     protected $language;
+    protected $timeout;
     protected $user;
     protected $data;
     protected $configuration;
@@ -30,13 +31,15 @@ class TestScript implements ShouldQueue
      *
      * @param string $code
      * @param string $language
+     * @param string $timeout
      * @param array $data
      * @param array $configuration
      */
-    public function __construct($code, $language, User $user, array $data, array $configuration)
+    public function __construct($code, $language, $timeout, User $user, array $data, array $configuration)
     {
         $this->code = $code;
         $this->language = $language;
+        $this->timeout = $timeout;
         $this->user = $user;
         $this->data = $data;
         $this->configuration = $configuration;
@@ -53,6 +56,7 @@ class TestScript implements ShouldQueue
             $script = new Script([
                 'code' => $this->code,
                 'language' => $this->language,
+                'timeout' => $this->timeout,
             ]);
             $response = $script->runScript($this->data, $this->configuration);
             $this->sendResponse(200, $response);
