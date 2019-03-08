@@ -45,7 +45,7 @@ class ProcessController extends Controller
      *     path="/processes",
      *     summary="Returns all processes that the user has access to",
      *     operationId="getProcesses",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -102,14 +102,14 @@ class ProcessController extends Controller
      * @return Response
      *
      * @OA\Get(
-     *     path="/processes/processId",
+     *     path="/processes/{processId}",
      *     summary="Get single process by ID",
      *     operationId="getProcessById",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -139,7 +139,7 @@ class ProcessController extends Controller
      *     path="/processes",
      *     summary="Save a new process",
      *     operationId="createProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
@@ -184,14 +184,14 @@ class ProcessController extends Controller
      * @throws \Throwable
      *
      * @OA\Put(
-     *     path="/processes/processId",
+     *     path="/processes/{processId}",
      *     summary="Update a process",
      *     operationId="updateProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -456,14 +456,14 @@ class ProcessController extends Controller
      * @throws \Throwable
      *
      * @OA\Put(
-     *     path="/processes/processId/restore",
+     *     path="/processes/{processId}/restore",
      *     summary="Restore an inactive process",
      *     operationId="restoreProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -507,14 +507,14 @@ class ProcessController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Delete(
-     *     path="/processes/processId",
+     *     path="/processes/{processId}",
      *     summary="Delete a process",
      *     operationId="deleteProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -543,14 +543,14 @@ class ProcessController extends Controller
      * @return Response
      *
      * @OA\Get(
-     *     path="/processes/processId/export",
+     *     path="/processes/{processId}/export",
      *     summary="Export a single process by ID",
      *     operationId="exportProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -618,10 +618,10 @@ class ProcessController extends Controller
      * @return \ProcessMaker\Http\Resources\ProcessRequests
      *
      * @OA\Post(
-     *     path="process_events/{process_id}",
+     *     path="/process_events/{process_id}",
      *     summary="Start a new process",
      *     operationId="triggerStartEvent",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
