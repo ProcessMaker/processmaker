@@ -68,9 +68,9 @@ location / {
 
 Redirect to the `/opt` directory, and then download the ProcessMaker installer from the following URL: [https://github.com/ProcessMaker/bpm/releases/download/beta2/bpm-beta4.tar.gz](https://github.com/ProcessMaker/bpm/releases/download/beta2/bpm-beta4.tar.gz).
 
-### Untarnish the ProcessMaker 4 Installer
+### Uncompress the ProcessMaker 4 Installer
 
-Untarnish the ProcessMaker 4 tar file based on which web server application you intend to use with ProcessMaker 4. Change the ownership to the dedicated ProcessMaker user you created when you [configured the web server](installation-guide.md#web-server-configuration).
+Uncompress the installer archive into the folder you intend to install Processmaker based on which web server application you intend to use with ProcessMaker 4. Change the ownership to the dedicated ProcessMaker user you created when you [configured the web server](installation-guide.md#web-server-configuration).
 
 See the examples below to untarnish the ProcessMaker 4 installer for Apache and NGINX web servers.
 
