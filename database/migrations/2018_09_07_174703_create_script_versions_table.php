@@ -22,7 +22,7 @@ class CreateScriptVersionsTable extends Migration
             $table->text('description')->nullable();
             $table->string('language', 20)->default('PHP');
             $table->text('code')->nullable();
-            $table->unsignedInteger('run_as_user_id');
+            $table->unsignedInteger('run_as_user_id')->nullable();
             $table->timestamps();
 
             $table->foreign('script_id')->references('id')->on('scripts')->onDelete('cascade');
