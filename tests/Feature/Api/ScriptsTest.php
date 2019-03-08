@@ -289,6 +289,8 @@ class ScriptsTest extends TestCase
     public function testDuplicateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
+
         $code = '{"foo":"bar"}';
         $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
                 'code' => $code
@@ -297,6 +299,7 @@ class ScriptsTest extends TestCase
             'title' => "TITLE",
             'language' => 'php',
             'description' => $faker->sentence(5),
+            'run_as_user_id' => $user->id
         ]);
         $new_script = Script::find($response->json()['id']);
         $this->assertEquals($code, $new_script->code);
@@ -356,5 +359,23 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);
+    }
+
+    /**
+     * test that script without user to run as assigned generates an error
+     */
+    public function testScriptWithoutUser()
+    {
+        $faker = Faker::create();
+        $code = '{"foo":"bar"}';
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
+                'code' => $code
+            ])->id;
+        $response = $this->apiCall('PUT', $url . '/duplicate', [
+            'title' => "TITLE",
+            'language' => 'php',
+            'description' => $faker->sentence(5),
+        ]);
+        $response->assertStatus(422);
     }
 }
