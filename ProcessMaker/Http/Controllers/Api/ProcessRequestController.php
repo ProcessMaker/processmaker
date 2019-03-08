@@ -166,14 +166,14 @@ class ProcessRequestController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Put(
-     *     path="/requests/process_request_id",
+     *     path="/requests/{process_request_id}",
      *     summary="Update a process request",
      *     operationId="updateProcessRequest",
      *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_id",
+     *         name="process_request_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -245,14 +245,14 @@ class ProcessRequestController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
-     *     path="/requests/process_request_id",
+     *     path="/requests/{process_request_id}",
      *     summary="Delete a process request",
      *     operationId="deleteProcessRequest",
      *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_id",
+     *         name="process_request_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
