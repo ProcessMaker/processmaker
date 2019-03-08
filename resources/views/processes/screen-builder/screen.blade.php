@@ -17,7 +17,7 @@
 @endsection
 
 @section('content')
-    <div id="screen-container" class="overflow-hidden" style="display: contents !important">
+    <div id="screen-container" style="display: contents !important">
         <screen-builder :screen="{{$screen}}"></screen-builder>
     </div>
 @endsection

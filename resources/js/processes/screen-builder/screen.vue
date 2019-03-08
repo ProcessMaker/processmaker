@@ -1,6 +1,6 @@
 <template>
-    <div id="form-container" class="h-100 mb-3">
-        <div id="form-toolbar">
+    <div id="form-container" class="d-flex flex-column h-100 mb-3">
+        <div id="form-toolbar" class="d-block">
             <nav class="navbar navbar-expand-md override">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
