@@ -72,34 +72,6 @@ Redirect to the `/opt` directory, and then download the ProcessMaker installer f
 
 Uncompress the installer archive into the folder you intend to install Processmaker based on which web server application you intend to use with ProcessMaker 4. Change the ownership to the dedicated ProcessMaker user you created when you [configured the web server](installation-guide.md#web-server-configuration).
 
-See the examples below to untarnish the ProcessMaker 4 installer for Apache and NGINX web servers.
-
-{% tabs %}
-{% tab title="Apache2.4.x" %}
-{% code-tabs %}
-{% code-tabs-item title="Example to untarnish the ProcessMaker 4 installer on the Apache web server." %}
-```text
-tar -xzvf bpm4_version.tar.gz
-mv bpm_version processmaker
-chown -R apache:apache processmaker
-```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
-{% endtab %}
-
-{% tab title="NGINX 1.x" %}
-{% code-tabs %}
-{% code-tabs-item title="Example to untarnish the ProcessMaker 4 installer on the NGINX web server." %}
-```text
-tar -xzvf bpm4_version.tar.gz
-mv bpm_version processmaker
-chown -R nginx:nginx processmaker
-```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
-{% endtab %}
-{% endtabs %}
-
 ### Run the ProcessMaker 4 Installer
 
 Run the ProcessMaker 4 installer and follow the prompts to configure your ProcessMaker 4 installation.
