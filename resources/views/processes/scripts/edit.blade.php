@@ -87,7 +87,10 @@
                 }
             },
             mounted() {
-                this.selectedUser = this.options.filter(u => {return u.id === this.formData.run_as_user_id});
+                let users = this.options.filter(u => {return u.id === this.formData.run_as_user_id});
+                if (users.length > 0) {
+                    this.selectedUser = users[0];
+                }
             },
             methods: {
                 resetErrors() {
