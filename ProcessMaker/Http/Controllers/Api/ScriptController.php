@@ -116,7 +116,7 @@ class ScriptController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="output of scripts",
+     *         description="success if the script was queued",
      *         @OA\JsonContent()
      *         ),
      *     ),
@@ -130,6 +130,7 @@ class ScriptController extends Controller
         $language = $request->get('language');
         $user = Auth::user();
         TestScript::dispatch($code, $language, $user, $data, $config);
+        return ['status' => 'success'];
     }
 
     /**
