@@ -12,7 +12,7 @@ Import Processes into ProcessMaker 4 if the Process to be imported is BPMN 2.0 c
 
 Import valid ProcessMaker 4 Processes that have been [exported](export-a-bpmn-compliant-process.md) from ProcessMaker 4 if the Process was exported from the same ProcessMaker 4 version. A valid ProcessMaker 4 Process is [BPMN 2.0 compliant](https://www.omg.org/spec/BPMN/2.0/About-BPMN/). The Process can be imported from the same or different ProcessMaker 4 instance.
 
-The following ProcessMaker 4 components are imported from another valid ProcessMaker 4 Process if they are specified in that Process:
+The following ProcessMaker 4 components are imported from a valid ProcessMaker 4 Process if they are specified in that Process:
 
 * [ProcessMaker Scripts](../../scripts/what-is-a-script.md) configured for [Script Task elements](../../process-design/model-your-process/add-and-configure-script-task-elements.md) as well as their Script configurations
 * [ProcessMaker Screens](../../design-forms/what-is-a-form.md) configured for [Task elements](../../process-design/model-your-process/add-and-configure-task-elements.md) as well as routing rule expressions
@@ -51,7 +51,7 @@ Follow these steps to import a Process:
    ![](../../../.gitbook/assets/imported-process-with-name-of-source-process-processes.png)
 
 {% hint style="warning" %}
-If the source BPMN 2.0 compliant Process cannot import successfully, the following message displays: **Unable to import the process.** Ensure that the source Process is valid, not corrupt, and is BPMN 2.0 compliant.
+If the source BPMN 2.0 compliant Process cannot import successfully, the following message displays: **Unable to import the process.** Ensure that the source Process is BPMN 2.0 compliant.
 {% endhint %}
 
 ## Related Topics
