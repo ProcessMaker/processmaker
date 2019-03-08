@@ -174,7 +174,7 @@ class UserController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/users/userId",
+     *     path="/users/{user_id}",
      *     summary="Update a user",
      *     operationId="updateUsers",
      *     tags={"Users"},
@@ -229,7 +229,7 @@ class UserController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Delete(
-     *     path="/users/userId",
+     *     path="/users/{user_id}",
      *     summary="Delete a user",
      *     operationId="deleteUser",
      *     tags={"Users"},
