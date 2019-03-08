@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\ScriptRunners;
 
+use Log;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\ScriptDockerBindingFilesTrait;
 use ProcessMaker\Models\ScriptDockerCopyingFilesTrait;
@@ -28,11 +29,12 @@ abstract class Base
      * @param string $code
      * @param array $data
      * @param array $config
+     * @param integer $timeout
      *
      * @return array
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config)
+    public function run($code, array $data, array $config, $timeout)
     {
         // Prepate the docker parameters
         $environmentVariables = $this->getEnvironmentVariables();
@@ -43,6 +45,7 @@ abstract class Base
             $parameters = '';
         }
         $dockerConfig = $this->config($code, [
+            'timeout' => $timeout,
             'parameters' => $parameters,
             'inputs' => [
                 '/opt/executor/data.json' => json_encode($data),
@@ -52,10 +55,13 @@ abstract class Base
                 'response' => '/opt/executor/output.json'
             ]
         ]);
-
+        
         // Execute docker
         $executeMethod = config('app.bpm_scripts_docker_mode') === 'binding'
             ? 'executeBinding' : 'executeCopying';
+        Log::debug('Executing docker', [
+            'executeMethod' => $executeMethod,
+        ]);
         $response = $this->$executeMethod($dockerConfig);
 
         // Process the output

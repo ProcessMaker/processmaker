@@ -306,6 +306,7 @@ class ScriptsTest extends TestCase
                 'This test requires docker'
             );
         }
+        
         $url = route('api.script.preview', ['data' => '{}', 'code' => 'return {response=1}', 'language' => 'lua']);
         $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(200);
