@@ -65,4 +65,20 @@ class ScriptResponseNotification extends Notification
     {
         return new BroadcastMessage($this->toArray($notifiable));
     }
+
+    /**
+     * Get the value of status
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Get the value of response
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
 }
