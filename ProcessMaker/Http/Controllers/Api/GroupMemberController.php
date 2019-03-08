@@ -3,15 +3,13 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-
-use ProcessMaker\Http\Controllers\Controller;
-
-use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\GroupMembers as GroupMemberResource;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\User;
 
 class GroupMemberController extends Controller
 {
@@ -28,9 +26,11 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
      *
-     *     @OA\Get(
+     * @return ApiCollection
+     *
+     * @OA\Get(
      *     path="/group_members",
      *     summary="Returns all groups for a given member",
      *     operationId="getGroupMembers",
@@ -48,12 +48,12 @@ class GroupMemberController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/group_members"),
+     *                 @OA\Items(ref="#/components/schemas/groupMembers"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -76,41 +76,42 @@ class GroupMemberController extends Controller
 
         $response =
             $query->orderBy(
-            $request->input('order_by', 'created_at'),
-            $request->input('order_direction', 'ASC')
-        )->paginate($request->input('per_page', 10));
+                $request->input('order_by', 'created_at'),
+                $request->input('order_direction', 'ASC')
+            )->paginate($request->input('per_page', 10));
 
         return new ApiCollection($response);
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
      *
-     *     @OA\Post(
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Throwable
+     *
+     * @OA\Post(
      *     path="/group_members",
-     *     summary="Save a new group_members",
-     *     operationId="createGroupMembers",
+     *     summary="Save a new group member",
+     *     operationId="createGroupMember",
      *     tags={"Group Members"},
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/group_membersEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/groupMembersEditable")
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/group_members")
+     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
      *     ),
      * )
      */
     public function store(Request $request)
     {
         $isMemberAssociated = GroupMember::where('group_id', $request->input('group_id'))
-            ->where ('member_type', $request->input('member_type'))
-            ->where ('member_id', $request->input('member_id'))
+            ->where('member_type', $request->input('member_type'))
+            ->where('member_id', $request->input('member_id'))
             ->count();
 
         if ($isMemberAssociated) {
@@ -134,16 +135,17 @@ class GroupMemberController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  id  $id
-     * @return \Illuminate\Http\Response
+     * @param GroupMember $group_member
      *
-     *     @OA\Get(
-     *     path="/group_members/group_memberId",
-     *     summary="Get single group_member by ID",
+     * @return GroupMemberResource
+     *
+     * @OA\Get(
+     *     path="/group_members/{group_member_id}",
+     *     summary="Get single group member by ID",
      *     operationId="getGroupMemberById",
      *     tags={"Group Members"},
      *     @OA\Parameter(
-     *         description="ID of group_members to return",
+     *         description="ID of group members to return",
      *         in="path",
      *         name="group_member_id",
      *         required=true,
@@ -153,8 +155,8 @@ class GroupMemberController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the group_members",
-     *         @OA\JsonContent(ref="#/components/schemas/group_members")
+     *         description="Successfully found the group members",
+     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
      *     ),
      * )
      */
@@ -166,14 +168,16 @@ class GroupMemberController extends Controller
     /**
      * Delete a group membership
      *
-     * @param GroupMember $user
+     * @param GroupMember $group_member
      *
-     * @return ResponseFactory|Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
-     *     @OA\Delete(
-     *     path="/group_members/group_memberId",
-     *     summary="Delete a group_members",
-     *     operationId="deleteGroupMembers",
+     * @throws \Exception
+     *
+     * @OA\Delete(
+     *     path="/group_members/{group_member_id}",
+     *     summary="Delete a group member",
+     *     operationId="deleteGroupMember",
      *     tags={"Group Members"},
      *     @OA\Parameter(
      *         description="ID of group_members to return",
@@ -187,7 +191,7 @@ class GroupMemberController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/group_members")
+     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
      *     ),
      * )
      */
@@ -200,7 +204,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of groups available
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -209,7 +213,7 @@ class GroupMemberController extends Controller
      *     operationId="getGroupMembersAvailable",
      *     tags={"Group Members"},
      *     @OA\Parameter(
-     *         description="ID of group_members to return",
+     *         description="ID of group member to return",
      *         in="path",
      *         name="member_id",
      *         required=true,
@@ -218,7 +222,7 @@ class GroupMemberController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         description="type of group_members to return",
+     *         description="type of group member to return",
      *         in="path",
      *         name="member_type",
      *         required=true,
@@ -239,12 +243,12 @@ class GroupMemberController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/group_members"),
+     *                 @OA\Items(ref="#/components/schemas/groupMembers"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -289,7 +293,7 @@ class GroupMemberController extends Controller
     /**
      * Display a listing of users available
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return ApiCollection
      *
      * @OA\Get(
@@ -319,12 +323,12 @@ class GroupMemberController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/group_members"),
+     *                 @OA\Items(ref="#/components/schemas/groupMembers"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
