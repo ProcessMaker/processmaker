@@ -84,12 +84,29 @@
         },
         mounted() {
             window.addEventListener("resize", this.handleResize);
+            let userID = document.head.querySelector("meta[name=\"user-id\"]");
+            window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
+                .notification((response) => {
+                    this.outputResponse(response);
+                });
         },
         beforeDestroy: function() {
             window.removeEventListener("resize", this.handleResize);
         },
 
         methods: {
+            outputResponse(response) {
+                if (response.status === 200) {
+                    this.preview.executing = false;
+                    this.preview.output = response.response;
+                    this.preview.success = true;
+                } else {
+                    this.preview.executing = false;
+                    this.preview.failure = true;
+                    this.preview.output = response.response;
+                    this.preview.error = response.response;
+                }
+            },
             stopResizing: _.debounce(function() {
                 this.resizing = false;
             }, 50),
@@ -108,17 +125,6 @@
                         language: this.script.language,
                         data: this.preview.data,
                         config: this.preview.config
-                    })
-                    .then(response => {
-                        this.preview.executing = false;
-                        this.preview.output = response.data.output;
-                        this.preview.success = true;
-                    })
-                    .catch((err) => {
-                        this.preview.executing = false;
-                        this.preview.failure = true;
-                        this.preview.output = err.response;
-                        this.preview.error = err.response.data;
                     });
             },
             onClose() {
