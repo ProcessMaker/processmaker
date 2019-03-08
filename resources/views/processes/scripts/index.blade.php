@@ -76,6 +76,17 @@
                                      :searchable="true"></multiselect>
                     </div>
 
+                    <div class="form-group">
+                        {!! Form::label('timeout', 'Timeout') !!}
+                        <div class="form-row ml-0">
+                            {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-2',
+                            'v-model' => 'timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":addError.timeout}']) !!}                        
+                            {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
+                            'v-model' => 'timeout', 'min' => 0, 'max' => 300]) !!}
+                            <div class="invalid-feedback" v-for="timeout in addError.timeout">@{{timeout}}</div>
+                        </div>
+                        <small class="form-text text-muted" v-if="! addError.timeout">{{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary"
@@ -106,6 +117,7 @@
                     addError: {},
                     selectedUser:'',
                     users:@json($users),
+                    timeout: 60,
                 },
                 methods: {
                     onClose() {
@@ -113,6 +125,7 @@
                         this.language = '';
                         this.description = '';
                         this.code = '';
+                        this.timeout = 60;
                         this.addError = {};
                     },
                     onSubmit() {
@@ -126,7 +139,8 @@
                             language: this.language,
                             description: this.description,
                             run_as_user_id: this.selectedUser.id,
-                            code: "[]"
+                            code: "[]",
+                            timeout: this.timeout
                         })
                         .then(response => {
                             ProcessMaker.alert('{{__('The script was created.')}}', 'success');

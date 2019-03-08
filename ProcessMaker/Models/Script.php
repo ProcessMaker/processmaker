@@ -18,6 +18,7 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
  * @property text description
  * @property string language
  * @property text code
+ * @property integer timeout
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
@@ -26,6 +27,7 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="code", type="string"),
+ *   @OA\Property(property="teimout", type="integer"),
  * ),
  * @OA\Schema(
  *   schema="scripts",
@@ -49,6 +51,10 @@ class Script extends Model
         'application/x-php' => 'php',
         'application/x-lua' => 'lua',
     ];
+    
+    protected $casts = [
+        'timeout' => 'integer',
+    ];
 
     /**
      * Validation rules
@@ -65,7 +71,8 @@ class Script extends Model
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique],
             'language' => 'required|in:php,lua',
-            'run_as_user_id' => 'required'
+            'run_as_user_id' => 'required',
+            'timeout' => 'integer|min:0|max:65535',
         ];
     }
 
@@ -78,7 +85,7 @@ class Script extends Model
     public function runScript(array $data, array $config)
     {
         $runner = new ScriptRunner($this->language);
-        return $runner->run($this->code, $data, $config);
+        return $runner->run($this->code, $data, $config, $this->timeout);
     }
 
     /**

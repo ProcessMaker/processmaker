@@ -91,7 +91,8 @@
                         code: this.code,
                         language: this.script.language,
                         data: this.preview.data,
-                        config: this.preview.config
+                        config: this.preview.config,
+                        timeout: this.script.timeout
                     })
                     .then(response => {
                         this.preview.executing = false;

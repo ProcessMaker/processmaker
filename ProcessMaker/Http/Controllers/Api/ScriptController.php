@@ -128,10 +128,18 @@ class ScriptController extends Controller
         $config = json_decode($request->get('config'), true) ?: [];
         $code = $request->get('code');
         $language = $request->get('language');
+        $timeout = $request->get('timeout');
+        
+        if ($timeout === null) {
+            $timeout = 60;
+        }
+        
         $script = new Script([
             'code' => $code,
             'language' => $language,
+            'timeout' => $timeout,
         ]);
+        
         return $script->runScript($data, $config);
     }
 
@@ -196,6 +204,15 @@ class ScriptController extends Controller
         $request->validate(Script::rules());
         $script = new Script();
         $script->fill($request->input());
+
+        $userToRunAs = User::find($script->run_as_user_id);
+        if ($userToRunAs->tokens()->get()->count() === 0 && !$userToRunAs->is_administrator) {
+            return response(
+                ['message' => "The user doesn't have an access token",
+                    'errors' => ['run_as_user_id' => ["The user doesn't have an access token"]]],
+                422);
+        }
+
         $script->saveOrFail();
         return new ScriptResource($script);
     }

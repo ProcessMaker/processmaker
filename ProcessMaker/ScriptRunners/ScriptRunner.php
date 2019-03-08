@@ -24,13 +24,14 @@ class ScriptRunner
      * @param string $code
      * @param array $data
      * @param array $config
+     * @param integer $timeout
      *
      * @return array
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config)
+    public function run($code, array $data, array $config, $timeout = 60)
     {
-        return $this->runner->run($code, $data, $config);
+        return $this->runner->run($code, $data, $config, $timeout);
     }
 
     /**
