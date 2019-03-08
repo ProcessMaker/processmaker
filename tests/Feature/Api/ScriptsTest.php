@@ -42,13 +42,16 @@ class ScriptsTest extends TestCase
     public function testCreateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create();
+
         //Post saved correctly
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'language' => 'php',
             'code' => '123',
-            'description' => 'Description'
+            'description' => 'Description',
+            'run_as_user_id' => $user->id
         ]);
         //validating the answer is correct.
         //Check structure of response.
@@ -231,6 +234,8 @@ class ScriptsTest extends TestCase
     public function testUpdateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create();
+
         //Post saved success
         $yesterday = \Carbon\Carbon::now()->subDay();
         $script = factory(Script::class)->create([
@@ -242,6 +247,7 @@ class ScriptsTest extends TestCase
             'title' => $script->title,
             'language' => 'lua',
             'code' => $faker->sentence(3),
+            'run_as_user_id' => $user->id
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
