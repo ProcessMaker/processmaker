@@ -21,8 +21,8 @@ See the [Process](../../../processmaker-administration/permission-descriptions-f
 
 Follow these steps to restore an archived Process:
 
-1. [View your archived Processes](remove-a-process.md#view-archived-processes). The **Process Archive** page displays.
-2. Select the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png)for your Process. The following message displays: **The process was restored successfully**. The Process moves from the **Process Archive** page to the **Processes** page. See [View Active and Inactive Processes](view-your-processes.md#view-all-processes).
+1. [View your archived Processes](remove-a-process.md#view-archived-processes). The **Archived Processes** page displays.
+2. Select the **Restore** icon![](../../../.gitbook/assets/restore-process-icon-processes-page-processes.png)for your Process. The following message displays: **The process was restored**. The Process moves from the **Process Archive** page to the **Processes** page. See [View All Active Processes](view-your-processes.md#view-all-active-processes).
 
 ## Related Topics
 

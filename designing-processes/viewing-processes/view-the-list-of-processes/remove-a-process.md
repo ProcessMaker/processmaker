@@ -24,7 +24,7 @@ Follow these steps to view all archived Processes in your organization:
 
 1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
-3. Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-processes-icon-processes.png)in the left sidebar. The **Process Archive** page displays all archived Processes in your organization.
+3. Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-processes-icon-processes.png)in the left sidebar. The **Archived Processes** page displays all archived Processes in your organization.
 
 {% hint style="info" %}
 Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-processes-icon-processes.png)in the left sidebar when you are in other Process-related pages to view the **Process Archive** page.
@@ -73,7 +73,7 @@ Follow these steps to archive a Process:
 
    ![](../../../.gitbook/assets/archive-process-confirmation-processes.png)
 
-3. Click **Confirm** to archive the Process. The following message displays: **Process Archived**. The Process moves from the **Processes** page to the **Process Archive** page. See [View Archived Processes](remove-a-process.md#view-archived-processes). Also see [Restore an Archived Process](restore-a-process.md#restore-a-process).
+3. Click **Confirm** to archive the Process. The following message displays: **The process was archived.** The Process moves from the **Processes** page to the **Process Archive** page. See [View Archived Processes](remove-a-process.md#view-archived-processes). Also see [Restore an Archived Process](restore-a-process.md#restore-a-process).
 
 ## Related Topics
 
