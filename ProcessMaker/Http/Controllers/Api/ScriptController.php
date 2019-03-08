@@ -129,7 +129,12 @@ class ScriptController extends Controller
         $code = $request->get('code');
         $language = $request->get('language');
         $user = Auth::user();
-        TestScript::dispatch($code, $language, $user, $data, $config);
+        $timeout = $request->get('timeout');
+
+        if ($timeout === null) {
+            $timeout = 60;
+        }
+        TestScript::dispatch($code, $language, $timeout, $user, $data, $config);
         return ['status' => 'success'];
     }
 
