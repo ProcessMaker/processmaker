@@ -46,11 +46,12 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * ),
  * @OA\Schema(
  *   schema="Process",
- *   allOf={@OA\Schema(ref="#/components/schemas/ProcessEditable")},
+ *   allOf={@OA\Schema(ref="#/components/schemas/ProcessEditable"),
  *   @OA\Property(property="user_id", type="string", format="id"),
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *  }
  * )
  */
 class Process extends Model implements HasMedia

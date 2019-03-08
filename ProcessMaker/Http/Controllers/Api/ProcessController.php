@@ -388,7 +388,7 @@ class ProcessController extends Controller
      *     path="/start_processes",
      *     summary="Returns the list of processes that the user can start",
      *     operationId="startProcesses",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -586,7 +586,7 @@ class ProcessController extends Controller
      *     path="/processes/import",
      *     summary="Import a process",
      *     operationId="importProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
