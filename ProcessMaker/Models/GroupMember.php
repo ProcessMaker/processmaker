@@ -26,9 +26,14 @@ use Illuminate\Database\Eloquent\Model;
  * ),
  * @OA\Schema(
  *     schema="groupMembers",
- *     allOf={@OA\Schema(ref="#/components/schemas/groupMembersEditable")},
- *     @OA\Property(property="created_at", type="string", format="date-time"),
- *     @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     allOf={
+ *      @OA\Schema(ref="#/components/schemas/groupMembersEditable"),
+ *      @OA\Schema(
+ *          type = "object",
+ *          @OA\Property(property="created_at", type="string", format="date-time"),
+ *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *          )
+ *      },
  * )
  *
  */

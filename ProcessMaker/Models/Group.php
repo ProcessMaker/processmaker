@@ -23,9 +23,14 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * ),
  * @OA\Schema(
  *   schema="groups",
- *   allOf={@OA\Schema(ref="#/components/schemas/groupsEditable")},
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   allOf={
+ *      @OA\Schema(ref="#/components/schemas/groupsEditable"),
+ *      @OA\Schema(
+ *          type = "object",
+ *          @OA\Property(property="created_at", type="string", format="date-time"),
+ *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *      )
+ *   }
  * )
  *
  */
