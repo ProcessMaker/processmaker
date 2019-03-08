@@ -25,6 +25,10 @@ return [
     |
     */
     'channels' => [
+        'test' => [
+            'driver' => 'custom',
+            'via' => ProcessMaker\Logging\CreateTestLogger::class,
+        ],
         'stack' => [
             'driver' => 'stack',
             'channels' => ['daily'],

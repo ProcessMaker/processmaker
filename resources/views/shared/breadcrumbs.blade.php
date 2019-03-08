@@ -1,4 +1,5 @@
-<nav aria-label="breadcrumb" class="sticky-top">
+<div>
+<nav aria-label="breadcrumb" class="sticky-top navbar-z-index">
     <ol class="breadcrumb bg-light text-primary">
         <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
         @foreach($routes as $title => $link)
@@ -7,7 +8,7 @@
                     list($title, $link) = $link();
                 }
             @endphp
-            
+
             @if ($loop->last)
                 <li class="breadcrumb-item active font-weight-bold">
             @else
@@ -25,4 +26,5 @@
             </li>
         @endforeach
     </ol>
-</nav>      
+</nav>
+</div>

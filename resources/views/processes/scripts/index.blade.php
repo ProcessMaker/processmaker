@@ -69,6 +69,17 @@
                         \'is-invalid\':addError.language}']);!!}
                         <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
                     </div>
+                    <div class="form-group">
+                        {!! Form::label('timeout', 'Timeout') !!}
+                        <div class="form-row ml-0">
+                            {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-2',
+                            'v-model' => 'timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":addError.timeout}']) !!}                        
+                            {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
+                            'v-model' => 'timeout', 'min' => 0, 'max' => 300]) !!}
+                            <div class="invalid-feedback" v-for="timeout in addError.timeout">@{{timeout}}</div>
+                        </div>
+                        <small class="form-text text-muted" v-if="! addError.timeout">{{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}</small>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary"
@@ -96,6 +107,7 @@
                     language: '',
                     description: '',
                     code: '',
+                    timeout: 60,
                     addError: {}
                 },
                 methods: {
@@ -104,6 +116,7 @@
                         this.language = '';
                         this.description = '';
                         this.code = '';
+                        this.timeout = 60;
                         this.addError = {};
                     },
                     onSubmit() {
@@ -116,7 +129,8 @@
                             title: this.title,
                             language: this.language,
                             description: this.description,
-                            code: "[]"
+                            code: "[]",
+                            timeout: this.timeout
                         })
                         .then(response => {
                             ProcessMaker.alert('{{__('The script was created.')}}', 'success');
