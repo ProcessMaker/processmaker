@@ -22,7 +22,7 @@ Follow these steps to view all ProcessMaker Scripts in your organization:
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
 3. Click the **Scripts** icon![](../../../.gitbook/assets/scripts-icon-processes.png) from the left sidebar. The **Scripts** page displays all ProcessMaker Scripts.
 
-![&quot;Scripts&quot; page displays all ProcessMaker Scripts in your organization](../../../.gitbook/assets/chrome_2019-01-17_14-38-34.png)
+![&quot;Scripts&quot; page displays all ProcessMaker Scripts in your organization](../../../.gitbook/assets/scripts-page-processes.png)
 
 The **Scripts** page displays the following information in tabular format about ProcessMaker Scripts:
 
@@ -61,13 +61,15 @@ If no ProcessMaker Scripts exist, the following message displays: **No Data Avai
 
 {% page-ref page="../what-is-a-script.md" %}
 
+{% page-ref page="create-a-new-script.md" %}
+
 {% page-ref page="search-for-a-script.md" %}
+
+{% page-ref page="edit-script-configuration.md" %}
 
 {% page-ref page="edit-a-script.md" %}
 
 {% page-ref page="remove-a-script.md" %}
-
-{% page-ref page="create-a-new-script.md" %}
 
 {% page-ref page="../scripts-editor.md" %}
 

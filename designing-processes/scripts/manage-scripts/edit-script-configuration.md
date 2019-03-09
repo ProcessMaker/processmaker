@@ -40,13 +40,13 @@ Follow these steps to edit the configuration information about a ProcessMaker Sc
 
 {% page-ref page="view-all-scripts.md" %}
 
+{% page-ref page="create-a-new-script.md" %}
+
 {% page-ref page="search-for-a-script.md" %}
 
 {% page-ref page="edit-a-script.md" %}
 
 {% page-ref page="remove-a-script.md" %}
-
-{% page-ref page="create-a-new-script.md" %}
 
 {% page-ref page="../scripts-editor.md" %}
 

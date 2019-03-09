@@ -36,11 +36,13 @@ Follow these steps to delete a ProcessMaker Script:
 
 {% page-ref page="view-all-scripts.md" %}
 
+{% page-ref page="create-a-new-script.md" %}
+
 {% page-ref page="search-for-a-script.md" %}
 
-{% page-ref page="edit-a-script.md" %}
+{% page-ref page="edit-script-configuration.md" %}
 
-{% page-ref page="create-a-new-script.md" %}
+{% page-ref page="edit-a-script.md" %}
 
 {% page-ref page="../scripts-editor.md" %}
 

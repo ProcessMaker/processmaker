@@ -108,13 +108,15 @@ Follow these best practices when developing ProcessMaker Scripts.
 
 {% page-ref page="what-is-a-script.md" %}
 
+{% page-ref page="manage-scripts/view-all-scripts.md" %}
+
 {% page-ref page="manage-scripts/search-for-a-script.md" %}
+
+{% page-ref page="manage-scripts/create-a-new-script.md" %}
 
 {% page-ref page="manage-scripts/edit-script-configuration.md" %}
 
 {% page-ref page="manage-scripts/edit-a-script.md" %}
 
 {% page-ref page="manage-scripts/remove-a-script.md" %}
-
-{% page-ref page="manage-scripts/create-a-new-script.md" %}
 

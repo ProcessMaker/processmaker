@@ -6,7 +6,7 @@ description: Assign Categories to Processes for better organization.
 
 ## Overview
 
-Processes for which a Request can be started can be grouped into Categories. Use Categories to organize your organizational Processes for Requesters.
+Processes for which a Request can be started can be grouped into Categories. Use Categories to organize your Processes for Requesters.
 
 Categories can be active or inactive. Processes that have been assigned to an inactive Category do not display in any Category for Requesters.
 
@@ -33,7 +33,7 @@ The **Categories** page displays the following information in tabular format abo
 * **Name:** The **Name** column displays the name of the Process Category.
 * **Status:** The **Status** column displays the status of the Process Category. Below is a description of each status:
   * **Active:** An active Process Category can have Processes assigned to it.
-  * **Inactive:** An inactive Process Category can no longer be selected when [assigning a Process to a Process Category](view-the-list-of-processes/create-a-process.md#create-a-new-process). Furthermore, Processes assigned to an inactive Category [no longer display to Process requesters](../../using-processmaker/requests/make-a-request.md#start-a-request) even though such Processes may be active.
+  * **Inactive:** An inactive Process Category can no longer be selected when [assigning a Process to a Category](view-the-list-of-processes/create-a-process.md#create-a-new-process). Furthermore, Processes assigned to an inactive Category [no longer display to Requesters](../../using-processmaker/requests/make-a-request.md#start-a-request) even though such Processes may be active.
 * **Processes:** The **\# Processes** column displays how many Processes in your organization have been assigned to that Process Category.
 * **Modified:** The **Modified** column displays the date and time the Process Category was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the Process Category was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
@@ -48,10 +48,10 @@ If no Process Categories exist, the following message displays: **No Data Availa
 ​[Control how tabular information displays](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LWD5skTaOptuIWIWk76/primary/using-processmaker/control-how-requests-display-in-a-tab), including how to sort columns or how many items display per page.
 {% endhint %}
 
-## Add a New Process Category
+## Create a New Process Category
 
 {% hint style="info" %}
-Your user account or group membership must have the following permissions to add a new Process Category:
+Your user account or group membership must have the following permissions to create a new Process Category:
 
 * Categories: View Categories
 * Categories: Create Categories
@@ -59,15 +59,15 @@ Your user account or group membership must have the following permissions to add
 See the Process [Categories](../../processmaker-administration/permission-descriptions-for-users-and-groups.md#categories) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
-Follow these steps to add a new Process Category:
+Follow these steps to create a new Process Category:
 
 1. [View your Process Categories.](process-categories.md#view-process-categories)
 2. Click the **+Category** button. The **Create New Process Category** screen displays.  
 
    ![](../../.gitbook/assets/create-new-process-category-screen-processes.png)
 
-3. In the **Category Name** field, enter the name of the new Category. The Category name must be unique from all other Category names in your organization. This is a required field.
-4. Click **Save**. The **Edit Process Category** page displays. Use this page to edit the Category's name or set its status. See [Edit a Process Category](process-categories.md#edit-a-process-category).
+3. In the **Category Name** field, enter the name of the new Process Category. The Process Category name must be unique from all other Category names in your organization. This is a required field.
+4. Click **Save**. The **Edit Process Category** page displays. Use this page to edit the Process Category's name or set its status. See [Edit a Process Category](process-categories.md#edit-a-process-category).
 
 ## Edit a Process Category
 
@@ -89,9 +89,9 @@ Follow these steps to edit a Process Category:
    ![](../../.gitbook/assets/edit-process-category-page-processes.png)
 
 3. Edit the following information about the Category as necessary:
-   * In the **Category Name** field, edit the name of the Category if necessary. The Category name must be unique from all other Category names in your organization.
-   * From the **Status** drop-down, change the status of the Category if necessary. See [View Process Categories](process-categories.md#view-process-categories).
-4. Click **Update**.
+   * In the **Category Name** field, edit the name of the Category if necessary. The Category name must be unique from all other Category names in your organization. This is a required field.
+   * From the **Status** drop-down, change the status of the Category. This is a required field. See [View Process Categories](process-categories.md#view-process-categories) for status descriptions.
+4. Click **Save**.
 
 ## Delete a Process Category
 
@@ -112,14 +112,16 @@ To delete a Process Category, no Processes can be assigned to it. Reassign those
 Furthermore, deleting a Process Category cannot be undone.
 {% endhint %}
 
+A Process Category cannot be deleted until no Processes are assigned to it. If any Processes are assigned to the Category, its Delete icon![](../../.gitbook/assets/trash-icon-process-modeler-processes.png)does not display.
+
 Follow these steps to delete a Process Category:
 
 1. [View your Process Categories.](process-categories.md#view-process-categories)
-2. Select the **Delete** icon![](../../.gitbook/assets/trash-icon-process-modeler-processes.png). A message displays to confirm deletion of the Category. ~~UPDATE SCREENSHOT AFTER THE CONFIRMATION MESSAGE IS FIXED.~~  
+2. Select the **Delete** icon![](../../.gitbook/assets/trash-icon-process-modeler-processes.png). A message displays to confirm deletion of the Category.  
 
    ![](../../.gitbook/assets/remove-process-category-screen-processes.png)
 
-3. Click **Confirm** to delete the Category. The following message displays: **Category Successfully Deleted**.
+3. Click **Confirm** to delete the Category. The following message displays: **The category was deleted.**
 
 ## Related Topics
 
