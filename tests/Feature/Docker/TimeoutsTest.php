@@ -9,7 +9,7 @@ use Tests\Feature\Shared\LoggingHelper;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Notifications\ScriptResponseNotification;
-use RuntimeException;
+use ProcessMaker\Exception\ScriptTimeoutException;
 
 class TimeoutsTest extends TestCase
 {
@@ -57,7 +57,7 @@ class TimeoutsTest extends TestCase
             ScriptResponseNotification::class,
             function ($notification, $channels) {
                 $response = $notification->getResponse();
-                return $response['exception'] === RuntimeException::class && in_array('broadcast', $channels);
+                return $response['exception'] === ScriptTimeoutException::class && in_array('broadcast', $channels);
             }
         );
     }
