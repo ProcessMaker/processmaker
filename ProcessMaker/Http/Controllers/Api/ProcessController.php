@@ -582,24 +582,30 @@ class ProcessController extends Controller
      *
      * @return Response
      *
-     * @OA\Get(
+     * @OA\Post(
      *     path="/processes/import",
-     *     summary="Import a process",
+     *     summary="Import a new process",
      *     operationId="importProcess",
      *     tags={"Processes"},
-     *     @OA\Parameter(
-     *         description="ID of process to return",
-     *         in="path",
-     *         name="process_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="Successfully found the process",
+     *         response=201,
+     *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     description="file to upload",
+     *                     property="file",
+     *                     type="file",
+     *                     format="file",
+     *                 ),
+     *                 required={"file"}
+     *             )
+     *         )
      *     ),
      * )
      */
