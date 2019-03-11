@@ -91,6 +91,9 @@ class IntermediateTimerEventTest extends TestCase
         $task->type= 'INTERMEDIATE_TIMER_EVENT';
         $manager->executeIntermediateTimerEvent($task, json_decode($task->configuration));
 
+        $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_5"}';
+        $manager->executeIntermediateTimerEvent($task, json_decode($task->configuration));
+
         // If no exception has been thrown, this assertion will be executed
         $this->assertTrue(true);
     }
