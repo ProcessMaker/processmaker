@@ -22,7 +22,6 @@ class BuildSdk {
 
     public function run()
     {
-        $this->runCmd('mkdir -p ' . $this->outputBaseDir());
         $this->runChecks();
 
         $existing = $this->existingContainer();
