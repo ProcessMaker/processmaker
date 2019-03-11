@@ -46,11 +46,6 @@ class Script extends Model
         'created_at',
         'updated_at',
     ];
-
-    private static $scriptFormats = [
-        'application/x-php' => 'php',
-        'application/x-lua' => 'lua',
-    ];
     
     protected $casts = [
         'timeout' => 'integer',
@@ -88,15 +83,82 @@ class Script extends Model
     }
 
     /**
-     * Get the language from a script format string.
+     * Get a configuration array of all supported script formats.
+     *
+     * @return array
+     */    
+    public static function scriptFormats()
+    {
+        return config('script-runners');
+    }
+
+    /**
+     * Get the configuration for a specific script format.
      *
      * @param string $format
      *
+     * @return array
+     */
+    public static function scriptFormat($format)
+    {
+        $formats = static::scriptFormats();
+        
+        if (array_key_exists($format, $formats)) {
+            return $formats[$format];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get a key/value pair array of supported script formats.
+     *
+     * @return array
+     */    
+    public static function scriptFormatList()
+    {
+        $list = [];
+        $formats = static::scriptFormats();
+        
+        foreach ($formats as $key => $format) {
+            $list[$key] = $format['name'];
+        }
+        
+        return $list;
+    }
+    
+    /**
+     * Get the language from a script format (MIME type) string.
+     *
+     * @param string $mimeType
+     *
      * @return string
      */
-    public static function scriptFormat2Language($format)
+    public static function scriptFormat2Language($mimeType)
     {
-        return static::$scriptFormats[$format];
+        $formats = static::scriptFormats();
+        
+        foreach ($formats as $key => $format) {
+            if ($mimeType == $format['mime_type']) {
+                return $key;
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Get the language name for this script.
+     *
+     * @return string
+     */    
+    public function getLanguageNameAttribute()
+    {
+        if ($format = static::scriptFormat($this->language)) {
+            return $format['name'];
+        } else {
+            return $this->language;
+        }
     }
 
     /**
