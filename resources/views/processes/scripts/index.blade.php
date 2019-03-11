@@ -34,7 +34,7 @@
             </div>
         </div>
         <div class="container-fluid">
-            <script-listing :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}" ref="listScript" @delete="deleteScript"></script-listing>
+            <script-listing :filter="filter" :script-formats='@json($scriptFormats)' :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}" ref="listScript" @delete="deleteScript"></script-listing>
         </div>
     </div>
 
@@ -64,7 +64,7 @@
                     </div>
                     <div class="form-group">
                         {!!Form::label('language', __('Language'))!!}
-                        {!!Form::select('language', [''=>__('Select'),'php' => 'PHP', 'lua' => 'Lua'], null, ['class'=>
+                        {!!Form::select('language', [''=>__('Select')] + $scriptFormats, null, ['class'=>
                         'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true,
                         \'is-invalid\':addError.language}']);!!}
                         <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
