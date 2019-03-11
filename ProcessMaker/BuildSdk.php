@@ -25,9 +25,10 @@ class BuildSdk {
         $this->runChecks();
 
         $existing = $this->existingContainers();
+
         if (!empty($existing) && $this->rebuild) {
             $existing = str_replace("\n", " ", $existing);
-            $this->runCmd("docker container stop $existing");
+            $this->runCmd("docker container stop $existing || echo 'Container already stopped'");
             $this->runCmd("docker container rm $existing");
             $existing = [];
         }
@@ -36,6 +37,8 @@ class BuildSdk {
             $this->runCmd('docker pull ' . $this->image);
             $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
             $this->docker('apk add --update curl && rm -rf /var/cache/apk/*');
+        } else {
+            $this->runCmd("docker start generator || echo 'Generator already started'");
         }
 
         $this->waitForBoot();
@@ -47,7 +50,7 @@ class BuildSdk {
 
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
-
+        $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
         $this->log("DONE. Api is at {$this->outputDir()}");
     }
 
@@ -72,9 +75,9 @@ class BuildSdk {
             throw new Exception("Folder is not writeable: " . $this->outputPath);
         }
 
-        if (is_dir($this->outputDir())) {
-            throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
-        }
+        // if (is_dir($this->outputDir())) {
+        //     throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
+        // }
 
         if (!is_file($this->jsonPath) || !is_readable($this->jsonPath)) {
             throw new Exception("Json file does not exist or can not be read: " . $this->jsonPath);
@@ -88,7 +91,7 @@ class BuildSdk {
 
     private function outputDir()
     {
-        return "{$this->outputPath}/{$this->lang}-client";
+        return $this->outputPath;
     }
 
     private function waitForBoot()
@@ -125,10 +128,10 @@ class BuildSdk {
         $zip = new ZipArchive;
         $res = $zip->open($file);
         $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $zip->extractTo($this->outputPath);
+        $zip->extractTo("/tmp/{$folder}");
         $zip->close();
         unlink($file);
-        return "{$this->outputPath}/$folder";
+        return "/tmp/{$folder}/{$this->lang}-client";
     }
 
     private function existingContainers()
