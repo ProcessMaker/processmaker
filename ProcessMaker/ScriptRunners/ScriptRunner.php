@@ -49,7 +49,8 @@ class ScriptRunner
         if (!$runner) {
             throw new ScriptLanguageNotSupported($language);
         } else {
-            return new $runner;
+            $class = "ProcessMaker\\ScriptRunners\\{$runner}";
+            return new $class;
         }
     }
 }
