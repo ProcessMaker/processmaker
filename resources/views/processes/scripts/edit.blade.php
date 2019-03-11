@@ -28,7 +28,7 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('language', 'Language') !!}
-                        {!! Form::select('language', ['php' => 'PHP', 'lua' => 'LUA'], 'null', ['id' => 'language','class'=> 'form-control', 'v-model' => 'formData.language',
+                        {!! Form::select('language', $scriptFormats, 'null', ['id' => 'language','class'=> 'form-control', 'v-model' => 'formData.language',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.language}']) !!}
                         <div class="invalid-feedback" v-for="language in errors.language">@{{language}}</div>
                     </div>
