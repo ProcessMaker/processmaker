@@ -22,24 +22,25 @@ class BuildSdk {
 
     public function run()
     {
+        $this->runCmd('mkdir -p ' . $this->outputBaseDir());
         $this->runChecks();
 
-        $existing = $this->existingContainers();
+        $existing = $this->existingContainer();
 
-        if (!empty($existing) && $this->rebuild) {
-            $existing = str_replace("\n", " ", $existing);
+        if ($this->rebuild && $existing !== "") {
             $this->runCmd("docker container stop $existing || echo 'Container already stopped'");
             $this->runCmd("docker container rm $existing");
-            $existing = [];
         }
-
-        if (empty($existing) || $this->rebuild) {
+        
+        if ($existing === "" || $this->rebuild) {
             $this->runCmd('docker pull ' . $this->image);
             $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
             $this->docker('apk add --update curl && rm -rf /var/cache/apk/*');
         } else {
             $this->runCmd("docker start generator || echo 'Generator already started'");
         }
+        
+        $this->runCmd('docker start generator || echo "Container already running"');
 
         $this->waitForBoot();
 
@@ -134,7 +135,7 @@ class BuildSdk {
         return "/tmp/{$folder}/{$this->lang}-client";
     }
 
-    private function existingContainers()
+    private function existingContainer()
     {
         return $this->runCmd("docker container ls -aq --filter='name=generator'");
     }
