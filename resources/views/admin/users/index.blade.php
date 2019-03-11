@@ -29,15 +29,16 @@
             </div>
             <div class="col-8" align="right">
                 @can('create-users')
-                <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser"
-                        id="addUserBtn">
+                    <button type="button" class="btn btn-action text-light" data-toggle="modal" data-target="#addUser"
+                            id="addUserBtn">
                         <i class="fas fa-plus"></i>
                         {{__('User')}}</button>
                 @endcan
             </div>
         </div>
         <div class="container-fluid">
-            <users-listing ref="listing" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('users') }}" v-on:reload="reload"></users-listing>
+            <users-listing ref="listing" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('users') }}"
+                           v-on:reload="reload"></users-listing>
         </div>
     </div>
 
@@ -100,9 +101,12 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary"
-                                data-dismiss="modal" @click="onClose">{{__('Cancel')}}</button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                            {{__('Cancel')}}
+                        </button>
+                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
+                            {{__('Save')}}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -115,70 +119,76 @@
 
     @can('create-users')
         <script>
-            new Vue({
-                el: '#addUser',
-                data: {
-                    username: '',
-                    firstname: '',
-                    lastname: '',
-                    status: '',
-                    email: '',
-                    password: '',
-                    confpassword: '',
-                    addError: {},
-                    submitted: false,
-                },
-                methods: {
-                    onClose () {
-                        this.username = '';
-                        this.firstname = '';
-                        this.lastname = '';
-                        this.status = '';
-                        this.email = '';
-                        this.password = '';
-                        this.confpassword = '';
-                        this.addError = {};
-                        this.submitted = false;
-                    },
-                    validatePassword() {
-                        if (this.password.trim().length > 0 && this.password.trim().length < 8) {
-                            this.addError.password = ['Password must be at least 8 characters']
-                            this.$refs.passwordStrength.updatePassword('')
-                            this.password = ''
-                            this.confpassword = ''
-                            this.submitted = false
-                            return false
-                        }
-                        if (this.password !== this.confpassword) {
-                            this.addError.password = ['Passwords must match']
-                            this.$refs.passwordStrength.updatePassword('')
-                            this.password = ''
-                            this.confpassword = ''
-                            this.submitted = false
-                            return false
-                        }
-                        return true
-                    },
-                    onSubmit() {
-                    this.submitted = true;
-                    if (this.validatePassword()) {
-                        ProcessMaker.apiClient.post("/users", {
-                            username: this.username,
-                            firstname: this.firstname,
-                            lastname: this.lastname,
-                            status: this.status,
-                            email: this.email,
-                            password: this.password
-                        }).then(function (response) {
-                            window.location = "/admin/users/" + response.data.id + '/edit?created=true'
-                        }).catch(error => {
-                           this.addError = error.response.data.errors
-
-                            });
-                        }
-                    }
+          new Vue({
+            el: '#addUser',
+            data: {
+              username: '',
+              firstname: '',
+              lastname: '',
+              status: '',
+              email: '',
+              password: '',
+              confpassword: '',
+              addError: {},
+              submitted: false,
+              disabled: false
+            },
+            methods: {
+              onClose() {
+                this.username = '';
+                this.firstname = '';
+                this.lastname = '';
+                this.status = '';
+                this.email = '';
+                this.password = '';
+                this.confpassword = '';
+                this.addError = {};
+                this.submitted = false;
+              },
+              validatePassword() {
+                if (this.password.trim().length > 0 && this.password.trim().length < 8) {
+                  this.addError.password = ['Password must be at least 8 characters']
+                  this.$refs.passwordStrength.updatePassword('')
+                  this.password = ''
+                  this.confpassword = ''
+                  this.submitted = false
+                  return false
                 }
-            })
+                if (this.password !== this.confpassword) {
+                  this.addError.password = ['Passwords must match']
+                  this.$refs.passwordStrength.updatePassword('')
+                  this.password = ''
+                  this.confpassword = ''
+                  this.submitted = false
+                  return false
+                }
+                return true
+              },
+              onSubmit() {
+                this.submitted = true;
+                if (this.validatePassword()) {
+                  //single click
+                  if (this.disabled) {
+                    return
+                  }
+                  this.disabled = true;
+                  ProcessMaker.apiClient.post("/users", {
+                    username: this.username,
+                    firstname: this.firstname,
+                    lastname: this.lastname,
+                    status: this.status,
+                    email: this.email,
+                    password: this.password
+                  }).then(function (response) {
+                    window.location = "/admin/users/" + response.data.id + '/edit?created=true'
+                  }).catch(error => {
+                    this.addError = error.response.data.errors;
+                    this.disabled = false;
+                  });
+                }
+              }
+            }
+          })
         </script>
     @endcan
 @endsection

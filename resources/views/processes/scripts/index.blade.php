@@ -34,64 +34,69 @@
             </div>
         </div>
         <div class="container-fluid">
-            <script-listing :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}" ref="listScript" @delete="deleteScript"></script-listing>
+            <script-listing :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}"
+                            ref="listScript" @delete="deleteScript"></script-listing>
         </div>
     </div>
 
     @can('create-scripts')
         <div class="modal" tabindex="-1" role="dialog" id="addScript">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{__('Create Script')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        {!!Form::label('title', __('Name'))!!}
-                        {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' =>
-                        '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
-                        <small class="form-text text-muted" v-if="! addError.title">{{ __('The script name must be distinct.') }}</small>
-                        <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{__('Create Script')}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        {!!Form::label('description', __('Description'))!!}
-                        {!!Form::textarea('description', null, ['rows'=>'2','class'=> 'form-control', 'v-model'=> 'description',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
-                        <div class="invalid-feedback" v-for="description in addError.description">@{{description}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!!Form::label('language', __('Language'))!!}
-                        {!!Form::select('language', [''=>__('Select'),'php' => 'PHP', 'lua' => 'Lua'], null, ['class'=>
-                        'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true,
-                        \'is-invalid\':addError.language}']);!!}
-                        <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('timeout', 'Timeout') !!}
-                        <div class="form-row ml-0">
-                            {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-2',
-                            'v-model' => 'timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":addError.timeout}']) !!}                        
-                            {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
-                            'v-model' => 'timeout', 'min' => 0, 'max' => 300]) !!}
-                            <div class="invalid-feedback" v-for="timeout in addError.timeout">@{{timeout}}</div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            {!!Form::label('title', __('Name'))!!}
+                            {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' =>
+                            '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
+                            <small class="form-text text-muted"
+                                   v-if="! addError.title">{{ __('The script name must be distinct.') }}</small>
+                            <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
                         </div>
-                        <small class="form-text text-muted" v-if="! addError.timeout">{{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}</small>
+                        <div class="form-group">
+                            {!!Form::label('description', __('Description'))!!}
+                            {!!Form::textarea('description', null, ['rows'=>'2','class'=> 'form-control', 'v-model'=> 'description',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
+                            <div class="invalid-feedback" v-for="description in addError.description">@{{description}}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {!!Form::label('language', __('Language'))!!}
+                            {!!Form::select('language', [''=>__('Select'),'php' => 'PHP', 'lua' => 'Lua'], null, ['class'=>
+                            'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true,
+                            \'is-invalid\':addError.language}']);!!}
+                            <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('timeout', 'Timeout') !!}
+                            <div class="form-row ml-0">
+                                {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-2',
+                                'v-model' => 'timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":addError.timeout}']) !!}
+                                {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
+                                'v-model' => 'timeout', 'min' => 0, 'max' => 300]) !!}
+                                <div class="invalid-feedback" v-for="timeout in addError.timeout">@{{timeout}}</div>
+                            </div>
+                            <small class="form-text text-muted" v-if="! addError.timeout">
+                                {{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}
+                            </small>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary"
-                            data-dismiss="modal" @click="onClose">{{__('Cancel')}}
-                    </button>
-                    <button type="button" class="btn btn-secondary ml-2" @click="onSubmit">
-                        {{__('Save')}}
-                    </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                            {{__('Cancel')}}
+                        </button>
+                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
+                            {{__('Save')}}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     @endcan
 @endsection
 
@@ -100,48 +105,55 @@
 
     @can('create-scripts')
         <script>
-            new Vue({
-                el: '#addScript',
-                data: {
-                    title: '',
-                    language: '',
-                    description: '',
-                    code: '',
-                    timeout: 60,
-                    addError: {}
-                },
-                methods: {
-                    onClose() {
-                        this.title = '';
-                        this.language = '';
-                        this.description = '';
-                        this.code = '';
-                        this.timeout = 60;
-                        this.addError = {};
-                    },
-                    onSubmit() {
-                        this.errors = Object.assign({}, {
-                            name: null,
-                            description: null,
-                            status: null
-                        });
-                        ProcessMaker.apiClient.post("/scripts", {
-                            title: this.title,
-                            language: this.language,
-                            description: this.description,
-                            code: "[]",
-                            timeout: this.timeout
-                        })
-                        .then(response => {
-                            ProcessMaker.alert('{{__('The script was created.')}}', 'success');
-                            window.location = "/processes/scripts/" + response.data.id + "/builder";
-                        })
-                        .catch(error => {
-                            this.addError = error.response.data.errors;
-                        })
-                    }
+          new Vue({
+            el: '#addScript',
+            data: {
+              title: '',
+              language: '',
+              description: '',
+              code: '',
+              timeout: 60,
+              addError: {},
+              disabled: false,
+            },
+            methods: {
+              onClose() {
+                this.title = '';
+                this.language = '';
+                this.description = '';
+                this.code = '';
+                this.timeout = 60;
+                this.addError = {};
+              },
+              onSubmit() {
+                this.errors = Object.assign({}, {
+                  name: null,
+                  description: null,
+                  status: null
+                });
+                //single click
+                if (this.disabled) {
+                  return
                 }
-            })
+                this.disabled = true;
+                ProcessMaker.apiClient.post("/scripts", {
+                  title: this.title,
+                  language: this.language,
+                  description: this.description,
+                  code: "[]",
+                  timeout: this.timeout
+                })
+                  .then(response => {
+                    ProcessMaker.alert('{{__('The script was created.')}}', 'success');
+                    window.location = "/processes/scripts/" + response.data.id + "/builder";
+                  })
+                  .catch(error => {
+                    this.disabled = false;
+                    this.addError = error.response.data.errors;
+                  })
+              }
+            }
+          })
         </script>
     @endcan
 @endsection

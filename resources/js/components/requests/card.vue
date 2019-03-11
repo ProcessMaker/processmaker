@@ -48,7 +48,7 @@
         //Start a process
         this.spin = process.id + '.' + event.id;
         let startEventId = event.id;
-        window.ProcessMaker.apiClient.post('/process_events/' + this.process.id + '?event2=' + startEventId)
+        window.ProcessMaker.apiClient.post('/process_events/' + this.process.id + '?event=' + startEventId)
           .then((response) => {
             this.spin = 0;
             var instance = response.data;
