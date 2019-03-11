@@ -75,10 +75,6 @@ class BuildSdk {
             throw new Exception("Folder is not writeable: " . $this->outputPath);
         }
 
-        // if (is_dir($this->outputDir())) {
-        //     throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
-        // }
-
         if (!is_file($this->jsonPath) || !is_readable($this->jsonPath)) {
             throw new Exception("Json file does not exist or can not be read: " . $this->jsonPath);
         }
@@ -167,6 +163,7 @@ class BuildSdk {
             "options" => [
                 "gitUserId" => "ProcessMaker",
                 "gitRepoId" => "pm4-sdk-" . $this->lang,
+                "invokerPackage" => "ProcessMaker\\Client",
             ],
             "spec" => "API-DOCS-JSON",
         ]);
