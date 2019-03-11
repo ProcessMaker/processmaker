@@ -117,7 +117,7 @@ jobs:
       - run:
           name: Configure scripts executor
           command: |
-            docker pull nolanpro/executor:php
+            docker pull processmaker/executor:php
             docker pull processmaker/executor:lua
             sudo mkdir -m777 /opt/executor
 
