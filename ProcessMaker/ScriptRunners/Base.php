@@ -8,6 +8,7 @@ use ProcessMaker\Models\ScriptDockerBindingFilesTrait;
 use ProcessMaker\Models\ScriptDockerCopyingFilesTrait;
 use ProcessMaker\Models\User;
 use RuntimeException;
+use ProcessMaker\GenerateAccessToken;
 
 abstract class Base
 {
@@ -50,10 +51,10 @@ abstract class Base
     
         // Create tokens for the SDK if a user is set
         $token = null;
-        if ($this->user) {
-            $token = new GenerateAccessToken($this->user);
-            $variablesParameter[] = 'API_TOKEN=' . $token->getToken();
-            $variablesParameter[] = 'API_HOST=' . config('app.url') . '/api/1.0';
+        if ($user) {
+            $token = new GenerateAccessToken($user);
+            $environmentVariables[] = 'API_TOKEN=' . $token->getToken();
+            $environmentVariables[] = 'API_HOST=' . config('app.url') . '/api/1.0';
         }
 
         if ($environmentVariables) {
