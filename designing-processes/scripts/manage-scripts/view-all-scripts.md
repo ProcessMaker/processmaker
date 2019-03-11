@@ -37,12 +37,21 @@ The **Scripts** page displays the following information in tabular format about 
 
 Use the [Search](search-for-a-script.md#search-for-a-processmaker-script) field to filter ProcessMaker Scripts that display.
 
+### Create a ProcessMaker Script
+
+Click the **+Script** button. See [Create a New Script](create-a-new-script.md#create-a-new-processmaker-script).
+
 ### Edit a ProcessMaker Script
 
-Do one of the following:
+Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Script](edit-a-script.md).
 
-* **Edit the ProcessMaker Script:** Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Script](edit-a-script.md).
-* **Edit the Script Configuration:** Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Script Configuration](edit-script-configuration.md#edit-configuration-information-about-a-processmaker-script).
+### Configure a ProcessMaker Script
+
+Click the **Configure** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Script Configuration](edit-script-configuration.md#edit-configuration-information-about-a-processmaker-script).
+
+### Duplicate a ProcessMaker Script
+
+Click the **Duplicate** icon![](../../../.gitbook/assets/duplicate-script-processes.png). See [Duplicate a Script](duplicate-a-script.md#duplicate-a-processmaker-script).
 
 ### Delete a ProcessMaker Script
 
@@ -68,6 +77,8 @@ If no ProcessMaker Scripts exist, the following message displays: **No Data Avai
 {% page-ref page="edit-script-configuration.md" %}
 
 {% page-ref page="edit-a-script.md" %}
+
+{% page-ref page="duplicate-a-script.md" %}
 
 {% page-ref page="remove-a-script.md" %}
 

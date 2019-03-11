@@ -36,6 +36,10 @@ The **Environment Variables** page displays the following information in tabular
 
 Use the [Search](../../scripts/manage-scripts/search-for-a-script.md#search-for-a-processmaker-script) field to filter ProcessMaker Environment Variables that display.
 
+### Create an Environment Variable
+
+Click the **+Environment Variable** button. See [Create a New Environment Variable](create-a-new-environment-variable.md#create-a-new-processmaker-environment-variable).
+
 ### Edit a ProcessMaker Environment Variable
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit an Environment Variable](edit-an-environmental-variable.md#edit-a-processmaker-environment-variable).

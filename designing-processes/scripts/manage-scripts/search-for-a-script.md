@@ -41,6 +41,8 @@ If there are no search results, the following message displays: **No data availa
 
 {% page-ref page="edit-a-script.md" %}
 
+{% page-ref page="duplicate-a-script.md" %}
+
 {% page-ref page="remove-a-script.md" %}
 
 {% page-ref page="../scripts-editor.md" %}

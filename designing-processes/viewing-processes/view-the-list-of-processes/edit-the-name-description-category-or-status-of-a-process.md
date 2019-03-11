@@ -2,9 +2,9 @@
 description: Edit the configuration and notifications for a Process.
 ---
 
-# Edit Process Configuration
+# Configure a Process
 
-## Edit Process Configuration
+## Configure a Process
 
 {% hint style="info" %}
 ### Looking for Process Model Editing?
@@ -13,7 +13,7 @@ Process configuration is different than Process model editing. See [Model Your P
 
 ### Permissions Required
 
-Your user account or group membership must have the following permissions to edit a Process's configuration:
+Your user account or group membership must have the following permissions to configure a Process's configuration:
 
 * Processes: View Processes
 * Processes: Edit Processes
@@ -21,10 +21,10 @@ Your user account or group membership must have the following permissions to edi
 See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
-Follow these steps to edit Process configuration information:
+Follow these steps to configure a Process:
 
 1. [View your active Processes.](./#view-your-processes) The **Processes** page displays.
-2. Select the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)for your Process. The **Edit** page displays.  
+2. Select the **Configure** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png)for your Process. The **Edit** page displays.  
 
    ![](../../../.gitbook/assets/edit-process-page-processes.png)
 
@@ -48,10 +48,10 @@ Follow these steps to edit Process configuration information:
    * Select the **Pause Timer Start Events** checkbox to pause [Start Timer Event](../../process-design/model-your-process/add-and-configure-start-timer-event-elements.md) elements configured in the Process model.
 4. Click **Save**.
 
-## Edit Process Notifications
+## Configure Process Notifications
 
 {% hint style="info" %}
-Your user account or group membership must have the following permissions to edit a Process's notifications:
+Your user account or group membership must have the following permissions to configure a Process's notifications:
 
 * Processes: View Processes
 * Processes: Edit Processes

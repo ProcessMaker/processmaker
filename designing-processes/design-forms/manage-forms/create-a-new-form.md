@@ -18,7 +18,7 @@ See the ProcessMaker [Screens](../../../processmaker-administration/permission-d
 Follow these steps to create a new ProcessMaker Screen:
 
 1. [View your ProcessMaker Screens.](view-all-forms.md) The **Screens** page displays.
-2. Click the **+Screen** button. The **Create New Screen** page displays.  
+2. Click the **+Screen** button. The **Create Screen** page displays.  
 
    ![](../../../.gitbook/assets/create-new-screen-screen-processes.png)
 
@@ -36,6 +36,8 @@ Follow these steps to create a new ProcessMaker Screen:
 {% page-ref page="search-for-a-screen.md" %}
 
 {% page-ref page="edit-a-screen.md" %}
+
+{% page-ref page="duplicate-a-screen.md" %}
 
 {% page-ref page="remove-a-screen.md" %}
 

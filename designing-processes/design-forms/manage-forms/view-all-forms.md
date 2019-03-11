@@ -37,12 +37,21 @@ The **Screens** page displays the following information in tabular format about 
 
 Use the [Search](search-for-a-screen.md#search-for-a-processmaker-screen) field to filter ProcessMaker Screens that display.
 
+### Create a ProcessMaker Screen
+
+Click the **+Screen** button. See [Create a New Script](../../scripts/manage-scripts/create-a-new-script.md#create-a-new-processmaker-script).
+
 ### Edit a ProcessMaker Screen
 
-Do one of the following:
+Click the **Open Editor** icon![](../../../.gitbook/assets/edit-icon.png). See [Screens Builder](../screens-builder/) for topics.
 
-* **Edit the ProcessMaker Screen:** Click the **Open Editor** icon![](../../../.gitbook/assets/edit-icon.png). See [Screens Builder](../screens-builder/) for topics.
-* **Edit the Screen Configuration:** Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Screen Configuration](edit-a-screen.md#edit-configuration-information-about-a-processmaker-screen).
+### Configure a ProcessMaker Screen
+
+Click the **Configure** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Screen Configuration](edit-a-screen.md#edit-configuration-information-about-a-processmaker-screen).
+
+### Duplicate a ProcessMaker Screen
+
+Click the **Duplicate** icon![](../../../.gitbook/assets/duplicate-script-processes.png). See [Duplicate a Screen](duplicate-a-screen.md#duplicate-a-processmaker-screen).
 
 ### Delete a ProcessMaker Screen
 
@@ -61,13 +70,15 @@ If no ProcessMaker Screens exist, the following message displays: **No Data Avai
 
 {% page-ref page="../what-is-a-form.md" %}
 
+{% page-ref page="create-a-new-form.md" %}
+
 {% page-ref page="search-for-a-screen.md" %}
 
 {% page-ref page="edit-a-screen.md" %}
 
-{% page-ref page="remove-a-screen.md" %}
+{% page-ref page="duplicate-a-screen.md" %}
 
-{% page-ref page="create-a-new-form.md" %}
+{% page-ref page="remove-a-screen.md" %}
 
 {% page-ref page="../screens-builder/" %}
 

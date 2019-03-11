@@ -34,6 +34,10 @@ The **Auth Clients** page displays the following information in tabular format a
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Client Authentication Key](edit-a-client-authentication-key.md).
 
+### Create a Client Authentication Key
+
+Click the **+Auth Client** button. See [Create a New Client Authentication Key](create-a-new-client-authentication-key.md#create-a-client-authentication-key).
+
 ### Delete a Client Authentication Key
 
 Click the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png). See [Delete a Client Authentication Key](delete-a-client-authentication-key.md#delete-a-client-authentication-key).

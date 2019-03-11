@@ -16,7 +16,7 @@ See the ProcessMaker [Scripts](../../../processmaker-administration/permission-d
 {% endhint %}
 
 {% hint style="warning" %}
-When a ProcessMaker Script is deleted, Process models that use that ProcessMaker Script in Script Task elements are not affected. However, that ProcessMaker Script can no longer be added to other Process models.
+When a ProcessMaker Script is deleted, Process models that use that ProcessMaker Script in [Script Task elements](../../process-design/model-your-process/add-and-configure-script-task-elements.md#select-the-processmaker-script-for-a-script-task-element) are not affected. However, that ProcessMaker Script can no longer be added to other Process models.
 
 Deleting a ProcessMaker Script from the **Scripts** page cannot be undone.
 {% endhint %}
@@ -28,7 +28,7 @@ Follow these steps to delete a ProcessMaker Script:
 
    ![](../../../.gitbook/assets/caution-script-removal-screen-processes.png)
 
-3. Click **Confirm** to delete the ProcessMaker Script.
+3. Click **Confirm**.
 
 ## Related Topics
 
@@ -43,6 +43,8 @@ Follow these steps to delete a ProcessMaker Script:
 {% page-ref page="edit-script-configuration.md" %}
 
 {% page-ref page="edit-a-script.md" %}
+
+{% page-ref page="duplicate-a-script.md" %}
 
 {% page-ref page="../scripts-editor.md" %}
 

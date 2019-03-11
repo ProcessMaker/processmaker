@@ -36,6 +36,10 @@ The **Groups** page displays the following information in tabular format about P
 
 Use the [Search](search-for-a-group.md#search-for-a-processmaker-group) field to filter ProcessMaker groups that display.
 
+### Create a new ProcessMaker Group
+
+Click the **+Group** button. See [Create a New Group](create-a-group.md#create-a-processmaker-group).
+
 ### Edit a ProcessMaker Group
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a Group](edit-a-group.md#edit-a-processmaker-group).

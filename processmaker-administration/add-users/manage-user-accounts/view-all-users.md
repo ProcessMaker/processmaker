@@ -39,6 +39,10 @@ The **Users** page displays the following information in tabular format about Pr
 
 Use the [Search](search-for-a-user.md#search-for-a-processmaker-user-account) field to filter ProcessMaker user accounts that display.
 
+### Create a ProcessMaker User Account
+
+Click the **+User** button. See [Create a New User Account](create-a-user-account.md#create-a-processmaker-user-account).
+
 ### Edit a ProcessMaker User Account
 
 Click the **Edit** icon![](../../../.gitbook/assets/edit-icon.png). See [Edit a User Account](edit-a-user-account.md#edit-a-processmaker-user-account).

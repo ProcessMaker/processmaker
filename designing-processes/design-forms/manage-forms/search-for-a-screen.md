@@ -35,11 +35,13 @@ If there are no search results, the following message displays: **No data availa
 
 {% page-ref page="view-all-forms.md" %}
 
+{% page-ref page="create-a-new-form.md" %}
+
 {% page-ref page="edit-a-screen.md" %}
 
-{% page-ref page="remove-a-screen.md" %}
+{% page-ref page="duplicate-a-screen.md" %}
 
-{% page-ref page="create-a-new-form.md" %}
+{% page-ref page="remove-a-screen.md" %}
 
 {% page-ref page="../screens-builder/" %}
 

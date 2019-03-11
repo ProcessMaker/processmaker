@@ -54,10 +54,11 @@ Click the **Import** button. See [Import a BPMN-Compliant Process](import-a-bpmn
 
 ### Edit a Process
 
-Do one of the following:
+Click the **Open Modeler** icon![](../../../.gitbook/assets/edit-icon.png). See [Model Your Process](../../process-design/model-your-process/) for topics.
 
-* **Edit the Process model:** Click the **Open Modeler** icon![](../../../.gitbook/assets/edit-icon.png). See [Model Your Process](../../process-design/model-your-process/) for topics.
-* **Edit the Process configuration:** Click the **Config** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Process Configuration](edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process).
+### Configure a Process
+
+Click the **Configure** icon![](../../../.gitbook/assets/configure-process-icon-processes-page-processes.png). See [Edit Process Configuration](edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process).
 
 ### Export a Process
 

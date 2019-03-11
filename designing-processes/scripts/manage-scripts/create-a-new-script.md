@@ -20,13 +20,13 @@ See the ProcessMaker [Scripts](../../../processmaker-administration/permission-d
 Follow these steps to create a new ProcessMaker Script:
 
 1. [View your ProcessMaker Scripts](view-all-scripts.md). The **Scripts** page displays.
-2. Click the **+Script** button. The **Add a Script** screen displays.  
+2. Click the **+Script** button. The **Create Script** screen displays.  
 
    ![](../../../.gitbook/assets/add-a-script-screen-processes.png)
 
-3. In the **Title** field, enter the title of the ProcessMaker Script. ~~Character length limitation and/or unsupported characters?~~ This is a required field.
+3. In the **Name** field, enter the name of the ProcessMaker Script. ~~Character length limitation and/or unsupported characters?~~ This is a required field.
 4. In the **Description** field, enter the description of the ProcessMaker Script. ~~This does not seem to be a required field. Character length limitation and/or unsupported characters?~~
-5. From the **Language** drop-down, select one of the following programming languages to specify with which the ProcessMaker Script is written:
+5. From the **Language** drop-down, select one of the following programming languages in which the ProcessMaker Script is written:
    * PHP
    * Lua
 6. Click **Save**. Scripts Editor displays. See [Scripts Editor](../scripts-editor.md).
@@ -42,6 +42,8 @@ Follow these steps to create a new ProcessMaker Script:
 {% page-ref page="edit-script-configuration.md" %}
 
 {% page-ref page="edit-a-script.md" %}
+
+{% page-ref page="duplicate-a-script.md" %}
 
 {% page-ref page="remove-a-script.md" %}
 

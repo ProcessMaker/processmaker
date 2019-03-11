@@ -31,7 +31,7 @@ Follow these steps to delete a ProcessMaker Environment Variable:
 
    ![](../../../.gitbook/assets/caution-environment-variable-removal-screen-processes.png)
 
-3. Click **Confirm** to remove the ProcessMaker Environment Variable.
+3. Click **Confirm**.
 
 ## Related Topics
 
