@@ -45,7 +45,7 @@ class ScriptRunner
     private function getScriptRunnerByLanguage($language)
     {
         $language = strtolower($language);
-        $runner = config("script-runners.{$language}");
+        $runner = config("script-runners.{$language}.runner");
         if (!$runner) {
             throw new ScriptLanguageNotSupported($language);
         } else {
