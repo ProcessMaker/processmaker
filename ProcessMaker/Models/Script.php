@@ -65,7 +65,10 @@ class Script extends Model
         return [
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique],
-            'language' => 'required|in:php,lua',
+            'language' => [
+                'required',
+                Rule::in(static::scriptFormatValues())
+            ],
             'timeout' => 'integer|min:0|max:65535',
         ];
     }
