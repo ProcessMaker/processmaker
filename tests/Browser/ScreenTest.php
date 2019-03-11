@@ -56,7 +56,7 @@ class ScreenTest extends DuskTestCase
                 ->type('description', 'Screen created for test')
                 ->click('#createScreen .modal-footer .btn.btn-secondary')
                 //save successfully and redirect
-                ->waitFor('#screen-container')
+                ->waitFor('#form-container')
                 ->assertSee('Controls')
                 ->assertSee('Inspector');
         });
@@ -79,7 +79,7 @@ class ScreenTest extends DuskTestCase
             //display form builder, show or hide controls
             $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
                 //wait for Editor screens
-                ->waitFor('#screen-container')
+                ->waitFor('#form-container')
                 ->assertSee('Controls')
                 ->assertSee('Inspector')
                 //change to Screen Preview

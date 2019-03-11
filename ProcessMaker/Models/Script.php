@@ -4,12 +4,10 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
-use RuntimeException;
+use ProcessMaker\ScriptRunners\ScriptRunner;
 
 /**
  * Represents an Eloquent model of a Script
@@ -22,6 +20,7 @@ use RuntimeException;
  * @property text description
  * @property string language
  * @property text code
+ * @property integer timeout
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
@@ -30,6 +29,7 @@ use RuntimeException;
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="code", type="string"),
+ *   @OA\Property(property="teimout", type="integer"),
  * ),
  * @OA\Schema(
  *   schema="scripts",
@@ -42,8 +42,6 @@ use RuntimeException;
 class Script extends Model
 {
     use SerializeToIso8601;
-    use ScriptDockerCopyingFilesTrait;
-    use ScriptDockerBindingFilesTrait;
 
     protected $guarded = [
         'id',
@@ -54,6 +52,10 @@ class Script extends Model
     private static $scriptFormats = [
         'application/x-php' => 'php',
         'application/x-lua' => 'lua',
+    ];
+    
+    protected $casts = [
+        'timeout' => 'integer',
     ];
 
     /**
@@ -70,7 +72,8 @@ class Script extends Model
         return [
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique],
-            'language' => 'required|in:php,lua'
+            'language' => 'required|in:php,lua',
+            'timeout' => 'integer|min:0|max:65535',
         ];
     }
 
@@ -79,95 +82,12 @@ class Script extends Model
      *
      * @param array $data
      * @param array $config
+     * @param \ProcessMaker\Models\User $user
      */
     public function runScript(array $data, array $config, User $asUser = null)
     {
-        $code = $this->code;
-        $language = $this->language;
-
-        $variablesParameter = [];
-        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
-            foreach ($variables as $variable) {
-                $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
-            }
-        });
-
-        // Add the url to the host
-        $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
-        
-        if ($asUser) {
-            $token = new GenerateAccessToken($asUser);
-            $variablesParameter[] = 'API_TOKEN=' . $token->getToken();
-            $variablesParameter[] = 'API_HOST=' . config('app.url') . '/api/1.0';
-        }
-
-        if ($variablesParameter) {
-            $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
-        } else {
-            $variablesParameter = '';
-        }
-
-        // So we have the files, let's execute the docker container
-        switch (strtolower($language)) {
-            case 'php':
-                $dockerConfig = [
-                    'image' => 'nolanpro/executor:php',
-                    'command' => 'php /opt/executor/bootstrap.php',
-                    'parameters' => $variablesParameter,
-                    'inputs' => [
-                        '/opt/executor/data.json' => json_encode($data),
-                        '/opt/executor/config.json' => json_encode($config),
-                        '/opt/executor/script.php' => $code
-                    ],
-                    'outputs' => [
-                        'response' => '/opt/executor/output.json'
-                    ],
-                    'folders' => [
-                        base_path('storage/api/php-client') => '/opt/executor/php-client',
-                    ]
-                ];
-                break;
-            case 'lua':
-                $dockerConfig = [
-                    'image' => 'processmaker/executor:lua',
-                    'command' => 'lua5.3 /opt/executor/bootstrap.lua',
-                    'parameters' => $variablesParameter,
-                    'inputs' => [
-                        '/opt/executor/data.json' => json_encode($data),
-                        '/opt/executor/config.json' => json_encode($config),
-                        '/opt/executor/script.lua' => $code
-                    ],
-                    'outputs' => [
-                        'response' => '/opt/executor/output.json'
-                    ],
-                    'folders' => [
-                        base_path('storage/api/lua-client') => '/opt/executor/lua-client',
-                    ]
-                ];
-                break;
-            default:
-                throw new ScriptLanguageNotSupported($language);
-        }
-
-        $executeMethod = config('app.bpm_scripts_docker_mode')==='binding'
-            ? 'executeBinding' : 'executeCopying';
-        $response = $this->$executeMethod($dockerConfig);
-        if ($asUser) {
-            $token->delete();
-        }
-        $returnCode = $response['returnCode'];
-        $stdOutput = $response['output'];
-        $output = $response['outputs']['response'];
-        if ($returnCode || $stdOutput) {
-            // Has an error code
-            throw new RuntimeException(implode("\n", $stdOutput));
-        } else {
-            // Success
-            $response = json_decode($output, true);
-            return [
-                'output' => $response
-            ];
-        }
+        $runner = new ScriptRunner($this->language);
+        return $runner->run($this->code, $data, $config, $this->timeout, $asUser);
     }
 
     /**
@@ -181,7 +101,7 @@ class Script extends Model
     {
         return static::$scriptFormats[$format];
     }
-    
+
     /**
      * Get the associated versions
      */
