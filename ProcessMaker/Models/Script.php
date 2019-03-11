@@ -111,6 +111,23 @@ class Script extends Model
     }
 
     /**
+     * Get a basic array of supported script formats.
+     *
+     * @return array
+     */    
+    public static function scriptFormatValues()
+    {
+        $values = [];
+        $formats = static::scriptFormats();
+        
+        foreach ($formats as $key => $format) {
+            $values[] = $key;
+        }
+        
+        return $values;
+    }
+
+    /**
      * Get a key/value pair array of supported script formats.
      *
      * @return array
