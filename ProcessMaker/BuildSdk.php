@@ -10,10 +10,12 @@ class BuildSdk {
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = null;
     private $supportedLangs = ['php', 'lua'];
-    private $basePath = null;
+    private $outputPath = null;
+    private $jsonPath = null;
 
-    public function __construct($basePath, $debug = false, $rebuild = false) {
-        $this->basePath = $basePath;
+    public function __construct($jsonPath, $outputPath, $debug = false, $rebuild = false) {
+        $this->jsonPath = $jsonPath;
+        $this->outputPath = rtrim($outputPath, "/");
         $this->debug = $debug;
         $this->rebuild = $rebuild;
     }
@@ -46,7 +48,6 @@ class BuildSdk {
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
 
-        $this->runCmd("mv -f $folder {$this->outputBaseDir()}/");
         $this->log("DONE. Api is at {$this->outputDir()}");
     }
 
@@ -63,27 +64,31 @@ class BuildSdk {
             throw new Exception("Language must be specified using setLang()");
         }
 
-        if (!is_dir($this->basePath)) {
-            throw new Exception("$basePath is not a valid directory");
+        if (!is_dir($this->outputPath)) {
+            throw new Exception("{$this->outputPath} is not a valid directory");
+        }
+        
+        if (!is_writable($this->outputPath)) {
+            throw new Exception("Folder is not writeable: " . $this->outputPath);
         }
 
         if (is_dir($this->outputDir())) {
             throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
         }
 
-        if (!is_writable($this->outputBaseDir())) {
-            throw new Exception("Folder is not writeable: " . $this->outputDir());
+        if (!is_file($this->jsonPath) || !is_readable($this->jsonPath)) {
+            throw new Exception("Json file does not exist or can not be read: " . $this->jsonPath);
         }
+
+        if (json_decode($this->apiJsonRaw()) === null) {
+            throw new Exception("File is not valid json: " . $this->jsonPath);
+        }
+
     }
 
-    private function outputBaseDir()
-    {
-        return "{$this->basePath}/storage/api";
-    }
-    
     private function outputDir()
     {
-        return "{$this->outputBaseDir()}/{$this->lang}-client";
+        return "{$this->outputPath}/{$this->lang}-client";
     }
 
     private function waitForBoot()
@@ -110,7 +115,7 @@ class BuildSdk {
 
     private function getZip($url)
     {
-        $filename = "{$this->basePath}/api.zip";
+        $filename = "{$this->outputPath}/api.zip";
         $this->docker("curl -s -S $url > $filename");
         return $filename;
     }
@@ -120,10 +125,10 @@ class BuildSdk {
         $zip = new ZipArchive;
         $res = $zip->open($file);
         $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $zip->extractTo($this->basePath);
+        $zip->extractTo($this->outputPath);
         $zip->close();
         unlink($file);
-        return "{$this->basePath}/$folder";
+        return "{$this->outputPath}/$folder";
     }
 
     private function existingContainers()
@@ -158,7 +163,7 @@ class BuildSdk {
         return json_encode([
             "options" => [
                 "gitUserId" => "ProcessMaker",
-                "gitRepoId" => "bpm-".$this->lang."-sdk",
+                "gitRepoId" => "pm4-sdk-" . $this->lang,
             ],
             "spec" => "API-DOCS-JSON",
         ]);
@@ -166,7 +171,7 @@ class BuildSdk {
 
     private function apiJsonRaw()
     {
-        return file_get_contents($this->basePath . "/storage/api-docs/api-docs.json");
+        return file_get_contents($this->jsonPath);
     }
 
     private function runCmd($cmd)

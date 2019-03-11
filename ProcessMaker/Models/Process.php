@@ -46,12 +46,38 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * ),
  * @OA\Schema(
  *   schema="Process",
- *   allOf={@OA\Schema(ref="#/components/schemas/ProcessEditable"),
- *   @OA\Property(property="user_id", type="string", format="id"),
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
- *  }
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/ProcessEditable"),
+ *       @OA\Schema(
+ *           @OA\Property(property="user_id", type="string", format="id"),
+ *           @OA\Property(property="id", type="string", format="id"),
+ *           @OA\Property(property="created_at", type="string", format="date-time"),
+ *           @OA\Property(property="updated_at", type="string", format="date-time"),
+ *       )
+ *   }
+ * )
+ * @OA\Schema(
+ *     schema="ProcessStartEvents",
+ *     @OA\Schema(
+ *         @OA\Property(property="eventDefinitions", type="object"),
+ *         @OA\Property(property="parallelMultiple", type="boolean"),
+ *         @OA\Property(property="outgoing", type="object"),
+ *         @OA\Property(property="incoming", type="object"),
+ *         @OA\Property(property="id", type="string"),
+ *         @OA\Property(property="name", type="string"),
+ *     )
+ * )
+ * @OA\Schema(
+ *     schema="ProcessWithStartEvents",
+ *     allOf={
+ *         @OA\Schema(ref="#/components/schemas/Process"),
+ *         @OA\Schema(
+ *         @OA\Property(
+ *             property="startEvents",
+ *             type="array",
+ *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
+ *         )),
+ *     },
  * )
  */
 class Process extends Model implements HasMedia

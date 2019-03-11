@@ -1,7 +1,4 @@
 <?php
-if (!defined('API_HOST')) {
-    define("API_HOST", getenv("APP_URL") . '/api/1.0');
-}
 return [
     'api' => [
         /*
@@ -111,7 +108,7 @@ return [
         |--------------------------------------------------------------------------
         */
 
-        'base' => env('L5_SWAGGER_BASE_PATH', null),
+        'base' => '/api/1.0',
 
         /*
         |--------------------------------------------------------------------------
@@ -201,7 +198,6 @@ return [
      */
     'constants' => [
         // We're assuming base path is the same as the swagger UI
-        // 'APP_URL' => getenv('APP_URL') ?: 'http://localhost',
     ],
 ];
 

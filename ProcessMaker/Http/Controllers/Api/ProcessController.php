@@ -402,12 +402,12 @@ class ProcessController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/Process"),
+     *                 @OA\Items(ref="#/components/schemas/ProcessWithStartEvents"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -431,6 +431,8 @@ class ProcessController extends Controller
 
         foreach($processes as $key => $process) {
             //filter he start events that can be used manually (no timer start events);
+            # TODO: startEvents is not a real property on Process.
+            # Move below to $process->getManualStartEvents();
             $process->startEvents = $process->events->filter(function($event) {
                 $eventIsTimerStart = collect($event['eventDefinitions'])
                                         ->filter(function($eventDefinition){
@@ -444,7 +446,7 @@ class ProcessController extends Controller
             }
         };
 
-        return new ApiCollection($processes);
+        return new ApiCollection($processes); // TODO use existing resource class
     }
 
     /**

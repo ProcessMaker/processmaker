@@ -98,6 +98,7 @@ class Script extends Model
         if ($asUser) {
             $token = new GenerateAccessToken($asUser);
             $variablesParameter[] = 'API_TOKEN=' . $token->getToken();
+            $variablesParameter[] = 'API_HOST=' . config('app.url') . '/api/1.0';
         }
 
         if ($variablesParameter) {

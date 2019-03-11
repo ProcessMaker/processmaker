@@ -14,7 +14,7 @@ class GenerateSdk extends Command
      *
      * @var string
      */
-    protected $signature = 'bpm:sdk {language}';
+    protected $signature = 'bpm:sdk {language} {output=storage/api}';
 
     /**
      * The console command description.
@@ -41,7 +41,8 @@ class GenerateSdk extends Command
     public function handle()
     {
         try {
-            $builder = new BuildSdk(base_path(), true);
+            $jsonPath = base_path('storage/api-docs/api-docs.json');
+            $builder = new BuildSdk($jsonPath, $this->argument('output'), true);
             $builder->setLang($this->argument('language'));
             $builder->run();
         } catch(Exception $e) {
