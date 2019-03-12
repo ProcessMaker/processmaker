@@ -177,6 +177,7 @@ class BuildSdk {
             "options" => [
                 "gitUserId" => "ProcessMaker",
                 "gitRepoId" => "pm4-sdk-" . $this->lang,
+                "packageName" => "pm4-sdk-" . $this->lang,
             ],
             "spec" => "API-DOCS-JSON",
         ]);
