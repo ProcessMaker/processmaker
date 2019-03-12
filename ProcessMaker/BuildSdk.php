@@ -10,17 +10,18 @@ class BuildSdk {
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = null;
     private $supportedLangs = ['php', 'lua'];
-    private $basePath = null;
+    private $outputPath = null;
+    private $jsonPath = null;
 
-    public function __construct($basePath, $debug = false, $rebuild = false) {
-        $this->basePath = $basePath;
+    public function __construct($jsonPath, $outputPath, $debug = false, $rebuild = false) {
+        $this->jsonPath = $jsonPath;
+        $this->outputPath = rtrim($outputPath, "/");
         $this->debug = $debug;
         $this->rebuild = $rebuild;
     }
 
     public function run()
     {
-        $this->runCmd('mkdir -p ' . $this->outputBaseDir());
         $this->runChecks();
 
         $existing = $this->existingContainer();
@@ -34,6 +35,8 @@ class BuildSdk {
             $this->runCmd('docker pull ' . $this->image);
             $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
             $this->docker('apk add --update curl && rm -rf /var/cache/apk/*');
+        } else {
+            $this->runCmd("docker start generator || echo 'Generator already started'");
         }
         
         $this->runCmd('docker start generator || echo "Container already running"');
@@ -47,16 +50,25 @@ class BuildSdk {
 
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
-
-        $this->runCmd("mv -f $folder {$this->outputBaseDir()}/");
+        $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
         $this->log("DONE. Api is at {$this->outputDir()}");
     }
 
-    public function setLang($value) {
+    public function setLang($value)
+    {
         if (!in_array($value, $this->supportedLangs)) {
             throw new Exception("$value language is not supported");
         }
         $this->lang = $value;
+    }
+
+    public function getOptions()
+    {
+        if (!$this->lang) {
+            throw new Exception("Language must be specified using setLang()");
+        }
+        $this->waitForBoot();
+        return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients/{$this->lang}");
     }
 
     private function runChecks()
@@ -65,27 +77,31 @@ class BuildSdk {
             throw new Exception("Language must be specified using setLang()");
         }
 
-        if (!is_dir($this->basePath)) {
-            throw new Exception("$basePath is not a valid directory");
+        if (!is_dir($this->outputPath)) {
+            throw new Exception("{$this->outputPath} is not a valid directory");
+        }
+        
+        if (!is_writable($this->outputPath)) {
+            throw new Exception("Folder is not writeable: " . $this->outputPath);
         }
 
-        if (is_dir($this->outputDir())) {
-            throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
+        // if (is_dir($this->outputDir())) {
+        //     throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
+        // }
+
+        if (!is_file($this->jsonPath) || !is_readable($this->jsonPath)) {
+            throw new Exception("Json file does not exist or can not be read: " . $this->jsonPath);
         }
 
-        if (!is_writable($this->outputBaseDir())) {
-            throw new Exception("Folder is not writeable: " . $this->outputDir());
+        if (json_decode($this->apiJsonRaw()) === null) {
+            throw new Exception("File is not valid json: " . $this->jsonPath);
         }
+
     }
 
-    private function outputBaseDir()
-    {
-        return "{$this->basePath}/storage/api";
-    }
-    
     private function outputDir()
     {
-        return "{$this->outputBaseDir()}/{$this->lang}-client";
+        return $this->outputPath;
     }
 
     private function waitForBoot()
@@ -112,7 +128,7 @@ class BuildSdk {
 
     private function getZip($url)
     {
-        $filename = "{$this->basePath}/api.zip";
+        $filename = "{$this->outputPath}/api.zip";
         $this->docker("curl -s -S $url > $filename");
         return $filename;
     }
@@ -122,10 +138,10 @@ class BuildSdk {
         $zip = new ZipArchive;
         $res = $zip->open($file);
         $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $zip->extractTo($this->basePath);
+        $zip->extractTo("/tmp/{$folder}");
         $zip->close();
         unlink($file);
-        return "{$this->basePath}/$folder";
+        return "/tmp/{$folder}/{$this->lang}-client";
     }
 
     private function existingContainer()
@@ -160,7 +176,9 @@ class BuildSdk {
         return json_encode([
             "options" => [
                 "gitUserId" => "ProcessMaker",
-                "gitRepoId" => "bpm-".$this->lang."-sdk",
+                "gitRepoId" => "pm4-sdk-" . $this->lang,
+                "packageName" => "pm4-sdk-" . $this->lang,
+                "invokerPackage" => "ProcessMaker\\Client",
             ],
             "spec" => "API-DOCS-JSON",
         ]);
@@ -168,7 +186,7 @@ class BuildSdk {
 
     private function apiJsonRaw()
     {
-        return file_get_contents($this->basePath . "/storage/api-docs/api-docs.json");
+        return file_get_contents($this->jsonPath);
     }
 
     private function runCmd($cmd)
