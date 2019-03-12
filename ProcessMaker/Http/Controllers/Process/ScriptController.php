@@ -16,17 +16,23 @@ class ScriptController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('processes.scripts.index', compact('users'));
+        $scriptFormats = Script::scriptFormatList();
+
+        return view('processes.scripts.index', compact('users', 'scriptFormats'));
     }
 
     public function edit(Script $script, User $users)
     {
         $users = User::all();
-        return view('processes.scripts.edit', compact('script', 'users'));
+        $scriptFormats = Script::scriptFormatList();
+        
+        return view('processes.scripts.edit', compact('script', 'users', 'scriptFormats'));
     }
 
     public function builder(Script $script)
     {
-        return view('processes.scripts.builder', ['script' => $script]);
+        $scriptFormat = $script->language_name;
+        
+        return view('processes.scripts.builder', compact('script', 'scriptFormat'));
     }
 }
