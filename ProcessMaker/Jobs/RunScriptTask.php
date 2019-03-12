@@ -63,8 +63,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
 
         try {
-            $user = User::find(1); # temporary until scripts can set a user
-            $response = $script->runScript($data, $configuration, $user);
+            $response = $script->runScript($data, $configuration);
             // Update data
             foreach ($response['output'] as $key => $value) {
                 $dataStore->putData($key, $value);
