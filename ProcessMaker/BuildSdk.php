@@ -54,11 +54,21 @@ class BuildSdk {
         $this->log("DONE. Api is at {$this->outputDir()}");
     }
 
-    public function setLang($value) {
+    public function setLang($value)
+    {
         if (!in_array($value, $this->supportedLangs)) {
             throw new Exception("$value language is not supported");
         }
         $this->lang = $value;
+    }
+
+    public function getOptions()
+    {
+        if (!$this->lang) {
+            throw new Exception("Language must be specified using setLang()");
+        }
+        $this->waitForBoot();
+        return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients/{$this->lang}");
     }
 
     private function runChecks()
