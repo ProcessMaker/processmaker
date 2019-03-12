@@ -33,6 +33,13 @@
                         <div class="invalid-feedback" v-for="language in errors.language">@{{language}}</div>
                     </div>
                     <div class="form-group">
+                        <label class="typo__label">{{__('Run script as')}}</label>
+                        <multiselect v-model="selectedUser" label="fullname" :options="options"
+                                     :searchable="true"></multiselect>
+                    </div>
+
+
+                    <div class="form-group">
                         {!! Form::label('description', 'Description') !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
@@ -68,6 +75,8 @@
             data() {
                 return {
                     formData: @json($script),
+                    options:@json($users),
+                    selectedUser:"",
                     errors: {
                         'title': null,
                         'language': null,
@@ -75,6 +84,12 @@
                         'timeout': null,
                         'status': null
                     }
+                }
+            },
+            mounted() {
+                let users = this.options.filter(u => {return u.id === this.formData.run_as_user_id});
+                if (users.length > 0) {
+                    this.selectedUser = users[0];
                 }
             },
             methods: {
@@ -95,6 +110,7 @@
                         title: this.formData.title,
                         language: this.formData.language,
                         description: this.formData.description,
+                        run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
                         timeout: this.formData.timeout,
                     })
                         .then(response => {
@@ -103,6 +119,9 @@
                         })
                         .catch(error => {
                             if (error.response.status && error.response.status === 422) {
+                                if (error.response.data.errors.run_as_user_id !== undefined) {
+                                    ProcessMaker.alert(error.response.data.errors.run_as_user_id[0], 'danger');
+                                }
                                 this.errors = error.response.data.errors;
                             }
                         });
