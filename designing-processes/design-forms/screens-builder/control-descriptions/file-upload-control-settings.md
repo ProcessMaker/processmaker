@@ -93,3 +93,5 @@ Below are Inspector settings for the File Upload control:
 
 {% page-ref page="file-download-control-settings.md" %}
 
+{% page-ref page="expression-syntax-components-for-show-if-control-settings.md" %}
+

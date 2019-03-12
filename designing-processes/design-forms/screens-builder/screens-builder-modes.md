@@ -42,7 +42,7 @@ See [Manage Computed Properties](manage-computed-properties.md).
 
 ## Custom CSS Mode
 
-Use the Custom CSS mode to add custom CSS styles to a ProcessMaker Screen and/or control fields within it.
+Use the Custom CSS mode to add custom CSS styles to control fields within a ProcessMaker Screen by referencing the control's CSS ID in the CSS style sheet language.
 
 {% hint style="info" %}
 See [Add Custom CSS to a Screen](add-custom-css-to-a-screen.md).

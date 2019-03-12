@@ -52,19 +52,23 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Text Box control:
 
+* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
 * **Text Content:** Specify what text displays for the Text Box control. **New Text** is the default value. You can change what text will display.
-* **Font Weight:** Sets the weight of the **Text Content** text. **Normal** is the default option. You can change to **Bold**.
-* **Text Color:** Sets the color of the displayed text. Use any HTML or Hex code. This setting has no default value.
+* **Font Weight:** Sets the weight of the text specified in the **Text Content** setting. **Normal** is the default option. You can change to **Bold**.
+* ~~**Text Color:** Sets the color of the displayed text. Use any HTML or Hex code. This setting has no default value.~~
 * **Text Alignment:** Sets the text alignment. **Left** is the default option. Select one of the following options:
   * Center
   * Left
   * Right
   * Justify
 * **Font Size:** Sets the size of the **Text Label** text in em units. **1** is the default option. Select one of the following options:
-  * 0.5
   * 1
   * 1.5
   * 2
+* **Background Color:** Select to specify the background color of the Text Box control. Select the **Background Color** checkbox, and then select the background color.
+* **Text Color:** Select to specify the text color specified in the **Text Content** setting. Select the **Text Color** checkbox, and then select the text color.
+* **CSS ID:** Specify the CSS ID for custom CSS. Reference this CSS ID when specifying style for this control in [Custom CSS](../add-custom-css-to-a-screen.md) mode. By default this setting uses the **Field Name** setting.
+* **Show If:** Specify an expression that dictates the condition\(s\) under which the Text Box control displays. See [Expression Syntax Components for "Show If" Control Settings](expression-syntax-components-for-show-if-control-settings.md#expression-syntax-components-for-show-if-control-settings). If this setting does not have an expression, then this control displays by default.
 
 {% hint style="info" %}
 Below are some ways to render Request data to display as text in a Text Box control:
@@ -104,4 +108,6 @@ Below are some ways to render Request data to display as text in a Text Box cont
 {% page-ref page="file-upload-control-settings.md" %}
 
 {% page-ref page="file-download-control-settings.md" %}
+
+{% page-ref page="expression-syntax-components-for-show-if-control-settings.md" %}
 

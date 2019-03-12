@@ -104,7 +104,7 @@ Follow these steps to set the condition under which a Request follows a Sequence
 
 #### Expression Syntax Components
 
-Use the following expression syntax components to compose the expression that describes under which condition a Request follows that Sequence Flow to its connected element.
+Use the following expression syntax components to compose the expression that describes under which condition\(s\) a Request follows that Sequence Flow to its connected element.
 
 **Literals**
 

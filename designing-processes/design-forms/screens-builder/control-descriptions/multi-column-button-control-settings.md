@@ -84,3 +84,5 @@ The Multi Column control does not have Inspector settings.
 
 {% page-ref page="file-download-control-settings.md" %}
 
+{% page-ref page="expression-syntax-components-for-show-if-control-settings.md" %}
+
