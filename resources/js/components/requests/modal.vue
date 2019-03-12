@@ -19,8 +19,9 @@
                     <input class="form-control form-control-sm" v-model="filter" placeholder="Search...">
                 </div>
             </span>
+
             <p>We've made it easy for you to make the following Requests.</p>
-            <div v-if="Object.keys(processes).length && !loading" class="process-list">
+            <div v-if="Object.keys(processes).length && !loading" class="process-list p-4">
                 <div class="category" v-for="(category, index) in processes">
                     <h3 class="name">{{index}}</h3>
                     <process-card v-for="(process,index) in category"
@@ -29,8 +30,8 @@
                                   :process="process">
                     </process-card>
                 </div>
-
             </div>
+
             <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
                 <h4>You don't have any Processes.</h4>
                 <span v-if="permission.includes('create-processes')">
@@ -39,6 +40,7 @@
                 <span v-else>Please contact your administrator to get started.</span>
             </div>
             <div v-if="loading" class="loading">Finding Requests available to you...</div>
+
             <pagination single="Process"
                         plural="Processes"
                         :perPageSelectEnabled="true"
@@ -46,6 +48,7 @@
                         @vuetable-pagination:change-page="onPageChange"
                         ref="listProcess">
             </pagination>
+
         </b-modal>
     </div>
 </template>
@@ -54,10 +57,9 @@
   import card from "./card";
   import _ from "lodash";
   import datatableMixin from "../common/mixins/datatable";
-  import pagination from "../common/Pagination";
 
   export default {
-    mixins: [datatableMixin, pagination],
+    mixins: [datatableMixin],
     props: {
       permission: Array
     },
