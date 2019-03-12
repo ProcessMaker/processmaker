@@ -22,7 +22,7 @@ All ProcessMaker 4 Community edition Screen [controls](control-descriptions/) in
 
 ### Display
 
-The Display type only displays information. The Display type only has the following controls available in Screens Builder:
+The Display type, generally used to display information, has limited functionality compared the Form type. The Display type only has the following controls available in Screens Builder:
 
 * [Text](control-descriptions/textarea-control-settings.md)
 * [File Download](control-descriptions/file-download-control-settings.md)
@@ -34,12 +34,6 @@ The Display type only displays information. The Display type only has the follow
 {% page-ref page="what-is-screens-builder.md" %}
 
 {% page-ref page="control-descriptions/" %}
-
-{% page-ref page="control-descriptions/text-control-settings.md" %}
-
-{% page-ref page="control-descriptions/multi-column-button-control-settings.md" %}
-
-{% page-ref page="control-descriptions/record-list-control-settings.md" %}
 
 {% page-ref page="../../../package-development-distribution/first-topic.md" %}
 

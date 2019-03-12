@@ -32,7 +32,23 @@ Follow these steps to view the **Inspector** panel:
 
 {% page-ref page="what-is-screens-builder.md" %}
 
+{% page-ref page="types-for-screens.md" %}
+
+{% page-ref page="screens-builder-modes.md" %}
+
 {% page-ref page="control-descriptions/" %}
 
+{% page-ref page="preview-a-screen.md" %}
 
+{% page-ref page="add-a-new-page-to-a-screen.md" %}
+
+{% page-ref page="manage-computed-properties.md" %}
+
+{% page-ref page="add-custom-css-to-a-screen.md" %}
+
+{% page-ref page="save-a-screen.md" %}
+
+{% page-ref page="close-screens-builder.md" %}
+
+{% page-ref page="best-practices.md" %}
 

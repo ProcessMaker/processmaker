@@ -56,5 +56,31 @@ The Multi Column control does not have Inspector settings.
 
 ## Related Topics <a id="related-topics"></a>
 
+{% page-ref page="../types-for-screens.md" %}
+
 {% page-ref page="./" %}
+
+{% page-ref page="text-control-settings.md" %}
+
+{% page-ref page="line-input-control-settings.md" %}
+
+{% page-ref page="select-control-settings.md" %}
+
+{% page-ref page="radio-group-control-settings.md" %}
+
+{% page-ref page="checkbox-control-settings.md" %}
+
+{% page-ref page="textarea-control-settings.md" %}
+
+{% page-ref page="date-picker-control-settings.md" %}
+
+{% page-ref page="submit-button-control-settings.md" %}
+
+{% page-ref page="page-navigation-button-control-settings.md" %}
+
+{% page-ref page="record-list-control-settings.md" %}
+
+{% page-ref page="file-upload-control-settings.md" %}
+
+{% page-ref page="file-download-control-settings.md" %}
 

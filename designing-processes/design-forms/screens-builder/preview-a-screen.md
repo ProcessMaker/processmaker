@@ -59,3 +59,17 @@ Computed properties also display in the Data Preview panel as part of the JSON d
 
 {% page-ref page="../manage-forms/view-all-forms.md" %}
 
+{% page-ref page="types-for-screens.md" %}
+
+{% page-ref page="add-a-new-page-to-a-screen.md" %}
+
+{% page-ref page="manage-computed-properties.md" %}
+
+{% page-ref page="add-custom-css-to-a-screen.md" %}
+
+{% page-ref page="save-a-screen.md" %}
+
+{% page-ref page="close-screens-builder.md" %}
+
+{% page-ref page="best-practices.md" %}
+
