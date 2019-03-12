@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use ProcessMaker\Exception\ScriptTaskWithoutUser;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
