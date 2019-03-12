@@ -21,7 +21,11 @@ class CreateScriptsTable extends Migration
             $table->text('description')->nullable();
             $table->string('language', 20)->default('PHP');
             $table->text('code')->nullable();
+            $table->unsignedInteger('run_as_user_id')->nullable();
             $table->timestamps();
+
+            // Foreign keys
+            $table->foreign('run_as_user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
