@@ -6,6 +6,11 @@ use RuntimeException;
 
 class GenerateAccessTokenTest extends TestCase
 {
+    public function setUpWithPersonalAccessClient()
+    {
+        $this->withPersonalAccessClient();
+    }
+
     public function testGetNewToken()
     {
         $user = factory(User::class)->create();

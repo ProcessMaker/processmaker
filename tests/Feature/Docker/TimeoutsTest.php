@@ -33,6 +33,14 @@ class TimeoutsTest extends TestCase
             return $this->markTestSkipped('This test requires docker');
         }
     }
+
+    /**
+     * Make sure we have a personal access token needed to run scripts
+     */
+    public function setUpWithPersonalAccessClient()
+    {
+        $this->withPersonalAccessClient();
+    }
     
     /**
      * Run a test script and assert that the specified timeout is exceeded
