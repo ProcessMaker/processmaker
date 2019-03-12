@@ -65,9 +65,8 @@ Below are Inspector settings for the Text Box control:
   * 1
   * 1.5
   * 2
-* **Background Color:** Select to specify the background color of the Text Box control. Select the **Background Color** checkbox, and then select the background color.
-* **Text Color:** Select to specify the text color specified in the **Text Content** setting. Select the **Text Color** checkbox, and then select the text color.
-* **CSS ID:** Specify the CSS ID for custom CSS. Reference this CSS ID when specifying style for this control in [Custom CSS](../add-custom-css-to-a-screen.md) mode. By default this setting uses the **Field Name** setting.
+* **Background Color:** Select to specify the background color of the Text Box control. Selecting a background color also selects the **Background Color** checkbox.
+* **Text Color:** Select to specify the text color specified in the **Text Content** setting. Selecting a text color also selects the **Text Color** checkbox.
 * **Show If:** Specify an expression that dictates the condition\(s\) under which the Text Box control displays. See [Expression Syntax Components for "Show If" Control Settings](expression-syntax-components-for-show-if-control-settings.md#expression-syntax-components-for-show-if-control-settings). If this setting does not have an expression, then this control displays by default.
 
 {% hint style="info" %}
