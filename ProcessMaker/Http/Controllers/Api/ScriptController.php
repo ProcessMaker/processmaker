@@ -3,10 +3,12 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
 {
@@ -126,10 +128,18 @@ class ScriptController extends Controller
         $config = json_decode($request->get('config'), true) ?: [];
         $code = $request->get('code');
         $language = $request->get('language');
+        $timeout = $request->get('timeout');
+        
+        if ($timeout === null) {
+            $timeout = 60;
+        }
+        
         $script = new Script([
             'code' => $code,
             'language' => $language,
+            'timeout' => $timeout,
         ]);
+        
         return $script->runScript($data, $config);
     }
 
@@ -194,6 +204,7 @@ class ScriptController extends Controller
         $request->validate(Script::rules());
         $script = new Script();
         $script->fill($request->input());
+
         $script->saveOrFail();
         return new ScriptResource($script);
     }
@@ -235,9 +246,11 @@ class ScriptController extends Controller
     public function update(Script $script, Request $request)
     {
         $request->validate(Script::rules($script));
+
         $original_attributes = $script->getAttributes();
 
         $script->fill($request->input());
+
         $script->saveOrFail();
         
         unset(

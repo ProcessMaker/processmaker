@@ -35,7 +35,7 @@ class Install extends Command
      *
      * @var string
      */
-    protected $description = 'Install and configure ProcessMaker BPM';
+    protected $description = 'Install and configure ProcessMaker 4';
 
     /**
      * The values for our .env to populate
@@ -57,7 +57,7 @@ class Install extends Command
     public function handle()
     {
         // Setup our initial encryption key and set our running laravel app key to it
-        $this->key = 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
+        $this->key = 'base64:' . base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
         config(['app.key' => $this->key]);
 
         // Our initial .env values
@@ -87,9 +87,9 @@ class Install extends Command
         // Determine if .env file exists or not
         // if exists, bail out with an error
         // If file does not exist, begin to generate it
-        if(Storage::disk('install')->exists('.env')) {
-            $this->error(__("A .env file already exists"));
-            $this->error(__("Remove the .env file to perform a new installation"));
+        if (Storage::disk('install')->exists('.env')) {
+            $this->error(__("A .env file already exists. Stop the installation procedure, delete the existing .env file, and then restart the installation."));
+            $this->error(__("Remove the .env file to perform a new installation."));
             return 255;
         }
         $this->info(__("This application installs a new version of ProcessMaker."));
@@ -97,21 +97,20 @@ class Install extends Command
         $this->confirm(__("Are you ready to begin?"));
         $this->checkDependencies();
         do {
-        $this->fetchDatabaseCredentials();
-        } while(!$this->testDatabaseConnection());
+            $this->fetchDatabaseCredentials();
+        } while (!$this->testDatabaseConnection());
         // Ask for URL and validate
         $invalid = false;
         do {
-            if($invalid) {
-                $this->error(__("The url you provided was invalid. Please provide the scheme, host and path and have no trailing slashes."));
+            if ($invalid) {
+                $this->error(__("The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes."));
             }
-            $this->env['APP_URL'] = $this->ask(__('What is the url of this ProcessMaker Installation? (Ex: https://pm.example.com, no trailing slash)'));
-        } while($invalid = (!filter_var($this->env['APP_URL'],
-                                        FILTER_VALIDATE_URL,
-                                        FILTER_FLAG_SCHEME_REQUIRED |
-                                        FILTER_FLAG_HOST_REQUIRED)
-                    || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/'))
-        );
+            $this->env['APP_URL'] = $this->ask(__('What is the URL of this ProcessMaker installation? (Ex: https://pm.example.com, with no trailing slash)'));
+        } while ($invalid = (!filter_var(
+            $this->env['APP_URL'],
+            FILTER_VALIDATE_URL
+        )
+            || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/')));
         // Set broadcaster url
         $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
 
@@ -122,21 +121,9 @@ class Install extends Command
 
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
-        
-        // Confirm whether the user would like to seed default groups
-        $seedDefaultGroups = $this->confirm(__('Would you like default user groups to be set up?'), true);
 
-        //Confirm the user would like to setup their email
-        if ($this->confirm(__('Would you like to setup email options?'))) {
-            //Fetch from name & email from the user
-            $this->fetchEmailFromInfo();
-            
-            //Explain and then fetch email credentials
-            $this->info(__('ProcessMaker works with any SMTP server as well as several email APIs.'));
-            $this->fetchEmailCredentials();
-        }
 
-        $this->info(__("Installing ProcessMaker Database, OAuth SSL Keys and configuration file"));
+        $this->info(__("Installing ProcessMaker database, OAuth SSL keys and configuration file."));
 
         // The database should already exist and is tested by the fetchDatabaseCredentials call
         // Set the database default connection to install
@@ -146,47 +133,29 @@ class Install extends Command
         // Now generate the .env file
         $contents = '';
         // Build out the file contents for our .env file
-        foreach($this->env as $key => $value) {
+        foreach ($this->env as $key => $value) {
             $contents .= $key . "=" . $value . "\n";
         }
         // Now store it
         Storage::disk('install')->put('.env', $contents);
 
         // Install migrations
-        $this->call('migrate:fresh', [
+        $this->callSilent('migrate:fresh', [
             '--seed' => true,
         ]);
-        
-        // Seed default user groups if desired
-        if ($seedDefaultGroups) {
-            $this->call('db:seed', [
-                '--class' => 'DefaultGroupSeeder',
-            ]);        
-        }
+
+        $this->info(__("ProcessMaker database installed successfully."));
 
         // Generate passport secure keys and personal token oauth client
         $this->call('passport:install', [
             '--force' => true
         ]);
-		
-		//Create a symbolic link from "public/storage" to "storage/app/public"
+
+        //Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
 
-        // Install cron job for Laravel scheduled tasks
-        $this->info(__('Installing scheduled tasks...'));
-        $this->installCronJob();
-        
-        // Install Docker executors
-        $this->info(__('Installing Docker executors...'));        
-        $this->installDockerImages();
-        
-        // Restart services so they pick up the new settings
-        $this->info(__('Restarting Services...'));
-        $this->info(
-            system('sudo supervisorctl restart all')
-        );
-
-        $this->info(__("ProcessMaker installation is complete. Please visit the url in your browser to continue."));
+        $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
+        $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
         return true;
     }
 
@@ -199,17 +168,18 @@ class Install extends Command
         $this->info(__("Dependencies Check"));
         $table = new Table($this->output);
         $table->setRows([
-            [__('PHP Version'), phpversion()],
+            [__('CType Extension'), phpversion('ctype')],
+            [__('GD Extension'), phpversion('gd')],
+            [__('JSON Extension'), phpversion('json')],
+            [__('mbstring Extension'), phpversion('mbstring')],
             [__('OpenSSL Extension'), phpversion('openssl')],
             [__('PDO Extension'), phpversion('pdo')],
             [__('PDO MySQL Extension'), phpversion('pdo_mysql')],
-            [__('mbstring Extension'), phpversion('mbstring')],
+            [__('PHP Version'), phpversion()],
             [__('Tokenizer Extension'), phpversion('tokenizer')],
             [__('XML Extension'), phpversion('xml')],
-            [__('CType Extension'), phpversion('ctype')],
-            [__('JSON Extension'), phpversion('json')],
-            [__('GD Extension'), phpversion('gd')],
-            [__('SOAP Extension'), phpversion('soap')]
+            [__('ZIP Extension'), phpversion('zip')],
+
         ]);
         $table->render();
         return true;
@@ -217,98 +187,13 @@ class Install extends Command
 
     private function fetchDatabaseCredentials()
     {
-        $this->info(__("ProcessMaker requires a MySQL database created with appropriate credentials configured."));
-        $this->info(__("Refer to the Installation Guide for more information on database best practices."));
-        $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host"), ['localhost']);
-        $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (Usually 3306)"), [3306]);
-        $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL Database name"), ['workflow']);
-        $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL Username"));
-        $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL Password (Input hidden)"));
-    }
-    
-    private function fetchEmailCredentials()
-    {
-        //Present multiple choice list of email drivers
-        $type = $this->choice(__('Which email driver would you like to use?'), ['SMTP', 'Mailgun', 'Sparkpost', 'Amazon SES', 'Mailtrap'], 0);
-        $method = camel_case('setup' . $type);
-        $this->{$method}();
-    }
-    
-    private function fetchEmailFromInfo()
-    {
-        //Obtain from address and name from user
-        $this->env['MAIL_FROM_ADDRESS'] = $this->ask(__("Enter the email address you'd like emails to come from"), 'admin@example.com');
-        $this->env['MAIL_FROM_NAME'] = '"' . $this->ask(__("Enter the name you'd like emails to come from"), 'ProcessMaker') . '"';  
-    }
-    
-    private function setupSMTP()
-    {
-        //Ask for SMTP credentials
-        $this->env['MAIL_DRIVER'] = "smtp";
-        $this->env['MAIL_HOST'] = $this->ask(__("Enter your SMTP host"));
-        $this->env['MAIL_PORT'] = $this->anticipate(__("Enter your SMTP port"), [25, 465, 587, 2525]);
-        $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your SMTP username"));
-        $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your SMTP password (input hidden)"));
-    }
-
-    private function setupMailgun()
-    {
-        //Ask for Mailgun credentials
-        $this->env['MAIL_DRIVER'] = "mailgun";
-        $this->env['MAILGUN_DOMAIN'] = $this->ask(__("Enter your Mailgun domain"));
-        $this->env['MAILGUN_SECRET'] = $this->secret(__("Enter your Mailgun secret (input hidden)"));
-        $this->env['MAILGUN_ENDPOINT'] = $this->ask(__("Enter your Mailgun endpoint"), 'api.mailgun.net');
-    }
-
-    private function setupAmazonSES()
-    {
-        //Warn about dependency
-        $this->info(__("<comment>Please note that aws/aws-sdk-php must be installed for this driver to function.</comment>"));
-
-        //Ask for SES credentials
-        $this->env['MAIL_DRIVER'] = "ses";
-        $this->env['SES_KEY'] = $this->ask(__("Enter your Amazon SES key"));
-        $this->env['SES_SECRET'] = $this->secret(__("Enter your Amazon SES secret (input hidden)"));
-        $this->env['SES_REGION'] = $this->ask(__("Enter your Amazon SES region"), 'us-east-1');
-    }
-
-    private function setupSparkpost()
-    {
-        //Ask for Sparkpost credentials
-        $this->env['MAIL_DRIVER'] = "sparkpost";
-        $this->env['SPARKPOST_SECRET'] = $this->secret(__("Enter your Sparkpost secret (input hidden)"));
-    }
-    
-    private function setupMailtrap()
-    {
-        //Ask for Mailtrap credentials
-        $this->env['MAIL_DRIVER'] = "smtp";
-        $this->env['MAIL_HOST'] = 'smtp.mailtrap.io';
-        $this->env['MAIL_PORT'] = 2525;
-        $this->env['MAIL_USERNAME'] = $this->ask(__("Enter your Mailtrap inbox username"));
-        $this->env['MAIL_PASSWORD'] = $this->secret(__("Enter your Mailtrap inbox password (input hidden)"));    
-    }    
-
-    private function installDockerImages()
-    {
-        $this->info(system('sudo docker pull processmaker/executor:php'));
-        $this->info(system('sudo docker pull processmaker/executor:lua'));
-        $this->info(system('sudo mkdir -m777 /opt/executor'));
-    }
-
-    private function installCronJob()
-    {
-        $crontab = shell_exec('crontab -l');
-        $exists = stripos($crontab, 'php artisan schedule:run');
-        
-        if ($exists === false) {
-            $this->info(
-                system('echo "$(echo \'* * * * * cd /home/vagrant/processmaker && php artisan schedule:run >> /dev/null 2>&1\' ; crontab -l)" | crontab -')
-            );
-            $this->info(__('Scheduled tasks installed.'));
-        } else {
-            $this->line(__('Scheduled tasks already installed.'));
-        }
+        $this->info(__("ProcessMaker requires a MySQL database created with appropriate credentials."));
+        $this->info(__("Database connection failed. Check your database configuration and try again."));
+        $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host:"), ['localhost']);
+        $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (usually 3306):"), [3306]);
+        $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL database name:"), ['workflow']);
+        $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL username:"));
+        $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL password (input hidden):"));
     }
 
     private function testDatabaseConnection()
@@ -325,8 +210,8 @@ class Install extends Command
         // Attempt to connect
         try {
             $pdo = DB::connection('install')->getPdo();
-        } catch(Exception $e) {
-            $this->error(__("Failed to connect to MySQL database. Check your credentials and try again. Note, the database must also exist."));
+        } catch (Exception $e) {
+            $this->error(__("Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again."));
             return false;
         }
         return true;

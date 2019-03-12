@@ -4,10 +4,8 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Traits\SerializeToIso8601;
-use RuntimeException;
+use ProcessMaker\ScriptRunners\ScriptRunner;
 
 /**
  * Represents an Eloquent model of a Script
@@ -20,6 +18,7 @@ use RuntimeException;
  * @property text description
  * @property string language
  * @property text code
+ * @property integer timeout
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
@@ -28,6 +27,7 @@ use RuntimeException;
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="code", type="string"),
+ *   @OA\Property(property="teimout", type="integer"),
  * ),
  * @OA\Schema(
  *   schema="scripts",
@@ -40,18 +40,15 @@ use RuntimeException;
 class Script extends Model
 {
     use SerializeToIso8601;
-    use ScriptDockerCopyingFilesTrait;
-    use ScriptDockerBindingFilesTrait;
 
     protected $guarded = [
         'id',
         'created_at',
         'updated_at',
     ];
-
-    private static $scriptFormats = [
-        'application/x-php' => 'php',
-        'application/x-lua' => 'lua',
+    
+    protected $casts = [
+        'timeout' => 'integer',
     ];
 
     /**
@@ -68,7 +65,12 @@ class Script extends Model
         return [
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique],
-            'language' => 'required|in:php,lua'
+            'language' => [
+                'required',
+                Rule::in(static::scriptFormatValues())
+            ],
+            'run_as_user_id' => 'required',
+            'timeout' => 'integer|min:0|max:65535',
         ];
     }
 
@@ -80,91 +82,106 @@ class Script extends Model
      */
     public function runScript(array $data, array $config)
     {
-        $code = $this->code;
-        $language = $this->language;
+        $runner = new ScriptRunner($this->language);
+        return $runner->run($this->code, $data, $config, $this->timeout);
+    }
 
-        $variablesParameter = [];
-        EnvironmentVariable::chunk(50, function ($variables) use (&$variablesParameter) {
-            foreach ($variables as $variable) {
-                $variablesParameter[] = escapeshellarg($variable['name']) . '=' . escapeshellarg($variable['value']);
-            }
-        });
+    /**
+     * Get a configuration array of all supported script formats.
+     *
+     * @return array
+     */    
+    public static function scriptFormats()
+    {
+        return config('script-runners');
+    }
 
-        // Add the url to the host
-        $variablesParameter[] = 'HOST_URL=' . escapeshellarg(config('app.docker_host_url'));
-
-        if ($variablesParameter) {
-            $variablesParameter = "-e " . implode(" -e ", $variablesParameter);
+    /**
+     * Get the configuration for a specific script format.
+     *
+     * @param string $format
+     *
+     * @return array
+     */
+    public static function scriptFormat($format)
+    {
+        $formats = static::scriptFormats();
+        
+        if (array_key_exists($format, $formats)) {
+            return $formats[$format];
         } else {
-            $variablesParameter = '';
-        }
-
-        // So we have the files, let's execute the docker container
-        switch (strtolower($language)) {
-            case 'php':
-                $dockerConfig = [
-                    'image' => 'processmaker/executor:php',
-                    'command' => 'php /opt/executor/bootstrap.php',
-                    'parameters' => $variablesParameter,
-                    'inputs' => [
-                        '/opt/executor/data.json' => json_encode($data),
-                        '/opt/executor/config.json' => json_encode($config),
-                        '/opt/executor/script.php' => $code
-                    ],
-                    'outputs' => [
-                        'response' => '/opt/executor/output.json'
-                    ]
-                ];
-                break;
-            case 'lua':
-                $dockerConfig = [
-                    'image' => 'processmaker/executor:lua',
-                    'command' => 'lua5.3 /opt/executor/bootstrap.lua',
-                    'parameters' => $variablesParameter,
-                    'inputs' => [
-                        '/opt/executor/data.json' => json_encode($data),
-                        '/opt/executor/config.json' => json_encode($config),
-                        '/opt/executor/script.lua' => $code
-                    ],
-                    'outputs' => [
-                        'response' => '/opt/executor/output.json'
-                    ]
-                ];
-                break;
-            default:
-                throw new ScriptLanguageNotSupported($language);
-        }
-
-        $executeMethod = config('app.bpm_scripts_docker_mode')==='binding'
-            ? 'executeBinding' : 'executeCopying';
-        $response = $this->$executeMethod($dockerConfig);
-        $returnCode = $response['returnCode'];
-        $stdOutput = $response['output'];
-        $output = $response['outputs']['response'];
-        if ($returnCode || $stdOutput) {
-            // Has an error code
-            throw new RuntimeException(implode("\n", $stdOutput));
-        } else {
-            // Success
-            $response = json_decode($output, true);
-            return [
-                'output' => $response
-            ];
+            return null;
         }
     }
 
     /**
-     * Get the language from a script format string.
+     * Get a basic array of supported script formats.
      *
-     * @param string $format
+     * @return array
+     */    
+    public static function scriptFormatValues()
+    {
+        $values = [];
+        $formats = static::scriptFormats();
+        
+        foreach ($formats as $key => $format) {
+            $values[] = $key;
+        }
+        
+        return $values;
+    }
+
+    /**
+     * Get a key/value pair array of supported script formats.
+     *
+     * @return array
+     */    
+    public static function scriptFormatList()
+    {
+        $list = [];
+        $formats = static::scriptFormats();
+        
+        foreach ($formats as $key => $format) {
+            $list[$key] = $format['name'];
+        }
+        
+        return $list;
+    }
+    
+    /**
+     * Get the language from a script format (MIME type) string.
+     *
+     * @param string $mimeType
      *
      * @return string
      */
-    public static function scriptFormat2Language($format)
+    public static function scriptFormat2Language($mimeType)
     {
-        return static::$scriptFormats[$format];
+        $formats = static::scriptFormats();
+        
+        foreach ($formats as $key => $format) {
+            if ($mimeType == $format['mime_type']) {
+                return $key;
+            }
+        }
+        
+        return null;
     }
-    
+
+    /**
+     * Get the language name for this script.
+     *
+     * @return string
+     */    
+    public function getLanguageNameAttribute()
+    {
+        if ($format = static::scriptFormat($this->language)) {
+            return $format['name'];
+        } else {
+            return $this->language;
+        }
+    }
+
     /**
      * Get the associated versions
      */

@@ -2,7 +2,7 @@
     <div id="editor-container">
         <div class="toolbar">
             <nav class="navbar navbar-expand-md override">
-                <span> {{script.title}} ({{script.language}})</span>
+                <span> {{script.title}} ({{scriptFormat}})</span>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <ul class="navbar-nav">
                         <li class="nav-item ">
@@ -49,7 +49,7 @@
     import _ from "lodash";
 
     export default {
-        props: ["process", "script"],
+        props: ["process", "script", "scriptFormat"],
         data() {
             return {
                 resizing: false,
@@ -91,7 +91,8 @@
                         code: this.code,
                         language: this.script.language,
                         data: this.preview.data,
-                        config: this.preview.config
+                        config: this.preview.config,
+                        timeout: this.script.timeout
                     })
                     .then(response => {
                         this.preview.executing = false;

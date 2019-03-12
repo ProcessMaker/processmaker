@@ -42,13 +42,16 @@ class ScriptsTest extends TestCase
     public function testCreateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
+
         //Post saved correctly
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'language' => 'php',
             'code' => '123',
-            'description' => 'Description'
+            'description' => 'Description',
+            'run_as_user_id' => $user->id
         ]);
         //validating the answer is correct.
         //Check structure of response.
@@ -231,6 +234,8 @@ class ScriptsTest extends TestCase
     public function testUpdateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
+
         //Post saved success
         $yesterday = \Carbon\Carbon::now()->subDay();
         $script = factory(Script::class)->create([
@@ -242,6 +247,7 @@ class ScriptsTest extends TestCase
             'title' => $script->title,
             'language' => 'lua',
             'code' => $faker->sentence(3),
+            'run_as_user_id' => $user->id
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -283,6 +289,8 @@ class ScriptsTest extends TestCase
     public function testDuplicateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
+
         $code = '{"foo":"bar"}';
         $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
                 'code' => $code
@@ -291,6 +299,7 @@ class ScriptsTest extends TestCase
             'title' => "TITLE",
             'language' => 'php',
             'description' => $faker->sentence(5),
+            'run_as_user_id' => $user->id
         ]);
         $new_script = Script::find($response->json()['id']);
         $this->assertEquals($code, $new_script->code);
@@ -306,6 +315,7 @@ class ScriptsTest extends TestCase
                 'This test requires docker'
             );
         }
+        
         $url = route('api.script.preview', ['data' => '{}', 'code' => 'return {response=1}', 'language' => 'lua']);
         $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(200);
@@ -350,5 +360,23 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);
+    }
+
+    /**
+     * test that script without user to run as assigned generates an error
+     */
+    public function testScriptWithoutUser()
+    {
+        $faker = Faker::create();
+        $code = '{"foo":"bar"}';
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
+                'code' => $code
+            ])->id;
+        $response = $this->apiCall('PUT', $url . '/duplicate', [
+            'title' => "TITLE",
+            'language' => 'php',
+            'description' => $faker->sentence(5),
+        ]);
+        $response->assertStatus(422);
     }
 }
