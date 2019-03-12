@@ -71,6 +71,7 @@ class Script extends Model
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique],
             'language' => 'required|in:php,lua',
+            'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
         ];
     }
