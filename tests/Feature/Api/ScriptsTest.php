@@ -23,11 +23,6 @@ class ScriptsTest extends TestCase
         'description'
     ];
 
-    public function setUpWithPersonalAccessClient()
-    {
-        $this->withPersonalAccessClient();
-    }
-
     /**
      * Test verify the parameter required to create a script
      */

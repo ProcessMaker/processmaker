@@ -88,3 +88,14 @@ if (env('RUN_MSSQL_TESTS')) {
 if (env('POPULATE_DATABASE')) {
     Artisan::call('migrate:fresh', []);
 }
+
+/**
+ * A personal access client is always required for scripts to run.
+ */
+$clients = app()->make('Laravel\Passport\ClientRepository');
+try {
+    $clients->personalAccessClient();
+} catch(\RuntimeException $e) {
+    # Need to create a personal access client first
+    $clients->createPersonalAccessClient(null, 'test-client', 'http://localhost');
+}
