@@ -539,7 +539,7 @@
               title: @json($user['fullname']),
               initials: @json($user['firstname'][0]) + @json($user['lastname'][0])
             }],
-            selectedGroup: null,
+            selectedGroup: [],
             groups: [],
           }
         },

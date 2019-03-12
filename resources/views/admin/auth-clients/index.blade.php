@@ -40,9 +40,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary"
-                                data-dismiss="modal">{{__('Cancel')}}</button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="save" :disabled="disabled">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                            {{__('Cancel')}}
+                        </button>
+                        <button type="button" class="btn btn-secondary ml-2" @click.prevent="save" :disabled="disabled">
                             {{__('Save')}}
                         </button>
                     </div>
@@ -53,8 +54,7 @@
         <div class="container page-content">
             <div class="row">
                 <div class="col" align="right">
-                    <button class="btn btn-secondary" type="button" data-toggle="modal"
-                            data-target="#createEditAuthClient">
+                    <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#createEditAuthClient">
                         <i class="fas fa-plus"></i>
                         {{__('Auth Client')}}</a>
                     </button>
@@ -87,7 +87,12 @@
         },
         methods: {
           save() {
-            event.preventDefault()
+            //single click
+            if (this.disabled) {
+              return
+            }
+            this.disabled = true;
+
             this.loading = true
             let method = 'POST'
             let url = '/oauth/clients'
@@ -98,12 +103,6 @@
                 url = url + '/' + this.authClient.id
               verb = 'saved'
             }
-            //single click
-            if (this.disabled) {
-              return
-            }
-            this.disabled = true;
-
             ProcessMaker.apiClient({
               method,
               url,
@@ -129,7 +128,8 @@
             this.errors = {
               name: null,
               redirect: null
-            }
+            };
+            this.disabled = false;
           },
           edit(item) {
             this.authClient = item

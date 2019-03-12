@@ -55,7 +55,8 @@
         methods: {
           handleFile(e) {
             this.file = this.$refs.file.files[0];
-            this.uploaded = true
+            this.uploaded = true;
+            this.submitted = false;
           },
           onCancel() {
             window.location = '{{ route("processes.index") }}';
