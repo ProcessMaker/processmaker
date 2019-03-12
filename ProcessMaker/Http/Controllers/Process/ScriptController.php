@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
 {
@@ -14,16 +15,24 @@ class ScriptController extends Controller
      */
     public function index()
     {
-        return view('processes.scripts.index');
+        $users = User::all();
+        $scriptFormats = Script::scriptFormatList();
+
+        return view('processes.scripts.index', compact('users', 'scriptFormats'));
     }
 
-    public function edit(Script $script)
+    public function edit(Script $script, User $users)
     {
-        return view('processes.scripts.edit', ['script' => $script]);
+        $users = User::all();
+        $scriptFormats = Script::scriptFormatList();
+        
+        return view('processes.scripts.edit', compact('script', 'users', 'scriptFormats'));
     }
 
     public function builder(Script $script)
     {
-        return view('processes.scripts.builder', ['script' => $script]);
+        $scriptFormat = $script->language_name;
+        
+        return view('processes.scripts.builder', compact('script', 'scriptFormat'));
     }
 }
