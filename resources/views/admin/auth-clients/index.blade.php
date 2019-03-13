@@ -54,7 +54,8 @@
         <div class="container page-content">
             <div class="row">
                 <div class="col" align="right">
-                    <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#createEditAuthClient">
+                    <button class="btn btn-secondary" type="button" data-toggle="modal"
+                            data-target="#createEditAuthClient">
                         <i class="fas fa-plus"></i>
                         {{__('Auth Client')}}</a>
                     </button>
@@ -109,10 +110,10 @@
               baseURL: '/',
               data: this.authClient,
             }).then(response => {
-              $('#createEditAuthClient').modal('hide')
-              this.$refs.authClientList.fetch()
-              this.loading = false
-              ProcessMaker.alert("The auth client was " + verb + ".", "success")
+              $('#createEditAuthClient').modal('hide');
+              this.$refs.authClientList.fetch();
+              this.loading = false;
+              ProcessMaker.alert(__("The auth client was ") + verb + ".", __("success"))
             }).catch(error => {
               this.disabled = false;
               this.errors = error.response.data.errors;

@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Notification;

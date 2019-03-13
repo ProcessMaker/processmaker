@@ -20,9 +20,9 @@
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config" role="tab"
-                        aria-controls="nav-config" aria-selected="true">Configuration</a>
+                        aria-controls="nav-config" aria-selected="true">{{__('Configuration')}}</a>
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications" role="tab"
-                           aria-controls="nav-notifications" aria-selected="true">Notifications</a>
+                           aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
                 </div>
             </nav>
             <div class="card card-body card-body-nav-tabs">
@@ -69,12 +69,12 @@
                                 v-model="canCancel"
                                 :options="activeUsersAndGroups"
                                 :multiple="true"
-                                placeholder="Type to search"
+                                placeholder="{{__('Type to search')}}"
                                 track-by="fullname"
                                 label="fullname"
                                 group-values="items"
                                 group-label="label">
-                                    <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                             </multiselect>
                         </div>
                         <div class="form-group p-0">
@@ -94,12 +94,12 @@
                                 v-model="canEditData"
                                 :options="activeUsersAndGroups"
                                 :multiple="true"
-                                placeholder="Type to search"
+                                placeholder="{{__('Type to search')}}"
                                 track-by="fullname"
                                 label="fullname"
                                 group-values="items"
                                 group-label="label">
-                                    <span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                                    <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                             </multiselect>
                         </div>
                         <div class="form-group p-0">
@@ -107,8 +107,8 @@
                             <input type="checkbox" v-model="formData.pause_timer_start" >
                         </div>
                         <div class="d-flex justify-content-end mt-2">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                     </div>
                     <div class="tab-pane fade show" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
@@ -118,14 +118,14 @@
                                 <thead>
                                     <tr>
                                         <th class="notify"></th>
-                                        <th class="action">Request Started</th>
-                                        <th class="action">Request Canceled</th>
-                                        <th class="action">Request Completed</th>
+                                        <th class="action">{{__('Request Started')}}</th>
+                                        <th class="action">{{__('Request Canceled')}}</th>
+                                        <th class="action">{{__('Request Completed')}}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="notify">Notify Requester</td>
+                                        <td class="notify">{{__('Notify Requester')}}</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
                                                 <input v-model="formData.notifications.requester.started" type="checkbox" class="custom-control-input" id="notify-requester-started">
@@ -146,7 +146,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td class="notify">Notify Participants</td>
+                                        <td class="notify">{{__('Notify Participants')}}</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
                                                 <input v-model="formData.notifications.participants.started" type="checkbox" class="custom-control-input" id="notify-participants-started">
@@ -170,8 +170,8 @@
                             </table>
                         </div>
                         <div class="d-flex justify-content-end mt-2">
-                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                     </div>
                 </div>

@@ -67,8 +67,8 @@
 
 <div id="api-error" class="error-content">
   <div>
-    <h1>Sorry! API failed to load</h1>
-    <p>Something went wrong. Try refreshing the application</p>
+    <h1>{{('Sorry! API failed to load')}}</h1>
+    <p>{{('Something went wrong. Try refreshing the application')}}</p>
   </div>
 </div>
 <!-- Scripts -->
