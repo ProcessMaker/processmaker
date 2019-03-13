@@ -79,7 +79,11 @@ trait ScriptDockerBindingFilesTrait
         if ($returnCode) {
             if ($returnCode == 137) {
                 Log::error('Script timed out');
-                throw new ScriptTimeoutException(implode("\n", $output));
+                throw new ScriptTimeoutException(
+                    __("Script took too long to complete. Consider increasing the timeout.")
+                  . " "
+                  . implode("\n", $output)
+                );
             }
             Log::error('Script threw return code ' . $returnCode . 'Message: ' . implode("\n", $output));
             throw new ScriptException(implode("\n", $output));
