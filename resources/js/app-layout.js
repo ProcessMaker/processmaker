@@ -31,7 +31,7 @@ Vue.component('multiselect', Multiselect);
 window.ProcessMaker.events = new Vue();
 
 window.ProcessMaker.nodeTypes = [];
-window.ProcessMaker.nodeTypes.get = function(id) {
+window.ProcessMaker.nodeTypes.get = function (id) {
     return this.find(node => node.id === id);
 }
 
@@ -81,8 +81,8 @@ window.ProcessMaker.alert = function (msg, variant) {
 
 // Set out own specific confirm modal.
 window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
-    ProcessMaker.navbar.confirmTitle = title || "Confirm";
-    ProcessMaker.navbar.confirmMessage = message || "Are you sure you want to delete?";
+    ProcessMaker.navbar.confirmTitle = title || __("Confirm");
+    ProcessMaker.navbar.confirmMessage = message || __("Are you sure you want to delete?");
     ProcessMaker.navbar.confirmVariant = variant;
     ProcessMaker.navbar.confirmCallback = callback;
     ProcessMaker.navbar.confirmShow = true;
@@ -108,15 +108,15 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
 
 // Display any uncaught promise rejections from axios in the Process Maker alert box
 window.addEventListener('unhandledrejection', function (event) {
-        let error = event.reason;
-        if (error.config._defaultErrorShown) {
-            // Already handeled
-            event.preventDefault(); // stops the unhandled rejection error
-        } else if (error.response.data && error.response.data.message) {
-            window.ProcessMaker.alert(error.response.data.message, "danger");
-        } else if (error.message) {
-            window.ProcessMaker.alert(error.message, "danger");
-        }
+    let error = event.reason;
+    if (error.config._defaultErrorShown) {
+        // Already handeled
+        event.preventDefault(); // stops the unhandled rejection error
+    } else if (error.response.data && error.response.data.message) {
+        window.ProcessMaker.alert(error.response.data.message, "danger");
+    } else if (error.message) {
+        window.ProcessMaker.alert(error.message, "danger");
+    }
 });
 
 new Vue({

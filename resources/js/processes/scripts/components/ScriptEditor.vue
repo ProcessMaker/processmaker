@@ -34,9 +34,21 @@
             </div>
             <div class="output">
                 <div class="p-1 bg-secondary border-bottom text-white">Script Output</div>
-                <button :disabled="preview.executing" @click="execute" class="btn btn-primary">Execute</button>
+                <div class="btn-group" role="group">
+                    <button :disabled="preview.executing" @click="execute" class="btn btn-primary"><i class="fas fa-play-circle"></i></button>
+                    <div class="col"></div>
+                    <div class="col p-2 text-right">
+                        <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
+                        <i v-if="preview.success" class="fas fa-check text-success"></i>
+                        <i v-if="preview.failure" class="fas fa-times-circle text-danger"></i>
+                    </div>
+                </div>
                 <div class="content" style="overflow: auto; width: 100%;">
-                    <pre v-text="preview.output"></pre>
+                    <pre v-if="preview.success" v-text="preview.output"></pre>
+                    <div v-if="preview.failure" class="w-100">
+                        <div class="text-light bg-danger">{{preview.error.exception}}</div>
+                        <div class="text-light text-monospace small">{{preview.error.message}}</div>
+                    </div>
                 </div>
 
             </div>
@@ -61,7 +73,9 @@
                     executing: false,
                     data: "{}",
                     config: "{}",
-                    output: ''
+                    output: '',
+                    success: false,
+                    failure: false,
                 }
             };
         },
@@ -70,12 +84,29 @@
         },
         mounted() {
             window.addEventListener("resize", this.handleResize);
+            let userID = document.head.querySelector("meta[name=\"user-id\"]");
+            window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
+                .notification((response) => {
+                    this.outputResponse(response);
+                });
         },
         beforeDestroy: function() {
             window.removeEventListener("resize", this.handleResize);
         },
 
         methods: {
+            outputResponse(response) {
+                if (response.status === 200) {
+                    this.preview.executing = false;
+                    this.preview.output = response.response;
+                    this.preview.success = true;
+                } else {
+                    this.preview.executing = false;
+                    this.preview.failure = true;
+                    this.preview.output = response.response;
+                    this.preview.error = response.response;
+                }
+            },
             stopResizing: _.debounce(function() {
                 this.resizing = false;
             }, 50),
@@ -85,6 +116,8 @@
             },
             execute() {
                 this.preview.executing = true;
+                this.preview.success = false;
+                this.preview.failure = false;
                 // Attempt to execute a script, using our temp variables
                 ProcessMaker.apiClient
                     .post("scripts/" + this.script.id + "/preview", {
@@ -92,15 +125,7 @@
                         language: this.script.language,
                         data: this.preview.data,
                         config: this.preview.config,
-                        timeout: this.script.timeout
-                    })
-                    .then(response => {
-                        this.preview.executing = false;
-                        this.preview.output = response.data.output;
-                    })
-                    .catch((err) => {
-                        ProcessMaker.alert(err.response.data.message, "danger");
-                        this.preview.executing = false;
+                        timeout: this.script.timeout,
                     });
             },
             onClose() {
@@ -142,7 +167,7 @@
             }
         }
         .preview {
-            height: 200px;
+            height: 300px;
             display: flex;
 
             .content {

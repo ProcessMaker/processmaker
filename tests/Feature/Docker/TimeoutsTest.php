@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
-use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\BenchmarkHelper;
 use Tests\Feature\Shared\LoggingHelper;
 use Tests\Feature\Shared\RequestHelper;
+use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Notifications\ScriptResponseNotification;
+use ProcessMaker\Exception\ScriptTimeoutException;
 
 class TimeoutsTest extends TestCase
 {
@@ -20,33 +20,26 @@ class TimeoutsTest extends TestCase
 
     // How long to sleep our test scripts that should exceed timeout
     const SLEEP_EXCEED = 6;
-    
+
     // How long to sleep our test scripts that should not exceed timeout
     const SLEEP_NOT_EXCEED = 1;
-    
+
     /**
      * Skip the test if Docker is not installed
      */
     private function skipWithoutDocker()
     {
-        if (! file_exists(config('app.bpm_scripts_home')) || ! file_exists(config('app.bpm_scripts_docker'))) {
+        if (!file_exists(config('app.bpm_scripts_home')) || !file_exists(config('app.bpm_scripts_docker'))) {
             return $this->markTestSkipped('This test requires docker');
         }
     }
 
     /**
-     * Make sure we have a personal access token needed to run scripts
-     */
-    public function setUpWithPersonalAccessClient()
-    {
-        $this->withPersonalAccessClient();
-    }
-    
-    /**
      * Run a test script and assert that the specified timeout is exceeded
      */
     private function assertTimeoutExceeded($data)
     {
+        Notification::fake();
         $this->assertLogIsEmpty();
         
         $url = route(
@@ -57,10 +50,19 @@ class TimeoutsTest extends TestCase
         $this->benchmarkStart();
         $response = $this->apiCall('POST', $url, $data);
         $this->benchmarkEnd();
-        
+
         $this->assertLogMessageExists('Script timed out');
         $this->assertLessThan(intval($data['timeout']) + 2, $this->benchmark());
-        $response->assertStatus(500);
+
+        // Assertion: An exception is notified to usr through broadcast channel
+        Notification::assertSentTo(
+            [$this->user],
+            ScriptResponseNotification::class,
+            function ($notification, $channels) {
+                $response = $notification->getResponse();
+                return $response['exception'] === ScriptTimeoutException::class && in_array('broadcast', $channels);
+            }
+        );
     }
 
     /**
@@ -68,6 +70,7 @@ class TimeoutsTest extends TestCase
      */
     private function assertTimeoutNotExceeded($data)
     {
+        Notification::fake();
         $this->benchmarkStart();
         $url = route(
             'api.script.preview',
@@ -75,10 +78,19 @@ class TimeoutsTest extends TestCase
         );
         $response = $this->apiCall('POST', $url, $data);
         $this->benchmarkEnd();
-        
+
         $this->assertLessThan(intval($data['timeout']) + 2, $this->benchmark());
         $response->assertStatus(200);
-        $response->assertJsonStructure(['output' => ['response']]);
+
+        // Assertion: The script output is sent to usr through broadcast channel
+        Notification::assertSentTo(
+            [$this->user],
+            ScriptResponseNotification::class,
+            function ($notification, $channels) {
+                $response = $notification->getResponse();
+                return $response['output'] === ['response' => 1];
+            }
+        );
     }
 
     /**
@@ -87,7 +99,7 @@ class TimeoutsTest extends TestCase
     public function testLuaScriptTimeoutExceeded()
     {
         $this->skipWithoutDocker();
-        
+
         $this->assertTimeoutExceeded([
             'data' => '{}',
             'code' => 'os.execute("sleep ' . self::SLEEP_EXCEED . '") return {response=1}',
@@ -95,14 +107,14 @@ class TimeoutsTest extends TestCase
             'timeout' => self::TIMEOUT_LENGTH
         ]);
     }
-    
+
     /**
      * Test to ensure Lua scripts do not timeout if they do not exceed limits
      */
     public function testLuaScriptTimeoutNotExceeded()
     {
         $this->skipWithoutDocker();
-        
+
         $this->assertTimeoutNotExceeded([
             'data' => '{}',
             'code' => 'os.execute("sleep ' . self::SLEEP_NOT_EXCEED . '") return {response=1}',
@@ -110,14 +122,14 @@ class TimeoutsTest extends TestCase
             'timeout' => self::TIMEOUT_LENGTH
         ]);
     }
-    
+
     /**
      * Test to ensure PHP scripts timeout
      */
     public function testPhpScriptTimeoutExceeded()
     {
         $this->skipWithoutDocker();
-        
+
         $this->assertTimeoutExceeded([
             'data' => '{}',
             'code' => '<?php sleep(' . self::SLEEP_EXCEED . '); return ["response"=>1];',
@@ -125,14 +137,14 @@ class TimeoutsTest extends TestCase
             'timeout' => self::TIMEOUT_LENGTH
         ]);
     }
-    
+
     /**
      * Test to ensure PHP scripts do not timeout if they do not exceed limits
      */
     public function testPhpScriptTimeoutNotExceeded()
     {
         $this->skipWithoutDocker();
-        
+
         $this->assertTimeoutNotExceeded([
             'data' => '{}',
             'code' => '<?php sleep(' . self::SLEEP_NOT_EXCEED . '); return ["response"=>1];',

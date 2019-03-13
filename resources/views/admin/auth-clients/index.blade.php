@@ -1,11 +1,11 @@
 @extends('layouts.layout')
 
 @section('title')
-{{__('Auth Clients')}}
+    {{__('Auth Clients')}}
 @endsection
 
 @section('sidebar')
-@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
+    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
 @section('content')
@@ -40,9 +40,12 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary"
-                                data-dismiss="modal">{{__('Cancel')}}</button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="save">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                            {{__('Cancel')}}
+                        </button>
+                        <button type="button" class="btn btn-secondary ml-2" @click.prevent="save" :disabled="disabled">
+                            {{__('Save')}}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -51,7 +54,8 @@
         <div class="container page-content">
             <div class="row">
                 <div class="col" align="right">
-                    <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#createEditAuthClient">
+                    <button class="btn btn-secondary" type="button" data-toggle="modal"
+                            data-target="#createEditAuthClient">
                         <i class="fas fa-plus"></i>
                         {{__('Auth Client')}}</a>
                     </button>
@@ -67,64 +71,72 @@
     <script src="{{mix('js/admin/auth-clients/index.js')}}"></script>
 
     <script>
-        new Vue({
-            el: '#authClients',
-            data: {
-                authClient: null,
-                errors: null,
-            },
-            beforeMount() {
-                this.resetValues();
-            },
-            mounted() {
-                $('#createEditAuthClient').on('hidden.bs.modal', () => {
-                    this.resetValues();
-                });
-            },
-            methods: {
-                save() {
-                    event.preventDefault()
-                    this.loading = true
-                    let method = 'POST'
-                    let url = '/oauth/clients'
-                    let verb = 'created'
-                    if (this.authClient.id) {
-                        // Do an update
-                        method = 'PUT',
-                        url = url + '/' + this.authClient.id
-                        verb = 'saved'
-                    }
-                    ProcessMaker.apiClient({
-                        method,
-                        url,
-                        baseURL: '/',
-                        data: this.authClient,
-                    }).then(response => {
-                        $('#createEditAuthClient').modal('hide')
-                        this.$refs.authClientList.fetch()
-                        this.loading = false
-                        ProcessMaker.alert("The auth client was " + verb + ".", "success")
-                    }).catch(error => {
-                        this.errors = error.response.data.errors;
-                    });
-                },
-                resetValues() {
-                    this.authClient = {
-                        id: null,
-                        name: "",
-                        redirect: "",
-                        secret: ""
-                    };
-                    this.errors = {
-                        name: null,
-                        redirect: null
-                    }
-                },
-                edit(item) {
-                    this.authClient = item
-                    $('#createEditAuthClient').modal('show');
-                }
-            },
-        })
+      new Vue({
+        el: '#authClients',
+        data: {
+          authClient: null,
+          errors: null,
+          disabled: false
+        },
+        beforeMount() {
+          this.resetValues();
+        },
+        mounted() {
+          $('#createEditAuthClient').on('hidden.bs.modal', () => {
+            this.resetValues();
+          });
+        },
+        methods: {
+          save() {
+            //single click
+            if (this.disabled) {
+              return
+            }
+            this.disabled = true;
+
+            this.loading = true
+            let method = 'POST'
+            let url = '/oauth/clients'
+            let verb = 'created'
+            if (this.authClient.id) {
+              // Do an update
+              method = 'PUT',
+                url = url + '/' + this.authClient.id
+              verb = 'saved'
+            }
+            ProcessMaker.apiClient({
+              method,
+              url,
+              baseURL: '/',
+              data: this.authClient,
+            }).then(response => {
+              $('#createEditAuthClient').modal('hide');
+              this.$refs.authClientList.fetch();
+              this.loading = false;
+              ProcessMaker.alert(__("The auth client was ") + verb + ".", __("success"))
+            }).catch(error => {
+              this.disabled = false;
+              this.errors = error.response.data.errors;
+            });
+          },
+          resetValues() {
+            this.authClient = {
+              id: null,
+              name: "",
+              redirect: "",
+              secret: ""
+            };
+            this.errors = {
+              name: null,
+              redirect: null
+            };
+            this.disabled = false;
+          },
+          edit(item) {
+            this.authClient = item
+            $('#createEditAuthClient').modal('show');
+          }
+        },
+      })
     </script>
 @endsection
