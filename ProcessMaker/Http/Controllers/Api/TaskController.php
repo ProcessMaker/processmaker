@@ -63,9 +63,6 @@ class TaskController extends Controller
             $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
         );
 
-        // only show tasks that the user is assigned to
-        $query->where('process_request_tokens.user_id', Auth::user()->id);
-
         $inOverdueQuery = ProcessRequestToken::where('user_id', Auth::user()->id)
             ->where('status', 'ACTIVE')
             ->where('due_at', '<', Carbon::now());
