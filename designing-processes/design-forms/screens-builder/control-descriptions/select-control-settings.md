@@ -33,6 +33,8 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/select-control-placed-screens-builder-processes.png)
 
+6. Configure the Select control. See [Inspector Settings](select-control-settings.md#inspector-settings).
+
 Below is a Select control in Preview mode.
 
 ![Select control in Preview mode](../../../../.gitbook/assets/select-control-preview-screen-builder-processes.png)
@@ -56,7 +58,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Line Input control:
 
-* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
 * **Field Label:** Specify the field label text that displays. **New Select** is the default value.
 * **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
@@ -68,7 +70,7 @@ Below are Inspector settings for the Line Input control:
 
   * **Value:** **Value** is the internal data name for the option that only the Process Owner views at design time.
   * **Content:** **Content** is the option label displayed to the form user. 
-  * **Actions:** Click the Remove![](../../../../.gitbook/assets/options-list-delete-option-icon-screens-builder-processes.png)icon to remove the option.
+  * **Actions:** Click the **Remove**![](../../../../.gitbook/assets/options-list-delete-option-icon-screens-builder-processes.png)icon to remove the option.
 
   Follow these steps to add an option: 
 
@@ -111,6 +113,8 @@ Below are Inspector settings for the Line Input control:
 {% page-ref page="multi-column-button-control-settings.md" %}
 
 {% page-ref page="record-list-control-settings.md" %}
+
+{% page-ref page="image-control-settings.md" %}
 
 {% page-ref page="file-upload-control-settings.md" %}
 

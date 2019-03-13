@@ -35,6 +35,8 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/checkbox-control-placed-screens-builder-processes.png)
 
+6. Configure the Checkbox control. See [Inspector Settings](checkbox-control-settings.md#inspector-settings).
+
 Below are two Checkbox controls in Preview mode.
 
 ![Two Checkbox controls in Preview mode](../../../../.gitbook/assets/checkbox-control-preview-screens-builder-processes.png)
@@ -58,7 +60,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Checkbox control:
 
-* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. Multiple Checkbox controls can be grouped together to function as one set of options whereby separate Checkbox controls with the same **Field Name** value maintain the same selected or deselected state. This is a required setting.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. Multiple Checkbox controls can be grouped together to function as one set of options whereby separate Checkbox controls with the same **Field Name** value maintain the same selected or deselected state. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
 * **Field Label:** Specify the field label text that displays. **New Checkbox** is the default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
 * **Initially Checked?:** Select to indicate that the Checkbox control is checked \(selected\) by default. Otherwise, deselect to indicate that the Checkbox control is not checked by default. This setting is not selected by default.
@@ -93,6 +95,8 @@ Below are Inspector settings for the Checkbox control:
 {% page-ref page="multi-column-button-control-settings.md" %}
 
 {% page-ref page="record-list-control-settings.md" %}
+
+{% page-ref page="image-control-settings.md" %}
 
 {% page-ref page="file-upload-control-settings.md" %}
 

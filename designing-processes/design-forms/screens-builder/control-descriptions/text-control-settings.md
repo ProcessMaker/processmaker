@@ -1,8 +1,8 @@
 ---
-description: Add a field that displays text.
+description: Add a control that displays text.
 ---
 
-# Text Box Settings
+# Text Box Control Settings
 
 ## Control Description
 
@@ -29,6 +29,8 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/text-control-placed-screens-builder-processes.png)
 
+6. Configure the Text Box control. See [Inspector Settings](text-control-settings.md#inspector-settings).
+
 Below is a Text Box control in Preview mode.
 
 ![Text Box control in Preview mode](../../../../.gitbook/assets/text-control-preview-screens-builder-processes.png)
@@ -52,7 +54,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Text Box control:
 
-* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
 * **Text Content:** Specify what text displays for the Text Box control. **New Text** is the default value. You can change what text will display.
 * **Font Weight:** Sets the weight of the text specified in the **Text Content** setting. **Normal** is the default option. You can change to **Bold**.
 * ~~**Text Color:** Sets the color of the displayed text. Use any HTML or Hex code. This setting has no default value.~~
@@ -103,6 +105,8 @@ Below are some ways to render Request data to display as text in a Text Box cont
 {% page-ref page="multi-column-button-control-settings.md" %}
 
 {% page-ref page="record-list-control-settings.md" %}
+
+{% page-ref page="image-control-settings.md" %}
 
 {% page-ref page="file-upload-control-settings.md" %}
 

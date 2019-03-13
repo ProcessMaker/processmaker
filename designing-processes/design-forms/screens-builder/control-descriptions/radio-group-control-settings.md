@@ -35,6 +35,8 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/radio-group-control-placed-screens-builder-processes.png)
 
+6. Configure the Radio Group control. See [Inspector Settings](radio-group-control-settings.md#inspector-settings).
+
 Below is a Radio Group control in Preview mode.
 
 ![Radio Group control in Preview mode](../../../../.gitbook/assets/radio-group-control-preview-screens-builder-processes.png)
@@ -58,7 +60,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Radio Group control:
 
-* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
 * **Field Label:** Specify the field label text that displays. **New Radio Button Group** is the default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
 * **Options List:** Specify the list of options available in the select box. Add options in the order they are to display from top to bottom in the drop-down. The default option is called **new** with the content **New Option**. ~~RETAKE THIS SCREENSHOT WHEN THEY FIX THE HELP MESSAGE BELOW THE "ADD OPTION" BUTTON.~~  
@@ -69,7 +71,7 @@ Below are Inspector settings for the Radio Group control:
 
   * **Value:** **Value** is the internal data name for the option that only the Process Owner views at design time.
   * **Content:** **Content** is the option label displayed to the form user. 
-  * **Actions:** Click the Remove![](../../../../.gitbook/assets/options-list-delete-option-icon-screens-builder-processes.png)icon to remove the radio button from the group.
+  * **Actions:** Click the **Remove**![](../../../../.gitbook/assets/options-list-delete-option-icon-screens-builder-processes.png)icon to remove the radio button from the group.
 
   Follow these steps to add an option: 
 
@@ -112,6 +114,8 @@ Below are Inspector settings for the Radio Group control:
 {% page-ref page="multi-column-button-control-settings.md" %}
 
 {% page-ref page="record-list-control-settings.md" %}
+
+{% page-ref page="image-control-settings.md" %}
 
 {% page-ref page="file-upload-control-settings.md" %}
 

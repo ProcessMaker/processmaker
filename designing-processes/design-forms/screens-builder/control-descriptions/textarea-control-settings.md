@@ -35,6 +35,8 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/textarea-control-placed-screens-builder-processes.png)
 
+6. Configure the Textarea control. See [Inspector Settings](textarea-control-settings.md#inspector-settings).
+
 Below is a Textarea control in Preview mode.
 
 ![Textarea control in Preview mode](../../../../.gitbook/assets/textarea-control-placed-screens-builder-processes%20%281%29.png)
@@ -58,7 +60,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Textarea control:
 
-* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
 * **Field Label:** Specify the field label text that displays. **New TextArea** is the default value.
 * **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value.
 * **Rows:** The number of rows to provide for input. **2** is the default value.
@@ -95,6 +97,8 @@ Below are Inspector settings for the Textarea control:
 {% page-ref page="multi-column-button-control-settings.md" %}
 
 {% page-ref page="record-list-control-settings.md" %}
+
+{% page-ref page="image-control-settings.md" %}
 
 {% page-ref page="file-upload-control-settings.md" %}
 

@@ -8,7 +8,9 @@ description: >-
 
 ## Control Description <a id="control-description"></a>
 
-The Record List control allows the form user to add several values in a list.
+The Record List control records values that the form user enters into another page of the ProcessMaker Screen. Optionally, values can be edited after the form user initially enters the record\(s\) into the secondary ProcessMaker Screen page.
+
+The page that records the submitted records cannot be on the same page as the Record List control.
 
 ## Add the Control to a ProcessMaker Screen <a id="add-the-control-to-a-processmaker-screen"></a>
 
@@ -31,7 +33,40 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/record-list-control-placed-screens-builder-processes.png)
 
-~~I don't understand how to make a Record List Control display in Preview mode.~~
+6. Configure the Record List control. See [Inspector Settings](record-list-control-settings.md#inspector-settings).
+7. Create a new page in the ProcessMaker Screen. The page that records the submitted records cannot be on the same page as the Record List control. See [Add a New Page to a ProcessMaker Screen](../add-a-new-page-to-a-screen.md#add-a-new-page-to-a-processmaker-screen).
+8. On the new page, create the form using controls to record the data that the Record List control records. In each of the controls to record elements of the record list, ensure to use the same **Field Name** value as you use in the Record List control's **Value** parameter. These values must match for the Record List control to correspond with each control in the secondary ProcessMaker Screen page.
+
+## Example
+
+Consider the following example. A Record List control can be configured to record the following data about each attendee to a conference.
+
+| Record List Value | Record List Content |
+| :--- | :--- |
+| firstname | First name of attendee |
+| lastname | Last name of attendee |
+| email | Email address of attendee |
+| confirmation | Confirmation from the attendee |
+
+The Record List control has the following configuration. See [Inspector Settings](record-list-control-settings.md#inspector-settings) for control setting descriptions.
+
+![Record List control that contains records in Editor mode](../../../../.gitbook/assets/record-list-control-example-screens-builder-processes.png)
+
+On a secondary page, use ProcessMaker Screen controls for form users to enter values for each record. Ensure the following:
+
+* The Record List control references the secondary page to record each record from each conference attendee. The page that records the submitted records cannot be on the same page as the Record List control. 
+* In each of the controls to record elements of the record list, ensure to use the same **Field Name** value as you use in the Record List control's **Value** parameter. These values must match for the Record List control to correspond with each control in the secondary ProcessMaker Screen page.
+
+Below is the secondary ProcessMaker Screen page in Preview mode for each conference attendee to enter a record.
+
+| Control Type | "Field Name" Value for Control | Corresponds to Record List Value |
+| :--- | :--- | :--- |
+| Line Input | firstname | First name of attendee |
+| Line Input | lastname | Last name of attendee |
+| Line Input | email | Email address of attendee |
+| Select | confirmation | Confirmation from the attendee |
+
+![Secondary page with controls to record attendance confirmation in Preview mode](../../../../.gitbook/assets/record-list-control-example-secondary-page-screens-builder-processes.png)
 
 ## Inspector Settings <a id="inspector-settings"></a>
 
@@ -52,21 +87,18 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Record List control:
 
-* **List Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
+* **List Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **List Name** value for this control to reference it in **Show If** setting expressions.
 * **List Label:** Specify the field label text that displays. **New Record List** is the default value.
-* **Editable?:** Select to indicate that records in the list can be added upon, edited, or removed. Otherwise, deselect to indicate that records in the list cannot be changed. This setting is not selected by default.
-
-  Note that if the **Editable?** setting is selected and the **Record Form** option is set to the same page that the Record List control displays, the following message displays in Preview mode: **The add/edit form referencing our own form is not allowed**. Set the **Record Form** option to a different page than the one the Record List control displays.
-
-* **Fields List:** Specify the list of options available in the Record List.  
+* **Editable?:** Select to indicate that the record that the form user enters can be edited. Otherwise, deselect to indicate that the form user's record cannot be changed. This setting is not selected by default.
+* **Fields List:** Specify the list of options the Record List records from the form user. Each option in the **Fields List** setting references a control on a secondary ProcessMaker Screen page that uses the same **Field Name** value as entered into the **Value** parameter. These values must match for the Record List control to correspond with each control in the secondary ProcessMaker Screen page. See the [example](record-list-control-settings.md#example). The following message displays in Preview mode when not all the **Value** parameters match with a control's **Field Name** value on the secondary page: **There is no records in this list or the data is invalid.**   
 
   ![](../../../../.gitbook/assets/fields-list-option-record-list-control-screens-builder-processes.png)
 
   Each option has the following settings:
 
-  * **Value:** **Value** is the internal data name for the option that only the Process Owner views at design time.
-  * **Content:** **Content** is the option label displayed to the form user.
-  * **Actions:** Click the Remove![](../../../../.gitbook/assets/options-list-delete-option-icon-screens-builder-processes.png)icon to remove the field item.
+  * **Value:** **Value** is the internal data name for the option that only the Process Owner views at design time. Make note of each **Value** parameter you enter here, and then ensure to use the same **Field Name** value for the corresponding control in the secondary page to record that field's value for the record. These values must match for the Record List control to correspond with each control in the secondary ProcessMaker Screen page.
+  * **Content:** **Content** is the option label to indicate what content the target control on the secondary ProcessMaker Screen page records. The Process Owner views this at design time and does not display to the form user.
+  * **Actions:** Click the **Remove**![](../../../../.gitbook/assets/options-list-delete-option-icon-screens-builder-processes.png)icon to remove the field item.
 
   Follow these steps to add an option:
 
@@ -78,7 +110,7 @@ Below are Inspector settings for the Record List control:
   3. In the **Option Label** field, enter the **Content** option value \(as described above\).
   4. Click **OK**. The field item displays below the existing items in **Fields List**.
 
-* **Record Form:** Select from which page in the ProcessMaker Screen to add/edit records. The default is the first page of the ProcessMaker Screen.
+* **Record Form:** Select from which ProcessMaker Screen page to add/edit records. The page that records the submitted records cannot be on the same page as the Record List control. The following message displays in Preview mode when the Record List control references the same page the control is placed: **The add/edit form referencing our own form which is not allowed.**
 
 ## Related Topics <a id="related-topics"></a>
 
@@ -107,6 +139,8 @@ Below are Inspector settings for the Record List control:
 {% page-ref page="page-navigation-button-control-settings.md" %}
 
 {% page-ref page="multi-column-button-control-settings.md" %}
+
+{% page-ref page="image-control-settings.md" %}
 
 {% page-ref page="file-upload-control-settings.md" %}
 

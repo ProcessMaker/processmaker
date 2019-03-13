@@ -35,6 +35,8 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/page-navigation-control-placed-screens-builder-processes.png)
 
+6. Configure the Page Navigation Button control. See [Inspector Settings](page-navigation-button-control-settings.md#inspector-settings).
+
 Below is a Page Navigation Button control in Preview mode.
 
 ![Page Navigation Button control in Preview mode using the &quot;Secondary&quot; Variant option](../../../../.gitbook/assets/page-navigation-button-control-preview-screens-builder-processes.png)
@@ -58,7 +60,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Page Navigation Button control:
 
-* ~~**Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.~~
+* ~~**Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.~~
 * **Field Label:** Specify the field label text that displays. **New** **Page Navigation** is the default value.
 * **Variant:** Specify the style for the Page Navigation Button control. The style changes the control's appearance but otherwise has no functional difference. Select from the following options:
   * **Primary:** Blue-colored background with white-colored **Field Label** text. Set as the default.
@@ -102,6 +104,8 @@ Below are Inspector settings for the Page Navigation Button control:
 {% page-ref page="multi-column-button-control-settings.md" %}
 
 {% page-ref page="record-list-control-settings.md" %}
+
+{% page-ref page="image-control-settings.md" %}
 
 {% page-ref page="file-upload-control-settings.md" %}
 

@@ -35,6 +35,8 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
    ![](../../../../.gitbook/assets/date-picker-control-placed-screens-builder-processes.png)
 
+6. Configure the Date Picker control. See [Inspector Settings](date-picker-control-settings.md#inspector-settings).
+
 Below is a Date control in Preview mode.
 
 ![Date control in Preview mode](../../../../.gitbook/assets/date-control-preview-screens-builder-processes.png)
@@ -58,7 +60,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Date Picker control:
 
-* **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
 * **Field Label:** Specify the field label text that displays. **New Date Picker** is the default value.
 * **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided. This setting has no default value.
 * **Background Color:** Select to specify the background color of the Date Picker control. Selecting a background color also selects the **Background Color** checkbox.
@@ -92,6 +94,8 @@ Below are Inspector settings for the Date Picker control:
 {% page-ref page="multi-column-button-control-settings.md" %}
 
 {% page-ref page="record-list-control-settings.md" %}
+
+{% page-ref page="image-control-settings.md" %}
 
 {% page-ref page="file-upload-control-settings.md" %}
 

@@ -111,5 +111,9 @@ If a ProcessMaker Screen control does not have an expression in its **Show If** 
 
 {% page-ref page="record-list-control-settings.md" %}
 
+{% page-ref page="image-control-settings.md" %}
+
 {% page-ref page="file-upload-control-settings.md" %}
+
+{% page-ref page="file-download-control-settings.md" %}
 
