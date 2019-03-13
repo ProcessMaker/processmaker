@@ -56,12 +56,15 @@ Your user account or group membership must have the following permissions to edi
 See the ProcessMaker [Screens](../../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
-Below are Inspector settings for the Radio Group control:
+Below are Inspector settings for the Checkbox control:
 
 * **Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. Multiple Checkbox controls can be grouped together to function as one set of options whereby separate Checkbox controls with the same **Field Name** value maintain the same selected or deselected state. This is a required setting.
 * **Field Label:** Specify the field label text that displays. **New Checkbox** is the default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
 * **Initially Checked?:** Select to indicate that the Checkbox control is checked \(selected\) by default. Otherwise, deselect to indicate that the Checkbox control is not checked by default. This setting is not selected by default.
+* **Background Color:** Select to specify the background color of the Checkbox control. Selecting a background color also selects the **Background Color** checkbox.
+* **Text Color:** Select to specify the text color that displays in the control. Selecting a text color also selects the **Text Color** checkbox.
+* **Show If:** Specify an expression that dictates the condition\(s\) under which the Checkbox control displays. See [Expression Syntax Components for "Show If" Control Settings](expression-syntax-components-for-show-if-control-settings.md#expression-syntax-components-for-show-if-control-settings). If this setting does not have an expression, then this control displays by default.
 
 ## Related Topics <a id="related-topics"></a>
 

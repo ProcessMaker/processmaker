@@ -71,6 +71,9 @@ Below are Inspector settings for the Submit Button control:
   * **Light:** White-colored background with black-colored **Field Label** text.
   * **Dark:** Black-colored background with white-colored **Field Label** text.
   * **Link:** White-colored background with blue-colored **Field Label** text.
+* **Background Color:** Select to specify the background color of the Submit Button control. Selecting a background color also selects the **Background Color** checkbox.
+* **Text Color:** Select to specify the text color that displays in the control. Selecting a text color also selects the **Text Color** checkbox.
+* **Show If:** Specify an expression that dictates the condition\(s\) under which the Submit Button control displays. See [Expression Syntax Components for "Show If" Control Settings](expression-syntax-components-for-show-if-control-settings.md#expression-syntax-components-for-show-if-control-settings). If this setting does not have an expression, then this control displays by default.
 
 ## Related Topics <a id="related-topics"></a>
 

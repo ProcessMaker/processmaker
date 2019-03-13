@@ -81,6 +81,10 @@ Below are Inspector settings for the Radio Group control:
   3. In the **Option Label** field, enter the **Content** option value \(as described above\).
   4. Click **OK**. The option displays below the existing options in **Options List**.
 
+* **Background Color:** Select to specify the background color of the Radio Group control. Selecting a background color also selects the **Background Color** checkbox.
+* **Text Color:** Select to specify the text color that displays in the control. Selecting a text color also selects the **Text Color** checkbox.
+* **Show If:** Specify an expression that dictates the condition\(s\) under which the Radio Group control displays. See [Expression Syntax Components for "Show If" Control Settings](expression-syntax-components-for-show-if-control-settings.md#expression-syntax-components-for-show-if-control-settings). If this setting does not have an expression, then this control displays by default.
+
 ## Related Topics <a id="related-topics"></a>
 
 {% page-ref page="../types-for-screens.md" %}

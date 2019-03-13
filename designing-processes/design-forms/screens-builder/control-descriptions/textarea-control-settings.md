@@ -64,6 +64,9 @@ Below are Inspector settings for the Textarea control:
 * **Rows:** The number of rows to provide for input. **2** is the default value.
 * **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided. This setting has no default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
+* **Background Color:** Select to specify the background color of the Textarea control. Selecting a background color also selects the **Background Color** checkbox.
+* **Text Color:** Select to specify the text color that displays in the control. Selecting a text color also selects the **Text Color** checkbox.
+* **Show If:** Specify an expression that dictates the condition\(s\) under which the Textarea control displays. See [Expression Syntax Components for "Show If" Control Settings](expression-syntax-components-for-show-if-control-settings.md#expression-syntax-components-for-show-if-control-settings). If this setting does not have an expression, then this control displays by default.
 
 ## Related Topics <a id="related-topics"></a>
 

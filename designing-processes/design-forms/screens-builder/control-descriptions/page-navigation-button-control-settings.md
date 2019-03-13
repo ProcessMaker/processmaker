@@ -58,6 +58,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Page Navigation Button control:
 
+* ~~**Field Name:** Specify the internal data name of the control that only the Process Owner views at design time. This is a required setting.~~
 * **Field Label:** Specify the field label text that displays. **New** **Page Navigation** is the default value.
 * **Variant:** Specify the style for the Page Navigation Button control. The style changes the control's appearance but otherwise has no functional difference. Select from the following options:
   * **Primary:** Blue-colored background with white-colored **Field Label** text. Set as the default.
@@ -70,6 +71,9 @@ Below are Inspector settings for the Page Navigation Button control:
   * **Dark:** Black-colored background with white-colored **Field Label** text.
   * **Link:** White-colored background with blue-colored **Field Label** text.
 * **Destination:** Select the destination page to which to navigate in a multi-page ProcessMaker Screen. The default is the first page of the ProcessMaker Screen.
+* ~~**Background Color:** Select to specify the background color of the Page Navigation Button control. Selecting a background color also selects the **Background Color** checkbox.~~
+* ~~**Text Color:** Select to specify the text color that displays in the control. Selecting a text color also selects the **Text Color** checkbox.~~
+* **Show If:** Specify an expression that dictates the condition\(s\) under which the Page Navigation Button control displays. See [Expression Syntax Components for "Show If" Control Settings](expression-syntax-components-for-show-if-control-settings.md#expression-syntax-components-for-show-if-control-settings). If this setting does not have an expression, then this control displays by default.
 
 ## Related Topics <a id="related-topics"></a>
 
