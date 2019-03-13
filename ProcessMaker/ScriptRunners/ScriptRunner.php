@@ -25,13 +25,14 @@ class ScriptRunner
      * @param array $data
      * @param array $config
      * @param integer $timeout
+     * @param \ProcessMaker\Models\User $user
      *
      * @return array
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config, $timeout = 60)
+    public function run($code, array $data, array $config, $timeout = 60, $user)
     {
-        return $this->runner->run($code, $data, $config, $timeout);
+        return $this->runner->run($code, $data, $config, $timeout, $user);
     }
 
     /**

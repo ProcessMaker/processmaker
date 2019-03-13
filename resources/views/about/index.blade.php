@@ -24,7 +24,7 @@
         <hr>
         <a href="https://github.com/ProcessMaker/bpm" target="_blank">{{__('Get Help')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
-        &copy; {{date('Y')}} - All Rights Reserved
+        &copy; {{date('Y')}} - {{__('All Rights Reserved')}}
       </div>
     </div>
   </div>

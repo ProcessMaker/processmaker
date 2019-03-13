@@ -34,8 +34,9 @@
                 @endcan
             </div>
         </div>
-        <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory"
-                            :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}"></categories-listing>
+        <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory" :filter="filter"
+                            :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}">
+        </categories-listing>
     </div>
 
     @can('create-categories')
@@ -53,14 +54,18 @@
                             {!!Form::label('name', __('Category Name'))!!}
                             {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                            <small class="form-text text-muted" v-if="! errors.name">{{ __('The category name must be distinct.') }}</small>
+                            <small class="form-text text-muted" v-if="! errors.name">
+                                {{ __('The category name must be distinct.') }}
+                            </small>
                             <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary"
                                 data-dismiss="modal" @click="onClose">{{__('Cancel')}}</button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
+                            {{__('Save')}}
+                        </button>
                     </div>
                 </div>
 
@@ -74,38 +79,44 @@
 
     @can('create-categories')
         <script>
-            new Vue({
-                el: '#createProcessCategory',
-                data: {
-                    errors: {},
-                    name: '',
-                    status: 'ACTIVE',
-                },
-                methods: {
-                    onClose() {
-                        this.name = '';
-                        this.status = 'ACTIVE';
-                        this.errors = {};
-                    },
-                    onSubmit() {
-                        this.errors = {};
-                        let that = this;
-                        ProcessMaker.apiClient.post('process_categories', {
-                            name: this.name,
-                            status: this.status
-                        })
-                            .then(response => {
-                                ProcessMaker.alert('{{__('The category was created.')}}', 'success');
-                                window.location = '/processes/categories/' + response.data.id + '/edit';
-                            })
-                            .catch(error => {
-                                if (error.response.status === 422) {
-                                    that.errors = error.response.data.errors
-                                }
-                            });
-                    }
+          new Vue({
+            el: '#createProcessCategory',
+            data: {
+              errors: {},
+              name: '',
+              status: 'ACTIVE',
+              disabled: false,
+            },
+            methods: {
+              onClose() {
+                this.name = '';
+                this.status = 'ACTIVE';
+                this.errors = {};
+              },
+              onSubmit() {
+                this.errors = {};
+                //single click
+                if (this.disabled) {
+                  return
                 }
-            })
+                this.disabled = true;
+                ProcessMaker.apiClient.post('process_categories', {
+                  name: this.name,
+                  status: this.status
+                })
+                  .then(response => {
+                    ProcessMaker.alert('{{__('The category was created.')}}', 'success');
+                    window.location = '/processes/categories/' + response.data.id + '/edit';
+                  })
+                  .catch(error => {
+                    this.disabled = false;
+                    if (error.response.status === 422) {
+                      this.errors = error.response.data.errors
+                    }
+                  });
+              }
+            }
+          })
         </script>
     @endcan
 @endsection

@@ -34,7 +34,9 @@
                 @endcan
             </div>
         </div>
-        <variables-listing ref="listVariable" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('environment_variables') }}" @delete="deleteVariable"></variables-listing>
+        <variables-listing ref="listVariable" :filter="filter"
+                           :permission="{{ \Auth::user()->hasPermissionsFor('environment_variables') }}"
+                           @delete="deleteVariable"></variables-listing>
     </div>
 
     @can('create-environment_variables')
@@ -52,14 +54,16 @@
                             {!!Form::label('name', __('Name'))!!}
                             {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                            <small class="form-text text-muted" v-if="! errors.name">{{ __('The environment variable name must be distinct.') }}</small>
+                            <small class="form-text text-muted"
+                                   v-if="! errors.name">{{ __('The environment variable name must be distinct.') }}</small>
                             <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                         </div>
                         <div class="form-group">
                             {!!Form::label('description', __('Description'))!!}
                             {!!Form::textArea('description', null, ['class'=> 'form-control', 'v-model'=> 'description',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}','rows'=>3])!!}
-                            <div class="invalid-feedback" v-for="description in errors.description">@{{description}}</div>
+                            <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
+                            </div>
                         </div>
                         <div class="form-group">
                             {!!Form::label('value', __('Value'))!!}
@@ -69,9 +73,12 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary"
-                                data-dismiss="modal" @click="onClose">{{__('Cancel')}}</button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                            {{__('Cancel')}}
+                        </button>
+                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
+                            {{__('Save')}}
+                        </button>
                     </div>
                 </div>
 
@@ -85,41 +92,47 @@
 
     @can('create-environment_variables')
         <script>
-            new Vue({
-                el: '#createEnvironmentVariable',
-                data: {
-                    errors: {},
-                    name: '',
-                    description: '',
-                    value: ''
-                },
-                methods: {
-                    onClose() {
-                        this.name = '';
-                        this.description = '';
-                        this.value = '';
-                        this.errors = {};
-                    },
-                    onSubmit() {
-                        this.errors = {};
-                        let that = this;
-                        ProcessMaker.apiClient.post('environment_variables', {
-                            name: this.name,
-                            description: this.description,
-                            value: this.value
-                        })
-                            .then(response => {
-                                ProcessMaker.alert('{{__('The environment variable was created.')}}', 'success');
-                                window.location = '/processes/environment-variables';
-                            })
-                            .catch(error => {
-                                if (error.response.status === 422) {
-                                    that.errors = error.response.data.errors
-                                }
-                            });
-                    }
+          new Vue({
+            el: '#createEnvironmentVariable',
+            data: {
+              errors: {},
+              name: '',
+              description: '',
+              value: '',
+              disabled: false,
+            },
+            methods: {
+              onClose() {
+                this.name = '';
+                this.description = '';
+                this.value = '';
+                this.errors = {};
+              },
+              onSubmit() {
+                this.errors = {};
+                //single click
+                if (this.disabled) {
+                  return
                 }
-            })
+                this.disabled = true;
+                ProcessMaker.apiClient.post('environment_variables', {
+                  name: this.name,
+                  description: this.description,
+                  value: this.value
+                })
+                  .then(response => {
+                    ProcessMaker.alert('{{__('The environment variable was created.')}}', 'success');
+                    window.location = '/processes/environment-variables';
+                  })
+                  .catch(error => {
+                    this.disabled = false;
+                    if (error.response.status === 422) {
+                      this.errors = error.response.data.errors
+                    }
+                  });
+              }
+            }
+          })
         </script>
     @endcan
 @endsection

@@ -62,12 +62,12 @@ class ProcessRequestController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/requests"),
+     *                 @OA\Items(ref="#/components/schemas/processRequest"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -132,14 +132,14 @@ class ProcessRequestController extends Controller
      * @return Response
      *
      *      * @OA\Get(
-     *     path="/requests/process_request_id",
+     *     path="/requests/{process_request_id}",
      *     summary="Get single process request by ID",
      *     operationId="getProcessRequestById",
      *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_id",
+     *         name="process_request_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -148,7 +148,7 @@ class ProcessRequestController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
      * )
      */
@@ -166,14 +166,14 @@ class ProcessRequestController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Put(
-     *     path="/requests/process_request_id",
+     *     path="/requests/{process_request_id}",
      *     summary="Update a process request",
      *     operationId="updateProcessRequest",
      *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_id",
+     *         name="process_request_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -181,12 +181,12 @@ class ProcessRequestController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/requestsEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/processRequestEditable")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
      * )
      */
@@ -245,14 +245,14 @@ class ProcessRequestController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
-     *     path="/requests/process_request_id",
+     *     path="/requests/{process_request_id}",
      *     summary="Delete a process request",
      *     operationId="deleteProcessRequest",
      *     tags={"Process Requests"},
      *     @OA\Parameter(
      *         description="ID of process request to return",
      *         in="path",
-     *         name="process_id",
+     *         name="process_request_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -261,7 +261,7 @@ class ProcessRequestController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/requests")
+     *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
      * )
      */

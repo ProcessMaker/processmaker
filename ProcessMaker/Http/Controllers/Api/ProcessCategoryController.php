@@ -87,7 +87,7 @@ class ProcessCategoryController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      *     * @OA\Get(
-     *     path="/process_categories/process_category_id",
+     *     path="/process_categories/{process_category_id}",
      *     summary="Get single process category by ID",
      *     operationId="getProcessCategoryById",
      *     tags={"Process Categories"},
@@ -152,7 +152,7 @@ class ProcessCategoryController extends Controller
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *      * @OA\Put(
-     *     path="/process_categories/process_category_id",
+     *     path="/process_categories/{process_category_id}",
      *     summary="Update a process Category",
      *     operationId="updateProcessCategory",
      *     tags={"Process Categories"},
@@ -192,7 +192,7 @@ class ProcessCategoryController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      *      * @OA\Delete(
-     *     path="/process_categories/process_category_id",
+     *     path="/process_categories/{process_category_id}",
      *     summary="Delete a process category",
      *     operationId="deleteProcessCategory",
      *     tags={"Process Categories"},
