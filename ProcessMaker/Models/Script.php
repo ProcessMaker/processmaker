@@ -195,4 +195,23 @@ class Script extends Model
     {
         return $this->hasMany(ScriptVersion::class);
     }
+    
+    /**
+     * Get the associated run_as_user
+     */
+    public function runAsUser()
+    {
+        return $this->belongsTo(User::class, 'run_as_user_id');
+    }
+
+    /**
+     * Return the a user for service tasks
+     *
+     * @return ProcessMaker\Models\User
+     */
+    public static function defaultRunAsUser()
+    {
+        # return the default admin user
+        return User::where('is_administrator', true)->firstOrFail();
+    }
 }

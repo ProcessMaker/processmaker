@@ -32,7 +32,6 @@ class ScriptRunner
      */
     public function run($code, array $data, array $config, $timeout = 60, $user)
     {
-        // throw new \Exception("HERE " . $user->id);
         return $this->runner->run($code, $data, $config, $timeout, $user);
     }
 

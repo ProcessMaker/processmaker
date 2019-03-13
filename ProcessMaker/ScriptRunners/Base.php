@@ -46,7 +46,7 @@ abstract class Base
      */
     public function run($code, array $data, array $config, $timeout, ?User $user)
     {
-        // Prepate the docker parameters
+        // Prepare the docker parameters
         $environmentVariables = $this->getEnvironmentVariables();
     
         // Create tokens for the SDK if a user is set

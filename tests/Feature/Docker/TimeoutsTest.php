@@ -33,6 +33,15 @@ class TimeoutsTest extends TestCase
             return $this->markTestSkipped('This test requires docker');
         }
     }
+    
+    /**
+     * Make sure we have a personal access client set up
+     *
+     */
+    public function setUpWithPersonalAccessClient()
+    {
+        $this->withPersonalAccessClient();
+    }
 
     /**
      * Run a test script and assert that the specified timeout is exceeded
@@ -48,7 +57,10 @@ class TimeoutsTest extends TestCase
         );
         
         $this->benchmarkStart();
-        $response = $this->apiCall('POST', $url, $data);
+        $response = $this->apiCall('POST', $url, [
+            'code' => $data['code'],
+            'data' => $data['data'],
+        ]);
         $this->benchmarkEnd();
 
         $this->assertLogMessageExists('Script timed out');

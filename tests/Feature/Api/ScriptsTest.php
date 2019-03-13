@@ -331,7 +331,7 @@ class ScriptsTest extends TestCase
         $url = route('api.script.preview', $this->getScript('php')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => '<?php return ["response"=>1];']);
         $response->assertStatus(200);
-
+        
         // Assertion: The script output is sent to usr through broadcast channel
         Notification::assertSentTo(
             [$this->user],
@@ -349,8 +349,8 @@ class ScriptsTest extends TestCase
     public function testPreviewScriptFail()
     {
         Notification::fake();
-        $url = self::API_TEST_SCRIPT . '/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=JAVA';
-        $response = $this->apiCall('POST', $url, []);
+        $url = route('api.script.preview', $this->getScript('foo')->id);
+        $response = $this->apiCall('POST', $url, ['data' => 'foo', 'config' => 'foo', 'code' => 'foo']);
 
         // Assertion: An exception is notified to usr through broadcast channel
         Notification::assertSentTo(

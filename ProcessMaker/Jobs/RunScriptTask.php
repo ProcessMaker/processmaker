@@ -56,7 +56,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         if (empty($scriptRef)) {
             $script = new Script([
                 'code' => $element->getScript(),
-                'language' => Script::scriptFormat2Language($element->getProperty('scriptFormat', 'application/x-php'))
+                'language' => Script::scriptFormat2Language($element->getProperty('scriptFormat', 'application/x-php')),
+                'run_as_user_id' => Script::defaultRunAsUser()->id,
             ]);
         } else {
             $script = Script::find($scriptRef);

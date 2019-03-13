@@ -91,10 +91,15 @@ class ScriptController extends Controller
      * Previews executing a script, with sample data/config data
      *
      *     @OA\Get(
-     *     path="/scripts/ew",
-     *     summary="Returns all scripts that the user has access to",
+     *     path="/scripts/{script_id}/preview",
+     *     summary="Test script code without saving it",
      *     operationId="getScriptsPreview",
      *     tags={"Scripts"},
+     *         @OA\Parameter(
+     *             name="script_id",
+     *             in="path",
+     *             @OA\Schema(type="integer"),
+     *         ),
      *         @OA\Parameter(
      *             name="data",
      *             in="query",
@@ -107,11 +112,6 @@ class ScriptController extends Controller
      *         ),
      *         @OA\Parameter(
      *             name="code",
-     *             in="query",
-     *             @OA\Schema(type="string"),
-     *         ),
-     *         @OA\Parameter(
-     *             name="language",
      *             in="query",
      *             @OA\Schema(type="string"),
      *         ),
@@ -128,11 +128,9 @@ class ScriptController extends Controller
     {
         $data = json_decode($request->get('data'), true) ?: [];
         $config = json_decode($request->get('config'), true) ?: [];
+        $code = $request->get('code');
 
-        # set attribute but do not save (for preview only)
-        $script->code = $request->get('code');
-
-        TestScript::dispatch($script, $data, $config);
+        TestScript::dispatch($script, $code, $data, $config);
         return ['status' => 'success'];
     }
 
