@@ -47,6 +47,15 @@ class ProcessScriptsTest extends TestCase
     }
 
     /**
+     * Make sure we have a personal access client set up
+     *
+     */
+    public function setUpWithPersonalAccessClient()
+    {
+        $this->withPersonalAccessClient();
+    }
+
+    /**
      * Create a single task process assigned to $this->user
      */
     private function createTestProcess(array $data = [])
