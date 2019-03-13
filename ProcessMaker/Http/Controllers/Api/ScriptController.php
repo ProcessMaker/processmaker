@@ -4,11 +4,13 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
 use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
 {
@@ -199,6 +201,7 @@ class ScriptController extends Controller
         $request->validate(Script::rules());
         $script = new Script();
         $script->fill($request->input());
+
         $script->saveOrFail();
         return new ScriptResource($script);
     }
@@ -240,9 +243,11 @@ class ScriptController extends Controller
     public function update(Script $script, Request $request)
     {
         $request->validate(Script::rules($script));
+
         $original_attributes = $script->getAttributes();
 
         $script->fill($request->input());
+
         $script->saveOrFail();
 
         unset(

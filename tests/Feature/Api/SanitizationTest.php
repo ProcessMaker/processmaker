@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
@@ -25,10 +26,13 @@ class SanitizationTest extends TestCase
         
         // Create the process
         $faker = Faker::create();
+
+        $user = factory(User::class)->create(['is_administrator' => true]);
         $script = factory(Script::class)->make([
             'title' => $title,
             'description' => $description,
             'code' => $code,
+            'run_as_user_id' => $user->id,
         ]);
 
         // Post the process to the API
