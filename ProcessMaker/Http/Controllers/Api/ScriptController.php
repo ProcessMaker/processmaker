@@ -3,10 +3,12 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
+use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 
@@ -28,8 +30,8 @@ class ScriptController extends Controller
      * @param Process $process
      *
      * @return ResponseFactory|Response
-     * 
-     *     
+     *
+     *
      *     @OA\Get(
      *     path="/scripts",
      *     summary="Returns all scripts that the user has access to",
@@ -40,7 +42,7 @@ class ScriptController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
-     * 
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of scripts",
@@ -87,7 +89,7 @@ class ScriptController extends Controller
 
     /**
      * Previews executing a script, with sample data/config data
-     * 
+     *
      *     @OA\Get(
      *     path="/scripts/ew",
      *     summary="Returns all scripts that the user has access to",
@@ -113,10 +115,10 @@ class ScriptController extends Controller
      *             in="query",
      *             @OA\Schema(type="string"),
      *         ),
-     * 
+     *
      *     @OA\Response(
      *         response=200,
-     *         description="output of scripts",
+     *         description="success if the script was queued",
      *         @OA\JsonContent()
      *         ),
      *     ),
@@ -128,19 +130,14 @@ class ScriptController extends Controller
         $config = json_decode($request->get('config'), true) ?: [];
         $code = $request->get('code');
         $language = $request->get('language');
+        $user = Auth::user();
         $timeout = $request->get('timeout');
-        
+
         if ($timeout === null) {
             $timeout = 60;
         }
-        
-        $script = new Script([
-            'code' => $code,
-            'language' => $language,
-            'timeout' => $timeout,
-        ]);
-        
-        return $script->runScript($data, $config);
+        TestScript::dispatch($code, $language, $timeout, $user, $data, $config);
+        return ['status' => 'success'];
     }
 
     /**
@@ -149,7 +146,7 @@ class ScriptController extends Controller
      * @param Script $script
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Get(
      *     path="/scripts/scriptsId",
      *     summary="Get single script by ID",
@@ -182,7 +179,7 @@ class ScriptController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Post(
      *     path="/scripts",
      *     summary="Save a new script",
@@ -217,7 +214,7 @@ class ScriptController extends Controller
      * @param Request $request
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Put(
      *     path="/scripts/scriptsId",
      *     summary="Update a script",
@@ -252,7 +249,7 @@ class ScriptController extends Controller
         $script->fill($request->input());
 
         $script->saveOrFail();
-        
+
         unset(
             $original_attributes['id'],
             $original_attributes['updated_at']
@@ -261,6 +258,7 @@ class ScriptController extends Controller
 
         return response($request, 204);
     }
+
     /**
      * duplicate a Script.
      *
@@ -298,12 +296,12 @@ class ScriptController extends Controller
     {
         $request->validate(Script::rules());
         $newScript = new Script();
-        
+
         $exclude = ['id', 'created_at', 'updated_at'];
         foreach ($script->getAttributes() as $attribute => $value) {
-            if (! in_array($attribute, $exclude)) {
-                $newScript->{$attribute} = $script->{$attribute};   
-            } 
+            if (!in_array($attribute, $exclude)) {
+                $newScript->{$attribute} = $script->{$attribute};
+            }
         }
 
         if ($request->has('title')) {
@@ -324,7 +322,7 @@ class ScriptController extends Controller
      * @param Script $script
      *
      * @return ResponseFactory|Response
-     * 
+     *
      *     @OA\Delete(
      *     path="/scripts/scriptsId",
      *     summary="Delete a script",
