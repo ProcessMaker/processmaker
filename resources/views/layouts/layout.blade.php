@@ -28,10 +28,9 @@
     @endif
 
     <title>@yield('title',__('Welcome')) - {{__('ProcessMaker')}}</title>
-    <link rel="shortcut icon" type="image/x-icon" href="https://pbs.twimg.com/profile_images/521685439820742657/8B2oQKmP_400x400.jpeg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
-    {{-- <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css"> --}}
     @yield('css')
     <script type="text/javascript">
     @if(Auth::user())

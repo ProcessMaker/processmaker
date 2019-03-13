@@ -57,7 +57,7 @@ class Install extends Command
     public function handle()
     {
         // Setup our initial encryption key and set our running laravel app key to it
-        $this->key = 'base64:'.base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
+        $this->key = 'base64:' . base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
         config(['app.key' => $this->key]);
 
         // Our initial .env values
@@ -87,7 +87,7 @@ class Install extends Command
         // Determine if .env file exists or not
         // if exists, bail out with an error
         // If file does not exist, begin to generate it
-        if(Storage::disk('install')->exists('.env')) {
+        if (Storage::disk('install')->exists('.env')) {
             $this->error(__("A .env file already exists. Stop the installation procedure, delete the existing .env file, and then restart the installation."));
             $this->error(__("Remove the .env file to perform a new installation."));
             return 255;
@@ -97,21 +97,20 @@ class Install extends Command
         $this->confirm(__("Are you ready to begin?"));
         $this->checkDependencies();
         do {
-        $this->fetchDatabaseCredentials();
-        } while(!$this->testDatabaseConnection());
+            $this->fetchDatabaseCredentials();
+        } while (!$this->testDatabaseConnection());
         // Ask for URL and validate
         $invalid = false;
         do {
-            if($invalid) {
+            if ($invalid) {
                 $this->error(__("The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes."));
             }
             $this->env['APP_URL'] = $this->ask(__('What is the URL of this ProcessMaker installation? (Ex: https://pm.example.com, with no trailing slash)'));
-        } while($invalid = (!filter_var($this->env['APP_URL'],
-                                        FILTER_VALIDATE_URL,
-                                        FILTER_FLAG_SCHEME_REQUIRED |
-                                        FILTER_FLAG_HOST_REQUIRED)
-                    || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/'))
-        );
+        } while ($invalid = (!filter_var(
+            $this->env['APP_URL'],
+            FILTER_VALIDATE_URL
+        )
+            || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/')));
         // Set broadcaster url
         $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
 
@@ -134,7 +133,7 @@ class Install extends Command
         // Now generate the .env file
         $contents = '';
         // Build out the file contents for our .env file
-        foreach($this->env as $key => $value) {
+        foreach ($this->env as $key => $value) {
             $contents .= $key . "=" . $value . "\n";
         }
         // Now store it
@@ -152,7 +151,7 @@ class Install extends Command
             '--force' => true
         ]);
 
-		//Create a symbolic link from "public/storage" to "storage/app/public"
+        //Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
 
         $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
@@ -169,17 +168,17 @@ class Install extends Command
         $this->info(__("Dependencies Check"));
         $table = new Table($this->output);
         $table->setRows([
-          [__('CType Extension'), phpversion('ctype')],
-          [__('GD Extension'), phpversion('gd')],
-          [__('JSON Extension'), phpversion('json')],
-          [__('mbstring Extension'), phpversion('mbstring')],
-          [__('OpenSSL Extension'), phpversion('openssl')],
-          [__('PDO Extension'), phpversion('pdo')],
-          [__('PDO MySQL Extension'), phpversion('pdo_mysql')],
-          [__('PHP Version'), phpversion()],
-          [__('Tokenizer Extension'), phpversion('tokenizer')],
-          [__('XML Extension'), phpversion('xml')],
-          [__('ZIP Extension'), phpversion('zip')],
+            [__('CType Extension'), phpversion('ctype')],
+            [__('GD Extension'), phpversion('gd')],
+            [__('JSON Extension'), phpversion('json')],
+            [__('mbstring Extension'), phpversion('mbstring')],
+            [__('OpenSSL Extension'), phpversion('openssl')],
+            [__('PDO Extension'), phpversion('pdo')],
+            [__('PDO MySQL Extension'), phpversion('pdo_mysql')],
+            [__('PHP Version'), phpversion()],
+            [__('Tokenizer Extension'), phpversion('tokenizer')],
+            [__('XML Extension'), phpversion('xml')],
+            [__('ZIP Extension'), phpversion('zip')],
 
         ]);
         $table->render();
@@ -211,7 +210,7 @@ class Install extends Command
         // Attempt to connect
         try {
             $pdo = DB::connection('install')->getPdo();
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->error(__("Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again."));
             return false;
         }

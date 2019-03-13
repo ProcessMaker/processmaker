@@ -39,6 +39,8 @@
       <env name="DB_ADAPTER" value="mysql" />
       <env name="DB_DATABASE" value="test" />
 
+      <!-- Log config -->
+      <env name="LOG_CHANNEL" value="test" />
 
       <!-- MS Sql server -->
       <env name="RUN_MSSQL_TESTS" value="false" />

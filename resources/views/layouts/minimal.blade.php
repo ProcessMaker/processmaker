@@ -8,6 +8,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title',__('Welcome')) - {{__('ProcessMaker')}}</title>
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
 @yield('css')
 </head>
 <body>

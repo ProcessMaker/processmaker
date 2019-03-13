@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Models;
 
+use Log;
 use RuntimeException;
+use ProcessMaker\Exception\ScriptTimeoutException;
 
 /**
  * Execute a docker container copying files to interchange information.
@@ -10,7 +12,6 @@ use RuntimeException;
  */
 trait ScriptDockerCopyingFilesTrait
 {
-
     /**
      * Run a command in a docker container.
      *
@@ -25,7 +26,7 @@ trait ScriptDockerCopyingFilesTrait
         foreach ($options['inputs'] as $path => $data) {
             $this->putInContainer($container, $path, $data);
         }
-        $response = $this->startContainer($container);
+        $response = $this->startContainer($container, $options['timeout']);
         $outputs = [];
         foreach ($options['outputs'] as $name => $path) {
             $outputs[$name] = $this->getFromContainer($container, $path);
@@ -107,15 +108,34 @@ trait ScriptDockerCopyingFilesTrait
      * Start the container.
      *
      * @param string $container
+     * @param integer $timeout
      *
      * @return array
      */
-    private function startContainer($container)
+    private function startContainer($container, $timeout)
     {
-        $cmd = config('app.bpm_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
+        $cmd = '';
+
+        if ($timeout > 0) {
+            $cmd .= "timeout -s 9 $timeout ";
+        }
+
+        $cmd .= config('app.bpm_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
+
+        Log::debug('Running Docker container', [
+            'timeout' => $timeout,
+            'cmd' => $cmd,
+        ]);
+
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
-            throw new RuntimeException(implode("\n", $output));
+            if ($returnCode == 137) {
+                Log::error('Script timed out');
+            } else {
+                Log::error('Script threw return code ' . $returnCode);
+            }
+
+            throw new ScriptTimeoutException(implode("\n", $output));
         }
         return compact('line', 'output', 'returnCode');
     }

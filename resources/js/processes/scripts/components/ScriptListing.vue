@@ -110,7 +110,7 @@ import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "id", "permission"],
+  props: ["filter", "id", "permission", "scriptFormats"],
   data() {
     return {
       dupScript: {
@@ -226,7 +226,11 @@ export default {
       }
     },
     formatLanguage(language) {
-      return language.toUpperCase();
+      if (this.scriptFormats[language] !== undefined) {
+        return this.scriptFormats[language];
+      } else {
+        return language.toUpperCase();
+      }
     },
     fetch() {
       this.loading = true;

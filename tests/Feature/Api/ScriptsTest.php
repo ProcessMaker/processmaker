@@ -2,12 +2,13 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Notifications\ScriptResponseNotification;
+use ProcessMaker\Exception\ScriptLanguageNotSupported;
 
 class ScriptsTest extends TestCase
 {
@@ -42,13 +43,16 @@ class ScriptsTest extends TestCase
     public function testCreateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
+
         //Post saved correctly
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'language' => 'php',
             'code' => '123',
-            'description' => 'Description'
+            'description' => 'Description',
+            'run_as_user_id' => $user->id
         ]);
         //validating the answer is correct.
         //Check structure of response.
@@ -231,10 +235,12 @@ class ScriptsTest extends TestCase
     public function testUpdateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
+
         //Post saved success
         $yesterday = \Carbon\Carbon::now()->subDay();
         $script = factory(Script::class)->create([
-            "created_at" => $yesterday,
+            'created_at' => $yesterday,
         ]);
         $original_attributes = $script->getAttributes();
         $url = self::API_TEST_SCRIPT . '/' . $script->id;
@@ -242,6 +248,7 @@ class ScriptsTest extends TestCase
             'title' => $script->title,
             'language' => 'lua',
             'code' => $faker->sentence(3),
+            'run_as_user_id' => $user->id
         ]);
         //Validate the answer is correct
         $response->assertStatus(204);
@@ -278,19 +285,22 @@ class ScriptsTest extends TestCase
     }
 
     /**
-     * Duplicate Script 
+     * Duplicate Script
      */
     public function testDuplicateScript()
     {
         $faker = Faker::create();
+        $user = factory(User::class)->create(['is_administrator' => true]);
+
         $code = '{"foo":"bar"}';
         $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
-                'code' => $code
-            ])->id;
+            'code' => $code
+        ])->id;
         $response = $this->apiCall('PUT', $url . '/duplicate', [
-            'title' => "TITLE",
+            'title' => 'TITLE',
             'language' => 'php',
             'description' => $faker->sentence(5),
+            'run_as_user_id' => $user->id
         ]);
         $new_script = Script::find($response->json()['id']);
         $this->assertEquals($code, $new_script->code);
@@ -301,11 +311,13 @@ class ScriptsTest extends TestCase
      */
     public function testPreviewScript()
     {
+        Notification::fake();
         if (!file_exists(config('app.bpm_scripts_home')) || !file_exists(config('app.bpm_scripts_docker'))) {
             $this->markTestSkipped(
                 'This test requires docker'
             );
         }
+
         $url = route('api.script.preview', ['data' => '{}', 'code' => 'return {response=1}', 'language' => 'lua']);
         $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(200);
@@ -314,8 +326,15 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, []);
         $response->assertStatus(200);
 
-        $response->assertJsonStructure(['output' => ['response']]);
-
+        // Assertion: The script output is sent to usr through broadcast channel
+        Notification::assertSentTo(
+            [$this->user],
+            ScriptResponseNotification::class,
+            function ($notification, $channels) {
+                $response = $notification->getResponse();
+                return $response['output'] === ['response' => 1];
+            }
+        );
     }
 
     /**
@@ -323,9 +342,19 @@ class ScriptsTest extends TestCase
      */
     public function testPreviewScriptFail()
     {
+        Notification::fake();
         $url = self::API_TEST_SCRIPT . '/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=JAVA';
         $response = $this->apiCall('POST', $url, []);
-        $response->assertStatus(500);
+
+        // Assertion: An exception is notified to usr through broadcast channel
+        Notification::assertSentTo(
+            [$this->user],
+            ScriptResponseNotification::class,
+            function ($notification, $channels) {
+                $response = $notification->getResponse();
+                return $response['exception'] === ScriptLanguageNotSupported::class && in_array('broadcast', $channels);
+            }
+        );
     }
 
     /**
@@ -350,5 +379,23 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('DELETE', $url);
         //Validate the answer is correct
         $response->assertStatus(405);
+    }
+
+    /**
+     * test that script without user to run as assigned generates an error
+     */
+    public function testScriptWithoutUser()
+    {
+        $faker = Faker::create();
+        $code = '{"foo":"bar"}';
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
+                'code' => $code
+            ])->id;
+        $response = $this->apiCall('PUT', $url . '/duplicate', [
+            'title' => "TITLE",
+            'language' => 'php',
+            'description' => $faker->sentence(5),
+        ]);
+        $response->assertStatus(422);
     }
 }

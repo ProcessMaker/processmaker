@@ -2,7 +2,8 @@
 
 namespace ProcessMaker\Models;
 
-use RuntimeException;
+use Log;
+use ProcessMaker\Exception\ScriptTimeoutException;
 
 /**
  * Execute a docker container binding files to interchange information.
@@ -10,7 +11,6 @@ use RuntimeException;
  */
 trait ScriptDockerBindingFilesTrait
 {
-
     private $temporalFiles = [];
     private $outputFiles = [];
 
@@ -31,8 +31,13 @@ trait ScriptDockerBindingFilesTrait
         foreach ($options['outputs'] as $name => $guestFile) {
             $bindings .= $this->bindOutput($guestFile, $name);
         }
-        $response = $this->runContainer($options['image'], $options['command'],
-            $options['parameters'], $bindings);
+        $response = $this->runContainer(
+            $options['image'],
+            $options['command'],
+            $options['parameters'],
+            $bindings,
+            $options['timeout']
+        );
         return $response;
     }
 
@@ -43,17 +48,41 @@ trait ScriptDockerBindingFilesTrait
      * @param string $command
      * @param string $parameters
      * @param string $bindings
+     * @param integer $timeout
      *
      * @return array
-     * @throws RuntimeException
+     * @throws ScriptTimeoutException
      */
-    private function runContainer($image, $command, $parameters, $bindings)
+    private function runContainer($image, $command, $parameters, $bindings, $timeout)
     {
-        $cmd = config('app.bpm_scripts_docker') . sprintf(' run %s %s %s %s 2>&1',
-                $parameters, $bindings, $image, $command);
+        $cmd = '';
+
+        if ($timeout > 0) {
+            $cmd .= "timeout -s 9 $timeout ";
+        }
+
+        $cmd .= config('app.bpm_scripts_docker') . sprintf(
+            ' run %s %s %s %s 2>&1',
+            $parameters,
+            $bindings,
+            $image,
+            $command
+        );
+
+        Log::debug('Running Docker container', [
+            'timeout' => $timeout,
+            'cmd' => $cmd,
+        ]);
+
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
-            throw new RuntimeException(implode("\n", $output));
+            if ($returnCode == 137) {
+                Log::error('Script timed out');
+            } else {
+                Log::error('Script threw return code ' . $returnCode);
+            }
+
+            throw new ScriptTimeoutException(implode("\n", $output));
         }
         $outputs = $this->getOutputFilesContent();
         $this->removeTemporalFiles();
@@ -70,7 +99,7 @@ trait ScriptDockerBindingFilesTrait
      */
     private function bindFile($hostFile, $guestFile)
     {
-        return sprintf(" -v %s:%s", $hostFile, $guestFile);
+        return sprintf(' -v %s:%s', $hostFile, $guestFile);
     }
 
     /**
