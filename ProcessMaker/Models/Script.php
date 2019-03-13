@@ -86,6 +86,9 @@ class Script extends Model
     {
         $runner = new ScriptRunner($this->language);
         $user = User::find($this->run_as_user_id);
+        if (!$user) {
+            throw new \RuntimeException("A user is required to run scripts");
+        }
         return $runner->run($this->code, $data, $config, $this->timeout, $user);
     }
 
