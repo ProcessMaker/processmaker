@@ -130,7 +130,7 @@ class ScriptController extends Controller
         $config = json_decode($request->get('config'), true) ?: [];
         $code = $request->get('code');
 
-        TestScript::dispatch($script, $code, $data, $config);
+        TestScript::dispatch($script, $request->user(), $code, $data, $config);
         return ['status' => 'success'];
     }
 

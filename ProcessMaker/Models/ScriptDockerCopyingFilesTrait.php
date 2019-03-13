@@ -147,11 +147,10 @@ trait ScriptDockerCopyingFilesTrait
         if ($returnCode) {
             if ($returnCode == 137) {
                 Log::error('Script timed out');
-            } else {
-                Log::error('Script threw return code ' . $returnCode);
+                throw new ScriptTimeoutException(implode("\n", $output));
             }
-
-            throw new ScriptTimeoutException(implode("\n", $output));
+            Log::error('Script threw return code ' . $returnCode);
+            throw new ScriptException(implode("\n", $output));
         }
         return compact('line', 'output', 'returnCode');
     }

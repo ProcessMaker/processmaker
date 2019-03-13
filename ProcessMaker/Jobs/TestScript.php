@@ -20,6 +20,7 @@ class TestScript implements ShouldQueue
         SerializesModels;
 
     protected $script;
+    protected $current_user;
     protected $code;
     protected $data;
     protected $configuration;
@@ -28,13 +29,15 @@ class TestScript implements ShouldQueue
      * Create a new job instance to execute a script.
      *
      * @param ProcessMaker\Models\Script $script
+     * @param ProcessMaker\Models\User $current_user
      * @param string $code
      * @param array $data
      * @param array $configuration
      */
-    public function __construct($script, $code, array $data, array $configuration)
+    public function __construct(Script $script, User $current_user, $code, array $data, array $configuration)
     {
         $this->script = $script;
+        $this->current_user = $current_user;
         $this->code = $code;
         $this->data = $data;
         $this->configuration = $configuration;
@@ -68,6 +71,6 @@ class TestScript implements ShouldQueue
      */
     private function sendResponse($status, array $response)
     {
-        $this->script->runAsUser->notify(new ScriptResponseNotification($status, $response));
+        $this->current_user->notify(new ScriptResponseNotification($status, $response));
     }
 }
