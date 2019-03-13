@@ -122,25 +122,25 @@ class ScriptController extends Controller
      *     ),
      * )
      */
-    public function preview(Request $request)
+    public function preview(Request $request, Script $script)
     {
         $data = json_decode($request->get('data'), true) ?: [];
         $config = json_decode($request->get('config'), true) ?: [];
-        $code = $request->get('code');
-        $language = $request->get('language');
-        $timeout = $request->get('timeout');
+        // $code = $request->get('code');
+        // $language = $request->get('language');
+        // $timeout = $request->get('timeout');
         
         if ($timeout === null) {
             $timeout = 60;
         }
         
-        $script = new Script([
-            'code' => $code,
-            'language' => $language,
-            'timeout' => $timeout,
-        ]);
+        // $script = new Script([
+        //     'code' => $code,
+        //     'language' => $language,
+        //     'timeout' => $timeout,
+        // ]);
         
-        return $script->runScript($data, $config, \Auth::user());
+        return $script->runScript($data, $config);
     }
 
     /**

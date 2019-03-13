@@ -81,12 +81,12 @@ class Script extends Model
      *
      * @param array $data
      * @param array $config
-     * @param \ProcessMaker\Models\User $user
      */
-    public function runScript(array $data, array $config, User $asUser = null)
+    public function runScript(array $data, array $config)
     {
         $runner = new ScriptRunner($this->language);
-        return $runner->run($this->code, $data, $config, $this->timeout, $asUser);
+        $user = User::find($this->run_as_user_id);
+        return $runner->run($this->code, $data, $config, $this->timeout, $user);
     }
 
     /**
