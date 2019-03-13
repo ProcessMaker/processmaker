@@ -111,7 +111,8 @@
                     .put("scripts/" + this.script.id, {
                         code: this.code,
                         title: this.script.title,
-                        language: this.script.language
+                        language: this.script.language,
+                        run_as_user_id: this.script.run_as_user_id
                     })
                     .then(response => {
                         ProcessMaker.alert("The script was saved.", "success");
