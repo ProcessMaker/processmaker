@@ -58,8 +58,9 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         $prefix = '';
+        $route = $request->route();
         // Make sure we are using the correct fallback, web or api
-        if (substr($request->route()->getName(), 0, 4) === 'api.') {
+        if ($route && substr($route->getName(), 0, 4) === 'api.') {
             $prefix = 'api.';
         }
 

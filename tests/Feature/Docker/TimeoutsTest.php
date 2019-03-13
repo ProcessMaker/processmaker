@@ -49,10 +49,13 @@ class TimeoutsTest extends TestCase
     {
         $this->assertLogIsEmpty();
         
-        $url = route('api.script.preview', $data);
+        $url = route(
+            'api.script.preview',
+            $this->getScript($data['language'], $data['timeout'])->id
+        );
         
         $this->benchmarkStart();
-        $response = $this->apiCall('POST', $url, []);
+        $response = $this->apiCall('POST', $url, $data);
         $this->benchmarkEnd();
         
         $this->assertLogMessageExists('Script timed out');
@@ -66,8 +69,11 @@ class TimeoutsTest extends TestCase
     private function assertTimeoutNotExceeded($data)
     {
         $this->benchmarkStart();
-        $url = route('api.script.preview', $data);
-        $response = $this->apiCall('POST', $url, []);
+        $url = route(
+            'api.script.preview',
+            $this->getScript($data['language'], $data['timeout'])->id
+        );
+        $response = $this->apiCall('POST', $url, $data);
         $this->benchmarkEnd();
         
         $this->assertLessThan(intval($data['timeout']) + 2, $this->benchmark());
@@ -132,6 +138,22 @@ class TimeoutsTest extends TestCase
             'code' => '<?php sleep(' . self::SLEEP_NOT_EXCEED . '); return ["response"=>1];',
             'language' => 'php',
             'timeout' => self::TIMEOUT_LENGTH
+        ]);
+    }
+
+    /**
+     * A helper method to generate a script object from the factory
+     *
+     * @param string $language
+     * @param integer $timeout
+     * @return Script
+     */
+    private function getScript($language, $timeout)
+    {
+        return factory(Script::class)->create([
+            'run_as_user_id' => $this->user->id,
+            'language' => $language,
+            'timeout' => $timeout,
         ]);
     }
 }
