@@ -35,7 +35,9 @@
             </div>
         </div>
 
-        <screen-listing ref="screenListing" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}" v-on:reload="reload"></screen-listing>
+        <screen-listing ref="screenListing" :filter="filter"
+                        :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}"
+                        v-on:reload="reload"></screen-listing>
     </div>
 
     @can('create-screens')
@@ -53,7 +55,9 @@
                             {!! Form::label('title', 'Name') !!}
                             {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                             'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                            <small class="form-text text-muted" v-if="! errors.title">{{ __('The screen name must be distinct.') }}</small>
+                            <small class="form-text text-muted" v-if="! errors.title">
+                                {{ __('The screen name must be distinct.') }}
+                            </small>
                             <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                         </div>
                         <div class="form-group">
@@ -66,12 +70,17 @@
                             {!! Form::label('description', 'Description') !!}
                             {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                             'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
-                            <div class="invalid-feedback" v-for="description in errors.description">@{{description}}</div>
+                            <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">{{__('Cancel')}}</button>
-                        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                            {{__('Cancel')}}
+                        </button>
+                        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
+                            {{__('Save')}}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -84,56 +93,63 @@
 
     @can('create-screens')
         <script>
-            new Vue({
-                el: '#createScreen',
-                data() {
-                    return {
-                        formData: {},
-                        errors: {
-                            'title': null,
-                            'type': null,
-                            'description': null,
-                        }
-                    }
+          new Vue({
+            el: '#createScreen',
+            data() {
+              return {
+                formData: {},
+                errors: {
+                  'title': null,
+                  'type': null,
+                  'description': null,
                 },
-                mounted() {
-                    this.resetFormData();
-                    this.resetErrors();
-                },
-                methods: {
-                    resetFormData() {
-                        this.formData = Object.assign({}, {
-                            title: null,
-                            type: '',
-                            description: null,
-                        });
-                    },
-                    resetErrors() {
-                        this.errors = Object.assign({}, {
-                            title: null,
-                            type: null,
-                            description: null,
-                        });
-                    },
-                    onClose() {
-                        this.resetFormData();
-                        this.resetErrors();
-                    },
-                    onSubmit() {
-                        this.resetErrors();
-                        ProcessMaker.apiClient.post('screens', this.formData)
-                            .then(response => {
-                                ProcessMaker.alert('{{__('The screen was created.')}}', 'success');
-                                window.location = '/processes/screen-builder/' + response.data.id + '/edit';
-                            })
-                            .catch(error => {
-                                if (error.response.status && error.response.status === 422) {
-                                    this.errors = error.response.data.errors;
-                                }
-                            });
-                    }
+                disabled: false,
+              }
+            },
+            mounted() {
+              this.resetFormData();
+              this.resetErrors();
+            },
+            methods: {
+              resetFormData() {
+                this.formData = Object.assign({}, {
+                  title: null,
+                  type: '',
+                  description: null,
+                });
+              },
+              resetErrors() {
+                this.errors = Object.assign({}, {
+                  title: null,
+                  type: null,
+                  description: null,
+                });
+              },
+              onClose() {
+                this.resetFormData();
+                this.resetErrors();
+              },
+              onSubmit() {
+                this.resetErrors();
+                //single click
+                if (this.disabled) {
+                  return
                 }
-            });
+                this.disabled = true;
+                ProcessMaker.apiClient.post('screens', this.formData)
+                  .then(response => {
+                    ProcessMaker.alert('{{__('The screen was created.')}}', 'success');
+                    window.location = '/processes/screen-builder/' + response.data.id + '/edit';
+                  })
+                  .catch(error => {
+                    this.disabled = false;
+                    if (error.response.status && error.response.status === 422) {
+                      this.errors = error.response.data.errors;
+                    }
+                  });
+              }
+            }
+          });
         </script>
     @endcan
 @endsection
