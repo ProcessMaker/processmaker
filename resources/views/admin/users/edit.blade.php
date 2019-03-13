@@ -42,7 +42,7 @@
                                         <h2>{{__('Name')}}</h2>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!! Form::label('firstname', 'First Name') !!}
+                                                {!! Form::label('firstname', __('First Name')) !!}
                                                 {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
                                                 'form-control', 'v-model' => 'formData.firstname',
                                                 'v-bind:class' => '{\'form-control\':true,
@@ -52,7 +52,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group col">
-                                                {!! Form::label('lastname', 'Last Name') !!}
+                                                {!! Form::label('lastname', __('Last Name'))!!}
                                                 {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4,
                                                 'class'=> 'form-control', 'v-model'
                                                 => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true,
@@ -65,7 +65,7 @@
                                         <h2 class="mt-2">{{__('Contact Information')}}</h2>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!! Form::label('email', 'Email') !!}
+                                                {!! Form::label('email', __('Email')) !!}
                                                 {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
                                                 'form-control', 'v-model'
                                                 => 'formData.email', 'v-bind:class' => '{\'form-control\':true,
@@ -74,7 +74,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group col">
-                                                {!! Form::label('phone', 'Phone') !!}
+                                                {!! Form::label('phone', __('Phone')) !!}
                                                 {!! Form::text('phone', null, ['id' => 'phone','class'=> 'form-control',
                                                 'v-model' => 'formData.phone',
                                                 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.phone}'])
@@ -86,7 +86,7 @@
                                         <h2 class="mt-2">{{__('Address')}}</h2>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!! Form::label('address', 'Address') !!}
+                                                {!! Form::label('address', __('Address')) !!}
                                                 {!! Form::text('address', null, ['id' => 'address','class'=>
                                                 'form-control', 'v-model' => 'formData.address',
                                                 'v-bind:class' => '{\'form-control\':true,
@@ -98,7 +98,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!! Form::label('city', 'City') !!}
+                                                {!! Form::label('city', __('City')) !!}
                                                 {!! Form::text('city', null, ['id' => 'city', 'rows' => 4, 'class'=>
                                                 'form-control', 'v-model'
                                                 => 'formData.city', 'v-bind:class' => '{\'form-control\':true,
@@ -106,7 +106,7 @@
                                                 <div class="invalid-feedback" v-if="errors.city">@{{errors.city}}</div>
                                             </div>
                                             <div class="form-group col">
-                                                {!! Form::label('state', 'State or Region') !!}
+                                                {!! Form::label('state', __('State or Region')) !!}
                                                 {!! Form::select('state',
                                                 $states,
                                                 'formData.state',
@@ -122,7 +122,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!! Form::label('postal', 'Postal code') !!}
+                                                {!! Form::label('postal', __('Postal code')) !!}
                                                 {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=>
                                                 'form-control', 'v-model'
                                                 => 'formData.postal', 'v-bind:class' => '{\'form-control\':true,
@@ -131,7 +131,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group col">
-                                                {!! Form::label('country', 'Country') !!}
+                                                {!! Form::label('country', __('Country')) !!}
                                                 {!! Form::select('country',
                                                 $countries,
                                                 'formData.country',
@@ -149,7 +149,7 @@
                                         <h2 class="mt-2">{{__('Localization')}}</h2>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!!Form::label('datetime_format', 'Date format');!!}
+                                                {!!Form::label('datetime_format', __('Date format'));!!}
                                                 {!!Form::select('datetime_format',
                                                 $datetimeFormats,
                                                 'formData.datetime_format',
@@ -167,7 +167,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!!Form::label('timezone', 'Time zone');!!}
+                                                {!!Form::label('timezone', __('Time zone'));!!}
                                                 {!!Form::select('timezone',
                                                 $timezones,
                                                 'formData.timezone',
@@ -183,7 +183,7 @@
                                             </div>
 
                                             <div class="form-group col">
-                                                {!! Form::label('language', 'Language') !!}
+                                                {!! Form::label('language', __('Language')) !!}
                                                 {!! Form::select('language', ['us_en' => 'English (US)'], $user->language,
                                                 ['id' =>
                                                 'language','class'=>
@@ -197,8 +197,8 @@
                                             </div>
                                         </div>
                                         <div class="text-right mt-2">
-                                            {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                            {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
+                                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
                                         </div>
                                     </div>
                                 </div>
@@ -210,12 +210,12 @@
                                         </div>
                                         <div class="form-group">
                                             @include('shared.input',
-                                                ['type' => 'text', 'name' => 'username', 'label' => 'Username']
+                                                ['type' => 'text', 'name' => 'username', 'label' => __('Username')]
                                             )
                                         </div>
 
                                         <div class="form-group">
-                                            {!!Form::label('status', 'Status') !!}
+                                            {!!Form::label('status', __('Status')) !!}
                                             {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'],
                                             'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
                                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
@@ -224,11 +224,11 @@
 
                                         <div class="form-group">
                                             <small class="form-text text-muted">
-                                                Leave the password blank to keep the current password:
+                                                {{__('Leave the password blank to keep the current password:')}}
                                             </small>
                                         </div>
                                         <div class="form-group">
-                                            {!! Form::label('password', 'New Password') !!}
+                                            {!! Form::label('password', __('New Password')) !!}
                                             <vue-password v-model="formData.password" :disable-toggle=true>
                                                 <div slot="password-input" slot-scope="props">
                                                     {!! Form::password('password', ['id' => 'password', 'rows' => 4,
@@ -241,7 +241,7 @@
                                             </vue-password>
                                         </div>
                                         <div class="form-group">
-                                            {!! Form::label('confPassword', 'Confirm Password') !!}
+                                            {!! Form::label('confPassword', __('Confirm Password')) !!}
                                             {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4,
                                             'class'=> 'form-control', 'v-model'
                                             => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' =>
@@ -288,8 +288,8 @@
                                 </label>
                                 @include('admin.shared.permissions')
                                 <div class="text-right mt-2">
-                                {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
-                                {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
+                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
                             </div>
                             </div>
                         </div>
@@ -301,10 +301,10 @@
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <th>ID</th>
-                                        <th>Created At</th>
-                                        <th>Expires At</th>
-                                        <th>Delete</th>
+                                        <th>{{__('ID')}}</th>
+                                        <th>{{__('Created At')}}</th>
+                                        <th>{{__('Expires At')}}</th>
+                                        <th>{{__('Delete')}}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -319,24 +319,24 @@
                                         </td>
                                     </tr>
                                     <tr v-if='apiTokens.length == 0'>
-                                        <td colspan="4">User has no tokens.</td>
+                                        <td colspan="4">{{__('User has no tokens.')}}</td>
                                     </tr>
                                     </tbody>
                                 </table>
                                 <div class="form-group" v-if="newToken != null">
                                     <div class="alert alert-warning">
                                         <i class="fas fa-exclamation-triangle"></i>
-                                        Make sure you copy your access token now. You won't be able to see it again.
+                                        {{__("Make sure you copy your access token now. You won't be able to see it again.")}}
                                     </div>
                                     <button @click="copyTextArea" class="btn btn-secondary">
                                         <i class="fas fa-paste"></i>
-                                        Copy Token To Clipboard
+                                        {{__('Copy Token To Clipboard')}}
                                     </button>
                                     <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
                                 </div>
                                 <hr class="mt-0">
                                 <button class="btn btn-secondary float-right" @click="generateToken">
-                                    Generate New Token
+                                    {{__('Generate New Token')}}
                                 </button>
                             </div>
                         </div>
@@ -678,7 +678,7 @@
               .then((result) => {
                 this.newToken = result.data;
                 this.loadTokens();
-                ProcessMaker.alert("Access token generated successfully", "success");
+                ProcessMaker.alert("{{__('Access token generated successfully')}}", "success");
               })
           },
           deleteToken(tokenId) {

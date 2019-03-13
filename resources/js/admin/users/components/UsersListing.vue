@@ -19,7 +19,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
                 v-if="permission.includes('edit-users')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -28,7 +28,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Delete"
+                :title="__('Delete')"
                 v-if="permission.includes('delete-users')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -52,6 +52,7 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -69,35 +70,35 @@ export default {
       ],
       fields: [
         {
-          title: "Username",
+          title: __("Username"),
           name: "username",
           sortField: "username"
         },
         {
-          title: "Full Name",
+          title: __("Full Name"),
           name: "fullname",
           sortField: "fullname"
         },
         {
-          title: "Status",
+          title: __("Status"),
           name: "status",
           sortField: "status",
           callback: this.formatStatus
         },
         {
-          title: "Modified",
+          title: __("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: "Created",
+          title: __("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
         },
         {
-          title: "Last Login",
+          title: __("Last Login"),
           name: "loggedin_at",
           sortField: "loggedin_at",
           callback: "formatDate"
@@ -110,6 +111,9 @@ export default {
     };
   },
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     formatStatus(status) {
       status = status.toLowerCase();
       let bubbleColor = {
@@ -136,14 +140,16 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            "Caution!",
-            "<b>Are you sure you want to delete the user </b>" + data.fullname + "?",
+            __("Caution!"),
+            __("Are you sure you want to delete the user ") +
+              data.fullname +
+              __("?"),
             "",
             () => {
               ProcessMaker.apiClient
                 .delete("users/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert("The user was deleted.", "warning");
+                  ProcessMaker.alert(__("The user was deleted."), "danger");
                   this.$emit("reload");
                 });
             }

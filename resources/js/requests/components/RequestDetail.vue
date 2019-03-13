@@ -33,6 +33,7 @@
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
 import moment from "moment";
+import __ from "../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -50,19 +51,19 @@ export default {
       ],
       fields: [
         {
-          title: "TASK",
+          title: __("TASK"),
           name: "__slot:name",
           field: "element_name",
           sortField: "element_name"
         },
         {
-          title: "ASSIGNED",
+          title: __("ASSIGNED"),
           name: "__slot:participants",
           field: "participants",
           sortField: "user.lastname"
         },
         {
-          title: "DUE",
+          title: __("DUE"),
           name: "due_at",
           sortField: "due_at"
         }
@@ -70,6 +71,9 @@ export default {
     };
   },
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     isEditable(row) {
         return String(row.user_id) === String(window.ProcessMaker.user.id) || row.status !== "ACTIVE";
     },

@@ -1,13 +1,14 @@
 <template>
     <div>
         <button id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal">
-            <i class="fas fa-plus"></i> Request
+            <i class="fas fa-plus"></i>
+            {{__('Request')}}
         </button>
         <b-modal size="lg"
                  id="requests-modal"
                  class="requests-modal modal-dialog-scrollable"
                  ref="requestModalAdd"
-                 title="New Request"
+                 title="__('New Request')"
                  hide-footer>
             <span class="float-right">
                 <div class="input-group">
@@ -16,11 +17,11 @@
                             <i class="fas fa-search"></i>
                         </div>
                     </div>
-                    <input class="form-control form-control-sm" v-model="filter" placeholder="Search...">
+                    <input class="form-control form-control-sm" v-model="filter" placeholder="__('Search...')">
                 </div>
             </span>
 
-            <p>We've made it easy for you to make the following Requests.</p>
+            <p>{{__('We\'ve made it easy for you to make the following Requests.')}}</p>
             <div v-if="Object.keys(processes).length && !loading" class="process-list p-4">
                 <div class="category" v-for="(category, index) in processes">
                     <h3 class="name">{{index}}</h3>
@@ -33,13 +34,14 @@
             </div>
 
             <div class="no-requests" v-if="!Object.keys(processes).length && !loading">
-                <h4>You don't have any Processes.</h4>
+                <h4>{{__('You don\'t have any Processes.')}}</h4>
                 <span v-if="permission.includes('create-processes')">
-                    <a href="/processes">Please visit the Processes page</a> and click on +Process to get started.
+                    <a href="/processes">{{__('Please visit the Processes page')}}</a>
+                    {{__('and click on +Process to get started.')}}
                 </span>
-                <span v-else>Please contact your administrator to get started.</span>
+                <span v-else>{{__('Please contact your administrator to get started.')}}</span>
             </div>
-            <div v-if="loading" class="loading">Finding Requests available to you...</div>
+            <div v-if="loading" class="loading">{{__('Finding Requests available to you...')}}</div>
 
             <pagination single="Process"
                         plural="Processes"
@@ -57,6 +59,7 @@
   import card from "./card";
   import _ from "lodash";
   import datatableMixin from "../common/mixins/datatable";
+  import __ from "../../modules/lang";
 
   export default {
     mixins: [datatableMixin],
@@ -84,6 +87,9 @@
       }, 250)
     },
     methods: {
+      __(variable) {
+        return __(variable);
+      },
       showRequestModal() {
         if (!this.loaded) {
           // Perform initial load of requests from backend

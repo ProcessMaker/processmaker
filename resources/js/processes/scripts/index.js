@@ -1,5 +1,6 @@
 import Vue from "vue";
 import ScriptListing from "./components/ScriptListing";
+import __ from "../../modules/lang";
 
 new Vue({
     el: "#scriptIndex",
@@ -10,10 +11,13 @@ new Vue({
         ScriptListing
     },
     methods: {
+        __(variable) {
+            return __(variable);
+        },
         deleteScript(data) {
             ProcessMaker.apiClient.delete(`scripts/${data.id}`)
                 .then((response) => {
-                    ProcessMaker.alert("The script was deleted.", "success");
+                    ProcessMaker.alert(__("The script was deleted."), "success");
                     this.reload();
                 });
         },
