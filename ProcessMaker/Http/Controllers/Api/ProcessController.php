@@ -252,13 +252,13 @@ class ProcessController extends Controller
                 $cancelUsers[$item] = ['method' => 'CANCEL'];
             }
 
-            //Adding method to groups array            
+            //Adding method to groups array
             $cancelGroups = [];
             foreach ($request->input('cancel_request')['groups'] as $item) {
                 $cancelGroups[$item] = ['method' => 'CANCEL'];
             }
-            
-            //Syncing users and groups that can cancel this process            
+
+            //Syncing users and groups that can cancel this process
             $process->usersCanCancel()->sync($cancelUsers, ['method' => 'CANCEL']);
             $process->groupsCanCancel()->sync($cancelGroups, ['method' => 'CANCEL']);
         }
@@ -271,47 +271,47 @@ class ProcessController extends Controller
                 $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
             }
 
-            //Adding method to groups array            
+            //Adding method to groups array
             $editDataGroups = [];
             foreach ($request->input('edit_data')['groups'] as $item) {
                 $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
             }
-            
-            //Syncing users and groups that can cancel this process            
+
+            //Syncing users and groups that can cancel this process
             $process->usersCanEditData()->sync($editDataUsers, ['method' => 'EDIT_DATA']);
             $process->groupsCanEditData()->sync($editDataGroups, ['method' => 'EDIT_DATA']);
         }
-        
+
         //Save any request notification settings...
         if ($request->has('notifications')) {
-            $this->saveRequestNotifications($process, $request);            
+            $this->saveRequestNotifications($process, $request);
         }
 
         //Save any task notification settings...
         if ($request->has('task_notifications')) {
-            $this->saveTaskNotifications($process, $request);            
+            $this->saveTaskNotifications($process, $request);
         }
 
         return new Resource($process->refresh());
     }
-    
-    private function saveRequestNotifications($process, $request) 
+
+    private function saveRequestNotifications($process, $request)
     {
         //Retrieve input
         $input = $request->input('notifications');
-        
+
         //For each notifiable type...
         foreach ($process->requestNotifiableTypes as $notifiable) {
-            
+
             //And for each notification type...
             foreach ($process->requestNotificationTypes as $notification) {
-                
+
                 //If this input has been set
                 if (isset($input[$notifiable][$notification])) {
-                    
+
                     //Determine if this notification is wanted
                     $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
-                    
+
                     //If we want the notification, find or create it
                     if ($notificationWanted === true) {
                         $process->notification_settings()->firstOrCreate([
@@ -320,7 +320,7 @@ class ProcessController extends Controller
                             'notification_type' => $notification,
                         ]);
                     }
-                        
+
                     //If we do not want the notification, delete it
                     if ($notificationWanted === false) {
                         $process->notification_settings()
@@ -328,32 +328,32 @@ class ProcessController extends Controller
                             ->where('notifiable_type', $notifiable)
                             ->where('notification_type', $notification)
                             ->delete();
-                    }                                            
-                }                
+                    }
+                }
             }
-        }        
+        }
     }
 
-    private function saveTaskNotifications($process, $request) 
+    private function saveTaskNotifications($process, $request)
     {
         //Retrieve input
         $inputs = $request->input('task_notifications');
-        
+
         //For each node...
         foreach ($inputs as $nodeId => $input) {
-            
+
             //For each notifiable type...
             foreach ($process->taskNotifiableTypes as $notifiable) {
-                
+
                 //And for each notification type...
                 foreach ($process->taskNotificationTypes as $notification) {
-                    
+
                     //If this input has been set
                     if (isset($input[$notifiable][$notification])) {
-                        
+
                         //Determine if this notification is wanted
                         $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
-                        
+
                         //If we want the notification, find or create it
                         if ($notificationWanted === true) {
                             $process->notification_settings()->firstOrCreate([
@@ -362,7 +362,7 @@ class ProcessController extends Controller
                                 'notification_type' => $notification,
                             ]);
                         }
-                            
+
                         //If we do not want the notification, delete it
                         if ($notificationWanted === false) {
                             $process->notification_settings()
@@ -370,12 +370,12 @@ class ProcessController extends Controller
                                 ->where('notifiable_type', $notifiable)
                                 ->where('notification_type', $notification)
                                 ->delete();
-                        }                                            
-                    }                
+                        }
+                    }
                 }
-            }        
+            }
         }
-    }    
+    }
 
     /**
      * Returns the list of processes that the user can start.
@@ -389,6 +389,7 @@ class ProcessController extends Controller
      *     summary="Returns the list of processes that the user can start",
      *     operationId="startProcesses",
      *     tags={"Process"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -415,8 +416,8 @@ class ProcessController extends Controller
      */
     public function startProcesses(Request $request)
     {
+        $where = $this->getRequestFilterBy($request, ['processes.name', 'processes.description', 'category.name']);
         $orderBy = $this->getRequestSortBy($request, 'name');
-        $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
 
         $processes = Process::with($include)
@@ -425,9 +426,9 @@ class ProcessController extends Controller
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
             ->where('category.status', 'ACTIVE')
+            ->where($where)
             ->orderBy(...$orderBy)
             ->get();
-
 
         foreach($processes as $key => $process) {
             //filter he start events that can be used manually (no timer start events);
@@ -442,7 +443,7 @@ class ProcessController extends Controller
             if (count($process->startEvents) === 0) {
                 $processes->forget($key);
             }
-        };
+        }
 
         return new ApiCollection($processes);
     }
