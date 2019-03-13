@@ -36,12 +36,12 @@
                 <div class="p-1 bg-secondary border-bottom text-white">Script Output</div>
                 <div class="btn-group" role="group">
                     <button :disabled="preview.executing" @click="execute" class="btn btn-primary"><i class="fas fa-play-circle"></i></button>
-                    <button type="button" class="btn btn-light"></button>
-                    <button type="button" class="btn btn-light text-right">
+                    <div class="col"></div>
+                    <div class="col p-2 text-right">
                         <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
                         <i v-if="preview.success" class="fas fa-check text-success"></i>
                         <i v-if="preview.failure" class="fas fa-times-circle text-danger"></i>
-                    </button>
+                    </div>
                 </div>
                 <div class="content" style="overflow: auto; width: 100%;">
                     <pre v-if="preview.success" v-text="preview.output"></pre>
