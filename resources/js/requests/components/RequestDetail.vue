@@ -12,9 +12,10 @@
         pagination-path="meta"
       >
         <template slot="name" slot-scope="props">
-          <b-link
+          <b-link v-if="isEditable(props.rowData)"
             @click="onAction('edit', props.rowData, props.rowIndex)"
           >{{props.rowData.element_name}}</b-link>
+          <span v-else>{{props.rowData.element_name}}</span>
         </template>
 
         <template slot="participants" slot-scope="props">
@@ -69,6 +70,9 @@ export default {
     };
   },
   methods: {
+    isEditable(row) {
+        return String(row.user_id) === String(window.ProcessMaker.user.id) || row.status !== "ACTIVE";
+    },
     onAction(action, rowData, index) {
       switch (action) {
         case "edit":
