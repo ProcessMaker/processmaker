@@ -8,12 +8,12 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 
-class UserCreationTest extends DuskTestCase
+class EnvironmentVariablesCreationTest extends DuskTestCase
 {
     /**
      * @throws \Throwable
      */
-    public function testUserCreation()
+    public function testEnvironmentVariablesCreation()
     {
         $this->markTestSkipped('Skipping Dusk tests temporarily');
 
