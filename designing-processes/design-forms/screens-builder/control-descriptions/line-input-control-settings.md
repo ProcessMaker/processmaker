@@ -41,6 +41,14 @@ Below is a Line Input control in Preview mode.
 
 ![Line Input control in Preview mode](../../../../.gitbook/assets/line-input-control-preview-screens-builder-processes.png)
 
+## Delete the Control from a ProcessMaker Screen
+
+{% hint style="warning" %}
+Deleting a control also deletes configuration for that control. If you add another control, it will have default settings.
+{% endhint %}
+
+Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-screens-builder-processes.png)for the control to delete it.
+
 ## Inspector Settings
 
 {% hint style="info" %}
@@ -60,7 +68,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Line Input control:
 
-* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in [**Show If** setting expressions](expression-syntax-components-for-show-if-control-settings.md).
 * **Field Type:** Select one of the following options:
   * **Text:** The form user enters a single line of plain text into the Line Input control. If the entered text is longer than the field width, the entered text is clipped. **Text** is the default option.
   * **Password:** The form user enters a password into the Line Input control. Entered text is masked. If the entered text is longer than the field width, the entered text is clipped.

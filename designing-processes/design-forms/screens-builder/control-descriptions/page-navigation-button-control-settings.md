@@ -41,6 +41,14 @@ Below is a Page Navigation Button control in Preview mode.
 
 ![Page Navigation Button control in Preview mode using the &quot;Secondary&quot; Variant option](../../../../.gitbook/assets/page-navigation-button-control-preview-screens-builder-processes.png)
 
+## Delete the Control from a ProcessMaker Screen
+
+{% hint style="warning" %}
+Deleting a control also deletes configuration for that control. If you add another control, it will have default settings.
+{% endhint %}
+
+Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-screens-builder-processes.png)for the control to delete it.
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
@@ -60,7 +68,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Page Navigation Button control:
 
-* ~~**Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.~~
+* ~~**Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in~~ [~~**Show If** setting expressions~~](expression-syntax-components-for-show-if-control-settings.md)~~.~~
 * **Field Label:** Specify the field label text that displays. **New** **Page Navigation** is the default value.
 * **Variant:** Specify the style for the Page Navigation Button control. The style changes the control's appearance but otherwise has no functional difference. Select from the following options:
   * **Primary:** Blue-colored background with white-colored **Field Label** text. Set as the default.

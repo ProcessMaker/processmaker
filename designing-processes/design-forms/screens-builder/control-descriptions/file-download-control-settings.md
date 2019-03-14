@@ -34,6 +34,14 @@ Follow these steps to add this control to the ProcessMaker Screen:
 
 Below is a File Download control in Preview mode. ~~ADD THE FILE DOWNLOAD PREVIEW AFTER THE CONTROL HAS A PREVIEW REPRESENTATION.~~
 
+## Delete the Control from a ProcessMaker Screen
+
+{% hint style="warning" %}
+Deleting a control also deletes configuration for that control. If you add another control, it will have default settings.
+{% endhint %}
+
+Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-screens-builder-processes.png)for the control to delete it.
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
@@ -53,7 +61,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the File Download control:
 
-* ~~**Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.~~
+* ~~**Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in~~ [~~**Show If** setting expressions~~](expression-syntax-components-for-show-if-control-settings.md)~~.~~
 * **Text Label:** Specify the field label text that displays. **New File Download** is the default value.
 * **Download Name:** Specify the name associated with the downloaded file\(s\). This name can be referenced from a previous step in the Request. This setting has no default value.
 * **Show If:** Specify an expression that dictates the condition\(s\) under which the File Download control displays. See [Expression Syntax Components for "Show If" Control Settings](expression-syntax-components-for-show-if-control-settings.md#expression-syntax-components-for-show-if-control-settings). If this setting does not have an expression, then this control displays by default.

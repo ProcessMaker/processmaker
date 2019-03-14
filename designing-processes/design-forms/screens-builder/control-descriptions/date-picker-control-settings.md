@@ -41,6 +41,14 @@ Below is a Date control in Preview mode.
 
 ![Date control in Preview mode](../../../../.gitbook/assets/date-control-preview-screens-builder-processes.png)
 
+## Delete the Control from a ProcessMaker Screen
+
+{% hint style="warning" %}
+Deleting a control also deletes configuration for that control. If you add another control, it will have default settings.
+{% endhint %}
+
+Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-screens-builder-processes.png)for the control to delete it.
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
@@ -60,7 +68,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Date Picker control:
 
-* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in [**Show If** setting expressions](expression-syntax-components-for-show-if-control-settings.md).
 * **Field Label:** Specify the field label text that displays. **New Date Picker** is the default value.
 * **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided. This setting has no default value.
 * **Background Color:** Select to specify the background color of the Date Picker control. Selecting a background color also selects the **Background Color** checkbox.

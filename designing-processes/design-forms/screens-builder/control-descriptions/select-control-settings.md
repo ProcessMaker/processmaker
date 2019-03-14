@@ -39,6 +39,14 @@ Below is a Select control in Preview mode.
 
 ![Select control in Preview mode](../../../../.gitbook/assets/select-control-preview-screen-builder-processes.png)
 
+## Delete the Control from a ProcessMaker Screen
+
+{% hint style="warning" %}
+Deleting a control also deletes configuration for that control. If you add another control, it will have default settings.
+{% endhint %}
+
+Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-screens-builder-processes.png)for the control to delete it.
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
@@ -58,7 +66,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Line Input control:
 
-* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in [**Show If** setting expressions](expression-syntax-components-for-show-if-control-settings.md).
 * **Field Label:** Specify the field label text that displays. **New Select** is the default value.
 * **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.

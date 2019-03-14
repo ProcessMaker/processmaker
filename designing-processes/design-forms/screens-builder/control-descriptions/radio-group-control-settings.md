@@ -41,6 +41,14 @@ Below is a Radio Group control in Preview mode.
 
 ![Radio Group control in Preview mode](../../../../.gitbook/assets/radio-group-control-preview-screens-builder-processes.png)
 
+## Delete the Control from a ProcessMaker Screen
+
+{% hint style="warning" %}
+Deleting a control also deletes configuration for that control. If you add another control, it will have default settings.
+{% endhint %}
+
+Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-screens-builder-processes.png)for the control to delete it.
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
@@ -60,7 +68,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Radio Group control:
 
-* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in [**Show If** setting expressions](expression-syntax-components-for-show-if-control-settings.md).
 * **Field Label:** Specify the field label text that displays. **New Radio Button Group** is the default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
 * **Options List:** Specify the list of options available in the select box. Add options in the order they are to display from top to bottom in the drop-down. The default option is called **new** with the content **New Option**. ~~RETAKE THIS SCREENSHOT WHEN THEY FIX THE HELP MESSAGE BELOW THE "ADD OPTION" BUTTON.~~  

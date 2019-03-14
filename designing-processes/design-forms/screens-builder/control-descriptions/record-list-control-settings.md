@@ -68,6 +68,14 @@ Below is the secondary ProcessMaker Screen page in Preview mode for each confere
 
 ![Secondary page with controls to record attendance confirmation in Preview mode](../../../../.gitbook/assets/record-list-control-example-secondary-page-screens-builder-processes.png)
 
+## Delete the Control from a ProcessMaker Screen
+
+{% hint style="warning" %}
+Deleting a control also deletes configuration for that control. If you add another control, it will have default settings.
+{% endhint %}
+
+Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-screens-builder-processes.png)for the control to delete it.
+
 ## Inspector Settings <a id="inspector-settings"></a>
 
 {% hint style="info" %}
@@ -87,7 +95,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 
 Below are Inspector settings for the Record List control:
 
-* **List Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **List Name** value for this control to reference it in **Show If** setting expressions.
+* **List Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **List Name** value for this control to reference it in [**Show If** setting expressions](expression-syntax-components-for-show-if-control-settings.md).
 * **List Label:** Specify the field label text that displays. **New Record List** is the default value.
 * **Editable?:** Select to indicate that the record that the form user enters can be edited. Otherwise, deselect to indicate that the form user's record cannot be changed. This setting is not selected by default.
 * **Fields List:** Specify the list of options the Record List records from the form user. Each option in the **Fields List** setting references a control on a secondary ProcessMaker Screen page that uses the same **Field Name** value as entered into the **Value** parameter. These values must match for the Record List control to correspond with each control in the secondary ProcessMaker Screen page. See the [example](record-list-control-settings.md#example). The following message displays in Preview mode when not all the **Value** parameters match with a control's **Field Name** value on the secondary page: **There is no records in this list or the data is invalid.**   

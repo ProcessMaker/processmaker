@@ -35,6 +35,14 @@ Below is an Image control in Preview mode.
 
 ![Image control in Preview mode](../../../../.gitbook/assets/image-control-preview-screens-builder-processes.png)
 
+## Delete the Control from a ProcessMaker Screen
+
+{% hint style="warning" %}
+Deleting a control also deletes configuration for that control. If you add another control, it will have default settings.
+{% endhint %}
+
+Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-screens-builder-processes.png)for the control to delete it.
+
 ## Inspector Settings
 
 {% hint style="info" %}
@@ -55,7 +63,7 @@ See the ProcessMaker [Screens](../../../../processmaker-administration/permissio
 Below are Inspector settings for the Image control:
 
 * **Id:** Specify the unique internal image identification. ~~This is a required setting.~~
-* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This setting automatically uses the file name of the uploaded image as its value. This is a required setting. Use the **Field Name** value for this control to reference it in **Show If** setting expressions.
+* **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This setting automatically uses the file name of the uploaded image as its value. This is a required setting. Use the **Field Name** value for this control to reference it in [**Show If** setting expressions](expression-syntax-components-for-show-if-control-settings.md).
 * **Upload Image:** Click the **Upload Image** button to browse for the image to upload to the Image control.
 * **Preview:** This setting displays a preview of the uploaded image.
 * **Width:** Specify the width of the uploaded image in pixels. If the **Height** setting has no value, the Image control adjust the uploaded image to the **Width** setting value.
