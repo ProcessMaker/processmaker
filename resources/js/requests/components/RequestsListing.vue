@@ -13,7 +13,7 @@
         pagination-path="meta"
       >
         <template slot="ids" slot-scope="props">
-          <b-link @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.name}}</b-link>
+          <b-link @click="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
         </template>
         <template slot="participants" slot-scope="props">
           <avatar-image
@@ -77,9 +77,14 @@ export default {
       fields: [
         {
           name: "__slot:ids",
-          title: __("Name"),
+          title: '#',
           field: "id",
           sortField: "id"
+        },
+        {
+          title: __("Name"),
+          name: "name",
+          sortField: "name"
         },
         {
           title: __("Status"),
