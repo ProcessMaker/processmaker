@@ -10,11 +10,11 @@ The following are brief descriptions about each Process modeling element. See th
 
 ## Events
 
-An Event represents a milestone in the Process model.
+An Event represents a milestone or time in the Process model.
 
 ### Start Event
 
-A Start Event indicates where a modeled Process starts. A Start Event begins the flow of a Request for that Process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Events.
+A Start Event indicates where a modeled Process starts. A Start Event begins the workflow of a [Request](../../../using-processmaker/requests/what-is-a-request.md) for that Process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Events.
 
 In Process Modeler, the Start Event element is labeled as "Start Event" in the **BPMN** panel as highlighted below.
 
@@ -30,7 +30,7 @@ See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add
 
 ### End Event
 
-An End Event indicates where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple End Events.
+An End Event indicates where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the workflow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple End Events.
 
 In Process Modeler, the End Event element is labeled as "End Event" in the **BPMN** panel as highlighted below.
 
@@ -46,9 +46,17 @@ See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add
 
 ### Start Timer Event
 
+A Start Timer Event indicates a time or periodic interval when a modeled Process starts. A Start Timer Event begins the workflow of a Request for that Process. Therefore, a Start Timer Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Timer Events.
+
+In Process Modeler, the Start Timer Event element is labeled as "Start Timer Event" in the **BPMN** panel as highlighted below.
+
 
 
 ### Intermediate Timer Event
+
+An Intermediate Timer Event delays the workflow of a [Request](../../../using-processmaker/requests/what-is-a-request.md) for that Process either on a specific time or at a periodic interval.
+
+In Process Modeler, the Intermediate Timer Event element is labeled as "Intermediate Timer Event" in the **BPMN** panel as highlighted below.
 
 
 
