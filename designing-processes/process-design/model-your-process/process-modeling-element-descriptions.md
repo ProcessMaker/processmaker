@@ -6,7 +6,7 @@ description: These are brief descriptions about commonly used Process modeling e
 
 ## Overview
 
-The following are brief descriptions about each Process modeling element. See the [BPMN specification](https://www.omg.org/spec/BPMN/2.0/About-BPMN/) for more information.
+The following are brief descriptions about each Process modeling element. See the [BPMN 2.0 specification](https://www.omg.org/spec/BPMN/2.0/About-BPMN/) for more information.
 
 ## Events
 
@@ -44,11 +44,19 @@ Below is an End Event element when it has been placed into a Process model.
 See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-an-end-event-element).
 {% endhint %}
 
+### Start Timer Event
+
+
+
+### Intermediate Timer Event
+
+
+
 ## Tasks
 
 A task represents an activity to be performed either by a [Request](../../../using-processmaker/requests/what-is-a-request.md) participant or a [ProcessMaker Script](../../scripts/).
 
-### User Task
+### Task
 
 A Task element represents an activity to be performed by a person participating in a [Request](../../../using-processmaker/requests/what-is-a-request.md). The Request participant assigned that task might be determined by the conditions in a Request's workflow.
 
@@ -84,7 +92,9 @@ Below is a Script Task element when it has been placed into a Process model.
 See [Add and Configure Script Task Elements](add-and-configure-script-task-elements.md).
 {% endhint %}
 
-## Exclusive Gateway
+## Gateways
+
+### Exclusive Gateway
 
 An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that Process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing Sequence Flows.
 
@@ -102,6 +112,10 @@ See the following topics about Exclusive Gateway elements:
 * [Add and Configure Exclusive Gateway Elements](add-and-configure-exclusive-gateway-elements.md#add-an-exclusive-gateway-element)
 * [Configure a Sequence Flow from an Exclusive Gateway Element](the-quick-toolbar.md#configure-a-sequence-flow-from-an-exclusive-gateway-element)
 {% endhint %}
+
+### Parallel Gateway
+
+
 
 ## Text Annotation
 

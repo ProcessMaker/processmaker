@@ -27,7 +27,7 @@ Follow these steps to view all ProcessMaker Environment Variables in your organi
 The **Environment Variables** page displays the following information in tabular format about ProcessMaker Environment Variables:
 
 * **Name:** The **Name** column displays the name of the ProcessMaker Environment Variable.
-* **Description:** The **Description** column displays the description about the ProcessMaker Environment Variable. For information how to edit the ProcessMaker Environment Variable description, see [Edit an Environmental Variable](edit-an-environmental-variable.md).
+* **Description:** The **Description** column displays the description about the ProcessMaker Environment Variable.
 * **Modified:** The **Modified** column displays the date and time the ProcessMaker Environment Variable was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the ProcessMaker Environment Variable was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
@@ -60,6 +60,8 @@ If no ProcessMaker Environment Variables exist, the following message displays: 
 ## Related Topics
 
 {% page-ref page="../what-is-an-environment-variable.md" %}
+
+{% page-ref page="create-a-new-environment-variable.md" %}
 
 {% page-ref page="search-for-an-environment-variable.md" %}
 

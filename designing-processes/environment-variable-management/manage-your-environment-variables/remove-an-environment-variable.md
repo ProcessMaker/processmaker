@@ -6,7 +6,7 @@ description: >-
 
 # Delete an Environment Variable
 
-## Remove a ProcessMaker Environment Variable
+## Delete a ProcessMaker Environment Variable
 
 {% hint style="info" %}
 Your user account or group membership must have the following permissions to delete a ProcessMaker Environment Variable:
@@ -19,7 +19,7 @@ See the ProcessMaker [Environment Variable](../../../processmaker-administration
 {% endhint %}
 
 {% hint style="warning" %}
-When a ProcessMaker Environment Variable is deleted ~~describe what happens and in which conditions a process can be deleted.~~
+The data that a ProcessMaker Environment Variable maintains secure remains so for past Requests associated with Processes that reference a deleted Environment Variable. However, in-progress and future Requests that reference a deleted ProcessMaker Environment Variable no longer have a secure environment for that data. Be extremely cautious when considering deleting a ProcessMaker Environment Variable.
 
 Deleting a ProcessMaker Environment Variable from the **Environment Variables** page cannot be undone.
 {% endhint %}
@@ -39,9 +39,9 @@ Follow these steps to delete a ProcessMaker Environment Variable:
 
 {% page-ref page="view-all-environment-variables.md" %}
 
+{% page-ref page="create-a-new-environment-variable.md" %}
+
 {% page-ref page="search-for-an-environment-variable.md" %}
 
 {% page-ref page="edit-an-environmental-variable.md" %}
-
-{% page-ref page="create-a-new-environment-variable.md" %}
 

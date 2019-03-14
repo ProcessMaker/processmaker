@@ -26,7 +26,7 @@ See [Add a New Page to a Screen](add-a-new-page-to-a-screen.md).
 
 Use Preview mode to view how your ProcessMaker Screen displays.
 
-Furthermore, use Preview mode to view how the ProcessMaker Screen's controls you configured in Editor mode use data in a JSON data model. While Screens Builder has an easy-to-use drag-and-drop design interface to edit and preview ProcessMaker Screens, they are represented as JSON data models. You can view the JSON data model in Preview mode as you enter information into your previewed ProcessMaker Screen. Viewing the JSON data model can be helpful to see how values are entered into the ProcessMaker Screen as well as to use that JSON data model in your [ProcessMaker Scripts](../../scripts/scripts-editor.md#enter-json-data-model-variables-from-processmaker-screens).
+Furthermore, use Preview mode to view how the ProcessMaker Screen's controls you configured in Editor mode interact with JSON data models. While Screens Builder has an easy-to-use drag-and-drop design interface to edit and preview ProcessMaker Screens, they are represented as JSON data models. You can view any JSON data model in Preview mode to experiment with how a [Process's](../../viewing-processes/what-is-a-process.md) JSON data model or another ProcessMaker Screen's data model interacts with your Screen. Viewing the JSON data model can be helpful to see how values are entered into the ProcessMaker Screen as well as to use that JSON data model in your [ProcessMaker Scripts](../../scripts/what-is-a-script.md).
 
 {% hint style="info" %}
  See [Preview a Screen and Its JSON Data Model](preview-a-screen.md).
@@ -42,7 +42,7 @@ See [Manage Computed Properties](manage-computed-properties.md).
 
 ## Custom CSS Mode
 
-Use the Custom CSS mode to add custom CSS styles to control fields within a ProcessMaker Screen by referencing the control's CSS ID in the CSS style sheet language.
+Use the Custom CSS mode to add custom CSS styles to a ProcessMaker Screen.
 
 {% hint style="info" %}
 See [Add Custom CSS to a Screen](add-custom-css-to-a-screen.md).
@@ -77,4 +77,8 @@ See [Add Custom CSS to a Screen](add-custom-css-to-a-screen.md).
 {% page-ref page="close-screens-builder.md" %}
 
 {% page-ref page="best-practices.md" %}
+
+{% page-ref page="../../scripts/what-is-a-script.md" %}
+
+{% page-ref page="../../viewing-processes/what-is-a-process.md" %}
 
