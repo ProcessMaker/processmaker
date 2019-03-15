@@ -10,7 +10,7 @@ description: Duplicate an existing ProcessMaker Screen.
 Your user account or group membership must have the following permissions to duplicate a ProcessMaker Screen's configuration:
 
 * Screens: View Screens
-* Screens: Edit Screens
+* Screens: Create Screens
 
 See the ProcessMaker [Screens](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#screens) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}

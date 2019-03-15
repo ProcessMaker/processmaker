@@ -6,7 +6,7 @@ description: Add a control that displays an image.
 
 ## Control Description
 
-The Image control displays an image.
+The Image control displays an image that is PNG, GIF, or JPG file types.
 
 ## Add the Control to a ProcessMaker Screen
 
@@ -64,7 +64,7 @@ Below are Inspector settings for the Image control:
 
 * **Id:** Specify the unique internal image identification. ~~This is a required setting.~~
 * **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This setting automatically uses the file name of the uploaded image as its value. This is a required setting. Use the **Field Name** value for this control to reference it in [**Show If** setting expressions](expression-syntax-components-for-show-if-control-settings.md).
-* **Upload Image:** Click the **Upload Image** button to browse for the image to upload to the Image control.
+* **Upload Image:** Click the **Upload Image** button to browse for the PNG, GIF, or JPG file type image to upload to the Image control.
 * **Preview:** This setting displays a preview of the uploaded image.
 * **Width:** Specify the width of the uploaded image in pixels. If the **Height** setting has no value, the Image control adjust the uploaded image to the **Width** setting value.
 * **Height:** Specify the width of the uploaded image in pixels. If the **Width** setting has no value, the Image control adjust the uploaded image to the **Height** setting value.

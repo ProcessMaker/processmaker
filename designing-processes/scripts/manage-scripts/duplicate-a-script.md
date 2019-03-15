@@ -10,7 +10,7 @@ description: Duplicate an existing ProcessMaker Script.
 Your user account or group membership must have the following permissions to duplicate a ProcessMaker Script:
 
 * Scripts: View Scripts
-* Scripts: Edit Scripts
+* Scripts: Create Scripts
 
 See the ProcessMaker [Scripts](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#scripts) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}

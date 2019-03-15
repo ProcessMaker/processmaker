@@ -10,11 +10,11 @@ The following are brief descriptions about each Process modeling element. See th
 
 ## Events
 
-An Event represents a milestone or time in the Process model.
+An Event represents a milestone, time, or time interval in the Process model.
 
 ### Start Event
 
-A Start Event indicates where a modeled Process starts. A Start Event begins the workflow of a [Request](../../../using-processmaker/requests/what-is-a-request.md) for that Process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Events.
+A Start Event represents where a modeled Process starts. A Start Event begins the workflow of a [Request](../../../using-processmaker/requests/what-is-a-request.md) for that Process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Events.
 
 In Process Modeler, the Start Event element is labeled as "Start Event" in the **BPMN** panel as highlighted below.
 
@@ -28,9 +28,41 @@ Below is a Start Event element when it has been placed into a Process model.
 See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-a-start-event-element).
 {% endhint %}
 
+### Start Timer Event
+
+A Start Timer Event represents a time or periodic interval when a modeled Process starts. A Start Timer Event begins the workflow of a Request for that Process. Therefore, a Start Timer Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Timer Events.
+
+In Process Modeler, the Start Timer Event element is labeled as "Start Timer Event" in the **BPMN** panel as highlighted below.
+
+
+
+Below is a Start Timer Event element when it has been placed into a Process model.
+
+![Start Timer Event element](../../../.gitbook/assets/start-timer-event-element-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Add and Configure Start Timer Event Elements](add-and-configure-start-timer-event-elements.md).
+{% endhint %}
+
+### Intermediate Timer Event
+
+An Intermediate Timer Event represents a delay in a [Request's](../../../using-processmaker/requests/what-is-a-request.md) workflow for that Process either at a specific time or at a periodic interval.
+
+In Process Modeler, the Intermediate Timer Event element is labeled as "Intermediate Timer Event" in the **BPMN** panel as highlighted below.
+
+
+
+Below is an Intermediate Timer Event element when it has been placed into a Process model.
+
+![Intermediate Timer Event element](../../../.gitbook/assets/intermediate-timer-event-element-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Add and Configure Intermediate Timer Event Elements](add-and-configure-intermediate-timer-event-elements.md).
+{% endhint %}
+
 ### End Event
 
-An End Event indicates where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the workflow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple End Events.
+An End Event represents where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the workflow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple End Events.
 
 In Process Modeler, the End Event element is labeled as "End Event" in the **BPMN** panel as highlighted below.
 
@@ -43,22 +75,6 @@ Below is an End Event element when it has been placed into a Process model.
 {% hint style="info" %}
 See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add-an-end-event-element).
 {% endhint %}
-
-### Start Timer Event
-
-A Start Timer Event indicates a time or periodic interval when a modeled Process starts. A Start Timer Event begins the workflow of a Request for that Process. Therefore, a Start Timer Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Timer Events.
-
-In Process Modeler, the Start Timer Event element is labeled as "Start Timer Event" in the **BPMN** panel as highlighted below.
-
-
-
-### Intermediate Timer Event
-
-An Intermediate Timer Event delays the workflow of a [Request](../../../using-processmaker/requests/what-is-a-request.md) for that Process either on a specific time or at a periodic interval.
-
-In Process Modeler, the Intermediate Timer Event element is labeled as "Intermediate Timer Event" in the **BPMN** panel as highlighted below.
-
-
 
 ## Tasks
 
@@ -104,7 +120,7 @@ See [Add and Configure Script Task Elements](add-and-configure-script-task-eleme
 
 ### Exclusive Gateway
 
-An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that Process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing Sequence Flows.
+An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that Process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow).
 
 In Process Modeler, the Exclusive Gateway element is labeled as "Exclusive Gateway" in the **BPMN** panel as highlighted below.
 
@@ -123,7 +139,22 @@ See the following topics about Exclusive Gateway elements:
 
 ### Parallel Gateway
 
+A Parallel Gateway represents the synchronization and/or creation of parallel paths within a [Request's](../../../using-processmaker/requests/) workflow. The Parallel Gateway element has two functions:
 
+* A Parallel Gateway does not trigger until all its incoming [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow) route to it. This is how Parallel Gateways synchronize workflow.
+* When a Parallel Gateway triggers, its outgoing Sequence Flows creates parallel paths without any conditions. This function differentiates it from outgoing Sequence Flows for [Exclusive Gateway](process-modeling-element-descriptions.md#exclusive-gateway) elements.
+
+In Process Modeler, the Parallel Gateway element is labeled as "Parallel Gateway" in the **BPMN** panel as highlighted below.
+
+
+
+Below is a Parallel Gateway element when it has been placed into a Process model.
+
+![Parallel Gateway element](../../../.gitbook/assets/parallel-gateway-element-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Add and Configure Parallel Gateway Elements](add-and-configure-parallel-gateway-elements.md).
+{% endhint %}
 
 ## Text Annotation
 
