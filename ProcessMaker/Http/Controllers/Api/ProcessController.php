@@ -338,6 +338,12 @@ class ProcessController extends Controller
         }        
     }
 
+    /**
+     * Validates the bpmn content that comes in the request
+     *
+     * @param Request $request
+     * @return array|null
+     */
     private function validateBpmn(Request $request)
     {
         $data = $request->json()->all();
