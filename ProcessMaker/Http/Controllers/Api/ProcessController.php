@@ -21,6 +21,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 
 class ProcessController extends Controller
 {
@@ -160,6 +161,13 @@ class ProcessController extends Controller
             $data['status'] = 'ACTIVE';
         }
 
+        if ($schemaErrors = $this->validateBpmn($request)) {
+            return response(
+                ['message' => 'The bpm definition is not valid',
+                    'errors' => ['bpmn' => $schemaErrors]],
+                422);
+        }
+
         $process = new Process();
         $process->fill($data);
 
@@ -214,11 +222,7 @@ class ProcessController extends Controller
         $original_attributes = $process->getAttributes();
 
         //bpmn validation
-        libxml_use_internal_errors(true);
-        $definitions = $process->getDefinitions();
-        $res = $definitions->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
-        if (!$res) {
-            $schemaErrors = $definitions->getValidationErrors();
+        if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
                 ['message' => 'The bpm definition is not valid',
                     'errors' => ['bpmn' => $schemaErrors]],
@@ -334,6 +338,25 @@ class ProcessController extends Controller
         }        
     }
 
+    private function validateBpmn(Request $request)
+    {
+        $data = $request->json()->all();
+        $schemaErrors = null;
+        if (isset($data['bpmn'])) {
+            $document = new BpmnDocument();
+            $document->loadXML($data['bpmn']);
+
+            try {
+                $validation = $document->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
+            }
+            catch (\Exception $e) {
+                $schemaErrors = $document->getValidationErrors();
+                $schemaErrors[] = $e->getMessage();
+            }
+        }
+        return $schemaErrors;
+    }
+
     private function saveTaskNotifications($process, $request) 
     {
         //Retrieve input
@@ -375,7 +398,8 @@ class ProcessController extends Controller
                 }
             }        
         }
-    }    
+    }
+
 
     /**
      * Returns the list of processes that the user can start.
