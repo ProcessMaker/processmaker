@@ -8,7 +8,7 @@
                  id="requests-modal"
                  class="requests-modal modal-dialog-scrollable"
                  ref="requestModalAdd"
-                 title="__('New Request')"
+                 :title="__('New Request')"
                  hide-footer>
             <span class="float-right">
                 <div class="input-group">
@@ -60,7 +60,7 @@
   import _ from "lodash";
   import datatableMixin from "../common/mixins/datatable";
   import __ from "../../modules/lang";
-
+window.__ = __;
   export default {
     mixins: [datatableMixin],
     props: {
