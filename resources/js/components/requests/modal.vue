@@ -17,7 +17,7 @@
                             <i class="fas fa-search"></i>
                         </div>
                     </div>
-                    <input class="form-control form-control-sm" v-model="filter" placeholder="__('Search...')">
+                    <input class="form-control form-control-sm" v-model="filter" :placeholder="__('Search...')">
                 </div>
             </span>
 
