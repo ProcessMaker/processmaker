@@ -61,7 +61,7 @@ class RequestController extends Controller
                $result = $query->count();
                break;
             case 'startedMe':
-                $result = ProcessRequest::startedMe(Auth::user()->id)->count();
+                $result = ProcessRequest::startedMe(Auth::user()->id)->notCompleted()->count();
                 break;
             case 'inProgress':
                 $result =$query->inProgress()->count();

@@ -88,6 +88,7 @@ class ProcessRequestController extends Controller
         switch ($request->input('type')) {
             case 'started_me':
                 $query->startedMe(Auth::user()->id);
+                $query->notCompleted();
                 break;
             case 'in_progress':
                 $query->inProgress();
