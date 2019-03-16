@@ -126,8 +126,10 @@ return [
     */
     'security' => [
         'pm_api_bearer' => [ // personal access token
-            'type' => 'http',
-            'scheme' => 'bearer',
+            'type' => 'oauth2',
+            'flows' => [
+                'implicit' => ['authorizationUrl' => '']
+            ],
         ]
     ],
 
