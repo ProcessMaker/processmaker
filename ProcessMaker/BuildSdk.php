@@ -9,7 +9,7 @@ class BuildSdk {
     private $debug = false;
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = null;
-    private $supportedLangs = ['php', 'lua'];
+    private $supportedLangs = ['php', 'lua', 'typescript-node'];
     private $outputPath = null;
     private $jsonPath = null;
 
@@ -46,6 +46,9 @@ class BuildSdk {
         $response = $this->docker($this->curlPost());
 
         $json = json_decode($response, true);
+        if (!array_key_exists('link', $json)) {
+            throw new Exception("Generator Error: " . $response);
+        }
         $link = $json['link'];
 
         $zip = $this->getZip($link);
@@ -138,10 +141,11 @@ class BuildSdk {
         $zip = new ZipArchive;
         $res = $zip->open($file);
         $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $zip->extractTo("/tmp/{$folder}");
+        $this->runCmd('rm -rf /tmp/pm4-sdk-tmp');
+        $zip->extractTo("/tmp/pm4-sdk-tmp");
         $zip->close();
         unlink($file);
-        return "/tmp/{$folder}/{$this->lang}-client";
+        return "/tmp/pm4-sdk-tmp/{$this->lang}-client";
     }
 
     private function existingContainer()
@@ -177,7 +181,7 @@ class BuildSdk {
             "options" => [
                 "gitUserId" => "ProcessMaker",
                 "gitRepoId" => "pm4-sdk-" . $this->lang,
-                "packageName" => "pm4-sdk-" . $this->lang,
+                "packageName" => "pmsdk",
                 "invokerPackage" => "ProcessMaker\\Client",
                 "appDescription" => "SDK Client for the ProcessMaker v4 App",
                 "infoUrl" => "https://github.com/ProcessMaker/bpm",
