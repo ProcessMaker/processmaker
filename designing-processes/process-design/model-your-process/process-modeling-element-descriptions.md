@@ -34,7 +34,7 @@ A Start Timer Event represents a time or periodic interval when a modeled Proces
 
 In Process Modeler, the Start Timer Event element is labeled as "Start Timer Event" in the **BPMN** panel as highlighted below.
 
-
+![Start Timer Event element in the BPMN panel of Process Modeler](../../../.gitbook/assets/start-timer-event-bpmn-panel-process-modeler-processes.png)
 
 Below is a Start Timer Event element when it has been placed into a Process model.
 
@@ -50,7 +50,7 @@ An Intermediate Timer Event represents a delay in a [Request's](../../../using-p
 
 In Process Modeler, the Intermediate Timer Event element is labeled as "Intermediate Timer Event" in the **BPMN** panel as highlighted below.
 
-
+![Intermediate Timer Event element in the BPMN panel of Process Modeler](../../../.gitbook/assets/intermediate-timer-event-bpmn-panel-process-modeler-processes.png)
 
 Below is an Intermediate Timer Event element when it has been placed into a Process model.
 
@@ -62,7 +62,7 @@ See [Add and Configure Intermediate Timer Event Elements](add-and-configure-inte
 
 ### End Event
 
-An End Event represents where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the workflow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple End Events.
+An End Event represents where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the workflow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow), though it may have an outgoing [Message Flow](process-modeling-element-descriptions.md#message-flow). A Process model can have multiple End Events.
 
 In Process Modeler, the End Event element is labeled as "End Event" in the **BPMN** panel as highlighted below.
 
@@ -118,6 +118,8 @@ See [Add and Configure Script Task Elements](add-and-configure-script-task-eleme
 
 ## Gateways
 
+A Gateway controls how and/or when [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow) that interact with other elements in the Process model.
+
 ### Exclusive Gateway
 
 An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that Process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow).
@@ -146,7 +148,7 @@ A Parallel Gateway represents the synchronization and/or creation of parallel pa
 
 In Process Modeler, the Parallel Gateway element is labeled as "Parallel Gateway" in the **BPMN** panel as highlighted below.
 
-
+![Parallel Gateway element in the BPMN panel of Process Modeler](../../../.gitbook/assets/parallel-gateway-bpmn-panel-process-modeler-processes.png)
 
 Below is a Parallel Gateway element when it has been placed into a Process model.
 
@@ -172,25 +174,49 @@ Below is a Text Annotation element when it has been placed into a Process model.
 See [Add and Configure Text Annotation Elements](add-and-configure-text-annotation-elements.md).
 {% endhint %}
 
-## Sequence Flow
+## Flows
 
-Sequence Flow represents intended workflow in a modeled Process. As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled Processes easier to understand.
+Flows represent the order in which workflow and messaging occur in a Process model.
 
-In Process Modeler, a Sequence Flow indicator displays when you click an element in the Process model. Below the arrow icon represents a Sequence Flow indicator in Process Modeler.
+### Sequence Flow
 
-![Sequence Flow indicator on a selected process element](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
+Sequence Flows represent the intended workflow or routing in a Process model. Process workflow is the order in which elements trigger or activate in a Process model. Sequence Flows are not to be confused with [Message Flows](process-modeling-element-descriptions.md#message-flow).
+
+As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled Processes easier to understand.
+
+In Process Modeler, Flow indicators display when you click an element in the Process model. The top Flow indicator is for Sequence Flows \(highlighted below\), represented with a solid line. The Message Flow indicator displays below the Sequence Flow indicator, represented by a dotted line.
+
+![Sequence Flow indicator \(highlighted\) on a selected Process element](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
 
 {% hint style="info" %}
-Text annotations and Pool elements do not participate in Sequence Flow.
+[Text annotations](process-modeling-element-descriptions.md#text-annotation) and [Pool](process-modeling-element-descriptions.md#pool) elements do not participate in Sequence Flow. Furthermore, Sequence Flows cannot connect between Process model elements that are in different Pool elements since Pool elements represent different organizations. However, use Message Flows to infer communication between elements in different Pool elements.
 
 Sequence Flows from Exclusive Gateway elements can be configured to specify under which condition a Request routes through that Sequence Flow. See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements).
 
 An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing Sequence Flow.
 {% endhint %}
 
-The Sequence Flow indicates how two Process elements are connected. Below are two Process elements connected in Process Modeler.
+The Sequence Flow indicates in which order workflow or routing occurs between two connected Process elements. Below are two Process elements connected in Process Modeler.
 
-![Two Process elements connected by the Sequence Flow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
+![Two Process elements connected by the Sequence Flow to infer the order of workflow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).
+{% endhint %}
+
+### Message Flow
+
+Message Flows represent communication between an element in one Pool element with a separate Pool element in a Process model. Message Flows are not to be confused with [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow).
+
+In Process Modeler, Flow indicators display when you click an element in the Process model. The bottom Flow indicator is for Message Flows, represented with a dotted line \(highlighted below\). The Sequence Flow indicator displays above the Message Flow indicator, represented by a solid line.
+
+![Message Flow indicator \(highlighted\) on a selected Process element](../../../.gitbook/assets/message-flow-indicator-process-model-processes.png)
+
+The Message Flow indicates communication between the two separate Pool elements.
+
+![An element in one Pool element inferring communication with a second Pool element](../../../.gitbook/assets/message-flow-between-pool-elements-process-model-processes.png)
+
+Message Flows cannot connect to Process model elements within the same Pool element.
 
 {% hint style="info" %}
 See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).

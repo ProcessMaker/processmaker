@@ -22,7 +22,8 @@ Follow these steps to edit the identifier value for a Process model:
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. [Create a new Process](../../viewing-processes/view-the-list-of-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
 3. Select anywhere in the Process model other than any Process element so that no elements are selected. The current Process model identifier value displays in the **Identifier** field in the right side bar.
-4. In the **Identifier** field, edit the Process model's identifier value and then press **Enter**. The identifier value is changed.
+4. Expand the **Configuration** setting category if it is not expanded.
+5. In the **Identifier** field, edit the Process model's identifier value and then press **Enter**. The identifier value is changed.
 
 ## Edit the Process Model Name
 
