@@ -339,7 +339,8 @@ class ProcessController extends Controller
     }
 
     /**
-     * Validates the Bpmn content that comes in the request
+     * Validates the Bpmn content that comes in the request.
+     * Returns the list of errors found
      *
      * @param Request $request
      * @return array|null
