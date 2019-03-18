@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Models\Notification;
 use ProcessMaker\Http\Resources\Notifications as NotificationResource;
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\TaskOverdueNotification;
 
 class NotificationController extends Controller
 {
@@ -70,6 +72,9 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
+        // This creates notifications for overdue tasks
+        $this->notifyOverdueTasks();
+
         $query = Notification::select(
             'id',
             'read_at',
@@ -371,5 +376,22 @@ class NotificationController extends Controller
             ->where('notifiable_type', $type)
             ->update(['read_at' => Carbon::now()]);
         return response([], 201);
+    }
+
+    /**
+     * This method find task in overdue status that were not notified to the
+     * owner user.
+     */
+    private function notifyOverdueTasks()
+    {
+        $user = Auth::user();
+        $inOverdue = ProcessRequestToken::where('user_id', Auth::user()->id)
+            ->where('status', 'ACTIVE')
+            ->where('due_at', '<', Carbon::now())
+            ->where('due_notified', 0)
+            ->get();
+        foreach($inOverdue as $token) {
+            $user->notify(new TaskOverdueNotification($token));
+        }
     }
 }

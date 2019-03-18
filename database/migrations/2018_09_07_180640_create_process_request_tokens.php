@@ -27,6 +27,7 @@ class CreateProcessRequestTokens extends Migration
                     ->default('ACTIVE');
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('due_at')->nullable();
+            $table->boolean('due_notified')->default(false);
             $table->timestamp('initiated_at')->nullable();
             $table->timestamp('riskchanges_at')->nullable();
             $table->timestamps();
