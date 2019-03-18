@@ -328,6 +328,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
+     * Filter process not completed
+     *
+     * @param $query
+     */
+    public function scopeNotCompleted($query)
+    {
+        $query->where('status', '!=', 'COMPLETED');
+    }
+
+    /**
      * Returns the list of users that have participated in the request
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
