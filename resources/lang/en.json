@@ -358,5 +358,17 @@
     "Enter your MySQL database name:": "Enter your MySQL database name:",
     "Enter your MySQL username:": "Enter your MySQL username:",
     "Enter your MySQL password (input hidden):": "Enter your MySQL password (input hidden):",
-    "Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.": "Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again."
+    "Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.": "Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.",
+    "These credentials do not match our records.": "These credentials do not match our records.",
+    "Too many login attempts. Please try again in :seconds seconds.": "Too many login attempts. Please try again in :seconds seconds.",
+    "Passwords must be at least six characters and match the confirmation.": "Passwords must be at least six characters and match the confirmation.",
+    "Your password has been reset!": "Your password has been reset!",
+    "We have e-mailed your password reset link!": "We have e-mailed your password reset link!",
+    "This password reset token is invalid.": "This password reset token is invalid.",
+    "We can't find a user with that e-mail address.": "We can't find a user with that e-mail address.",
+    "active": "active",
+    "inactive": "inactive",
+    "display": "display",
+    "form": "form",
+    "No Data Available": "No Data Available"
 }
