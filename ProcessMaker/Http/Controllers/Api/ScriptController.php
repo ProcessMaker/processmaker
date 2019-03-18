@@ -91,10 +91,15 @@ class ScriptController extends Controller
      * Previews executing a script, with sample data/config data
      *
      *     @OA\Get(
-     *     path="/scripts/ew",
-     *     summary="Returns all scripts that the user has access to",
+     *     path="/scripts/{script_id}/preview",
+     *     summary="Test script code without saving it",
      *     operationId="getScriptsPreview",
      *     tags={"Scripts"},
+     *         @OA\Parameter(
+     *             name="script_id",
+     *             in="path",
+     *             @OA\Schema(type="integer"),
+     *         ),
      *         @OA\Parameter(
      *             name="data",
      *             in="query",
@@ -110,11 +115,6 @@ class ScriptController extends Controller
      *             in="query",
      *             @OA\Schema(type="string"),
      *         ),
-     *         @OA\Parameter(
-     *             name="language",
-     *             in="query",
-     *             @OA\Schema(type="string"),
-     *         ),
      *
      *     @OA\Response(
      *         response=200,
@@ -124,19 +124,13 @@ class ScriptController extends Controller
      *     ),
      * )
      */
-    public function preview(Request $request)
+    public function preview(Request $request, Script $script)
     {
         $data = json_decode($request->get('data'), true) ?: [];
         $config = json_decode($request->get('config'), true) ?: [];
         $code = $request->get('code');
-        $language = $request->get('language');
-        $user = Auth::user();
-        $timeout = $request->get('timeout');
 
-        if ($timeout === null) {
-            $timeout = 60;
-        }
-        TestScript::dispatch($code, $language, $timeout, $user, $data, $config);
+        TestScript::dispatch($script, $request->user(), $code, $data, $config);
         return ['status' => 'success'];
     }
 
@@ -270,7 +264,7 @@ class ScriptController extends Controller
      *     @OA\Put(
      *     path="/scripts/scriptsId/duplicate",
      *     summary="duplicate a script",
-     *     operationId="updateScreen",
+     *     operationId="duplicateScreen",
      *     tags={"scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",

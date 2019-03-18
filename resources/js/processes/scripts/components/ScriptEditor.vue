@@ -120,7 +120,7 @@
                 this.preview.failure = false;
                 // Attempt to execute a script, using our temp variables
                 ProcessMaker.apiClient
-                    .post("scripts/preview", {
+                    .post("scripts/" + this.script.id + "/preview", {
                         code: this.code,
                         language: this.script.language,
                         data: this.preview.data,

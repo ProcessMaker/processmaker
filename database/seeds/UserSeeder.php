@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             'is_administrator' => true,
         ]);
 
-        // Create personal access token
+        // Create client so we can generate tokens
         $clients->createPersonalAccessClient(
             null, 'PmApi', 'http://localhost'
         );

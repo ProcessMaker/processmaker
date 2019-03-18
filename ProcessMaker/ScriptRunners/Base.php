@@ -6,7 +6,9 @@ use Log;
 use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\ScriptDockerBindingFilesTrait;
 use ProcessMaker\Models\ScriptDockerCopyingFilesTrait;
+use ProcessMaker\Models\User;
 use RuntimeException;
+use ProcessMaker\GenerateAccessToken;
 
 abstract class Base
 {
@@ -24,20 +26,36 @@ abstract class Base
     abstract public function config($code, array $dockerConfig);
 
     /**
+     * Set the user to run this script as
+     *
+     * @var \ProcessMaker\Models\User $user
+     */
+    private $user;
+
+    /**
      * Run a script code.
      *
      * @param string $code
      * @param array $data
      * @param array $config
      * @param integer $timeout
+     * @param \ProcessMaker\Models\User $user
      *
      * @return array
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config, $timeout)
+    public function run($code, array $data, array $config, $timeout, ?User $user)
     {
-        // Prepate the docker parameters
+        // Prepare the docker parameters
         $environmentVariables = $this->getEnvironmentVariables();
+    
+        // Create tokens for the SDK if a user is set
+        $token = null;
+        if ($user) {
+            $token = new GenerateAccessToken($user);
+            $environmentVariables[] = 'API_TOKEN=' . $token->getToken();
+            $environmentVariables[] = 'API_HOST=' . config('app.url') . '/api/1.0';
+        }
 
         if ($environmentVariables) {
             $parameters = '-e ' . implode(' -e ', $environmentVariables);
@@ -63,6 +81,11 @@ abstract class Base
             'executeMethod' => $executeMethod,
         ]);
         $response = $this->$executeMethod($dockerConfig);
+
+        // Delete the token we created for this run
+        if ($token) {
+            $token->delete();
+        }
 
         // Process the output
         $returnCode = $response['returnCode'];

@@ -28,4 +28,5 @@ storage/debugbar
 storage/debugbar/*
 storage/api-docs/api-docs.json
 storage/ssl
+storage/api/*
 npm.sh

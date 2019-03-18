@@ -57,12 +57,19 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        $prefix = '';
+        $route = $request->route();
+        // Make sure we are using the correct fallback, web or api
+        if ($route && substr($route->getName(), 0, 4) === 'api.') {
+            $prefix = 'api.';
+        }
+
         if ($exception instanceof NotFoundHttpException) {
-            return Route::respondWithRoute('fallback');
+            return Route::respondWithRoute($prefix . 'fallback');
         }
 
         if ($exception instanceof ModelNotFoundException) {
-            return Route::respondWithRoute('fallback');
+            return Route::respondWithRoute($prefix . 'fallback');
         }
         return parent::render($request, $exception);
     }

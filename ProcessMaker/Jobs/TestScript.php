@@ -19,28 +19,26 @@ class TestScript implements ShouldQueue
         Queueable,
         SerializesModels;
 
+    protected $script;
+    protected $current_user;
     protected $code;
-    protected $language;
-    protected $timeout;
-    protected $user;
     protected $data;
     protected $configuration;
 
     /**
      * Create a new job instance to execute a script.
      *
+     * @param ProcessMaker\Models\Script $script
+     * @param ProcessMaker\Models\User $current_user
      * @param string $code
-     * @param string $language
-     * @param string $timeout
      * @param array $data
      * @param array $configuration
      */
-    public function __construct($code, $language, $timeout, User $user, array $data, array $configuration)
+    public function __construct(Script $script, User $current_user, $code, array $data, array $configuration)
     {
+        $this->script = $script;
+        $this->current_user = $current_user;
         $this->code = $code;
-        $this->language = $language;
-        $this->timeout = $timeout;
-        $this->user = $user;
         $this->data = $data;
         $this->configuration = $configuration;
     }
@@ -53,12 +51,9 @@ class TestScript implements ShouldQueue
     public function handle()
     {
         try {
-            $script = new Script([
-                'code' => $this->code,
-                'language' => $this->language,
-                'timeout' => $this->timeout,
-            ]);
-            $response = $script->runScript($this->data, $this->configuration);
+            # Just set the code but do not save the object (preview only)
+            $this->script->code = $this->code;
+            $response = $this->script->runScript($this->data, $this->configuration);
             $this->sendResponse(200, $response);
         } catch (Throwable $exception) {
             $this->sendResponse(500, [
@@ -76,6 +71,6 @@ class TestScript implements ShouldQueue
      */
     private function sendResponse($status, array $response)
     {
-        $this->user->notify(new ScriptResponseNotification($status, $response));
+        $this->current_user->notify(new ScriptResponseNotification($status, $response));
     }
 }

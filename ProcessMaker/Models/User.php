@@ -58,10 +58,15 @@ class User extends Authenticatable implements HasMedia
      * ),
      * @OA\Schema(
      *   schema="users",
-     *   allOf={@OA\Schema(ref="#/components/schemas/usersEditable")},
-     *   @OA\Property(property="id", type="string", format="id"),
-     *   @OA\Property(property="created_at", type="string", format="date-time"),
-     *   @OA\Property(property="updated_at", type="string", format="date-time"),
+     *   allOf={
+     *      @OA\Schema(ref="#/components/schemas/usersEditable"),
+     *      @OA\Schema(
+     *          type="object",
+     *          @OA\Property(property="id", type="string", format="id"),
+     *          @OA\Property(property="created_at", type="string", format="date-time"),
+     *          @OA\Property(property="updated_at", type="string", format="date-time"),
+     *      )
+     *   },
      * )
      */
     protected $fillable = [
