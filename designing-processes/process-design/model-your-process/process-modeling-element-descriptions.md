@@ -14,7 +14,7 @@ An Event represents a milestone, time, or time interval in the Process model.
 
 ### Start Event
 
-A Start Event represents where a modeled Process starts. A Start Event begins the workflow of a [Request](../../../using-processmaker/requests/what-is-a-request.md) for that Process. Therefore, a Start Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Events.
+A Start Event element represents where a modeled Process starts. A Start Event element begins the workflow of a [Request](../../../using-processmaker/requests/what-is-a-request.md) for that Process. Therefore, a Start Event element cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Event elements.
 
 In Process Modeler, the Start Event element is labeled as "Start Event" in the **BPMN** panel as highlighted below.
 
@@ -30,7 +30,7 @@ See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add
 
 ### Start Timer Event
 
-A Start Timer Event represents a time or periodic interval when a modeled Process starts. A Start Timer Event begins the workflow of a Request for that Process. Therefore, a Start Timer Event cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Timer Events.
+A Start Timer Event element represents a time or periodic interval when a modeled Process starts. A Start Timer Event element begins the workflow of a Request for that Process. Therefore, a Start Timer Event element cannot have an incoming [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow). A Process model can have multiple Start Timer Event elements.
 
 In Process Modeler, the Start Timer Event element is labeled as "Start Timer Event" in the **BPMN** panel as highlighted below.
 
@@ -46,7 +46,7 @@ See [Add and Configure Start Timer Event Elements](add-and-configure-start-timer
 
 ### Intermediate Timer Event
 
-An Intermediate Timer Event represents a delay in a [Request's](../../../using-processmaker/requests/what-is-a-request.md) workflow for that Process either at a specific time or at a periodic interval.
+An Intermediate Timer Event elment represents a delay in a [Request's](../../../using-processmaker/requests/what-is-a-request.md) workflow for that Process either at a specific time or at a periodic interval.
 
 In Process Modeler, the Intermediate Timer Event element is labeled as "Intermediate Timer Event" in the **BPMN** panel as highlighted below.
 
@@ -62,7 +62,7 @@ See [Add and Configure Intermediate Timer Event Elements](add-and-configure-inte
 
 ### End Event
 
-An End Event represents where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event terminates the workflow of a Request for that Process. Therefore, an End Event cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow), though it may have an outgoing [Message Flow](process-modeling-element-descriptions.md#message-flow). A Process model can have multiple End Events.
+An End Event element represents where a modeled Process normally ends when abnormal events do not terminate a [Request](../../../using-processmaker/requests/) for that Process \(such as a canceled Request\). An End Event element terminates the workflow of a Request for that Process. Therefore, an End Event element cannot have an outgoing [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow), though it may have an outgoing [Message Flow](process-modeling-element-descriptions.md#message-flow). A Process model can have multiple End Event elements.
 
 In Process Modeler, the End Event element is labeled as "End Event" in the **BPMN** panel as highlighted below.
 
@@ -78,11 +78,11 @@ See [Add and Configure Event Elements](add-and-configure-an-event-element.md#add
 
 ## Tasks
 
-A task represents an activity to be performed either by a [Request](../../../using-processmaker/requests/what-is-a-request.md) participant or a [ProcessMaker Script](../../scripts/).
+A Task represents an activity to be performed either by a [Request](../../../using-processmaker/requests/what-is-a-request.md) participant or a [ProcessMaker Script](../../scripts/).
 
 ### Task
 
-A Task element represents an activity to be performed by a person participating in a [Request](../../../using-processmaker/requests/what-is-a-request.md). The Request participant assigned that task might be determined by the conditions in a Request's workflow.
+A Task element represents an activity to be performed by a person participating in a [Request](../../../using-processmaker/requests/what-is-a-request.md). The Request participant assigned that Task might be determined by the conditions in a Request's workflow.
 
 People perform Task activities through ProcessMaker Screens as digital [forms](../../design-forms/screens-builder/types-for-screens.md#forms) and [displays](../../design-forms/screens-builder/types-for-screens.md#display). ProcessMaker Screens are designed in [Screens Builder](../../design-forms/screens-builder/).
 
@@ -100,7 +100,7 @@ See [Add and Configure Task Elements](add-and-configure-task-elements.md).
 
 ### Script Task
 
-A Script Task is an activity to be performed by a ProcessMaker Script.
+A Script Task element is an activity to be performed by a ProcessMaker Script.
 
 ProcessMaker Scripts are designed in [Scripts Editor](../../scripts/scripts-editor.md). ProcessMaker Scripts are independent of modeled processes: any ProcessMaker Script can be reused in any modeled process in your organization. This architecture allows Process Owners to focus on process modeling in a no-code environment while ProcessMaker Developers develop reusable ProcessMaker Scripts. ProcessMaker Scripts can leverage Request-level variable data as well as variable data designed in ProcessMaker Screens from [Screens Builder](../../design-forms/screens-builder/).
 
@@ -122,7 +122,7 @@ A Gateway controls how and/or when [Sequence Flows](process-modeling-element-des
 
 ### Exclusive Gateway
 
-An Exclusive Gateway represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that Process, only one outgoing path from the Exclusive Gateway can be taken. An Exclusive Gateway can have two or more outgoing [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow).
+An Exclusive Gateway element represents a decision that creates alternative paths within a [Request's](../../../using-processmaker/requests/) workflow. During a Request's workflow for that Process, only one outgoing path from the Exclusive Gateway element can be taken. An Exclusive Gateway element can have two or more outgoing [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow).
 
 In Process Modeler, the Exclusive Gateway element is labeled as "Exclusive Gateway" in the **BPMN** panel as highlighted below.
 
@@ -141,7 +141,7 @@ See the following topics about Exclusive Gateway elements:
 
 ### Parallel Gateway
 
-A Parallel Gateway represents the synchronization and/or creation of parallel paths within a [Request's](../../../using-processmaker/requests/) workflow. The Parallel Gateway element has two functions:
+A Parallel Gateway element represents the synchronization and/or creation of parallel paths within a [Request's](../../../using-processmaker/requests/) workflow. The Parallel Gateway element has two functions:
 
 * A Parallel Gateway does not trigger until all its incoming [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow) route to it. This is how Parallel Gateways synchronize workflow.
 * When a Parallel Gateway triggers, its outgoing Sequence Flows creates parallel paths without any conditions. This function differentiates it from outgoing Sequence Flows for [Exclusive Gateway](process-modeling-element-descriptions.md#exclusive-gateway) elements.
@@ -158,77 +158,13 @@ Below is a Parallel Gateway element when it has been placed into a Process model
 See [Add and Configure Parallel Gateway Elements](add-and-configure-parallel-gateway-elements.md).
 {% endhint %}
 
-## Text Annotation
-
-Text annotation is human-readable text in a modeled process provides description regarding the process. Text annotation performs no functional role in process Requests or routing.
-
-In Process Modeler, the Text Annotation element is labeled as "Text Annotation" in the **BPMN** panel as highlighted below.
-
-![Text Annotation element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-text-annotation-process-modeler-processes.png)
-
-Below is a Text Annotation element when it has been placed into a Process model.
-
-![Text Annotation element](../../../.gitbook/assets/text-annotation-process-modeler-processes.png)
-
-{% hint style="info" %}
-See [Add and Configure Text Annotation Elements](add-and-configure-text-annotation-elements.md).
-{% endhint %}
-
-## Flows
-
-Flows represent the order in which workflow and messaging occur in a Process model.
-
-### Sequence Flow
-
-Sequence Flows represent the intended workflow or routing in a Process model. Process workflow is the order in which elements trigger or activate in a Process model. Sequence Flows are not to be confused with [Message Flows](process-modeling-element-descriptions.md#message-flow).
-
-As a best practice indicate a consistent direction of Sequence Flows, either left to right or top to bottom, to make modeled Processes easier to understand.
-
-In Process Modeler, Flow indicators display when you click an element in the Process model. The top Flow indicator is for Sequence Flows \(highlighted below\), represented with a solid line. The Message Flow indicator displays below the Sequence Flow indicator, represented by a dotted line.
-
-![Sequence Flow indicator \(highlighted\) on a selected Process element](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
-
-{% hint style="info" %}
-[Text annotations](process-modeling-element-descriptions.md#text-annotation) and [Pool](process-modeling-element-descriptions.md#pool) elements do not participate in Sequence Flow. Furthermore, Sequence Flows cannot connect between Process model elements that are in different Pool elements since Pool elements represent different organizations. However, use Message Flows to infer communication between elements in different Pool elements.
-
-Sequence Flows from Exclusive Gateway elements can be configured to specify under which condition a Request routes through that Sequence Flow. See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements).
-
-An End Event terminates the flow of a Request for that Process. Therefore, an End Event cannot have an outgoing Sequence Flow.
-{% endhint %}
-
-The Sequence Flow indicates in which order workflow or routing occurs between two connected Process elements. Below are two Process elements connected in Process Modeler.
-
-![Two Process elements connected by the Sequence Flow to infer the order of workflow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
-
-{% hint style="info" %}
-See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).
-{% endhint %}
-
-### Message Flow
-
-Message Flows represent communication between an element in one Pool element with a separate Pool element in a Process model. Message Flows are not to be confused with [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow).
-
-In Process Modeler, Flow indicators display when you click an element in the Process model. The bottom Flow indicator is for Message Flows, represented with a dotted line \(highlighted below\). The Sequence Flow indicator displays above the Message Flow indicator, represented by a solid line.
-
-![Message Flow indicator \(highlighted\) on a selected Process element](../../../.gitbook/assets/message-flow-indicator-process-model-processes.png)
-
-The Message Flow indicates communication between the two separate Pool elements.
-
-![An element in one Pool element inferring communication with a second Pool element](../../../.gitbook/assets/message-flow-between-pool-elements-process-model-processes.png)
-
-Message Flows cannot connect to Process model elements within the same Pool element.
-
-{% hint style="info" %}
-See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).
-{% endhint %}
-
 ## Organize Process Participants
 
-BPMN 2.0 provides graphical representations to organize participants in a modeled Process.
+BPMN 2.0 provides graphical representations to organize participants in a Process model.
 
 ### Pool
 
-A Pool represents an organization or entity involved in a Process modeled. The pool might apply to a  specific role \("Human Resources"\), entity \(such as a company\) or a general relationship \(such as a buyer, seller, or manufacturer\). A Pool can even reference another modeled Process.
+A Pool element represents an organization or entity involved in a Process model. The Pool element might apply to a specific role \("Human Resources"\), entity \(such as a company\) or a general relationship \(such as a buyer, seller, or manufacturer\). A Pool element can even reference another Process model.
 
 In Process Modeler, the Pool element is labeled as "Pool" in the **BPMN** panel as highlighted below.
 
@@ -244,14 +180,78 @@ See [Add and Configure Pool and Lane Elements](add-and-configure-pool-and-lane-e
 
 ### Lane
 
-A Lane represents a partition within a [Pool](process-modeling-element-descriptions.md#pool) element. Each Lane indicates individual roles and/or participants that perform tasks within the Pool. Text within the Lane indicates the participant in the Process model. Any elements within the Lane indicate that the participant is the actor or is responsible for performing tasks in the Process. Furthermore, [Sequence Flows](process-modeling-element-descriptions.md#sequence-flow) between elements in other Pools or  Lanes indicate with which other Process participants that Lane interacts.
+A Lane element represents a partition within a [Pool](process-modeling-element-descriptions.md#pool) element. Each Lane element indicates individual roles and/or participants that perform Tasks within the Pool element. Text within the Lane element indicates the participant in the Process model. Any elements within the Lane element indicate that the participant is the actor or is responsible for performing tasks in the Process. Furthermore, [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow) elements between elements in other Pool or Lane elements indicate with which other Process participants that Lane element interacts.
 
-Below is a Pool element with three Lane elements when it has been placed into a Process model. Each lane indicates roles within the overall organization.
+Below is a Pool element with three Lane elements when it has been placed into a Process model. Each Lane element indicates roles within the overall organization.
 
 ![Pool element with three Lane elements that indicate roles within the organization](../../../.gitbook/assets/pool-element-with-lanes-process-modeler-processes.png)
 
 {% hint style="info" %}
 See [Add and Configure Pool and Lane Elements](add-and-configure-pool-and-lane-elements.md).
+{% endhint %}
+
+## Flows
+
+Flows represent the order in which workflow and messaging occur in a Process model.
+
+### Sequence Flow
+
+Sequence Flow elements represent the intended workflow routing in a Process model. Process workflow is the order in which elements trigger or activate in a Process model. Sequence Flow elements are not to be confused with [Message Flow](process-modeling-element-descriptions.md#message-flow) elements.
+
+As a best practice indicate a consistent direction of Sequence Flow elements, either left to right or top to bottom, to make modeled Processes easier to understand.
+
+In Process Modeler, Flow indicators display when you click an element in the Process model. The top Flow indicator is for Sequence Flows \(highlighted below\), represented with a solid line. The Message Flow indicator displays below the Sequence Flow indicator, represented by a dotted line.
+
+![Sequence Flow indicator \(highlighted\) on a selected Process element](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
+
+{% hint style="info" %}
+[Text annotations](process-modeling-element-descriptions.md#text-annotation) and [Pool](process-modeling-element-descriptions.md#pool) elements do not use Sequence Flow elements. Furthermore, Sequence Flow elements cannot connect between Process model elements that are in different Pool elements since Pool elements represent different organizations. However, use Message Flows to infer communication between elements in different Pool elements.
+
+Sequence Flows from Exclusive Gateway elements can be configured to specify under which condition a Request routes through that Sequence Flow. See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements).
+
+An End Event element terminates the flow of a Request for that Process. Therefore, an End Event element cannot have an outgoing Sequence Flow.
+{% endhint %}
+
+The Sequence Flow element indicates in which order workflow or routing occurs between two connected Process elements. Below are two Process model elements connected in Process Modeler.
+
+![Two Process elements connected by the Sequence Flow to infer the order of workflow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).
+{% endhint %}
+
+### Message Flow
+
+Message Flow elements represent communication between an element in one Pool element with a separate Pool element in a Process model. Message Flow elements are not to be confused with [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow) elements.
+
+In Process Modeler, Flow indicators display when you click an element in the Process model. The bottom Flow indicator is for Message Flows, represented with a dotted line \(highlighted below\). The Sequence Flow indicator displays above the Message Flow indicator, represented by a solid line.
+
+![Message Flow indicator \(highlighted\) on a selected Process element](../../../.gitbook/assets/message-flow-indicator-process-model-processes.png)
+
+The Message Flow element indicates communication between the two separate Pool elements. The Message Flow does not indicate whether the communication is physical or digital. Use a [Text Annotation](process-modeling-element-descriptions.md#text-annotation) element to add information about the communication.
+
+![An element in one Pool element inferring communication with a second Pool element](../../../.gitbook/assets/message-flow-between-pool-elements-process-model-processes.png)
+
+Message Flows cannot connect to Process model elements within the same Pool element.
+
+{% hint style="info" %}
+See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).
+{% endhint %}
+
+## Text Annotation
+
+Text annotation is human-readable text in a modeled process provides description regarding the Process. Text annotation elements perform no functional role in Process Requests or workflow.
+
+In Process Modeler, the Text Annotation element is labeled as "Text Annotation" in the **BPMN** panel as highlighted below.
+
+![Text Annotation element in the BPMN panel of Process Modeler](../../../.gitbook/assets/bpmn-panel-text-annotation-process-modeler-processes.png)
+
+Below is a Text Annotation element when it has been placed into a Process model.
+
+![Text Annotation element](../../../.gitbook/assets/text-annotation-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Add and Configure Text Annotation Elements](add-and-configure-text-annotation-elements.md).
 {% endhint %}
 
 ## Related Topics
