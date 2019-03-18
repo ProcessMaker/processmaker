@@ -370,5 +370,7 @@
     "inactive": "inactive",
     "display": "display",
     "form": "form",
-    "No Data Available": "No Data Available"
+    "No Data Available": "No Data Available",
+    "due": "due",
+    "completed": "completed"
 }
