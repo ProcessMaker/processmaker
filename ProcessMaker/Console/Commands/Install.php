@@ -187,13 +187,13 @@ class Install extends Command
 
     private function fetchDatabaseCredentials()
     {
-        $this->info(__("ProcessMaker requires a MySQL database created with appropriate credentials."));
-        $this->info(__("Database connection failed. Check your database configuration and try again."));
-        $this->env['DB_HOSTNAME'] = $this->anticipate(__("Enter your MySQL host:"), ['localhost']);
-        $this->env['DB_PORT'] = $this->anticipate(__("Enter your MySQL port (usually 3306):"), [3306]);
-        $this->env['DB_DATABASE'] = $this->anticipate(__("Enter your MySQL database name:"), ['workflow']);
-        $this->env['DB_USERNAME'] = $this->ask(__("Enter your MySQL username:"));
-        $this->env['DB_PASSWORD'] = $this->secret(__("Enter your MySQL password (input hidden):"));
+        $this->info(__('ProcessMaker requires a MySQL database created with appropriate credentials.'));
+        $this->info(__('Database connection failed. Check your database configuration and try again.'));
+        $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['localhost']);
+        $this->env['DB_PORT'] = $this->anticipate(__('Enter your MySQL port (usually 3306)'), [3306]);
+        $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['workflow']);
+        $this->env['DB_USERNAME'] = $this->ask(__('Enter your MySQL username'));
+        $this->env['DB_PASSWORD'] = $this->secret(__('Enter your MySQL password (input hidden)'));
     }
 
     private function testDatabaseConnection()
