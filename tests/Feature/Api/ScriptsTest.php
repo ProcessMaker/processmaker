@@ -10,7 +10,6 @@ use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Notifications\ScriptResponseNotification;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Models\User;
 
 class ScriptsTest extends TestCase
 {
