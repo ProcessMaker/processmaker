@@ -27,7 +27,7 @@ return [
         'name' => 'NodeJS',
         'runner' => 'NodeRunner',
         'mime_type' => 'text/javascript',
-        'image' => env('SCRIPTS_NODE_IMAGE', 'processmaker/pm4-docker-executor-node:dev-master'),
+        'image' => env('SCRIPTS_NODE_IMAGE', 'processmaker/pm4-docker-executor-node:v1.0.0'),
         'sdk_build_options' => [],
     ],
 ];
