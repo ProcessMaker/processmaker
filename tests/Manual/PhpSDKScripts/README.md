@@ -22,3 +22,12 @@ Note: The 5 minute timer is manually set in the bpm file since the UI doesn't ha
 1. The request should complete automatically in a few seconds
 1. View the completed requests and verify the data has an email array containing all the users' email addresses
 1. Add additional users and start the request again to verity the data gets populated with more items
+
+# Testing the NODE sdk
+
+1. Import node_sdk_process.bpm4
+1. The script that got created in the import and set the Run As user to the admin user
+1. Create a new request "Test Node Executor"
+1. The request should complete automatically in a few seconds
+1. View the completed requests and verify the data has an email array containing all the users' email addresses
+1. Add additional users and start the request again to verity the data gets populated with more items
