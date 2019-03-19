@@ -25,6 +25,11 @@ class ScriptsTest extends TestCase
         'description'
     ];
 
+    public function setUpWithPersonalAccessClient()
+    {
+        $this->withPersonalAccessClient();
+    }
+
     /**
      * Test verify the parameter required to create a script
      */
@@ -319,14 +324,14 @@ class ScriptsTest extends TestCase
             );
         }
 
-        $url = route('api.script.preview', ['data' => '{}', 'code' => 'return {response=1}', 'language' => 'lua']);
-        $response = $this->apiCall('POST', $url, []);
+        $url = route('api.script.preview', $this->getScript('lua')->id);
+        $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);
         $response->assertStatus(200);
 
-        $url = route('api.script.preview', ['data' => '{}', 'code' => '<?php return ["response"=>1];', 'language' => 'php']);
-        $response = $this->apiCall('POST', $url, []);
+        $url = route('api.script.preview', $this->getScript('php')->id);
+        $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => '<?php return ["response"=>1];']);
         $response->assertStatus(200);
-
+        
         // Assertion: The script output is sent to usr through broadcast channel
         Notification::assertSentTo(
             [$this->user],
@@ -344,8 +349,8 @@ class ScriptsTest extends TestCase
     public function testPreviewScriptFail()
     {
         Notification::fake();
-        $url = self::API_TEST_SCRIPT . '/preview/?data=adkasdlasj&config=&code=adkasdlasj&language=JAVA';
-        $response = $this->apiCall('POST', $url, []);
+        $url = route('api.script.preview', $this->getScript('foo')->id);
+        $response = $this->apiCall('POST', $url, ['data' => 'foo', 'config' => 'foo', 'code' => 'foo']);
 
         // Assertion: An exception is notified to usr through broadcast channel
         Notification::assertSentTo(
@@ -398,5 +403,19 @@ class ScriptsTest extends TestCase
             'description' => $faker->sentence(5),
         ]);
         $response->assertStatus(422);
+    }
+    
+    /**
+     * A helper method to generate a script object from the factory
+     *
+     * @param string $language
+     * @return Script
+     */
+    private function getScript($language)
+    {
+        return factory(Script::class)->create([
+            'run_as_user_id' => $this->user->id,
+            'language' => $language,
+        ]);
     }
 }

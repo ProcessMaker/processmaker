@@ -31,6 +31,7 @@ trait ScriptDockerCopyingFilesTrait
         foreach ($options['outputs'] as $name => $path) {
             $outputs[$name] = $this->getFromContainer($container, $path);
         }
+
         exec(config('app.bpm_scripts_docker') . ' rm ' . $container);
         $response['outputs'] = $outputs;
         return $response;
@@ -76,13 +77,28 @@ trait ScriptDockerCopyingFilesTrait
     {
         $source = tempnam(config('app.bpm_scripts_home'), 'put');
         file_put_contents($source, $content);
-        $cmd = config('app.bpm_scripts_docker')
-            . sprintf(' cp %s %s:%s 2>&1', $source, $container, $path);
-        $line = exec($cmd, $output, $returnCode);
+        list($returnCode, $output) = $this->execCopy($source, $container, $path);
         unlink($source);
         if ($returnCode) {
             throw new RuntimeException('Unable to send data to container: ' . implode("\n", $output));
         }
+    }
+    
+    /**
+     * Runs the docker copy command
+     *
+     * @param string $source
+     * @param string $container
+     * @param string $dest
+     *
+     * @throws \RuntimeException
+     */
+    private function execCopy($source, $container, $dest)
+    {
+        $cmd = config('app.bpm_scripts_docker')
+            . sprintf(' cp %s %s:%s 2>&1', $source, $container, $dest);
+        exec($cmd, $output, $returnCode);
+        return [$returnCode, $output];
     }
 
     /**
@@ -131,11 +147,10 @@ trait ScriptDockerCopyingFilesTrait
         if ($returnCode) {
             if ($returnCode == 137) {
                 Log::error('Script timed out');
-            } else {
-                Log::error('Script threw return code ' . $returnCode);
+                throw new ScriptTimeoutException(implode("\n", $output));
             }
-
-            throw new ScriptTimeoutException(implode("\n", $output));
+            Log::error('Script threw return code ' . $returnCode);
+            throw new ScriptException(implode("\n", $output));
         }
         return compact('line', 'output', 'returnCode');
     }

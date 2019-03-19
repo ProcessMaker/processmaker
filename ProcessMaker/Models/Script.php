@@ -5,6 +5,8 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\GenerateAccessToken;
+use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 
 /**
@@ -83,7 +85,11 @@ class Script extends Model
     public function runScript(array $data, array $config)
     {
         $runner = new ScriptRunner($this->language);
-        return $runner->run($this->code, $data, $config, $this->timeout);
+        $user = User::find($this->run_as_user_id);
+        if (!$user) {
+            throw new \RuntimeException("A user is required to run scripts");
+        }
+        return $runner->run($this->code, $data, $config, $this->timeout, $user);
     }
 
     /**
@@ -188,5 +194,24 @@ class Script extends Model
     public function versions()
     {
         return $this->hasMany(ScriptVersion::class);
+    }
+    
+    /**
+     * Get the associated run_as_user
+     */
+    public function runAsUser()
+    {
+        return $this->belongsTo(User::class, 'run_as_user_id');
+    }
+
+    /**
+     * Return the a user for service tasks
+     *
+     * @return ProcessMaker\Models\User
+     */
+    public static function defaultRunAsUser()
+    {
+        # return the default admin user
+        return User::where('is_administrator', true)->firstOrFail();
     }
 }

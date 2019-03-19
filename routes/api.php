@@ -59,7 +59,7 @@ Route::group(
     Route::put('scripts/{script}', 'ScriptController@update')->name('scripts.update')->middleware('can:edit-scripts');
     Route::put('scripts/{script}/duplicate', 'ScriptController@duplicate')->name('scripts.duplicate')->middleware('can:create-scripts');
     Route::delete('scripts/{script}', 'ScriptController@destroy')->name('scripts.destroy')->middleware('can:delete-scripts');
-    Route::post('scripts/preview', 'ScriptController@preview')->name('script.preview')->middleware('can:view-scripts');
+    Route::post('scripts/{script}/preview', 'ScriptController@preview')->name('script.preview')->middleware('can:view-scripts');
 
     // Processes
     Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');

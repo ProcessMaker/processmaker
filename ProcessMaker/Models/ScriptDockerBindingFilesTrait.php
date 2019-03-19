@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Log;
+use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptTimeoutException;
 
 /**
@@ -78,11 +79,14 @@ trait ScriptDockerBindingFilesTrait
         if ($returnCode) {
             if ($returnCode == 137) {
                 Log::error('Script timed out');
-            } else {
-                Log::error('Script threw return code ' . $returnCode);
+                throw new ScriptTimeoutException(
+                    __("Script took too long to complete. Consider increasing the timeout.")
+                  . " "
+                  . implode("\n", $output)
+                );
             }
-
-            throw new ScriptTimeoutException(implode("\n", $output));
+            Log::error('Script threw return code ' . $returnCode . 'Message: ' . implode("\n", $output));
+            throw new ScriptException(implode("\n", $output));
         }
         $outputs = $this->getOutputFilesContent();
         $this->removeTemporalFiles();
