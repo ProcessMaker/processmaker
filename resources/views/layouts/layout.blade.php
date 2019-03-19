@@ -16,6 +16,8 @@
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
     <meta name="broadcasting-host" content="{{config('broadcasting.host')}}">
     <meta name="broadcasting-key" content="{{config('broadcasting.key')}}">
+    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-length" content="{{ config('session.lifetime') }}">
     @endif
     @if(Session::has('_alert'))
       <meta name="alert" content="show">

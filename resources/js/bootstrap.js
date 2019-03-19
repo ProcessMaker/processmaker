@@ -148,8 +148,26 @@ window.Echo = new Echo({
 });
 
 if (userID) {
+    // Session timeout
+    let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
+    window.ProcessMaker.AccountTimeoutLength = parseInt(document.head.querySelector("meta[name=\"timeout-length\"]").content);
+
+    window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
+    window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function(e) {
+      if (e.data.method === 'timedOut') {
+        window.ProcessMaker.loginModal('Account Timeout', '<strong>Your account has been timed out for security.</strong> Please log in to continue your work on this page.');
+      }
+    });
+
+    window.ProcessMaker.AccountTimeoutWorker.postMessage({method: 'start', data: {timeout: window.ProcessMaker.AccountTimeoutLength}});
+    
     window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
         .notification((token) => {
             ProcessMaker.pushNotification(token);
+        })
+        .listen('.SessionStarted', (e) => {
+            let lifetime = parseInt(e.lifetime);
+            window.ProcessMaker.AccountTimeoutWorker.postMessage({method: 'start', data: {timeout: lifetime}});
+            window.ProcessMaker.closeLoginModal();
         });
 }
