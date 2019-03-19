@@ -5,6 +5,7 @@ import VueRouter from "vue-router";
 import datetime_format from "../js/data/datetime_formats.json"
 
 
+
 window._ = require("lodash");
 window.Popper = require("popper.js").default;
 
@@ -45,7 +46,7 @@ window.ProcessMaker = {
      *
      * @returns {void}
      */
-    pushNotification (notification) {
+    pushNotification(notification) {
         if (this.notifications.filter(x => x.id === notification).length === 0) {
             this.notifications.push(notification);
         }
@@ -59,8 +60,8 @@ window.ProcessMaker = {
      *
      * @param urls
      */
-    removeNotifications (messageIds = [], urls = []) {
-        return window.ProcessMaker.apiClient.put('/read_notifications', {message_ids: messageIds, routes: urls}).then(() => {
+    removeNotifications(messageIds = [], urls = []) {
+        return window.ProcessMaker.apiClient.put('/read_notifications', { message_ids: messageIds, routes: urls }).then(() => {
             messageIds.forEach(function (messageId) {
                 ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
             });
@@ -81,8 +82,8 @@ window.ProcessMaker = {
      *
      * @param urls
      */
-    unreadNotifications (messageIds = [], urls = []) {
-        return window.ProcessMaker.apiClient.put('/unread_notifications', {message_ids: messageIds, routes: urls});
+    unreadNotifications(messageIds = [], urls = []) {
+        return window.ProcessMaker.apiClient.put('/unread_notifications', { message_ids: messageIds, routes: urls });
     },
 };
 
@@ -153,21 +154,21 @@ if (userID) {
     window.ProcessMaker.AccountTimeoutLength = parseInt(document.head.querySelector("meta[name=\"timeout-length\"]").content);
 
     window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
-    window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function(e) {
-      if (e.data.method === 'timedOut') {
-        window.ProcessMaker.loginModal('Account Timeout', '<strong>Your account has been timed out for security.</strong> Please log in to continue your work on this page.');
-      }
+    window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
+        if (e.data.method === 'timedOut') {
+            window.ProcessMaker.loginModal('Account Timeout', '<strong>Your account has been timed out for security.</strong> Please log in to continue your work on this page.');
+        }
     });
 
-    window.ProcessMaker.AccountTimeoutWorker.postMessage({method: 'start', data: {timeout: window.ProcessMaker.AccountTimeoutLength}});
-    
+    window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: window.ProcessMaker.AccountTimeoutLength } });
+
     window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
         .notification((token) => {
             ProcessMaker.pushNotification(token);
         })
         .listen('.SessionStarted', (e) => {
             let lifetime = parseInt(e.lifetime);
-            window.ProcessMaker.AccountTimeoutWorker.postMessage({method: 'start', data: {timeout: lifetime}});
+            window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: lifetime } });
             window.ProcessMaker.closeLoginModal();
         });
 }

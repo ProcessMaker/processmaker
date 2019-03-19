@@ -63,7 +63,7 @@ class LoginController extends Controller
     public function sendFailedLoginResponse(Request $request)
     {
         if ($request->expectsJson()) {
-            return response(['errors' => ['username' => ['These credentials do not match our records.']]], 422);
+            return response(['errors' => ['username' => [__('These credentials do not match our records.')]]], 422);
         } else {
             return $this->traitSendFailedLoginResponse($request);
         }
