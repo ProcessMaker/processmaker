@@ -87,8 +87,8 @@ class TaskOverdueNotification extends Notification
         $request = $token->processRequest;
         return [
             'type' => 'TASK_OVERDUE' ,
-            'message' => sprintf('%s was due %s, it is now overdue', $activity->getName(), $activity->getName()),
-            'name' => $activity->getName(),
+            'message' => sprintf('%s was due %s, it is now overdue', $activity->getName(), $token->due_at->diffForHumans()),
+            'name' => sprintf('%s was due %s, it is now overdue', $activity->getName(), $token->due_at->diffForHumans()),
             'processName' => $process->name,
             'request_id' => $request->getKey(),
             'userName' => $token->user->getFullName(),
