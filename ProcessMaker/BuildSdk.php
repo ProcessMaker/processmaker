@@ -9,7 +9,7 @@ class BuildSdk {
     private $debug = false;
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = null;
-    private $supportedLangs = ['php', 'lua', 'typescript-node'];
+    private $supportedLangs = ['php', 'lua', 'typescript-node', 'node'];
     private $outputPath = null;
     private $jsonPath = null;
 
@@ -35,12 +35,9 @@ class BuildSdk {
             $this->runCmd('docker pull ' . $this->image);
             $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
             $this->docker('apk add --update curl && rm -rf /var/cache/apk/*');
-        } else {
-            $this->runCmd("docker start generator || echo 'Generator already started'");
         }
         
         $this->runCmd('docker start generator || echo "Container already running"');
-
         $this->waitForBoot();
 
         $response = $this->docker($this->curlPost());
@@ -53,8 +50,8 @@ class BuildSdk {
 
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
-        $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
-        $this->log("DONE. Api is at {$this->outputDir()}");
+        $this->runCmd("cp -rf {$folder}/. {$this->outputPath}");
+        $this->log("DONE. Api is at {$this->outputPath}");
     }
 
     public function setLang($value)
@@ -88,10 +85,6 @@ class BuildSdk {
             throw new Exception("Folder is not writeable: " . $this->outputPath);
         }
 
-        // if (is_dir($this->outputDir())) {
-        //     throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
-        // }
-
         if (!is_file($this->jsonPath) || !is_readable($this->jsonPath)) {
             throw new Exception("Json file does not exist or can not be read: " . $this->jsonPath);
         }
@@ -100,11 +93,6 @@ class BuildSdk {
             throw new Exception("File is not valid json: " . $this->jsonPath);
         }
 
-    }
-
-    private function outputDir()
-    {
-        return $this->outputPath;
     }
 
     private function waitForBoot()
@@ -145,7 +133,7 @@ class BuildSdk {
         $zip->extractTo("/tmp/pm4-sdk-tmp");
         $zip->close();
         unlink($file);
-        return "/tmp/pm4-sdk-tmp/{$this->lang}-client";
+        return "/tmp/pm4-sdk-tmp/{$this->generatorLang()}-client";
     }
 
     private function existingContainer()
@@ -159,7 +147,7 @@ class BuildSdk {
             . '-H "Accept: application/json" '
             . '-H "Content-Type: application/json" '
             . '-X POST -d ' . $this->cliBody() . ' '
-            . 'http://127.0.0.1:8080/api/gen/clients/'.$this->lang;
+            . 'http://127.0.0.1:8080/api/gen/clients/' . $this->generatorLang();
     }
 
     private function docker($cmd)
@@ -177,17 +165,17 @@ class BuildSdk {
     private function requestBody()
     {
         # get all available options with curl http://127.0.0.1:8080/api/gen/clients/php
+        $options = [
+            "gitUserId" => "ProcessMaker",
+            "gitRepoId" => "pm4-sdk-" . $this->lang,
+            // "packageName" => "pmsdk",
+            // "invokerPackage" => "ProcessMakerSdk",
+            "appDescription" => "SDK Client for the ProcessMaker v4 App",
+            "infoUrl" => "https://github.com/ProcessMaker/bpm",
+            "infoEmail" => "info@processmaker.com",
+        ];
         return json_encode([
-            "options" => [
-                "gitUserId" => "ProcessMaker",
-                "gitRepoId" => "pm4-sdk-" . $this->lang,
-                "packageName" => "pmsdk",
-                "invokerPackage" => "ProcessMaker\\Client",
-                "appDescription" => "SDK Client for the ProcessMaker v4 App",
-                "infoUrl" => "https://github.com/ProcessMaker/bpm",
-                "infoEmail" => "info@processmaker.com",
-
-            ],
+            "options" => array_merge($options, $this->options()), 
             "spec" => "API-DOCS-JSON",
         ]);
     }
@@ -214,5 +202,18 @@ class BuildSdk {
         if ($this->debug) {
             echo "$message\n";
         }
+    }
+
+    private function options()
+    {
+        return config("script-runners.{$this->lang}.sdk_build_options");
+    }
+
+    private function generatorLang()
+    {
+        if ($this->lang == 'node') {
+            return 'javascript';
+        }
+        return $this->lang;
     }
 }
