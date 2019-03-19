@@ -25,11 +25,15 @@ Follow these steps to add a Pool element to the Process model:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. [Create a new Process](../../viewing-processes/view-the-list-of-processes/create-a-process.md) or click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
-3. Locate the **Pool** element![](../../../.gitbook/assets/pool-bpmn-side-bar-process-modeler-processes.png)in the **BPMN** panel. Drag and drop the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Text Annotation element cannot be placed outside of the Pool element. The element has been added to the Process model.
+3. Locate the **Pool** element in the **BPMN** panel.
+
+   ![](../../../.gitbook/assets/pool-bpmn-side-bar-process-modeler-processes.png)
+
+4. Drag the element to where in the Process model you want to place it. A Pool element cannot be placed into another Pool element. If non-Pool/Lane elements are in your Process model, those elements are automatically placed into the Pool element.
 
 ![Pool element](../../../.gitbook/assets/pool-process-modeler-processes.png)
 
-After the element is placed into the Process model, you may move it by selecting it, hold the cursor, and then dragging it to the new location. Any elements within the Pool element move as well.
+After the element is placed into the Process model, you may move it by dragging it to the new location. Any elements within the Pool element move as well.
 
 {% hint style="warning" %}
 ### Elements Placed Into a Pool Element Cannot Be Moved Out of It
@@ -56,7 +60,7 @@ See the [Process](../../../processmaker-administration/permission-descriptions-f
 
 ### Edit the Identifier Value
 
-Process Modeler automatically assigns a unique value to each Process element added to a Process model. However, an element's identifier value can be changed as long as it is unique.
+Process Modeler automatically assigns a unique value to each Process element added to a Process model. However, an element's identifier value can be changed if it is unique.
 
 {% hint style="warning" %}
 All identifier values for all elements in the Process model must be unique.
@@ -64,8 +68,9 @@ All identifier values for all elements in the Process model must be unique.
 
 Follow these steps to edit the identifier value for a Pool element:
 
-1. Select the Pool element in which to edit its identifier value. The current Pool identifier value displays in the **Identifier** field in the right side bar.
-2. In the **Identifier** field, edit the selected Pool element's identifier value and then press **Enter**. The identifier value is changed.
+1. Select the Pool element from the Process model in which to edit its identifier value.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.
+3. In the **Identifier** field, edit the Pool element's identifier to a unique value from all elements in the Process model and then press **Enter**. The element's identifier value is changed.
 
 ### Edit the Element Name
 
@@ -73,8 +78,9 @@ An element name is a human-readable reference for a Process element. Process Mod
 
 Follow these steps to edit the name for a Pool element:
 
-1. Select the Pool element in which to edit its name. The current name displays in the **Name** field in the right side bar.
-2. In the **Name** field, edit the selected Pool element's name and then press **Enter**. The element's name is changed.
+1. Select the Pool element from the Process model in which to edit its name.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.
+3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
 
 ## Add a Lane Element to a Pool Element
 
@@ -97,7 +103,7 @@ Follow these steps to add a Lane element to a Pool element:
 
 1. [View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
 2. Click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)for edit the selected Process model. Process Modeler displays.
-3. Click the Pool element into which to add a Lane element, and then do one of the following:
+3. Click the Pool element from the Process model into which to add a Lane element, and then do one of the following:
    * **Add a Lane element above existing Lane elements:** Click the![](../../../.gitbook/assets/pool-add-lane-above-process-modeler-processes.png)icon to add a Lane element above all existing Lane elements. If only the Pool element exists, two Lane elements display.
    * **Add a Lane element below existing Lane elements:** Click the![](../../../.gitbook/assets/pool-add-lane-below-process-modeler-processes.png)icon to add a Lane element below all existing Lane elements. If only the Pool element exists, two Lane elements display.
 
@@ -114,7 +120,7 @@ See the [Process](../../../processmaker-administration/permission-descriptions-f
 
 ### Edit the Identifier Value
 
-Process Modeler automatically assigns a unique value to each Process element added to a Process model. However, an element's identifier value can be changed as long as it is unique.
+Process Modeler automatically assigns a unique value to each Process element added to a Process model. However, an element's identifier value can be changed if it is unique.
 
 {% hint style="warning" %}
 All identifier values for all elements in the Process model must be unique.
@@ -122,8 +128,9 @@ All identifier values for all elements in the Process model must be unique.
 
 Follow these steps to edit the identifier value for a Lane element:
 
-1. Select the Lane element in which to edit its identifier value. The current Lane identifier value displays in the **Identifier** field in the right side bar.
-2. In the **Identifier** field, edit the selected Lane element's identifier value and then press **Enter**. The identifier value is changed.
+1. Select the Lane element from the Process model in which to edit its identifier value.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.
+3. In the **Identifier** field, edit the Lane element's identifier to a unique value from all elements in the Process model and then press **Enter**. The element's identifier value is changed.
 
 ### Edit the Element Name
 
@@ -131,8 +138,9 @@ An element name is a human-readable reference for a Process element. Process Mod
 
 Follow these steps to edit the name for a Lane element:
 
-1. Select the Lane element in which to edit its name. The current name displays in the **Name** field in the right side bar.
-2. In the **Name** field, edit the selected Lane element's name and then press **Enter**. The element's name is changed.
+1. Select the Lane element from the Process model in which to edit its name.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.
+3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
 
 ## Related Topics
 
