@@ -332,6 +332,10 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => '<?php return ["response"=>1];']);
         $response->assertStatus(200);
         
+        $url = route('api.script.preview', $this->getScript('node')->id);
+        $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {"response":"test"}']);
+        $response->assertStatus(200);
+        
         // Assertion: The script output is sent to usr through broadcast channel
         Notification::assertSentTo(
             [$this->user],
