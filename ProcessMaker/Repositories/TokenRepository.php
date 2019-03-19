@@ -4,7 +4,7 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\ProcessRequest as Instance;
-use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
@@ -71,6 +71,7 @@ class TokenRepository implements TokenRepositoryInterface
     {
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $user = $token->getInstance()->process->getNextUser($activity, $token);
+        $this->addUserToData($token->getInstance(), $user);
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
         $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
@@ -149,6 +150,7 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
     {
+        $this->removeUserFromData($token->getInstance());
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
@@ -285,5 +287,30 @@ class TokenRepository implements TokenRepositoryInterface
     public function store(TokenInterface $token, $saveChildElements = false): \this
     {
 
+    }
+
+    /**
+     * Add user to the request data.
+     *
+     * @param Instance $instance
+     * @param User $user
+     */
+    private function addUserToData(Instance $instance, User $user)
+    {
+        $userData = $user->toArray();
+        unset($userData['remember_token']);
+        $instance->getDataStore()->putData('_user', $userData);
+        $this->instanceRepository->persistInstanceUpdated($instance);
+    }
+
+    /**
+     * Remove user from the request data.
+     *
+     * @param Instance $instance
+     * @param User $user
+     */
+    private function removeUserFromData(Instance $instance)
+    {
+        $instance->getDataStore()->removeData('_user');
     }
 }
