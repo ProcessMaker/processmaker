@@ -5,7 +5,7 @@ namespace ProcessMaker\ScriptRunners;
 class LuaRunner extends Base
 {
     /**
-     * Configure docker with php executor
+     * Configure docker with lua executor
      *
      * @param string $code
      * @param array $dockerConfig
