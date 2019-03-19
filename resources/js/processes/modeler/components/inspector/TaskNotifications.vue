@@ -12,6 +12,10 @@
                     <input v-model="requesterCompleted"  type="checkbox" class="custom-control-input" id="notify-requester-completed">
                     <label class="custom-control-label" for="notify-requester-completed">Completed</label>
                 </div>
+                <div class="custom-control custom-switch">
+                    <input v-model="requesterDue"  type="checkbox" class="custom-control-input" id="notify-requester-due">
+                    <label class="custom-control-label" for="notify-requester-due">Due</label>
+                </div>
             </div>
             <div class="notification-settings-group">
                 <div class="notification-settings-header">Assignee</div>
@@ -23,6 +27,10 @@
                     <input v-model="assigneeCompleted"  type="checkbox" class="custom-control-input" id="notify-assignee-completed">
                     <label class="custom-control-label" for="notify-assignee-completed">Completed</label>
                 </div>
+                <div class="custom-control custom-switch">
+                    <input v-model="assigneeDue"  type="checkbox" class="custom-control-input" id="notify-assignee-due">
+                    <label class="custom-control-label" for="notify-assignee-due">Due</label>
+                </div>
             </div>
             <div class="notification-settings-group">
                 <div class="notification-settings-header">Participants</div>
@@ -33,6 +41,10 @@
                 <div class="custom-control custom-switch">
                     <input v-model="participantsCompleted"  type="checkbox" class="custom-control-input" id="notify-participants-completed">
                     <label class="custom-control-label" for="notify-participants-completed">Completed</label>
+                </div>
+                <div class="custom-control custom-switch">
+                    <input v-model="participantsDue"  type="checkbox" class="custom-control-input" id="notify-participants-due">
+                    <label class="custom-control-label" for="notify-participants-due">Due</label>
                 </div>
             </div>
             
@@ -121,10 +133,13 @@
               users: [],
               requesterAssigned: false,
               requesterCompleted: false,
+              requesterDue: false,
               assigneeAssigned: false,
               assigneeCompleted: false,
+              assigneeDue: false,
               participantsAssigned: false,
               participantsCompleted: false,              
+              participantsDue: false,              
             };
         },
         watch: {
@@ -134,17 +149,26 @@
           requesterCompleted: function(value) {
             this.notifications.requester.completed = value;
           },
+          requesterDue: function(value) {
+            this.notifications.requester.due = value;
+          },
           assigneeAssigned: function(value) {
             this.notifications.assignee.assigned = value;
           },
           assigneeCompleted: function(value) {
             this.notifications.assignee.completed = value;
           },
+          assigneeDue: function(value) {
+            this.notifications.assignee.due = value;
+          },
           participantsAssigned: function(value) {
             this.notifications.participants.assigned = value;
           },
           participantsCompleted: function(value) {
             this.notifications.participants.completed = value;
+          },
+          participantsDue: function(value) {
+            this.notifications.participants.due = value;
           },
           modelerId: function(newValue, oldValue) {
             this.loadNotifications();
@@ -154,10 +178,13 @@
           loadNotifications() {
             this.requesterAssigned = this.notifications.requester.assigned;
             this.requesterCompleted = this.notifications.requester.completed;
+            this.requesterDue = this.notifications.requester.due;
             this.assigneeAssigned = this.notifications.assignee.assigned;
             this.assigneeCompleted = this.notifications.assignee.completed;
+            this.assigneeDue = this.notifications.assignee.due;
             this.participantsAssigned = this.notifications.participants.assigned;
-            this.participantsCompleted = this.notifications.participants.completed;            
+            this.participantsCompleted = this.notifications.participants.completed;
+            this.participantsDue = this.notifications.participants.due;
           }
         },
         computed: {
