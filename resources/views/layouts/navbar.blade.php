@@ -15,6 +15,9 @@
                         :variant="confirmVariant" :callback="confirmCallback"
                         @close="confirmShow=false">
     </confirmation-modal>
+    <login-modal id="loginModal" v-if='loginShow' :title="loginTitle" :message="loginMessage" 
+                 @close="loginShow=false">
+    </login-modal>
     <b-alert :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow = false" dismissible>
         @{{alertText}}
     </b-alert>
