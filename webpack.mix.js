@@ -80,6 +80,7 @@ mix.webpackConfig({
     .copy('resources/js/components/DetailRow.vue', 'public/js')
     .copy('resources/fonts/Open_Sans/', 'public/fonts')
     .copy('resources/js/components/FilterBar.vue', 'public/js')
+    .copy('resources/js/timeout.js', 'public/js')
     // Copy files necessary for images for the designer/modeler to it's own img directory
     .copy('node_modules/@processmaker/modeler/dist/img', 'public/js/processes/modeler/img')
 
