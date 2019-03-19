@@ -31,3 +31,9 @@ Note: The 5 minute timer is manually set in the bpm file since the UI doesn't ha
 1. The request should complete automatically in a few seconds
 1. View the completed requests and verify the data has an email array containing all the users' email addresses
 1. Add additional users and start the request again to verity the data gets populated with more items
+
+# Testing PHP, LUA, and Node at once
+1. Import test_php_lua_node.bpm4
+1. Assign a user to the 3 scripts
+1. Start the request "Run Scripts Test"
+1. When complete, verity that a list of users' emails are in the data for each executor
