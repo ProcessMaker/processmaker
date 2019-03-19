@@ -295,11 +295,15 @@ class TokenRepository implements TokenRepositoryInterface
      * @param Instance $instance
      * @param User $user
      */
-    private function addUserToData(Instance $instance, User $user)
+    private function addUserToData(Instance $instance, User $user = null)
     {
-        $userData = $user->toArray();
-        unset($userData['remember_token']);
-        $instance->getDataStore()->putData('_user', $userData);
+        if (empty($user)) {
+            $instance->getDataStore()->putData('_user', null);
+        } else {
+            $userData = $user->toArray();
+            unset($userData['remember_token']);
+            $instance->getDataStore()->putData('_user', $userData);
+        }
         $this->instanceRepository->persistInstanceUpdated($instance);
     }
 
