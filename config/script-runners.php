@@ -21,7 +21,7 @@ return [
         'runner' => 'LuaRunner',
         'mime_type' => 'application/x-lua',
         'image' => env('SCRIPTS_LUA_IMAGE', 'processmaker/executor:lua'),
-        'sdk_build_options' => [],
+        'sdk_build_options' => ['packageName' => 'pmsdk'],
     ],
     'node' => [
         'name' => 'NodeJS',
