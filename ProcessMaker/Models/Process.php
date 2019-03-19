@@ -122,6 +122,7 @@ class Process extends Model implements HasMedia
     public $taskNotificationTypes = [
         'assigned',
         'completed',
+        'due',
     ];
 
     /**

@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Notifications as NotificationResource;
@@ -384,14 +385,14 @@ class NotificationController extends Controller
      */
     private function notifyOverdueTasks()
     {
-        $user = Auth::user();
         $inOverdue = ProcessRequestToken::where('user_id', Auth::user()->id)
             ->where('status', 'ACTIVE')
             ->where('due_at', '<', Carbon::now())
             ->where('due_notified', 0)
             ->get();
         foreach($inOverdue as $token) {
-            $user->notify(new TaskOverdueNotification($token));
+            $notifiables = $token->getNotifiables('due');
+            NotificationFacade::send($notifiables, new TaskOverdueNotification($token));
         }
     }
 }
