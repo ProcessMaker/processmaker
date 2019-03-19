@@ -30,6 +30,7 @@ class Kernel extends HttpKernel
             \ProcessMaker\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            \ProcessMaker\Http\Middleware\SessionStarted::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,   // In case we want to log users out after changing password, we need this
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,         // This is disabled until all routes are handled by our new engine
