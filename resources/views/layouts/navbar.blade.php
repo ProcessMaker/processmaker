@@ -5,11 +5,11 @@
     </div>
 
     <b-collapse is-nav id="nav_collapse">
-        <confirmation-modal id="confirmModal" v-if='confirmShow' :title="confirmTitle" :message="confirmMessage"
+        <confirmation-modal class="d-none d-lg-block" id="confirmModal" v-if='confirmShow' :title="confirmTitle" :message="confirmMessage"
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
-        <b-alert :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow = false" dismissible>
+        <b-alert class="d-none d-lg-block" :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow = false" dismissible>
             @{{alertText}}
         </b-alert>
 
@@ -26,12 +26,12 @@
                 <component id="navbar-request-button" v-bind:is="'request-modal'" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             </b-nav-item>
 
-            <b-nav-item>
+            <b-nav-item class="d-none d-lg-block">
                 <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
                 </notifications>
             </b-nav-item>
-            <b-nav-item class="seperator"></b-nav-item>
-            <b-nav-item>
+            <b-nav-item class="seperator d-none d-lg-block"></b-nav-item>
+            <b-nav-item class="d-none d-lg-block">
                 @php
                     $items = [];
                     foreach ($dropdown_nav->items as $item ) {
