@@ -11,6 +11,7 @@ class Permission extends Model
     protected $fillable = [
         'title',
         'name',
+        'group',
     ];
     
     public function getResourceTitleAttribute()
