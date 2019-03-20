@@ -37,6 +37,7 @@ class UserController extends Controller
         $groups = $this->getAllGroups();
         $all_permissions = Permission::all();
         $permissionNames = $user->permissions()->pluck('name')->toArray();
+        $permissionGroups = $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
 
         $currentUser = $user;
         $states = JsonData::states();
@@ -56,9 +57,18 @@ class UserController extends Controller
             }
         );
 
-        return view('admin.users.edit', compact(['user', 'groups', 'all_permissions','permissionNames',
-             'states', 'timezones', 'countries', 'datetimeFormats',
-            ]));
+        return view('admin.users.edit', compact([
+                'user',
+                'groups',
+                'all_permissions',
+                'permissionNames',
+                'permissionGroups',
+                'states',
+                'timezones',
+                'countries',
+                'datetimeFormats',
+            ])
+        );
     }
 
     /**

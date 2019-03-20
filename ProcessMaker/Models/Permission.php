@@ -29,13 +29,21 @@ class Permission extends Model
             return $matches[2];
         }
     }
+    
+    public function getActionAttribute()
+    {
+        $match = preg_match("/(.+)-(.+)/", $this->name, $matches);
+        if ($match === 1) {
+            return $matches[1];
+        }
+    }
 
     static public function resourceTitleList()
     {
         //Grab all of our permissions
         $all = self::all();
         
-        $grouped = $all->groupBy('resource_title');
+        $grouped = $all->groupBy('resource_title')->sort();
         return $grouped;
     }
 
