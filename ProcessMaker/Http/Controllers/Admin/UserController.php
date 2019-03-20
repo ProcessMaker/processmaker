@@ -57,18 +57,17 @@ class UserController extends Controller
             }
         );
 
-        return view('admin.users.edit', compact([
-                'user',
-                'groups',
-                'all_permissions',
-                'permissionNames',
-                'permissionGroups',
-                'states',
-                'timezones',
-                'countries',
-                'datetimeFormats',
-            ])
-        );
+        return view('admin.users.edit', compact(
+            'user',
+            'groups',
+            'all_permissions',
+            'permissionNames',
+            'permissionGroups',
+            'states',
+            'timezones',
+            'countries',
+            'datetimeFormats'
+        ));
     }
 
     /**
