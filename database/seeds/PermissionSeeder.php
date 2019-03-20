@@ -64,19 +64,19 @@ class PermissionSeeder extends Seeder
             'edit-request_data',
             'edit-task_data',
         ],
-        'Files' => [
+        'Files (API)' => [
             'create-files',
             'view-files',
             'edit-files',
             'delete-files',
         ],
-        'Notifications' => [
+        'Notifications (API)' => [
             'create-notifications',
             'view-notifications',
             'edit-notifications',
             'delete-notifications',
         ],
-        'Task Assignments' => [
+        'Task Assignments (API)' => [
             'create-task_assignments',
             'view-task_assignments',
             'edit-task_assignments',
