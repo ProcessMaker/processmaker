@@ -83,6 +83,17 @@ Follow these steps to edit the name for a Start Event element:
 
 3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
 
+## Set How a Request Starts Via a Start Event Element
+
+{% hint style="info" %}
+Your user account or group membership must have the following permissions to set how a Request can start via a Start Event element:
+
+* Processes: View Processes
+* Processes: Edit Processes
+
+See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
+{% endhint %}
+
 ## Related Topics
 
 {% page-ref page="process-modeling-element-descriptions.md" %}

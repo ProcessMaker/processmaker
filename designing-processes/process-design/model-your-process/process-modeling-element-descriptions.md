@@ -230,7 +230,7 @@ In Process Modeler, Flow indicators display when you click an element in the Pro
 
 The Message Flow element indicates communication between the two separate Pool elements. The Message Flow does not indicate whether the communication is physical or digital. Use a [Text Annotation](process-modeling-element-descriptions.md#text-annotation) element to add information about the communication.
 
-![An element in one Pool element inferring communication with a second Pool element](../../../.gitbook/assets/message-flow-between-pool-elements-process-model-processes.png)
+![A Message Flow element \(dotted line\) between two elements in different Pool elements](../../../.gitbook/assets/message-flow-between-pool-elements-process-model-processes.png)
 
 Message Flows cannot connect to Process model elements within the same Pool element.
 
