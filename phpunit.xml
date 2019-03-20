@@ -31,6 +31,11 @@
       <env name="TESTING_VERBOSE" value="false" />
       <env name="POPULATE_DATABASE" value="true" />
 
+      <!-- Executors from DockerHub to use -->
+      <env name="SCRIPTS_PHP_IMAGE" value="processmaker/executor:php" />
+      <env name="SCRIPTS_LUA_IMAGE" value="processmaker/executor:lua" />
+      <env name="SCRIPTS_NODE_IMAGE" value="" />
+
       <!-- Caching config -->
       <env name="CACHE_DRIVER" value="array" />
       <env name="QUEUE_DRIVER" value="sync" />
