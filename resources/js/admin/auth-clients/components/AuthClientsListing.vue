@@ -120,6 +120,7 @@ export default {
           ProcessMaker.apiClient
             .delete("/oauth/clients/" + item.id, { baseURL: "/" })
             .then(() => {
+              ProcessMaker.alert(__('The auth client was deleted.'), 'success');
               this.fetch();
             });
         }
