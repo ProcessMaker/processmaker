@@ -47,7 +47,7 @@ jobs:
       - checkout
 
       - run:
-          name: Build SDK for PHP 
+          name: Build SDK for PHP
           command: |
             sudo apt install -y sshpass
             sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 -p 2222 /opt/DevOpsAutomationHub/build_php.sh release/$CIRCLE_BRANCH
