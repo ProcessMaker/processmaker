@@ -24,7 +24,8 @@ class WebhookTest extends TestCase
         $response->assertStatus(201);
         
         $request = $process->requests->first();
-        $this->assertEquals(['someData' => 'something'], $request->data);
+        $this->assertTrue(array_key_exists('someData', $request->data));
+        $this->assertEquals('something', $request->data['someData']);
     }
 
 }

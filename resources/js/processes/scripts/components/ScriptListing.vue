@@ -72,7 +72,7 @@
         ref="pagination"
       ></pagination>
     </div>
-    <b-modal ref="myModalRef" title="Duplicate Screen" centered>
+    <b-modal ref="myModalRef" :title="__('Duplicate Script')" centered>
       <form>
         <div class="form-group">
           <label for="title">Name</label>
@@ -208,6 +208,7 @@ export default {
           this.dupScript.code = data.code;
           this.dupScript.description = data.description;
           this.dupScript.id = data.id;
+          this.dupScript.run_as_user_id = data.run_as_user_id;
           this.showModal();
           break;
         case "remove-item":
