@@ -35,6 +35,8 @@ jobs:
             echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
             echo 'export QA_DB_NAME=$(echo "bpm4$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
+            apt install -y sshpass
+            sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 cd /opt/DevOpsAutomationHub/ & ./build_lua.sh aut-sdk-build-1
 
       - run:
           name: QA Host SSH Host Identifier Import
@@ -109,11 +111,13 @@ jobs:
       - run:
           name: setup SDKs
           command: |
-            php artisan l5:generate
-            mkdir -p /tmp/pm4-sdk-php
-            php artisan bpm:sdk php /tmp/pm4-sdk-php
-            mkdir -p /tmp/pm4-sdk-lua
-            php artisan bpm:sdk lua /tmp/pm4-sdk-lua
+            #php artisan l5:generate
+            #mkdir -p /tmp/pm4-sdk-php
+            #php artisan bpm:sdk php /tmp/pm4-sdk-php
+            #mkdir -p /tmp/pm4-sdk-lua
+            #php artisan bpm:sdk lua /tmp/pm4-sdk-lua
+            
+
 
       - run:
           name: Configure scripts executor
