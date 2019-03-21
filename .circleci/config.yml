@@ -166,6 +166,9 @@ jobs:
             MSSQL_PASSWORD: "P4ssW0rd1!"
             BPM_SCRIPTS_HOME: "/opt/executor"
             BPM_SCRIPTS_DOCKER_MODE: "copying"
+            SCRIPTS_PHP_IMAGE: processmaker/devopsstacks/pm4-docker-executor-php:dev-release-${BUILD_NAME}
+            SCRIPTS_LUA_IMAGE: processmaker/devopsstacks/pm4-docker-executor-lua:dev-release-${BUILD_NAME}
+            SCRIPTS_NODE_IMAGE: processmaker/devopsstacks/pm4-docker-executor-node:dev-release-${BUILD_NAME}
       - run:
           name: "Jest"
           command: "npm run test"
@@ -207,6 +210,9 @@ jobs:
             echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
             echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env
             echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env
+            echo "SCRIPTS_PHP_IMAGE=processmaker/devopsstacks/pm4-docker-executor-php:dev-release-${BUILD_NAME}" >> .env
+            echo "SCRIPTS_LUA_IMAGE=processmaker/devopsstacks/pm4-docker-executor-lua:dev-release-${BUILD_NAME}" >> .env
+            echo "SCRIPTS_NODE_IMAGE=processmaker/devopsstacks/pm4-docker-executor-node:dev-release-${BUILD_NAME}" >> .env
 
             # Generate unique app key
             php artisan key:generate --force
