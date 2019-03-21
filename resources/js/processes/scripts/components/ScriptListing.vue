@@ -27,7 +27,7 @@
                 variant="link"
                 @click="onAction('edit-script', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
                 v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -36,7 +36,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Configure"
+                :title="__('Configure')"
                 v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -45,7 +45,7 @@
                 variant="link"
                 @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Duplicate"
+                :title="__('Duplicate')"
                 v-if="permission.includes('create-scripts')"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>
@@ -54,7 +54,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Delete"
+                :title="__('Delete')"
                 v-if="permission.includes('delete-scripts')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -72,7 +72,7 @@
         ref="pagination"
       ></pagination>
     </div>
-    <b-modal ref="myModalRef" title="Duplicate Screen" centered>
+    <b-modal ref="myModalRef" :title="__('Duplicate Script')" centered>
       <form>
         <div class="form-group">
           <label for="title">Name</label>
@@ -97,8 +97,8 @@
         </div>
       </form>
       <div slot="modal-footer" class="w-100" align="right">
-        <button type="button" class="btn btn-outline-secondary" @click="hideModal">Cancel</button>
-        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">Save</button>
+        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{__('Cancel')}}</button>
+        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
       </div>
     </b-modal>
   </div>
@@ -106,10 +106,11 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "id", "permission"],
+  props: ["filter", "id", "permission", "scriptFormats"],
   data() {
     return {
       dupScript: {
@@ -130,30 +131,30 @@ export default {
 
       fields: [
         {
-          title: "Name",
+          title: __("Name"),
           name: "__slot:title",
           field: "title",
           sortField: "title"
         },
         {
-          title: "Description",
+          title: __("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: "Language",
+          title: __("Language"),
           name: "language",
           sortField: "language",
           callback: this.formatLanguage
         },
         {
-          title: "Modified",
+          title: __("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: "Created",
+          title: __("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -167,6 +168,9 @@ export default {
   },
 
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     goToEdit(data) {
       window.location = "/processes/scripts/" + data + "/edit";
     },
@@ -180,7 +184,7 @@ export default {
       ProcessMaker.apiClient
         .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
         .then(response => {
-          ProcessMaker.alert("The script was duplicated.", "success");
+          ProcessMaker.alert(__('The script was duplicated.'), "success");
           this.hideModal();
           this.fetch();
         })
@@ -204,12 +208,15 @@ export default {
           this.dupScript.code = data.code;
           this.dupScript.description = data.description;
           this.dupScript.id = data.id;
+          this.dupScript.run_as_user_id = data.run_as_user_id;
           this.showModal();
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            "Caution!",
-            "<b>Are you sure you want to delete the script </b>" + data.title + "?",
+            __("Caution!"),
+            __("Are you sure you want to delete the script ") +
+              data.title +
+              __("?"),
             "",
             () => {
               this.$emit("delete", data);
@@ -220,7 +227,11 @@ export default {
       }
     },
     formatLanguage(language) {
-      return language.toUpperCase();
+      if (this.scriptFormats[language] !== undefined) {
+        return this.scriptFormats[language];
+      } else {
+        return language.toUpperCase();
+      }
     },
     fetch() {
       this.loading = true;

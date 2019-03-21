@@ -1,5 +1,4 @@
 <?php
-
 return [
     'api' => [
         /*
@@ -109,7 +108,7 @@ return [
         |--------------------------------------------------------------------------
         */
 
-        'base' => env('L5_SWAGGER_BASE_PATH', null),
+        'base' => '/api/1.0',
 
         /*
         |--------------------------------------------------------------------------
@@ -127,8 +126,10 @@ return [
     */
     'security' => [
         'pm_api_bearer' => [ // personal access token
-            'type' => 'http',
-            'scheme' => 'bearer',
+            'type' => 'oauth2',
+            'flows' => [
+                'implicit' => ['authorizationUrl' => '']
+            ],
         ]
     ],
 
@@ -199,7 +200,6 @@ return [
      */
     'constants' => [
         // We're assuming base path is the same as the swagger UI
-        // 'APP_URL' => getenv('APP_URL') ?: 'http://localhost',
     ],
 ];
 

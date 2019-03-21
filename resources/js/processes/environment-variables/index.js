@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VariablesListing from "./components/VariablesListing";
+import __ from "../../modules/lang";
 
 // Bootstrap our Variables listing
 new Vue({
@@ -11,14 +12,17 @@ new Vue({
         VariablesListing
     },
     methods: {
+        __(variable) {
+            return __(variable);
+        },
         deleteVariable(data) {
             ProcessMaker.apiClient.delete(`environment_variables/${data.id}`)
                 .then((response) => {
-                    ProcessMaker.alert("The environment variable was deleted.", "success");
+                    ProcessMaker.alert(__("The environment variable was deleted."), "success");
                     this.reload();
                 });
         },
-        reload () {
+        reload() {
             this.$refs.listVariable.dataManager([
                 {
                     field: "updated_at",

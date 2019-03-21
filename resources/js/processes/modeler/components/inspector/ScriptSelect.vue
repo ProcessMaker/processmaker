@@ -55,8 +55,11 @@ export default {
         },
         load() {
             this.loading = true;
+            let params = Object.assign({ per_page: 10000 })
             ProcessMaker.apiClient
-                .get("/scripts")
+                .get("/scripts",{
+                    params: params
+                } )
                 .then(response => {
                     this.screens = response.data.data;
                     this.loading = false;

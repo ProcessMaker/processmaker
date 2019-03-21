@@ -35,7 +35,7 @@
                 variant="link"
                 @click="onAction('edit', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Open Task"
+                :title="__('Open Task')"
               >
                 <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
               </b-btn>
@@ -43,7 +43,7 @@
                 variant="link"
                 @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Open Request"
+                :title="__('Open Request')"
               >
                 <i class="fas fa-clipboard fa-lg fa-fw"></i>
               </b-btn>
@@ -67,6 +67,7 @@
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
+import __ from "../../modules/lang";
 
 Vue.component("avatar-image", AvatarImage);
 
@@ -86,24 +87,24 @@ export default {
       ],
       fields: [
         {
-          title: "Name",
+          title: __("Name"),
           name: "__slot:name",
           field: "element_name",
           sortField: "element_name"
         },
         {
-          title: "Request",
+          title: __("Request"),
           name: "__slot:requestName",
           field: "request",
           sortField: "request.name"
         },
         {
-          title: "Assignee",
+          title: __("Assignee"),
           name: "__slot:assignee",
           field: "user"
         },
         {
-          title: "Due",
+          title: __("Due"),
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
@@ -123,6 +124,9 @@ export default {
     }
   },
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     onAction(action, rowData, index) {
       if (action === "edit") {
         let link = "/tasks/" + rowData.id + "/edit";
@@ -194,7 +198,7 @@ export default {
           this.data = this.transform(response.data);
           this.loading = false;
           if (response.data.meta.in_overdue > 0) {
-              this.$emit('in-overdue', response.data.meta.in_overdue);
+            this.$emit("in-overdue", response.data.meta.in_overdue);
           }
         });
     }

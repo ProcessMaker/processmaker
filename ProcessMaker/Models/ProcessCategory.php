@@ -23,10 +23,15 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * ),
  * @OA\Schema(
  *   schema="ProcessCategory",
- *   allOf={@OA\Schema(ref="#/components/schemas/ProcessCategoryEditable")},
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   allOf={
+ *      @OA\Schema(ref="#/components/schemas/ProcessCategoryEditable"),
+ *      @OA\Schema(
+ *          type = "object",
+ *          @OA\Property(property="id", type="string", format="id"),
+ *          @OA\Property(property="created_at", type="string", format="date-time"),
+ *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *      )
+ *   }
  * )
  */
 class ProcessCategory extends Model

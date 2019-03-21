@@ -16,7 +16,7 @@
                 variant="link"
                 @click="edit(props.rowData)"
                 v-b-tooltip.hover
-                title="Edit"
+                :title="__('Edit')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -24,7 +24,7 @@
                 variant="link"
                 @click="doDelete(props.rowData)"
                 v-b-tooltip.hover
-                title="Remove"
+                :title="__('Remove')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -37,7 +37,7 @@
             class="copylink"
             @click="copySecret(props.rowData.secret)"
             v-b-tooltip.hover
-            title="Copy Client Secret To Clipboard"
+            :title="__('Copy Client Secret To Clipboard')"
           >
             <i class="fas fa-clipboard fa-lg fa-fw"></i>
           </b-btn>
@@ -51,6 +51,7 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -61,21 +62,23 @@ export default {
 
       fields: [
         {
-          title: "Client ID",
-          name: "id",
+          title: __("Client ID"),
+          name: "id"
         },
         {
-          title: "Name",
-          name: "name",
+          title: __("Name"),
+          name: "name"
         },
         {
-          title: "Redirect",
+          title: __("Redirect"),
           name: "redirect",
-          callback(val) { return val.substr(0, 20) + '...' }
+          callback(val) {
+            return val.substr(0, 20) + "...";
+          }
         },
         {
-          title: "Client Secret",
-          name: "__slot:secret",
+          title: __("Client Secret"),
+          name: "__slot:secret"
         },
         {
           name: "__slot:actions",
@@ -85,34 +88,41 @@ export default {
     };
   },
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     fetch() {
       this.loading = true;
       // Load from our api client
       ProcessMaker.apiClient
-        .get('/oauth/clients', { baseURL: '/'})
+        .get("/oauth/clients", { baseURL: "/" })
         .then(response => {
           this.data = response.data;
           this.loading = false;
         });
     },
     edit(row) {
-      this.$emit('edit', Object.assign({}, row));
+      this.$emit("edit", Object.assign({}, row));
     },
     copySecret(secret) {
-      this.$refs.copytext.value = secret
-      this.$refs.copytext.select()
-      document.execCommand('copy')
+      this.$refs.copytext.value = secret;
+      this.$refs.copytext.select();
+      document.execCommand("copy");
     },
     doDelete(item) {
       ProcessMaker.confirmModal(
-        "Caution!",
-        "<b>Are you sure you want to delete the auth client </b>" + item.name + "?",
+        __("Caution!"),
+        __("Are you sure you want to delete the auth client ") +
+          item.name +
+          __("?"),
         "",
         () => {
-          ProcessMaker.apiClient.delete('/oauth/clients/' + item.id, {baseURL: '/'})
-          .then(() => {
-            this.fetch();
-          });
+          ProcessMaker.apiClient
+            .delete("/oauth/clients/" + item.id, { baseURL: "/" })
+            .then(() => {
+              ProcessMaker.alert(__('The auth client was deleted.'), 'success');
+              this.fetch();
+            });
         }
       );
     }
@@ -124,7 +134,7 @@ export default {
 .copytext {
   position: absolute;
   left: -1000px;
-  top: -1000px
+  top: -1000px;
 }
 
 .copylink {

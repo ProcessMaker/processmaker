@@ -13,7 +13,6 @@
  *             url="http://www.apache.org/licenses/LICENSE-2.0.html"
  *         )
  *     ),
- *     @OA\Server(url="/api/1.0"),
  *     @OA\Components(
  *         @OA\Parameter(
  *             parameter="filter",

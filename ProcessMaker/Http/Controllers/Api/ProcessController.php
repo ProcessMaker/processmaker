@@ -45,7 +45,7 @@ class ProcessController extends Controller
      *     path="/processes",
      *     summary="Returns all processes that the user has access to",
      *     operationId="getProcesses",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -66,7 +66,7 @@ class ProcessController extends Controller
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -102,14 +102,14 @@ class ProcessController extends Controller
      * @return Response
      *
      * @OA\Get(
-     *     path="/processes/processId",
+     *     path="/processes/{processId}",
      *     summary="Get single process by ID",
      *     operationId="getProcessById",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -139,7 +139,7 @@ class ProcessController extends Controller
      *     path="/processes",
      *     summary="Save a new process",
      *     operationId="createProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
@@ -184,14 +184,14 @@ class ProcessController extends Controller
      * @throws \Throwable
      *
      * @OA\Put(
-     *     path="/processes/processId",
+     *     path="/processes/{processId}",
      *     summary="Update a process",
      *     operationId="updateProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -252,13 +252,13 @@ class ProcessController extends Controller
                 $cancelUsers[$item] = ['method' => 'CANCEL'];
             }
 
-            //Adding method to groups array            
+            //Adding method to groups array
             $cancelGroups = [];
             foreach ($request->input('cancel_request')['groups'] as $item) {
                 $cancelGroups[$item] = ['method' => 'CANCEL'];
             }
-            
-            //Syncing users and groups that can cancel this process            
+
+            //Syncing users and groups that can cancel this process
             $process->usersCanCancel()->sync($cancelUsers, ['method' => 'CANCEL']);
             $process->groupsCanCancel()->sync($cancelGroups, ['method' => 'CANCEL']);
         }
@@ -271,47 +271,47 @@ class ProcessController extends Controller
                 $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
             }
 
-            //Adding method to groups array            
+            //Adding method to groups array
             $editDataGroups = [];
             foreach ($request->input('edit_data')['groups'] as $item) {
                 $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
             }
-            
-            //Syncing users and groups that can cancel this process            
+
+            //Syncing users and groups that can cancel this process
             $process->usersCanEditData()->sync($editDataUsers, ['method' => 'EDIT_DATA']);
             $process->groupsCanEditData()->sync($editDataGroups, ['method' => 'EDIT_DATA']);
         }
-        
+
         //Save any request notification settings...
         if ($request->has('notifications')) {
-            $this->saveRequestNotifications($process, $request);            
+            $this->saveRequestNotifications($process, $request);
         }
 
         //Save any task notification settings...
         if ($request->has('task_notifications')) {
-            $this->saveTaskNotifications($process, $request);            
+            $this->saveTaskNotifications($process, $request);
         }
 
         return new Resource($process->refresh());
     }
-    
-    private function saveRequestNotifications($process, $request) 
+
+    private function saveRequestNotifications($process, $request)
     {
         //Retrieve input
         $input = $request->input('notifications');
-        
+
         //For each notifiable type...
         foreach ($process->requestNotifiableTypes as $notifiable) {
-            
+
             //And for each notification type...
             foreach ($process->requestNotificationTypes as $notification) {
-                
+
                 //If this input has been set
                 if (isset($input[$notifiable][$notification])) {
-                    
+
                     //Determine if this notification is wanted
                     $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
-                    
+
                     //If we want the notification, find or create it
                     if ($notificationWanted === true) {
                         $process->notification_settings()->firstOrCreate([
@@ -320,7 +320,7 @@ class ProcessController extends Controller
                             'notification_type' => $notification,
                         ]);
                     }
-                        
+
                     //If we do not want the notification, delete it
                     if ($notificationWanted === false) {
                         $process->notification_settings()
@@ -328,32 +328,32 @@ class ProcessController extends Controller
                             ->where('notifiable_type', $notifiable)
                             ->where('notification_type', $notification)
                             ->delete();
-                    }                                            
-                }                
+                    }
+                }
             }
-        }        
+        }
     }
 
-    private function saveTaskNotifications($process, $request) 
+    private function saveTaskNotifications($process, $request)
     {
         //Retrieve input
         $inputs = $request->input('task_notifications');
-        
+
         //For each node...
         foreach ($inputs as $nodeId => $input) {
-            
+
             //For each notifiable type...
             foreach ($process->taskNotifiableTypes as $notifiable) {
-                
+
                 //And for each notification type...
                 foreach ($process->taskNotificationTypes as $notification) {
-                    
+
                     //If this input has been set
                     if (isset($input[$notifiable][$notification])) {
-                        
+
                         //Determine if this notification is wanted
                         $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
-                        
+
                         //If we want the notification, find or create it
                         if ($notificationWanted === true) {
                             $process->notification_settings()->firstOrCreate([
@@ -362,7 +362,7 @@ class ProcessController extends Controller
                                 'notification_type' => $notification,
                             ]);
                         }
-                            
+
                         //If we do not want the notification, delete it
                         if ($notificationWanted === false) {
                             $process->notification_settings()
@@ -370,12 +370,12 @@ class ProcessController extends Controller
                                 ->where('notifiable_type', $notifiable)
                                 ->where('notification_type', $notification)
                                 ->delete();
-                        }                                            
-                    }                
+                        }
+                    }
                 }
-            }        
+            }
         }
-    }    
+    }
 
     /**
      * Returns the list of processes that the user can start.
@@ -388,7 +388,7 @@ class ProcessController extends Controller
      *     path="/start_processes",
      *     summary="Returns the list of processes that the user can start",
      *     operationId="startProcesses",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -402,12 +402,12 @@ class ProcessController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/Process"),
+     *                 @OA\Items(ref="#/components/schemas/ProcessWithStartEvents"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -415,22 +415,24 @@ class ProcessController extends Controller
      */
     public function startProcesses(Request $request)
     {
+        $where = $this->getRequestFilterBy($request, ['processes.name', 'processes.description', 'category.name']);
         $orderBy = $this->getRequestSortBy($request, 'name');
-        $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
 
-        $processes = Process::with($include)
+        $processes = Process::with($include)->with('events')
             ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
             ->where('category.status', 'ACTIVE')
+            ->where($where)
             ->orderBy(...$orderBy)
             ->get();
 
-
         foreach($processes as $key => $process) {
             //filter he start events that can be used manually (no timer start events);
+            # TODO: startEvents is not a real property on Process.
+            # Move below to $process->getManualStartEvents();
             $process->startEvents = $process->events->filter(function($event) {
                 $eventIsTimerStart = collect($event['eventDefinitions'])
                                         ->filter(function($eventDefinition){
@@ -442,9 +444,9 @@ class ProcessController extends Controller
             if (count($process->startEvents) === 0) {
                 $processes->forget($key);
             }
-        };
+        }
 
-        return new ApiCollection($processes);
+        return new ApiCollection($processes); // TODO use existing resource class
     }
 
     /**
@@ -456,14 +458,14 @@ class ProcessController extends Controller
      * @throws \Throwable
      *
      * @OA\Put(
-     *     path="/processes/processId/restore",
+     *     path="/processes/{processId}/restore",
      *     summary="Restore an inactive process",
      *     operationId="restoreProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -507,14 +509,14 @@ class ProcessController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      *
      * @OA\Delete(
-     *     path="/processes/processId",
+     *     path="/processes/{processId}",
      *     summary="Delete a process",
      *     operationId="deleteProcess",
-     *     tags={"Process"},
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -543,14 +545,14 @@ class ProcessController extends Controller
      * @return Response
      *
      * @OA\Get(
-     *     path="/processes/processId/export",
+     *     path="/processes/{processId}/export",
      *     summary="Export a single process by ID",
-     *     operationId="getProcessById",
-     *     tags={"Process"},
+     *     operationId="exportProcess",
+     *     tags={"Processes"},
      *     @OA\Parameter(
      *         description="ID of process to return",
      *         in="path",
-     *         name="process_id",
+     *         name="processId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -582,24 +584,30 @@ class ProcessController extends Controller
      *
      * @return Response
      *
-     * @OA\Get(
+     * @OA\Post(
      *     path="/processes/import",
-     *     summary="Import a process",
-     *     operationId="getProcessById",
-     *     tags={"Process"},
-     *     @OA\Parameter(
-     *         description="ID of process to return",
-     *         in="path",
-     *         name="process_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
+     *     summary="Import a new process",
+     *     operationId="importProcess",
+     *     tags={"Processes"},
      *     @OA\Response(
-     *         response=200,
-     *         description="Successfully found the process",
+     *         response=201,
+     *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     description="file to upload",
+     *                     property="file",
+     *                     type="file",
+     *                     format="file",
+     *                 ),
+     *                 required={"file"}
+     *             )
+     *         )
      *     ),
      * )
      */
@@ -616,6 +624,40 @@ class ProcessController extends Controller
      * @param Request $request
      *
      * @return \ProcessMaker\Http\Resources\ProcessRequests
+     *
+     * @OA\Post(
+     *     path="/process_events/{process_id}",
+     *     summary="Start a new process",
+     *     operationId="triggerStartEvent",
+     *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="Node ID of the start event",
+     *         in="query",
+     *         name="event",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=false,
+     *       @OA\JsonContent()
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/processRequest")
+     *     ),
+     * )
      */
     public function triggerStartEvent(Process $process, Request $request)
     {

@@ -53,7 +53,7 @@ class UserController extends Controller
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -101,9 +101,9 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      *
      *     @OA\Get(
-     *     path="/users/userId",
+     *     path="/users/{user_id}",
      *     summary="Get single user by ID",
-     *     operationId="getUsersById",
+     *     operationId="getUserById",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
@@ -174,7 +174,7 @@ class UserController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/users/userId",
+     *     path="/users/{user_id}",
      *     summary="Update a user",
      *     operationId="updateUsers",
      *     tags={"Users"},
@@ -229,7 +229,7 @@ class UserController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Delete(
-     *     path="/users/userId",
+     *     path="/users/{user_id}",
      *     summary="Delete a user",
      *     operationId="deleteUser",
      *     tags={"Users"},
