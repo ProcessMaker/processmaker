@@ -64,7 +64,10 @@ All identifier values for all elements in the Process model must be unique.
 Follow these steps to edit the identifier value for an End Event element:
 
 1. Select the End Event element from the Process model in which to edit its identifier value.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.  
+
+   ![](../../../.gitbook/assets/end-event-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Identifier** field, edit the End Event element's identifier to a unique value from all elements in the Process model and then press **Enter**. The element's identifier value is changed.
 
 ### Edit the Element Name
@@ -74,8 +77,28 @@ An element name is a human-readable reference for a Process element. Process Mod
 Follow these steps to edit the name for an End Event element:
 
 1. Select the End Event element from the Process model in which to edit its name.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.  
+
+   ![](../../../.gitbook/assets/end-event-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
+
+### Select the ProcessMaker Screen That Summarizes a Completed Request
+
+After a [Request](../../../using-processmaker/requests/what-is-a-request.md) completes when an End Event element triggers, a [ProcessMaker Screen](../../design-forms/what-is-a-form.md) can display a summary of the completed Request. If a Process model has multiple End Event elements, then a different ProcessMaker Screen can display the Request summary.
+
+For example, if an End Event element triggers from Lane 1 of a Pool element, then use a different ProcessMaker Screen to display the Request summary than if an End Event element triggers from Lane 2.
+
+Follow these steps to select the ProcessMaker Screen that displays when a Request completes in an End Event element:
+
+1. Select the End Event element from the Process model in which to select the ProcessMaker Screen that displays when that End Event element is triggered, thereby completing that Request.
+2. The **Summary screen** drop-down displays below the **Configuration** setting section.  
+
+   ![](../../../.gitbook/assets/summary-screen-end-event-process-modeler-processes.png)
+
+3. From the **Summary screen** drop-down, select the ProcessMaker Screen that has been designed to display Request summaries for that Process when that End Event element is triggered. Click the **Refresh** link below the **Summary screen** drop-down to refresh the options that display in the drop-down if necessary.
+
+   Note that another End Event element located elsewhere in the Process model, such as another Pool or Lane element, may reference a different ProcessMaker Screen to display Request summaries when it is triggered.
 
 ## Related Topics
 
@@ -84,4 +107,8 @@ Follow these steps to edit the name for an End Event element:
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
+
+{% page-ref page="../../../using-processmaker/requests/what-is-a-request.md" %}
+
+{% page-ref page="../../design-forms/what-is-a-form.md" %}
 
