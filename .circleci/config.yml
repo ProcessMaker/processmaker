@@ -36,7 +36,7 @@ jobs:
             echo 'export QA_DB_NAME=$(echo "bpm4$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
             sudo apt install -y sshpass
-            sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 /opt/DevOpsAutomationHub/build_lua.sh aut-sdk-build-1
+            sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 -p 2222 /opt/DevOpsAutomationHub/build_lua.sh aut-sdk-build-1
 
       - run:
           name: QA Host SSH Host Identifier Import
