@@ -29,7 +29,13 @@ class GroupController extends Controller
     {
         $permissionNames = $group->permissions()->pluck('name')->toArray();
         $all_permissions = Permission::all();
-        return view('admin.groups.edit', compact('group', 'permissionNames', 'all_permissions'));
+        $permissionGroups = $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
+        return view('admin.groups.edit', compact(
+            'group',
+            'permissionNames',
+            'all_permissions',
+            'permissionGroups'
+        ));
     }
 
     public function show(Group $group)

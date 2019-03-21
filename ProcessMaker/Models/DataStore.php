@@ -101,4 +101,17 @@ class DataStore implements DataStoreInterface
     {
         return $this->itemSubject;
     }
+
+    /**
+     * Remove data from store.
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function removeData($name)
+    {
+        unset($this->data[$name]);
+        return $this;
+    }
 }

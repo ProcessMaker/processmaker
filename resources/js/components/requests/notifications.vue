@@ -1,5 +1,5 @@
 <template>
-  <div class="notifications">
+  <div>
     <a
       class="count-info"
       data-toggle="dropdown"
@@ -189,8 +189,4 @@ export default {
   top: 12px;
 }
 
-.notifications {
-  position: relative;
-  padding: 16px;
-}
 </style>
