@@ -47,11 +47,17 @@ jobs:
       - checkout
 
       - run:
-          name: Build SDKs
+          name: Build SDK for PHP Language
           command: |
             sudo apt install -y sshpass
             sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 -p 2222 /opt/DevOpsAutomationHub/build_php.sh release/$CIRCLE_BRANCH
+      - run:
+          name: Build SDK for LUA Language
+          command: |
             sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 -p 2222 /opt/DevOpsAutomationHub/build_lua.sh release/$CIRCLE_BRANCH
+      - run:
+          name: Build SDK for NODE Language
+          command: |
             sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 -p 2222 /opt/DevOpsAutomationHub/build_node.sh release/$CIRCLE_BRANCH
 
       # Install PHP dependencies
