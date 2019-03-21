@@ -222,15 +222,8 @@
         window.location.href = "/processes/screens";
       },
       checkForErrors() {
-        this.errors = false;
-        let that = this;
-        this.config.forEach(function (el) {
-          el.items.forEach(function (item) {
-            if (item.config.name === null) {
-              that.errors = true;
-            }
-          });
-        });
+        this.errors = this.$refs.screenBuilder.validationErrors
+                && this.$refs.screenBuilder.validationErrors.length > 0;
       },
       saveScreen() {
         this.checkForErrors();
