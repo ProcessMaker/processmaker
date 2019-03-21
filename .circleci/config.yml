@@ -34,7 +34,7 @@ jobs:
           command: |
             echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
             echo 'export QA_DB_NAME=$(echo "bpm4$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
-            source $BASH_ENV
+            source $BASH_ENV            
 
       - run:
           name: QA Host SSH Host Identifier Import
@@ -45,6 +45,20 @@ jobs:
             chmod 0600 ~/.ssh/known_hosts
 
       - checkout
+
+      - run:
+          name: Build SDK for PHP
+          command: |
+            sudo apt install -y sshpass 
+            sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 -p 2222 /opt/DevOpsAutomationHub/build_php.sh release/$CIRCLE_BRANCH
+      - run:
+          name: Build SDK for LUA
+          command: |
+            sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 -p 2222 /opt/DevOpsAutomationHub/build_lua.sh release/$CIRCLE_BRANCH
+      - run:
+          name: Build SDK for NODE
+          command: |
+            sshpass -p $SDK_HOST_BUILD_PASS ssh -o StrictHostKeyChecking=no root@186.121.202.135 -p 2222 /opt/DevOpsAutomationHub/build_node.sh release/$CIRCLE_BRANCH
 
       # Install PHP dependencies
       - run: sudo apt install -y libpng-dev libzip-dev default-libmysqlclient-dev curl apt-transport-https
@@ -114,6 +128,8 @@ jobs:
             php artisan bpm:sdk php /tmp/pm4-sdk-php
             mkdir -p /tmp/pm4-sdk-lua
             php artisan bpm:sdk lua /tmp/pm4-sdk-lua
+            
+
 
       - run:
           name: Configure scripts executor
@@ -150,6 +166,9 @@ jobs:
             MSSQL_PASSWORD: "P4ssW0rd1!"
             BPM_SCRIPTS_HOME: "/opt/executor"
             BPM_SCRIPTS_DOCKER_MODE: "copying"
+            SCRIPTS_PHP_IMAGE: devopsstacks/pm4-docker-executor-php:dev-release-${BUILD_NAME}
+            SCRIPTS_LUA_IMAGE: devopsstacks/pm4-docker-executor-lua:dev-release-${BUILD_NAME}
+            SCRIPTS_NODE_IMAGE: devopsstacks/pm4-docker-executor-node:dev-release-${BUILD_NAME}
       - run:
           name: "Jest"
           command: "npm run test"
@@ -191,6 +210,9 @@ jobs:
             echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
             echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env
             echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env
+            echo "SCRIPTS_PHP_IMAGE=devopsstacks/pm4-docker-executor-php:dev-release-${BUILD_NAME}" >> .env
+            echo "SCRIPTS_LUA_IMAGE=devopsstacks/pm4-docker-executor-lua:dev-release-${BUILD_NAME}" >> .env
+            echo "SCRIPTS_NODE_IMAGE=devopsstacks/pm4-docker-executor-node:dev-release-${BUILD_NAME}" >> .env
 
             # Generate unique app key
             php artisan key:generate --force
