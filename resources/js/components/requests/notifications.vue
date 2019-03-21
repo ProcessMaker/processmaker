@@ -184,6 +184,9 @@ export default {
 .count-info .badge {
   font-size: 10px;
   padding: 2px 3px;
+  position: absolute;
+  right: 109px;
+  top: 22px;
 }
 
 </style>
