@@ -117,6 +117,7 @@
     * [Add and Configure Parallel Gateway Elements](designing-processes/process-design/model-your-process/add-and-configure-parallel-gateway-elements.md)
     * [Add and Configure Pool and Lane Elements](designing-processes/process-design/model-your-process/add-and-configure-pool-and-lane-elements.md)
     * [Set and Delete Sequence Flow Between Elements](designing-processes/process-design/model-your-process/the-quick-toolbar.md)
+    * [Set and Delete Message Flow Between Elements](designing-processes/process-design/model-your-process/set-and-delete-message-flow-between-elements.md)
     * [Add and Configure Text Annotation Elements](designing-processes/process-design/model-your-process/add-and-configure-text-annotation-elements.md)
     * [Delete Process Model Elements](designing-processes/process-design/model-your-process/remove-process-model-elements.md)
     * [Navigate Around Your Process Model](designing-processes/process-design/model-your-process/navigate-around-your-process-model.md)

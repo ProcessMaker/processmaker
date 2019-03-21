@@ -217,7 +217,7 @@ The Sequence Flow element indicates in which order workflow or routing occurs be
 ![Two Process elements connected by the Sequence Flow to infer the order of workflow](../../../.gitbook/assets/sequence-flow-connecting-elements-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).
+See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md).
 {% endhint %}
 
 ### Message Flow
@@ -235,7 +235,7 @@ The Message Flow element indicates communication between the two separate Pool e
 Message Flows cannot connect to Process model elements within the same Pool element.
 
 {% hint style="info" %}
-See [Connect Process Model Elements](the-quick-toolbar.md#connect-one-process-model-element-to-another).
+See [Set and Delete Message Flow Between Elements](set-and-delete-message-flow-between-elements.md).
 {% endhint %}
 
 ## Text Annotation

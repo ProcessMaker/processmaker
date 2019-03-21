@@ -1,5 +1,7 @@
 ---
-description: Connect Process model elements by setting the Sequence Flow between them.
+description: >-
+  Indicate the order of workflow in your Process model by setting Sequence Flows
+  between elements.
 ---
 
 # Set and Delete Sequence Flow Between Elements
