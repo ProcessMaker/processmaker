@@ -164,6 +164,42 @@ class TimeoutsTest extends TestCase
             'timeout' => self::TIMEOUT_LENGTH
         ]);
     }
+    
+    /**
+     * Test to ensure NodeJS scripts timeout
+     */
+    public function testNodeScriptTimeoutExceeded()
+    {
+        $this->skipWithoutDocker();
+
+        $this->assertTimeoutExceeded([
+            'data' => '{}',
+            'code' => sprintf(
+                'return new Promise(res => { setTimeout(() => { res({"response":1}) }, %d); })',
+                self::SLEEP_EXCEED * 1000
+            ),
+            'language' => 'node',
+            'timeout' => self::TIMEOUT_LENGTH
+        ]);
+    }
+
+    /**
+     * Test to ensure NodeJs scripts do not timeout if they do not exceed limits
+     */
+    public function testNodeScriptTimeoutNotExceeded()
+    {
+        $this->skipWithoutDocker();
+
+        $this->assertTimeoutNotExceeded([
+            'data' => '{}',
+            'code' => sprintf(
+                'return new Promise(res => { setTimeout(() => { res({"response":1}) }, %d); })',
+                self::SLEEP_NOT_EXCEED * 1000
+            ),
+            'language' => 'node',
+            'timeout' => self::TIMEOUT_LENGTH
+        ]);
+    }
 
     /**
      * A helper method to generate a script object from the factory
