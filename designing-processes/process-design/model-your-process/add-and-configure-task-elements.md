@@ -64,7 +64,10 @@ All identifier values for all elements in the Process model must be unique.
 Follow these steps to edit the identifier value for a Task element:
 
 1. Select the Task element from the Process model in which to edit its identifier value.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.  
+
+   ![](../../../.gitbook/assets/task-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Identifier** field, edit the Task element's identifier to a unique value from all elements in the Process model and then press **Enter**. The element's identifier value is changed.
 
 ### Edit the Element Name
@@ -74,7 +77,10 @@ An element name is a human-readable reference for a Process element. Process Mod
 Follow these steps to edit the name for a Task element:
 
 1. Select the Task element from the Process model in which to edit its name.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.  
+
+   ![](../../../.gitbook/assets/task-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
 
 ### Select the ProcessMaker Screen for a Task Element
@@ -91,12 +97,12 @@ Ensure to select a ProcessMaker Screen for each Task element in your Process mod
 
 Follow these steps to select a ProcessMaker Screen for a Task element:
 
-1. Select the Task element from the Process model in which to specify its ProcessMaker Screen. Options for the Task element display in the right side bar.
-2. In the **Screen For Input** field, select which ProcessMaker Screen that Task element uses. The ProcessMaker Screen is selected.
+1. Select the Task element from the Process model in which to specify its ProcessMaker Screen.
+2. The **Screen For Input** field displays below the **Configuration** settings section.  
 
-{% hint style="info" %}
-Click the **Refresh** link below the **Screen For Input** field to refresh the options in the drop-down.
-{% endhint %}
+   ![](../../../.gitbook/assets/screen-input-task-process-modeler-processes.png)
+
+3. In the **Screen For Input** field, select which ProcessMaker Screen that Task element uses. The ProcessMaker Screen is selected. Click the **Refresh** link below the **Screen For Input** field if necessary to refresh the options in the drop-down.
 
 {% hint style="warning" %}
 If no ProcessMaker Screens exist, the drop-down contains no options. Ensure to select a ProcessMaker Screen for every Task element in the Process model before making the Process active.
@@ -115,7 +121,11 @@ Specify due time for a Task element in total number of hours. This includes hour
 Follow these steps to specify when a Task element is due:
 
 1. Select the Task element from the Process model in which to specify how many hours the task is due.
-2. Specify the total number of hours the task is due in one of the following ways:
+2. The **Due In** field displays below the **Configuration** settings section.  
+
+   ![](../../../.gitbook/assets/due-task-process-modeler-processes.png)
+
+3. Specify the total number of hours the task is due in one of the following ways:
    * Enter the number in the **Due In** field and then press **Enter**. The number of hours is entered.
    * Hover your cursor over the **Due In** field, and then use the spin arrows to increase or decrease the total number of hours by one.
 
