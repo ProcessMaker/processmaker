@@ -9,7 +9,7 @@
     >
       <i class="fas fa-bell fa-lg font-size-23"></i>
       <b-badge pill variant="danger" v-if="totalMessages>0 && totalMessages<9">{{totalMessages}}</b-badge>
-      <b-badge pill variant="danger" v-if="totalMessages>9" class="ml-1">9+</b-badge>
+      <b-badge pill variant="danger" v-if="totalMessages>9" id="info-large">9+</b-badge>
     </a>
     <b-popover :target="'exPopover1-bottom'" :placement="'bottomleft'" triggers="click blur">
       <h3 class="popover-header">{{__('New Tasks')}}</h3>
@@ -189,5 +189,9 @@ export default {
   right: 92px;
   top: 17px;
 }
-
+.count-info #info-large {
+  position: absolute;
+  right: 87px;
+  top: 17px;
+}
 </style>
