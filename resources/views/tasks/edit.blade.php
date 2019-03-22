@@ -100,12 +100,12 @@
                                     <div class="form-group">
                                         {!!Form::label('user', __('User'))!!}
                                         <multiselect v-model="selectedUser"
-                                                     placeholder="{{__('Select user or type here to search user')}}"
+                                                     placeholder="{{__('Select the user to reassign to the task')}}"
                                                      :options="usersList"
                                                      :multiple="false"
                                                      track-by="fullname"
                                                      :show-labels="false"
-                                                     :searchable="true"
+                                                     :searchable="false"
                                                      :internal-search="false"
                                                      @search-change="loadUsers"
                                                      label="fullname">
@@ -134,7 +134,7 @@
                                             {{__('Cancel')}}
                                         </button>
                                         <button type="button" class="btn btn-secondary ml-2" @click="reassignUser"
-                                                :disabled="selectedUser.length == 0">
+                                                :disabled="disabled">
                                             {{__('Reassign')}}
                                         </button>
                                     </div>
@@ -211,6 +211,9 @@
           },
           createdAt() {
             return this.task.created_at;
+          },
+          disabled() {
+            return this.selectedUser ? this.selectedUser.length === 0 : true;
           }
         },
         methods: {
@@ -307,10 +310,57 @@
 
 @section('css')
     <style>
-        .list-users-groups {
-            border: 1px solid #b6bfc6;
-            border-radius: 2px;
-            height: 10em;
+        .inline-input {
+            margin-right: 6px;
+        }
+
+        .inline-button {
+            background-color: rgb(109, 124, 136);
+            font-weight: 100;
+        }
+
+        .input-and-select {
+            width: 212px;
+        }
+
+        .multiselect__element span img {
+            border-radius: 50%;
+            height: 20px;
+        }
+
+        .multiselect__tags-wrap {
+            display: flex !important;
+        }
+
+        .multiselect__tags-wrap img {
+            height: 15px;
+            border-radius: 50%;
+        }
+
+        .multiselect__tag-icon:after {
+            color: white !important;
+        }
+
+        .multiselect__option--highlight {
+            background: #00bf9c !important;
+        }
+
+        .multiselect__option--selected.multiselect__option--highlight {
+            background: #00bf9c !important;
+        }
+
+        .multiselect__tags {
+            border: 1px solid #b6bfc6 !important;
+            border-radius: 0.125em !important;
+            height: calc(1.875rem + 2px) !important;
+        }
+
+        .multiselect__tag {
+            background: #788793 !important;
+        }
+
+        .multiselect__tag-icon:after {
+            color: white !important;
         }
     </style>
 @endsection
