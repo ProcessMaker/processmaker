@@ -83,32 +83,32 @@ Follow these steps to edit the name for a Sequence Flow element:
 2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.
 3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
 
-### Configure a Sequence Flow from an Exclusive Gateway Element
+### Configure an Outgoing Sequence Flow from an Exclusive Gateway Element
 
-Sequence Flows from Exclusive Gateway elements have the following settings as for Sequence Flows not associated with Exclusive Gateway elements:
+Outgoing Sequence Flows from Exclusive Gateway elements have the following settings as do other Sequence Flow elements:
 
 * [Identifier value](the-quick-toolbar.md#edit-the-identifier-value)
 * [Element name](the-quick-toolbar.md#edit-the-element-name)
 
-Sequence Flows from Exclusive Gateway elements have an addition setting to indicate the condition under which a Request should follow that Sequence Flow to its connected element. Specify this condition using an expression syntax described in [Expression Syntax Components](the-quick-toolbar.md#expression-syntax-components). Each Sequence Flow can only have one expression, but by using logical operators multiple conditions can be specified in that expression.
+Outgoing Sequence Flows from Exclusive Gateway elements have an addition setting to indicate the condition under which a Request should follow that Sequence Flow to its connected element. Specify this condition using an expression syntax described in [Expression Syntax Components](the-quick-toolbar.md#expression-syntax-components). Each Sequence Flow can only have one expression, but by using logical operators multiple conditions can be specified in that expression.
 
-Each Sequence Flow from an Exclusive Gateway element is evaluated using the following protocol:
+Each outgoing Sequence Flow from an Exclusive Gateway element is evaluated using the following protocol:
 
-* **The Sequence Flow does not have an expression:** If a Sequence Flow does not have an expression, there are no conditions to evaluate if that Sequence Flow should be followed.
-* **The Sequence Flow has an expression:** The condition\(s\) in the Request is evaluated to determine if the condition\(s\) is met. If so, workflow can follow that Sequence Flow to its connected element. If not, then workflow cannot follow that Sequence Flow.
+* **The Sequence Flow does not have an expression:** If an outgoing Sequence Flow does not have an expression, there are no conditions to evaluate if that outgoing Sequence Flow should be followed.
+* **The Sequence Flow has an expression:** The condition\(s\) in the Request is evaluated to determine if the condition\(s\) is met. If so, workflow can follow that outgoing Sequence Flow to its connected element. If not, then workflow cannot follow that Sequence Flow.
 
 {% hint style="warning" %}
-When specifying the condition\(s\) for Sequence Flows from an Exclusive Gateway element, ensure that the condition\(s\) for at least one Sequence Flow can evaluate to meet possible Request conditions. Otherwise, no Sequence Flows can be followed and the Request will stall at the Exclusive Gateway element.
+When specifying the condition\(s\) for outgoing Sequence Flows from an Exclusive Gateway element, ensure that the condition\(s\) for at least one outgoing Sequence Flow can evaluate validly to meet possible Request conditions. Otherwise, no outgoing Sequence Flows can be followed and the Request will stall at the Exclusive Gateway element.
 {% endhint %}
 
-Follow these steps to set the condition under which a Request follows a Sequence Flow element:
+Follow these steps to set the condition under which a Request follows an outgoing Sequence Flow element from an Exclusive Gateway element:
 
-1. Select the Sequence Flow from the Exclusive Gateway element in which to set its workflow condition. The expression syntax displays in the **Expression** field in the right side bar if one has been set previously.
-2. In the **Expression** field, enter or edit the expression syntax for the selected Sequence Flow element using the syntax components described in [Expression Syntax Components](the-quick-toolbar.md#expression-syntax-components), and then press **Enter**.
+1. Select the outgoing Sequence Flow from the Exclusive Gateway element in which to set its workflow condition. The expression displays in the **Expression** field in the right side bar if one has been set previously.
+2. In the **Expression** field, enter or edit the expression for the selected Sequence Flow element using the syntax components described in [Expression Syntax Components](the-quick-toolbar.md#expression-syntax-components), and then press **Enter**.
 
 #### Expression Syntax Components
 
-Use the following expression syntax components to compose the expression that describes under which condition\(s\) a Request follows that Sequence Flow to its connected element.
+Use the following expression syntax components to compose the expression that describes under which condition\(s\) a Request follows that outgoing Sequence Flow to its connected element.
 
 **Literals**
 
