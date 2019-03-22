@@ -98,19 +98,19 @@ Ensure to select a ProcessMaker Screen for each Task element in your Process mod
 Follow these steps to select a ProcessMaker Screen for a Task element:
 
 1. Select the Task element from the Process model in which to specify its ProcessMaker Screen.
-2. The **Screen For Input** field displays below the **Configuration** settings section.  
+2. The **Screen For Input** drop-down displays below the **Configuration** settings section.  
 
    ![](../../../.gitbook/assets/screen-input-task-process-modeler-processes.png)
 
-3. In the **Screen For Input** field, select which ProcessMaker Screen that Task element uses. The ProcessMaker Screen is selected. Click the **Refresh** link below the **Screen For Input** field if necessary to refresh the options in the drop-down.
+3. In the **Screen For Input** drop-down, select which ProcessMaker Screen that Task element uses. Click the **Refresh** link below the **Screen For Input** drop-down if necessary to refresh the options in the drop-down.
 
 {% hint style="warning" %}
-If no ProcessMaker Screens exist, the drop-down contains no options. Ensure to select a ProcessMaker Screen for every Task element in the Process model before making the Process active.
+If no ProcessMaker Screens exist, the **Screen For Input** drop-down contains no options. Ensure to select a ProcessMaker Screen for every Task element in the Process model before deploying your Process.
 {% endhint %}
 
 ### Specify When the Task is Due
 
-Specify how much time a task in a Task element is due from when that task is assigned to a Request participant. The default period of time for a task to be due is 72 hours \(three days\).
+Specify how much time a [Task](../../../using-processmaker/task-management/what-is-a-task.md) in a Task element is due from when that task is assigned to a Request participant. The default period of time for a task to be due is 72 hours \(three days\).
 
 The task due date displays for each [pending assigned task](../../../using-processmaker/requests/view-completed-requests.md#view-completed-requests-in-which-you-are-a-participant). After the specified time has expired for a task, an overdue indicator displays for that task to the assigned task recipient.
 
@@ -125,25 +125,42 @@ Follow these steps to specify when a Task element is due:
 
    ![](../../../.gitbook/assets/due-task-process-modeler-processes.png)
 
-3. Specify the total number of hours the task is due in one of the following ways:
+3. In the **Due In** field, specify the total number of hours the task is due in one of the following ways:
    * Enter the number in the **Due In** field and then press **Enter**. The number of hours is entered.
    * Hover your cursor over the **Due In** field, and then use the spin arrows to increase or decrease the total number of hours by one.
 
 ### Select to Whom to Assign the Task
 
-Select to whom to assign the Task element in a Process model:
+Select to whom to assign the Task that is referenced in a Task element:
 
-* **Requester:** Assign the Task element to the Request initiator.
-* **User:** Assign the Task element to a selected person.
-* **Group:** Assign the Task element to a selected group. When a Task element is assigned to a group, round robin assignment rule determines the assignee without manually assigning the Task.
+* **Requester:** Assign that Task to the Request initiator.
+* **User:** Assign that Task to a selected person.
+* **Group:** Assign that Task to a selected group. When a Task is assigned to a group, round robin assignment rules determine which group member is the assignee without manually assigning the Task.
+* **Previous Task assignee:** Assign that Task to who was assigned the Task in the preceding Task element.
 
-Follow these steps to select to whom to assign the Task element:
+Follow these steps to select to whom to assign the Task that is referenced in a Task element:
 
-1. Select the Task element from the Process model in which to select the task assignee. Options for the Task element display in the right side bar.
-2. From the **Task Assignment** field, select one of the following options:
-   * **To requester:** Select **To requester** to assign the Task element to the Request initiator.
-   * **To user:** Select **To user** to assign the Task element to a specified person. When this option is selected, the **Assigned User** field displays below the **Task Assignment** field. From the **Assigned User** field, select the person's full name as the Task element's assignee.
-   * **To group:** Select **To group** to assign the Task element to a specified group. When this option is selected, the **Assigned Group** field displays below the **Task Assignment** field. From the **Assigned Group** field, select the group as the Task element's assignee.
+1. Select the Task element from the Process model in which to select the task assignee.
+2. The **Task Assignment** drop-down displays below the **Configuration** settings section.  
+
+   ![](../../../.gitbook/assets/assignment-assignee-task-process-modeler-processes.png)
+
+3. From the **Task Assignment** drop-down, select one of the following options:
+   * **Requester:** Select **Requester** to assign the Task to the Request initiator.
+   * **User:** Select **User** to assign the Task to a specified ProcessMaker user. When this option is selected, the **Assigned User** drop-down displays below the **Task Assignment** drop-down.  
+
+     ![](../../../.gitbook/assets/assignment-assignee-user-task-process-modeler-processes.png)
+
+     From the **Assigned User** drop-down, select the person's full name as the Task element's assignee.
+
+   * **Group:** Select **Group** to assign the Task to a specified ProcessMaker group. When this option is selected, the **Assigned Group** drop-down displays below the **Task Assignment** drop-down.  
+
+     ![](../../../.gitbook/assets/assignment-assignee-group-task-process-modeler-processes.png)
+
+     From the **Assigned Group** drop-down, select the group as the Task assignee.
+
+   * **Previous Task Assignee:** Select **Previous Task Assignee** to assign the Task to who was assigned the Task in the preceding Task element.
+4. Select the **Allow Reassignment** checkbox to allow the Task assignee to reassign the Task if necessary.
 
 ## Related Topics
 
@@ -156,6 +173,8 @@ Follow these steps to select to whom to assign the Task element:
 {% page-ref page="../../design-forms/what-is-a-form.md" %}
 
 {% page-ref page="../../../using-processmaker/requests/what-is-a-request.md" %}
+
+{% page-ref page="../../../using-processmaker/task-management/what-is-a-task.md" %}
 
 {% page-ref page="../../../using-processmaker/task-management/view-tasks-you-need-to-do.md" %}
 
