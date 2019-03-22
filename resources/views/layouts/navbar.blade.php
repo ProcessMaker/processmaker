@@ -22,7 +22,7 @@
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
-            <b-nav-item>
+            <b-nav-item class="d-none d-lg-block">
                 <component id="navbar-request-button" v-bind:is="'request-modal'" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             </b-nav-item>
 
@@ -31,7 +31,7 @@
                 </notifications>
             </b-nav-item>
             <b-nav-item class="seperator d-none d-lg-block"></b-nav-item>
-            <b-nav-item class="d-none d-lg-block">
+            <li class="d-none d-lg-block">
                 @php
                     $items = [];
                     foreach ($dropdown_nav->items as $item ) {
@@ -45,7 +45,7 @@
                     $user = Auth::user();
                 @endphp
                 <navbar-profile :info="{{$user}}"  :items="{{$items}}"></navbar-profile>
-            </b-nav-item>
+            </li>
         </b-navbar-nav>
     </b-collapse>   
 </b-navbar>
