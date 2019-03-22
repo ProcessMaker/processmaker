@@ -185,8 +185,8 @@ export default {
   font-size: 10px;
   padding: 2px 3px;
   position: absolute;
-  right: 109px;
-  top: 22px;
+  right: 92px;
+  top: 17px;
 }
 
 </style>
