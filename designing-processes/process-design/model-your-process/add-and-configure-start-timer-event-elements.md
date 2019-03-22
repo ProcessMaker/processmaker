@@ -107,7 +107,7 @@ Set the timer controls for a Start Timer Event element using the following param
 
 Follow these steps to set the timer controls for a Start Timer Event element:
 
-1. Select the Start Timer Event element from the Process model in which to set its timing controls.
+1. Select the Start Timer Event element from the Process model in which to set its timer controls.
 2. Expand the **Timing Control** setting section.  
 
    ![](../../../.gitbook/assets/start-timer-timing-control-process-modeler-processes.png)
