@@ -27,7 +27,7 @@
             </div>
             <div class="col-8" align="right">
                 @can('create-environment_variables')
-                    <button type="button" class="btn btn-secondary" data-toggle="modal"
+                    <button type="button" id="create-envvar" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createEnvironmentVariable">
                         <i class="fas fa-plus"></i> {{__('Environment Variable')}}
                     </button>
