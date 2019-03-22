@@ -56,8 +56,7 @@ class AuthClientTest extends DuskTestCase
             $browser->driver->findElement(WebDriverBy::xpath("//*[@id='authClients']/div[2]/div[2]/div/table/tbody/tr[1]/td[5]/div/div/button[1]/i"))
                 ->click();  //The edit button lacks a unique ID
             $browser->pause(500)
-//                ->assertSee('Edit Auth Client')
-                ->assertSee('Create An Auth-Client') //They changed the modal name
+                ->assertSee('Edit Auth Client')
                 ->type("#name", "bar foo")
                 ->type("#redirect", "https://bar.foo.com")
                 ->press(".ml-2")
