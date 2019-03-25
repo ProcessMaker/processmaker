@@ -48,7 +48,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{__('Create User')}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                             {{__('Cancel')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
@@ -189,6 +189,11 @@
                   });
                 }
               }
+            },
+            mounted() {
+              $('#addUser').on('hidden.bs.modal', () => {
+                this.onClose();
+              });
             }
           })
         </script>
