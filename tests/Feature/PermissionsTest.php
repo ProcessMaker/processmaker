@@ -108,4 +108,19 @@ class PermissionsTest extends TestCase
         $response = $this->webCall('GET', $url);
         $response->assertStatus(200);
     }
+    
+    public function testCreatePermission()
+    {
+        $attributes = [
+            'name' => 'create-package_permissions',
+            'title' => 'Create Package Permissions',
+            'group' => 'Package Permissions',
+        ];
+
+        $this->assertDatabaseMissing('permissions', $attributes);
+        
+        factory(Permission::class)->create($attributes);
+
+        $this->assertDatabaseHas('permissions', $attributes);
+    }
 }

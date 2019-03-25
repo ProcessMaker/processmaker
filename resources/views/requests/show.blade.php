@@ -15,7 +15,7 @@
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
         __('Requests') => route('requests.index'),
-        $request->name . ' # '. $request->getKey() => null,
+        $request->name . ' #'. $request->getKey() => null,
     ]])
     <div id="request" class="container">
         <div class="row">

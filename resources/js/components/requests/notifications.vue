@@ -1,5 +1,5 @@
 <template>
-  <div class="notifications">
+  <div>
     <a
       class="count-info"
       data-toggle="dropdown"
@@ -8,7 +8,8 @@
       id="exPopover1-bottom"
     >
       <i class="fas fa-bell fa-lg font-size-23"></i>
-      <b-badge pill variant="danger" v-show="totalMessages>0">{{totalMessages}}</b-badge>
+      <b-badge pill variant="danger" v-if="totalMessages>0 && totalMessages<=9">{{totalMessages}}</b-badge>
+      <b-badge pill variant="danger" v-if="totalMessages>9" id="info-large">9+</b-badge>
     </a>
     <b-popover :target="'exPopover1-bottom'" :placement="'bottomleft'" triggers="click blur">
       <h3 class="popover-header">{{__('New Tasks')}}</h3>
@@ -183,14 +184,14 @@ export default {
 
 .count-info .badge {
   font-size: 10px;
-  padding: 2px 3px;
+  padding: 2px 5px;
   position: absolute;
-  right: 10px;
-  top: 12px;
+  right: 88px;
+  top: 17px;
 }
-
-.notifications {
-  position: relative;
-  padding: 16px;
+.count-info #info-large {
+  position: absolute;
+  right: 83px;
+  top: 17px;
 }
 </style>

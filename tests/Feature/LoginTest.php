@@ -21,22 +21,25 @@ class LoginTest extends TestCase
     {
         $password = 'testpass';
         
-        $user = factory(User::class)->create();
-        $user->password = Hash::make($password);
-        $user->save;
+        $user = factory(User::class)->create([
+            'password' => Hash::make($password),
+            'status' => 'ACTIVE',
+        ]);
+
+        // Assert that we get a 422 if the password is incorrect
+        $response = $this->json('POST', '/login', [
+            'username' => $user->username,
+            'password' => 'wrongpass',
+        ]);
+        
+        $response->assertStatus(422);
 
         // Assert that we get a 204 if the password is correct
         $response = $this->json('POST', '/login', [
             'username' => $user->username,
             'password' => $password,
         ]);
+
         $response->assertStatus(204);
-        
-        // Assert that we get a 422 if the password is incorrect
-        $response = $this->json('POST', '/login', [
-            'username' => $user->username,
-            'password' => 'wrongpass',
-        ]);
-        $response->assertStatus(422);
     }
 }
