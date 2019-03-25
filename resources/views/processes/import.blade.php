@@ -42,8 +42,8 @@
             </div>
         </div>
 
-        <b-modal ref="responseImport" title="Import Process" @hide="reload" ok-only centered>
-            <ul v-show="options">
+        <b-modal ref="responseImport" title="Import Process" @hide="reload" ok-only centered v-cloak>
+            <ul v-show="options" class="list-unstyled">
                 <li v-for="item in options">
                     <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
                     @{{item.label}} - @{{item.message}}
