@@ -98,10 +98,13 @@ window.onload = function() {
     layout: "StandaloneLayout"
   })
 
+  @php ($client = \Laravel\Passport\Client::where('name', 'Swagger UI Auth')->firstOrFail())
   ui.initOAuth({
-    appName: "swagger-ui",
+    appName: "Swagger UI Auth",
+    clientId: {{ $client->id }},
+    clientSecret: '{{ $client->secret }}',
     scopeSeparator: " ",
-    additionalQueryStringParams: {}
+    additionalQueryStringParams: { client_id: {{ $client->id }} }
   })
 
   window.ui = ui
