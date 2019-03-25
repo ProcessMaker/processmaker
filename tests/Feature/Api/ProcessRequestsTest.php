@@ -318,6 +318,47 @@ class ProcessRequestsTest extends TestCase
         // Assert that the API updated
         $response->assertStatus(204);
     }
+    
+    /**
+     * Test ability to complete a request if it has the status: ERROR
+     */
+    public function testCompleteRequest()
+    {
+        $this->user->is_administrator = false;
+        $this->user->saveOrFail();
+        $request = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
+
+        // give the user editData permission to get passed the route check
+        $request->process->usersCanEditData()->sync([$this->user->id => ['method' => 'EDIT_DATA']]);
+
+        $route = route('api.requests.update', [$request->id]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED']);
+
+        // Confirm the user does not have access
+        $response->assertStatus(403);
+        $this->assertEquals('Not authorized to complete this request.', $response->json()['message']);
+        
+        // Make user admin again
+        $this->user->is_administrator = true;
+        $this->user->saveOrFail();
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED']);
+
+        // Confirm only ERROR status can be changed
+        $response->assertStatus(422);
+        $this->assertEquals(
+            'Only requests with status: ERROR can be manually completed',
+            $response->json()['errors']['status'][0]
+        );
+
+        $request->status = 'ERROR';
+        $request->saveOrFail();
+        
+        $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED']);
+        $response->assertStatus(204);
+
+        $request->refresh();
+        $this->assertEquals('COMPLETED', $request->status);
+    }
 
     /**
      * Delete request in process

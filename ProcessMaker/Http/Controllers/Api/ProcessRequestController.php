@@ -204,6 +204,18 @@ class ProcessRequestController extends Controller
             $this->cancelRequestToken($request);
             return response([], 204);
         }
+        if ($httpRequest->post('status') === 'COMPLETED') {
+            if (! Auth::user()->is_administrator) {
+                throw new AuthorizationException(__('Not authorized to complete this request.'));
+            }
+            if ($request->status != 'ERROR') {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => __('Only requests with status: ERROR can be manually completed')
+                ]);
+            }
+            $this->completeRequest($request);
+            return response([], 204);
+        }
         $fields = $httpRequest->json()->all();
         if (array_keys($fields) === ['data'] || array_keys($fields) === ['data', 'task_element_id']) {
             if (! Auth::user()->can('editData', $request)) {
@@ -290,6 +302,24 @@ class ProcessRequestController extends Controller
 
         //cancel request
         $request->status = 'CANCELED';
+        $request->saveOrFail();
+
+        //Closed tokens
+        $request->tokens()->update(['status' => 'CLOSED']);
+    }
+
+    /**
+     * Manually complete a request
+     * 
+     * @param ProcessRequest $request
+     * @throws \Throwable
+     */
+    private function completeRequest(ProcessRequest $request)
+    {
+        $notifiables = $request->getNotifiables('completed');
+        Notification::send($notifiables, new ProcessCanceledNotification($request));
+
+        $request->status = 'COMPLETED';
         $request->saveOrFail();
 
         //Closed tokens
