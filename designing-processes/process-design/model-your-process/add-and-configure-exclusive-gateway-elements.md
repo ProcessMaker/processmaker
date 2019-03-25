@@ -70,7 +70,10 @@ All identifier values for all elements in the Process model must be unique.
 Follow these steps to edit the identifier value for an Exclusive Gateway element:
 
 1. Select the Exclusive Gateway element from the Process model in which to edit its identifier value.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.  
+
+   ![](../../../.gitbook/assets/exclusive-gateway-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Identifier** field, edit the Exclusive Gateway element's identifier to a unique value from all elements in the Process model and then press **Enter**. The element's identifier value is changed.
 
 ### Edit the Element Name
@@ -80,7 +83,10 @@ An element name is a human-readable reference for a Process element. Process Mod
 Follow these steps to edit the name for an Exclusive Gateway element:
 
 1. Select the Exclusive Gateway element from the Process model in which to edit its name.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.  
+
+   ![](../../../.gitbook/assets/exclusive-gateway-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
 
 ## Related Topics
