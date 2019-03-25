@@ -184,14 +184,14 @@ export default {
 
 .count-info .badge {
   font-size: 10px;
-  padding: 2px 3px;
+  padding: 2px 4px;
   position: absolute;
-  right: 92px;
+  right: 90px;
   top: 17px;
 }
 .count-info #info-large {
   position: absolute;
-  right: 87px;
+  right: 85px;
   top: 17px;
 }
 </style>
