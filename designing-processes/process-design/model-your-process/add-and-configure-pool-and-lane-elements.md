@@ -44,7 +44,7 @@ If a non-Pool element is placed into a Pool element, that element cannot be move
 
 When a Pool element is deleted, all elements within it are also deleted. If you want to keep the elements within a Pool element, you must add those elements outside of the Pool element prior to deleting the Pool element.
 
-If you accidentally delete a Pool element with other elements you want to keep, then select the **Undo** button.
+If you accidentally delete a Pool element with other elements you want to keep, then click the **Undo** button.
 {% endhint %}
 
 ## Configure a Pool Element
@@ -69,7 +69,10 @@ All identifier values for all elements in the Process model must be unique.
 Follow these steps to edit the identifier value for a Pool element:
 
 1. Select the Pool element from the Process model in which to edit its identifier value.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays. This is a required field.  
+
+   ![](../../../.gitbook/assets/pool-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Identifier** field, edit the Pool element's identifier to a unique value from all elements in the Process model and then press **Enter**. The element's identifier value is changed.
 
 ### Edit the Element Name
@@ -79,7 +82,10 @@ An element name is a human-readable reference for a Process element. Process Mod
 Follow these steps to edit the name for a Pool element:
 
 1. Select the Pool element from the Process model in which to edit its name.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.  
+
+   ![](../../../.gitbook/assets/pool-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
 
 ## Add a Lane Element to a Pool Element
@@ -129,7 +135,10 @@ All identifier values for all elements in the Process model must be unique.
 Follow these steps to edit the identifier value for a Lane element:
 
 1. Select the Lane element from the Process model in which to edit its identifier value.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays. This is a required field.  
+
+   ![](../../../.gitbook/assets/lane-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Identifier** field, edit the Lane element's identifier to a unique value from all elements in the Process model and then press **Enter**. The element's identifier value is changed.
 
 ### Edit the Element Name
@@ -139,7 +148,10 @@ An element name is a human-readable reference for a Process element. Process Mod
 Follow these steps to edit the name for a Lane element:
 
 1. Select the Lane element from the Process model in which to edit its name.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Name** field displays.  
+
+   ![](../../../.gitbook/assets/lane-configuration-identifier-name-process-modeler-processes.png)
+
 3. In the **Name** field, edit the selected element's name and then press **Enter**. The element's name is changed.
 
 ## Related Topics

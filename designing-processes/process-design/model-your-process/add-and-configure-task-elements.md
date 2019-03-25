@@ -64,7 +64,7 @@ All identifier values for all elements in the Process model must be unique.
 Follow these steps to edit the identifier value for a Task element:
 
 1. Select the Task element from the Process model in which to edit its identifier value.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.  
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays. This is a required field.  
 
    ![](../../../.gitbook/assets/task-configuration-identifier-name-process-modeler-processes.png)
 

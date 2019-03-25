@@ -6,10 +6,10 @@ description: Delete elements from your Process model.
 
 ## Delete Process Model Elements
 
-Deleting a Process model element also deletes any Sequence Flows incoming to or outgoing from that element. Therefore, if a Process element is deleted that has both incoming and outgoing Sequence Flows, the disconnected Sequence Flows must be reconnected for the remaining elements.
+Deleting a Process model element also deletes any Sequence Flow and/or Message Flow elements incoming to or outgoing from that element. For example, if a Process model element is deleted that has both incoming and outgoing Sequence Flows, the disconnected Sequence Flows must be reconnected for the remaining elements.
 
 {% hint style="info" %}
-### Don't Know What Process Model Element Is?
+### Don't Know What Process Model Elements Are?
 
 See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
 
@@ -25,21 +25,21 @@ See the [Process](../../../processmaker-administration/permission-descriptions-f
 
 ### Delete a Non-Pool Element
 
-Follow these steps to delete a non-Pool element from a Process model:
+Follow these steps to delete any non-Pool element from a Process model:
 
-1. Select the non-Pool element to delete. Available options display to the right of the selected element.   
+1. Select the non-Pool element to delete. Available options display to the right of the selected element.  
 
-   ![](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
+   ![](../../../.gitbook/assets/delete-element-process-modeler-processes.png)
 
 2. Click the **Delete** icon![](../../../.gitbook/assets/remove-icon.png). The Process model element is deleted.
+
+### Delete a Pool Element
 
 {% hint style="warning" %}
 When a Pool element is deleted, all elements within it are also deleted. If you want to keep the elements within a Pool element, you must add those elements outside of the Pool element prior to deleting the Pool element.
 
 If you accidentally delete a Pool element with other elements you want to keep, then select the **Undo** button.
 {% endhint %}
-
-### Delete a Pool Element
 
 Follow these steps to delete a Pool element from a Process model:
 

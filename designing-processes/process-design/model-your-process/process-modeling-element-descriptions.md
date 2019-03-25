@@ -192,22 +192,24 @@ See [Add and Configure Pool and Lane Elements](add-and-configure-pool-and-lane-e
 
 ## Flows
 
-Flows represent the order in which workflow and messaging occur in a Process model.
+Flows represent the order in which workflow routing and messaging occur in a Process model.
 
 ### Sequence Flow
 
 Sequence Flow elements represent the intended workflow routing in a Process model. Process workflow is the order in which elements trigger or activate in a Process model. Sequence Flow elements are not to be confused with [Message Flow](process-modeling-element-descriptions.md#message-flow) elements.
 
-As a best practice indicate a consistent direction of Sequence Flow elements, either left to right or top to bottom, to make modeled Processes easier to understand.
+As a best practice indicate a consistent direction of Sequence Flow elements, either left to right or top to bottom, to make Process models easier to understand.
 
-In Process Modeler, Flow indicators display when you click an element in the Process model. The top Flow indicator is for Sequence Flows \(highlighted below\), represented with a solid line. The Message Flow indicator displays below the Sequence Flow indicator, represented by a dotted line.
+In Process Modeler, Flow indicators display when you click an element in the Process model. The top Flow indicator is for Sequence Flows \(highlighted below\), represented with a solid line.
 
 ![Sequence Flow indicator \(highlighted\) on a selected Process element](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
 
 {% hint style="info" %}
-[Text annotations](process-modeling-element-descriptions.md#text-annotation) and [Pool](process-modeling-element-descriptions.md#pool) elements do not use Sequence Flow elements. Furthermore, Sequence Flow elements cannot connect between Process model elements that are in different Pool elements since Pool elements represent different organizations. However, use Message Flows to infer communication between elements in different Pool elements.
+[Text annotations](process-modeling-element-descriptions.md#text-annotation), [Pool](process-modeling-element-descriptions.md#pool), and [Lane](process-modeling-element-descriptions.md#lane) elements do not use Sequence Flow elements. Furthermore, Sequence Flow elements cannot connect between Process model elements that are in different Pool elements since Pool elements represent different organizations. However, use Message Flow elements to infer communication between elements in different Pool elements.
 
 Sequence Flows from Exclusive Gateway elements can be configured to specify under which condition a Request routes through that Sequence Flow. See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md#configure-the-sequence-flow-for-exclusive-gateway-elements).
+
+A Start Event begins the flow of a Request for that Process. Therefore, a Start Event cannot have an incoming Sequence Flow.
 
 An End Event element terminates the flow of a Request for that Process. Therefore, an End Event element cannot have an outgoing Sequence Flow.
 {% endhint %}
@@ -222,9 +224,9 @@ See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md).
 
 ### Message Flow
 
-Message Flow elements represent communication between an element in one Pool element with a separate Pool element in a Process model. Message Flow elements are not to be confused with [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow) elements.
+In a Process model, Message Flow elements represent communication between an element in one Pool element with another element in a separate Pool element. Message Flow elements are not to be confused with [Sequence Flow](process-modeling-element-descriptions.md#sequence-flow) elements.
 
-In Process Modeler, Flow indicators display when you click an element in the Process model. The bottom Flow indicator is for Message Flows, represented with a dotted line \(highlighted below\). The Sequence Flow indicator displays above the Message Flow indicator, represented by a solid line.
+In Process Modeler, Flow indicators display when you click an element in the Process model. The bottom Flow indicator is for Message Flows, represented with a dotted line \(highlighted below\).
 
 ![Message Flow indicator \(highlighted\) on a selected Process element](../../../.gitbook/assets/message-flow-indicator-process-model-processes.png)
 
@@ -232,15 +234,19 @@ The Message Flow element indicates communication between the two separate Pool e
 
 ![A Message Flow element \(dotted line\) between two elements in different Pool elements](../../../.gitbook/assets/message-flow-between-pool-elements-process-model-processes.png)
 
-Message Flows cannot connect to Process model elements within the same Pool element.
+Message Flow elements cannot connect to Process model elements within the same Pool element.
 
 {% hint style="info" %}
 See [Set and Delete Message Flow Between Elements](set-and-delete-message-flow-between-elements.md).
 {% endhint %}
 
-## Text Annotation
+## Text Annotations and Associations
 
-Text annotation is human-readable text in a modeled process provides description regarding the Process. Text annotation elements perform no functional role in Process Requests or workflow.
+Use Text Annotation and Association elements to add human-readable descriptions about the Process model.
+
+### Text Annotation
+
+A Text Annotation element is human-readable text in a Process model that provides description about the Process. Text Annotation elements perform no functional role in Process Requests or workflow routing.
 
 In Process Modeler, the Text Annotation element is labeled as "Text Annotation" in the **BPMN** panel as highlighted below.
 
@@ -251,7 +257,19 @@ Below is a Text Annotation element when it has been placed into a Process model.
 ![Text Annotation element](../../../.gitbook/assets/text-annotation-process-modeler-processes.png)
 
 {% hint style="info" %}
-See [Add and Configure Text Annotation Elements](add-and-configure-text-annotation-elements.md).
+See [Add and Configure Text Annotation and Association Elements](add-and-configure-text-annotation-elements.md).
+{% endhint %}
+
+### Association
+
+An Association element is part of a Text Annotation element that graphically references the Text Annotation element with the element it describes in the Process model. An Association element cannot be placed into the Process model until a Text Annotation element is.
+
+Below is an Association element when it has been placed into a Process model.
+
+![Association element that references the Text Annotation element to the element it describes](../../../.gitbook/assets/association-process-modeler-processes.png)
+
+{% hint style="info" %}
+See [Add and Configure Text Annotation and Association Elements](add-and-configure-text-annotation-elements.md#add-an-association-element).
 {% endhint %}
 
 ## Related Topics

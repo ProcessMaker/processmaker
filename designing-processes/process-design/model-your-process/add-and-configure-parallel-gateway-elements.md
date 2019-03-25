@@ -64,7 +64,7 @@ All identifier values for all elements in the Process model must be unique.
 Follow these steps to edit the identifier value for a Parallel Gateway element:
 
 1. Select the Parallel Gateway element from the Process model in which to edit its identifier value.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays.  
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Identifier** field displays. This is a required field.  
 
    ![](../../../.gitbook/assets/parallel-gateway-configuration-identifier-name-direction-process-modeler-processes.png)
 
@@ -101,9 +101,9 @@ Follow these steps to indicate the workflow direction for a Parallel Gateway ele
 
 3. From the **Direction** drop-down, select from one of the following options:
    * **Diverging:** Select the **Diverging** option to indicate that the workflow direction is for outgoing Sequence Flow elements. When this option is selected, all outgoing Sequence Flow elements from the Parallel Gateway element trigger simultaneously without exception.
-   * **Converging:** Select the **Converging** option to indicate the workflow direction is for incoming Sequence Flow elements. ~~When this option is selected, the **what?** drop-down displays.~~
+   * **Converging:** Select the **Converging** option to indicate the workflow direction is for incoming Sequence Flow elements. ~~When this option is selected, the **Sequence Flow Trigger Condition** drop-down displays.~~
 
-     ~~From the **what?** drop-down, select how the incoming Sequence Flow element\(s\) triggers the Parallel Gateway element:~~
+     ~~From the **Sequence Flow Trigger Condition** drop-down, select how the incoming Sequence Flow element\(s\) triggers the Parallel Gateway element:~~
 
      * ~~**First Sequence Flow:** Select the **First Sequence Flow** option to indicate that the first incoming Sequence Flow element that triggers to the Parallel Gateway element thereby triggers the Parallel Gateway element.~~
      * ~~**All Sequence Flows:** Select the **All Sequence Flows** option to indicate that all incoming Sequence Flow elements to the Parallel Gateway element must trigger before the Parallel Gateway triggers.~~
