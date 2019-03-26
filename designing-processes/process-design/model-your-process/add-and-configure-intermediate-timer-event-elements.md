@@ -135,3 +135,5 @@ Follow these steps to set the timer controls for an Intermediate Timer Event ele
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

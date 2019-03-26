@@ -117,3 +117,5 @@ Follow these steps to indicate the workflow direction for a Parallel Gateway ele
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

@@ -184,3 +184,5 @@ Follow these steps to select which ProcessMaker [group](../../../processmaker-ad
 
 {% page-ref page="../../../processmaker-administration/assign-groups-to-users/what-is-a-group.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

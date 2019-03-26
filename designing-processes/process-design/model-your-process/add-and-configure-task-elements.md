@@ -311,3 +311,5 @@ Follow these steps to set Task notifications in a Task element:
 
 {% page-ref page="../../../using-processmaker/notifications.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

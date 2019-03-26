@@ -162,3 +162,5 @@ Follow these steps to edit the name for a Lane element:
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

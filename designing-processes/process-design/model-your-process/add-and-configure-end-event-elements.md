@@ -112,3 +112,5 @@ Follow these steps to select the ProcessMaker Screen that displays when a Reques
 
 {% page-ref page="../../design-forms/what-is-a-form.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

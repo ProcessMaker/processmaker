@@ -137,3 +137,5 @@ Follow these steps to set the timer controls for a Start Timer Event element:
 
 {% page-ref page="../../../using-processmaker/requests/what-is-a-request.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

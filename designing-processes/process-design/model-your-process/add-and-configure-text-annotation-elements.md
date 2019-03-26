@@ -112,9 +112,11 @@ Follow these steps to add an Association element to the Process model:
    ![](../../../.gitbook/assets/association-element-process-modeler-processes.png)
 
 5. Click the **Association** icon![](../../../.gitbook/assets/association-icon-process-modeler-processes.png).
-6. Click the Process model element in which to reference which element the Text Annotation element describes. The Annotation element is placed.  
+6. Click the Process model element to which the Text Annotation element describes. The Annotation element is placed.  
 
    ![](../../../.gitbook/assets/association-process-modeler-processes.png)
+
+7. Repeat steps 5 and 6 to reference another Process model element that the Text Annotation element  describes as necessary.
 
 ## Configure an Association Element
 
@@ -175,4 +177,6 @@ Follow these steps to edit the directional arrow that points between the Text An
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
+
+{% page-ref page="remove-process-model-elements.md" %}
 

@@ -97,3 +97,5 @@ Follow these steps to edit the name for an Exclusive Gateway element:
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

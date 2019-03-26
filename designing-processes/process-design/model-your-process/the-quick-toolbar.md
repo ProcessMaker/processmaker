@@ -208,3 +208,5 @@ Use the following expression syntax components to compose the expression that de
 
 {% page-ref page="set-and-delete-message-flow-between-elements.md" %}
 
+{% page-ref page="remove-process-model-elements.md" %}
+

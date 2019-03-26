@@ -122,6 +122,7 @@
     * [Delete Process Model Elements](designing-processes/process-design/model-your-process/remove-process-model-elements.md)
     * [Navigate Around Your Process Model](designing-processes/process-design/model-your-process/navigate-around-your-process-model.md)
     * [Save Your Process Model](designing-processes/process-design/model-your-process/toolboxes.md)
+    * [Validate BPMN 2.0 Compliance](designing-processes/process-design/model-your-process/validate-bpmn-2.0-compliance.md)
 
 ## ProcessMaker Administration
 

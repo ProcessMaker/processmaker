@@ -262,7 +262,9 @@ See [Add and Configure Text Annotation and Association Elements](add-and-configu
 
 ### Association
 
-An Association element is part of a Text Annotation element that graphically references the Text Annotation element with the element it describes in the Process model. An Association element cannot be placed into the Process model until a Text Annotation element is.
+An Association element is part of a Text Annotation element that graphically references the Process model element that the Text Annotation element describes. Multiple Association elements can be used from one Text Annotation element. However, a Text Annotation element must be placed into the Process model before an Association element can be.
+
+Each Annotation element can display a directional arrow to and/or from the Text Annotation element.
 
 Below is an Association element when it has been placed into a Process model.
 
