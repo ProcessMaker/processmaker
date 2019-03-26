@@ -38,9 +38,13 @@ Follow these steps to validate your Process model is BPMN 2.0 compliant:
    * **Errors are found:** If errors are found, ProcessMaker 4 displays how any errors are found to the left of the **Validate BPMN** button. Instead of the green check mark the error icon displays![](../../../.gitbook/assets/validate-bpmn-problems-errors-process-modeler-processes.png). Click the error icon to display a summary of the errors. Below is an example.  
 
      ![](../../../.gitbook/assets/validate-bpmn-problem-error-summary-process-modeler-processes.png)
-5. fdfdf
+5. If errors are found, click the error icon again to hide the error summary. Make changes to your Process model and then repeat steps 4 and 5 again until ProcessMaker finds no BPMN compliance errors.
 
 ## Related Topics
+
+{% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
+
+{% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/export-a-bpmn-compliant-process.md" %}
 
