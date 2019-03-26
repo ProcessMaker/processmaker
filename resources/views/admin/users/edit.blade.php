@@ -356,7 +356,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-user">
+                        <div class="form-group">
                             {!!Form::label('groups', __('Groups'))!!}
                             <multiselect v-model="selectedGroup"
                                          placeholder="{{__('Select group or type here to search groups')}}"
