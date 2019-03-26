@@ -8,10 +8,9 @@ description: Understand what users are in ProcessMaker 4.
 
 In ProcessMaker 4, a user is any person for which a ProcessMaker account is created to allow that individual to do the following:
 
-* Log in to ProcessMaker using unique credentials.
-* ProcessMaker Administrators can track the last time each ProcessMaker user logged in.
-* Each ProcessMaker user can adjust his or her [user profile](../../using-processmaker/profile-settings.md).
-* ProcessMaker Administrators can activate or deactivate any ProcessMaker user's account.
+* Log in to ProcessMaker using unique credentials
+* Adjust his or her [user profile](../../using-processmaker/profile-settings.md)
+* Participate in [Requests](../../using-processmaker/requests/what-is-a-request.md)
 
 ## Related Topics
 
@@ -26,4 +25,6 @@ In ProcessMaker 4, a user is any person for which a ProcessMaker account is crea
 {% page-ref page="manage-user-accounts/create-a-user-account.md" %}
 
 {% page-ref page="../../using-processmaker/profile-settings.md" %}
+
+{% page-ref page="../../using-processmaker/requests/what-is-a-request.md" %}
 

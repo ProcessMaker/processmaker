@@ -8,7 +8,7 @@ description: View ProcessMaker 4 version information.
 
 Follow these steps to view ProcessMaker 4 version information:
 
-1. [Log in](log-in.md#log-in) to ProcessMaker.
+1. [Log on](log-in.md#log-in) to ProcessMaker.
 2. Click your user avatar and then select **About**.  
 
    ![](../.gitbook/assets/about-option.png)

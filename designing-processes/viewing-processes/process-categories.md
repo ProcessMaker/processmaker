@@ -22,7 +22,7 @@ See the Process [Categories](../../processmaker-administration/permission-descri
 
 Follow these steps to view Process Categories:
 
-1. [Log in](../../using-processmaker/log-in.md#log-in) to ProcessMaker.
+1. [Log on](../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays.
 3. Click the **Process Categories** icon![](../../.gitbook/assets/process-categories-icon-processes.png) in the left sidebar. The **Categories** page displays.
 

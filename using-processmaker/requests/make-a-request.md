@@ -8,7 +8,7 @@ description: Start a Request by starting a Process.
 
 Follow these steps to start a Request:
 
-1. [Log in](../log-in.md#log-in) to ProcessMaker.
+1. [Log on](../log-in.md#log-in) to ProcessMaker.
 2. Click **+Request** from the top options bar. This button is always available.
 
    ![](../../.gitbook/assets/+-request-button-highlighted.png)

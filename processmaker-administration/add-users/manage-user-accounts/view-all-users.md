@@ -16,7 +16,7 @@ See the [User](../../permission-descriptions-for-users-and-groups.md#users) perm
 
 Follow these steps to view all ProcessMaker user accounts in your organization:
 
-1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
+1. [Log on](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Admin** option from the top menu. The **Users** page displays all ProcessMaker user accounts.
 
 {% hint style="info" %}
@@ -29,10 +29,12 @@ The **Users** page displays the following information in tabular format about Pr
 
 * **Username:** The **Username** column displays the username associated with the ProcessMaker user account.
 * **Full Name:** The **Full Name** column displays the full name associated with ProcessMaker user account.
-* **Status:** The **Status** column displays the status of the ProcessMaker user account. See [Edit a User Account](edit-a-user-account.md).
+* **Status:** The **Status** column displays the one of the following statuses for the ProcessMaker user account:
+  * **Active:** An Active ProcessMaker user account is one in which a person can use his or her user account to log on to ProcessMaker.
+  * **Inactive:** An Inactive ProcessMaker user account is one in which a person cannot use his or her user account to log on to ProcessMaker.
 * **Modified:** The **Modified** column displays the date and time the ProcessMaker user account was last modified. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 * **Created:** The **Created** column displays the date and time the ProcessMaker user account was created. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
-* **Last login:** The **Last login** column displays the date and time the ProcessMaker user last logged in to ProcessMaker. If the ProcessMaker user account has not logged in, the following indicator displays: **n/a**. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
+* **Last Login:** The **Last Login** column displays the date and time the ProcessMaker user last logged on to ProcessMaker. If the ProcessMaker user account has not logged on, the following indicator displays: **n/a**. The time zone setting to display the time is according to the ProcessMaker 4 server unless your [user profile's](../../../using-processmaker/profile-settings.md#change-your-profile-settings) **Time zone** setting is specified.
 
 {% hint style="info" %}
 ### Search for a ProcessMaker User Account

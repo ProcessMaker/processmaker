@@ -10,7 +10,7 @@ The **My Requests** page displays all Requests you started. Request information 
 
 Do one of the following to view Requests that you started:
 
-* [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
+* [Log on](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
 * Click the **Requests** option from the top menu if the **Requests** page is not currently displayed. The **My Requests** page displays.
 * Click the Home breadcrumb icon![](../../.gitbook/assets/home-breadcrumb-icon.png)if the **Requests** page is not currently displayed. The **My Requests** page displays.
 

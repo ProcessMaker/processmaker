@@ -8,7 +8,7 @@ description: View all completed Tasks from all users in your organization.
 
 Follow these steps to view all completed Tasks from all users in your organization:
 
-1. [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
+1. [Log on](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
 2. Click the **Tasks** option from the top menu. The **Completed Tasks** page displays.
 3. Click the **Completed** icon ![](../../.gitbook/assets/completed-icon-request%20%281%29.png)in the left sidebar. All completed Tasks display for all users in your organization.
 

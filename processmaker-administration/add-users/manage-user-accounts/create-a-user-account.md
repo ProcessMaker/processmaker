@@ -18,7 +18,7 @@ See the [User](../../permission-descriptions-for-users-and-groups.md#users) perm
 Follow these steps to create a ProcessMaker user account:
 
 1. [View all ProcessMaker user accounts.](view-all-users.md) The **Users** page displays.
-2. Click the **+User** button. The **Add A User** screen displays.  
+2. Click the **+User** button. The **Create User** screen displays.  
 
    ![](../../../.gitbook/assets/add-a-user-screen-admin.png)
 

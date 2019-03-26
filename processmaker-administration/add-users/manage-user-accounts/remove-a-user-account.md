@@ -26,7 +26,7 @@ Follow these steps to delete a ProcessMaker user account:
 1. [View all ProcessMaker user accounts.](view-all-users.md) The **Users** page displays.
 2. Select the **Delete** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)for the ProcessMaker user account. The **Caution** screen displays to confirm the deletion of the ProcessMaker user account.  
 
-   ![](../../../.gitbook/assets/caution-user-removal-screen-admin.png)
+   ![](../../../.gitbook/assets/caution-delete-user-account-admin.png)
 
 3. Click **Confirm**.
 

@@ -22,7 +22,7 @@ Click the **Archived Processes** icon![](../../../.gitbook/assets/archived-proce
 
 Follow these steps to view all active Processes in your organization:
 
-1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
+1. [Log on](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Processes** option from the top menu. The **Processes** page displays all active Processes.
 
 {% hint style="info" %}

@@ -17,7 +17,7 @@ See the [Process](../../../processmaker-administration/permission-descriptions-f
 
 Process Modeler displays the **Undo** button in the upper left corner of the Process model space. The **Undo** button is disabled when a Process is initially created or opened until any change in the Process model is made.
 
-The **Undo** button can be used as many times as necessary or until the Process model's state when the Process was created/opened.
+The **Undo** button can be used as many times as necessary or until the Process model's state when the Process was created/opened this log in session. The **Undo** button is lost after you close the opened Process.
 
 Follow these steps to use the **Undo** button in Process Modeler:
 
@@ -37,7 +37,7 @@ Your user account or group membership must have the following permissions to red
 See the [Process](../../../processmaker-administration/permission-descriptions-for-users-and-groups.md#processes) permissions or ask your ProcessMaker Administrator for assistance.
 {% endhint %}
 
-Process Modeler displays the **Redo** button in the upper left corner of the Process model space. The **Redo** button is disabled when a Process is initially created or opened until the **Undo** button is used to undo a change.
+Process Modeler displays the **Redo** button in the upper left corner of the Process model space. The **Redo** button is disabled when a Process is initially created or opened until the **Undo** button is used to undo a change. The **Redo** button is lost after you close the opened Process.
 
 The **Redo** button can be used to redo any revision undone by the **Undo** button up to the current state.
 

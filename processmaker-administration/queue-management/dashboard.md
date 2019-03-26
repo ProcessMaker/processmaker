@@ -12,7 +12,7 @@ The Queue Management Dashboard displays an overview of your ProcessMaker 4 serve
 
 Follow these steps to view the Queue Management Dashboard:
 
-1. [Log in](../../using-processmaker/log-in.md#log-in) to ProcessMaker.
+1. [Log on](../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Admin** option from the top menu. The **Users** page displays.
 3. Click the **Queue Management** icon![](../../.gitbook/assets/queue-management-icon-admin.png). The Queue Management Dashboard displays.
 

@@ -9,7 +9,7 @@
 
 ## Use ProcessMaker
 
-* [Log In to ProcessMaker](using-processmaker/log-in.md)
+* [Log On to ProcessMaker](using-processmaker/log-in.md)
 * [Profile Settings](using-processmaker/profile-settings.md)
 * [View ProcessMaker Version Information](using-processmaker/application-version-details.md)
 * [Log Out of ProcessMaker](using-processmaker/log-out.md)

@@ -11,7 +11,7 @@ The **Completed** page displays all Requests that have completed in which you pa
 Follow these steps to view completed Requests:
 
 1. Do one of the following:
-   * [Log in](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
+   * [Log on](../log-in.md#log-in) to ProcessMaker. The **My Requests** page displays.
    * Click the **Requests** option from the top menu if it is not currently displayed. The **My Requests** page displays.
    * Click the Home breadcrumb icon![](../../.gitbook/assets/home-breadcrumb-icon.png)if the **Requests** page is not currently displayed. The **My Requests** page displays.
 2. Click the **Completed** tab or click the **Completed** icon![](../../.gitbook/assets/completed-icon-request.png)from the left sidebar. The **Completed** page displays.

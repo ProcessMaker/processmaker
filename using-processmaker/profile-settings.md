@@ -8,7 +8,7 @@ description: Personalize your ProcessMaker profile.
 
 Follow these steps to access your profile settings:
 
-1. [Log in](log-in.md#log-in) to ProcessMaker.
+1. [Log on](log-in.md#log-in) to ProcessMaker.
 2. Click your user avatar, and then select **Profile**.  
 
    ![](../.gitbook/assets/profile-option.png)

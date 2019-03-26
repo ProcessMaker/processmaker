@@ -52,7 +52,7 @@ Follow these steps to edit a ProcessMaker user account:
      * **Inactive:** An Inactive ProcessMaker user account is one in which a person cannot use it to log in to ProcessMaker.
    * In the **New Password** field, edit the password to log in with the ProcessMaker user account. Leave the **New Password** field blank to keep the current password. Passwords must be at least eight \(8\) characters long. [Password special characters](https://www.owasp.org/index.php/Password_special_characters) are recommended. Password validation indicates how strong your password is if you enter a new password.
    * In the **Confirm Password** field, confirm that the password matches that entered into the **New Password** field if a new password was entered. If you entered a new password, password validation indicates if the **New Password** and **Confirm Password** values do not match.
-4. Click **Update** if you made any changes in the **Information** tab and do not need to make other changes in the ProcessMaker user account. Otherwise, continue.
+4. Click **Save** if you made any changes in the **Information** tab and do not need to make other changes in the ProcessMaker user account. Otherwise, continue.
 5. Click the **Groups** tab. The **Groups** tab displays the ProcessMaker [groups](../../assign-groups-to-users/what-is-a-group.md) of which that ProcessMaker user is a member. If no groups have been created, the following message displays: **No Data Available**. See [Create a Group](../../assign-groups-to-users/manage-groups/create-a-group.md#create-a-processmaker-group).  
 
    ![](../../../.gitbook/assets/groups-tab-edit-user-admin.png)
@@ -62,20 +62,29 @@ Follow these steps to edit a ProcessMaker user account:
    * **Group:** The **Group** column displays the name of the group of which the ProcessMaker user is a member.
    * **Description:** The **Description** column displays the description of the group.
 
-6. In the **Groups** tab, change which ProcessMaker groups of which that ProcessMaker user is a member if necessary:
-   * **Remove the ProcessMaker user from a ProcessMaker group:** Click the **Remove** icon![](../../../.gitbook/assets/trash-icon-process-modeler-processes.png)to remove the ProcessMaker user from the selected ProcessMaker group.
-   * **Add the ProcessMaker user to a ProcessMaker group:** Click the **+Add User to Group** button. The **Add User To Group** screen displays. From the **Select a group** drop-down, select the ProcessMaker group to add the ProcessMaker user as a member, and then click **OK**. The ProcessMaker group displays in the **Groups** tab.  
+6. In the **Groups** tab, change which ProcessMaker group\(s\) to which that ProcessMaker user is a member if necessary:
+   * **Follow these steps to add the ProcessMaker user to a ProcessMaker group:**
+     1. Click the **+Add User to Group** button. The **Add User To Group** screen displays.
+     2. From the **Groups** drop-down, select which ProcessMaker group\(s\) to add the ProcessMaker user as a member. Multiple ProcessMaker groups may be added, one at a time, to this field. You may click the Remove icon to remove a ProcessMaker user account from the **Users** drop-down.  
 
-     ![](../../../.gitbook/assets/add-user-to-group-screen-edit-user-groups-tab-admin.png)
+        ![](../../../.gitbook/assets/add-user-to-group-screen-edit-user-groups-tab-admin.png)
+
+     3. Click **Save**. The selected ProcessMaker group\(s\) displays in the **Groups** tab.
+   * **Follow these steps to remove the ProcessMaker user from a ProcessMaker group:**
+     1. Click the **Remove from Group** icon![](../../../.gitbook/assets/remove-icon-admin.png)to remove the ProcessMaker user from the selected ProcessMaker group. A confirmation screen displays to confirm the removal of the ProcessMaker group from the user account.  
+
+        ![](../../../.gitbook/assets/caution-remove-group-from-user-account-admin.png)
+
+     2. Click **Confirm**. The ProcessMaker user is no longer a member of that ProcessMaker group.
 7. Click the **Permissions** tab. The **Permissions** tab displays permissions assigned to that ProcessMaker user account.  
 
    ![](../../../.gitbook/assets/permissions-tab-edit-user-admin.png)
 
 8. In the **Permissions** tab, change which permissions from each permission category to assign that ProcessMaker user account if necessary. Follow these guidelines to change permission assignments:
-   * Select the **Make this user an admin** checkbox to assign all ProcessMaker Administrator related permissions to the ProcessMaker user account.
+   * Select the **Make this user a Super Admin** checkbox to assign all ProcessMaker Administrator related permissions to the ProcessMaker user account.
    * Select the **Assign all permissions to this user** checkbox to assign all permissions to the ProcessMaker user account.
    * Click on a permission category to expand the view of individual permissions within that category. Click on an expanded permission category to collapse that category. If you don't intend to assign this ProcessMaker user account with any group\(s\), then assign permissions to this user account. Note that if this ProcessMaker user account is assigned to any group\(s\), the permissions set in the group\(s\) take apply to those assigned to the user account. See [Permission Descriptions for Users and Groups](../../permission-descriptions-for-users-and-groups.md).
-   * Click **Update** if you made any changes in the **Information** or **Permissions** tabs.
+9. Click **Save** if you made any changes in the **Information** or **Permissions** tabs.
 
 {% hint style="info" %}
 The **API Tokens** tab displays the API token that ProcessMaker user generated to access the [ProcessMaker 4 REST API](https://develop-demo.bpm4.qa.processmaker.net/api/documentation). It is not editable.

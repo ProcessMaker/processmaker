@@ -16,7 +16,7 @@ ProcessMaker displays all client authentication keys to access the [ProcessMaker
 
 Follow these steps to view all client authentication keys granted access to the ProcessMaker 4 REST API:
 
-1. [Log in](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
+1. [Log on](../../../using-processmaker/log-in.md#log-in) to ProcessMaker.
 2. Click the **Admin** option from the top menu. The **Users** page displays.
 3. Click the **Auth Clients** icon![](../../../.gitbook/assets/auth-client-icon-admin.png). The **Auth Clients** page displays all client authentication keys. 
 
