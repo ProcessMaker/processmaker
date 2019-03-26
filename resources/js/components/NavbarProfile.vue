@@ -26,7 +26,8 @@
           class="dropdown-item item"
           target="_blank"
         >
-          <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg"></i> Help
+          <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg"></i>
+          {{__('Help')}}
         </a>
         <template v-for="item in items">
           <a class="dropdown-item item" :href="item.url">
@@ -43,6 +44,7 @@
 import Vue from "vue";
 import AvatarImage from "../components/AvatarImage";
 import VueCroppie from "vue-croppie";
+import __ from "../modules/lang";
 
 Vue.component("avatar-image", AvatarImage);
 Vue.use(VueCroppie);
@@ -58,6 +60,9 @@ export default {
   },
   props: ["info", "items"],
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     onClose() {
       this.popoverShow = false;
     },

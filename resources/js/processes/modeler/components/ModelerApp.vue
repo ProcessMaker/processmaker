@@ -3,7 +3,8 @@
     <div class="navbar">
       <div>{{process.name}}</div>
       <div class="actions">
-          <font-awesome-icon @click="saveBpmn" icon="save">Save</font-awesome-icon>
+          <b-btn v-b-modal="'uploadmodal'"><i class="fas fa-upload"></i></b-btn>
+          <b-btn @click="saveBpmn"><font-awesome-icon icon="save">Save</font-awesome-icon></b-btn>
       </div>
     </div>
     <div class="modeler-container">
@@ -16,6 +17,11 @@
 
       <validation-status :validation-errors="validationErrors"/>
     </statusbar>
+    <b-modal ref="uploadmodal" id="uploadmodal" title="Upload BPMN File">
+      <file-upload @input-file="handleUpload">
+        Upload file
+      </file-upload>
+    </b-modal>
   </div>
 </template>
 
@@ -23,6 +29,7 @@
 <script>
 import { Modeler, Statusbar, ValidationStatus } from "@processmaker/modeler";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import FileUpload from 'vue-upload-component';
 
 import {
   faCheckCircle,
@@ -34,13 +41,16 @@ import moment from 'moment';
 
 library.add(faSave)
 
+const reader = new FileReader();
+
 export default {
   name: "ModelerApp",
   components: {
     Modeler,
     Statusbar,
     FontAwesomeIcon,
-    ValidationStatus
+    ValidationStatus,
+    FileUpload,
   },
   data() {
     return {
@@ -57,6 +67,13 @@ export default {
     ProcessMaker.$modeler = this.$refs.modeler;
   },
   methods: {
+    handleUpload(fileObject) {
+      if (!fileObject) {
+        return;
+      }
+
+      reader.readAsText(fileObject.file);
+    },
     getTaskNotifications() {
       var notifications = {};
       this.$refs.modeler.nodes.forEach(function(node) {

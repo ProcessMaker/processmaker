@@ -17,6 +17,6 @@
 
 @section('content')
 <div class="container page-content">
-    <h2>Processes Dashboard</h2>
+    <h2>{{__('Processes Dashboard')}}</h2>
 </div>
 @endsection

@@ -13,7 +13,7 @@
         pagination-path="meta"
       >
         <template slot="ids" slot-scope="props">
-          <b-link @click="openRequest(props.rowData, props.rowIndex)">{{props.rowData.name}}</b-link>
+          <b-link @click="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
         </template>
         <template slot="participants" slot-scope="props">
           <avatar-image
@@ -32,7 +32,7 @@
                 variant="link"
                 @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                title="Open Request"
+                :title="__('Open Request')"
               >
                 <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
               </b-btn>
@@ -56,6 +56,7 @@
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
+import __ from "../../modules/lang";
 
 Vue.component("avatar-image", AvatarImage);
 
@@ -76,26 +77,31 @@ export default {
       fields: [
         {
           name: "__slot:ids",
-          title: "Name",
+          title: '#',
           field: "id",
           sortField: "id"
         },
         {
-          title: "Status",
+          title: __("Name"),
+          name: "name",
+          sortField: "name"
+        },
+        {
+          title: __("Status"),
           name: "status",
           sortField: "status"
         },
         {
-          title: "Participants",
+          title: __("Participants"),
           name: "__slot:participants"
         },
         {
-          title: "Started",
+          title: __("Started"),
           name: "initiated_at",
           sortField: "initiated_at"
         },
         {
-          title: "Completed",
+          title: __("Completed"),
           name: "completed_at",
           sortField: "completed_at"
         },
@@ -107,6 +113,9 @@ export default {
     };
   },
   methods: {
+    __(variable) {
+      return __(variable);
+    },
     onAction(action, data, index) {
       switch (action) {
         case "edit-designer":

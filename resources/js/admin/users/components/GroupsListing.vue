@@ -18,7 +18,7 @@
                                     variant="link"
                                     @click="deleteMembership(props.rowData)"
                                     v-b-tooltip.hover
-                                    title="Remove from Group"
+                                    :title="__('Remove from Group')"
                             >
                                 <i class="fas fa-minus-circle fa-lg fa-fw"></i>
                             </b-btn>
@@ -41,6 +41,7 @@
 
 <script>
   import datatableMixin from "../../../components/common/mixins/datatable";
+  import __ from "../../../modules/lang";
 
   export default {
     mixins: [datatableMixin],
@@ -57,12 +58,12 @@
         ],
         fields: [
           {
-            title: "Name",
+            title: __("Name"),
             name: "name",
             sortField: "name"
           },
           {
-            title: "Description",
+            title: __("Description"),
             name: "description",
             sortField: "description"
           },
@@ -74,6 +75,9 @@
       };
     },
     methods: {
+    __(variable) {
+      return __(variable);
+    },
       fetch() {
         this.loading = true;
         ProcessMaker.apiClient
@@ -96,12 +100,12 @@
       },
       deleteMembership(item) {
         ProcessMaker.confirmModal(
-          "Caution!",
-          "<b>Are you sure you want to remove the user from the group</b> " + item.name + "?",
+          __("Caution!"),
+          __("Are you sure you want to remove the user from the group ") + item.name + __("?"),
           "",
           () => {
             ProcessMaker.apiClient.delete("group_members/" + item.id).then(response => {
-              ProcessMaker.alert("The user was removed from the group.", "success");
+              ProcessMaker.alert(__("The user was removed from the group."), "success");
               this.fetch();
             });
           }

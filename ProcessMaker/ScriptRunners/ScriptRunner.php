@@ -25,13 +25,14 @@ class ScriptRunner
      * @param array $data
      * @param array $config
      * @param integer $timeout
+     * @param \ProcessMaker\Models\User $user
      *
      * @return array
      * @throws \RuntimeException
      */
-    public function run($code, array $data, array $config, $timeout = 60)
+    public function run($code, array $data, array $config, $timeout = 60, $user)
     {
-        return $this->runner->run($code, $data, $config, $timeout);
+        return $this->runner->run($code, $data, $config, $timeout, $user);
     }
 
     /**
@@ -45,11 +46,12 @@ class ScriptRunner
     private function getScriptRunnerByLanguage($language)
     {
         $language = strtolower($language);
-        $runner = config("script-runners.{$language}");
+        $runner = config("script-runners.{$language}.runner");
         if (!$runner) {
             throw new ScriptLanguageNotSupported($language);
         } else {
-            return new $runner;
+            $class = "ProcessMaker\\ScriptRunners\\{$runner}";
+            return new $class;
         }
     }
 }

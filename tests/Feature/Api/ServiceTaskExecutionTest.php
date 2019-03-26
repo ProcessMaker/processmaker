@@ -47,8 +47,18 @@ class ServiceTaskExecutionTest extends TestCase
             'key' => 'EchoConnector',
             'language' => 'php',
             'code' => '<?php return ["pong" => $data["ping"]];',
+            'run_as_user_id' => $this->user->id,
         ]);
         $this->process = $this->createTestProcess();
+    }
+    
+    /**
+     * Make sure we have a personal access client set up
+     *
+     */
+    public function setUpWithPersonalAccessClient()
+    {
+        $this->withPersonalAccessClient();
     }
 
     /**

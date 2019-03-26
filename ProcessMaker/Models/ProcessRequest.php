@@ -35,25 +35,27 @@ use Throwable;
  * @property Process $process
  *
  * @OA\Schema(
- *   schema="requestsEditable",
- *   @OA\Property(property="name", type="string"),
- *   @OA\Property(property="process_id", type="string", format="id"),
+ *   schema="processRequestEditable",
+ *   @OA\Property(property="user_id", type="string", format="id"),
  *   @OA\Property(property="callable_id", type="string", format="id"),
  *   @OA\Property(property="data", type="string", format="json"),
  *   @OA\Property(property="status", type="string", enum={"DRAFT", "ACTIVE", "COMPLETED"}),
  * ),
  * @OA\Schema(
- *   schema="requests",
- *   allOf={@OA\Schema(ref="#/components/schemas/requestsEditable")},
- *   @OA\Property(property="id", type="string", format="id"),
- *
- *   @OA\Property(property="process_collaboration_id", type="string", format="id"),
- *   @OA\Property(property="user_id", type="string", format="id"),
- *   @OA\Property(property="participant_id", type="string", format="id"),
- *
- *   @OA\Property(property="process_category_id", type="string", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   schema="processRequest",
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/processRequestEditable"),
+ *       @OA\Schema(
+ *           type="object",
+ *           @OA\Property(property="id", type="string", format="id"),
+ *           @OA\Property(property="process_id", type="string", format="id"),
+ *           @OA\Property(property="process_collaboration_id", type="string", format="id"),
+ *           @OA\Property(property="participant_id", type="string", format="id"),
+ *           @OA\Property(property="process_category_id", type="string", format="id"),
+ *           @OA\Property(property="created_at", type="string", format="date-time"),
+ *           @OA\Property(property="updated_at", type="string", format="date-time"),
+ *      )
+ *   },
  * )
  */
 class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMedia
@@ -323,6 +325,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function scopeCompleted($query)
     {
         $query->where('status', '=', 'COMPLETED');
+    }
+
+    /**
+     * Filter process not completed
+     *
+     * @param $query
+     */
+    public function scopeNotCompleted($query)
+    {
+        $query->where('status', '!=', 'COMPLETED');
     }
 
     /**

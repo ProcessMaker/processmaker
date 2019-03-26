@@ -1,2 +1,0 @@
-SHOW
-{{$process->name}}

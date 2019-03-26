@@ -24,7 +24,7 @@
                         <i slot="header" class='fas fa-id-badge fa-2x'></i>
                         <a href="{{ route('requests_by_type', ['type' => '']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$startedMe}}</h1>
-                            <h6 class="card-text">{{__('Started by Me')}}</h6>
+                            <h6 class="card-text">{{__('My Requests')}}</h6>
                         </a>
                     </b-card>
 

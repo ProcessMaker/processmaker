@@ -8,71 +8,100 @@ use ProcessMaker\Models\Permission;
 
 class PermissionSeeder extends Seeder
 {
-    private $permissions = [
-        'archive-processes',
-        'create-categories',
-        'create-comments',
-        'create-environment_variables',
-        'create-groups',
-        'create-processes',
-        'create-screens',
-        'create-scripts',
-        'create-users',
-        'delete-categories',
-        'delete-comments',
-        'delete-environment_variables',
-        'delete-groups',
-        'delete-screens',
-        'delete-scripts',
-        'delete-users',
-        'edit-categories',
-        'edit-comments',
-        'edit-environment_variables',
-        'edit-groups',
-        'edit-processes',
-        'edit-screens',
-        'edit-scripts',
-        'edit-users',
-        'export-processes',
-        'import-processes',
-        'view-all_requests',
-        'view-categories',
-        'view-comments',
-        'view-environment_variables',
-        'view-groups',
-        'view-processes',
-        'view-screens',
-        'view-scripts',
-        'view-users',
-        'create-files',
-        'view-files',
-        'edit-files',
-        'delete-files',
-        'create-notifications',
-        'view-notifications',
-        'edit-notifications',
-        'delete-notifications',
-        'create-task_assignments',
-        'view-task_assignments',
-        'edit-task_assignments',
-        'delete-task_assignments',
-        'create-auth_clients',
-        'view-auth_clients',
-        'edit-auth_clients',
-        'delete-auth_clients',
-        'edit-request_data',
-        'edit-task_data',
+    private $permissionGroups = [
+        'Processes' => [
+            'archive-processes',
+            'create-processes',
+            'edit-processes',
+            'export-processes',
+            'import-processes',
+            'view-processes',
+        ],
+        'Categories' => [
+            'create-categories',
+            'delete-categories',
+            'edit-categories',
+            'view-categories',
+        ],
+        'Comments' => [
+            'create-comments',
+            'delete-comments',
+            'edit-comments',
+            'view-comments',
+        ],
+        'Environment Variables' => [
+            'create-environment_variables',
+            'delete-environment_variables',
+            'edit-environment_variables',
+            'view-environment_variables',
+        ],
+        'Groups' => [
+            'create-groups',
+            'delete-groups',
+            'edit-groups',
+            'view-groups',
+        ],
+        'Screens' => [
+            'create-screens',
+            'delete-screens',
+            'edit-screens',
+            'view-screens',
+        ],
+        'Scripts' => [
+            'create-scripts',
+            'delete-scripts',
+            'edit-scripts',
+            'view-scripts',
+        ],
+        'Users' => [
+            'create-users',
+            'delete-users',
+            'edit-users',
+            'view-users',
+        ],
+        'Requests' => [
+            'view-all_requests',
+            'edit-request_data',
+            'edit-task_data',
+        ],
+        'Files (API)' => [
+            'create-files',
+            'view-files',
+            'edit-files',
+            'delete-files',
+        ],
+        'Notifications (API)' => [
+            'create-notifications',
+            'view-notifications',
+            'edit-notifications',
+            'delete-notifications',
+        ],
+        'Task Assignments (API)' => [
+            'create-task_assignments',
+            'view-task_assignments',
+            'edit-task_assignments',
+            'delete-task_assignments',
+        ],
+        'Auth Clients' => [
+            'create-auth_clients',
+            'view-auth_clients',
+            'edit-auth_clients',
+            'delete-auth_clients',
+        ],
     ];
-    
+
     public function run($seedUser = null)
     {
         if (Permission::count() === 0) {
-            foreach ($this->permissions as $permissionString) {
-                $permission = factory(Permission::class)->create([
-                    'title' => ucwords(preg_replace('/(\-|_)/', ' ',
-                            $permissionString)),
-                    'name' => $permissionString,
-                ]);
+            foreach ($this->permissionGroups as $groupName => $permissions) {
+                foreach ($permissions as $permissionString) {
+                    $permission = factory(Permission::class)->create([
+                        'title' => ucwords(preg_replace('/(\-|_)/', ' ',
+                                $permissionString)),
+                        'name' => $permissionString,
+                        'group' => $groupName,
+                    ]);
+                }
             }
         }
 

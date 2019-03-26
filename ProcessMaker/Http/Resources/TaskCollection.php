@@ -10,7 +10,7 @@ use Illuminate\Pagination\AbstractPaginator;
  *    schema="taskMetadata",
  *    @OA\Property(property="filter", type="string"),
  *    @OA\Property(property="sort_by", type="string"),
- *    @OA\Property(property="sort_order", type="string", enum={"ASC", "DESC"}),
+ *    @OA\Property(property="sort_order", type="string", enum={"asc", "desc"}),
  *    @OA\Property(property="count", type="integer"),
  *    @OA\Property(property="total_pages", type="integer"),
  *    
