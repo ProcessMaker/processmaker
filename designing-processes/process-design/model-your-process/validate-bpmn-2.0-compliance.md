@@ -28,27 +28,29 @@ See the [Process](../../../processmaker-administration/permission-descriptions-f
 Follow these steps to validate your Process model is BPMN 2.0 compliant:
 
 1. ​[View your Processes](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/drafts/-LRhVZm0ddxDcGGdN5ZN/primary/designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes#view-all-processes). The **Processes** page displays.
-2. ​[Create a new Process](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/edit/drafts/-LauIZVG_nBSIczT8ilV/designing-processes/viewing-processes/view-the-list-of-processes/create-a-process) or click the **Open Modeler** icon​![](https://firebasestorage.googleapis.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-LJ0aNaVW1m7sNsxVJLV%2F-LVxYmCLNQNVkqtm90bQ%2F-LVxdCH6161DyA6JCRG-%2FOpen%20Modeler%20Edit%20icon%20Processes%20page%20-%20Processes.png?alt=media&token=75758d17-e403-418c-80e0-47ae2dca3c23)to edit the selected Process model. Process Modeler displays. Until you test the validity of your Process model, ProcessMaker 4 indicates that there are no problems by displaying the green check mark.  
+2. ​[Create a new Process](https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/~/edit/drafts/-LauIZVG_nBSIczT8ilV/designing-processes/viewing-processes/view-the-list-of-processes/create-a-process) or click the **Open Modeler** icon​![](https://firebasestorage.googleapis.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-LJ0aNaVW1m7sNsxVJLV%2F-LVxYmCLNQNVkqtm90bQ%2F-LVxdCH6161DyA6JCRG-%2FOpen%20Modeler%20Edit%20icon%20Processes%20page%20-%20Processes.png?alt=media&token=75758d17-e403-418c-80e0-47ae2dca3c23)to edit the selected Process model. Process Modeler displays. Until you test the validity of your Process model, Process Modeler indicates that there are no problems by displaying the green check mark.  
 
    ![](../../../.gitbook/assets/validate-bpmn-no-problems-process-modeler-processes.png)
 
 3. [Save your Process model](toolboxes.md#save-your-process-model) if you make changes.
-4. Click the **Validate BPMN** button. ProcessMaker 4 tests the Process model's BPMN 2.0 compliance. One of the following occurs:
+4. Click the **Validate BPMN** button. Process Modeler tests the Process model's BPMN 2.0 compliance. One of the following occurs:
    * **No errors found:** If no errors are found, the following text displays to the left of the **Validate BPMN** button: **Problems 0**. The green check mark displays. Your Process model is BPMN 2.0 compliant.
-   * **Errors are found:** If errors are found, ProcessMaker 4 displays how any errors are found to the left of the **Validate BPMN** button. Instead of the green check mark the error icon displays![](../../../.gitbook/assets/validate-bpmn-problems-errors-process-modeler-processes.png). Click the error icon to display a summary of the errors. Below is an example.  
+   * **Errors are found:** If errors are found, Process Modeler displays how any errors are found to the left of the **Validate BPMN** button. Instead of the green check mark the error icon displays![](../../../.gitbook/assets/validate-bpmn-problems-errors-process-modeler-processes.png). Click the error icon to display a summary of the errors. Below is an example.  
 
      ![](../../../.gitbook/assets/validate-bpmn-problem-error-summary-process-modeler-processes.png)
 
      Furthermore, Process model elements that are associated with errors display a red-colored highlight.  
 
      ![](../../../.gitbook/assets/validate-bpmn-problem-error-highlight-process-modeler-processes.png)
-5. If errors are found, click the error icon again to hide the error summary. Make changes to your Process model and then repeat steps 4 and 5 again until ProcessMaker finds no BPMN compliance errors.
+5. If errors are found, click the error icon again to hide the error summary. Make changes to your Process model and then repeat steps 4 and 5 again until Process Modeler finds no BPMN compliance errors.
 
 ## Related Topics
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/view-your-processes.md" %}
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/create-a-process.md" %}
+
+{% page-ref page="toolboxes.md" %}
 
 {% page-ref page="../../viewing-processes/view-the-list-of-processes/export-a-bpmn-compliant-process.md" %}
 

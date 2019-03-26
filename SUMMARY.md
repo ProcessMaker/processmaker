@@ -120,6 +120,7 @@
     * [Set Message Flow Elements Between Separate Pool Elements](designing-processes/process-design/model-your-process/set-and-delete-message-flow-between-elements.md)
     * [Add and Configure Text Annotation and Association Elements](designing-processes/process-design/model-your-process/add-and-configure-text-annotation-elements.md)
     * [Delete Process Model Elements](designing-processes/process-design/model-your-process/remove-process-model-elements.md)
+    * [Undo and Redo Changes](designing-processes/process-design/model-your-process/undo-and-redo-changes.md)
     * [Navigate Around Your Process Model](designing-processes/process-design/model-your-process/navigate-around-your-process-model.md)
     * [Save Your Process Model](designing-processes/process-design/model-your-process/toolboxes.md)
     * [Validate Your Process is BPMN 2.0 Compliant](designing-processes/process-design/model-your-process/validate-bpmn-2.0-compliance.md)
