@@ -27,7 +27,7 @@
 
             <div class="col-8" align="right">
                 @can('create-scripts')
-                    <a href="#" id="create-script" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
+                    <a href="#" id="script_id" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
                                 class="fas fa-plus"></i>
                         {{__('Script')}}</a>
                 @endcan
