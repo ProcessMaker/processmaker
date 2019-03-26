@@ -33,13 +33,28 @@
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{__('Cancel')}}
                         </button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="importFile" :disabled="uploaded == false">
+                        <button type="button" class="btn btn-secondary ml-2" @click="importFile"
+                                :disabled="uploaded == false">
                             {{__('Import')}}
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <b-modal ref="responseImport" title="Import Process" @hide="reload" ok-only centered v-cloak>
+            <ul v-show="options" class="list-unstyled">
+                <li v-for="item in options">
+                    <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
+                    @{{item.label}} - @{{item.message}}
+                </li>
+            </ul>
+            <div slot="modal-footer" class="w-100" align="right">
+                <button type="button" class="btn btn-secondary ml-2" @click="onCancel">{{__('List Processes')}}
+                </button>
+            </div>
+        </b-modal>
+
     </div>
 @endsection
 
@@ -50,13 +65,17 @@
         data: {
           file: '',
           uploaded: false,
-          submitted: false
+          submitted: false,
+          options: []
         },
         methods: {
           handleFile(e) {
             this.file = this.$refs.file.files[0];
             this.uploaded = true;
             this.submitted = false;
+          },
+          reload() {
+            window.location.reload();
           },
           onCancel() {
             window.location = '{{ route("processes.index") }}';
@@ -76,8 +95,17 @@
                 }
               }
             ).then(response => {
-              ProcessMaker.alert('{{__('The process was imported.')}}', 'success')
-              window.location = '{{ route("processes.index") }}';
+              this.options = response.data.status;
+              let message = '{{__('The process was imported.')}}';
+              let variant = 'success';
+              for (let item in this.options) {
+                if (!this.options[item].success) {
+                  message = '{{__('The process was imported, but with errors.')}}';
+                  variant = 'warning'
+                }
+              }
+              ProcessMaker.alert(message, variant);
+              this.$refs.responseImport.show();
             })
               .catch(error => {
                 this.submitted = false;

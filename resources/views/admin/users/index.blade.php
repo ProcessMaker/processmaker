@@ -48,7 +48,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{__('Create User')}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -73,7 +73,9 @@
                         </div>
                         <div class="form-group">
                             {!!Form::label('status', __('Status'));!!}
-                            {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'Active', ['class'=> 'form-control', 'v-model'=> 'status',
+                            {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], 'Active',
+                            ['placeholder' => 'Select status',
+                            'class'=> 'form-control', 'v-model'=> 'status',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.status}']);!!}
                             <div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
                         </div>
@@ -101,7 +103,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                             {{__('Cancel')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
@@ -187,6 +189,11 @@
                   });
                 }
               }
+            },
+            mounted() {
+              $('#addUser').on('hidden.bs.modal', () => {
+                this.onClose();
+              });
             }
           })
         </script>
