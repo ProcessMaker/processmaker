@@ -32,20 +32,24 @@ User-level and group-level permission assignments are cumulative. This means tha
 
 ProcessMaker recommends [creating ProcessMaker groups](assign-groups-to-users/manage-groups/create-a-group.md#create-a-processmaker-group) based on how you define ProcessMaker usage roles in your organization. Based on usage roles you define, assign permissions to ProcessMaker groups so that all group members have the same permission set. Below is an example how you might create groups to assign permissions:
 
-* **ProcessMaker user:** Most ProcessMaker users start or participate in Requests and perform Tasks. Their permission assignments may be limited to [Requests](permission-descriptions-for-users-and-groups.md#requests). Note that if you want specific ProcessMaker users and/or groups to start and/or cancel Requests, that must be [configured for each Process](../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process).
+* **ProcessMaker user:** Most ProcessMaker users start or participate in Requests and perform Tasks. Their permission assignments may be limited to [Requests](permission-descriptions-for-users-and-groups.md#requests). Note that if you want specific ProcessMaker users and/or groups to start and/or cancel Requests, those must be set from the following functional areas and are outside the scope of the permission settings discussed in this topic:
+  * **Cancel Requests:** [Process Configuration](../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process)
+  * **Start Requests:** [Start Event element configuration](../designing-processes/process-design/model-your-process/add-and-configure-an-event-element.md#select-the-processmaker-user-or-group-that-can-start-requests)
 * **Process Owner:** Process Owners create Process models. Their permission assignments may be limited to [Requests](permission-descriptions-for-users-and-groups.md#requests), [Processes](permission-descriptions-for-users-and-groups.md#processes), Process [Categories](permission-descriptions-for-users-and-groups.md#categories), [Screens](permission-descriptions-for-users-and-groups.md#screens), and [Environment Variables](permission-descriptions-for-users-and-groups.md#environment-variables) categories.
 * **ProcessMaker Developer:** ProcessMaker Developers create ProcessMaker Scripts. Their permission assignments may be limited to [Requests](permission-descriptions-for-users-and-groups.md#requests), [Scripts](permission-descriptions-for-users-and-groups.md#scripts), [Files \(API\)](permission-descriptions-for-users-and-groups.md#files-api), [Notifications \(API\)](permission-descriptions-for-users-and-groups.md#notifications-api), and [Task Assignments \(API\)](permission-descriptions-for-users-and-groups.md#task-assignments-api) categories.
 * **ProcessMaker Administrator:** ProcessMaker Administrators administer the ProcessMaker environment and its users. Their permission assignments may be limited to [Requests](permission-descriptions-for-users-and-groups.md#requests), [Users](permission-descriptions-for-users-and-groups.md#users), [Groups](permission-descriptions-for-users-and-groups.md#groups), and [Comments](permission-descriptions-for-users-and-groups.md#comments) categories.
 
 ## Permission Descriptions
 
-Permissions are organized into categories. Permission are described below by category and how each permission affects ProcessMaker functionality. These permissions function identically in ProcessMaker user accounts and groups.
+Permissions are organized into categories. Permissions are described below by category and how each permission affects ProcessMaker functionality. These permissions function identically in ProcessMaker user accounts and groups.
 
 ### Requests
 
 The **Requests** category contains the following permission:
 
 * **View All Requests:** View the **All Requests** page and [Request information](../using-processmaker/requests/request-details.md) accessible from that page. See [View All Requests](../using-processmaker/requests/view-all-requests.md).
+* **Edit Request Data:** View the **Data** tab for a completed Request and edit the [completed Request data](../using-processmaker/requests/request-details.md#completed-tasks-summary) that is in JSON format. See [View a Request Summary](../using-processmaker/requests/request-details.md#editable-request-data).
+* **Edit Task Data:** View the **Data** tab for an assigned Task and edit the Task data that is in JSON format. See [View a Task Summary](../using-processmaker/task-management/view-a-task-summary.md#editable-task-data).
 
 ### Scripts
 
@@ -133,6 +137,8 @@ The **Processes** category contains the following permissions:
 * **Create Processes:** Create a Process from the **Processes** page. Selecting this permission also selects the **Edit Processes** permission. See [Create a New Process](../designing-processes/viewing-processes/view-the-list-of-processes/create-a-process.md).
 * **Edit Processes:** Edit a Process model and/or its configuration from the **Processes** page. See [Edit a Process Model](../designing-processes/viewing-processes/view-the-list-of-processes/view-your-processes.md#edit-the-process-model) and [Edit Process Configuration](../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md).
 * **Archive Processes:** Archive a Process from the **Processes** page. See [Archive a Process](../designing-processes/viewing-processes/view-the-list-of-processes/remove-a-process.md).
+* **Import Processes:** Import a Process from the **Processes** page. See [Import a BPMN-Compliant Process](../designing-processes/viewing-processes/view-the-list-of-processes/import-a-bpmn-compliant-process.md).
+* **Export Processes:** Export a Process from the **Processes** page. See [Export a BPMN-Compliant Process](../designing-processes/viewing-processes/view-the-list-of-processes/export-a-bpmn-compliant-process.md).
 
 {% hint style="info" %}
 Select the **View Processes** permission to use any of the other permissions in this category.
@@ -149,6 +155,19 @@ The **Comments** category contains the following permissions:
 
 {% hint style="info" %}
 Select the **View Comments** permission to use any of the other permissions in this category.
+{% endhint %}
+
+### Auth-Clients
+
+The **Auth-Clients** category contains the following permissions:
+
+* **View Auth-Clients:** View all client authentication keys on the **Auth Clients** page. See [View All Client Authentication Keys](auth-client-management/manage-client-authentications/view-all-client-authentication-keys.md).
+* **Create Auth-Clients:** Create a client authentication key on the **Auth Clients** page. Selecting this permission also selects the **Edit Auth-Clients** permission. See [Create a New Client Authentication Key](auth-client-management/manage-client-authentications/create-a-new-client-authentication-key.md).
+* **Edit Auth-Clients:** Edit a client authentication key from the **Auth Clients** page. See [Edit a Client Authentication Key](auth-client-management/manage-client-authentications/edit-a-client-authentication-key.md).
+* **Delete Auth-Clients:** Delete a client authentication key from the **Auth Clients** page. See [Delete a Client Authentication Key](auth-client-management/manage-client-authentications/delete-a-client-authentication-key.md).
+
+{% hint style="info" %}
+Select the **View Auth-Clients** permission to use any of the other permissions in this category.
 {% endhint %}
 
 ### Files \(API\)
@@ -187,6 +206,8 @@ The **Task Assignments \(API\)** category contains the following permissions:
 {% page-ref page="../using-processmaker/requests/request-details.md" %}
 
 {% page-ref page="../designing-processes/scripts/manage-scripts/view-all-scripts.md" %}
+
+{% page-ref page="../using-processmaker/task-management/view-a-task-summary.md" %}
 
 {% page-ref page="../designing-processes/scripts/manage-scripts/create-a-new-script.md" %}
 
@@ -237,4 +258,10 @@ The **Task Assignments \(API\)** category contains the following permissions:
 {% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/create-a-process.md" %}
 
 {% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md" %}
+
+{% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/import-a-bpmn-compliant-process.md" %}
+
+{% page-ref page="../designing-processes/viewing-processes/view-the-list-of-processes/export-a-bpmn-compliant-process.md" %}
+
+{% page-ref page="auth-client-management/manage-client-authentications/view-all-client-authentication-keys.md" %}
 
