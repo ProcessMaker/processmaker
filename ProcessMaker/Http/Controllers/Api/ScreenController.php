@@ -4,6 +4,8 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Jobs\ExportProcess;
+use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -234,12 +236,12 @@ class ScreenController extends Controller
     {
         $request->validate(Screen::rules());
         $newScreen = new Screen();
-        
+
         $exclude = ['id', 'created_at', 'updated_at'];
         foreach ($screen->getAttributes() as $attribute => $value) {
             if (! in_array($attribute, $exclude)) {
-                $newScreen->{$attribute} = $screen->{$attribute};   
-            } 
+                $newScreen->{$attribute} = $screen->{$attribute};
+            }
         }
 
         if ($request->has('title')) {
@@ -286,5 +288,44 @@ class ScreenController extends Controller
         $screen->delete();
         return response([], 204);
     }
-    
+
+    /**
+     * Export the specified screen.
+     *
+     * @param $screen
+     *
+     * @return Response
+     *
+     * @OA\Get(
+     *     path="/screens/{screen_id}/export",
+     *     summary="Export a single screen by ID",
+     *     operationId="exportScreen",
+     *     tags={"Screens"},
+     *     @OA\Parameter(
+     *         description="ID of screen to return",
+     *         in="path",
+     *         name="screen_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the screen",
+     *         @OA\JsonContent(ref="#/components/schemas/Screen")
+     *     ),
+     * )
+     */
+    public function export(Request $request, Screen $screen)
+    {
+        $fileKey = ExportScreen::dispatchNow($screen);
+
+        if ($fileKey) {
+            return ['url' => url("/processes/screens/{$screen->id}/download/{$fileKey}")];
+        } else {
+            return response(['error' => __('Unable to Export Screen')], 500) ;
+        }
+    }
+
 }

@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Screen;
@@ -51,5 +52,32 @@ class ScreenController extends Controller
     public function export(Screen $screen)
     {
         return view('processes.screens.export', compact('screen'));
+    }
+
+    /**
+     * Get page import
+     *
+     * @param Screen $screen
+     *
+     * @return Factory|View
+     */
+    public function import(Screen $screen)
+    {
+        return view('processes.screens.import');
+    }
+
+
+    public function download(Screen $screen, $key)
+    {
+        $fileName = snake_case($screen->title) . '.bpm4';
+        $fileContents = Cache::get($key);
+
+        if (! $fileContents) {
+            return abort(404);
+        } else {
+            return response()->streamDownload(function () use ($fileContents) {
+                echo $fileContents;
+            }, $fileName);
+        }
     }
 }
