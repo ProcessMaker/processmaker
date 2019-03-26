@@ -40,4 +40,16 @@ class ScreenController extends Controller
     {
         return view('processes.screens.edit', compact('screen'));
     }
+
+    /**
+     * Get page export
+     *
+     * @param Screen $screen
+     *
+     * @return Factory|View
+     */
+    public function export(Screen $screen)
+    {
+        return view('processes.screens.export', compact('screen'));
+    }
 }

@@ -199,6 +199,9 @@
             this.dupScreen.id = data.id;
             this.showModal();
             break;
+          case "export-item":
+            window.location.href = "/processes/screens/" + data.id + "/export";
+            break;
           case "remove-item":
             let that = this;
             ProcessMaker.confirmModal(
