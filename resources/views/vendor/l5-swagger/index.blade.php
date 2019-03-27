@@ -26,6 +26,14 @@
       margin:0;
       background: #fafafa;
     }
+
+    .auth-container:first-child .wrapper {
+      display: none;
+    }
+    
+    .auth-container:nth-child(2) {
+      display: none;
+    }
   </style>
 </head>
 
