@@ -1,5 +1,5 @@
 ---
-description: Manage people in ProcessMaker.
+description: Manage ProcessMaker users.
 ---
 
 # User Management
