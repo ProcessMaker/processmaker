@@ -1,5 +1,5 @@
 ---
-description: Add a drop-down control from which the form user selects a single option.
+description: Add a drop-down menu control from which the form user selects a single option.
 ---
 
 # Select Control Settings
@@ -70,7 +70,7 @@ Below are Inspector settings for the Line Input control:
 * **Field Label:** Specify the field label text that displays. **New Select** is the default value.
 * **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
-* **Options List:** Specify the list of options available in the select box. Add options in the order they are to display from top to bottom in the drop-down. The default option is called **new** with the content **New Option**.  
+* **Options List:** Specify the list of options available in the select box. Add options in the order they are to display from top to bottom in the drop-down menu. The default option is called **new** with the content **New Option**.  
 
   ![](../../../../.gitbook/assets/select-control-options-list-screens-builder-processes.png)
 
