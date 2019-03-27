@@ -6,7 +6,7 @@ description: Understand what Queue Management is in ProcessMaker 4.
 
 ## Overview
 
-ProcessMaker 4 is built on the Laravel framework. [Laravel Horizon](https://horizon.laravel.com/) is a robust queue monitoring solution for Laravel-powered Redis queues. Use Laravel Horizon to monitor key metrics of your queue system such as job throughput, runtime, and job failures.
+ProcessMaker 4 is built on the Laravel framework. [Laravel Horizon](https://horizon.laravel.com/) is a robust queue monitoring solution. Use Laravel Horizon to monitor key metrics of your queue system such as job throughput, runtime, and job failures.
 
 ## What are Jobs and Queues?
 
@@ -19,11 +19,11 @@ Below are examples of ProcessMaker 4 jobs:
 * A ProcessMaker 4 [user account is created](../add-users/manage-user-accounts/create-a-user-account.md).
 * A ProcessMaker 4 [user profile is updated](../../using-processmaker/profile-settings.md#change-your-profile-settings).
 * A [Request](../../using-processmaker/requests/what-is-a-request.md) is started.
-* A [Task](../../using-processmaker/task-management/what-is-a-task.md) is created as part of a Request.
+* A [Task](../../using-processmaker/task-management/what-is-a-task.md) is assigned to a Request participant.
 
 ### Queues
 
-A queue manages and monitors the sequence of jobs that ProcessMaker 4 must run. When a job is called, that job enters the queue. If there is no delay to run the job, the queue loads that job to run as soon as possible. However, some jobs are intentionally delayed from running immediately, such as a Timer Event element in a Request.
+A queue manages and monitors the sequence of jobs that ProcessMaker 4 must run. When a job is called, that job enters the queue. If there is no delay to run the job, the queue loads that job to run as soon as possible. However, some jobs are intentionally delayed from running immediately, such as a Start Timer Event element in a Request.
 
 The queue have the following functions:
 

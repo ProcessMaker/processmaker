@@ -22,7 +22,7 @@ The **Recent Jobs** panel displays the following information about recently run 
 * **Tags:** The **Tags** column displays the tag\(s\) associated with the job.
 * **Queued At:** The **Queued At** column displays the date and time in which the job entered its queue.
 
-If more than ~~ten \(10\)~~ jobs display in the **Recent Jobs** panel, then the following occurs:
+If more than ~~nine \(9\)~~ jobs display in the **Recent Jobs** panel, then the following occurs:
 
 * The **Next** navigation button displays.
 * The **Previous** navigation button enables.

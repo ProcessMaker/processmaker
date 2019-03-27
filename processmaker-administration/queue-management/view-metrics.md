@@ -23,7 +23,7 @@ Follow these steps to view job metrics in Queue Management:
 
    ![](../../.gitbook/assets/jobs-tab-metrics-page-queue-management-admin.png)
 
-2. Click a recently run job to view throughput and runtime metrics for that job.
+2. Click a recently run job to view throughput and run-time metrics for that job.
 
 ## View Queue Metrics
 
@@ -34,7 +34,7 @@ Follow these steps to view queue metrics in Queue Management:
 
    ![](../../.gitbook/assets/queues-tab-metrics-page-queue-management-admin.png)
 
-3. Click a queue to view throughput and runtime metrics for that queue.
+3. Click a queue to view throughput and run-time metrics for that queue.
 
 ## Related Topics
 
