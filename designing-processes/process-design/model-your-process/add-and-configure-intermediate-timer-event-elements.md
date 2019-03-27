@@ -107,7 +107,7 @@ Follow these steps to set the timer controls for an Intermediate Timer Event ele
    ![](../../../.gitbook/assets/intermediate-timer-timing-control-process-modeler-processes.png)
 
 3. Do one of the following to set the timer control:
-   * **Delay the timer:** From the **Type** drop-down, select the **Delay** option. The **Delay** option is the default setting. When the **Delay** option is selected from the **Type** drop-down, the **Delay** setting displays.  
+   * **Delay the timer:** From the **Type** drop-down menu, select the **Delay** option. The **Delay** option is the default setting. When the **Delay** option is selected from the **Type** drop-down menu, the **Delay** setting displays.  
 
      ![](../../../.gitbook/assets/intermediate-timer-timing-control-delay-process-modeler-processes.png)
 
@@ -118,7 +118,7 @@ Follow these steps to set the timer controls for an Intermediate Timer Event ele
      * Month
      * Year
 
-   * **Set date and time to trigger the Intermediate Start Event element:** From the **Type** drop-down, select the **Date/Time** option. The **Wait until specific date/time** setting displays.  
+   * **Set date and time to trigger the Intermediate Start Event element:** From the **Type** drop-down menu, select the **Date/Time** option. The **Wait until specific date/time** setting displays.  
 
      ![](../../../.gitbook/assets/intermediate-timer-timing-control-wait-process-modeler-processes.png)
 

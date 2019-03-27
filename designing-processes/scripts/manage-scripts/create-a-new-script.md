@@ -26,7 +26,7 @@ Follow these steps to create a new ProcessMaker Script:
 
 3. In the **Name** field, enter the name of the ProcessMaker Script. ~~Character length limitation and/or unsupported characters?~~ This is a required field.
 4. In the **Description** field, enter the description of the ProcessMaker Script. ~~This does not seem to be a required field. Character length limitation and/or unsupported characters?~~
-5. From the **Language** drop-down, select one of the following programming languages in which the ProcessMaker Script is written:
+5. From the **Language** drop-down menu, select one of the following programming languages in which the ProcessMaker Script is written:
    * PHP
    * Lua
 6. Click **Save**. Scripts Editor displays. See [Scripts Editor](../scripts-editor.md).

@@ -153,11 +153,11 @@ Use the Annotation element to place a directional arrow that points between the 
 Follow these steps to edit the directional arrow that points between the Text Annotation element and the element it describes:
 
 1. Select the Association element from the Text Annotation element in which to edit its annotation description.
-2. Expand the **Configuration** setting section if it is not presently expanded. The **Direction** drop-down displays.  
+2. Expand the **Configuration** setting section if it is not presently expanded. The **Direction** drop-down menu displays.  
 
    ![](../../../.gitbook/assets/association-configuration-identifier-direction-process-modeler-processes.png)
 
-3. From the **Direction** drop-down, select the direction in which the arrow points between the Text Annotation element and the element it describes. Select one of the following options:
+3. From the **Direction** drop-down menu, select the direction in which the arrow points between the Text Annotation element and the element it describes. Select one of the following options:
    * **None:** Select the **None** option to not display an arrow that indicates the reference between the Text Annotation element and the element it describes.  
 
      ![](../../../.gitbook/assets/association-process-modeler-processes.png)

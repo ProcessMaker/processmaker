@@ -25,7 +25,7 @@ Follow these steps to create a ProcessMaker user account:
 3. In the **Username** field, enter the username associated with the ProcessMaker user account. This is a required field.
 4. In the **First name** field, enter the first name of the person associated with the ProcessMaker user account.
 5. In the **Last name** field, enter the last name of the person associated with the ProcessMaker user account.
-6. From the **Status** drop-down, select the status of the ProcessMaker user account using one of the following options:
+6. From the **Status** drop-down menu, select the status of the ProcessMaker user account using one of the following options:
    * **Active:** An Active ProcessMaker user account is one in which a person can use it to log in to ProcessMaker.
    * **Inactive:** An Inactive ProcessMaker user account is one in which a person cannot use it to log in to ProcessMaker.
 7. In the **Email** field, enter the email address associated with the ProcessMaker user account. This is a required field.

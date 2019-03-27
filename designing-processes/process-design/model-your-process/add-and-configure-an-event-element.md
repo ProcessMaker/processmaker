@@ -145,30 +145,30 @@ Follow these steps to disable an enabled Webhook in a Start Event element:
 Follow these steps to select which ProcessMaker [user](../../../processmaker-administration/add-users/what-is-a-user.md) can start a Request for this Process:
 
 1. Select the Start Event element from the Process model in which to select the user may start a Request.
-2. The **Start Permission** drop-down displays below the **Configuration** setting section.  
+2. The **Start Permission** drop-down menu displays below the **Configuration** setting section.  
 
    ![](../../../.gitbook/assets/start-permission-request-event-process-modeler-processes.png)
 
-3. From the **Start Permission** drop-down, select the **User** option. The **User** drop-down displays below the **Start Permission** drop-down.  
+3. From the **Start Permission** drop-down menu, select the **User** option. The **User** drop-down menu displays below the **Start Permission** drop-down menu.  
 
    ![](../../../.gitbook/assets/start-permission-request-user-event-process-modeler-processes.png)
 
-4. From the **User** drop-down, select which ProcessMaker user can start a Request via the Start Event element. That ProcessMaker user may start a Request.
+4. From the **User** drop-down menu, select which ProcessMaker user can start a Request via the Start Event element. That ProcessMaker user may start a Request.
 
 #### Select the ProcessMaker Group That Can Start a Request
 
 Follow these steps to select which ProcessMaker [group](../../../processmaker-administration/assign-groups-to-users/what-is-a-group.md) members can start a Request for this Process:
 
 1. Select the Start Event element from the Process model in which to select the user may start a Request.
-2. The **Start Permission** drop-down displays below the **Configuration** setting section.  
+2. The **Start Permission** drop-down menu displays below the **Configuration** setting section.  
 
    ![](../../../.gitbook/assets/start-permission-request-event-process-modeler-processes.png)
 
-3. From the **Start Permission** drop-down, select the **Group** option. The **Group** drop-down displays below the **Start Permission** drop-down.  
+3. From the **Start Permission** drop-down menu, select the **Group** option. The **Group** drop-down menu displays below the **Start Permission** drop-down menu.  
 
    ![](../../../.gitbook/assets/start-permission-request-group-event-process-modeler-processes.png)
 
-4. From the **Group** drop-down, select which ProcessMaker group can start a Request via the Start Event element. All members of that ProcessMaker group may start a Request.
+4. From the **Group** drop-down menu, select which ProcessMaker group can start a Request via the Start Event element. All members of that ProcessMaker group may start a Request.
 
 ## Related Topics
 

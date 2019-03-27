@@ -24,7 +24,7 @@ Follow these steps to configure a ProcessMaker Screen:
 
 3. Edit the following information about the ProcessMaker Screen as necessary:
    * In the **Name** field, edit the name of the ProcessMaker Screen. This is a required field.
-   * ~~In the **Type** drop-down, select the type of ProcessMaker Screen. This is a required field. See~~ [~~Screen Types~~](../screens-builder/types-for-screens.md)~~.~~
+   * ~~In the **Type** drop-down menu, select the type of ProcessMaker Screen. This is a required field. See~~ [~~Screen Types~~](../screens-builder/types-for-screens.md)~~.~~
    * In the **Description** field, edit the description of the ProcessMaker Screen. This is a required field.
 4. Click **Save**.
 

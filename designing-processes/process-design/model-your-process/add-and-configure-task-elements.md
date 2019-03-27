@@ -98,14 +98,14 @@ Ensure to select a ProcessMaker Screen for each Task element in your Process mod
 Follow these steps to select a ProcessMaker Screen for a Task element:
 
 1. Select the Task element from the Process model in which to specify its ProcessMaker Screen.
-2. The **Screen For Input** drop-down displays below the **Configuration** settings section.  
+2. The **Screen For Input** drop-down menu displays below the **Configuration** settings section.  
 
    ![](../../../.gitbook/assets/screen-input-task-process-modeler-processes.png)
 
-3. From the **Screen For Input** drop-down, select which ProcessMaker Screen that Task element uses. Click the **Refresh** link below the **Screen For Input** drop-down if necessary to refresh the options in the drop-down.
+3. From the **Screen For Input** drop-down menu, select which ProcessMaker Screen that Task element uses. Click the **Refresh** link below the **Screen For Input** drop-down menu if necessary to refresh the options in the drop-down menu.
 
 {% hint style="warning" %}
-If no ProcessMaker Screens exist, the **Screen For Input** drop-down contains no options. Ensure to select a ProcessMaker Screen for every Task element in the Process model before deploying your Process.
+If no ProcessMaker Screens exist, the **Screen For Input** drop-down menu contains no options. Ensure to select a ProcessMaker Screen for every Task element in the Process model before deploying your Process.
 {% endhint %}
 
 ### Specify When the Task is Due
@@ -141,23 +141,23 @@ Select to whom to assign the Task that is referenced in a Task element:
 Follow these steps to select to whom to assign the Task that is referenced in a Task element:
 
 1. Select the Task element from the Process model in which to select the Task assignee.
-2. The **Task Assignment** drop-down displays below the **Configuration** settings section.  
+2. The **Task Assignment** drop-down menu displays below the **Configuration** settings section.  
 
    ![](../../../.gitbook/assets/assignment-assignee-task-process-modeler-processes.png)
 
-3. From the **Task Assignment** drop-down, select one of the following options:
+3. From the **Task Assignment** drop-down menu, select one of the following options:
    * **Requester:** Select **Requester** to assign the Task to the Request initiator.
-   * **User:** Select **User** to assign the Task to a specified ProcessMaker user. When this option is selected, the **Assigned User** drop-down displays below the **Task Assignment** drop-down.  
+   * **User:** Select **User** to assign the Task to a specified ProcessMaker user. When this option is selected, the **Assigned User** drop-down menu displays below the **Task Assignment** drop-down menu.  
 
      ![](../../../.gitbook/assets/assignment-assignee-user-task-process-modeler-processes.png)
 
-     From the **Assigned User** drop-down, select the person's full name as the Task element's assignee.
+     From the **Assigned User** drop-down menu, select the person's full name as the Task element's assignee.
 
-   * **Group:** Select **Group** to assign the Task to a specified ProcessMaker group. When this option is selected, the **Assigned Group** drop-down displays below the **Task Assignment** drop-down.  
+   * **Group:** Select **Group** to assign the Task to a specified ProcessMaker group. When this option is selected, the **Assigned Group** drop-down menu displays below the **Task Assignment** drop-down menu.  
 
      ![](../../../.gitbook/assets/assignment-assignee-group-task-process-modeler-processes.png)
 
-     From the **Assigned Group** drop-down, select the group as the Task assignee.
+     From the **Assigned Group** drop-down menu, select the group as the Task assignee.
 
    * **Previous Task Assignee:** Select **Previous Task Assignee** to assign the Task to who was assigned the Task in the preceding Task element.
 4. Select the **Allow Reassignment** checkbox to allow the Task assignee to reassign the Task if necessary.
@@ -186,19 +186,19 @@ Follow these steps to select to whom to assign the Task that is referenced in a 
    ![](../../../.gitbook/assets/rule-expression-assignment-assignee-task-process-modeler-processes.png)
 
 4. In the **Expression** field, enter or edit the expression that determines that Task element's Task assignee using the syntax components described in [Expression Syntax Components](add-and-configure-task-elements.md#expression-syntax-components), and then press **Enter**.
-5. From the **Task Assignment** drop-down, select that Task's assignee from the following options:
+5. From the **Task Assignment** drop-down menu, select that Task's assignee from the following options:
    * **Requester:** Select the **Requester** option to assign that Task element's Task to the Request initiator if the expression in the **Expression** field evaluates as True.
-   * **User:** Select the **User** option to assign that Task element's Task to a ProcessMaker user if the expression in the **Expression** field evaluates as True. When the **User** option is selected, the **Assigned User** drop-down displays below the **Task Assignment** option.  
+   * **User:** Select the **User** option to assign that Task element's Task to a ProcessMaker user if the expression in the **Expression** field evaluates as True. When the **User** option is selected, the **Assigned User** drop-down menu displays below the **Task Assignment** option.  
 
      ![](../../../.gitbook/assets/rule-expression-user-assignment-assignee-task-process-modeler-processes.png)
 
-     From the **Assigned User** drop-down, select which ProcessMaker user to assign that Task.
+     From the **Assigned User** drop-down menu, select which ProcessMaker user to assign that Task.
 
-   * **Group:** Select the **Group** option to assign that Task element's Task to a ProcessMaker group if the expression in the **Expression** field evaluates as True. When the **Group** option is selected, the **Assigned Group** drop-down displays below the **Task Assignment** option.  
+   * **Group:** Select the **Group** option to assign that Task element's Task to a ProcessMaker group if the expression in the **Expression** field evaluates as True. When the **Group** option is selected, the **Assigned Group** drop-down menu displays below the **Task Assignment** option.  
 
      ![](../../../.gitbook/assets/rule-expression-group-assignment-assignee-task-process-modeler-processes.png)
 
-     From the **Assigned Group** drop-down, select which ProcessMaker group to assign that Task.
+     From the **Assigned Group** drop-down menu, select which ProcessMaker group to assign that Task.
 6. Click **Save**.
 
 #### Expression Syntax Components

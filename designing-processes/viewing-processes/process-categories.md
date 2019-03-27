@@ -90,7 +90,7 @@ Follow these steps to edit a Process Category:
 
 3. Edit the following information about the Category as necessary:
    * In the **Category Name** field, edit the name of the Category if necessary. The Category name must be unique from all other Category names in your organization. This is a required field.
-   * From the **Status** drop-down, change the status of the Category. This is a required field. See [View Process Categories](process-categories.md#view-process-categories) for status descriptions.
+   * From the **Status** drop-down menu, change the status of the Category. This is a required field. See [View Process Categories](process-categories.md#view-process-categories) for status descriptions.
 4. Click **Save**.
 
 ## Delete a Process Category

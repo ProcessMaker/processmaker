@@ -32,22 +32,22 @@ Follow these steps to edit a ProcessMaker user account:
    * In the **Address** section, change the following information:
      * In the **Address** field, edit the person's business address.
      * In the **City** field, edit the city for the person's business address.
-     * From the **State or Region** drop-down, select the state, region, or province for the person's business address.
+     * From the **State or Region** drop-down menu, select the state, region, or province for the person's business address.
      * In the **Postal code** field, edit the person's business postal code.
-     * From the **Country** drop-down, select the country for the person's business address.
+     * From the **Country** drop-down menu, select the country for the person's business address.
    * In the **Localization** section, change the following information:
-     * From the **Date format** drop-down, select the format for how dates are displayed for this person from the following options:
+     * From the **Date format** drop-down menu, select the format for how dates are displayed for this person from the following options:
        * m/d/Y \(12/31/2017\)
        * m/d/Y h:i A \(12/31/2017 11:30 pm\)
        * m/d/Y H:i \(12/31/2017 23:30\)
-     * From the **Time zone** drop-down, select the time zone in which to display times for this person.
-     * From the **Language** drop-down, select in which language to display ProcessMaker labels.
+     * From the **Time zone** drop-down menu, select the time zone in which to display times for this person.
+     * From the **Language** drop-down menu, select in which language to display ProcessMaker labels.
    * Select the avatar image to change the avatar for the ProcessMaker user account. If there is no avatar image, the initials for that person's full name display. When the avatar image is selected, the **Upload Avatar** screen displays to select a new avatar image. Click the **Browse** button to locate the new avatar image. After selecting the new image click **Continue** from the **Upload Avatar** screen.  
 
      ![](../../../.gitbook/assets/browse-avatar-edit-user-information-tab-admin.png)
 
    * In the **Username** field, edit the username for the person's ProcessMaker user account. This is a required field.
-   * From the **Status** drop-down, select the status of the ProcessMaker user account from the following options:
+   * From the **Status** drop-down menu, select the status of the ProcessMaker user account from the following options:
      * **Active:** An Active ProcessMaker user account is one in which a person can use it to log in to ProcessMaker.
      * **Inactive:** An Inactive ProcessMaker user account is one in which a person cannot use it to log in to ProcessMaker.
    * In the **New Password** field, edit the password to log in with the ProcessMaker user account. Leave the **New Password** field blank to keep the current password. Passwords must be at least eight \(8\) characters long. [Password special characters](https://www.owasp.org/index.php/Password_special_characters) are recommended. Password validation indicates how strong your password is if you enter a new password.
@@ -65,7 +65,7 @@ Follow these steps to edit a ProcessMaker user account:
 6. In the **Groups** tab, change which ProcessMaker group\(s\) to which that ProcessMaker user is a member if necessary:
    * **Follow these steps to add the ProcessMaker user to a ProcessMaker group:**
      1. Click the **+Add User to Group** button. The **Add User To Group** screen displays.
-     2. From the **Groups** drop-down, select which ProcessMaker group\(s\) to add the ProcessMaker user as a member. Multiple ProcessMaker groups may be added, one at a time, to this field. You may click the Remove icon to remove a ProcessMaker user account from the **Users** drop-down.  
+     2. From the **Groups** drop-down menu, select which ProcessMaker group\(s\) to add the ProcessMaker user as a member. Multiple ProcessMaker groups may be added, one at a time, to this field. You may click the Remove icon to remove a ProcessMaker user account from the **Groups** drop-down menu.  
 
         ![](../../../.gitbook/assets/add-user-to-group-screen-edit-user-groups-tab-admin.png)
 

@@ -25,7 +25,7 @@ Follow these steps to edit a ProcessMaker group:
 3. Edit the following information in the **Group Details** tab about the ProcessMaker group as necessary:
    * In the **Name** field, edit the name of the ProcessMaker group. This is a required field.
    * In the **Description** field, edit the description of the ProcessMaker group.
-   * From the **Status** drop-down, select the status of the ProcessMaker group from one of the following options:
+   * From the **Status** drop-down menu, select the status of the ProcessMaker group from one of the following options:
      * **Active:** An Active ProcessMaker group is one to which ProcessMaker user accounts can be assigned as members.
      * **Inactive:** An Inactive ProcessMaker group is one to which ProcessMaker user accounts cannot be assigned. When a ProcessMaker group becomes inactive, ProcessMaker user accounts that were members of that group are no longer members.
 4. Click **Save** if you made any changes in the **Group Members** tab and do not need to make other changes in the ProcessMaker group. Otherwise, continue.
@@ -48,11 +48,11 @@ Follow these steps to edit a ProcessMaker group:
 
         ![](../../../.gitbook/assets/add-users-screen-edit-groups-admin.png)
 
-     2. From the **Users** drop-down, select which ProcessMaker user account\(s\) to include as members of this ProcessMaker group by selecting the person's full name. Multiple ProcessMaker groups may be added, one at a time, to this field. You may click the Remove icon to remove a ProcessMaker user account from the **Users** drop-down.  
+     2. From the **Users** drop-down menu, select which ProcessMaker user account\(s\) to include as members of this ProcessMaker group by selecting the person's full name. Multiple ProcessMaker groups may be added, one at a time, to this field. You may click the Remove icon to remove a ProcessMaker user account from the **Users** drop-down menu.  
 
         ![](../../../.gitbook/assets/add-users-screen-remove-user-edit-group-admin.png)
 
-     3. Click **Save**. The ProcessMaker user account\(s\) from the **Users** drop-down display in the **Group Members** tab.
+     3. Click **Save**. The ProcessMaker user account\(s\) from the **Users** drop-down menu display in the **Group Members** tab.
    * **Follow these steps to remove ProcessMaker user accounts from the group:** 
      1. Click the **Remove from Group** icon![](../../../.gitbook/assets/remove-icon-admin.png)for the ProcessMaker user account. The **Caution** screen displays to confirm the removal of the ProcessMaker user group.  
 
