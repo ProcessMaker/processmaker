@@ -48,9 +48,7 @@ window.ProcessMaker.navbar = new Vue({
     data() {
         return {
             messages: ProcessMaker.notifications,
-            alertShow: false,
-            alertText: "",
-            alertVariant: "",
+            alerts: [],
             confirmTitle: "",
             confirmMessage: "",
             confirmVariant: "",
@@ -78,9 +76,11 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 3) {
         // Just show it indefinitely, no countdown
         showValue = true;
     }
-    ProcessMaker.navbar.alertText = msg;
-    ProcessMaker.navbar.alertShow = showValue;
-    ProcessMaker.navbar.alertVariant = String(variant);
+    ProcessMaker.navbar.alerts.push({
+        alertText: msg,
+        alertShow: showValue,
+        alertVariant: String(variant)
+    })
 };
 
 // Set out own specific confirm modal.

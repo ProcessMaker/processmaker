@@ -9,9 +9,12 @@
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
-        <b-alert class="d-none d-lg-block" :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow=0" dismissible fade>
-            @{{alertText}}
-        </b-alert>
+
+        <div v-if="alerts.length > 0" class="alert-wrapper">
+            <b-alert v-for="(item, index) in alerts" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade>
+                @{{item.alertText}}
+            </b-alert>
+        </div>
 
         <b-navbar-nav class="d-flex align-items-center">
             @foreach(Menu::get('topnav')->items as $item)
