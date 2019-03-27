@@ -11,7 +11,7 @@
         </confirmation-modal>
 
         <div v-if="alerts.length > 0" class="alert-wrapper">
-            <b-alert v-for="(item, index) in alerts" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade>
+            <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade>
                 @{{item.alertText}}
             </b-alert>
         </div>
