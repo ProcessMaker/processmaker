@@ -1,5 +1,5 @@
 ---
-description: 'Learn how to create, list, and search for processes.'
+description: 'Learn how to create, configure, archive, import, and export Processes.'
 ---
 
 # Process Management
