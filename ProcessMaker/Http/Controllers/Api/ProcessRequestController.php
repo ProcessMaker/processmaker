@@ -324,6 +324,16 @@ class ProcessRequestController extends Controller
 
         //Closed tokens
         $request->tokens()->update(['status' => 'CLOSED']);
+
+        $user = \Auth::user();
+        Comment::create([
+            'type' => 'LOG',
+            'user_id' => $user->id,
+            'commentable_type' => ProcessRequest::class,
+            'commentable_id' => $request->id,
+            'subject' => __('Process Manually Completed'),
+            'body' => $user->fullname . " " . __("manually completed the request from an error state"),
+        ]);
     }
 
     private function getTaskName($fields, $request) {

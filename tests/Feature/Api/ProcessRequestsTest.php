@@ -12,6 +12,7 @@ use Tests\TestCase;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Comment;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -358,6 +359,15 @@ class ProcessRequestsTest extends TestCase
 
         $request->refresh();
         $this->assertEquals('COMPLETED', $request->status);
+
+        // Verify comment added
+        $this->assertEquals(
+            $this->user->fullname . " manually completed the request from an error state",
+            Comment::first()->body
+        );
+
+        // Verify metadata was removed from data object
+        $this->assertFalse(array_key_exists('_user', $request->data));
     }
 
     /**
