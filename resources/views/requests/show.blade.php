@@ -194,6 +194,15 @@
                                     </li>
                                 </template>
                             @endif
+                            @if($canManuallyComplete == true)
+                                <li class="list-group-item">
+                                    <h5>{{__('Manually Complete Request')}}</h5>
+                                    <button type="button" class="btn btn-outline-success btn-block"
+                                            data-toggle="modal" @click="completeRequest">
+                                        <i class="fas fa-stop-circle"></i> {{__('Complete')}}
+                                    </button>
+                                </li>
+                            @endif
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
@@ -470,6 +479,20 @@
           },
           cancelRequest() {
             this.showCancelRequest = true;
+          },
+          completeRequest() {
+            ProcessMaker.confirmModal(
+              __("Caution!"),
+              __("Are you sure you want to complete this request?"),
+              "",
+              () => {
+                ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
+                  status: 'COMPLETED'
+                }).then(() => {
+                  ProcessMaker.alert(__('Request Completed'), 'success')
+                  location.reload()
+                })
+              })
           }
         },
         mounted() {
