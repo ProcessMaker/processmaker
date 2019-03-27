@@ -34,6 +34,15 @@
     .auth-container:nth-child(2) {
       display: none;
     }
+
+    .auth-container:first-child h6 {
+      font-size: 18px;
+    }
+    
+    .auth-container:first-child h6::after {
+      content: " - You can close this dialog and use the 'Try it out' features"
+    }
+
   </style>
 </head>
 
