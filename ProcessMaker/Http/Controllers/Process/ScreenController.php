@@ -69,7 +69,7 @@ class ScreenController extends Controller
 
     public function download(Screen $screen, $key)
     {
-        $fileName = snake_case($screen->title) . '.bpm4';
+        $fileName = snake_case($screen->title) . '.pm4';
         $fileContents = Cache::get($key);
 
         if (! $fileContents) {

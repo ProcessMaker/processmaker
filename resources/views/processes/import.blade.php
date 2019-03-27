@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <b-modal ref="responseImport" title="__('Import Process')" @hide="reload" ok-only centered v-cloak>
+        <b-modal ref="responseImport" :title="__('Import Process')" @hide="reload" ok-only centered v-cloak>
             <ul v-show="options" class="list-unstyled">
                 <li v-for="item in options">
                     <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
@@ -95,6 +95,10 @@
                 }
               }
             ).then(response => {
+              if (!response.data.status) {
+                ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger');
+                return;
+              }
               this.options = response.data.status;
               let message = '{{__('The process was imported.')}}';
               let variant = 'success';

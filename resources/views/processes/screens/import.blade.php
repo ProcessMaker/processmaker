@@ -23,7 +23,7 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{__('You are about to import a Screen.')}}</h5>
-                        <input type="file" ref="file" class="d-none" @change="handleFile" accept=".bpm4">
+                        <input type="file" ref="file" class="d-none" @change="handleFile" accept=".pm4">
                         <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                             <i class="fas fa-upload"></i>
                             {{__('Browse')}}
@@ -95,6 +95,10 @@
                 }
               }
             ).then(response => {
+              if (!response.data.status) {
+                ProcessMaker.alert('{{__('Unable to import the screen.')}}', 'danger');
+                return;
+              }
               this.options = response.data.status;
               let message = '{{__('The screen was imported.')}}';
               let variant = 'success';
