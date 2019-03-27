@@ -296,14 +296,14 @@ class ScreenController extends Controller
      * @return Response
      *
      * @OA\Get(
-     *     path="/screens/{screen_id}/export",
+     *     path="/screens/screensId/export",
      *     summary="Export a single screen by ID",
      *     operationId="exportScreen",
      *     tags={"Screens"},
      *     @OA\Parameter(
      *         description="ID of screen to return",
      *         in="path",
-     *         name="screen_id",
+     *         name="screensId",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -312,7 +312,7 @@ class ScreenController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the screen",
-     *         @OA\JsonContent(ref="#/components/schemas/Screen")
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */
@@ -344,7 +344,7 @@ class ScreenController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Screen")
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
