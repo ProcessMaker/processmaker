@@ -73,9 +73,13 @@ window.ProcessMaker.navbar = new Vue({
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant) {
+window.ProcessMaker.alert = function (msg, variant, showValue = 3) {
+    if (showValue === 0) {
+        // Just show it indefinitely, no countdown
+        showValue = true;
+    }
     ProcessMaker.navbar.alertText = msg;
-    ProcessMaker.navbar.alertShow = true;
+    ProcessMaker.navbar.alertShow = showValue;
     ProcessMaker.navbar.alertVariant = String(variant);
 };
 

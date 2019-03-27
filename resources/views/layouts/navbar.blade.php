@@ -9,7 +9,7 @@
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
-        <b-alert class="d-none d-lg-block" :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow = false" dismissible>
+        <b-alert class="d-none d-lg-block" :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow=0" dismissible fade>
             @{{alertText}}
         </b-alert>
 
