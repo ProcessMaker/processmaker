@@ -19,6 +19,11 @@
 
                 <ul class="navbar-nav pull-right">
                     <li class="nav-item">
+                        <a :class="classExportScreen" @click="exportScreen" href="#">
+                            <i class="fas fa-file-export"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" @click="saveScreen" href="#">
                             <i class="fas fa-save"></i>
                         </a>
@@ -129,6 +134,14 @@
       }
     },
     computed: {
+      classExportScreen() {
+        let classExport = 'nav-link';
+        if (this.$refs.screenBuilder && this.$refs.screenBuilder.validationErrors
+          && this.$refs.screenBuilder.validationErrors.length > 0) {
+          classExport = 'nav-link disabled';
+        }
+        return classExport;
+      },
       displayBuilder() {
         return this.mode === 'editor';
       },
@@ -224,6 +237,16 @@
       checkForErrors() {
         this.errors = this.$refs.screenBuilder.validationErrors
                 && this.$refs.screenBuilder.validationErrors.length > 0;
+      },
+      exportScreen() {
+        ProcessMaker.apiClient.post('screens/' + this.screen.id + '/export')
+          .then(response => {
+            window.location = response.data.url;
+            ProcessMaker.alert('The screen was exported.', 'success');
+          })
+          .catch(error => {
+            ProcessMaker.alert(error.response.data.error, 'danger');
+          });
       },
       saveScreen() {
         this.checkForErrors();
