@@ -209,7 +209,7 @@
                                               :input-data="participants" hide-name="true"></avatar-image>
                             </li>
                             <li class="list-group-item">
-                                <h5>{{__('Completed')}}</h5>
+                                <h5>@{{statusLabel}}</h5>
                                 <i class="far fa-calendar-alt"></i>
                                 <small>@{{ moment(statusDate).format() }}</small>
                                 <br>
@@ -368,6 +368,16 @@
               "COMPLETED": this.request.completed_at,
               "CANCELED": this.request.updated_at,
               "ERROR": this.request.updated_at
+            };
+
+            return status[this.request.status.toUpperCase()];
+          },
+          statusLabel() {
+            let status = {
+              "ACTIVE": "{{__('Created')}}",
+              "COMPLETED": "{{__('Completed')}}",
+              "CANCELED": "{{__('Canceled')}}",
+              "ERROR": "{{__('Canceled')}}",
             };
 
             return status[this.request.status.toUpperCase()];
