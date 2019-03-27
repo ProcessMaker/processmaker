@@ -27,7 +27,7 @@
             </div>
             <div class="col-8" align="right">
                 @can('create-categories')
-                    <button type="button" id="category_id" class="btn btn-secondary" data-toggle="modal"
+                    <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createProcessCategory">
                         <i class="fas fa-plus"></i> {{__('Category')}}
                     </button>

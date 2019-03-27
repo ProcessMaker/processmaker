@@ -54,7 +54,7 @@
         <div class="container page-content">
             <div class="row">
                 <div class="col" align="right">
-                    <button id="authclients_id" class="btn btn-secondary" type="button" data-toggle="modal"
+                    <button id="create_authclients" class="btn btn-secondary" type="button" data-toggle="modal"
                             data-target="#createEditAuthClient">
                         <i class="fas fa-plus"></i>
                         {{__('Auth Client')}}</a>
