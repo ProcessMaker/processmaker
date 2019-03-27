@@ -53,6 +53,31 @@ class CallActivity implements CallActivityInterface
                 );
             }
         );
+
+        $this->attachEvent(
+            ActivityInterface::EVENT_ACTIVITY_CLOSED,
+            function ($self, TokenInterface $token) {
+                $instance = $this->getCalledElement()->call();
+                $this->getCalledElement()->attachEvent(
+                    ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED,
+                    function ($self, $closedInstance) use($token, $instance) {
+                        if ($closedInstance === $instance) {
+                            if ($token->getStatus() !== ActivityInterface::TOKEN_STATE_FAILING) {
+                                $token->setStatus(ActivityInterface::TOKEN_STATE_COMPLETED);
+                            }
+                        }
+                    }
+                );
+                $this->getCalledElement()->attachEvent(
+                    ErrorEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION,
+                    function ($element, $innerToken, $errorEvent) use($token, $instance) {
+                        if ($innerToken->getInstance() === $instance) {
+                            $token->setStatus(ActivityInterface::TOKEN_STATE_FAILING);
+                        }
+                    }
+                );
+            }
+        );
     }
 
     /**
