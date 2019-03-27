@@ -40,16 +40,16 @@ Follow these steps to change your profile settings:
    * In the **Address** section, change the following information:
      * In the **Address** field, enter your business address.
      * In the **City** field, enter the city for your business address.
-     * From the **State or Region** drop-down, select the state, region, or province for the person's business address.
+     * From the **State or Region** drop-down menu, select the state, region, or province for the person's business address.
      * In the **Postal code** field, enter your business postal code.
      * From the **Country** drop-down menu, select the country for your business address.
    * In the **Localization** section, change the following information:
-     * In the **Date format** drop-down, select the format for how dates are displayed from the following options:
+     * In the **Date format** drop-down menu, select the format for how dates are displayed from the following options:
        * m/d/Y \(12/31/2017\)
        * m/d/Y h:i A \(12/31/2017 11:30 pm\)
        * m/d/Y H:i \(12/31/2017 23:30\)
-     * From the **Time zone** drop-down, select the time zone in which to display times.
-     * From the **Language** drop-down, select in which language to display ProcessMaker labels.
+     * From the **Time zone** drop-down menu, select the time zone in which to display times.
+     * From the **Language** drop-down menu, select in which language to display ProcessMaker labels.
 3. Click the avatar image to change the avatar for the ProcessMaker user account if necessary. If there is no avatar image, the initials of your full name display. When the avatar image is selected, the **Upload Avatar** screen displays to select a new avatar image. Click the **Browse** button to locate the new avatar image. After selecting the new image click **Continue** from the **Upload Avatar** screen.  
 
    ![](../.gitbook/assets/browse-avatar-edit-user-information-tab-admin.png)
