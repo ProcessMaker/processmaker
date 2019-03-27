@@ -28,7 +28,7 @@ class ImportProcess implements ShouldQueue
      * The original contents of the imported file.
      *
      * @var string
-     */    
+     */
     private $fileContents;
 
     /**
@@ -49,15 +49,22 @@ class ImportProcess implements ShouldQueue
      * The BPMN definitions of the process.
      *
      * @var object
-     */    
+     */
     private $definitions;
 
     /**
      * An array of the new models being created on import.
      *
      * @var object[]
-     */    
+     */
     private $new = [];
+
+    /**
+     * An array with the state completed, incomplete or failure of the elements to be imported
+     *
+     * @var array
+     */
+    private $status = [];
 
     /**
      * Create a new job instance and set the file contents.
@@ -74,7 +81,7 @@ class ImportProcess implements ShouldQueue
      * or return false if no such method exists.
      *
      * @return string|bool
-     */    
+     */
     private function getParser()
     {
         $method = "parseFileV{$this->file->version}";
@@ -90,10 +97,10 @@ class ImportProcess implements ShouldQueue
      * run in the console, the first user in the database.
      *
      * @return object
-     */    
+     */
     private function currentUser()
     {
-        if (! app()->runningInConsole()) {
+        if (!app()->runningInConsole()) {
             return Auth::user();
         } else {
             return User::first();
@@ -107,7 +114,7 @@ class ImportProcess implements ShouldQueue
      * @param string|null $date
      *
      * @return resource|null
-     */    
+     */
     private function formatDate($date)
     {
         if ($date) {
@@ -127,17 +134,17 @@ class ImportProcess implements ShouldQueue
      * @param object $class
      *
      * @return string
-     */        
+     */
     private function formatName($name, $field, $class)
     {
         //Create a new instance of this model
         $model = new $class;
-        
+
         //Find duplicates of this item's name
         $dupe = $model->where($field, 'like', $name . '%')
-                      ->orderBy(DB::raw("LENGTH($field), $field"))
-                      ->get();
-        
+            ->orderBy(DB::raw("LENGTH($field), $field"))
+            ->get();
+
         //If we have duplicates...
         if ($dupe->count()) {
             //Get the last duplicate
@@ -145,7 +152,7 @@ class ImportProcess implements ShouldQueue
 
             //Match the number at the end of the name
             $doesMatch = preg_match('/(\d+)$/', $dupe->{$field}, $matches);
-            
+
             //If we have a match...
             if ($doesMatch === 1) {
                 //Increment the number!
@@ -154,7 +161,7 @@ class ImportProcess implements ShouldQueue
                 //Start with 2
                 $number = 2;
             }
-            
+
             //Return the name appended with the number
             return $name . ' ' . $number;
         } else {
@@ -168,7 +175,7 @@ class ImportProcess implements ShouldQueue
      * then remove them along with any referenced users or groups.
      *
      * @return void
-     */        
+     */
     private function removeAssignedEntities()
     {
         $humanTasks = ['task', 'userTask'];
@@ -193,25 +200,32 @@ class ImportProcess implements ShouldQueue
      * @param object[] $environmentVariables
      *
      * @return void
-     */    
+     */
     private function saveEnvironmentVariables($environmentVariables)
     {
-        $this->new['environment_variables'] = [];
-                
-        foreach ($environmentVariables as $environmentVariable) {
-            //Find duplicates of the environment variable's name
-            $dupe = EnvironmentVariable::where('name', $environmentVariable->name)->get();        
+        try {
+            $this->new['environment_variables'] = [];
 
-            //If no duplicate, save it!
-            if (! $dupe->count()) {
-                $new = new EnvironmentVariable;
-                $new->name = $environmentVariable->name;
-                $new->description = $environmentVariable->description;
-                $new->value = '';
-                $new->created_at = $this->formatDate($environmentVariable->created_at);
-                $new->save();
+            $this->prepareStatus('environment_variables', count($environmentVariables) > 0);
+            foreach ($environmentVariables as $environmentVariable) {
+                //Find duplicates of the environment variable's name
+                $dupe = EnvironmentVariable::where('name', $environmentVariable->name)->get();
+
+                //If no duplicate, save it!
+                if (!$dupe->count()) {
+                    $new = new EnvironmentVariable;
+                    $new->name = $environmentVariable->name;
+                    $new->description = $environmentVariable->description;
+                    $new->value = '';
+                    $new->created_at = $this->formatDate($environmentVariable->created_at);
+                    $new->save();
+                }
             }
+            $this->finishStatus('environment_variables');
+        } catch (\Exception $e) {
+            $this->finishStatus('environment_variables', true);
         }
+
     }
 
     /**
@@ -222,7 +236,7 @@ class ImportProcess implements ShouldQueue
      * @param string|integer $newId
      *
      * @return void
-     */    
+     */
     private function updateScreenRefs($oldId, $newId)
     {
         $humanTasks = ['task', 'userTask'];
@@ -244,24 +258,29 @@ class ImportProcess implements ShouldQueue
      * @param object[] $screens
      *
      * @return void
-     */    
+     */
     private function saveScreens($screens)
     {
-        $this->new['screens'] = [];
-        
-        foreach ($screens as $screen) {
-            $new = new Screen;
-            $new->title = $this->formatName($screen->title, 'title', Screen::class);
-            $new->description = $screen->description;
-            $new->type = $screen->type;
-            $new->config = $screen->config;
-            $new->computed = $screen->computed;
-            $new->created_at = $this->formatDate($screen->created_at);
-            $new->save();
-            
-            $this->updateScreenRefs($screen->id, $new->id);
-            
-            $this->new['screens'][] = $new;
+        try {
+            $this->new['screens'] = [];
+            $this->prepareStatus('screens', count($screens) > 0);
+            foreach ($screens as $screen) {
+                $new = new Screen;
+                $new->title = $this->formatName($screen->title, 'title', Screen::class);
+                $new->description = $screen->description;
+                $new->type = $screen->type;
+                $new->config = $screen->config;
+                $new->computed = $screen->computed;
+                $new->created_at = $this->formatDate($screen->created_at);
+                $new->save();
+
+                $this->updateScreenRefs($screen->id, $new->id);
+
+                $this->new['screens'][] = $new;
+            }
+            $this->finishStatus('screens');
+        } catch (\Exception $e) {
+            $this->finishStatus('screens', true);
         }
     }
 
@@ -278,7 +297,7 @@ class ImportProcess implements ShouldQueue
     {
         $tasks = $this->definitions->getElementsByTagName('scriptTask');
         foreach ($tasks as $task) {
-            $scriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');        
+            $scriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
             if ($scriptRef == $oldId) {
                 $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $newId);
             }
@@ -295,20 +314,25 @@ class ImportProcess implements ShouldQueue
      */
     private function saveScripts($scripts)
     {
-        $this->new['scripts'] =[];
+        try {
+            $this->new['scripts'] = [];
+            $this->prepareStatus('scripts', count($scripts) > 0);
+            foreach ($scripts as $script) {
+                $new = new Script;
+                $new->title = $this->formatName($script->title, 'title', Script::class);
+                $new->description = $script->description;
+                $new->language = $script->language;
+                $new->code = $script->code;
+                $new->created_at = $this->formatDate($script->created_at);
+                $new->save();
 
-        foreach($scripts as $script) {
-            $new = new Script;
-            $new->title = $this->formatName($script->title, 'title', Script::class);
-            $new->description = $script->description;
-            $new->language = $script->language;
-            $new->code = $script->code;
-            $new->created_at = $this->formatDate($script->created_at);
-            $new->save();
+                $this->updateScriptRefs($script->id, $new->id);
 
-            $this->updateScriptRefs($script->id, $new->id);
-            
-            $this->new['scripts'][] = $new;
+                $this->new['scripts'][] = $new;
+            }
+            $this->finishStatus('scripts');
+        } catch (\Exception $e) {
+            $this->finishStatus('scripts', true);
         }
     }
 
@@ -320,20 +344,26 @@ class ImportProcess implements ShouldQueue
      * @param object $processCategory
      *
      * @return void
-     */    
+     */
     private function saveProcessCategory($processCategory)
     {
-        $existing = ProcessCategory::where('name', $processCategory->name)->first();
-        if ($existing) {
-            $this->new['process_category'] = $existing;
-        } else {
-            $new = new ProcessCategory;
-            $new->name = $processCategory->name;
-            $new->status = $processCategory->status;
-            $new->created_at = $this->formatDate($processCategory->created_at);
-            $new->save();
-            
-            $this->new['process_category'] = $new;
+        try {
+            $existing = ProcessCategory::where('name', $processCategory->name)->first();
+            $this->prepareStatus('process_category', true);
+            if ($existing) {
+                $this->new['process_category'] = $existing;
+            } else {
+                $new = new ProcessCategory;
+                $new->name = $processCategory->name;
+                $new->status = $processCategory->status;
+                $new->created_at = $this->formatDate($processCategory->created_at);
+                $new->save();
+
+                $this->new['process_category'] = $new;
+            }
+            $this->finishStatus('process_category');
+        } catch (\Exception $e) {
+            $this->finishStatus('process_category', true);
         }
     }
 
@@ -347,57 +377,63 @@ class ImportProcess implements ShouldQueue
      */
     private function saveProcess($process)
     {
-        $new = new Process;
-        $new->process_category_id = $this->new['process_category']->id;
-        $new->user_id = $this->currentUser()->id;
-        $new->bpmn = $process->bpmn;
-        $new->description = $process->description;
-        $new->name = $this->formatName($process->name, 'name', Process::class);
-        $new->status = $process->status;
-        $new->created_at = $this->formatDate($process->created_at);
-        $new->deleted_at = $this->formatDate($process->deleted_at);
-        $new->save();
-        
-        if (property_exists($process, 'notifications')) {
-            foreach ($process->notifications as $notifiable => $notificationTypes) {
-                foreach ($notificationTypes as $notificationType => $wanted) {
-                    if ($wanted === true) {
-                        $newNotification = new ProcessNotificationSetting;
-                        $newNotification->process_id = $new->id;
-                        $newNotification->notifiable_type = $notifiable;
-                        $newNotification->notification_type = $notificationType;
-                        $newNotification->save();
-                    }
-                }
-            }
-        }
+        try {
+            $this->prepareStatus('process', true);
+            $new = new Process;
+            $new->process_category_id = $this->new['process_category']->id;
+            $new->user_id = $this->currentUser()->id;
+            $new->bpmn = $process->bpmn;
+            $new->description = $process->description;
+            $new->name = $this->formatName($process->name, 'name', Process::class);
+            $new->status = $process->status;
+            $new->created_at = $this->formatDate($process->created_at);
+            $new->deleted_at = $this->formatDate($process->deleted_at);
+            $new->save();
 
-        if (property_exists($process, 'task_notifications')) {
-            foreach ($process->task_notifications as $elementId => $notifiables) {
-                foreach ($notifiables as $notifiable => $notificationTypes) {
+            if (property_exists($process, 'notifications')) {
+                foreach ($process->notifications as $notifiable => $notificationTypes) {
                     foreach ($notificationTypes as $notificationType => $wanted) {
                         if ($wanted === true) {
                             $newNotification = new ProcessNotificationSetting;
                             $newNotification->process_id = $new->id;
-                            $newNotification->element_id = $elementId;
                             $newNotification->notifiable_type = $notifiable;
                             $newNotification->notification_type = $notificationType;
                             $newNotification->save();
                         }
                     }
                 }
-            }            
-        }
+            }
 
-        $this->definitions = $new->getDefinitions();       
-        $this->new['process'] = $new;
+            if (property_exists($process, 'task_notifications')) {
+                foreach ($process->task_notifications as $elementId => $notifiables) {
+                    foreach ($notifiables as $notifiable => $notificationTypes) {
+                        foreach ($notificationTypes as $notificationType => $wanted) {
+                            if ($wanted === true) {
+                                $newNotification = new ProcessNotificationSetting;
+                                $newNotification->process_id = $new->id;
+                                $newNotification->element_id = $elementId;
+                                $newNotification->notifiable_type = $notifiable;
+                                $newNotification->notification_type = $notificationType;
+                                $newNotification->save();
+                            }
+                        }
+                    }
+                }
+            }
+
+            $this->definitions = $new->getDefinitions();
+            $this->new['process'] = $new;
+            $this->finishStatus('process');
+        } catch (\Exception $e) {
+            $this->finishStatus('process', true);
+        }
     }
 
     /**
      * Save the BPMN with any adjustments that have been made along the way.
      *
      * @return void
-     */    
+     */
     private function saveBpmn()
     {
         $this->new['process']->bpmn = $this->definitions->saveXML();
@@ -407,8 +443,8 @@ class ImportProcess implements ShouldQueue
     /**
      * Parse files with version 1
      *
-     * @return boolean
-     */    
+     * @return array
+     */
     private function parseFileV1()
     {
         $this->saveEnvironmentVariables($this->file->environment_variables);
@@ -418,7 +454,7 @@ class ImportProcess implements ShouldQueue
         $this->saveScreens($this->file->screens);
         $this->removeAssignedEntities();
         $this->saveBpmn();
-        return true;
+        return $this->status;
     }
 
     /**
@@ -431,7 +467,7 @@ class ImportProcess implements ShouldQueue
         $this->file = base64_decode($this->fileContents);
         $this->file = json_decode($this->file);
     }
-    
+
     /**
      * Execute the job.
      *
@@ -445,11 +481,74 @@ class ImportProcess implements ShouldQueue
         //Then, process it based on version number
         if ($this->file->type == 'process_package') {
             if ($method = $this->getParser()) {
+                $this->resetStatus();
                 return $this->{$method}();
             }
         }
-        
+
         //Return false by default
         return false;
+    }
+
+    /**
+     * Initial state of the process
+     */
+    private function resetStatus()
+    {
+        $this->status = [];
+        $this->status['environment_variables'] = [
+            'label' => __('Environment Variables'),
+            'success' => false,
+            'message' => __('Starting')];
+
+        $this->status['process_category'] = [
+            'label' => __('Process Category'),
+            'success' => false,
+            'message' => __('Starting')];
+
+        $this->status['process'] = [
+            'label' => __('Process'),
+            'success' => false,
+            'message' => __('Starting')];
+
+        $this->status['scripts'] = [
+            'label' => __('Scripts'),
+            'success' => false,
+            'message' => __('Starting')];
+
+        $this->status['screens'] = [
+            'label' => __('Screens'),
+            'success' => false,
+            'message' => __('Starting')];
+    }
+
+    /**
+     * Prepare information status
+     *
+     * @param $element
+     * @param $data boolean
+     */
+    private function prepareStatus($element, $data = false)
+    {
+        $this->status[$element]['message'] = __('There is no information');
+        if ($data) {
+            $this->status[$element]['message'] = __('the process not finished.');
+        }
+    }
+
+    /**
+     * Finish status
+     *
+     * @param $element
+     * @param $error
+     */
+    private function finishStatus($element, $error = false)
+    {
+        $this->status[$element]['success'] = true;
+        $this->status[$element]['message'] = __('It was imported correctly.');
+        if ($error) {
+            $this->status[$element]['success'] = false;
+            $this->status[$element]['message'] = __('An error occurred in the import..');
+        }
     }
 }
