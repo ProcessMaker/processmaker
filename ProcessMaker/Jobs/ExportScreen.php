@@ -44,7 +44,7 @@ class ExportScreen extends ExportProcess
      */
     private function packageFile()
     {
-        $this->package['type'] = 'process_package';
+        $this->package['type'] = 'screen_package';
         $this->package['version'] = '1';
         $this->packageScreens();
     }

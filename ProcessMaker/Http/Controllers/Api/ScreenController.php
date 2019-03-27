@@ -4,10 +4,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ExportScreen;
+use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Http\Resources\ApiCollection;
 
@@ -326,6 +325,48 @@ class ScreenController extends Controller
         } else {
             return response(['error' => __('Unable to Export Screen')], 500) ;
         }
+    }
+
+    /**
+     * Import the specified screen.
+     *
+     * @param Request $request
+     *
+     * @return array
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     *
+     * @OA\Post(
+     *     path="/screens/import",
+     *     summary="Import a new screen",
+     *     operationId="importScreen",
+     *     tags={"Screens"},
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Screen")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     description="file to upload",
+     *                     property="file",
+     *                     type="file",
+     *                     format="file",
+     *                 ),
+     *                 required={"file"}
+     *             )
+     *         )
+     *     ),
+     * )
+     */
+    public function import(Request $request)
+    {
+        $success = ImportScreen::dispatchNow($request->file('file')->get());
+        return ['status' => $success];
     }
 
 }
