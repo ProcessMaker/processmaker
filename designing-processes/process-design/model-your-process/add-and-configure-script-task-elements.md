@@ -29,7 +29,7 @@ Follow these steps to add a Script Task element to the Process model:
 
    ![](../../../.gitbook/assets/script-task-bpmn-side-bar-process-modeler-processes.png)
 
-4. Drag the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Script Task element cannot be placed outside of the Pool element.
+4. Drag the element to where in the Process model canvas that you want to place it. If a Pool element is in your Process model, the Script Task element cannot be placed outside of the Pool element.
 
 ![Script Task element](../../../.gitbook/assets/script-task-process-modeler-processes.png)
 

@@ -29,7 +29,7 @@ Follow these steps to add a Start Event element to the Process model:
 
    ![](../../../.gitbook/assets/start-event-bpmn-side-bar-process-modeler-processes.png)
 
-4. Drag the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Start Event element cannot be placed outside of the Pool element.
+4. Drag the element to where in the Process model canvas that you want to place it. If a Pool element is in your Process model, the Start Event element cannot be placed outside of the Pool element.
 
 ![Start Event element](../../../.gitbook/assets/start-event-process-modeler-processes.png)
 

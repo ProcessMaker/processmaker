@@ -29,7 +29,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 3. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
 4. Drag the **Multi Column Button** icon![](../../../../.gitbook/assets/multi-column-control-screens-builder-processes.png)from the **Controls** panel anywhere within the ProcessMaker Screen canvas represented by the dotted-lined box. Existing controls on the ProcessMaker Screen canvas adjust positioning based on where you drag the control.
 5. Configure the Multi Column control. See [Inspector Settings](multi-column-button-control-settings.md#inspector-settings).
-6. Drop into the ProcessMaker Screen where you want the control to display on the page.​![](../../../../.gitbook/assets/multi-column-control-placed-screens-builder-processes.png)
+6. Place into the ProcessMaker Screen canvas where you want the control to display on the page.​![](../../../../.gitbook/assets/multi-column-control-placed-screens-builder-processes.png)
 7. Drag-and-drop others controls into either column. Configure each control's settings. 
 
 Below is a Multi Column control in Preview mode. 

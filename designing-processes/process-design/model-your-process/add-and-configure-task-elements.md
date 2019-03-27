@@ -29,7 +29,7 @@ Follow these steps to add a Task element to the Process model:
 
    ![](../../../.gitbook/assets/task-bpmn-side-bar-process-modeler-processes.png)
 
-4. Drag the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Task element cannot be placed outside of the Pool element.
+4. Drag the element to where in the Process model canvas that you want to place it. If a Pool element is in your Process model, the Task element cannot be placed outside of the Pool element.
 
 ![Task element](../../../.gitbook/assets/task-element-process-modeler-processes.png)
 

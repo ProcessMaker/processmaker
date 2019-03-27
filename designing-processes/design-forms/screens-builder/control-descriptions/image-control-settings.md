@@ -25,7 +25,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 2. View the ProcessMaker Screen page to which to add the control.
 3. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
 4. Drag the **Image** icon![](../../../../.gitbook/assets/chrome_2019-03-13_11-29-37.png)from the **Controls** panel anywhere within the ProcessMaker Screen canvas represented by the dotted-lined box. Existing controls on the ProcessMaker Screen canvas adjust positioning based on where you drag the control.
-5. Drop into the ProcessMaker Screen where you want the control to display on the page.  
+5. Place into the ProcessMaker Screen canvas where you want the control to display on the page.  
 
    ![](../../../../.gitbook/assets/image-control-placed-screens-builder-processes.png)
 

@@ -26,7 +26,7 @@ Follow these steps to add this control to the ProcessMaker Screen:
 1. View the ProcessMaker Screen page to which to add the control.
 2. Go to the **Controls** panel on the left side of the ProcessMaker Screen.
 3. Drag the **File Download** icon![](../../../../.gitbook/assets/file-download-control-screens-builder-processes.png)from the **Controls** panel anywhere within the ProcessMaker Screen canvas represented by the dotted-lined box. Existing controls on the ProcessMaker Screen canvas adjust positioning based on where you drag the control.
-4. Drop into the ProcessMaker Screen where you want the control to display on the page.  
+4. Place into the ProcessMaker Screen canvas where you want the control to display on the page.  
 
    ![](../../../../.gitbook/assets/file-download-control-placed-screens-builder-processes.png)
 

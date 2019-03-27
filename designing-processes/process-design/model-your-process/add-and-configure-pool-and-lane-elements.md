@@ -29,7 +29,7 @@ Follow these steps to add a Pool element to the Process model:
 
    ![](../../../.gitbook/assets/pool-bpmn-side-bar-process-modeler-processes.png)
 
-4. Drag the element to where in the Process model you want to place it. A Pool element cannot be placed into another Pool element. If non-Pool/Lane elements are in your Process model, those elements are automatically placed into the Pool element.
+4. Drag the element to where in the Process model canvas that you want to place it. A Pool element cannot be placed into another Pool element. If non-Pool/Lane elements are in your Process model, those elements are automatically placed into the Pool element.
 
 ![Pool element](../../../.gitbook/assets/pool-process-modeler-processes.png)
 

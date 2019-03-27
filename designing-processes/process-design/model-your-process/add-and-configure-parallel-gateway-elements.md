@@ -29,7 +29,7 @@ Follow these steps to add a Parallel Gateway element to the Process model:
 
    ![](../../../.gitbook/assets/parallel-gateway-bpmn-side-bar-process-modeler-processes.png)
 
-4. Drag the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Parallel Gateway element cannot be placed outside of the Pool element.
+4. Drag the element to where in the Process model canvas that you want to place it. If a Pool element is in your Process model, the Parallel Gateway element cannot be placed outside of the Pool element.
 
 ![Parallel Gateway element](../../../.gitbook/assets/parallel-gateway-process-modeler-processes.png)
 

@@ -29,7 +29,7 @@ Follow these steps to add an Intermediate Timer Event element to the Process mod
 
    ![](../../../.gitbook/assets/intermediate-timer-event-bpmn-side-bar-process-modeler-processes.png)
 
-4. Drag the element to where in the Process model you want to place it. If a Pool element is in your Process model, the Intermediate Timer Event element cannot be placed outside of the Pool element.
+4. Drag the element to where in the Process model canvas that you want to place it. If a Pool element is in your Process model, the Intermediate Timer Event element cannot be placed outside of the Pool element.
 
 ![Intermediate Timer Event element](../../../.gitbook/assets/intermediate-timer-event-process-modeler-processes.png)
 

@@ -51,7 +51,7 @@ Follow these steps to set the Sequence Flow element from one connecting element 
 
 1. ​[View your Processes](../../viewing-processes/view-the-list-of-processes/view-your-processes.md#view-all-processes). The **Processes** page displays.
 2. Click the **Open Modeler** icon![](../../../.gitbook/assets/open-modeler-edit-icon-processes-page-processes.png)to edit the selected Process model. Process Modeler displays.
-3. Select the Process model element from which you want to set the workflow routing. Available options display to the right of the selected element.  
+3. Select the Process model element from which you want to set the workflow routing. Available options display to the right of the selected element. The solid-line Flow indicator is for Sequence Flows \(highlighted below\).  
 
    ![](../../../.gitbook/assets/sequence-flow-indicator-process-modeler-processes.png)
 
