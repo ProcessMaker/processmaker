@@ -21,12 +21,12 @@ This document is organized based on how different roles use ProcessMaker 4. Refe
 
 ### ProcessMaker Administrator
 
-A ProcessMaker Administrator installs ProcessMaker on-premises and performs administrative tasks in ProcessMaker.
+A ProcessMaker Administrator installs ProcessMaker on-premises. \(On-premises installations are not necessary for ProcessMaker Enterprise cloud deployments.\) A ProcessMaker Administrator also performs administrative tasks in ProcessMaker.
 
 Refer to the **Install ProcessMaker** section that includes the following topics:
 
-* [Requirements](../install-processmaker/prerequisites.md)
-* [Install Required Software and ProcessMaker 4](../install-processmaker/install-required-software.md)
+* [On-Premises Server Requirements](../install-processmaker/prerequisites.md)
+* [On-Premises Install Guide](../install-processmaker/installation-guide.md)
 
 Refer to the **ProcessMaker Administration** section that includes the following topics:
 
@@ -38,9 +38,9 @@ Refer to the **ProcessMaker Administration** section that includes the following
 
 ### Process Owner
 
-A Process Owner creates and maintains ProcessMaker processes that both people and ProcessMaker Scripts use to make Requests.
+A Process Owner creates and maintains ProcessMaker [Processes](../designing-processes/viewing-processes/what-is-a-process.md) that both people use to make [Requests](../using-processmaker/requests/what-is-a-request.md).
 
-~~Refer to the~~ [~~Getting Started Guide~~](getting-started-guide.md) ~~for help in developing your first process. This is not available for internal Beta releases~~.
+~~Refer to the~~ [~~Getting Started Guide~~](getting-started-guide.md) ~~for help in developing your first Process. This is not available for internal Beta releases~~.
 
 Refer to the **Manage and Model Processes** section that includes the following topics:
 
@@ -54,7 +54,7 @@ Refer to the **Manage and Model Processes** section that includes the following 
 
 A ProcessMaker Developer extends out-of-the-box ProcessMaker functionality in the following ways:
 
-* Develop ProcessMaker Scripts that Process Owners use in Processes.
+* Develop [ProcessMaker Scripts](../designing-processes/scripts/what-is-a-script.md) that Process Owners use in Processes.
 * Develop Connectors that perform custom functions, and then package those Connectors for distribution.
 
 Refer to the [Script Management](../designing-processes/scripts/) section, especially the [Scripts Editor](../designing-processes/scripts/scripts-editor.md) topic.
@@ -65,11 +65,11 @@ Refer to the **Package Development and Distribution** section.
 
 ### ProcessMaker User
 
-A ProcessMaker user is a person whose only interaction with ProcessMaker is to start and participate in Requests. 
+A ProcessMaker user is a person whose only interaction with ProcessMaker is to start, cancel, and/or participate in Requests. 
 
 Refer to the **Using ProcessMaker** section that includes the following topics:
 
-* [Log In to ProcessMaker](../using-processmaker/log-in.md)
+* [Log On to ProcessMaker](../using-processmaker/log-in.md)
 * [Profile Settings](../using-processmaker/profile-settings.md)
 * [View ProcessMaker Version Information](../using-processmaker/application-version-details.md)
 * [Log Out of ProcessMaker](../using-processmaker/log-out.md)
@@ -80,7 +80,7 @@ Refer to the **Using ProcessMaker** section that includes the following topics:
 
 ## Document Conventions
 
-This document uses different font styles, types, and weights to represent types of information. These conventions are used in paragraphs and do not represent style variations in document titles or headers, nor standard document conventions such as for hyperlinks.
+This document uses different font styles, types, and weights to represent types of information. The conventions described below are used in paragraphs and do not represent style variations in document titles or headers, nor standard document conventions such as for hyperlinks.
 
 The table below describes these document conventions.
 
@@ -132,11 +132,11 @@ The table below describes these document conventions.
     <tr>
       <td style="text-align:left"><del>Strikethrough</del>
       </td>
-      <td style="text-align:left">Represents questions that document writers have to remind them to get
-        answers later. Used only while the document is pre-GA. This convention
-        will no longer be used after GA. In general you may ignore text with strikethrough
-        style.</td>
-      <td style="text-align:left"><del>What happens after the button is clicked? Ask Alan.</del>
+      <td style="text-align:left">Represents questions or comments that product writers must ask or remind
+        subject matter experts to get answers later. Used only while the document
+        is pre-GA. This convention will no longer be used after GA. In general
+        you may ignore text with strikethrough style.</td>
+      <td style="text-align:left"><del>What happens after the button is clicked? Ask Engineering.</del>
       </td>
     </tr>
   </tbody>
