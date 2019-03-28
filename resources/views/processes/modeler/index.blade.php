@@ -45,6 +45,9 @@ ol.breadcrumb {
 
 @section('js')
   <script>
+    window.onbeforeunload = function () {
+      return 'Are you sure you want to leave?';
+    }
   window.ProcessMaker.modeler = {
     process: @json($process),
     xml: @json($process->bpmn)

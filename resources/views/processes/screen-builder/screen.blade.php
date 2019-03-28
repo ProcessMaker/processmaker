@@ -23,6 +23,11 @@
 @endsection
 
 @section('js')
+    <script>
+        window.onbeforeunload = function () {
+          return 'Are you sure you want to leave?';
+        }
+    </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach
