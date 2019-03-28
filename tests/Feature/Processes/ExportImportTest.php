@@ -89,6 +89,7 @@ class ExportImportTest extends TestCase
         $response = $this->apiCall('POST', "/processes/import", [
             'file' => $file,
         ]);
+        $response->assertJsonStructure(['status' => [], 'assignable' => []]);
         $response->assertStatus(200);
         $this->assertDatabaseHas('processes', ['name' => 'Leave Absence Request 2']);
         $this->assertDatabaseHas('screens', ['title' => 'Request Time Off 2']);
