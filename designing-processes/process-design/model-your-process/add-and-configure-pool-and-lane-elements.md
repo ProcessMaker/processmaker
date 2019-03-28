@@ -50,12 +50,6 @@ If you accidentally delete a Pool element with other elements you want to keep, 
 ## Resize a Pool Element
 
 {% hint style="info" %}
-### Don't Know What a Pool Element Is?
-
-See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [Pool](process-modeling-element-descriptions.md#pool) element.
-
-### Permissions Required to Do This Task
-
 Your user account or group membership must have the following permissions to resize a Pool element to the Process model:
 
 * Processes: View Processes
@@ -146,12 +140,6 @@ Follow these steps to add a Lane element to a Pool element:
 ## Resize a Lane Element
 
 {% hint style="info" %}
-### Don't Know What a Lane Element Is?
-
-See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [Lane](process-modeling-element-descriptions.md#lane) element.
-
-### Permissions Required to Do This Task
-
 Your user account or group membership must have the following permissions to resize a Lane element to the Process model:
 
 * Processes: View Processes
