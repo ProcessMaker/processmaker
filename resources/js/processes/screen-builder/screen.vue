@@ -19,12 +19,12 @@
 
                 <ul class="navbar-nav pull-right">
                     <li class="nav-item">
-                        <a :class="classExportScreen" @click="exportScreen" href="#">
+                        <a :class="classExportScreen" @click="beforeExportScreen" href="#">
                             <i class="fas fa-file-export"></i>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" @click="saveScreen" href="#">
+                        <a class="nav-link" @click="saveScreen(false)" href="#">
                             <i class="fas fa-save"></i>
                         </a>
                     </li>
@@ -238,6 +238,9 @@
         this.errors = this.$refs.screenBuilder.validationErrors
                 && this.$refs.screenBuilder.validationErrors.length > 0;
       },
+      beforeExportScreen() {
+        this.saveScreen(true);
+      },
       exportScreen() {
         ProcessMaker.apiClient.post('screens/' + this.screen.id + '/export')
           .then(response => {
@@ -248,7 +251,7 @@
             ProcessMaker.alert(error.response.data.error, 'danger');
           });
       },
-      saveScreen() {
+      saveScreen(exportScreen) {
         this.checkForErrors();
         if (this.errors == true) {
           ProcessMaker.alert("This screen has validation errors.", "danger");
@@ -263,6 +266,9 @@
               custom_css: this.customCSS
             })
             .then(response => {
+              if (exportScreen) {
+                this.exportScreen();
+              }
               ProcessMaker.alert(" Successfully saved", "success");
             });
         }
