@@ -9,6 +9,7 @@ use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -74,7 +75,8 @@ class TokenRepository implements TokenRepositoryInterface
         $this->addUserToData($token->getInstance(), $user);
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
-        $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
+//        $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
+        $token->element_type = $this->getActivityType($activity);
         $token->element_name = $activity->getName();
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
@@ -316,5 +318,22 @@ class TokenRepository implements TokenRepositoryInterface
     private function removeUserFromData(Instance $instance)
     {
         $instance->getDataStore()->removeData('_user');
+    }
+
+    private function getActivityType($activity)
+    {
+        if ($activity instanceof  ScriptTaskInterface) {
+            return 'scriptTask';
+        }
+
+        if ($activity instanceof  CallActivityInterface) {
+            return 'callActivity';
+        }
+
+        if ($activity instanceof  ActivityInterface) {
+            return 'task';
+        }
+
+        return 'task';
     }
 }
