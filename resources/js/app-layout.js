@@ -103,6 +103,9 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
         );
         error.config._defaultErrorShown = true;
     }
+    if (error.response.status == 401) {
+        window.location = "/login"
+    }
     return Promise.reject(error);
 });
 
