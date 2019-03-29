@@ -70,7 +70,7 @@ Below are Inspector settings for the Textarea control:
 
 * **Field Name:** Specify the unique internal data name of the control that only the Process Owner views at design time. This is a required setting. Use the **Field Name** value for this control to reference it in [**Show If** setting expressions](expression-syntax-components-for-show-if-control-settings.md).
 * **Field Label:** Specify the field label text that displays. **New TextArea** is the default value.
-* **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value.
+* **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value. See [Validation Rules for "Validation" Control Settings](validation-rules-for-validation-control-settings.md).
 * **Rows:** The number of rows to provide for input. **2** is the default value.
 * **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided. This setting has no default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.

@@ -85,6 +85,7 @@
       * [Image Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/image-control-settings.md)
       * [File Upload Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/file-upload-control-settings.md)
       * [File Download Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/file-download-control-settings.md)
+      * [Validation Rules for "Validation" Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/validation-rules-for-validation-control-settings.md)
       * [Expression Syntax Components for "Show If" Control Settings](designing-processes/design-forms/screens-builder/control-descriptions/expression-syntax-components-for-show-if-control-settings.md)
     * [Add, Delete or Rename a Page](designing-processes/design-forms/screens-builder/add-a-new-page-to-a-screen.md)
     * [Preview a Screen and Its JSON Data Model](designing-processes/design-forms/screens-builder/preview-a-screen.md)

@@ -73,7 +73,7 @@ Below are Inspector settings for the Line Input control:
   * **Text:** The form user enters a single line of plain text into the Line Input control. If the entered text is longer than the field width, the entered text is clipped. **Text** is the default option.
   * **Password:** The form user enters a password into the Line Input control. Entered text is masked. If the entered text is longer than the field width, the entered text is clipped.
 * **Field Label:** Specify the field label text that displays. **New Input** is the default value.
-* **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value.
+* **Validation:** Specify the validation rules the form user must comply with to properly enter a valid value into this field. This setting has no default value. See [Validation Rules for "Validation" Control Settings](validation-rules-for-validation-control-settings.md).
 * **Placeholder:** Specify the placeholder text that displays in the field when no value has been provided. This setting has no default value.
 * **Help Text:** Specify text that provides additional guidance on the field's use. This setting has no default value.
 * **Background Color:** Select to specify the background color of the Line Input control. Selecting a background color also selects the **Background Color** checkbox.
