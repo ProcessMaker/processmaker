@@ -2,19 +2,20 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Notification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Notification;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
+use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Notifications\ProcessCanceledNotification;
 
 class ProcessRequestController extends Controller
 {
@@ -27,7 +28,7 @@ class ProcessRequestController extends Controller
     public $doNotSanitize = [
         'data'
     ];
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -83,7 +84,7 @@ class ProcessRequestController extends Controller
                 $query->with($include);
             }
         }
-        
+
         // type filter
         switch ($request->input('type')) {
             case 'started_me':
@@ -107,12 +108,12 @@ class ProcessRequestController extends Controller
             $filter = '%' . $filterBase . '%';
             $query->where(function ($query) use ($filter, $filterBase) {
                         $query->whereHas('participants', function ($query) use($filter) {
-                            $query->Where('firstname', 'like', $filter);
-                            $query->orWhere('lastname', 'like', $filter);
-                    })->orWhere('name', 'like', $filter)
+                    $query->Where('firstname', 'like', $filter);
+                    $query->orWhere('lastname', 'like', $filter);
+                })->orWhere('name', 'like', $filter)
                     ->orWhere('id', 'like', $filterBase)
                     ->orWhere('status', 'like', $filter);
-                });
+            });
         }
 
         $response = $query
@@ -121,7 +122,7 @@ class ProcessRequestController extends Controller
                 $request->input('order_direction', 'ASC')
             )
             ->get();
-        
+
         $response = $response->filter(function($processRequest) {
             return Auth::user()->can('view', $processRequest);
         })->values();
@@ -231,7 +232,7 @@ class ProcessRequestController extends Controller
             // Log the data edition
             $user_id   = Auth::id();
             $user_name = $user_id ? Auth::user()->fullname : 'The System';
-            
+
             if ($task_name) {
                 $text = __('has edited the data for ') . $task_name;
             } else {
@@ -310,7 +311,7 @@ class ProcessRequestController extends Controller
 
     /**
      * Manually complete a request
-     * 
+     *
      * @param ProcessRequest $request
      * @throws \Throwable
      */
@@ -319,11 +320,8 @@ class ProcessRequestController extends Controller
         $notifiables = $request->getNotifiables('completed');
         Notification::send($notifiables, new ProcessCanceledNotification($request));
 
-        $request->status = 'COMPLETED';
-        $request->saveOrFail();
-
-        //Closed tokens
-        $request->tokens()->update(['status' => 'CLOSED']);
+        // Terminate request
+        TerminateRequest::dispatchNow($request);
 
         $user = \Auth::user();
         Comment::create([
@@ -332,11 +330,12 @@ class ProcessRequestController extends Controller
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $request->id,
             'subject' => __('Process Manually Completed'),
-            'body' => $user->fullname . " " . __("manually completed the request from an error state"),
+            'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
         ]);
     }
 
-    private function getTaskName($fields, $request) {
+    private function getTaskName($fields, $request)
+    {
         if (!array_key_exists('task_element_id', $fields)) {
             return null;
         }
