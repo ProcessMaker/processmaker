@@ -6,7 +6,6 @@ use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
-use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface;
@@ -14,7 +13,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ErrorEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Call Activity model
@@ -58,8 +56,6 @@ class CallActivity implements CallActivityInterface
         $this->getCalledElement()->attachEvent(
             ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED,
             function ($self, $closedInstance) use ($token, $instance) {
-                Log::info('ENTRO A EVENT_PROCESS_INSTANCE_COMPLETED!!!!!');
-                Log::info($closedInstance->id . ' ?= ' . $instance->id);
                 if ($closedInstance->id === $instance->id) {
                     if ($token->getStatus() !== ActivityInterface::TOKEN_STATE_FAILING) {
                         $token->setStatus(ActivityInterface::TOKEN_STATE_COMPLETED);
@@ -124,11 +120,9 @@ class CallActivity implements CallActivityInterface
      */
     public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
     {
-        Log::info('Entro al NUEVO ADD TOKEN!!!');
         if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && !empty($token->subprocess_request_id)) {
             $subprocess = ProcessRequest::find($token->subprocess_request_id);
             $this->linkProcesses($token, $subprocess);
-            Log::info('ENLAZO EL SUBPROCESS ' . $subprocess->id);
         }
         return $this->addTokenBase($instance, $token);
     }

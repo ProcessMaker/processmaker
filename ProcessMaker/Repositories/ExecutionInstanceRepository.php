@@ -11,7 +11,6 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Execution Instance Repository.
@@ -56,16 +55,13 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $process->getTransitions($storage->getFactory());
 
         //Load tokens:
-        Log::info(sprintf('Tokens for %s', $instance->id));
         foreach ($instance->tokens as $token) {
-            Log::info(sprintf('--> %s', $token->id));
             $tokenInfo = [
                 'id' => $token->getKey(),
                 'status' => $token->status,
                 'element_ref' => $token->element_id,
             ];
             $token->setProperties($tokenInfo);
-            Log::info('storage: ' . get_class($storage) . ' ~~!!!!!');
             $element = $storage->getElementInstanceById($tokenInfo['element_ref']);
             $element->addToken($instance, $token);
         }
@@ -73,7 +69,6 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         foreach ($instance->getTokens() as $tt) {
             $mytokens2[] = $tt->id;
         }
-        Log::info('Tokens inside: ' . json_encode($mytokens2));
         return $instance;
     }
 

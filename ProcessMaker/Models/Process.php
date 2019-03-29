@@ -20,7 +20,6 @@ use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Represents a business process definition.
@@ -196,7 +195,7 @@ class Process extends Model implements HasMedia
             }
         }
 
-        return (object) $array;
+        return (object)$array;
     }
 
     /**
@@ -217,7 +216,7 @@ class Process extends Model implements HasMedia
             foreach ($this->taskNotifiableTypes as $notifiable) {
                 foreach ($this->taskNotificationTypes as $notification) {
                     $setting = $group->where('notifiable_type', $notifiable)
-                                     ->where('notification_type', $notification);
+                        ->where('notification_type', $notification);
 
                     if ($setting->count()) {
                         $value = true;
@@ -230,7 +229,7 @@ class Process extends Model implements HasMedia
             }
         }
 
-        return (object) $array;
+        return (object)$array;
     }
 
     /**
@@ -280,7 +279,7 @@ class Process extends Model implements HasMedia
     public function usersCanStart($node = null)
     {
         $relationship = $this->morphedByMany('ProcessMaker\Models\User', 'processable')
-                    ->wherePivot('method', 'START');
+            ->wherePivot('method', 'START');
         $relationship = $node === null ? $relationship : $relationship->wherePivot('node', $node);
         return $relationship;
     }
@@ -293,7 +292,7 @@ class Process extends Model implements HasMedia
     public function groupsCanStart($node = null)
     {
         $relationship = $this->morphedByMany('ProcessMaker\Models\Group', 'processable')
-                    ->wherePivot('method', 'START');
+            ->wherePivot('method', 'START');
         $relationship = $node === null ? $relationship : $relationship->wherePivot('node', $node);
         return $relationship;
     }
@@ -367,7 +366,6 @@ class Process extends Model implements HasMedia
                 $this->bpmnDefinitions->loadXML($this->bpmn);
                 //Load the collaborations if exists
                 $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
-                Log::info('LOAD COLLABORATION!');
                 foreach ($collaborations as $collaboration) {
                     $collaboration->getBpmnElementInstance();
                 }
