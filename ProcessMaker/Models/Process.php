@@ -4,14 +4,11 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
-use ProcessMaker\Managers\TaskSchedulerManager;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -23,6 +20,7 @@ use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Represents a business process definition.
@@ -133,7 +131,7 @@ class Process extends Model implements HasMedia
         'assignee',
         'participants',
     ];
-    
+
     public $requestNotificationTypes = [
         'started',
         'canceled',
@@ -145,7 +143,7 @@ class Process extends Model implements HasMedia
         'assignee',
         'participants',
     ];
-    
+
     public $taskNotificationTypes = [
         'assigned',
         'completed',
@@ -180,21 +178,20 @@ class Process extends Model implements HasMedia
     public function getNotificationsAttribute()
     {
         $array = [];
-        
+
         foreach ($this->requestNotifiableTypes as $notifiable) {
             foreach ($this->requestNotificationTypes as $notification) {
-                
                 $setting = $this->notification_settings()
                     ->whereNull('element_id')
                     ->where('notifiable_type', $notifiable)
                     ->where('notification_type', $notification)->get();
-                
+
                 if ($setting->count()) {
                     $value = true;
                 } else {
                     $value = false;
                 }
-                
+
                 $array[$notifiable][$notification] = $value;
             }
         }
@@ -210,25 +207,24 @@ class Process extends Model implements HasMedia
     public function getTaskNotificationsAttribute()
     {
         $array = [];
-        
+
         $elements = $this->notification_settings()
             ->whereNotNull('element_id')
             ->get();
-            
+
         foreach ($elements->groupBy('element_id') as $group) {
             $elementId = $group->first()->element_id;
             foreach ($this->taskNotifiableTypes as $notifiable) {
                 foreach ($this->taskNotificationTypes as $notification) {
-                    
                     $setting = $group->where('notifiable_type', $notifiable)
                                      ->where('notification_type', $notification);
-                    
+
                     if ($setting->count()) {
                         $value = true;
                     } else {
                         $value = false;
                     }
-                    
+
                     $array[$elementId][$notifiable][$notification] = $value;
                 }
             }
@@ -280,7 +276,7 @@ class Process extends Model implements HasMedia
      * Get the users who can start this process
      *
      * @param string|null $node If null get START from any node
-     */    
+     */
     public function usersCanStart($node = null)
     {
         $relationship = $this->morphedByMany('ProcessMaker\Models\User', 'processable')
@@ -293,7 +289,7 @@ class Process extends Model implements HasMedia
      * Get the groups who can start this process
      *
      * @param string|null $node If null get START from any node
-     */    
+     */
     public function groupsCanStart($node = null)
     {
         $relationship = $this->morphedByMany('ProcessMaker\Models\Group', 'processable')
@@ -305,7 +301,7 @@ class Process extends Model implements HasMedia
     /**
      * Get the users who can start this process
      *
-     */    
+     */
     public function usersCanCancel()
     {
         return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'CANCEL');
@@ -314,7 +310,7 @@ class Process extends Model implements HasMedia
     /**
      * Get the groups who can start this process
      *
-     */    
+     */
     public function groupsCanCancel()
     {
         return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'CANCEL');
@@ -323,7 +319,7 @@ class Process extends Model implements HasMedia
     /**
      * Get the users who can start this process
      *
-     */    
+     */
     public function usersCanEditData()
     {
         return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'EDIT_DATA');
@@ -332,7 +328,7 @@ class Process extends Model implements HasMedia
     /**
      * Get the groups who can start this process
      *
-     */    
+     */
     public function groupsCanEditData()
     {
         return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'EDIT_DATA');
@@ -350,11 +346,11 @@ class Process extends Model implements HasMedia
     /**
      * Scope a query to include only inactive processes
      *
-     */    
+     */
     public function scopeInactive($query)
     {
         return $query->where('processes.status', 'INACTIVE');
-    }    
+    }
 
     /**
      * Get the process definitions from BPMN field.
@@ -371,6 +367,7 @@ class Process extends Model implements HasMedia
                 $this->bpmnDefinitions->loadXML($this->bpmn);
                 //Load the collaborations if exists
                 $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
+                Log::info('LOAD COLLABORATION!');
                 foreach ($collaborations as $collaboration) {
                     $collaboration->getBpmnElementInstance();
                 }
@@ -507,7 +504,6 @@ class Process extends Model implements HasMedia
         return $users[0];
     }
 
-
     /**
      * Get the next user in a user assignment.
      *
@@ -541,7 +537,7 @@ class Process extends Model implements HasMedia
      */
     private function getNextUserByRule($activity, $token)
     {
-        $assignmentRules  = $activity->getProperty('assignmentRules', null);
+        $assignmentRules = $activity->getProperty('assignmentRules', null);
 
         $instanceData = $token->getInstance()->getDataStore()->getData();
         if ($assignmentRules && $instanceData) {
@@ -556,8 +552,10 @@ class Process extends Model implements HasMedia
                     switch ($item->type) {
                         case 'group':
                             $users = [];
-                            $user = $this->getNextUserFromGroupAssignment($activity->getId(),
-                                $this->getConsolidatedUsers($item->assignee, $users));
+                            $user = $this->getNextUserFromGroupAssignment(
+                                $activity->getId(),
+                                $this->getConsolidatedUsers($item->assignee, $users)
+                            );
                             break;
                         case 'user':
                             $user = $item->assignee;
@@ -661,7 +659,6 @@ class Process extends Model implements HasMedia
         return $response;
     }
 
-
     /**
      * Update BPMN content and reset bpmnDefinitions
      *
@@ -669,7 +666,7 @@ class Process extends Model implements HasMedia
      */
     public function setBpmnAttribute($value)
     {
-        $this->bpmnDefinitions  = null;
+        $this->bpmnDefinitions = null;
         $this->attributes['bpmn'] = $value;
     }
 
@@ -681,10 +678,10 @@ class Process extends Model implements HasMedia
     private function getStartEventPermissions()
     {
         $permissions = [];
-        foreach($this->usersCanStart()->withPivot('node')->get() as $user) {
+        foreach ($this->usersCanStart()->withPivot('node')->get() as $user) {
             $permissions[$user->pivot->node][$user->id] = $user->id;
         }
-        foreach($this->groupsCanStart()->withPivot('node')->get() as $group) {
+        foreach ($this->groupsCanStart()->withPivot('node')->get() as $group) {
             $users = [];
             $this->getConsolidatedUsers($group->id, $users);
             isset($permissions[$group->pivot->node]) ?: $permissions[$group->pivot->node] = [];

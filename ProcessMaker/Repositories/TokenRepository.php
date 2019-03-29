@@ -1,8 +1,8 @@
 <?php
+
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\ProcessRequestToken as Token;
@@ -18,8 +18,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
-use ProcessMaker\Repositories\ExecutionInstanceRepository;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Models\ProcessCollaboration;
 
 /**
  * Execution Instance Repository.
@@ -57,7 +58,6 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function loadTokenByUid($uid): TokenInterface
     {
-
     }
 
     /**
@@ -105,7 +105,7 @@ class TokenRepository implements TokenRepositoryInterface
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'TRIGGERED';
         $token->element_id = $startEvent->getId();
-        $token->element_type = $startEvent instanceof StartEventInterface? 'startEvent' : 'task';
+        $token->element_type = $startEvent instanceof StartEventInterface ? 'startEvent' : 'task';
         $token->element_name = $startEvent->getName();
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
@@ -120,8 +120,6 @@ class TokenRepository implements TokenRepositoryInterface
 
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
     {
-
-
     }
 
     /**
@@ -238,27 +236,22 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistCatchEventTokenPassed(CatchEventInterface $intermediateCatchEvent, Collection $consumedTokens)
     {
-
     }
 
     public function persistGatewayTokenArrives(GatewayInterface $exclusiveGateway, TokenInterface $token)
     {
-
     }
 
     public function persistGatewayTokenConsumed(GatewayInterface $exclusiveGateway, TokenInterface $token)
     {
-
     }
 
     public function persistGatewayTokenPassed(GatewayInterface $exclusiveGateway, TokenInterface $token)
     {
-
     }
 
     public function persistThrowEventTokenArrives(ThrowEventInterface $event, TokenInterface $token)
     {
-
     }
 
     public function persistThrowEventTokenConsumed(ThrowEventInterface $event, TokenInterface $token)
@@ -283,12 +276,10 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistThrowEventTokenPassed(ThrowEventInterface $endEvent, TokenInterface $token)
     {
-
     }
 
     public function store(TokenInterface $token, $saveChildElements = false): \this
     {
-
     }
 
     /**
@@ -335,5 +326,28 @@ class TokenRepository implements TokenRepositoryInterface
         }
 
         return 'task';
+    }
+
+    /**
+     * Persists a Call Activity Activated
+     *
+     * @param TokenInterface $token
+     * @param ExecutionInstanceInterface $subprocess
+     * @return void
+     */
+    public function persistCallActivityActivated(TokenInterface $token, ExecutionInstanceInterface $subprocess)
+    {
+        $source = $token->getInstance();
+        if ($source->process_collaboration_id === null) {
+            $collaboration = new ProcessCollaboration();
+            $collaboration->process_id = $source->process->getKey();
+            $collaboration->saveOrFail();
+            $source->process_collaboration_id = $collaboration->getKey();
+            $source->saveOrFail();
+        }
+        $subprocess->process_collaboration_id = $source->process_collaboration_id;
+        $subprocess->saveOrFail();
+        $token->subprocess_request_id = $subprocess->id;
+        $token->saveOrFail();
     }
 }

@@ -7,15 +7,14 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
-use ProcessMaker\Nayra\Bpmn\State;
-use ProcessMaker\Nayra\Bpmn\Transition;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorEventDefinitionInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Call Activity model
@@ -24,8 +23,9 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
  */
 class CallActivity implements CallActivityInterface
 {
-
-    use ActivitySubProcessTrait;
+    use ActivitySubProcessTrait {
+        addToken as addTokenBase;
+    }
 
     /**
      * Configure the activity to go to a FAILING status when activated.
@@ -37,49 +37,42 @@ class CallActivity implements CallActivityInterface
             ActivityInterface::EVENT_ACTIVITY_ACTIVATED,
             function ($self, TokenInterface $token) {
                 $instance = $this->getCalledElement()->call();
-                $this->getCalledElement()->attachEvent(
-                    ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED,
-                    function ($self, $closedInstance) use($token, $instance) {
-                        if ($closedInstance === $instance) {
-                            if ($token->getStatus() !== ActivityInterface::TOKEN_STATE_FAILING) {
-                                $token->setStatus(ActivityInterface::TOKEN_STATE_COMPLETED);
-                            }
-                        }
-                    }
-                );
-                $this->getCalledElement()->attachEvent(
-                    ErrorEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION,
-                    function ($element, $innerToken, $errorEvent) use($token, $instance) {
-                        if ($innerToken->getInstance() === $instance) {
-                            $token->setStatus(ActivityInterface::TOKEN_STATE_FAILING);
-                        }
-                    }
-                );
+                $this->getRepository()
+                    ->getTokenRepository()
+                    ->persistCallActivityActivated($token, $instance);
+                $this->linkProcesses($token, $instance);
             }
         );
+    }
 
-        $this->attachEvent(
-            ActivityInterface::EVENT_ACTIVITY_CLOSED,
-            function ($self, TokenInterface $token) {
-                $instance = $this->getCalledElement()->call();
-                $this->getCalledElement()->attachEvent(
-                    ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED,
-                    function ($self, $closedInstance) use($token, $instance) {
-                        if ($closedInstance === $instance) {
-                            if ($token->getStatus() !== ActivityInterface::TOKEN_STATE_FAILING) {
-                                $token->setStatus(ActivityInterface::TOKEN_STATE_COMPLETED);
-                            }
-                        }
+    /**
+     * Links parent and sub process in a CallActivity
+     *
+     * @param TokenInterface $token
+     * @param ExecutionInstanceInterface $instance
+     *
+     * @return void
+     */
+    private function linkProcesses(TokenInterface $token, ExecutionInstanceInterface $instance)
+    {
+        $this->getCalledElement()->attachEvent(
+            ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED,
+            function ($self, $closedInstance) use ($token, $instance) {
+                Log::info('ENTRO A EVENT_PROCESS_INSTANCE_COMPLETED!!!!!');
+                Log::info($closedInstance->id . ' ?= ' . $instance->id);
+                if ($closedInstance->id === $instance->id) {
+                    if ($token->getStatus() !== ActivityInterface::TOKEN_STATE_FAILING) {
+                        $token->setStatus(ActivityInterface::TOKEN_STATE_COMPLETED);
                     }
-                );
-                $this->getCalledElement()->attachEvent(
-                    ErrorEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION,
-                    function ($element, $innerToken, $errorEvent) use($token, $instance) {
-                        if ($innerToken->getInstance() === $instance) {
-                            $token->setStatus(ActivityInterface::TOKEN_STATE_FAILING);
-                        }
-                    }
-                );
+                }
+            }
+        );
+        $this->getCalledElement()->attachEvent(
+            ErrorEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION,
+            function ($element, $innerToken, $errorEvent) use ($token, $instance) {
+                if ($innerToken->getInstance() === $instance) {
+                    $token->setStatus(ActivityInterface::TOKEN_STATE_FAILING);
+                }
             }
         );
     }
@@ -121,98 +114,22 @@ class CallActivity implements CallActivityInterface
         return $this;
     }
 
-
     /**
-     * Get an input to the element.
+     * Load tokens from array. And Link to the subprocess if exists.
      *
-     * @return StateInterface
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface $token
+     *
+     * @return $this
      */
-    public function getInputPlace()
+    public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
     {
-
-        $ready = new State($this);
-        $transition = new Transition($this, false);
-        $ready->connectTo($transition);
-        $transition->connectTo($this->activeState);
-        $this->addInput($ready);
-
-        $ready->attachEvent(State::EVENT_TOKEN_ARRIVED, function (TokenInterface $token) {
-//            if ($source->process_collaboration_id === null) {
-
-
-
-                $collaboration = new ProcessCollaboration();
-                $collaboration->process_id = $this->getOwnerProcess()->getEngine()->getProcess()->id;
-                $collaboration->saveOrFail();
-
-
-
-                $token->getInstance()-> process_collaboration_id = $collaboration->getKey();
-                $token->getInstance()->saveOrFail();
-//            }
-//            $instance->process_collaboration_id = $source->process_collaboration_id;
-//            $instance->participant_id = $participant ? $participant->getId() : null;
-//            $instance->saveOrFail();
-
-
-
-
-//            $definitions=$this->getOwnerProcess()->getEventDefinitions();
-//            $collaboration = $this->getEventDefinitions()->item(0)->getPayload()->getMessageFlow()->getCollaboration();
-//            $collaboration->send($this->getEventDefinitions()->item(0), $token);
-//
-//            $this->getRepository()
-//                ->getTokenRepository()
-//                ->persistThrowEventTokenArrives($this, $token);
-//
-//            $this->notifyEvent(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, $this, $token);
-        });
-
-        return $ready;
-
-        $incomingPlace=new State($this, GatewayInterface::TOKEN_STATE_INCOMING);
-        $incomingPlace->connectTo($this->transition);
-        $incomingPlace->attachEvent(State::EVENT_TOKEN_ARRIVED, function (TokenInterface $token) {
-            $collaboration = $this->getEventDefinitions()->item(0)->getPayload()->getMessageFlow()->getCollaboration();
-            $collaboration->send($this->getEventDefinitions()->item(0), $token);
-
-            $this->getRepository()
-                ->getTokenRepository()
-                ->persistThrowEventTokenArrives($this, $token);
-
-//            $this->notifyEvent(IntermediateThrowEventInterface::EVENT_THROW_TOKEN_ARRIVES, $this, $token);
-            $this->notifyEvent(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, $this, $token);
-        });
-
-        $incomingPlace->attachEvent(State::EVENT_TOKEN_CONSUMED, function (TokenInterface $token) {
-
-            $this->getRepository()
-                ->getTokenRepository()
-                ->persistActivityClosed($this, $token);
-
-//            $this->notifyEvent(CallEve::EVENT_THROW_TOKEN_CONSUMED, $this, $token);
-            $this->notifyEvent(Activity::EVENT_ACTIVITY_CLOSED, $this, $token);
-        });
-
-        return $incomingPlace;
+        Log::info('Entro al NUEVO ADD TOKEN!!!');
+        if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && !empty($token->subprocess_request_id)) {
+            $subprocess = ProcessRequest::find($token->subprocess_request_id);
+            $this->linkProcesses($token, $subprocess);
+            Log::info('ENLAZO EL SUBPROCESS ' . $subprocess->id);
+        }
+        return $this->addTokenBase($instance, $token);
     }
-
-//    protected function buildConnectionTo(FlowNodeInterface $target)
-//    {
-//        $place = $target->getInputPlace();
-//        $this->transition->connectTo($place);
-//        $place->attachEvent(
-//            StateInterface::EVENT_TOKEN_CONSUMED,
-//            function (TokenInterface $token) {
-//                $token->setStatus(ActivityInterface::TOKEN_STATE_CLOSED);
-//                $this->getRepository()
-//                    ->getTokenRepository()
-//                    ->persistActivityClosed($this, $token);
-//                $this->notifyEvent(ActivityInterface::EVENT_ACTIVITY_CLOSED, $this, $token);
-//
-//            }
-//        );
-//        return $this;
-//    }
-
 }
