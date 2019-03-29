@@ -379,6 +379,16 @@ class Process extends Model implements HasMedia
         return $this->bpmnDefinitions;
     }
 
+    public function getCollaborations()
+    {
+        $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
+        if ($this->bpmn) {
+            $this->bpmnDefinitions->loadXML($this->bpmn);
+            //Load the collaborations if exists
+            return $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
+        }
+    }
+
     /**
      * Get the path of the process templates.
      *
