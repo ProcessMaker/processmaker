@@ -118,6 +118,10 @@ Validate that an attribute is numeric. The string representation of a number pas
 
 The field under validation must be present in the input data but can be empty.
 
+### **regex:pattern**
+
+The field under validation must match the given regular expression.
+
 ### **required**
 
 Checks if the length of the String representation of the value is complies with the validation described with the following `required` rules.
