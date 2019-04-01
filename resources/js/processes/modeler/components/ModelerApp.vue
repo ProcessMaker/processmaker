@@ -2,9 +2,9 @@
   <div id="modeler-app">
     <div class="navbar">
       <div>{{process.name}}</div>
-      <div class="actions">
-          <b-btn v-b-modal="'uploadmodal'"><i class="fas fa-upload"></i></b-btn>
-          <b-btn @click="saveBpmn"><font-awesome-icon icon="save">Save</font-awesome-icon></b-btn>
+      <div>
+          <a v-b-modal="'uploadmodal'"><i class="fas fa-upload fa-fw"></i></a>
+          <a @click="saveBpmn"><i class="fas fa-save fa-fw"></i></a>
       </div>
     </div>
     <div class="modeler-container">
@@ -17,7 +17,7 @@
 
       <validation-status :validation-errors="validationErrors"/>
     </statusbar>
-    <b-modal ref="uploadmodal" id="uploadmodal" title="Upload BPMN File">
+    <b-modal ref="uploadmodal" id="uploadmodal" centered title="Upload BPMN File">
       <file-upload @input-file="handleUpload">
         Upload file
       </file-upload>
@@ -139,34 +139,16 @@ export default {
   }
   .navbar {
     font-weight: bold;
-    height: 42px;
-    min-height: 42px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     font-size: 1.2em;
     background-color: #b6bfc6;
-
     color: white;
     border-bottom: 1px solid grey;
     padding-right: 16px;
     padding-left: 16px;
-    .actions {
-      button {
-        border-radius: 4px;
-        display: inline-block;
-        padding-top: 4px;
-        padding-bottom: 4px;
-        padding-left: 8px;
-        padding-right: 8px;
-        background-color: grey;
-        color: white;
-        border-width: 1px;
-        border-color: darkgrey;
-        margin-right: 8px;
-        font-weight: bold;
-      }
-    }
+
   }
 }
 </style>

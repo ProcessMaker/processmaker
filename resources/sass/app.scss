@@ -9,10 +9,7 @@
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~vue-multiselect/dist/vue-multiselect.min.css';
 
-@font-face {
-  font-family: 'Open Sans';
-  src: url('/fonts/OpenSans.ttf') format('truetype');
-}
+@import '../../node_modules/npm-font-open-sans/open-sans';
 
 // .search-bar {
 //   @extend form-inline;
