@@ -53,23 +53,23 @@
                 ],
                 fields: [
                     {
-                        title: "STATUS",
+                        title: __("Status"),
                         name: "__slot:changeStatus",
                         sortField: "read_at",
                         width:"80px"
                     },
                     {
-                        title: "USER",
+                        title: __("User"),
                         name: "userName",
                         sortField: "userName",
                     },
                     {
-                        title: "SUBJECT",
+                        title: __("Subject"),
                         name: "__slot:subject",
                         sortField: "name",
                     },
                     {
-                        title: "DATE CREATED",
+                        title: __("Created"),
                         name: "created_at",
                         sortField: "created_at"
                     }
