@@ -410,6 +410,24 @@ class ProcessTest extends TestCase
     }
 
     /**
+     * Test the creation of processes with BPMN definition
+     */
+    public function testValidateBpmnWhenCreatingAProcess()
+    {
+        $route = route('api.' . $this->resource . '.store');
+        $base = factory(Process::class)->make([
+            'user_id' => static::$DO_NOT_SEND,
+            'process_category_id' => static::$DO_NOT_SEND,
+        ]);
+        $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
+        //Add a bpmn content
+        $array['bpmn'] = trim(Process::getProcessTemplate('ProcessWithErrors.bpmn'));
+        $response = $this->apiCall('POST', $route, $array);
+        //A validation error should be displayed
+        $response->assertStatus(422);
+    }
+
+    /**
      * Test show process
      *
      */

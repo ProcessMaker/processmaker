@@ -44,10 +44,9 @@ class UserCreationTest extends DuskTestCase
                 ->type('#password', 'admin')
                 ->press('.btn')
                 ->clickLink('Admin')
-                ->pause(5000)
-                ->clickLink('Users')
-                ->pause(5000)
+//                ->pause(5000)
                 ->waitFor('.vuetable-body', 5)
+                ->waitUntilMissing('.vuetable-empty-result')
                 ->assertSee('1 - 10 of 100 Users');
 
             $browser->press('#addUserBtn')
@@ -60,8 +59,9 @@ class UserCreationTest extends DuskTestCase
                 ->type('#confpassword', 'password123');
 
             $browser->maximize();
-            $browser->press('#disabledForNow')
-                ->pause(5000)
+            $browser->press('.ml-2')
+//                ->pause(5000)
+                ->waitFor('.alert-dismissible', 10)
                 ->assertSee('successfully created');
         });
 
