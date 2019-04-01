@@ -38,8 +38,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Category"
-        plural="Categories"
+        :single="__('Category')"
+        :plural="__('Categories')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"

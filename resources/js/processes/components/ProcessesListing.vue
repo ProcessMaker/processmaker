@@ -77,8 +77,8 @@
       </vuetable>
 
       <pagination
-        single="Process"
-        plural="Processes"
+        :single="__('Process')"
+        :plural="__('Processes')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"

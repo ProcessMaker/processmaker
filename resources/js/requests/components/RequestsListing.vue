@@ -41,8 +41,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Request"
-        plural="Requests"
+        :single="__('Request')"
+        :plural="__('Requests')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"

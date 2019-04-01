@@ -28,8 +28,8 @@
             </vuetable>
 
             <pagination
-                    single="Group"
-                    plural="Groups"
+                    :single="__('Group')"
+                    :plural="__('Groups')"
                     :perPageSelectEnabled="true"
                     @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange"

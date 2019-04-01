@@ -38,8 +38,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Variable"
-        plural="Variables"
+        :single="__('Variable')"
+        :plural="__('Variables')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"

@@ -64,8 +64,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Screen"
-        plural="Screens"
+        :single="__('Screen')"
+        :plural="__('Screens')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"

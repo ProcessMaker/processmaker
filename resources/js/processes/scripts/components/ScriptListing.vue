@@ -64,8 +64,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Script"
-        plural="Scripts"
+        :single="__('Script')"
+        :plural="__('Scripts')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"

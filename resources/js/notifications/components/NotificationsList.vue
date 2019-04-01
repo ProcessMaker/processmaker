@@ -29,7 +29,7 @@
             </template>
 
         </vuetable>
-        <pagination single="Task" plural="Tasks" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+        <pagination :single="__('Task')" :plural="__('Tasks')" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
 </template>
