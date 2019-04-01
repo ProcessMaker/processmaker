@@ -56,7 +56,6 @@
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
-import __ from "../../modules/lang";
 
 Vue.component("avatar-image", AvatarImage);
 

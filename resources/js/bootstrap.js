@@ -3,8 +3,9 @@ import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
 import VueRouter from "vue-router";
 import datetime_format from "../js/data/datetime_formats.json"
+import translator from "./modules/lang.js"
 
-
+window.__ = translator;
 window._ = require("lodash");
 window.Popper = require("popper.js").default;
 
@@ -45,7 +46,7 @@ window.ProcessMaker = {
      *
      * @returns {void}
      */
-    pushNotification (notification) {
+    pushNotification(notification) {
         if (this.notifications.filter(x => x.id === notification).length === 0) {
             this.notifications.push(notification);
         }
@@ -59,8 +60,8 @@ window.ProcessMaker = {
      *
      * @param urls
      */
-    removeNotifications (messageIds = [], urls = []) {
-        return window.ProcessMaker.apiClient.put('/read_notifications', {message_ids: messageIds, routes: urls}).then(() => {
+    removeNotifications(messageIds = [], urls = []) {
+        return window.ProcessMaker.apiClient.put('/read_notifications', { message_ids: messageIds, routes: urls }).then(() => {
             messageIds.forEach(function (messageId) {
                 ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
             });
@@ -81,8 +82,8 @@ window.ProcessMaker = {
      *
      * @param urls
      */
-    unreadNotifications (messageIds = [], urls = []) {
-        return window.ProcessMaker.apiClient.put('/unread_notifications', {message_ids: messageIds, routes: urls});
+    unreadNotifications(messageIds = [], urls = []) {
+        return window.ProcessMaker.apiClient.put('/unread_notifications', { message_ids: messageIds, routes: urls });
     },
 };
 

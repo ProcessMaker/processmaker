@@ -59,7 +59,6 @@
   import card from "./card";
   import _ from "lodash";
   import datatableMixin from "../common/mixins/datatable";
-  import __ from "../../modules/lang";
 window.__ = __;
   export default {
     mixins: [datatableMixin],
