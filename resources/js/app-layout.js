@@ -98,7 +98,7 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
         // This is a standard laravel validation error
         error.config.context.errors = error.response.data.errors;
         ProcessMaker.alert(
-            'An error occurred. Check the form for errors in red text.',
+            __('An error occurred. Check the form for errors in red text.'),
             'danger'
         );
         error.config._defaultErrorShown = true;

@@ -72,7 +72,7 @@
         ref="pagination"
       ></pagination>
     </div>
-    <b-modal ref="myModalRef" title="Duplicate Screen" centered>
+    <b-modal ref="myModalRef" :title="__('Duplicate Screen')" centered>
       <form>
         <div class="form-group">
           <label for="title">{{__('Name')}}</label>
