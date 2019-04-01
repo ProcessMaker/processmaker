@@ -94,17 +94,10 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     // response.config.url (extract resource name)
     return response;
 }, (error) => {
-    if (error.response.status == 422 && error.config.context) {
-        // This is a standard laravel validation error
-        error.config.context.errors = error.response.data.errors;
-        ProcessMaker.alert(
-            'An error occurred. Check the form for errors in red text.',
-            'danger'
-        );
-        error.config._defaultErrorShown = true;
-    }
-    if (error.response.status == 401) {
-        window.location = "/login"
+    switch (error.response.status) {
+        case 401:
+            window.location = "/login"
+            break;
     }
     return Promise.reject(error);
 });
