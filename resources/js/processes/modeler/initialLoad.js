@@ -64,20 +64,6 @@ task.definition = function definition(moddle) {
     });
 };
 
-startTimerEvent.definition = () => {
-    const eventDefinitions = definition.get('eventDefinitions');
-    if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-        return 'processmaker-modeler-start-timer-event';
-    }
-};
-
-intermediateTimerEvent.definition = () => {
-    const eventDefinitions = definition.get('eventDefinitions');
-    if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-        return 'processmaker-modeler-intermediate-catch-timer-event';
-    }
-};
-
 ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
     /* Register basic node types */
     for (const node of nodeTypes) {
