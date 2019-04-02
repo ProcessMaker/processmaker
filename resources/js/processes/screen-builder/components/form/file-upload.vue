@@ -4,8 +4,8 @@
     <uploader :options="options" ref="uploader">
       <uploader-unsupport></uploader-unsupport>
       <uploader-drop id="uploaderMain" class="form-control-file">
-        <p>Drop files here to upload or</p>
-        <uploader-btn id="submitFile" class="btn btn-secondary text-white">select files</uploader-btn>
+        <p>{{$t('Drop files here to upload or')}}</p>
+        <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{$t('select files')}}</uploader-btn>
       </uploader-drop>
       <uploader-list></uploader-list>
     </uploader>
