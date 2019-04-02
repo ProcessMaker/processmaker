@@ -127,7 +127,7 @@
 
                         <div class="form-group col">
                             {!! Form::label('language', __('Language')) !!}
-                            {!! Form::select('language', ['us_en' => 'English (US)'], $currentUser->language, ['id' => 'language','class'=>
+                            {!! Form::select('language', ['en' => __('English (US)'), 'es' => __("Spanish")], $currentUser->language, ['id' => 'language','class'=>
                             'form-control',
                             'v-model' => 'formData.language',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.language}']) !!}
@@ -321,7 +321,7 @@
                     }
                     ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then((response) => {
-                            ProcessMaker.alert('Your profile was saved.', 'success')
+                            ProcessMaker.alert(__('Your profile was saved.'), 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                         })
                         .catch(error => {

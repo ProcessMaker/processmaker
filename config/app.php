@@ -35,7 +35,7 @@ return [
     'dateformat' => env('DATE_FORMAT', 'm/d/Y h:i A'),
 
     // The system locale
-    'locale' => 'en',
+    'locale' => env('APP_LANG', 'en'),
 
     // The fallback locale
     'fallback_locale' => 'en',

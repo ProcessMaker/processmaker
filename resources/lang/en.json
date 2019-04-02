@@ -383,5 +383,8 @@
     "Run script as": "Run script as",
     "How many seconds the script should be allowed to run (0 is unlimited).": "How many seconds the script should be allowed to run (0 is unlimited).",
     "Timeout": "Timeout",
-    "No relevant data": "No relevant data"
+    "No relevant data": "No relevant data",
+    "Your profile was saved.": "Your profile was saved.",
+    "English (US)": "English (US)",
+    "Spanish": "Spanish"
 }
