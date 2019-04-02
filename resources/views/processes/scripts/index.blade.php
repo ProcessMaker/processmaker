@@ -85,7 +85,7 @@
                         </div>
 
                         <div class="form-group">
-                            {!! Form::label('timeout', 'Timeout') !!}
+                            {!! Form::label('timeout', __('Timeout')) !!}
                             <div class="form-row ml-0">
                                 {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-2',
                                 'v-model' => 'timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":addError.timeout}']) !!}
