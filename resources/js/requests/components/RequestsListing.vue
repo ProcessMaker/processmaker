@@ -41,8 +41,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Request"
-        plural="Requests"
+        :single="__('Request')"
+        :plural="__('Requests')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -56,7 +56,6 @@
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
-import __ from "../../modules/lang";
 
 Vue.component("avatar-image", AvatarImage);
 

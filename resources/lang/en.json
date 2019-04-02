@@ -373,5 +373,11 @@
     "No Data Available": "No Data Available",
     "due": "due",
     "completed": "completed",
-    "Select a user to set the api access of the script": "Select a user to set the api access of the script"
+    "Select a user to set the api access of the script": "Select a user to set the api access of the script",
+    "Subject": "Subject",
+    "Unread Notifications": "Unread Notifications",
+    "All Notifications": "All Notifications",
+    "Variable": "Variable",
+    "Variables": "Variables",
+    "Duplicate Screen": "Duplicate Screen"
 }

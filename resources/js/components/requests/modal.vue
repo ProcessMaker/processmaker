@@ -43,8 +43,8 @@
             </div>
             <div v-if="loading" class="loading">{{__('Finding Requests available to you...')}}</div>
 
-            <pagination single="Process"
-                        plural="Processes"
+            <pagination :single="__('Process')"
+                        :plural="__('Processes')"
                         :perPageSelectEnabled="true"
                         @changePerPage="changePerPage"
                         @vuetable-pagination:change-page="onPageChange"
@@ -59,7 +59,6 @@
   import card from "./card";
   import _ from "lodash";
   import datatableMixin from "../common/mixins/datatable";
-  import __ from "../../modules/lang";
 window.__ = __;
   export default {
     mixins: [datatableMixin],

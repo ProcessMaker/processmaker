@@ -54,7 +54,6 @@
 <script>
 import moment from "moment";
 import { Popover } from "bootstrap-vue/es/components";
-import __ from "../../modules/lang";
 
 Vue.use(Popover);
 export default {

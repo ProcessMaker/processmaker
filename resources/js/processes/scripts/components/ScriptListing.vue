@@ -64,8 +64,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Script"
-        plural="Scripts"
+        :single="__('Script')"
+        :plural="__('Scripts')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -106,7 +106,6 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
-import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],

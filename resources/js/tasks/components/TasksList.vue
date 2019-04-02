@@ -52,8 +52,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Task"
-        plural="Tasks"
+        :single="__('Task')"
+        :plural="__('Tasks')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -67,7 +67,6 @@
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
-import __ from "../../modules/lang";
 
 Vue.component("avatar-image", AvatarImage);
 

@@ -77,8 +77,8 @@
       </vuetable>
 
       <pagination
-        single="Process"
-        plural="Processes"
+        :single="__('Process')"
+        :plural="__('Processes')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -90,7 +90,6 @@
 
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
-import __ from "../../modules/lang";
 
 export default {
   mixins: [datatableMixin],

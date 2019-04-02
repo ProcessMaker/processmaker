@@ -44,7 +44,6 @@
 import Vue from "vue";
 import AvatarImage from "../components/AvatarImage";
 import VueCroppie from "vue-croppie";
-import __ from "../modules/lang";
 
 Vue.component("avatar-image", AvatarImage);
 Vue.use(VueCroppie);

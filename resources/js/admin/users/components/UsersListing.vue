@@ -38,8 +38,8 @@
         </template>
       </vuetable>
       <pagination
-        single="User"
-        plural="Users"
+        :single="__('User')"
+        :plural="__('Users')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -52,7 +52,6 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
-import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
