@@ -3,7 +3,7 @@
 
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
-                  pagination-path="meta">
+                  pagination-path="meta" :noDataTemplate="$t('No Data Available')">
 
             <template slot="subject" slot-scope="props">
                 <i class="fas fa-ban" v-if="props.rowData.type==='PROCESS_CANCELED'"></i>

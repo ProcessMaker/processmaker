@@ -8,6 +8,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
+        :noDataTemplate="$t('No Data Available')"
       >
         <template slot="actions" slot-scope="props">
           <div class="actions">
