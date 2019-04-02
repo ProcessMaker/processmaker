@@ -16,8 +16,6 @@ window.Popper = require("popper.js").default;
 
 window.$ = window.jQuery = require("jquery");
 
-require("bootstrap");
-
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
  * using reactive data binding and reusable components. Vue's API is clean
@@ -29,7 +27,34 @@ window.Vue = require("vue");
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
 
+/**
+ * Setup Translations
+ */
+import i18next from 'i18next';
+import Backend from 'i18next-chained-backend';
+import LocalStorageBackend from 'i18next-localstorage-backend';
+import XHR from 'i18next-xhr-backend';
+import VueI18Next from '@panter/vue-i18next';
+
+window.Vue.use(VueI18Next)
+i18next.use(Backend).init({
+    lng: 'es',
+    backend: {
+        backends: [
+            LocalStorageBackend, // Try cache first
+            XHR,
+        ],
+        backendOptions: [
+            { versions: { en: 4, es: 4 }}, // change this to invalidate cache
+            { loadPath: '/i18next/fetch/{{lng}}/_default' },
+        ],
+    }
+})
+// Make $t available to all vue instances
+Vue.mixin({ i18n: new VueI18Next(i18next) })
+
 window.ProcessMaker = {
+   
     /**
      * A general use global event bus that can be used
      */

@@ -68,18 +68,18 @@ export default {
       ],
       fields: [
         {
-          title: __("Name"),
+          title: () => this.$t('Name'),
           name: "name",
           sortField: "name"
         },
         {
-          title: __("Status"),
+          title: () => this.$t("Status"),
           name: "status",
           sortField: "status",
           callback: this.formatStatus
         },
         {
-          title: __("# Processes"),
+          title: () => this.$t("# Processes"),
           name: "processes_count",
           sortField: "processes_count"
         },
