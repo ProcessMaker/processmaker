@@ -386,5 +386,15 @@
     "No relevant data": "No relevant data",
     "Your profile was saved.": "Your profile was saved.",
     "English (US)": "English (US)",
-    "Spanish": "Spanish"
+    "Spanish": "Spanish",
+    "Successfully saved": "Successfully saved",
+    "This screen has validation errors.": "This screen has validation errors.",
+    "Preview Screen was Submitted": "Preview Screen was Submitted",
+    "Invalid JSON Data Object": "Invalid JSON Data Object",
+    "Valid JSON Data Object": "Valid JSON Data Object",
+    "Data Input": "Data Input",
+    "Custom CSS": "Custom CSS",
+    "Computed Properties": "Computed Properties",
+    "Preview": "Preview",
+    "Editor": "Editor"
 }
