@@ -383,5 +383,8 @@
     "Run script as": "yo soy espanol",
     "How many seconds the script should be allowed to run (0 is unlimited).": "yo soy espanol",
     "Timeout": "yo soy espanol",
-    "No relevant data": "yo soy espanol"
+    "No relevant data": "yo soy espanol",
+    "Your profile was saved.": "yo soy espanol",
+    "English (US)": "yo soy espanol",
+    "Spanish": "Espanol"
 }
