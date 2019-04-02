@@ -39,7 +39,11 @@ import VueI18Next from '@panter/vue-i18next';
 
 window.Vue.use(VueI18Next)
 i18next.use(Backend).init({
-    lng: 'es',
+    lng: document.documentElement.lang,
+    parseMissingKeyHandler(_val) {
+        // Show an empty string until the values are loaded from the backend
+        return ""
+    },
     backend: {
         backends: [
             LocalStorageBackend, // Try cache first
