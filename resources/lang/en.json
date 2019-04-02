@@ -379,5 +379,9 @@
     "All Notifications": "All Notifications",
     "Variable": "Variable",
     "Variables": "Variables",
-    "Duplicate Screen": "Duplicate Screen"
+    "Duplicate Screen": "Duplicate Screen",
+    "Run script as": "Run script as",
+    "How many seconds the script should be allowed to run (0 is unlimited).": "How many seconds the script should be allowed to run (0 is unlimited).",
+    "Timeout": "Timeout",
+    "No relevant data": "No relevant data"
 }

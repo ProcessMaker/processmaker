@@ -11,6 +11,7 @@
         :data="data"
         data-path="data"
         pagination-path="meta"
+        :noDataTemplate="$t('No Data Available')"
       >
         <template slot="actions" slot-scope="props">
           <div class="actions">

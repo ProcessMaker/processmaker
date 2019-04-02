@@ -10,6 +10,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
+        :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
         <template slot="title" slot-scope="props">
