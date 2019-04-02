@@ -131,12 +131,11 @@ export default {
     onDelete(data, index) {
       let that = this;
       ProcessMaker.confirmModal(
-        $t("Caution!"),
-        $t("Are you sure you want to delete the group ") + data.name + $t("?"),
-        "",
+        this.$t('Caution!'),
+        "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.name}) + "</b>",
         function() {
           ProcessMaker.apiClient.delete("groups/" + data.id).then(response => {
-            ProcessMaker.alert($t("The group was deleted."), "success");
+            ProcessMaker.alert(this.$t("The group was deleted."), "success");
             that.fetch();
           });
         }

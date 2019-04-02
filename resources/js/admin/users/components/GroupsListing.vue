@@ -58,12 +58,12 @@
         ],
         fields: [
           {
-            title: $t("Name"),
+            title: this.$t("Name"),
             name: "name",
             sortField: "name"
           },
           {
-            title: $t("Description"),
+            title: this.$t("Description"),
             name: "description",
             sortField: "description"
           },
@@ -97,12 +97,11 @@
       },
       deleteMembership(item) {
         ProcessMaker.confirmModal(
-          $t("Caution!"),
-          $t("Are you sure you want to remove the user from the group ") + item.name + $t("?"),
-          "",
+          this.$t('Caution!'),
+          "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: item.name}) + "</b>",
           () => {
             ProcessMaker.apiClient.delete("group_members/" + item.id).then(response => {
-              ProcessMaker.alert($t("The user was removed from the group."), "success");
+              ProcessMaker.alert(this.$t("The user was removed from the group."), "success");
               this.fetch();
             });
           }

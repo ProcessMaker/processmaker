@@ -42,6 +42,7 @@ class Kernel extends HttpKernel
 
         ],
         'api' => [
+            \ProcessMaker\Http\Middleware\SetLocale::class,
             // Empty middleware for api
             // @todo Determine if we need throttling.  Currently it interrupts test suites
             // However, we haven't had a product decision on utilizing throttling or not

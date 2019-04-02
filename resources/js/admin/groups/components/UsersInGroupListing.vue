@@ -104,9 +104,8 @@
         let that = this;
         console.log(data);
         ProcessMaker.confirmModal(
-          $t("Caution!"),
-          $t("Are you sure to delete the group ") + data.fullname + $t("?"),
-          "",
+          this.$t("Caution!"),
+          "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.fullname}) + "</b>",
           function () {
             ProcessMaker.apiClient
               .delete("group_members/" + data.id)
