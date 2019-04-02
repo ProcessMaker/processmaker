@@ -35,7 +35,7 @@
                 variant="link"
                 @click="onAction('edit', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Open Task')"
+                :title="$t('Open Task')"
               >
                 <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
               </b-btn>
@@ -43,7 +43,7 @@
                 variant="link"
                 @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Open Request')"
+                :title="$t('Open Request')"
               >
                 <i class="fas fa-clipboard fa-lg fa-fw"></i>
               </b-btn>
@@ -52,8 +52,8 @@
         </template>
       </vuetable>
       <pagination
-        :single="__('Task')"
-        :plural="__('Tasks')"
+        :single="$t('Task')"
+        :plural="$t('Tasks')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -86,24 +86,24 @@ export default {
       ],
       fields: [
         {
-          title: __("Name"),
+          title: () => this.$t("Name"),
           name: "__slot:name",
           field: "element_name",
           sortField: "element_name"
         },
         {
-          title: __("Request"),
+          title: () => this.$t("Request"),
           name: "__slot:requestName",
           field: "request",
           sortField: "request.name"
         },
         {
-          title: __("Assignee"),
+          title: () => this.$t("Assignee"),
           name: "__slot:assignee",
           field: "user"
         },
         {
-          title: __("Due"),
+          title: () => this.$t("Due"),
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
@@ -119,13 +119,10 @@ export default {
     let params = new URL(document.location).searchParams;
     let successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
-      ProcessMaker.alert("The request was completed.", "success");
+      ProcessMaker.alert($t("The request was completed."), "success");
     }
   },
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     onAction(action, rowData, index) {
       if (action === "edit") {
         let link = "/tasks/" + rowData.id + "/edit";

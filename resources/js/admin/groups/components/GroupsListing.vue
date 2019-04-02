@@ -19,7 +19,7 @@
                 variant="link"
                 @click="onEdit(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Edit')"
+                :title="$t('Edit')"
                 v-if="permission.includes('edit-groups')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -28,7 +28,7 @@
                 variant="link"
                 @click="onDelete( props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Delete')"
+                :title="$t('Delete')"
                 v-if="permission.includes('delete-groups')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -38,8 +38,8 @@
         </template>
       </vuetable>
       <pagination
-        :single="__('Group')"
-        :plural="__('Groups')"
+        :single="$t('Group')"
+        :plural="$t('Groups')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -68,34 +68,34 @@ export default {
       ],
       fields: [
         {
-          title: __("Name"),
+          title: () => this.$t("Name"),
           name: "name",
           sortField: "Name"
         },
         {
-          title: __("Description"),
+          title: () => this.$t("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: __("Status"),
+          title: () => this.$t("Status"),
           name: "status",
           sortField: "status",
           callback: this.formatStatus
         },
         {
-          title: __("# Users"),
+          title: () => this.$t("# Users"),
           name: "group_members_count",
           sortField: "group_members_count"
         },
         {
-          title: __("Modified"),
+          title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: __("Created"),
+          title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -109,9 +109,6 @@ export default {
     };
   },
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     formatStatus(status) {
       status = status.toLowerCase();
       let bubbleColor = {
@@ -134,12 +131,12 @@ export default {
     onDelete(data, index) {
       let that = this;
       ProcessMaker.confirmModal(
-        __("Caution!"),
-        __("Are you sure you want to delete the group ") + data.name + __("?"),
+        $t("Caution!"),
+        $t("Are you sure you want to delete the group ") + data.name + $t("?"),
         "",
         function() {
           ProcessMaker.apiClient.delete("groups/" + data.id).then(response => {
-            ProcessMaker.alert(__("The group was deleted."), "success");
+            ProcessMaker.alert($t("The group was deleted."), "success");
             that.fetch();
           });
         }

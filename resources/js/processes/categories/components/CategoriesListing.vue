@@ -19,7 +19,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Edit')"
+                :title="$t('Edit')"
                 v-if="permission.includes('edit-categories')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -28,7 +28,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Remove')"
+                :title="$t('Remove')"
                 v-if="permission.includes('delete-categories') && props.rowData.processes_count == 0"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -38,8 +38,8 @@
         </template>
       </vuetable>
       <pagination
-        :single="__('Category')"
-        :plural="__('Categories')"
+        :single="$t('Category')"
+        :plural="$t('Categories')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -83,13 +83,13 @@ export default {
           sortField: "processes_count"
         },
         {
-          title: __("Modified"),
+          title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: __("Created"),
+          title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -102,9 +102,6 @@ export default {
     };
   },
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     fetch() {
       this.loading = true;
 

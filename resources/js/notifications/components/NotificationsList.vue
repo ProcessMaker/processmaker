@@ -29,7 +29,7 @@
             </template>
 
         </vuetable>
-        <pagination :single="__('Task')" :plural="__('Tasks')" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+        <pagination :single="$t('Task')" :plural="$t('Tasks')" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
 </template>
@@ -53,23 +53,23 @@
                 ],
                 fields: [
                     {
-                        title: __("Status"),
+                        title: () => this.$t("Status"),
                         name: "__slot:changeStatus",
                         sortField: "read_at",
                         width:"80px"
                     },
                     {
-                        title: __("User"),
+                        title: () => this.$t("User"),
                         name: "userName",
                         sortField: "userName",
                     },
                     {
-                        title: __("Subject"),
+                        title: () => this.$t("Subject"),
                         name: "__slot:subject",
                         sortField: "name",
                     },
                     {
-                        title: __("Created"),
+                        title: () => this.$t("Created"),
                         name: "created_at",
                         sortField: "created_at"
                     }
@@ -80,7 +80,7 @@
             let params = new URL(document.location).searchParams;
             let successRouting = params.get("successfulRouting") === "true";
             if (successRouting) {
-                ProcessMaker.alert("The request was completed.", "success");
+                ProcessMaker.alert($t("The request was completed."), "success");
             }
         },
         methods: {

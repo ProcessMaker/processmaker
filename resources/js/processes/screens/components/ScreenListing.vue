@@ -27,7 +27,7 @@
                 variant="link"
                 @click="onAction('edit-screen', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Edit')"
+                :title="$t('Edit')"
                 v-if="permission.includes('edit-screens')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -36,7 +36,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Configure')"
+                :title="$t('Configure')"
                 v-if="permission.includes('edit-screens')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -45,7 +45,7 @@
                 variant="link"
                 @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Duplicate')"
+                :title="$t('Duplicate')"
                 v-if="permission.includes('create-screens')"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>
@@ -54,7 +54,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Delete')"
+                :title="$t('Delete')"
                 v-if="permission.includes('delete-screens')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -64,18 +64,18 @@
         </template>
       </vuetable>
       <pagination
-        :single="__('Screen')"
-        :plural="__('Screens')"
+        :single="$t('Screen')"
+        :plural="$t('Screens')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
         ref="pagination"
       ></pagination>
     </div>
-    <b-modal ref="myModalRef" :title="__('Duplicate Screen')" centered>
+    <b-modal ref="myModalRef" :title="$t('Duplicate Screen')" centered>
       <form>
         <div class="form-group">
-          <label for="title">{{__('Name')}}</label>
+          <label for="title">{{$t('Name')}}</label>
           <input
             type="text"
             class="form-control"
@@ -86,19 +86,19 @@
           <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
-          <label for="type">{{__('Type')}}</label>
+          <label for="type">{{$t('Type')}}</label>
           <select class="form-control" id="type" disabled>
             <option>{{dupScreen.type}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="description">{{__('Description')}}</label>
+          <label for="description">{{$t('Description')}}</label>
           <textarea class="form-control" id="description" rows="3" v-model="dupScreen.description"></textarea>
         </div>
       </form>
       <div slot="modal-footer" class="w-100" align="right">
-        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{__('Cancel')}}</button>
-        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
+        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{$t('Cancel')}}</button>
+        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{$t('Save')}}</button>
       </div>
     </b-modal>
   </div>
@@ -129,29 +129,29 @@ export default {
 
       fields: [
         {
-          title: __("Name"),
+          title: () => this.$t("Name"),
           name: "__slot:title",
           field: "title",
           sortField: "title"
         },
         {
-          title: __("Description"),
+          title: () => this.$t("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: __("Type"),
+          title: () => this.$t("Type"),
           name: "type",
           sortField: "type"
         },
         {
-          title: __("Modified"),
+          title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: __("Created"),
+          title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -165,9 +165,6 @@ export default {
   },
 
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     showModal() {
       this.$refs.myModalRef.show();
     },
@@ -178,7 +175,7 @@ export default {
       ProcessMaker.apiClient
         .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
         .then(response => {
-          ProcessMaker.alert(__('The screen was duplicated.'), "success");
+          ProcessMaker.alert($t('The screen was duplicated.'), "success");
           this.hideModal();
           this.fetch();
         })
@@ -207,16 +204,16 @@ export default {
         case "remove-item":
           let that = this;
           ProcessMaker.confirmModal(
-            __("Caution!"),
-            __("Are you sure you want to delete the screen ") +
+            $t("Caution!"),
+            $t("Are you sure you want to delete the screen ") +
               data.title +
-              __("?"),
+              $t("?"),
             "",
             function() {
               ProcessMaker.apiClient
                 .delete("screens/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert(__('The screen was deleted.'),"success");
+                  ProcessMaker.alert($t('The screen was deleted.'),"success");
                   that.fetch();
                 });
             }
