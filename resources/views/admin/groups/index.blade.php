@@ -28,7 +28,7 @@
             </div>
             <div class="col-8" align="right">
                 @can('create-groups')
-                    <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createGroup"><i
+                    <a href="#" id="create_group" class="btn btn-secondary" data-toggle="modal" data-target="#createGroup"><i
                                 class="fas fa-plus"></i>
                         {{__('Group')}}</a>
                 @endcan
