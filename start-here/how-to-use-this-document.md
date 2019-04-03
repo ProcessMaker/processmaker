@@ -40,8 +40,6 @@ Refer to the **ProcessMaker Administration** section that includes the following
 
 A Process Owner creates and maintains ProcessMaker [Processes](../designing-processes/viewing-processes/what-is-a-process.md) that both people use to make [Requests](../using-processmaker/requests/what-is-a-request.md).
 
-~~Refer to the~~ [~~Getting Started Guide~~](getting-started-guide.md) ~~for help in developing your first Process. This is not available for internal Beta releases~~.
-
 Refer to the **Manage and Model Processes** section that includes the following topics:
 
 * [Process Management](../designing-processes/viewing-processes/)
@@ -127,16 +125,6 @@ The table below describes these document conventions.
           <li><code>npm install</code>
           </li>
         </ul>
-      </td>
-    </tr>
-    <tr>
-      <td style="text-align:left"><del>Strikethrough</del>
-      </td>
-      <td style="text-align:left">Represents questions or comments that product writers must ask or remind
-        subject matter experts to get answers later. Used only while the document
-        is pre-GA. This convention will no longer be used after GA. In general
-        you may ignore text with strikethrough style.</td>
-      <td style="text-align:left"><del>What happens after the button is clicked? Ask Engineering.</del>
       </td>
     </tr>
   </tbody>

@@ -6,8 +6,6 @@ description: View the summary for a Request.
 
 ## Overview
 
-~~A ProcessMaker Administrator can create a custom format and style for how the Request summary displays for your organization.~~ This topic discusses how ProcessMaker 4 displays the Request summary ~~by default~~.
-
 Follow these steps to view a Request summary:
 
 1. View any of the following Request pages:
