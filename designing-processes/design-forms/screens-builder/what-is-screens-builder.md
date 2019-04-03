@@ -1,5 +1,5 @@
 ---
-description: Understand what Screens Builder is in ProcessMaker 4.
+description: Understand what Screens Builder is in ProcessMaker Spark.
 ---
 
 # What is Screens Builder?

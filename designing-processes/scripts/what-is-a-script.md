@@ -1,12 +1,12 @@
 ---
-description: Understand what a Script does in ProcessMaker 4.
+description: Understand what a Script does in ProcessMaker Spark.
 ---
 
 # What is a Script?
 
 ## Overview
 
-In ProcessMaker 4, Scripts allow Process Owners and ProcessMaker Developers to write self-contained programmatic actions that can be called from any Process at run-time. The same ProcessMaker Script can be deployed in any Process model. In other words, "write once, use anywhere."
+In ProcessMaker Spark, Scripts allow Process Owners and ProcessMaker Developers to write self-contained programmatic actions that can be called from any Process at run-time. The same ProcessMaker Script can be deployed in any Process model. In other words, "write once, use anywhere."
 
 While writing a ProcessMaker Script, test it before you deploy it. ProcessMaker Scripts are tested within the authoring environment to ensure they function as intended. While testing, do the following:
 
@@ -15,7 +15,7 @@ While writing a ProcessMaker Script, test it before you deploy it. ProcessMaker 
 
 During run-time, ProcessMaker Scripts run within isolated containers for greater security. After the ProcessMaker Script runs and returns output to the Request, the container that isolated and ran the script automatically removes itself.
 
-ProcessMaker 4 supports Lua and PHP Scripts out-of-the-box.
+ProcessMaker Spark supports Lua and PHP Scripts out-of-the-box.
 
 ## Related Topics
 

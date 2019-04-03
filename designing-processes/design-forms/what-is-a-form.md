@@ -1,12 +1,12 @@
 ---
-description: Understand how to use Screens in ProcessMaker 4.
+description: Understand how to use Screens in ProcessMaker Spark.
 ---
 
 # What is a Screen?
 
 ## Overview
 
-In ProcessMaker 4, any Screen can be re-used in any Process model. Many Processes require the same information to be gathered for a [Request](../../using-processmaker/requests/what-is-a-request.md) such as a Request participant's name, email address, and other business information. In other words, "design once, use anywhere."
+In ProcessMaker Spark, any Screen can be re-used in any Process model. Many Processes require the same information to be gathered for a [Request](../../using-processmaker/requests/what-is-a-request.md) such as a Request participant's name, email address, and other business information. In other words, "design once, use anywhere."
 
 In simple forms, ProcessMaker Screens can display information. However, ProcessMaker Screens also allow users to interact with Request information. Below are a few of ways users can interact with ProcessMaker Screens:
 
