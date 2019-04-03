@@ -1,5 +1,5 @@
 ---
-description: Log on to ProcessMaker 4 using your ProcessMaker credentials.
+description: Log on to ProcessMaker Spark using your ProcessMaker credentials.
 ---
 
 # Log On to ProcessMaker
@@ -15,7 +15,7 @@ Please contact your ProcessMaker Administrator if you do not know either of the 
 Did you forget your password? See [Reset Your Password](log-in.md#reset-your-password).
 {% endhint %}
 
-Follow these steps to log on to ProcessMaker 4:
+Follow these steps to log on to ProcessMaker Spark:
 
 1. Enter the IP address \(or domain name\) and port number for the server or instance hosting ProcessMaker in a [supported web browser](../install-processmaker/prerequisites.md#supported-browsers). Follow these guidelines:
 
@@ -34,9 +34,9 @@ Follow these steps to log on to ProcessMaker 4:
 
 ## Reset Your Password
 
-Follow these steps to reset your ProcessMaker 4 password:
+Follow these steps to reset your ProcessMaker Spark password:
 
-1. Access the ProcessMaker log in page as described in [Log On](log-in.md#log-in). If you do not know the web address to access the ProcessMaker log in page, ask your ProcessMaker Administrator for assistance.
+1. Access the ProcessMaker log in page as described in [Log On](log-in.md#log-in). If you do not know the web address to access the ProcessMaker log on page, ask your ProcessMaker Administrator for assistance.
 2. Click the **Forgot Password?** link as highlighted below.  
 
    ![](../.gitbook/assets/forgot-password-link.png)
@@ -52,7 +52,7 @@ Follow these steps to reset your ProcessMaker 4 password:
 4. Click **Request Reset Link**.
 5. Check your email for the instructions to reset your password.
 6. After you select the link in that email to reset your password, click the **Back to Login** link to return to the log in page.
-7. Log on to ProcessMaker 4 as described in [Log On](log-in.md#log-in).
+7. Log on to ProcessMaker Spark as described in [Log On](log-in.md#log-in).
 
 ## Related Topics
 

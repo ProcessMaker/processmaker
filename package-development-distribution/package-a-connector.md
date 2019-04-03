@@ -1,5 +1,5 @@
 ---
-description: Learn how to package a ProcessMaker 4 Connector.
+description: Learn how to package a ProcessMaker Spark Connector.
 ---
 
 # Package a Connector

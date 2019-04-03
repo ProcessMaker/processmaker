@@ -1,12 +1,12 @@
 ---
-description: Understand what users are in ProcessMaker 4.
+description: Understand what users are in ProcessMaker Spark.
 ---
 
 # What is a User?
 
 ## Overview
 
-In ProcessMaker 4, a user is any person for which a ProcessMaker account is created to allow that individual to do the following:
+In ProcessMaker Spark, a user is any person for which a ProcessMaker account is created to allow that individual to do the following:
 
 * Log in to ProcessMaker using unique credentials
 * Adjust his or her [user profile](../../using-processmaker/profile-settings.md)

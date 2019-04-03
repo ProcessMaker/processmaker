@@ -1,5 +1,5 @@
 ---
-description: Learn how to build a ProcessMaker 4 Connector.
+description: Learn how to build a ProcessMaker Spark Connector.
 ---
 
 # Build a Connector

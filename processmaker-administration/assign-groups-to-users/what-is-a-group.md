@@ -1,12 +1,12 @@
 ---
-description: Understand what groups are in ProcessMaker 4.
+description: Understand what groups are in ProcessMaker Spark.
 ---
 
 # What is a Group?
 
 ## Overview
 
-In ProcessMaker 4, a ProcessMaker group is a set of ProcessMaker users that have the following attributes:
+In ProcessMaker Spark, a ProcessMaker group is a set of ProcessMaker users that have the following attributes:
 
 * All members of the same ProcessMaker group are assigned the same set of permissions. See [Permission Descriptions for Users and Groups](../permission-descriptions-for-users-and-groups.md).
 * Optionally, one or more ProcessMaker groups can be selected such that the group's members can start and/or cancel Requests associated with a Process. See [Edit Process Configuration](../../designing-processes/viewing-processes/view-the-list-of-processes/edit-the-name-description-category-or-status-of-a-process.md#edit-configuration-information-about-a-process) and [Add and Configure Start Event Elements](../../designing-processes/process-design/model-your-process/add-and-configure-an-event-element.md).
