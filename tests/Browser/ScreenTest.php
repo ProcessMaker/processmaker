@@ -119,6 +119,10 @@ class ScreenTest extends DuskTestCase
                 ->assertSee('New File Upload')
                 //->assertSee('New File Download')
                 ;
+
+            //Accept leave page
+            $browser->visit('/processes/screens')
+                ->acceptDialog();
         });
     }
 
