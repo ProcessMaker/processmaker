@@ -9,10 +9,7 @@
 @import '~@fortawesome/fontawesome-free/scss/fontawesome';
 @import '~vue-multiselect/dist/vue-multiselect.min.css';
 
-@font-face {
-  font-family: 'Open Sans';
-  src: url('/fonts/OpenSans.ttf') format('truetype');
-}
+@import '../../node_modules/npm-font-open-sans/open-sans';
 
 // .search-bar {
 //   @extend form-inline;
@@ -407,11 +404,16 @@ h1.page-title {
   margin-bottom: 6px;
 }
 
-#alertBox {
+.alert-wrapper {
   position: fixed;
+  top: 0.5em;
   left: 30%;
   right: 30%;
-  z-index: 50000;
+  z-index: 100;
+}
+
+.alertBox {
+  width: 100%
 }
 
 .avatar-circle-list {

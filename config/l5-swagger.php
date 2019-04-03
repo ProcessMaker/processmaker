@@ -41,16 +41,6 @@ return [
         |--------------------------------------------------------------------------
          */
         'middleware' => [
-            'api' => [
-                \ProcessMaker\Http\Middleware\EncryptCookies::class,
-                \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-                \Illuminate\Session\Middleware\StartSession::class,
-                \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-                \ProcessMaker\Http\Middleware\VerifyCsrfToken::class,
-                \Illuminate\Routing\Middleware\SubstituteBindings::class,
-                \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
-                'auth',
-            ],
             'asset' => [],
             'docs' => [],
             'oauth2_callback' => [],
@@ -128,9 +118,14 @@ return [
         'pm_api_bearer' => [ // personal access token
             'type' => 'oauth2',
             'flows' => [
-                'implicit' => ['authorizationUrl' => '']
+                'authorizationCode' => [
+                    'authorizationUrl' => '/oauth/authorize',
+                    'tokenUrl' => '/oauth/token',
+                    'scopes' => '*'
+                ],
+                'implicit' => ['authorizationUrl' => ''],
             ],
-        ]
+        ],
     ],
 
     /*

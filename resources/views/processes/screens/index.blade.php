@@ -31,7 +31,7 @@
                         {{__('Import')}}</a>
                 @endcan
                 @can('create-screens')
-                    <button type="button" href="#" class="btn btn-secondary" data-toggle="modal"
+                    <button type="button" href="#" id="create_screen" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createScreen">
                         <i class="fas fa-plus"></i> {{__('Screen')}}
                     </button>
