@@ -19,7 +19,7 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{__('Create An Auth-Client')}}</h5>
+                        <h5 class="modal-title">@{{title}}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -76,7 +76,8 @@
         data: {
           authClient: null,
           errors: null,
-          disabled: false
+          disabled: false,
+          title:''
         },
         beforeMount() {
           this.resetValues();
@@ -120,6 +121,7 @@
             });
           },
           resetValues() {
+            this.title = __('Create An Auth-Client');
             this.authClient = {
               id: null,
               name: "",
@@ -133,7 +135,8 @@
             this.disabled = false;
           },
           edit(item) {
-            this.authClient = item
+            this.title = __('Edit Auth Client');
+            this.authClient = item;
             $('#createEditAuthClient').modal('show');
           }
         },
