@@ -1,6 +1,6 @@
 # Table of contents
 
-* [ProcessMaker 4 Spark Documentation](README.md)
+* [ProcessMaker Spark Documentation](README.md)
 
 ## Start Here
 
