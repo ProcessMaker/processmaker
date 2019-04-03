@@ -1,5 +1,5 @@
 ---
-description: Are you new to ProcessMaker 4? This is a great place to start.
+description: Are you new to ProcessMaker Spark? This is a great place to start.
 ---
 
 # Getting Started Guide

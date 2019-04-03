@@ -1,18 +1,18 @@
 ---
-description: Welcome to ProcessMaker 4 documentation. This is a good place to start.
+description: Welcome to ProcessMaker Spark documentation. This is a good place to start.
 ---
 
 # How to Use This Document
 
 ## Overview
 
-ProcessMaker 4 is a next-generation business process application to easily design and implement BPMN 2.0 compliant business processes within a modern and extensible system.
+ProcessMaker Spark is a next-generation business process application to easily design and implement BPMN 2.0 compliant business processes within a modern and extensible system.
 
-Our goal for ProcessMaker 4 is to deliver simplicity, but to allow complexity. ProcessMaker 4 is easy to use, but allows you to design customized processes and end-user experiences.
+Our goal for ProcessMaker Spark is to deliver simplicity, but to allow complexity. ProcessMaker Spark is easy to use, but allows you to design customized processes and end-user experiences.
 
 ## Use This Document Based on How You Use ProcessMaker
 
-This document is organized based on how different roles use ProcessMaker 4. Refer to the following roles:
+This document is organized based on how different roles use ProcessMaker Spark. Refer to the following roles:
 
 * [ProcessMaker Administrator](how-to-use-this-document.md#processmaker-administrator)
 * [Process Owner](how-to-use-this-document.md#process-owner)
