@@ -432,5 +432,8 @@
     "Property already exists": "yo soy espanol",
     "Property Saved": "yo soy espanol",
     "Property Edited": "yo soy espanol",
-    "Property deleted": "yo soy espanol"
+    "Property deleted": "yo soy espanol",
+    "Save Property": "yo soy espanol",
+    "You can set CSS Selector names in the inspector. Use them here with [selector='my-selector']": "yo soy espanol",
+    "Text Content": "yo soy espanol"
 }
