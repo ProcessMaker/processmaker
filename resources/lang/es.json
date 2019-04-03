@@ -521,5 +521,10 @@
     "Width": "",
     "image width": "",
     "Height": "",
-    "Image height": ""
+    "Image height": "",
+    "Visibility Rule": "",
+    "This control is hidden until this expression is true": "",
+    "CSS Selector Name": "",
+    "Use this in your custom css rules": "",
+    "Data Preview": ""
 }
