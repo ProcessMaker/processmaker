@@ -18,7 +18,7 @@
                 </ul>
 
                 <ul class="navbar-nav pull-right">
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="permission.includes('export-screens')">
                         <a :class="classExportScreen" @click="beforeExportScreen" href="#">
                             <i class="fas fa-file-export"></i>
                         </a>
@@ -169,7 +169,7 @@
         }
       }
     },
-    props: ["process", "screen"],
+    props: ["process", "screen", 'permission'],
     mounted() {
       // Add our initial controls
       // Iterate through our initial config set, calling this.addControl
