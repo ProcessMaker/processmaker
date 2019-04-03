@@ -21,8 +21,9 @@ class SetLocale
     public function handle(Request $request, Closure $next)
     {
         // Grab the locale
-        $locale = $request->route('lang');
-        if (\Auth::user()) {
+        $locale = config('locale');
+        $user = \Auth::user();
+        if ($user && $user->language !== null) {
             $locale = \Auth::user()->language;
         }
         if ($locale) {

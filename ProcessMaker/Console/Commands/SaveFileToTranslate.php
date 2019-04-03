@@ -42,6 +42,6 @@ class SaveFileToTranslate extends Command
         $lang = json_decode(file_get_contents($path), true);
         array_walk($lang, function(&$v) { $v = ""; });
         ksort($lang);
-        file_put_contents('en.json', json_encode($lang));
+        file_put_contents('en.blank.json', json_encode($lang, JSON_PRETTY_PRINT));
     }
 }

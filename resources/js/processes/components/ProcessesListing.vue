@@ -169,7 +169,7 @@ export default {
             .put("processes/" + data.id + "/restore")
             .then(response => {
               ProcessMaker.alert(
-                $t("The process was restored."),
+                this.$t("The process was restored."),
                 "success"
               );
               this.$emit("reload");
@@ -177,8 +177,8 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            $t("Caution!"),
-            $t("Are you sure you want to archive the process '") +
+            this.$t("Caution!"),
+            this.$t("Are you sure you want to archive the process '") +
               data.name +
               "'?",
             "",
@@ -187,7 +187,7 @@ export default {
                 .delete("processes/" + data.id)
                 .then(response => {
                   ProcessMaker.alert(
-                    $t("The process was archived."),
+                    this.$t("The process was archived."),
                     "warning"
                   );
                   this.$emit("reload");
