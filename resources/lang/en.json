@@ -527,5 +527,6 @@
     "This control is hidden until this expression is true": "This control is hidden until this expression is true",
     "CSS Selector Name": "CSS Selector Name",
     "Use this in your custom css rules": "Use this in your custom css rules",
-    "Data Preview": "Data Preview"
+    "Data Preview": "Data Preview",
+    "Inspector": "Inspector"
 }
