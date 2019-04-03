@@ -528,5 +528,15 @@
     "This control is hidden until this expression is true": "This control is hidden until this expression is true",
     "CSS Selector Name": "CSS Selector Name",
     "Use this in your custom css rules": "Use this in your custom css rules",
-    "Data Preview": "Data Preview"
+    "Data Preview": "Data Preview",
+    "Inspector": "Inspector",
+    "File Upload": "File Upload",
+    "New File Upload": "New File Upload",
+    "Text Label": "Text Label",
+    "Upload Name": "Upload Name",
+    "The name of the upload": "The name of the upload",
+    "File Download": "File Download",
+    "New File Download": "New File Download",
+    "Download Name": "Download Name",
+    "The name of the Download": "The name of the Download"
 }
