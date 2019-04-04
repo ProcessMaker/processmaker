@@ -18,9 +18,9 @@ Follow these steps to search for a Process:
 
 1. [View your active Processes.](./#view-your-processes) The **Processes** page displays.
 2. Click the **Search** field and then enter text to filter Processes using any of the following criteria:
-   * **Name:** Filter by the Process name.
-   * **Category:** Filter by the Process [Category](../process-categories.md) name.
-   * **Owner:** Filter by the Process Owner's full name.
+   * **Name:** Filter by the Process name that displays in the **Name** column.
+   * **Category:** Filter by the Process [Category](../process-categories.md) name that displays in the **Category** column.
+   * **Owner:** Filter by the Process Owner's full name that displays in the **Owner** column.
 
 As you enter text into the **Search** field, Processes display that match your entered text.
 

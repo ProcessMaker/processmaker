@@ -20,8 +20,8 @@ Follow these steps to search for a ProcessMaker user account:
 
 1. [View all ProcessMaker user accounts.](view-all-users.md) The **Users** page displays.
 2. Click the **Search** field and then enter text to filter ProcessMaker user accounts using any of the following criteria:
-   * **Username:** Filter by the ProcessMaker user account username.
-   * **Full name:** Filter by the full name associated with the ProcessMaker user account.
+   * **Username:** Filter by the ProcessMaker user account username that displays in the **Username** column.
+   * **Full name:** Filter by the full name associated with the ProcessMaker user account that displays in the **Full Name** column.
 
 As you enter text into the **Search** field, ProcessMaker user accounts display that match your entered text.
 

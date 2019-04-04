@@ -20,8 +20,8 @@ Follow these steps to search for a ProcessMaker Script:
 
 1. [View your ProcessMaker Scripts](view-all-scripts.md). The **Scripts** page displays.
 2. Click the **Search** field and then enter text to filter ProcessMaker Scripts using any of the following criteria:
-   * **Name:** Filter by the ProcessMaker Script name.
-   * **Description:** Filter by the ProcessMaker Script description.
+   * **Name:** Filter by the ProcessMaker Script name that displays in the **Name** column.
+   * **Description:** Filter by the ProcessMaker Script description that displays in the **Description** column.
 
 As you enter text into the **Search** field, ProcessMaker Scripts display that match your entered text.
 
