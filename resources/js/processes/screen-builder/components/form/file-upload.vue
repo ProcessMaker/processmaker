@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label v-uni-for="name">{{$t(label)}}</label>
+    <label v-uni-for="name">{{ label }}</label>
     <uploader :options="options" ref="uploader">
       <uploader-unsupport></uploader-unsupport>
       <uploader-drop id="uploaderMain" class="form-control-file">
