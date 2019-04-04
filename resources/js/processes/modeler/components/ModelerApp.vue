@@ -64,6 +64,11 @@ export default {
     }
   },
   mounted() {
+    reader.onloadend = () => {
+      this.$refs.modeler.loadXML(reader.result);
+      this.$refs.uploadmodal.hide();
+    };
+
     ProcessMaker.$modeler = this.$refs.modeler;
   },
   methods: {

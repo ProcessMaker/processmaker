@@ -74,7 +74,7 @@ class UserAddEditDeleteTest extends DuskTestCase
                 ->click();  //The delete button lacks a unique ID
             $browser->waitFor('#confirmModal', 10)
                 ->press("#confirm")
-                ->waitFor("#alertBox", 10)
+                ->waitFor(".alertBox", 10)
                 ->assertSee("The user was deleted");
         });
 
