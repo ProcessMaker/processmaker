@@ -22,7 +22,7 @@ Follow these steps to create a new ProcessMaker Screen:
 
    ![](../../../.gitbook/assets/create-new-screen-screen-processes.png)
 
-3. In the **Name** field, enter the name of the ProcessMaker Screen. ~~Character length limitation and/or unsupported characters?~~ This is a required field.
+3. In the **Name** field, enter the name of the ProcessMaker Screen. This is a required field.
 4. From the **Type** drop-down menu, select one of the following ProcessMaker Screen types:
 
    * **Display:** The Display type, generally used to display information, has limited functionality compared the Form type.
@@ -30,7 +30,7 @@ Follow these steps to create a new ProcessMaker Screen:
 
    This is a required field. See [Screen Types](../screens-builder/types-for-screens.md).
 
-5. Enter in the **Description** field a description for the ProcessMaker Screen. This is a required field. ~~Character length limitation and/or unsupported characters?~~
+5. Enter in the **Description** field a description for the ProcessMaker Screen. This is a required field.
 6. Click **Save**. Screens Builder displays the new ProcessMaker Screen in [Editor mode](../screens-builder/screens-builder-modes.md#editor-mode). See [Screens Builder](../screens-builder/).
 
 ## Related Topics
