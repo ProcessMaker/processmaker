@@ -38,11 +38,15 @@ import XHR from 'i18next-xhr-backend';
 import VueI18Next from '@panter/vue-i18next';
 
 window.Vue.use(VueI18Next)
+let translationsLoaded = false
 i18next.use(Backend).init({
     lng: document.documentElement.lang,
-    parseMissingKeyHandler(_val) {
-        // Show an empty string until the values are loaded from the backend
-        return ""
+    parseMissingKeyHandler(value) {
+        if (!translationsLoaded) { return value }
+        // Report that a translation is missing
+        window.ProcessMaker.missingTranslation(value)
+        // Fallback to showing the english version
+        return value
     },
     backend: {
         backends: [
@@ -50,11 +54,11 @@ i18next.use(Backend).init({
             XHR,
         ],
         backendOptions: [
-            { versions: { en: 4, es: 4 }}, // change this to invalidate cache
+            { versions: { en: 6, es: 6 }}, // change this to invalidate cache
             { loadPath: '/i18next/fetch/{{lng}}/_default' },
         ],
     }
-})
+}).then(() => { translationsLoaded = true })
 // Make $t available to all vue instances
 Vue.mixin({ i18n: new VueI18Next(i18next) })
 
@@ -113,6 +117,13 @@ window.ProcessMaker = {
      */
     unreadNotifications(messageIds = [], urls = []) {
         return window.ProcessMaker.apiClient.put('/unread_notifications', { message_ids: messageIds, routes: urls });
+    },
+
+    missingTranslations: new Set(),
+    missingTranslation(value) {
+        if (this.missingTranslations.has(value)) { return }
+        this.missingTranslations.add(value)
+        console.warn('Missing Translation:', value)
     },
 };
 
