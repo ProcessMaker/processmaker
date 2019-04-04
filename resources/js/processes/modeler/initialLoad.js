@@ -16,7 +16,7 @@ import {
     serviceTask,
     startTimerEvent,
     intermediateTimerEvent,
-    intermediateMessageCatchEvent,
+    // intermediateMessageCatchEvent,
     callActivity
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
@@ -40,20 +40,23 @@ Vue.component('StartPermission', StartPermission);
 
 let nodeTypes = [
     startEvent,
+    startTimerEvent,
+    intermediateTimerEvent,
     endEvent,
     task,
     scriptTask,
     callActivity,
+    // intermediateMessageCatchEvent,
     exclusiveGateway,
     //inclusiveGateway,
     parallelGateway,
     sequenceFlow,
-    textAnnotation,
     association,
     pool,
     poolLane,
     messageFlow,
-    serviceTask
+    serviceTask,
+    textAnnotation,
 ]
 ProcessMaker.nodeTypes.push(...nodeTypes);
 
@@ -65,35 +68,15 @@ task.definition = function definition(moddle) {
     });
 };
 
-ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
+ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
     /* Register basic node types */
     for (const node of nodeTypes) {
         registerNode(node);
     }
 
-    registerNode(startTimerEvent, definition => {
-        const eventDefinitions = definition.get('eventDefinitions');
-        if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-          return 'processmaker-modeler-start-timer-event';
-        }
-      });
-      registerNode(intermediateTimerEvent, definition => {
-        const eventDefinitions = definition.get('eventDefinitions');
-        if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-          return 'processmaker-modeler-intermediate-catch-timer-event';
-        }
-      });
-
-    registerNode(intermediateMessageCatchEvent, definition => {
-        const eventDefinitions = definition.get('eventDefinitions');
-        if (definition.$type === 'bpmn:IntermediateMessageCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-            return 'processmaker-modeler-intermediate-message-catch-event';
-        }
-    });
-
     /* Add a BPMN extension */
     registerBpmnExtension('pm', bpmnExtension);
-    
+
     /* Register extension for webhooks */
     registerInspectorExtension(startEvent, {
         component: 'Webhook',
@@ -103,7 +86,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
             name: ''
         }
     });
-    
+
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {
         component: 'StartPermission',
