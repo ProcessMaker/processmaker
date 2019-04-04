@@ -15,6 +15,8 @@ use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Facades\WorkflowManager;
+use Symfony\Component\HttpFoundation\IpUtils;
 
 class ProcessRequestController extends Controller
 {
@@ -27,7 +29,7 @@ class ProcessRequestController extends Controller
     public $doNotSanitize = [
         'data'
     ];
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -83,7 +85,7 @@ class ProcessRequestController extends Controller
                 $query->with($include);
             }
         }
-        
+
         // type filter
         switch ($request->input('type')) {
             case 'started_me':
@@ -106,13 +108,13 @@ class ProcessRequestController extends Controller
         if (!empty($filterBase)) {
             $filter = '%' . $filterBase . '%';
             $query->where(function ($query) use ($filter, $filterBase) {
-                        $query->whereHas('participants', function ($query) use($filter) {
-                            $query->Where('firstname', 'like', $filter);
-                            $query->orWhere('lastname', 'like', $filter);
-                    })->orWhere('name', 'like', $filter)
+                $query->whereHas('participants', function ($query) use ($filter) {
+                    $query->Where('firstname', 'like', $filter);
+                    $query->orWhere('lastname', 'like', $filter);
+                })->orWhere('name', 'like', $filter)
                     ->orWhere('id', 'like', $filterBase)
                     ->orWhere('status', 'like', $filter);
-                });
+            });
         }
 
         $response = $query
@@ -121,8 +123,8 @@ class ProcessRequestController extends Controller
                 $request->input('order_direction', 'ASC')
             )
             ->get();
-        
-        $response = $response->filter(function($processRequest) {
+
+        $response = $response->filter(function ($processRequest) {
             return Auth::user()->can('view', $processRequest);
         })->values();
 
@@ -198,7 +200,7 @@ class ProcessRequestController extends Controller
     public function update(ProcessRequest $request, Request $httpRequest)
     {
         if ($httpRequest->post('status') === 'CANCELED') {
-            if (! Auth::user()->can('cancel', $request->process)) {
+            if (!Auth::user()->can('cancel', $request->process)) {
                 throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
@@ -206,7 +208,7 @@ class ProcessRequestController extends Controller
         }
         $fields = $httpRequest->json()->all();
         if (array_keys($fields) === ['data'] || array_keys($fields) === ['data', 'task_element_id']) {
-            if (! Auth::user()->can('editData', $request)) {
+            if (!Auth::user()->can('editData', $request)) {
                 throw new AuthorizationException(__('Not authorized to edit request data.'));
             }
 
@@ -217,9 +219,9 @@ class ProcessRequestController extends Controller
             $request->data = $data;
             $request->saveOrFail();
             // Log the data edition
-            $user_id   = Auth::id();
+            $user_id = Auth::id();
             $user_name = $user_id ? Auth::user()->fullname : 'The System';
-            
+
             if ($task_name) {
                 $text = __('has edited the data for ') . $task_name;
             } else {
@@ -232,7 +234,7 @@ class ProcessRequestController extends Controller
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $request->id,
                 'subject' => 'Data edited',
-                'body' => $user_name . " " . $text,
+                'body' => $user_name . ' ' . $text,
             ]);
         } else {
             $httpRequest->validate(ProcessRequest::rules($request));
@@ -277,6 +279,55 @@ class ProcessRequestController extends Controller
     }
 
     /**
+     * Trigger a intermediate catch event
+     *
+     * @param ProcessRequest $request
+     * @param string $event
+     * @return void
+     */
+    public function activateIntermediateEvent(ProcessRequest $request, $event)
+    {
+        // Get token, process, event and data
+        $token = $request->tokens()->where('element_id', $event)->firstOrFail();
+        $process = $request->process;
+        $catchEvent = $process->getDefinitions()->findElementById($event)->getBpmnElementInstance();
+        $data = (array) request()->json();
+
+        // Check IPs whitelist
+        $whitelist = $catchEvent->getProperty('whitelist');
+        if ($whitelist && $whitelist !== 'undefined') {
+            dd($whitelist);
+            $ip = request()->ip;
+            if (!IpUtils::checkIp($ip, $whitelist)) {
+                throw new AuthorizationException(__('Not authorized to trigger this event.'));
+            }
+        }
+        return response([]);
+
+        // Check allowed users
+        $allowedUsers = $catchEvent->getProperty('allowedUsers');
+        $allowedGroups = $catchEvent->getProperty('allowedGroups');
+        if ($allowedUsers || $allowedGroups) {
+            $users = [];
+            foreach (explode(',', $allowedUsers) as $userId) {
+                $userId = trim($userId);
+                $userId ? $users[$userId] = $userId : null;
+            }
+            foreach (explode(',', $allowedGroups) as $groupId) {
+                $groupId = trim($groupId);
+                $groupId ? $process->getConsolidatedUsers($groupId, $users) : null;
+            }
+            if (!in_array(Auth::id(), $users)) {
+                //throw new AuthorizationException(__('Not authorized to trigger this event.'));
+            }
+        }
+
+        // Trigger the catch event
+        WorkflowManager::completeCatchEvent($process, $request, $token, $data);
+        return response([]);
+    }
+
+    /**
      * Cancel all tokens of request.
      *
      * @param ProcessRequest $request
@@ -296,7 +347,8 @@ class ProcessRequestController extends Controller
         $request->tokens()->update(['status' => 'CLOSED']);
     }
 
-    private function getTaskName($fields, $request) {
+    private function getTaskName($fields, $request)
+    {
         if (!array_key_exists('task_element_id', $fields)) {
             return null;
         }
