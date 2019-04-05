@@ -17,9 +17,13 @@ use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Facades\WorkflowManager;
 use Symfony\Component\HttpFoundation\IpUtils;
+use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 
 class ProcessRequestController extends Controller
 {
+    const DOMAIN_CACHE_TIME = 86400;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -287,26 +291,37 @@ class ProcessRequestController extends Controller
      */
     public function activateIntermediateEvent(ProcessRequest $request, $event)
     {
-        // Get token, process, event and data
-        $token = $request->tokens()->where('element_id', $event)->firstOrFail();
+        // Get the process definition
         $process = $request->process;
         $catchEvent = $process->getDefinitions()->findElementById($event)->getBpmnElementInstance();
-        $data = (array) request()->json();
+        if (!($catchEvent instanceof CatchEventInterface)) {
+            return abort(423, __('Invalid element, not a catch event ' . get_class($catchEvent)));
+        }
+        // Get token and data
+        $token = $request->tokens()->where('element_id', $event)->where('status', 'ACTIVE')->first();
+        if (!$token) {
+            return abort(400, __('Not found'));
+        }
 
         // Check IPs whitelist
         $whitelist = $catchEvent->getProperty('whitelist');
-        if ($whitelist && $whitelist !== 'undefined') {
-            dd($whitelist);
-            $ip = request()->ip;
-            if (!IpUtils::checkIp($ip, $whitelist)) {
-                throw new AuthorizationException(__('Not authorized to trigger this event.'));
+        $whitelist = $whitelist === 'undefined' ? '' : $whitelist;
+        if ($whitelist) {
+            $ip = request()->ip();
+            list($ipWhitelist, $domainWhitelist) = $this->parseWhitelist($whitelist);
+            $domain = Cache::remember("ip_domain_{$ip}", self::DOMAIN_CACHE_TIME, function () use ($ip) {
+                return gethostbyaddr($ip);
+            });
+            if (!IpUtils::checkIp($ip, $ipWhitelist) && !$this->checkDomain($domain, $domainWhitelist)) {
+                return abort(403, __('Not authorized to trigger this event.'));
             }
         }
-        return response([]);
 
         // Check allowed users
         $allowedUsers = $catchEvent->getProperty('allowedUsers');
+        $allowedUsers = $allowedUsers === 'undefined' ? '' : $allowedUsers;
         $allowedGroups = $catchEvent->getProperty('allowedGroups');
+        $allowedGroups = $allowedGroups === 'undefined' ? '' : $allowedGroups;
         if ($allowedUsers || $allowedGroups) {
             $users = [];
             foreach (explode(',', $allowedUsers) as $userId) {
@@ -318,13 +333,57 @@ class ProcessRequestController extends Controller
                 $groupId ? $process->getConsolidatedUsers($groupId, $users) : null;
             }
             if (!in_array(Auth::id(), $users)) {
-                //throw new AuthorizationException(__('Not authorized to trigger this event.'));
+                return abort(403, __('Not authorized to trigger this event.'));
             }
         }
+
+        $data = (array) request()->json()->all();
 
         // Trigger the catch event
         WorkflowManager::completeCatchEvent($process, $request, $token, $data);
         return response([]);
+    }
+
+    /**
+     * Parse the whitelist parameter
+     *
+     * @param string $whitelist
+     *
+     * @return array
+     */
+    private function parseWhitelist($whitelist)
+    {
+        $ipWhitelist = [];
+        $domainWhitelist = [];
+        if ($whitelist && $whitelist !== 'undefined') {
+            foreach (explode(',', $whitelist) as $item) {
+                if (filter_var($item, FILTER_VALIDATE_IP)) {
+                    $ipWhitelist[] = $item;
+                } else {
+                    $domainWhitelist[] = $item;
+                }
+            }
+        }
+        return [$ipWhitelist, $domainWhitelist];
+    }
+
+    /**
+     * Check if the domain match in the whitelist
+     *
+     * @param string $domain
+     * @param array $whitelist
+     *
+     * @return boolean
+     */
+    private function checkDomain($domain, $whitelist)
+    {
+        foreach ($whitelist as $filter) {
+            $filter = '/^' . str_replace('\*', '[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', preg_quote($filter, '/')) . '$/';
+            if (preg_match($filter, $domain)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
