@@ -41,6 +41,7 @@ window.Vue.use(VueI18Next)
 let translationsLoaded = false
 i18next.use(Backend).init({
     lng: document.documentElement.lang,
+    keySeparator: false,
     parseMissingKeyHandler(value) {
         if (!translationsLoaded) { return value }
         // Report that a translation is missing

@@ -17,11 +17,11 @@
                             <i class="fas fa-search"></i>
                         </div>
                     </div>
-                    <input class="form-control form-control-sm" v-model="filter" :placeholder="$t('Search...')">
+                    <input class="form-control form-control-sm" v-model="filter" :placeholder="$t('Search') + '...'">
                 </div>
             </span>
 
-            <p>{{$t('We\'ve made it easy for you to make the following Requests.')}}</p>
+            <p>{{ $t("We've made it easy for you to make the following Requests.") }}</p>
             <div v-if="Object.keys(processes).length && !loading" class="process-list p-4">
                 <div class="category" v-for="(category, index) in processes">
                     <h3 class="name">{{index}}</h3>
