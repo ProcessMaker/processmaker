@@ -17,7 +17,7 @@
 
       <validation-status :validation-errors="validationErrors"/>
     </statusbar>
-    <b-modal ref="uploadmodal" id="uploadmodal" centered title="Upload BPMN File">
+    <b-modal ref="uploadmodal" id="uploadmodal" centered :title="$t('Upload BPMN File')" :cancel-title="$t('Cancel')" :ok-title="$t('Ok')">
       <file-upload @input-file="handleUpload">
         {{ $t('Upload file') }}
       </file-upload>
