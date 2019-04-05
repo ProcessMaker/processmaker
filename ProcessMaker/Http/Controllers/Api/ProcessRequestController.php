@@ -406,6 +406,14 @@ class ProcessRequestController extends Controller
         $request->tokens()->update(['status' => 'CLOSED']);
     }
 
+    /**
+     * Get task name by token fields and request
+     *
+     * @param array $fields
+     * @param ProcessRequest $request
+     *
+     * @return string
+     */
     private function getTaskName($fields, $request)
     {
         if (!array_key_exists('task_element_id', $fields)) {
