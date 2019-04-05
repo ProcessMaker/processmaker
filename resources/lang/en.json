@@ -448,6 +448,7 @@
     "Info": "Info",
     "Light": "Light",
     "Dark": "Dark",
+    "Link": "Link",
     "Text color": "Text color",
     "Set the element/'s text color": "Set the element/'s text color",
     "New Text": "New Text",
@@ -554,5 +555,10 @@
     "Add New Column": "Add New Column",
     "Column Width": "Column Width",
     "Help text is meant to provide additional guidance on the field's value": "Help text is meant to provide additional guidance on the field's value",
-    "Add New Option": "Add New Option"
+    "Add New Option": "Add New Option",
+    "Set the element's background color": "Set the element's background color",
+    "Set the element's text color": "Set the element's text color",
+    "List of options available in the radio button group": "List of options available in the radio button group",
+    "Add Option": "Add Option",
+    "Add Column": "Add Column"
 }
