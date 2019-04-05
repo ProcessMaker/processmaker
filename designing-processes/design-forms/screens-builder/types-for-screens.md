@@ -8,7 +8,7 @@ description: >-
 
 ## Overview
 
-Use Screens Builder to design different types of ProcessMaker Screens. Savvy developers can design custom ProcessMaker Screen types in [packages](../../../package-development-distribution/first-topic.md). However, ProcessMaker 4 Community edition provides the following ProcessMaker Screen types by default.
+Use Screens Builder to design different types of ProcessMaker Screens. Savvy developers can design custom ProcessMaker Screen types in [packages](../../../package-development-distribution/first-topic.md). However, ProcessMaker Spark provides the following ProcessMaker Screen types by default.
 
 ### Form
 
@@ -18,7 +18,7 @@ The Form type allows people to interact with a Request in which those ProcessMak
 * Approve a request.
 * Upload or download documents.
 
-All ProcessMaker 4 Community edition Screen [controls](control-descriptions/) in Screens Builder are available for the Form type.
+All ProcessMaker Spark Screen [controls](control-descriptions/) in Screens Builder are available for the Form type.
 
 ### Display
 
