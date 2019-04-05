@@ -17,6 +17,8 @@ In simple forms, ProcessMaker Screens can display information. However, ProcessM
 
 There are many ways Process Owners design ProcessMaker Screens to meet the needs of their Processes. Savvy Process Owners design ProcessMaker Screens for multiple re-use.
 
+{% file src="../../.gitbook/assets/test.mp4" caption="Video demonstration of ProcessMaker Spark proof-of-concept" %}
+
 ## Related Topics
 
 {% page-ref page="manage-forms/view-all-forms.md" %}
