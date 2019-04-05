@@ -677,5 +677,18 @@
     "Last Saved:": "yo soy espanol",
     "Script Config Editor": "yo soy espanol",
     "CLOSE": "yo soy espanol",
-    "Start Permission": "yo soy espanol"
+    "Start Permission": "yo soy espanol",
+    "Permission To Start": "yo soy espanol",
+    "New Task": "yo soy espanol",
+    "requester": "yo soy espanol",
+    "Webhook": "yo soy espanol",
+    "Screen For Input": "yo soy espanol",
+    "What Screen Should Be Used For Rendering This Task": "yo soy espanol",
+    "Task Notifications": "yo soy espanol",
+    "Users that should be notified about task events": "yo soy espanol",
+    "Script that will be executed by the task": "yo soy espanol",
+    "Script Configuration": "yo soy espanol",
+    "Configuration JSON for the script task": "yo soy espanol",
+    "Summary screen": "yo soy espanol",
+    "Summary screen that will be displayed when process finish with this End event.": "yo soy espanol"
 }

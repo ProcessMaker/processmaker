@@ -672,5 +672,18 @@
     "Last Saved:": "Last Saved:",
     "Script Config Editor": "Script Config Editor",
     "CLOSE": "CLOSE",
-    "Start Permission": "Start Permission"
+    "Start Permission": "Start Permission",
+    "Permission To Start": "Permission To Start",
+    "New Task": "New Task",
+    "requester": "requester",
+    "Webhook": "Webhook",
+    "Screen For Input": "Screen For Input",
+    "What Screen Should Be Used For Rendering This Task": "What Screen Should Be Used For Rendering This Task",
+    "Task Notifications": "Task Notifications",
+    "Users that should be notified about task events": "Users that should be notified about task events",
+    "Script that will be executed by the task": "Script that will be executed by the task",
+    "Script Configuration": "Script Configuration",
+    "Configuration JSON for the script task": "Configuration JSON for the script task",
+    "Summary screen": "Summary screen",
+    "Summary screen that will be displayed when process finish with this End event.": "Summary screen that will be displayed when process finish with this End event."
 }
