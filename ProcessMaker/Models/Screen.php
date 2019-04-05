@@ -17,8 +17,12 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @property string title
  * @property string description
  * @property array content
+ * @property array config
+ * @property array computed
  * @property string label
  * @property Carbon type
+ * @property \Carbon\Carbon $updated_at
+ * @property \Carbon\Carbon $created_at
  *
  * @OA\Schema(
  *   schema="screensEditable",

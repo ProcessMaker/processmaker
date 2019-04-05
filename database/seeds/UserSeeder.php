@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
         $clients->create(
             $user->id,
             'Swagger UI Auth',
-            env('APP_URL', 'http://localhost') . '/api/documentation'
+            env('APP_URL', 'http://localhost') . '/api/oauth2-callback'
         );
     }
 }
