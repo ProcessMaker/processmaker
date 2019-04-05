@@ -9,7 +9,7 @@
                 language="json" class="editor"></monaco-editor>
         </div>
         <small class="form-text text-muted">{{$t(helper)}}</small>
-        <b-modal v-model="showPopup" size="lg" centered title="Script Config Editor" v-cloak>
+        <b-modal v-model="showPopup" size="lg" centered :title="$t('Script Config Editor')" v-cloak>
             <div class="editor-container">
                 <monaco-editor :options="monacoLargeOptions" v-model="code"
                     language="json" class="editor"></monaco-editor>
