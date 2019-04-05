@@ -659,5 +659,15 @@
     "Repeat on": "Repeat on",
     "Due In": "Due In",
     "Time when the task will due (hours)": "Time when the task will due (hours)",
-    "Assign user to task": "Assign user to task"
+    "Assign user to task": "Assign user to task",
+    "Assign by Expression": "Assign by Expression",
+    "Loading...": "Loading...",
+    "Assigned Group": "Assigned Group",
+    "Assigned User": "Assigned User",
+    "Previous Task Assignee": "Previous Task Assignee",
+    "Requester": "Requester",
+    "Task Assignment": "Task Assignment",
+    "Rule": "Rule",
+    "Allow Reassignment": "Allow Reassignment",
+    "Last Saved:": "Last Saved:"
 }

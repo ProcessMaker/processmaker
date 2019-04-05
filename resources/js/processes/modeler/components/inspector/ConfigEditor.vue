@@ -1,14 +1,14 @@
 <template>
     <div class="form-group">
         <div>
-            <label>{{label}}</label>
+            <label>{{$t(label)}}</label>
             <button @click="expandEditor" class="btn-sm float-right"><i class="fas fa-expand"></i></button>
         </div>
         <div class="small-editor-container">
             <monaco-editor :options="monacoOptions" v-model="code"
                 language="json" class="editor"></monaco-editor>
         </div>
-        <small class="form-text text-muted">{{helper}}</small>
+        <small class="form-text text-muted">{{$t(helper)}}</small>
         <b-modal v-model="showPopup" size="lg" centered title="Script Config Editor" v-cloak>
             <div class="editor-container">
                 <monaco-editor :options="monacoLargeOptions" v-model="code"
@@ -16,7 +16,7 @@
             </div>
             <div slot="modal-footer">
                 <b-button @click="closePopup" class="btn btn-outline-secondary btn-sm text-uppercase">
-                    CLOSE
+                    {{ $t('CLOSE') }}
                 </b-button>
             </div>
 
