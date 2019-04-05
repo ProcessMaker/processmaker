@@ -685,5 +685,7 @@
     "Script Configuration": "Script Configuration",
     "Configuration JSON for the script task": "Configuration JSON for the script task",
     "Summary screen": "Summary screen",
-    "Summary screen that will be displayed when process finish with this End event.": "Summary screen that will be displayed when process finish with this End event."
+    "Summary screen that will be displayed when process finish with this End event.": "Summary screen that will be displayed when process finish with this End event.",
+    "Refresh": "Refresh",
+    "Enable": "Enable"
 }
