@@ -11,7 +11,7 @@ description: Add and configure Start Event elements in your Process model.
 
 See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [End Event](process-modeling-element-descriptions.md#end-event) element.
 
-### Permissions Required to Do This Task
+### Permissions Required
 
 Your user account or group membership must have the following permissions to add an End Event element to the Process model:
 

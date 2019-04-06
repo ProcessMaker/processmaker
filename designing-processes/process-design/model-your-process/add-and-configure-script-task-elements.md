@@ -11,7 +11,7 @@ description: Add and configure Script Task elements in your Process model.
 
 See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [Script Task](process-modeling-element-descriptions.md#script-task) element.
 
-### Permissions Required to Do This Task
+### Permissions Required
 
 Your user account or group membership must have the following permissions to add a Script Task element to the Process model:
 

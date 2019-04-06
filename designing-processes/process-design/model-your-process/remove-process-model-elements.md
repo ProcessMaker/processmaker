@@ -13,7 +13,7 @@ Deleting a Process model element also deletes any Sequence Flow and/or Message F
 
 See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md).
 
-### Permissions Required to Do This Task
+### Permissions Required
 
 Your user account or group membership must have the following permissions to delete elements from the Process model:
 

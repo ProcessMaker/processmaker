@@ -11,7 +11,7 @@ description: Add and configure Intermediate Timer Event elements in your Process
 
 See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [Intermediate Timer Event](process-modeling-element-descriptions.md#intermediate-timer-event) element.
 
-### Permissions Required to Do This Task
+### Permissions Required
 
 Your user account or group membership must have the following permissions to add an Intermediate Timer Event element to the Process model:
 

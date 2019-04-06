@@ -37,7 +37,7 @@ Sequence Flow elements have the following attributes in regards to specific Proc
 
 See [Set and Delete Message Flow Between Elements](set-and-delete-message-flow-between-elements.md).
 
-### Permissions Required to Do This Task
+### Permissions Required
 
 Your user account or group membership must have the following permissions to set Sequence Flow elements in the Process model:
 

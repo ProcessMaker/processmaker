@@ -50,7 +50,7 @@ Click the **Delete** icon![](../../../../.gitbook/assets/delete-screen-control-s
 
 See [View the Inspector Panel](../view-the-inspector-pane.md).
 
-### Permissions Required to View Control Settings
+### Permissions Required
 
 Your user account or group membership must have the following permissions to edit a ProcessMaker Screen control:
 

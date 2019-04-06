@@ -11,7 +11,7 @@ description: Add and configure Exclusive Gateway elements in your Process model.
 
 See [Process Modeling Element Descriptions](process-modeling-element-descriptions.md) for a description of the [Exclusive Gateway](process-modeling-element-descriptions.md#exclusive-gateway) element.
 
-### Permissions Required to Do This Task
+### Permissions Required
 
 Your user account or group membership must have the following permissions to add an Exclusive Gateway element to the Process model:
 

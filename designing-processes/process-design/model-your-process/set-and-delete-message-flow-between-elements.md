@@ -36,7 +36,7 @@ The following element types do not use Message Flow elements:
 
 See [Set and Delete Sequence Flow Between Elements](the-quick-toolbar.md).
 
-### Permissions Required to Do This Task
+### Permissions Required
 
 Your user account or group membership must have the following permissions to set Message Flow elements in the Process model:
 
