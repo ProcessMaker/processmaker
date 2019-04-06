@@ -6,11 +6,11 @@ description: Are you new to ProcessMaker Spark? This is a great place to start.
 
 ## Overview
 
-The Getting Started Guide is separated into distinct, modular sections to help ProcessMaker Spark newcomers learn ProcessMaker faster.
+The Getting Started Guide is separated into modular sections to help ProcessMaker Spark newcomers learn ProcessMaker faster.
 
 The Getting Started Guide is in development. Please visit this page often for updates.
 
-## How Do I Use ProcessMaker Spark?
+## What Is ProcessMaker Spark?
 
 {% tabs %}
 {% tab title="Test" %}
@@ -21,16 +21,20 @@ A short description precedes each instructional video.
 {% embed url="https://drive.google.com/open?id=15BrLhAWuZFtoHyNc--BMnUJHBXl8Pm3Z" caption="This is a test to embed MP4 video into Gitbook \(video has no audio\)" %}
 {% endtab %}
 
+{% tab title="Introduction" %}
+#### Welcome to ProcessMaker Spark
+{% endtab %}
+
+{% tab title="Differences from Previous ProcessMaker Versions" %}
+#### Primer for Previous ProcessMaker Users
+{% endtab %}
+{% endtabs %}
+
+## How Do I Use ProcessMaker Spark?
+
+{% tabs %}
 {% tab title="Requests" %}
 #### What is a Request?
-
-
-
-#### How Do I Start a Request?
-
-
-
-#### How Do I View My Requests?
 {% endtab %}
 
 {% tab title="Tasks" %}
@@ -50,17 +54,13 @@ A short description precedes each instructional video.
 {% endtab %}
 {% endtabs %}
 
-## How Do I Manage and Create Processes?
+## How Do I Manage and Create Workflows?
 
 ### Manage Processes
 
 {% tabs %}
 {% tab title="View" %}
 #### What Is a Process?
-
-
-
-#### View All Active Processes
 {% endtab %}
 
 {% tab title="Create" %}
@@ -92,7 +92,7 @@ A short description precedes each instructional video.
 
 {% tabs %}
 {% tab title="Overview" %}
-#### Process Modeling Element Descriptions
+#### Process Modeling Element Descriptions in ProcessMaker Spark
 {% endtab %}
 
 {% tab title="Design a Simple Process" %}
@@ -105,10 +105,6 @@ A short description precedes each instructional video.
 {% tabs %}
 {% tab title="View" %}
 #### What is a ProcessMaker Script?
-
-
-
-#### View All ProcessMaker Scripts
 {% endtab %}
 
 {% tab title="Create" %}
@@ -124,15 +120,11 @@ A short description precedes each instructional video.
 {% endtab %}
 {% endtabs %}
 
-## How Do Design a Form?
+## How Do I Design a Form?
 
 {% tabs %}
 {% tab title="View" %}
 #### What is a ProcessMaker Screen?
-
-
-
-#### View All ProcessMaker Screens
 {% endtab %}
 
 {% tab title="Create" %}
@@ -153,10 +145,6 @@ A short description precedes each instructional video.
 {% tabs %}
 {% tab title="View" %}
 #### What is a ProcessMaker Environment Variable?
-
-
-
-#### View All ProcessMaker Environment Variables
 {% endtab %}
 
 {% tab title="Create" %}
@@ -169,10 +157,6 @@ A short description precedes each instructional video.
 {% tabs %}
 {% tab title="View" %}
 #### What Is a ProcessMaker User Account?
-
-
-
-#### View All ProcessMaker User Accounts
 {% endtab %}
 
 {% tab title="Create" %}
@@ -185,10 +169,6 @@ A short description precedes each instructional video.
 {% tabs %}
 {% tab title="View" %}
 #### What is a ProcessMaker Group?
-
-
-
-#### View All ProcessMaker Groups
 {% endtab %}
 
 {% tab title="Create" %}
@@ -213,10 +193,6 @@ A short description precedes each instructional video.
 {% tabs %}
 {% tab title="View" %}
 #### What Is Queue Management?
-
-
-
-#### View Queue Management's Dashboard
 {% endtab %}
 
 {% tab title="Monitoring Tags" %}
