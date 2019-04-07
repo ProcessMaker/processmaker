@@ -9,7 +9,7 @@ description: >-
 ## On-Premises Server Requirements
 
 {% hint style="info" %}
-The following server requirements are only for ProcessMaker Spark on-premises installation. Since ProcessMaker Spark is primarily an Enterprise cloud solution, these server requirements do not apply to ProcessMaker Spark.
+The following server requirements are only for ProcessMaker Spark on-premises installation. Since ProcessMaker Spark is primarily an Enterprise cloud solution, these server requirements do not apply to ProcessMaker Enterprise customers.
 {% endhint %}
 
 The following are server requirements to install ProcessMaker Spark on-premises:
