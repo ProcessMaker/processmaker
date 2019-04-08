@@ -63,7 +63,7 @@ class Install extends Command
         // Our initial .env values
         $this->env = [
             'APP_DEBUG' => 'FALSE',
-            'APP_NAME' => 'ProcessMaker Spark',
+            'APP_NAME' => '"ProcessMaker Spark"',
             'APP_ENV' => 'production',
             'APP_KEY' => $this->key,
             'BROADCAST_DRIVER' => 'redis',
