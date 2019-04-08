@@ -599,9 +599,11 @@
           },
           validatePassword() {
             if (!this.formData.password && !this.formData.confpassword) {
+              delete this.formData.password;
               return true;
             }
             if (this.formData.password.trim() === '' && this.formData.confpassword.trim() === '') {
+              delete this.formData.password;
               return true
             }
             if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {
@@ -628,6 +630,9 @@
                   this.onClose();
                 }
               })
+              .catch(error => {
+                this.errors = error.response.data.errors;
+              });
           },
           permissionUpdate() {
             if (this.adminHasChanged) {
