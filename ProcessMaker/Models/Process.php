@@ -356,7 +356,7 @@ class Process extends Model implements HasMedia
      *
      * @param bool $forceParse
      *
-     * @return ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
+     * @return \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
     public function getDefinitions($forceParse = false)
     {
@@ -608,7 +608,7 @@ class Process extends Model implements HasMedia
      *
      * @return array
      */
-    private function getConsolidatedUsers($group_id, array &$users)
+    public function getConsolidatedUsers($group_id, array &$users)
     {
         $groupMembers = GroupMember::where('group_id', $group_id)->get();
         foreach ($groupMembers as $groupMember) {

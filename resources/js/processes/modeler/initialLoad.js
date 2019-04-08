@@ -17,7 +17,9 @@ import {
     startTimerEvent,
     intermediateTimerEvent,
     // intermediateMessageCatchEvent,
-    callActivity
+    callActivity,
+    eventBasedGateway,
+    intermediateMessageCatchEvent
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
@@ -39,16 +41,13 @@ Vue.component('Webhook', Webhook);
 Vue.component('StartPermission', StartPermission);
 
 let nodeTypes = [
-    startEvent,
-    startTimerEvent,
-    intermediateTimerEvent,
     endEvent,
     task,
     scriptTask,
     callActivity,
     // intermediateMessageCatchEvent,
     exclusiveGateway,
-    //inclusiveGateway,
+    // inclusiveGateway,
     parallelGateway,
     sequenceFlow,
     association,
@@ -57,8 +56,62 @@ let nodeTypes = [
     messageFlow,
     serviceTask,
     textAnnotation,
+    eventBasedGateway,
+    intermediateMessageCatchEvent,
 ]
 ProcessMaker.nodeTypes.push(...nodeTypes);
+
+// Implement user list and group list for intermediate catch event
+// eslint-disable-next-line func-names
+(function () {
+    const activeUsers = [],
+        activeGroups = [],
+        inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[1];
+    inspector.items[4] = {
+        component: 'FormSelect',
+        config: {
+            label: 'Allowed User',
+            helper: 'Select allowed user',
+            name: 'allowedUsers',
+            options: activeUsers
+        }
+    };
+    window.ProcessMaker.apiClient
+        .get("/users", {
+        })
+        .then((response) => {
+            response.data.data.forEach((item) => {
+                activeUsers.push({
+                    value: item.id,
+                    content: item.fullname
+                });
+            });
+        })
+        .catch(() => {
+        });
+    inspector.items[5] = {
+        component: 'FormSelect',
+        config: {
+            label: 'Allowed Group',
+            helper: 'Select allowed group',
+            name: 'allowedUsers',
+            options: activeGroups
+        }
+    };
+    window.ProcessMaker.apiClient
+        .get("/groups", {
+        })
+        .then((response) => {
+            response.data.data.forEach((item) => {
+                activeGroups.push({
+                    value: item.id,
+                    content: item.name
+                });
+            });
+        })
+        .catch(() => {
+        });
+})();
 
 // Set default properties for task
 task.definition = function definition(moddle) {
@@ -69,6 +122,21 @@ task.definition = function definition(moddle) {
 };
 
 ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
+    // Register start events
+    registerNode(startEvent);
+    registerNode(startTimerEvent, definition => {
+        const eventDefinitions = definition.get('eventDefinitions');
+        if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
+        return 'processmaker-modeler-start-timer-event';
+        }
+    });
+    registerNode(intermediateTimerEvent, definition => {
+        const eventDefinitions = definition.get('eventDefinitions');
+        if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
+        return 'processmaker-modeler-intermediate-catch-timer-event';
+        }
+    });
+
     /* Register basic node types */
     for (const node of nodeTypes) {
         registerNode(node);
