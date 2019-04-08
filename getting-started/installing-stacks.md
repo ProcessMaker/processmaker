@@ -1,4 +1,2 @@
 # Installing Stacks
 
-
-
