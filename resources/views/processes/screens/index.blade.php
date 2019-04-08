@@ -26,8 +26,12 @@
                 </div>
             </div>
             <div class="col-8" align="right">
+                @can('import-screen')
+                    <a href="#" class="btn btn-outline-secondary" @click="goToImport"><i class="fas fa-file-import"></i>
+                        {{__('Import')}}</a>
+                @endcan
                 @can('create-screens')
-                    <button type="button" href="#" class="btn btn-secondary" data-toggle="modal"
+                    <button type="button" href="#" id="create_screen" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createScreen">
                         <i class="fas fa-plus"></i> {{__('Screen')}}
                     </button>

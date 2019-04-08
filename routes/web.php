@@ -25,6 +25,9 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
         Route::get('screens', 'ScreenController@index')->name('screens.index')->middleware('can:view-screens');
         Route::get('screens/{screen}/edit', 'ScreenController@edit')->name('screens.edit')->middleware('can:edit-screens,screen');
+        Route::get('screens/{screen}/export', 'ScreenController@export')->name('screens.export')->middleware('can:export-screens');
+        Route::get('screens/import', 'ScreenController@import')->name('screens.import')->middleware('can:import-screens');
+        Route::get('screens/{screen}/download/{key}', 'ScreenController@download')->name('screens.download')->middleware('can:export-screens');
         Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit')->middleware('can:edit-screens,screen');
 
         Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');

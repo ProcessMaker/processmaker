@@ -27,7 +27,7 @@
 
             <div class="col-8" align="right">
                 @can('create-scripts')
-                    <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
+                    <a href="#" id="create_script" class="btn btn-secondary" data-toggle="modal" data-target="#addScript"><i
                                 class="fas fa-plus"></i>
                         {{__('Script')}}</a>
                 @endcan
@@ -81,7 +81,7 @@
                             <label class="typo__label">{{__('Run script as')}}</label>
                             <multiselect v-model="selectedUser" label="fullname" :options="users"
                                          :searchable="true"></multiselect>
-                        <small class="form-text text-muted">{{__('Select a user to set the api access of the script')}}</small>
+                        <small class="form-text text-muted">{{__('Select a user to set the API access of the Script')}}</small>
                         </div>
 
                         <div class="form-group">
