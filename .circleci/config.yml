@@ -110,10 +110,10 @@ jobs:
           name: setup SDKs
           command: |
             php artisan l5:generate
-            mkdir -p /tmp/pm4-sdk-php
-            php artisan bpm:sdk php /tmp/pm4-sdk-php
-            mkdir -p /tmp/pm4-sdk-lua
-            php artisan bpm:sdk lua /tmp/pm4-sdk-lua
+            mkdir -p /tmp/spark-sdk-php
+            php artisan spark:sdk php /tmp/spark-sdk-php
+            mkdir -p /tmp/spark-sdk-lua
+            php artisan spark:sdk lua /tmp/spark-sdk-lua
 
       - run:
           name: Configure scripts executor
