@@ -3,6 +3,7 @@ namespace ProcessMaker\Http\Controllers\Auth;
 
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use ProcessMaker\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -35,6 +36,11 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    public function loginWithoutIntended(Request $request) {
+        $request->session()->put('url.intended', false);
+        return $this->login($request);
     }
 
     /**
