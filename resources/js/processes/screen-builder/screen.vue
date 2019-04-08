@@ -89,10 +89,10 @@
 </template>
 
 <script>
-  import ComputedProperties from "@processmaker/vue-form-builder/src/components/computed-properties";
-  import CustomCSS from "@processmaker/vue-form-builder/src/components/custom-css.vue";
-  import VueFormBuilder from "@processmaker/vue-form-builder/src/components/vue-form-builder";
-  import VueFormRenderer from "@processmaker/vue-form-builder/src/components/vue-form-renderer";
+  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties";
+  import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css.vue";
+  import VueFormBuilder from "@processmaker/spark-screen-builder/src/components/vue-form-builder";
+  import VueFormRenderer from "@processmaker/spark-screen-builder/src/components/vue-form-renderer";
   import VueJsonPretty from "vue-json-pretty";
   import {FormTextArea} from "@processmaker/vue-form-elements/src/components";
 
