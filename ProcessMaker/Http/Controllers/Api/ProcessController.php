@@ -643,8 +643,11 @@ class ProcessController extends Controller
      */
     public function import(Request $request)
     {
-        $success = ImportProcess::dispatchNow($request->file('file')->get());
-        return ['status' => $success];
+        $import = ImportProcess::dispatchNow($request->file('file')->get());
+        return response([
+            'status' => $import->status,
+            'assignable' => $import->assignable,
+        ], 200);
     }
 
     /**
