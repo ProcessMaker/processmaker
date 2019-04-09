@@ -12,6 +12,9 @@ new Vue({
         ScreenListing,
     },
     methods: {
+        goToImport() {
+          window.location = 'screens/import';
+        },
         show() {
             this.screenId = null;
             this.screenModal = true;

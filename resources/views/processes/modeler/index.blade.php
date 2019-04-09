@@ -45,6 +45,19 @@ ol.breadcrumb {
 
 @section('js')
   <script>
+    new Vue({
+      created() {
+        window.addEventListener('beforeunload', this.handler)
+      },
+      methods: {
+        handler: function handler(event) {
+          let confirmationMessage = __('Are you sure you want to leave?');
+
+          event.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+          return confirmationMessage;
+        }
+      }
+    });
   window.ProcessMaker.modeler = {
     process: @json($process),
     xml: @json($process->bpmn)

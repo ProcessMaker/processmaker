@@ -9,12 +9,15 @@
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
-        <login-modal id="loginModal" v-if='loginShow' :title="loginTitle" :message="loginMessage" 
-                 @close="loginShow=false">
-        </login-modal>
-        <b-alert class="d-none d-lg-block" :show="alertShow" id="alertBox" :variant="alertVariant" @dismissed="alertShow = false" dismissible>
-            @{{alertText}}
-        </b-alert>
+
+        <div v-if="alerts.length > 0" class="alert-wrapper">
+            <login-modal id="loginModal" v-if='sessionShow' :title="loginTitle" :message="loginMessage" 
+                 @close="sessionShow=false">
+            </login-modal>
+            <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade>
+                @{{item.alertText}}
+            </b-alert>
+        </div>
 
         <b-navbar-nav class="d-flex align-items-center">
             @foreach(Menu::get('topnav')->items as $item)

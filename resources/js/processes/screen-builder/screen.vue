@@ -18,8 +18,13 @@
                 </ul>
 
                 <ul class="navbar-nav pull-right">
+                    <li class="nav-item" v-if="permission.includes('export-screens')">
+                        <a :class="classExportScreen" @click="beforeExportScreen" href="#">
+                            <i class="fas fa-file-export"></i>
+                        </a>
+                    </li>
                     <li class="nav-item">
-                        <a class="nav-link" @click="saveScreen" href="#">
+                        <a class="nav-link" @click="saveScreen(false)" href="#">
                             <i class="fas fa-save"></i>
                         </a>
                     </li>
@@ -129,6 +134,14 @@
       }
     },
     computed: {
+      classExportScreen() {
+        let classExport = 'nav-link';
+        if (this.$refs.screenBuilder && this.$refs.screenBuilder.validationErrors
+          && this.$refs.screenBuilder.validationErrors.length > 0) {
+          classExport = 'nav-link disabled';
+        }
+        return classExport;
+      },
       displayBuilder() {
         return this.mode === 'editor';
       },
@@ -156,7 +169,7 @@
         }
       }
     },
-    props: ["process", "screen"],
+    props: ["process", "screen", 'permission'],
     mounted() {
       // Add our initial controls
       // Iterate through our initial config set, calling this.addControl
@@ -225,7 +238,20 @@
         this.errors = this.$refs.screenBuilder.validationErrors
                 && this.$refs.screenBuilder.validationErrors.length > 0;
       },
-      saveScreen() {
+      beforeExportScreen() {
+        this.saveScreen(true);
+      },
+      exportScreen() {
+        ProcessMaker.apiClient.post('screens/' + this.screen.id + '/export')
+          .then(response => {
+            window.location = response.data.url;
+            ProcessMaker.alert('The screen was exported.', 'success');
+          })
+          .catch(error => {
+            ProcessMaker.alert(error.response.data.error, 'danger');
+          });
+      },
+      saveScreen(exportScreen) {
         this.checkForErrors();
         if (this.errors == true) {
           ProcessMaker.alert("This screen has validation errors.", "danger");
@@ -240,6 +266,9 @@
               custom_css: this.customCSS
             })
             .then(response => {
+              if (exportScreen) {
+                this.exportScreen();
+              }
               ProcessMaker.alert(" Successfully saved", "success");
             });
         }

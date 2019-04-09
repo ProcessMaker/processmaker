@@ -6,5 +6,3 @@ description: >-
 
 # Getting Started
 
-
-
