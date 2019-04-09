@@ -7,27 +7,10 @@
               </div>
               <div class="modal-body mb-1">
                 <p><span v-html="message"></span></p>
-                <div class="form-group">
-                  <label for="username">{{__('Username')}}</label>
-                  <div>
-                    <input id="username" type="text" class="form-control" :class="{ 'is-invalid': errors.username }" name="username" v-model="username" required>
-                    <span class="invalid-feedback" v-if="errors.username">
-                      <strong>{{errors.username[0]}}</strong>
-                    </span>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="password">{{__('Password')}}</label>
-                  <div class="">
-                    <input id="password" type="password" class="form-control" :class="{ 'is-invalid': errors.password }" name="password" v-model="password" required>
-                    <span class="invalid-feedback" v-if="errors.password">
-                      <strong>{{errors.password[0]}}</strong>
-                    </span>
-                  </div>
-                </div>
               </div>
               <div class="modal-footer">
-                  <button type="button" class="float-right btn btn-secondary ml-2" @click="onLogin" :disabled="disabled">{{__('Log In')}}</button>
+                  <a role="button" class="btn btn-secondary ml-2" href="/logout" :disabled="disabled">{{__('LogOut')}}</a>
+                  <button type="button" class="btn btn-secondary ml-2" @click="onLogin" :disabled="disabled">{{__('Stay Connected')}}</button>
               </div>
           </div>
       </div>

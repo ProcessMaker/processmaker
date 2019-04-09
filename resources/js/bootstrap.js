@@ -156,7 +156,7 @@ if (userID) {
     window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
     window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
         if (e.data.method === 'timedOut') {
-            window.ProcessMaker.loginModal('Account Timeout', '<strong>Your account has been timed out for security.</strong> Please log in to continue your work on this page.');
+            window.ProcessMaker.sessionModal('Account Timeout', '<strong>Your account has been timed out for security.</strong> Please log in to continue your work on this page.');
         }
     });
 
@@ -169,6 +169,6 @@ if (userID) {
         .listen('.SessionStarted', (e) => {
             let lifetime = parseInt(e.lifetime);
             window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: lifetime } });
-            window.ProcessMaker.closeLoginModal();
+            window.ProcessMaker.closeSessionModal();
         });
 }

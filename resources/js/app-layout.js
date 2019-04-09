@@ -6,7 +6,7 @@ import notifications from "./components/requests/notifications";
 import {
     Navbar
 } from "bootstrap-vue/es/components";
-import LoginModal from "./components/Login";
+import sessionModal from "./components/Session";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
@@ -44,7 +44,7 @@ window.ProcessMaker.navbar = new Vue({
         Navbar,
         requestModal,
         notifications,
-        LoginModal,
+        sessionModal,
         ConfirmationModal,
         NavbarProfile
     },
@@ -57,9 +57,9 @@ window.ProcessMaker.navbar = new Vue({
             confirmVariant: "",
             confirmCallback: "",
             confirmShow: false,
-            loginShow: false,
-            loginTitle: "",
-            loginMessage: ""
+            sessionShow: false,
+            sessionTitle: "",
+            sessionMessage: ""
         };
     },
     mounted() {
@@ -90,14 +90,14 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 60) {
 };
 
 // Setup our login modal
-window.ProcessMaker.loginModal = function(title, message) {
-  ProcessMaker.navbar.loginTitle = title || __("Log In");
-  ProcessMaker.navbar.loginMessage = message || __("Please log in.");
-  ProcessMaker.navbar.loginShow = true;
+window.ProcessMaker.sessionModal = function (title, message) {
+    ProcessMaker.navbar.sessionTitle = title || __("Session Warning");
+    ProcessMaker.navbar.sessionMessage = message || __("Your session is about to expire.");
+    ProcessMaker.navbar.sessionShow = true;
 };
 
-window.ProcessMaker.closeLoginModal = function() {
-  ProcessMaker.navbar.loginShow = false;
+window.ProcessMaker.closeSessionModal = function () {
+    ProcessMaker.navbar.sessionShow = false;
 }
 
 // Set out own specific confirm modal.
