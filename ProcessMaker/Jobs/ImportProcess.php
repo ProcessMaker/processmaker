@@ -5,6 +5,7 @@ namespace ProcessMaker\Jobs;
 use Auth;
 use Cache;
 use DB;
+use DOMXPath;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use ProcessMaker\Models\EnvironmentVariable;
@@ -51,6 +52,8 @@ class ImportProcess implements ShouldQueue
      * @var object
      */
     private $definitions;
+    
+    private $assignable = [];
 
     /**
      * An array of the new models being created on import.
@@ -170,6 +173,91 @@ class ImportProcess implements ShouldQueue
         }
     }
 
+    private function getElementById($id)
+    {
+        $x = new DOMXPath($this->definitions);
+        return $x->query("//*[@id='$id']")->item(0);
+    }
+
+    /**
+     * Look for any assignable entities in the BPMN, then add them to a list.
+     *
+     * @return void
+     */
+    private function parseAssignables()
+    {
+        $this->assignable = collect([]);
+        
+        $this->parseAssignableTasks();
+        $this->parseAssignableScripts();
+        $this->parseAssignableEnvironmentVariables();
+        
+        if (! $this->assignable->count()) {
+            $this->assignable = null;
+        }
+    }
+    
+    /**
+     * Look for any assignable tasks and add them to the assignable list.
+     *
+     * @return void
+     */
+    private function parseAssignableTasks()
+    {
+        $humanTasks = ['task', 'userTask'];
+        foreach ($humanTasks as $humanTask) {
+            $tasks = $this->definitions->getElementsByTagName($humanTask);
+            foreach ($tasks as $task) {
+                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                if (! $assignment) {
+                    $this->assignable->push((object) [
+                        'type' => 'task',
+                        'id' => $task->getAttribute('id'),
+                        'name' => $task->getAttribute('name'),
+                        'prefix' => 'Assign task',
+                        'suffix' => 'to',
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Look for any scripts and add them to the assignable list.
+     *
+     * @return void
+     */    
+    private function parseAssignableScripts()
+    {
+        foreach ($this->new['scripts'] as $script) {
+            $this->assignable->push((object) [
+                'type' => 'script',
+                'id' => $script->id,
+                'name' => $script->title,
+                'prefix' => 'Run script',
+                'suffix' => 'as',
+            ]);
+        }
+    }
+
+    /**
+     * Look for environment variables and add them to the assignable list.
+     *
+     * @return void
+     */    
+    private function parseAssignableEnvironmentVariables()
+    {
+        foreach ($this->new['environment_variables'] as $environmentVariable) {
+            $this->assignable->push((object) [
+                'type' => 'environment_variable',
+                'id' => $environmentVariable->id,
+                'name' => $environmentVariable->name,
+                'prefix' => 'Set environment variable',
+                'suffix' => 'to',
+            ]);
+        }
+    }
+
     /**
      * Parse the BPMN, looking for any task assignments to users and/or groups,
      * then remove them along with any referenced users or groups.
@@ -219,6 +307,8 @@ class ImportProcess implements ShouldQueue
                     $new->value = '';
                     $new->created_at = $this->formatDate($environmentVariable->created_at);
                     $new->save();
+                    
+                    $this->new['environment_variables'][] = $new;
                 }
             }
             $this->finishStatus('environment_variables');
@@ -452,9 +542,13 @@ class ImportProcess implements ShouldQueue
         $this->saveProcess($this->file->process);
         $this->saveScripts($this->file->scripts);
         $this->saveScreens($this->file->screens);
-        $this->removeAssignedEntities();
+        $this->parseAssignables();
         $this->saveBpmn();
-        return $this->status;
+
+        return (object) [
+            'status' => collect($this->status),
+            'assignable' => $this->assignable,
+        ];
     }
 
     /**
@@ -530,9 +624,9 @@ class ImportProcess implements ShouldQueue
      */
     private function prepareStatus($element, $data = false)
     {
-        $this->status[$element]['message'] = __('There is no information');
+        $this->status[$element]['message'] = __('Started import of');
         if ($data) {
-            $this->status[$element]['message'] = __('the process not finished.');
+            $this->status[$element]['message'] = __('Incomplete import of');
         }
     }
 
@@ -545,10 +639,10 @@ class ImportProcess implements ShouldQueue
     private function finishStatus($element, $error = false)
     {
         $this->status[$element]['success'] = true;
-        $this->status[$element]['message'] = __('It was imported correctly.');
+        $this->status[$element]['message'] = __('Successfully imported');
         if ($error) {
             $this->status[$element]['success'] = false;
-            $this->status[$element]['message'] = __('An error occurred in the import..');
+            $this->status[$element]['message'] = __('Unable to import');
         }
     }
 }
