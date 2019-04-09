@@ -156,7 +156,7 @@ if (userID) {
     window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
     window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
         if (e.data.method === 'countdown') {
-            window.ProcessMaker.sessionModal('Session Warning', 'Your user session is expiring. If your session expires, all of your unsaved data will be lost. <br> <br> Would you like to stay connected?');
+            window.ProcessMaker.sessionModal('Session Warning', 'Your user session is expiring. If your session expires, all of your unsaved data will be lost. <br> <br> Would you like to stay connected?', e.data.data.time);
         }
     });
 

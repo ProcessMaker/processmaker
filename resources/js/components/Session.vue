@@ -11,7 +11,7 @@
               </div>
 
               <div class="progress ml-4 mr-4 mb-3">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 15%"></div>
+                <div class="progress-bar progress-bar-striped" role="progressbar" :style="{width: time + '%'}">{{time}}</div>
               </div>
 
               <div class="modal-footer">
@@ -27,7 +27,7 @@
 <script>
 
     export default {
-        props: ["title", "message"],
+        props: ["title", "message", "time"],
         data() {
             return {
               errors: {},
