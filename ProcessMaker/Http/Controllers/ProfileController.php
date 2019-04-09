@@ -19,7 +19,13 @@ class ProfileController extends Controller
         $currentUser = \Auth::user();
         $states = JsonData::states();
         $countries = JsonData::countries();
-
+        $availableLangs = [];
+        foreach (scandir(resource_path('lang')) as $file) {
+            preg_match("/([a-z]{2})\.json/", $file, $matches);
+            if (!empty($matches)) {
+                $availableLangs[] = $matches[1];
+            }
+        }
         $timezones = array_reduce(JsonData::timezones(),
             function ($result, $item) {
                 $result[$item] = $item;
@@ -35,7 +41,7 @@ class ProfileController extends Controller
                             );
 
         return view('profile.edit',
-            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats'));
+            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats', 'availableLangs'));
     }
 
     /**

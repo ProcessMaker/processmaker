@@ -8,6 +8,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
+        :noDataTemplate="$t('No Data Available')"
       >
         <template slot="actions" slot-scope="props">
           <div class="actions">
@@ -16,7 +17,7 @@
                 variant="link"
                 @click="edit(props.rowData)"
                 v-b-tooltip.hover
-                :title="__('Edit')"
+                :title="$t('Edit')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -24,7 +25,7 @@
                 variant="link"
                 @click="doDelete(props.rowData)"
                 v-b-tooltip.hover
-                :title="__('Remove')"
+                :title="$t('Remove')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -37,7 +38,7 @@
             class="copylink"
             @click="copySecret(props.rowData.secret)"
             v-b-tooltip.hover
-            :title="__('Copy Client Secret To Clipboard')"
+            :title="$t('Copy Client Secret To Clipboard')"
           >
             <i class="fas fa-clipboard fa-lg fa-fw"></i>
           </b-btn>
@@ -51,7 +52,6 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
-import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -62,22 +62,22 @@ export default {
 
       fields: [
         {
-          title: __("Client ID"),
+          title: () => this.$t("Client ID"),
           name: "id"
         },
         {
-          title: __("Name"),
+          title: () => this.$t("Name"),
           name: "name"
         },
         {
-          title: __("Redirect"),
+          title: () => this.$t("Redirect"),
           name: "redirect",
           callback(val) {
             return val.substr(0, 20) + "...";
           }
         },
         {
-          title: __("Client Secret"),
+          title: () => this.$t("Client Secret"),
           name: "__slot:secret"
         },
         {
@@ -88,9 +88,6 @@ export default {
     };
   },
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     fetch() {
       this.loading = true;
       // Load from our api client
@@ -111,16 +108,16 @@ export default {
     },
     doDelete(item) {
       ProcessMaker.confirmModal(
-        __("Caution!"),
-        __("Are you sure you want to delete the auth client ") +
+        $t("Caution!"),
+        $t("Are you sure you want to delete the auth client ") +
           item.name +
-          __("?"),
+          $t("?"),
         "",
         () => {
           ProcessMaker.apiClient
             .delete("/oauth/clients/" + item.id, { baseURL: "/" })
             .then(() => {
-              ProcessMaker.alert(__('The auth client was deleted.'), 'success');
+              ProcessMaker.alert($t('The auth client was deleted.'), 'success');
               this.fetch();
             });
         }

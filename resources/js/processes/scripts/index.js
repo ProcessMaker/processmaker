@@ -1,6 +1,5 @@
 import Vue from "vue";
 import ScriptListing from "./components/ScriptListing";
-import __ from "../../modules/lang";
 
 new Vue({
     el: "#scriptIndex",
