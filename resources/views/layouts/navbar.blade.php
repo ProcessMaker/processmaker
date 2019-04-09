@@ -9,11 +9,10 @@
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
-
+        <session-modal id="sessionModal" v-show='sessionShow' :title="sessionTitle" :message="sessionMessage" 
+                @close="sessionShow=false">
+        </session-modal>
         <div v-if="alerts.length > 0" class="alert-wrapper">
-            <session-modal id="sessionModal" v-if='sessionShow' :title="sessionTitle" :message="sessionMessage" 
-                 @close="sessionShow=false">
-            </session-modal>
             <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade>
                 @{{item.alertText}}
             </b-alert>

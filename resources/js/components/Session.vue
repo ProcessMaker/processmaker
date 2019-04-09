@@ -15,8 +15,8 @@
               </div>
 
               <div class="modal-footer">
-                  <a role="button" class="btn btn-secondary ml-2" href="/logout" :disabled="disabled">{{__('LogOut')}}</a>
-                  <button type="button" class="btn btn-secondary ml-2" @click="onLogin" :disabled="disabled">{{__('Stay Connected')}}</button>
+                  <a role="button" class="btn btn-secondary ml-2" href="/logout" :disabled="disabled">{{('LogOut')}}</a>
+                  <button type="button" class="btn btn-secondary ml-2" @click="onLogin" :disabled="disabled">{{('Stay Connected')}}</button>
               </div>
           </div>
       </div>
@@ -25,22 +25,16 @@
 
 
 <script>
-import __ from "../modules/lang";
 
     export default {
         props: ["title", "message"],
         data() {
             return {
-              username: null,
-              password: null,
               errors: {},
               disabled: false
             }
         },
         methods: {
-            __(variable) {
-              return __(variable);
-            },
             onClose() {
                 this.$emit('close');
             },
