@@ -156,7 +156,7 @@ if (userID) {
     window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
     window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
         if (e.data.method === 'timedOut') {
-            window.ProcessMaker.sessionModal('Account Timeout', '<strong>Your account has been timed out for security.</strong> Please log in to continue your work on this page.');
+            window.ProcessMaker.sessionModal('Session Warning', 'Your user session is expiring. If your session expires, all of your unsaved data will be lost. <br> <br> Would you like to keep it active?');
         }
     });
 

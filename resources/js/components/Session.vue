@@ -5,9 +5,15 @@
               <div class="modal-header">
                   <h5 class="modal-title">{{ title }}</h5>
               </div>
+              
               <div class="modal-body mb-1">
                 <p><span v-html="message"></span></p>
               </div>
+
+              <div class="progress ml-4 mr-4 mb-3">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 15%"></div>
+              </div>
+
               <div class="modal-footer">
                   <a role="button" class="btn btn-secondary ml-2" href="/logout" :disabled="disabled">{{__('LogOut')}}</a>
                   <button type="button" class="btn btn-secondary ml-2" @click="onLogin" :disabled="disabled">{{__('Stay Connected')}}</button>
