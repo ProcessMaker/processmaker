@@ -47,7 +47,7 @@ jobs:
       - checkout
 
       # Install PHP dependencies
-      - run: sudo apt install -y libpng-dev libzip-dev default-libmysqlclient-dev curl apt-transport-https
+      - run: sudo apt-get update && sudo apt install -y libpng-dev libzip-dev default-libmysqlclient-dev curl apt-transport-https
       - run: sudo docker-php-ext-install gd zip pdo_mysql mysqli
       - run: sudo apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev
       - run: sudo docker-php-ext-install -j$(nproc) iconv
