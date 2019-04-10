@@ -222,7 +222,7 @@ jobs:
             # Setup Media Link
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan storage:link"
-            echo "Deployed to https://${BUILD_NAME}.bpm4.qa.processmaker.net/"
+            echo "Deployed to https://${BUILD_NAME}.spark.qa.processmaker.net/"
             # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon. Excluding QUEUE for now.
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys

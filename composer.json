@@ -16,7 +16,7 @@
     },
     {
       "type": "vcs",
-      "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git"
+      "url": "https://github.com/ProcessMaker/spark-connector-send-email.git"
     }
   ],
   "require": {
