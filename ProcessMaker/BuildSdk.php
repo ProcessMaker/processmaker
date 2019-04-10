@@ -141,11 +141,11 @@ class BuildSdk {
         $zip = new ZipArchive;
         $res = $zip->open($file);
         $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $this->runCmd('rm -rf /tmp/pm4-sdk-tmp');
-        $zip->extractTo("/tmp/pm4-sdk-tmp");
+        $this->runCmd('rm -rf /tmp/spark-sdk-tmp');
+        $zip->extractTo("/tmp/spark-sdk-tmp");
         $zip->close();
         unlink($file);
-        return "/tmp/pm4-sdk-tmp/{$this->lang}-client";
+        return "/tmp/spark-sdk-tmp/{$this->lang}-client";
     }
 
     private function existingContainer()
@@ -180,7 +180,7 @@ class BuildSdk {
         return json_encode([
             "options" => [
                 "gitUserId" => "ProcessMaker",
-                "gitRepoId" => "pm4-sdk-" . $this->lang,
+                "gitRepoId" => "spark-sdk-" . $this->lang,
                 "packageName" => "pmsdk",
                 "invokerPackage" => "ProcessMaker\\Client",
                 "appDescription" => "SDK Client for the ProcessMaker v4 App",
