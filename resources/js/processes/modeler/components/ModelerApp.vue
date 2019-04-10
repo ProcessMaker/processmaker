@@ -27,7 +27,7 @@
 
 
 <script>
-import { Modeler, Statusbar, ValidationStatus } from "@processmaker/modeler";
+import { Modeler, Statusbar, ValidationStatus } from "@processmaker/spark-modeler";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import FileUpload from 'vue-upload-component';
 

@@ -16,7 +16,7 @@ import {
     serviceTask,
     startTimerEvent,
     intermediateTimerEvent
-} from '@processmaker/modeler';
+} from '@processmaker/spark-modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import TaskNotifications from './components/inspector/TaskNotifications';
