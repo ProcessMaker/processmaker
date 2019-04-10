@@ -94,7 +94,7 @@ class ExportImportScreenTest extends TestCase
         $this->assertDatabaseHas('screens', ['title' => 'Validate']);
         $this->assertDatabaseHas('screens', ['title' => 'Approve 2']);
 
-        //Test with type file bpm4
+        //Test with type file spark
         // Get the process we'll be testing on
         $process = Process::where('name', 'Leave Absence Request')->first();
 
@@ -104,7 +104,7 @@ class ExportImportScreenTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure(['url']);
 
-        // Download a type file bpm4.
+        // Download a type file: spark.
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
         $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.spark');
