@@ -18,10 +18,11 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers {
-        sendLoginResponse as protected traitSendLoginResponse;
-        sendFailedLoginResponse as protected traitSendFailedLoginResponse;
-    }
+    use AuthenticatesUsers;
+    //  {
+    //     sendLoginResponse as protected traitSendLoginResponse;
+    //     sendFailedLoginResponse as protected traitSendFailedLoginResponse;
+    // }
 
     /**
      * Where to redirect users after login.
@@ -50,27 +51,32 @@ class LoginController extends Controller
     {
         return 'username';
     }
-    
-    public function sendLoginResponse(Request $request)
-    {
-        if ($request->expectsJson()) {
-            return response([], 204);
-        } else {
-            return $this->traitSendLoginResponse($request);
-        }
-    }
-    
-    public function sendFailedLoginResponse(Request $request)
-    {
-        if ($request->expectsJson()) {
-            return response(['errors' => ['username' => [__('These credentials do not match our records.')]]], 422);
-        } else {
-            return $this->traitSendFailedLoginResponse($request);
-        }
-    }
 
-    protected function credentials(\Illuminate\Http\Request $request)
+    public function keepAlive()
     {
-        return array_merge($request->only($this->username(), 'password'), ['status' => 'ACTIVE']);
+        return response('', 204);
     }
+    
+    // public function sendLoginResponse(Request $request)
+    // {
+    //     if ($request->expectsJson()) {
+    //         return response([], 204);
+    //     } else {
+    //         return $this->traitSendLoginResponse($request);
+    //     }
+    // }
+    
+    // public function sendFailedLoginResponse(Request $request)
+    // {
+    //     if ($request->expectsJson()) {
+    //         return response(['errors' => ['username' => [__('These credentials do not match our records.')]]], 422);
+    //     } else {
+    //         return $this->traitSendFailedLoginResponse($request);
+    //     }
+    // }
+
+    // protected function credentials(\Illuminate\Http\Request $request)
+    // {
+    //     return array_merge($request->only($this->username(), 'password'), ['status' => 'ACTIVE']);
+    // }
 }
