@@ -1,10 +1,8 @@
-# ProcessMaker 4.1 Documentation
+# ProcessMaker Spark
 
 ![](https://www.processmaker.com/assets/PartnerArea/new_logos/sample200_whitebg.png)
 
 [![CircleCI](https://circleci.com/gh/ProcessMaker/spark/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/spark/tree/develop)
-
-## ProcessMaker 4.1 Documentation
 
 #### Overview
 
