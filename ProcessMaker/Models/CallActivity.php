@@ -42,11 +42,11 @@ class CallActivity implements CallActivityInterface
                 // The entire data model is sent to the target
                 $dataStore->setData($token->getInstance()->getDataStore()->getData());
                 $instance = $callable->call($dataStore, $startEvent);
+                $this->linkProcesses($token, $instance);
+                $this->syncronizeInstances($token->getInstance(), $instance);
                 $this->getRepository()
                     ->getTokenRepository()
                     ->persistCallActivityActivated($token, $instance, $sequenceFlow);
-                $this->linkProcesses($token, $instance);
-                $this->syncronizeInstances($token->getInstance(), $instance);
             }
         );
     }
@@ -67,6 +67,12 @@ class CallActivity implements CallActivityInterface
                 if ($closedInstance->id === $instance->id) {
                     if ($token->getStatus() !== ActivityInterface::TOKEN_STATE_FAILING) {
                         $token->setStatus(ActivityInterface::TOKEN_STATE_COMPLETED);
+                        // Copy data from subprocess to main process
+                        $dataStore = $token->getInstance()->getDataStore();
+                        $data = $closedInstance->getDataStore()->getData();
+                        foreach ($data as $key => $value) {
+                            $dataStore->putData($key, $value);
+                        }
                         $this->syncronizeInstances($instance, $token->getInstance());
                     }
                 }
@@ -104,15 +110,15 @@ class CallActivity implements CallActivityInterface
     public function getCalledElement()
     {
         $calledElementRef = $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT);
-        $refs = explode(':', $calledElementRef);
+        $refs = explode('-', $calledElementRef);
         if (count($refs) === 1) {
             $localBpmn = $this->ownerProcess->getEngine()->getStorage();
             return $localBpmn->getElementInstanceById($calledElementRef);
         } elseif (count($refs) === 2) {
             // Capability to reuse other processes inside a process
-            $process = Process::findOrFail($refs[0]);
-            return isset($this->getProcess()->getEngine()->isLinked) ? $this->getProcess()->getEngine()->isLinked->getProcess()
-                : $process->getDefinitions()->getElementInstanceById($refs[1]);
+            $process = Process::findOrFail($refs[1]);
+            return isset($this->getProcess()->getEngine()->currentInstance) ? $this->getProcess()->getEngine()->currentInstance->getProcess()
+                : $process->getDefinitions()->getElementInstanceById($refs[0]);
         }
     }
 
