@@ -62,7 +62,7 @@
                                             </td>
                                             <td class="assignable-entity">
                                                 <multiselect v-model="item.value"
-                                                             placeholder="{{__('Type to search 1')}}"
+                                                             placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
                                                              track-by="id"
@@ -70,14 +70,14 @@
                                                              :searchable="true"
                                                              :internal-search="false"
                                                              label="fullname"
-                                                             v-if="item.type == 'task'"
+                                                             v-if="item.type == 'task' || item.type == 'startEvent'"
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
                                                              class="assignable-input">
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
-                                                             placeholder="{{__('Type to search 2')}}"
+                                                             placeholder="{{__('Type to search')}}"
                                                              :options="users"
                                                              :multiple="false"
                                                              track-by="id"

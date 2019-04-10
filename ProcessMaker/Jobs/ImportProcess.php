@@ -52,7 +52,7 @@ class ImportProcess implements ShouldQueue
      * @var object
      */
     private $definitions;
-    
+
     private $assignable = [];
 
     /**
@@ -187,16 +187,17 @@ class ImportProcess implements ShouldQueue
     private function parseAssignables()
     {
         $this->assignable = collect([]);
-        
+
+        $this->parseAssignableStarEvent();
         $this->parseAssignableTasks();
         $this->parseAssignableScripts();
         $this->parseAssignableEnvironmentVariables();
-        
+
         if (! $this->assignable->count()) {
             $this->assignable = null;
         }
     }
-    
+
     /**
      * Look for any assignable tasks and add them to the assignable list.
      *
@@ -214,8 +215,33 @@ class ImportProcess implements ShouldQueue
                         'type' => 'task',
                         'id' => $task->getAttribute('id'),
                         'name' => $task->getAttribute('name'),
-                        'prefix' => 'Assign task',
-                        'suffix' => 'to',
+                        'prefix' => __('Assign task'),
+                        'suffix' => __('to'),
+                    ]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Look for any assignable tasks and add them to the assignable list.
+     *
+     * @return void
+     */
+    private function parseAssignableStarEvent()
+    {
+        $humanTasks = ['startEvent'];
+        foreach ($humanTasks as $humanTask) {
+            $tasks = $this->definitions->getElementsByTagName($humanTask);
+            foreach ($tasks as $task) {
+                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                if (! $assignment) {
+                    $this->assignable->push((object) [
+                        'type' => 'startEvent',
+                        'id' => $task->getAttribute('id'),
+                        'name' => $task->getAttribute('name'),
+                        'prefix' => __('Assign task'),
+                        'suffix' => __('to'),
                     ]);
                 }
             }
@@ -226,7 +252,7 @@ class ImportProcess implements ShouldQueue
      * Look for any scripts and add them to the assignable list.
      *
      * @return void
-     */    
+     */
     private function parseAssignableScripts()
     {
         foreach ($this->new['scripts'] as $script) {
@@ -234,8 +260,8 @@ class ImportProcess implements ShouldQueue
                 'type' => 'script',
                 'id' => $script->id,
                 'name' => $script->title,
-                'prefix' => 'Run script',
-                'suffix' => 'as',
+                'prefix' => __('Run script'),
+                'suffix' => __('as'),
             ]);
         }
     }
@@ -244,7 +270,7 @@ class ImportProcess implements ShouldQueue
      * Look for environment variables and add them to the assignable list.
      *
      * @return void
-     */    
+     */
     private function parseAssignableEnvironmentVariables()
     {
         foreach ($this->new['environment_variables'] as $environmentVariable) {
@@ -252,8 +278,8 @@ class ImportProcess implements ShouldQueue
                 'type' => 'environment_variable',
                 'id' => $environmentVariable->id,
                 'name' => $environmentVariable->name,
-                'prefix' => 'Set environment variable',
-                'suffix' => 'to',
+                'prefix' => __('Set environment variable'),
+                'suffix' => __('to'),
             ]);
         }
     }
@@ -266,7 +292,7 @@ class ImportProcess implements ShouldQueue
      */
     private function removeAssignedEntities()
     {
-        $humanTasks = ['task', 'userTask'];
+        $humanTasks = ['startEvent', 'task', 'userTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
@@ -307,7 +333,7 @@ class ImportProcess implements ShouldQueue
                     $new->value = '';
                     $new->created_at = $this->formatDate($environmentVariable->created_at);
                     $new->save();
-                    
+
                     $this->new['environment_variables'][] = $new;
                 }
             }
@@ -537,6 +563,7 @@ class ImportProcess implements ShouldQueue
      */
     private function parseFileV1()
     {
+        
         $this->saveEnvironmentVariables($this->file->environment_variables);
         $this->saveProcessCategory($this->file->process_category);
         $this->saveProcess($this->file->process);
