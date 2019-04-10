@@ -349,6 +349,7 @@ class TokenRepository implements TokenRepositoryInterface
             $source->saveOrFail();
         }
         $subprocess->process_collaboration_id = $source->process_collaboration_id;
+        $subprocess->parent_request_id = $source->getKey();
         $subprocess->saveOrFail();
         $token->subprocess_request_id = $subprocess->id;
         $token->subprocess_start_event_id = $sequenceFlow->getProperty('startEvent');
