@@ -8,11 +8,11 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 
 /**
  * Call Activity model
@@ -33,12 +33,20 @@ class CallActivity implements CallActivityInterface
     {
         $this->attachEvent(
             ActivityInterface::EVENT_ACTIVITY_ACTIVATED,
-            function ($self, TokenInterface $token) {
-                $instance = $this->getCalledElement()->call();
+            function ($self, TokenInterface $token, FlowInterface $sequenceFlow) {
+                $callable = $this->getCalledElement();
+                // Capability to specify the target start event on the sequence flow to the call activity.
+                $startId = $sequenceFlow->getProperty('startEvent');
+                $startEvent = $startId ? $callable->getEngine()->getStorage()->getElementInstanceById($startId) : null;
+                $dataStore = $callable->getRepository()->createDataStore();
+                // The entire data model is sent to the target
+                $dataStore->setData($token->getInstance()->getDataStore()->getData());
+                $instance = $callable->call($dataStore, $startEvent);
                 $this->getRepository()
                     ->getTokenRepository()
-                    ->persistCallActivityActivated($token, $instance);
+                    ->persistCallActivityActivated($token, $instance, $sequenceFlow);
                 $this->linkProcesses($token, $instance);
+                $this->syncronizeInstances($token->getInstance(), $instance);
             }
         );
     }
@@ -59,6 +67,7 @@ class CallActivity implements CallActivityInterface
                 if ($closedInstance->id === $instance->id) {
                     if ($token->getStatus() !== ActivityInterface::TOKEN_STATE_FAILING) {
                         $token->setStatus(ActivityInterface::TOKEN_STATE_COMPLETED);
+                        $this->syncronizeInstances($instance, $token->getInstance());
                     }
                 }
             }
@@ -94,17 +103,27 @@ class CallActivity implements CallActivityInterface
      */
     public function getCalledElement()
     {
-        return $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT);
+        $calledElementRef = $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT);
+        $refs = explode(':', $calledElementRef);
+        if (count($refs) === 1) {
+            $localBpmn = $this->ownerProcess->getEngine()->getStorage();
+            return $localBpmn->getElementInstanceById($calledElementRef);
+        } elseif (count($refs) === 2) {
+            // Capability to reuse other processes inside a process
+            $process = Process::findOrFail($refs[0]);
+            return isset($this->getProcess()->getEngine()->isLinked) ? $this->getProcess()->getEngine()->isLinked->getProcess()
+                : $process->getDefinitions()->getElementInstanceById($refs[1]);
+        }
     }
 
     /**
      * Set the called element by the activity.
      *
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface $callableElement
+     * @param \ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface|string $callableElement
      *
      * @return $this
      */
-    public function setCalledElement(CallableElementInterface $callableElement)
+    public function setCalledElement($callableElement)
     {
         $this->setProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT, $callableElement);
         return $this;
@@ -125,5 +144,18 @@ class CallActivity implements CallActivityInterface
             $this->linkProcesses($token, $subprocess);
         }
         return $this->addTokenBase($instance, $token);
+    }
+
+    /**
+     * Syncronize two process instances
+     *
+     * @param ExecutionInstanceInterface $instance
+     * @param ExecutionInstanceInterface $currentInstance
+     */
+    private function syncronizeInstances(ExecutionInstanceInterface $instance, ExecutionInstanceInterface $currentInstance)
+    {
+        if ($instance->process->id !== $currentInstance->process->id) {
+            $currentInstance->getProcess()->getEngine()->runToNextState();
+        }
     }
 }

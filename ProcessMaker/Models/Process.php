@@ -640,7 +640,11 @@ class Process extends Model implements HasMedia
         $startEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
         foreach ($startEvents as $startEvent) {
             if ($nofilter || ($user && isset($permissions[$startEvent->getAttribute('id')]) && in_array($user->id, $permissions[$startEvent->getAttribute('id')]))) {
-                $response[] = $startEvent->getBpmnElementInstance()->getProperties();
+                $bpmnNode = $startEvent->getBpmnElementInstance();
+                $properties = $bpmnNode->getProperties();
+                $properties['ownerProcessId'] = $bpmnNode->getOwnerProcess()->getId();
+                $properties['ownerProcessName'] = $bpmnNode->getOwnerProcess()->getName();
+                $response[] = $properties;
             }
         }
         return $response;

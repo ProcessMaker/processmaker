@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use ProcessMaker\Models\Process as Definitions;
 use Throwable;
+use Illuminate\Support\Facades\Log;
 
 abstract class BpmnAction implements ShouldQueue
 {
@@ -34,7 +35,14 @@ abstract class BpmnAction implements ShouldQueue
         if ($instance && $instance->collaboration) {
             foreach ($instance->collaboration->requests as $request) {
                 if ($request->getKey() !== $instance->getKey()) {
-                    $definitions->getEngine()->loadExecutionInstance($request->getKey());
+                    if ($request->process->id === $processModel->id) {
+                        $definitions->getEngine()->loadExecutionInstance($request->getKey());
+                    } else {
+                        Log::info('Load an different process row ');
+                        $engine = $request->process->getDefinitions()->getEngine();
+                        $engine->isLinked = $instance;
+                        $engine->loadExecutionInstance($request->getKey());
+                    }
                 }
             }
         }

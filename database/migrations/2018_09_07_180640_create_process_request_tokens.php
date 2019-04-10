@@ -37,6 +37,7 @@ class CreateProcessRequestTokens extends Migration
             $table->index('process_id');
             $table->index('process_request_id');
             $table->index('subprocess_request_id');
+            $table->index('subprocess_start_event_id');
             $table->index('user_id');
 
             // Foreign keys

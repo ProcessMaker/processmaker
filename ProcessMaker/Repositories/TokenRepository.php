@@ -23,6 +23,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 
 /**
  * Execution Instance Repository.
@@ -337,7 +338,7 @@ class TokenRepository implements TokenRepositoryInterface
      * @param ExecutionInstanceInterface $subprocess
      * @return void
      */
-    public function persistCallActivityActivated(TokenInterface $token, ExecutionInstanceInterface $subprocess)
+    public function persistCallActivityActivated(TokenInterface $token, ExecutionInstanceInterface $subprocess, FlowInterface $sequenceFlow)
     {
         $source = $token->getInstance();
         if ($source->process_collaboration_id === null) {
@@ -350,6 +351,7 @@ class TokenRepository implements TokenRepositoryInterface
         $subprocess->process_collaboration_id = $source->process_collaboration_id;
         $subprocess->saveOrFail();
         $token->subprocess_request_id = $subprocess->id;
+        $token->subprocess_start_event_id = $sequenceFlow->getProperty('startEvent');
         $token->saveOrFail();
     }
 
