@@ -148,8 +148,8 @@ jobs:
             MSSQL_DATABASE: "test"
             MSSQL_USERNAME: "sa"
             MSSQL_PASSWORD: "P4ssW0rd1!"
-            BPM_SCRIPTS_HOME: "/opt/executor"
-            BPM_SCRIPTS_DOCKER_MODE: "copying"
+            SPARK_SCRIPTS_HOME: "/opt/executor"
+            SPARK_SCRIPTS_DOCKER_MODE: "copying"
       - run:
           name: "Jest"
           command: "npm run test"
@@ -186,7 +186,7 @@ jobs:
             echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
             echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
             echo "REDIS_PORT=%%REDISPORT%%" >> .env
-            echo "BPM_SCRIPTS_HOME=/home/circleci/tmp" >> .env
+            echo "SPARK_SCRIPTS_HOME=/home/circleci/tmp" >> .env
             echo "HOME=/home/circleci" >> .env
             echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
             echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env

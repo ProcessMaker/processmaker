@@ -32,7 +32,7 @@ trait ScriptDockerCopyingFilesTrait
             $outputs[$name] = $this->getFromContainer($container, $path);
         }
 
-        exec(config('app.bpm_scripts_docker') . ' rm ' . $container);
+        exec(config('app.spark_scripts_docker') . ' rm ' . $container);
         $response['outputs'] = $outputs;
         return $response;
     }
@@ -49,9 +49,9 @@ trait ScriptDockerCopyingFilesTrait
      */
     private function createContainer($image, $command, $parameters = '')
     {
-        $cidfile = tempnam(config('app.bpm_scripts_home'), 'cid');
+        $cidfile = tempnam(config('app.spark_scripts_home'), 'cid');
         unlink($cidfile);
-        $cmd = config('app.bpm_scripts_docker') . sprintf(' create %s --cidfile %s %s %s 2>&1', $parameters, $cidfile, $image, $command);
+        $cmd = config('app.spark_scripts_docker') . sprintf(' create %s --cidfile %s %s %s 2>&1', $parameters, $cidfile, $image, $command);
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
             throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
@@ -75,7 +75,7 @@ trait ScriptDockerCopyingFilesTrait
      */
     private function putInContainer($container, $path, $content)
     {
-        $source = tempnam(config('app.bpm_scripts_home'), 'put');
+        $source = tempnam(config('app.spark_scripts_home'), 'put');
         file_put_contents($source, $content);
         list($returnCode, $output) = $this->execCopy($source, $container, $path);
         unlink($source);
@@ -95,7 +95,7 @@ trait ScriptDockerCopyingFilesTrait
      */
     private function execCopy($source, $container, $dest)
     {
-        $cmd = config('app.bpm_scripts_docker')
+        $cmd = config('app.spark_scripts_docker')
             . sprintf(' cp %s %s:%s 2>&1', $source, $container, $dest);
         exec($cmd, $output, $returnCode);
         return [$returnCode, $output];
@@ -112,8 +112,8 @@ trait ScriptDockerCopyingFilesTrait
      */
     private function getFromContainer($container, $path)
     {
-        $target = tempnam(config('app.bpm_scripts_home'), 'get');
-        $cmd = config('app.bpm_scripts_docker') . sprintf(' cp %s:%s %s 2>&1', $container, $path, $target);
+        $target = tempnam(config('app.spark_scripts_home'), 'get');
+        $cmd = config('app.spark_scripts_docker') . sprintf(' cp %s:%s %s 2>&1', $container, $path, $target);
         exec($cmd, $output, $returnCode);
         $content = file_get_contents($target);
         unlink($target);
@@ -136,7 +136,7 @@ trait ScriptDockerCopyingFilesTrait
             $cmd .= "timeout -s 9 $timeout ";
         }
 
-        $cmd .= config('app.bpm_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
+        $cmd .= config('app.spark_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
 
         Log::debug('Running Docker container', [
             'timeout' => $timeout,
