@@ -2,7 +2,7 @@
     "repositories": {
         "0": {
             "type": "path",
-            "url": "/home/vagrant/bpm-plugins/*",
+            "url": "/home/vagrant/spark-plugins/*",
             "options": {
                 "symlink": true
             }

@@ -183,8 +183,8 @@ class BuildSdk {
                 "gitRepoId" => "spark-sdk-" . $this->lang,
                 "packageName" => "pmsdk",
                 "invokerPackage" => "ProcessMaker\\Client",
-                "appDescription" => "SDK Client for the ProcessMaker v4 App",
-                "infoUrl" => "https://github.com/ProcessMaker/bpm",
+                "appDescription" => "SDK Client for the ProcessMaker Spark App",
+                "infoUrl" => "https://github.com/ProcessMaker/spark",
                 "infoEmail" => "info@processmaker.com",
 
             ],
