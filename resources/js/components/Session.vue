@@ -11,7 +11,7 @@
               </div>
 
               <div class="progress ml-4 mr-4 mb-3">
-                <div class="progress-bar progress-bar-striped" role="progressbar" :style="{width: time + '%'}"><span align="left" class="pl-2">{{time}}</span></div>
+                <div class="progress-bar progress-bar-striped" role="progressbar" :style="{width: time + '%'}"><span align="left" class="pl-2">{{moment().startOf('day').seconds(time).format('mm:ss')}}</span></div>
               </div>
 
               <div class="modal-footer">
