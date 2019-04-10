@@ -25,21 +25,7 @@
 @endsection
 
 @section('js')
-    <script>
-      new Vue({
-        created() {
-          window.addEventListener('beforeunload', this.handler)
-        },
-        methods: {
-          handler: function handler(event) {
-            let confirmationMessage = __('Are you sure you want to leave?');
-
-            event.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
-            return confirmationMessage;
-          }
-        }
-      });
-    </script>
+    <script src="{{mix('js/leave-warning.js')}}"></script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach
