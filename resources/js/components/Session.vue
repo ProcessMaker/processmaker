@@ -11,12 +11,12 @@
               </div>
 
               <div class="progress ml-4 mr-4 mb-3">
-                <div class="progress-bar progress-bar-striped" role="progressbar" :style="{width: time + '%'}">{{time}}</div>
+                <div class="progress-bar progress-bar-striped" role="progressbar" :style="{width: time + '%'}"><span align="left" class="pl-2">{{time}}</span></div>
               </div>
 
               <div class="modal-footer">
                   <a role="button" class="btn btn-secondary ml-2" href="/logout" :disabled="disabled">{{('LogOut')}}</a>
-                  <button type="button" class="btn btn-secondary ml-2" @click="onLogin" :disabled="disabled">{{('Stay Connected')}}</button>
+                  <button type="button" class="btn btn-secondary ml-2" @click="keepAlive" :disabled="disabled">{{('Stay Connected')}}</button>
               </div>
           </div>
       </div>
@@ -38,16 +38,10 @@
             onClose() {
                 this.$emit('close');
             },
-            onLogin() {
+            keepAlive() {
                 this.disabled = true;
                 ProcessMaker.apiClient
-                  .post("/login", {
-                    username: this.username,
-                    password: this.password
-                  },
-                  {
-                    baseURL: ''
-                  })
+                  .post("/keep-alive", {}, {baseURL: ''})
                   .then(() => {
                     this.disabled = false;
                     ProcessMaker.AccountTimeoutWorker.postMessage({method: 'start', data: {timeout: ProcessMaker.AccountTimeoutLength}});
