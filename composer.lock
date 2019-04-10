@@ -3147,12 +3147,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "c440691fd5f0284b5b7f04ed19873ec483838d8b"
+                "reference": "42750a0e2151b31e54f9aaa4f34f3c31a9471282"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/c440691fd5f0284b5b7f04ed19873ec483838d8b",
-                "reference": "c440691fd5f0284b5b7f04ed19873ec483838d8b",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/42750a0e2151b31e54f9aaa4f34f3c31a9471282",
+                "reference": "42750a0e2151b31e54f9aaa4f34f3c31a9471282",
                 "shasum": ""
             },
             "require-dev": {
