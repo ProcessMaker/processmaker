@@ -198,7 +198,7 @@
                             <li class="list-group-item">
                               <h5>{{__('Parent Request')}}</h5>
                               <i class="fas fa-circle text-success"></i>
-                              {{$request->parentRequest->name}}
+                            <a href="/requests/{{$request->parentRequest->getKey()}}">{{$request->parentRequest->name}}</a>
                             </li>
                             @endif
                             @if(count($request->childRequests))
@@ -207,7 +207,7 @@
                               @foreach($request->childRequests as $childRequest)
                               <div>
                               <i class="fas fa-circle text-success"></i>
-                              {{$childRequest->name}}
+                              <a href="/requests/{{$childRequest->getKey()}}">{{$childRequest->name}}</a>
                               </div>
                               @endforeach
                             </li>
