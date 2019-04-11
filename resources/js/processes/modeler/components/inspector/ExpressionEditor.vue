@@ -1,5 +1,5 @@
 <template>
-    <FormInput :value="propertyGetter" @input="propertySetter" :label="label" :helper="helper" />
+    <FormInput :value="propertyGetter" @input="propertySetter" :label="$t(label)" :helper="helper" />
 </template>
 
 

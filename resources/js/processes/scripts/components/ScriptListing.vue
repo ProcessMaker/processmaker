@@ -10,6 +10,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
+        :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
         <template slot="title" slot-scope="props">
@@ -27,7 +28,7 @@
                 variant="link"
                 @click="onAction('edit-script', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Edit')"
+                :title="$t('Edit')"
                 v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -36,7 +37,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Configure')"
+                :title="$t('Configure')"
                 v-if="permission.includes('edit-scripts')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -45,7 +46,7 @@
                 variant="link"
                 @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Duplicate')"
+                :title="$t('Duplicate')"
                 v-if="permission.includes('create-scripts')"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>
@@ -54,7 +55,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Delete')"
+                :title="$t('Delete')"
                 v-if="permission.includes('delete-scripts')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -64,15 +65,15 @@
         </template>
       </vuetable>
       <pagination
-        single="Script"
-        plural="Scripts"
+        :single="$t('Script')"
+        :plural="$t('Scripts')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
         ref="pagination"
       ></pagination>
     </div>
-    <b-modal ref="myModalRef" :title="__('Duplicate Script')" centered>
+    <b-modal ref="myModalRef" :title="$t('Duplicate Script')" centered>
       <form>
         <div class="form-group">
           <label for="title">Name</label>
@@ -97,8 +98,8 @@
         </div>
       </form>
       <div slot="modal-footer" class="w-100" align="right">
-        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{__('Cancel')}}</button>
-        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
+        <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{$t('Cancel')}}</button>
+        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{$t('Save')}}</button>
       </div>
     </b-modal>
   </div>
@@ -106,7 +107,6 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
-import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -131,30 +131,30 @@ export default {
 
       fields: [
         {
-          title: __("Name"),
+          title: () => this.$t("Name"),
           name: "__slot:title",
           field: "title",
           sortField: "title"
         },
         {
-          title: __("Description"),
+          title: () => this.$t("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: __("Language"),
+          title: () => this.$t("Language"),
           name: "language",
           sortField: "language",
           callback: this.formatLanguage
         },
         {
-          title: __("Modified"),
+          title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: __("Created"),
+          title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -168,9 +168,6 @@ export default {
   },
 
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     goToEdit(data) {
       window.location = "/processes/scripts/" + data + "/edit";
     },
@@ -184,7 +181,7 @@ export default {
       ProcessMaker.apiClient
         .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
         .then(response => {
-          ProcessMaker.alert(__('The script was duplicated.'), "success");
+          ProcessMaker.alert($t('The script was duplicated.'), "success");
           this.hideModal();
           this.fetch();
         })
@@ -213,10 +210,10 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            __("Caution!"),
-            __("Are you sure you want to delete the script ") +
+            $t("Caution!"),
+            $t("Are you sure you want to delete the script ") +
               data.title +
-              __("?"),
+              $t("?"),
             "",
             () => {
               this.$emit("delete", data);
