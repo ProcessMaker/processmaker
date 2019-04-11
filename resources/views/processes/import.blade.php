@@ -89,9 +89,50 @@
                                                              @search-change="loadUsers($event, false)"
                                                              class="assignable-input">
                                                 </multiselect>
-                                                {!!Form::text('value', null,['v-if' => "item.type == 'environment_variable'",
-                                                'class'=> 'form-control assignable-input', 'v-model'=> 'item.value',
-                                                'placeholder' => __('Type environment variable')])!!}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="assignable-name text-right">
+                                                {{ __('Assign') }} <strong>{{ __('Cancel Request') }}</strong> {{ __('to') }}
+                                                <i  class="assignable-arrow fas fa-long-arrow-alt-right"></i>
+                                            </td>
+                                            <td class="assignable-entity">
+                                                <multiselect v-model="cancelRequest"
+                                                             placeholder="{{__('Type to search')}}"
+                                                             :options="usersAndGroups"
+                                                             :multiple="true"
+                                                             track-by="id"
+                                                             :show-labels="false"
+                                                             :searchable="true"
+                                                             :internal-search="false"
+                                                             label="fullname"
+                                                             group-values="items"
+                                                             group-label="type"
+                                                             @search-change="loadUsers($event, true)"
+                                                             class="assignable-input">
+                                                </multiselect>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="assignable-name text-right">
+                                                {{ __('Assign') }} <strong>{{ __('Edit Data') }}</strong> {{ __('to') }}
+                                                <i  class="assignable-arrow fas fa-long-arrow-alt-right"></i>
+                                            </td>
+                                            <td class="assignable-entity">
+                                                <multiselect v-model="processData"
+                                                             placeholder="{{__('Type to search')}}"
+                                                             :options="usersAndGroups"
+                                                             :multiple="true"
+                                                             track-by="id"
+                                                             :show-labels="false"
+                                                             :searchable="true"
+                                                             :internal-search="false"
+                                                             label="fullname"
+                                                             group-values="items"
+                                                             group-label="type"
+                                                             @search-change="loadUsers($event, true)"
+                                                             class="assignable-input">
+                                                </multiselect>
                                             </td>
                                         </tr>
                                         </tbody>
@@ -199,6 +240,8 @@
           selectedUser: null,
           usersAndGroups: [],
           users: [],
+          cancelRequest: [],
+          processData: [],
         },
         filters: {
           titleCase: function (value) {
