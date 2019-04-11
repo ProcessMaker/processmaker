@@ -70,8 +70,17 @@ export default {
     };
 
     ProcessMaker.$modeler = this.$refs.modeler;
+
+    window.ProcessMaker.EventBus.$on('modeler-change', this.refreshSession);
   },
   methods: {
+    refreshSession: _.throttle(function() {
+      ProcessMaker.apiClient({
+          method: 'POST',
+          url: '/keep-alive',
+          baseURL: '/',
+        })
+    }, 60000),
     handleUpload(fileObject) {
       if (!fileObject) {
         return;
