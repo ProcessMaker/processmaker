@@ -122,68 +122,6 @@ task.definition = function definition(moddle) {
     });
 };
 
-// Implement selector of external processes
-(function () {
-    const externalProcceses = [],
-        startsByProcess = {},
-        inspector = callActivity.inspectorConfig[0].items[1];
-    inspector.items[1] = {
-        component: 'FormSelect',
-        config: {
-            label: 'Process',
-            helper: 'Please select a process to be invoked',
-            name: 'calledElement',
-            options: externalProcceses
-        }
-    };
-    window.ProcessMaker.apiClient
-        .get("/start_processes", {per_page: 1000})
-        .then((response) => {
-            response.data.data.forEach((item) => {
-                const processes = {},
-                    starts = {};
-                item.startEvents.forEach((start) => {
-                    let key = `${item.id}:${start.ownerProcessId}`;
-                    processes[key] = {
-                        value: key,
-                        content: `${item.name} (${start.ownerProcessName})`
-                    };
-                    if (starts[key] === undefined) {
-                        starts[key] = [];
-                    }
-                    starts[key].push({
-                        value: `${item.id}:${start.id}`,
-                        content: `${item.name}`
-                    });
-                });
-            });
-        })
-        .catch(() => {
-        });
-    inspector.items[5] = {
-        component: 'FormSelect',
-        config: {
-            label: 'Allowed Group',
-            helper: 'Select allowed group',
-            name: 'allowedUsers',
-            options: activeGroups
-        }
-    };
-    window.ProcessMaker.apiClient
-        .get("/groups", {
-        })
-        .then((response) => {
-            response.data.data.forEach((item) => {
-                activeGroups.push({
-                    value: item.id,
-                    content: item.name
-                });
-            });
-        })
-        .catch(() => {
-        });
-})();
-
 ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
     // Register start events
     registerNode(startEvent);
