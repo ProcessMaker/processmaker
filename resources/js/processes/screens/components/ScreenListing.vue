@@ -24,35 +24,35 @@
                             <b-btn variant="link"
                                    @click="onAction('edit-screen', props.rowData, props.rowIndex)"
                                    v-b-tooltip.hover
-                                   :title="__('Edit')"
+                                   :title="$t('Edit')"
                                    v-if="permission.includes('edit-screens')">
                                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
                             </b-btn>
                             <b-btn variant="link"
                                    @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                    v-b-tooltip.hover
-                                   :title="__('Configure')"
+                                   :title="$t('Configure')"
                                    v-if="permission.includes('edit-screens')">
                                 <i class="fas fa-cog fa-lg fa-fw"></i>
                             </b-btn>
                             <b-btn variant="link"
                                    @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
                                    v-b-tooltip.hover
-                                   :title="__('Duplicate')"
+                                   :title="$t('Duplicate')"
                                    v-if="permission.includes('create-screens')">
                                 <i class="fas fa-copy fa-lg fa-fw"></i>
                             </b-btn>
                             <b-btn variant="link"
                                    @click="onAction('export-item', props.rowData, props.rowIndex)"
                                    v-b-tooltip.hover
-                                   :title="__('Export')"
+                                   :title="$t('Export')"
                                    v-if="permission.includes('export-screens')">
                                 <i class="fas fa-file-export fa-lg fa-fw"></i>
                             </b-btn>
                             <b-btn variant="link"
                                    @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                    v-b-tooltip.hover
-                                   :title="__('Delete')"
+                                   :title="$t('Delete')"
                                    v-if="permission.includes('delete-screens')">
                                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
                             </b-btn>
@@ -68,10 +68,10 @@
                         ref="pagination">
             </pagination>
         </div>
-        <b-modal ref="myModalRef" :title="__('Duplicate Screen')" centered>
+        <b-modal ref="myModalRef" :title="$t('Duplicate Screen')" centered>
             <form>
                 <div class="form-group">
-                    <label for="title">{{__('Name')}}</label>
+                    <label for="title">{{$t('Name')}}</label>
                     <input type="text"
                            class="form-control"
                            id="title"
@@ -80,19 +80,19 @@
                     <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
                 </div>
                 <div class="form-group">
-                    <label for="type">{{__('Type')}}</label>
+                    <label for="type">{{$t('Type')}}</label>
                     <select class="form-control" id="type" disabled>
                         <option>{{dupScreen.type}}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="description">{{__('Description')}}</label>
+                    <label for="description">{{$t('Description')}}</label>
                     <textarea class="form-control" id="description" rows="3" v-model="dupScreen.description"></textarea>
                 </div>
             </form>
             <div slot="modal-footer" class="w-100" align="right">
-                <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{__('Cancel')}}</button>
-                <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{__('Save')}}</button>
+                <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{$t('Cancel')}}</button>
+                <button type="button" @click="onSubmit" class="btn btn-secondary ml-2">{{$t('Save')}}</button>
             </div>
         </b-modal>
     </div>
@@ -100,7 +100,6 @@
 
 <script>
   import datatableMixin from "../../../components/common/mixins/datatable";
-  import __ from "../../../modules/lang";
 
   export default {
     mixins: [datatableMixin],
@@ -124,29 +123,29 @@
 
         fields: [
           {
-            title: __("Name"),
+            title: this.$t("Name"),
             name: "__slot:title",
             field: "title",
             sortField: "title"
           },
           {
-            title: __("Description"),
+            title: this.$t("Description"),
             name: "description",
             sortField: "description"
           },
           {
-            title: __("Type"),
+            title: this.$t("Type"),
             name: "type",
             sortField: "type"
           },
           {
-            title: __("Modified"),
+            title: this.$t("Modified"),
             name: "updated_at",
             sortField: "updated_at",
             callback: "formatDate"
           },
           {
-            title: __("Created"),
+            title: this.$t("Created"),
             name: "created_at",
             sortField: "created_at",
             callback: "formatDate"
@@ -160,9 +159,6 @@
     },
 
     methods: {
-      __(variable) {
-        return __(variable);
-      },
       showModal() {
         this.$refs.myModalRef.show();
       },
@@ -173,7 +169,7 @@
         ProcessMaker.apiClient
           .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
           .then(response => {
-            ProcessMaker.alert(__('The screen was duplicated.'), "success");
+            ProcessMaker.alert($t('The screen was duplicated.'), "success");
             this.hideModal();
             this.fetch();
           })
@@ -205,16 +201,16 @@
           case "remove-item":
             let that = this;
             ProcessMaker.confirmModal(
-              __("Caution!"),
-              __("Are you sure you want to delete the screen ") +
+              this.$t("Caution!"),
+              this.$t("Are you sure you want to delete the screen ") +
               data.title +
-              __("?"),
+              this.$t("?"),
               "",
               function () {
                 ProcessMaker.apiClient
                   .delete("screens/" + data.id)
                   .then(response => {
-                    ProcessMaker.alert(__('The screen was deleted.'), "success");
+                    ProcessMaker.alert(this.$t('The screen was deleted.'), "success");
                     that.fetch();
                   });
               }

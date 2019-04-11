@@ -171,7 +171,7 @@ class ProcessController extends Controller
     
     public function download(Process $process, $key)
     {
-        $fileName = snake_case($process->name) . '.bpm4';
+        $fileName = snake_case($process->name) . '.spark';
         $fileContents = Cache::get($key);
         
         if (! $fileContents) {

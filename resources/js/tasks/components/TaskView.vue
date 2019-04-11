@@ -28,7 +28,7 @@
 
 <script>
 
-  import VueFormRenderer from "@processmaker/vue-form-builder/src/components/vue-form-renderer";
+  import VueFormRenderer from "@processmaker/spark-screen-builder/src/components/vue-form-renderer";
   import moment from "moment";
 
   export default {

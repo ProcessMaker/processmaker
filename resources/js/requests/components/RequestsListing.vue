@@ -10,6 +10,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
+        :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
         <template slot="ids" slot-scope="props">
@@ -32,7 +33,7 @@
                 variant="link"
                 @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Open Request')"
+                :title="$t('Open Request')"
               >
                 <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
               </b-btn>
@@ -41,8 +42,8 @@
         </template>
       </vuetable>
       <pagination
-        single="Request"
-        plural="Requests"
+        :single="$t('Request')"
+        :plural="$t('Requests')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -56,7 +57,6 @@
 import datatableMixin from "../../components/common/mixins/datatable";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
-import __ from "../../modules/lang";
 
 Vue.component("avatar-image", AvatarImage);
 
@@ -82,26 +82,26 @@ export default {
           sortField: "id"
         },
         {
-          title: __("Name"),
+          title: () => this.$t("Name"),
           name: "name",
           sortField: "name"
         },
         {
-          title: __("Status"),
+          title: () => this.$t("Status"),
           name: "status",
           sortField: "status"
         },
         {
-          title: __("Participants"),
+          title: () => this.$t("Participants"),
           name: "__slot:participants"
         },
         {
-          title: __("Started"),
+          title: () => this.$t("Started"),
           name: "initiated_at",
           sortField: "initiated_at"
         },
         {
-          title: __("Completed"),
+          title: () => this.$t("Completed"),
           name: "completed_at",
           sortField: "completed_at"
         },
@@ -113,9 +113,6 @@ export default {
     };
   },
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     onAction(action, data, index) {
       switch (action) {
         case "edit-designer":

@@ -1,6 +1,5 @@
 import Vue from "vue";
 import VariablesListing from "./components/VariablesListing";
-import __ from "../../modules/lang";
 
 // Bootstrap our Variables listing
 new Vue({
