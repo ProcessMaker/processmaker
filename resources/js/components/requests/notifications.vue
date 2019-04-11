@@ -12,10 +12,10 @@
       <b-badge pill variant="danger" v-if="totalMessages>9" id="info-large">9+</b-badge>
     </a>
     <b-popover :target="'exPopover1-bottom'" :placement="'bottomleft'" triggers="click blur">
-      <h3 class="popover-header">{{__('New Tasks')}}</h3>
+      <h3 class="popover-header">{{$t('New Tasks')}}</h3>
       <ul class="list-unstyled tasklist">
         <li v-if="messages.length == 0">
-          {{__('No Tasks Found')}}
+          {{$t('No Tasks Found')}}
           <hr>
         </li>
         <li v-for="(task, index) in messages" v-if="index <= 5">
@@ -25,7 +25,7 @@
               class="badge badge-pill badge-info float-right mt-1"
               style="cursor:pointer"
               @click="remove(task)"
-            >{{__('Dismiss')}}</div>
+            >{{$t('Dismiss')}}</div>
           </div>
 
           <h3>
@@ -43,8 +43,8 @@
             v-if="messages.length != 0"
             class="btn btn-sm btn-outline-info"
             @click="removeAll"
-          >{{__('Dismiss All')}}</button>
-          <a class="btn btn-sm btn-info" href="/notifications">{{__('View All')}}</a>
+          >{{$t('Dismiss All')}}</button>
+          <a class="btn btn-sm btn-info" href="/notifications">{{$t('View All')}}</a>
         </li>
       </ul>
     </b-popover>
@@ -54,7 +54,6 @@
 <script>
 import moment from "moment";
 import { Popover } from "bootstrap-vue/es/components";
-import __ from "../../modules/lang";
 
 Vue.use(Popover);
 export default {
@@ -83,9 +82,6 @@ export default {
     };
   },
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     updateTotalMessages() {
       this.incrementTotalMessages = false;
       ProcessMaker.apiClient

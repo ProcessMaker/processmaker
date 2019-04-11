@@ -140,7 +140,7 @@
                         run_as_user_id: this.script.run_as_user_id
                     })
                     .then(response => {
-                        ProcessMaker.alert("The script was saved.", "success");
+                        ProcessMaker.alert(__("The script was saved."), "success");
                     });
             }
         }

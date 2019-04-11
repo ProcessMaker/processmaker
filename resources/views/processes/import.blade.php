@@ -23,7 +23,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{__('You are about to import a Process.')}}</h5>
                         <p class="card-text">{{__('User assignments and sensitive environment variables will not be imported.')}}</p>
-                        <input type="file" ref="file" class="d-none" @change="handleFile" accept=".bpm4">
+                        <input type="file" ref="file" class="d-none" @change="handleFile" accept=".spark">
                         <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                             <i class="fas fa-upload"></i>
                             {{__('Browse')}}
