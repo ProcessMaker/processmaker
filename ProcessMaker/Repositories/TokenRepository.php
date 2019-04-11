@@ -18,9 +18,11 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
-use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Models\ProcessCollaboration;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Execution Instance Repository.
@@ -309,6 +311,20 @@ class TokenRepository implements TokenRepositoryInterface
     private function removeUserFromData(Instance $instance)
     {
         $instance->getDataStore()->removeData('_user');
+    }
+
+    /**
+     * Persists instance and token data when a token is consumed in a event based gateway
+     *
+     * @param \ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface $eventBasedGateway
+     * @param \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $passedToken
+     * @param \ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface $consumedTokens
+     *
+     * @return mixed
+     */
+    public function persistEventBasedGatewayActivated(EventBasedGatewayInterface $eventBasedGateway, TokenInterface $passedToken, CollectionInterface $consumedTokens)
+    {
+        Log::info('persistEventBasedGatewayActivated');
     }
 
     private function getActivityType($activity)
