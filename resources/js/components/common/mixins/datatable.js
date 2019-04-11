@@ -74,6 +74,14 @@ export default {
         }
 
     },
+    // props: {
+    //     noDataTemplate: {
+    //         type: String,
+    //         default() {
+    //             return "asdfsdjfksdhjkfsdfhjksfdjkh"
+    //         }
+    //     },
+    // },
     data() {
         return {
             // The returned data that will be loaded into the vuetable
@@ -103,7 +111,8 @@ export default {
                 renderIcon(classes, options) {
                     return `<i class="${classes.join(" ")}"></i>`;
                 }
-            }
+            },
+            noDataTemplate() { return "asdfas#####1111" }
         };
     }
 };

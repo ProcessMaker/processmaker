@@ -11,6 +11,7 @@
                     :data="data"
                     data-path="data"
                     pagination-path="meta"
+                    :noDataTemplate="$t('No Data Available')"
             >
                 <template slot="actions" slot-scope="props">
                     <div class="actions">
@@ -19,7 +20,7 @@
                                     variant="link"
                                     @click="onDelete( props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
-                                    :title="__('Remove from Group')"
+                                    :title="$t('Remove from Group')"
                             >
                                 <i class="fas fa-minus-circle fa-lg fa-fw"></i>
                             </b-btn>
@@ -28,8 +29,8 @@
                 </template>
             </vuetable>
             <pagination
-                    :single="__('User')"
-                    :plural="__('Users')"
+                    :single="$t('User')"
+                    :plural="$t('Users')"
                     :perPageSelectEnabled="true"
                     @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange"
@@ -41,7 +42,6 @@
 
 <script>
   import datatableMixin from "../../../components/common/mixins/datatable";
-  import __ from "../../../modules/lang";
 
   export default {
     mixins: [datatableMixin],
@@ -59,17 +59,17 @@
         ],
         fields: [
           {
-            title: __("Username"),
+            title: () => this.$t("Username"),
             name: "username",
             sortField: "username"
           },
           {
-            title: __("Full Name"),
+            title: () => this.$t("Full Name"),
             name: "fullname",
             sortField: "firstname"
           },
           {
-            title: __("Status"),
+            title: () => this.$t("Status"),
             name: "status",
             sortField: "status",
             callback: this.formatStatus
@@ -82,9 +82,6 @@
       };
     },
     methods: {
-      __(variable) {
-        return __(variable);
-      },
       formatStatus(status) {
         status = status.toLowerCase();
         let bubbleColor = {
@@ -108,14 +105,13 @@
         let that = this;
         console.log(data);
         ProcessMaker.confirmModal(
-          __("Caution!"),
-          __("Are you sure to delete the group ") + data.fullname + __("?"),
-          "",
+          this.$t("Caution!"),
+          "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.fullname}) + "</b>",
           function () {
             ProcessMaker.apiClient
               .delete("group_members/" + data.id)
               .then(response => {
-                ProcessMaker.alert(__("The user was removed from the group."), "success");
+                ProcessMaker.alert($t("The user was removed from the group."), "success");
                 that.fetch();
               });
           }

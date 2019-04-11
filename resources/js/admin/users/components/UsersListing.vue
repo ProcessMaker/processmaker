@@ -10,6 +10,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
+        :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
         <template slot="actions" slot-scope="props">
@@ -19,7 +20,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Edit')"
+                :title="$t('Edit')"
                 v-if="permission.includes('edit-users')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -28,7 +29,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Delete')"
+                :title="$t('Delete')"
                 v-if="permission.includes('delete-users')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -38,8 +39,8 @@
         </template>
       </vuetable>
       <pagination
-        single="User"
-        plural="Users"
+        :single="$t('User')"
+        :plural="$t('Users')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -52,7 +53,6 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
-import __ from "../../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -70,35 +70,35 @@ export default {
       ],
       fields: [
         {
-          title: __("Username"),
+          title: () => this.$t("Username"),
           name: "username",
           sortField: "username"
         },
         {
-          title: __("Full Name"),
+          title: () => this.$t("Full Name"),
           name: "fullname",
           sortField: "fullname"
         },
         {
-          title: __("Status"),
+          title: () => this.$t("Status"),
           name: "status",
           sortField: "status",
           callback: this.formatStatus
         },
         {
-          title: __("Modified"),
+          title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: __("Created"),
+          title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
         },
         {
-          title: __("Last Login"),
+          title: () => this.$t("Last Login"),
           name: "loggedin_at",
           sortField: "loggedin_at",
           callback: "formatDate"
@@ -111,9 +111,6 @@ export default {
     };
   },
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     formatStatus(status) {
       status = status.toLowerCase();
       let bubbleColor = {
@@ -140,16 +137,16 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            __("Caution!"),
-            __("Are you sure you want to delete the user ") +
+            $t("Caution!"),
+            $t("Are you sure you want to delete the user ") +
               data.fullname +
-              __("?"),
+              $t("?"),
             "",
             () => {
               ProcessMaker.apiClient
                 .delete("users/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert(__("The user was deleted."), "danger");
+                  ProcessMaker.alert($t("The user was deleted."), "danger");
                   this.$emit("reload");
                 });
             }

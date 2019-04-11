@@ -10,6 +10,7 @@
                     :fields="fields"
                     :data="data"
                     data-path="data"
+                    :noDataTemplate="$t('No Data Available')"
                     pagination-path="meta">
                 <template slot="actions" slot-scope="props">
                     <div class="actions">
@@ -18,7 +19,7 @@
                                     variant="link"
                                     @click="deleteMembership(props.rowData)"
                                     v-b-tooltip.hover
-                                    :title="__('Remove from Group')"
+                                    :title="$t('Remove from Group')"
                             >
                                 <i class="fas fa-minus-circle fa-lg fa-fw"></i>
                             </b-btn>
@@ -28,8 +29,8 @@
             </vuetable>
 
             <pagination
-                    single="Group"
-                    plural="Groups"
+                    :single="$t('Group')"
+                    :plural="$t('Groups')"
                     :perPageSelectEnabled="true"
                     @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange"
@@ -41,7 +42,7 @@
 
 <script>
   import datatableMixin from "../../../components/common/mixins/datatable";
-  import __ from "../../../modules/lang";
+
 
   export default {
     mixins: [datatableMixin],
@@ -58,12 +59,12 @@
         ],
         fields: [
           {
-            title: __("Name"),
+            title: this.$t("Name"),
             name: "name",
             sortField: "name"
           },
           {
-            title: __("Description"),
+            title: this.$t("Description"),
             name: "description",
             sortField: "description"
           },
@@ -75,9 +76,6 @@
       };
     },
     methods: {
-    __(variable) {
-      return __(variable);
-    },
       fetch() {
         this.loading = true;
         ProcessMaker.apiClient
@@ -100,12 +98,11 @@
       },
       deleteMembership(item) {
         ProcessMaker.confirmModal(
-          __("Caution!"),
-          __("Are you sure you want to remove the user from the group ") + item.name + __("?"),
-          "",
+          this.$t('Caution!'),
+          "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: item.name}) + "</b>",
           () => {
             ProcessMaker.apiClient.delete("group_members/" + item.id).then(response => {
-              ProcessMaker.alert(__("The user was removed from the group."), "success");
+              ProcessMaker.alert(this.$t("The user was removed from the group."), "success");
               this.fetch();
             });
           }
