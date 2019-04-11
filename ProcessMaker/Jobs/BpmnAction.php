@@ -13,7 +13,6 @@ use Throwable;
 
 abstract class BpmnAction implements ShouldQueue
 {
-
     use Dispatchable,
         InteractsWithQueue,
         Queueable,
