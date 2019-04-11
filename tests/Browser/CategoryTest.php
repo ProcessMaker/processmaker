@@ -33,7 +33,7 @@ class CategoryCreationTest extends DuskTestCase
 
         $this->browse(function ($browser) {
             //Login
-            $browser->visit("https://bpm4.local.processmaker.com/processes/categories")
+            $browser->visit("/")
                 ->assertSee("Username")
                 ->type("#username", "admin")
                 ->type("#password", "admin")

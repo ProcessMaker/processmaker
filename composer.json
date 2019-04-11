@@ -1,5 +1,5 @@
 {
-  "name": "processmaker/bpm",
+  "name": "processmaker/spark",
   "version": "4.0.0",
   "description": "BPM PHP Software",
   "keywords": [
@@ -16,18 +16,18 @@
     },
     {
       "type": "vcs",
-      "url": "https://github.com/ProcessMaker/pm4-connector-send-email.git"
+      "url": "https://github.com/ProcessMaker/spark-connector-send-email.git"
     }
   ],
   "require": {
     "php": ">=7.2.0",
     "TYPO3/class-alias-loader": "^1.0",
-    "fzaninotto/faker": "^1.4",
-    "laravel/dusk": "^3.0",    
     "darkaonline/l5-swagger": "5.7.*",
     "doctrine/dbal": "^2.5",
     "fideloper/proxy": "^4.0",
+    "fzaninotto/faker": "^1.4",
     "igaster/laravel-theme": "2.0.*",
+    "laravel/dusk": "^3.0",
     "laravel/framework": "5.7.*",
     "laravel/horizon": "^1.3",
     "laravel/passport": "^7.0",
@@ -37,6 +37,7 @@
     "phing/phing": "^2.16",
     "pion/laravel-chunk-upload": "dev-bugfix",
     "predis/predis": "^1.1",
+    "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "dev-master",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
