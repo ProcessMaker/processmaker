@@ -14,7 +14,7 @@
                         <i class="far fa-check-circle" style="font-size:80px; color:green;"></i>
                     </div>
                     <p class="card-text text-center mt-4">
-                        {{__('ProcessMaker 4 is busy processing your request.')}} <br/>
+                        {{__('ProcessMaker Spark is busy processing your request.')}} <br/>
                         {{__('You can close this page.')}}
                     </p>
                 </div>

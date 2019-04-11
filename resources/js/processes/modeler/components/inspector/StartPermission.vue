@@ -1,33 +1,33 @@
 <template>
   <div>
     <div class="form-group">
-      <label>Start Permission</label>
+      <label>{{ $t('Start Permission') }}</label>
       <select
         class="form-control"
         :value="assignmentGetter"
         @input="assignmentSetter"
       >
         <option value=""></option>
-        <option value="user">User</option>
-        <option value="group">Group</option>
+        <option value="user">{{ $t('User') }}</option>
+        <option value="group">{{ $t('Group') }}</option>
       </select>
     </div>
 
     <div class="form-group" v-if="assignmentGetter === 'user'">
-      <label>User</label>
-      <div v-if="loadingUsers">Loading...</div>
+      <label>{{ $t('User') }}</label>
+      <div v-if="loadingUsers">{{ $t('Loading...') }}</div>
       <select v-else class="form-control" :value="assignedUserGetter" @input="assignedUserSetter">
         <option></option>
-        <option v-for="(row, index) in users" :key="index" :value="row.id">{{row.fullname}}</option>
+        <option v-for="(row, index) in users" :key="index" :value="row.id">{{ $t(row.fullname) }}</option>
       </select>
     </div>
 
     <div class="form-group" v-if="assignmentGetter === 'group'">
-      <label>Group</label>
-      <div v-if="loadingGroups">Loading...</div>
+      <label>{{ $t('Group') }}</label>
+      <div v-if="loadingGroups">{{ $t('Loading...') }}</div>
       <select v-else class="form-control" :value="assignedGroupGetter" @input="assignedGroupSetter">
         <option></option>
-        <option v-for="(row, index) in groups" :key="index" :value="row.id">{{row.name}}</option>
+        <option v-for="(row, index) in groups" :key="index" :value="row.id">{{ $t(row.name) }}</option>
       </select>
     </div>
   </div>

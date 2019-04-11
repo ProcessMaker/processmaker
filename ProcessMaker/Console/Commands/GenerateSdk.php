@@ -14,7 +14,7 @@ class GenerateSdk extends Command
      *
      * @var string
      */
-    protected $signature = 'bpm:sdk {language} {output=storage/api} {--list-options}';
+    protected $signature = 'spark:sdk {language} {output=storage/api} {--list-options}';
 
     /**
      * The console command description.

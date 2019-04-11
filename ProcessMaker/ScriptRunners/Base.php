@@ -75,7 +75,7 @@ abstract class Base
         ]);
         
         // Execute docker
-        $executeMethod = config('app.bpm_scripts_docker_mode') === 'binding'
+        $executeMethod = config('app.spark_scripts_docker_mode') === 'binding'
             ? 'executeBinding' : 'executeCopying';
         Log::debug('Executing docker', [
             'executeMethod' => $executeMethod,

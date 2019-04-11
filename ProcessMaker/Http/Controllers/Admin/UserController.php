@@ -39,6 +39,13 @@ class UserController extends Controller
         $permissionNames = $user->permissions()->pluck('name')->toArray();
         $permissionGroups = $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
 
+        $availableLangs = [];
+        foreach (scandir(resource_path('lang')) as $file) {
+            preg_match("/([a-z]{2})\.json/", $file, $matches);
+            if (!empty($matches)) {
+                $availableLangs[] = $matches[1];
+            }
+        }
         $currentUser = $user;
         $states = JsonData::states();
         $countries = JsonData::countries();
@@ -66,7 +73,8 @@ class UserController extends Controller
             'states',
             'timezones',
             'countries',
-            'datetimeFormats'
+            'datetimeFormats',
+            'availableLangs'
         ));
     }
 
