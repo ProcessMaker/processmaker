@@ -687,5 +687,8 @@
     "Summary screen": "Summary screen",
     "Summary screen that will be displayed when process finish with this End event.": "Summary screen that will be displayed when process finish with this End event.",
     "Refresh": "Refresh",
-    "Enable": "Enable"
+    "Enable": "Enable",
+    "Account Timeout": "Account Timeout",
+    "Your account has been timed out for security.": "Your account has been timed out for security.",
+    "Please log in to continue your work on this page.": "Please log in to continue your work on this page."
 }

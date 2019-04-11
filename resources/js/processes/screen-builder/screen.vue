@@ -95,6 +95,7 @@
   import VueFormRenderer from "@processmaker/spark-screen-builder/src/components/vue-form-renderer";
   import VueJsonPretty from "vue-json-pretty";
   import {FormTextArea} from "@processmaker/vue-form-elements/src/components";
+  import _ from "lodash";
 
   export default {
     data() {
@@ -222,8 +223,16 @@
           builderBinding
           ] = builderComponent;
       },
+      refreshSession: _.throttle(function() {
+        ProcessMaker.apiClient({
+            method: 'POST',
+            url: '/keep-alive',
+            baseURL: '/',
+          })
+      }, 60000),
       updateConfig(newConfig) {
         this.config = newConfig;
+        this.refreshSession();
       },
       updatePreview(data) {
         this.previewData = data;

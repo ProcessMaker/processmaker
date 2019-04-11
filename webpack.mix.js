@@ -15,31 +15,31 @@ const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 */
 
 mix.webpackConfig({
-        plugins: [
-            new MonocoEditorPlugin()
+    plugins: [
+        new MonocoEditorPlugin()
+    ],
+    resolve: {
+        modules: [
+            path.resolve(__dirname, 'node_modules'),
+            'node_modules'
         ],
-        resolve: {
-            modules: [
-                path.resolve(__dirname, 'node_modules'),
-                'node_modules'
-            ],
-            symlinks: false,
-            alias: {
-                // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
-                Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
-            }
-        },
-        node: { fs: 'empty' }
-    }).js('resources/js/app-layout.js', 'public/js')
+        symlinks: false,
+        alias: {
+            // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
+            Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
+        }
+    },
+    node: { fs: 'empty' }
+}).js('resources/js/app-layout.js', 'public/js')
     .js('resources/js/processes/modeler/index.js', 'public/js/processes/modeler')
     .js('resources/js/processes/modeler/initialLoad.js', 'public/js/processes/modeler')
     .js('resources/js/admin/users/index.js', 'public/js/admin/users')
-	.js('resources/js/admin/users/edit.js', 'public/js/admin/users/edit.js')
+    .js('resources/js/admin/users/edit.js', 'public/js/admin/users/edit.js')
     .js('resources/js/admin/groups/index.js', 'public/js/admin/groups')
     .js('resources/js/admin/groups/edit.js', 'public/js/admin/groups/edit.js')
     .js('resources/js/admin/auth-clients/index.js', 'public/js/admin/auth-clients/index.js')
     .js('resources/js/admin/queues/index.js', 'public/js/admin/queues')
-	.js('resources/js/admin/profile/edit.js', 'public/js/admin/profile/edit.js')
+    .js('resources/js/admin/profile/edit.js', 'public/js/admin/profile/edit.js')
 
     .js('resources/js/processes/index.js', 'public/js/processes')
     .js('resources/js/processes/categories/index.js', 'public/js/processes/categories')
@@ -51,7 +51,7 @@ mix.webpackConfig({
     .js('resources/js/processes/screen-builder/typeForm.js', 'public/js/processes/screen-builder')
     .js('resources/js/processes/screen-builder/typeDisplay.js', 'public/js/processes/screen-builder')
     .js('resources/js/processes/screen-builder/typeEmail.js', 'public/js/processes/screen-builder')
-
+    .js('resources/js/leave-warning.js', 'public/js')
     .js('resources/js/requests/index.js', 'public/js/requests')
 
 
@@ -80,6 +80,7 @@ mix.webpackConfig({
     .copy('resources/js/components/DetailRow.vue', 'public/js')
     .copy('resources/fonts/Open_Sans/', 'public/fonts')
     .copy('resources/js/components/FilterBar.vue', 'public/js')
+    .copy('resources/js/timeout.js', 'public/js')
     // Copy files necessary for images for the designer/modeler to it's own img directory
     .copy('node_modules/@processmaker/spark-modeler/dist/img', 'public/js/processes/modeler/img')
 

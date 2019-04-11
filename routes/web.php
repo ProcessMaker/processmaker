@@ -58,6 +58,8 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
 
+    Route::post('/keep-alive', 'Auth\LoginController@keepAlive')->name('keep-alive');
+
     Route::get('requests/{type}', 'RequestController@index')
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
