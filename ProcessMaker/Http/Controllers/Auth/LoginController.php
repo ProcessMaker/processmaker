@@ -1,9 +1,9 @@
 <?php
 namespace ProcessMaker\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use ProcessMaker\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -35,7 +35,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('guest')->except(['logout', 'keepAlive']);
     }
 
     public function loginWithoutIntended(Request $request) {
@@ -53,8 +53,9 @@ class LoginController extends Controller
         return 'username';
     }
 
-     protected function credentials(\Illuminate\Http\Request $request)
+    public function keepAlive()
     {
-        return array_merge($request->only($this->username(), 'password'), ['status' => 'ACTIVE']);
+        return response('', 204);
     }
+    
 }

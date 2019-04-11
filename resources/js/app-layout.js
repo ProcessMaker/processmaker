@@ -6,6 +6,7 @@ import notifications from "./components/requests/notifications";
 import {
     Navbar
 } from "bootstrap-vue/es/components";
+import sessionModal from "./components/Session";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
@@ -15,6 +16,7 @@ import Multiselect from 'vue-multiselect/src/Multiselect';
  */
 import moment from "moment"
 import moment_timezone from "moment-timezone";
+import __ from "./modules/lang";
 if (window.ProcessMaker && window.ProcessMaker.user) {
     moment.tz.setDefault(window.ProcessMaker.user.timezone);
     moment.defaultFormat = window.ProcessMaker.user.datetime_format;
@@ -42,6 +44,7 @@ window.ProcessMaker.navbar = new Vue({
         Navbar,
         requestModal,
         notifications,
+        sessionModal,
         ConfirmationModal,
         NavbarProfile
     },
@@ -53,7 +56,11 @@ window.ProcessMaker.navbar = new Vue({
             confirmMessage: "",
             confirmVariant: "",
             confirmCallback: "",
-            confirmShow: false
+            confirmShow: false,
+            sessionShow: false,
+            sessionTitle: "",
+            sessionMessage: "",
+            sessionTime: ""
         };
     },
     mounted() {
@@ -82,6 +89,18 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 60) {
         alertVariant: String(variant)
     })
 };
+
+// Setup our login modal
+window.ProcessMaker.sessionModal = function (title, message, time) {
+    ProcessMaker.navbar.sessionTitle = title || __("Session Warning");
+    ProcessMaker.navbar.sessionMessage = message || __("Your session is about to expire.");
+    ProcessMaker.navbar.sessionTime = time;
+    ProcessMaker.navbar.sessionShow = true;
+};
+
+window.ProcessMaker.closeSessionModal = function () {
+    ProcessMaker.navbar.sessionShow = false;
+}
 
 // Set out own specific confirm modal.
 window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
