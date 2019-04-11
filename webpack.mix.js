@@ -81,6 +81,6 @@ mix.webpackConfig({
     .copy('resources/fonts/Open_Sans/', 'public/fonts')
     .copy('resources/js/components/FilterBar.vue', 'public/js')
     // Copy files necessary for images for the designer/modeler to it's own img directory
-    .copy('node_modules/@processmaker/modeler/dist/img', 'public/js/processes/modeler/img')
+    .copy('node_modules/@processmaker/spark-modeler/dist/img', 'public/js/processes/modeler/img')
 
     .version()

@@ -36,7 +36,7 @@ class ImportProcess implements ShouldQueue
      *
      * @var object
      */
-    private $file;
+    protected $file;
 
     /**
      * The process being imported.
@@ -57,14 +57,14 @@ class ImportProcess implements ShouldQueue
      *
      * @var object[]
      */
-    private $new = [];
+    protected $new = [];
 
     /**
      * An array with the state completed, incomplete or failure of the elements to be imported
      *
      * @var array
      */
-    private $status = [];
+    protected $status = [];
 
     /**
      * Create a new job instance and set the file contents.
@@ -82,7 +82,7 @@ class ImportProcess implements ShouldQueue
      *
      * @return string|bool
      */
-    private function getParser()
+    protected function getParser()
     {
         $method = "parseFileV{$this->file->version}";
         if (method_exists($this, $method)) {
@@ -115,7 +115,7 @@ class ImportProcess implements ShouldQueue
      *
      * @return resource|null
      */
-    private function formatDate($date)
+    protected function formatDate($date)
     {
         if ($date) {
             return new Carbon($date);
@@ -135,7 +135,7 @@ class ImportProcess implements ShouldQueue
      *
      * @return string
      */
-    private function formatName($name, $field, $class)
+    protected function formatName($name, $field, $class)
     {
         //Create a new instance of this model
         $model = new $class;
@@ -462,7 +462,7 @@ class ImportProcess implements ShouldQueue
      *
      * @return void
      */
-    private function decodeFile()
+    protected function decodeFile()
     {
         $this->file = base64_decode($this->fileContents);
         $this->file = json_decode($this->file);
@@ -493,7 +493,7 @@ class ImportProcess implements ShouldQueue
     /**
      * Initial state of the process
      */
-    private function resetStatus()
+    protected function resetStatus()
     {
         $this->status = [];
         $this->status['environment_variables'] = [
@@ -528,7 +528,7 @@ class ImportProcess implements ShouldQueue
      * @param $element
      * @param $data boolean
      */
-    private function prepareStatus($element, $data = false)
+    protected function prepareStatus($element, $data = false)
     {
         $this->status[$element]['message'] = __('There is no information');
         if ($data) {
@@ -542,7 +542,7 @@ class ImportProcess implements ShouldQueue
      * @param $element
      * @param $error
      */
-    private function finishStatus($element, $error = false)
+    protected function finishStatus($element, $error = false)
     {
         $this->status[$element]['success'] = true;
         $this->status[$element]['message'] = __('It was imported correctly.');

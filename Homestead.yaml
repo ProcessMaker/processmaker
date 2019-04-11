@@ -14,8 +14,8 @@ folders:
 # Uncomment and modify the following if you want to
 # link a local directory for package development
 #    -
-#        map: '../bpm-plugins'
-#        to: /home/vagrant/bpm-plugins
+#        map: '../spark-plugins'
+#        to: /home/vagrant/spark-plugins
 #
 # Uncomment and modify the following if you want to
 # link a local directory for nayra (workflow engine) development
@@ -24,10 +24,10 @@ folders:
 #        to: /home/vagrant/nayra
 sites:
     -
-        map: bpm4.local.processmaker.com
+        map: spark.local.processmaker.com
         to: /home/vagrant/processmaker/public
 databases:
-    - workflow
+    - spark
     - test
-name: bpm4
-hostname: bpm4
+name: spark
+hostname: spark

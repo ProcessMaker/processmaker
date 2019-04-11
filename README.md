@@ -1,10 +1,8 @@
-# ProcessMaker 4.1 Community Edition Documentation
+# ProcessMaker Spark
 
 ![](https://www.processmaker.com/assets/PartnerArea/new_logos/sample200_whitebg.png)
 
-[![CircleCI](https://circleci.com/gh/ProcessMaker/bpm/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/bpm/tree/develop)
-
-## ProcessMaker 4.1 Community Edition Documentation
+[![CircleCI](https://circleci.com/gh/ProcessMaker/spark/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/spark/tree/develop)
 
 #### Overview
 
@@ -29,18 +27,18 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
 * Perform `composer install` to install required libraries. If you are on windows, you may need to run `composer install --ignore-platform-reqs` due to Horizon requiring the pcntl extension. You can safely ignore this as the application runs in the virtual machine which has the appropriate extensions installed.
 * Perform `npm install` in the project directory
 * Perform `npm run dev` to build the front-end assets
-* Modify your local `/etc/hosts` file to point `bpm4.local.processmaker.com` to `192.168.10.10`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
+* Modify your local `/etc/hosts` file to point `spark.local.processmaker.com` to `192.168.10.10`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
   * If you need to change the ip address to something else to avoid conflicts on your network, modify the `Homestead.yaml` file accordingly. Do not commit this change to the repository.
 * Execute `vagrant up` in the project directory to bring up the laravel homestead virtual machine
 * Execute `vagrant ssh` to ssh into the newly created virtual machine
-* Execute `php artisan bpm:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
+* Execute `php artisan spark:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
   * Specify `localhost` as your local database server
   * Specify `3306` as your local database port
   * Specify `workflow` as your local database name
   * Specify `homestead` as your local database username
   * Specify `secret` as your local database password
-  * Specify `https://bpm4.local.processmaker.com` as your application url
-* Visit `https://bpm4.local.processmaker.com` in your browser to access the application
+  * Specify `https://spark.local.processmaker.com` as your application url
+* Visit `https://spark.local.processmaker.com` in your browser to access the application
   * Login with the username of `admin` and password of `admin`
 
 When developing, make sure to turn on debugging in your `.env` so you can see the actual error instead of the Whoops page.
@@ -51,11 +49,17 @@ APP_DEBUG=TRUE
 
 Optionally, trust the self-signed certificate on your host machine so you don't get the "Not Secure" warnings in chrome and postman.
 
-For macOS: 1. In your-repository-root/storage/ssl, double-click on bpm4.local.processmaker.com.crt 2. Click on "Add" to add it to your login keychain 3. In the Keychain Access window click on the Certificates category on the bottom left. 4. Double-click on the bpm4 certificate 5. Open the Trust section. For "When using this certificate", select "always trust" 6. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
+For macOS:
+1. In your-repository-root/storage/ssl, double-click on spark.local.processmaker.com.crt
+2. Click on "Add" to add it to your login keychain
+3. In the Keychain Access window click on the Certificates category on the bottom left.
+4. Double-click on the spark certificate
+5. Open the Trust section. For "When using this certificate", select "always trust"
+6. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
 
 If you choose not to install the certificate, you should access the socket.io js file in your browser to allow unsafe connections from it. Otherwise, real-time notifications may not work in your development environment.
 
-* [https://bpm4.local.processmaker.com:6001/socket.io/socket.io.js](https://bpm4.local.processmaker.com:6001/socket.io/socket.io.js)
+* [https://spark.local.processmaker.com:6001/socket.io/socket.io.js](https://spark.local.processmaker.com:6001/socket.io/socket.io.js)
 
 #### Customize Logos
 
@@ -201,9 +205,7 @@ And for a show method
 
 Reload the swagger UI at `api/documentation` page in your browser to see the results and debug any errors with the annotations.
 
-By default, Swagger UI will use your bpm4 app auth. So as long as you're logged into the app you should be able to run API Commands from Swagger UI as your logged in user.
-
-You can also create a personal access token to see the API results as a specific user would.
+Click on the Authorize button to log in with your spark credentials to run API commands
 
 ```text
 $user->createToken('Name it here')->accessToken;
