@@ -42,7 +42,7 @@
                                     <span class="fa-li">
                                         <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
                                     </span>
-                                    @{{  item.message }} <strong>@{{  item.label }}</strong>
+                                    @{{ item.message }} <strong>@{{ item.label }}</strong>
                                 </li>
                             </ul>
                             <div id="post-import-assignable" v-if="assignable" v-cloak>
@@ -58,7 +58,7 @@
                                         <tr v-for="item in assignable">
                                             <td class="assignable-name text-right">
                                                 @{{ item.prefix }} <strong>@{{item.name }}</strong> @{{ item.suffix }}
-                                                <i  class="assignable-arrow fas fa-long-arrow-alt-right"></i>
+                                                <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
                                                 <multiselect v-model="item.value"
@@ -93,8 +93,9 @@
                                         </tr>
                                         <tr>
                                             <td class="assignable-name text-right">
-                                                {{ __('Assign') }} <strong>{{ __('Cancel Request') }}</strong> {{ __('to') }}
-                                                <i  class="assignable-arrow fas fa-long-arrow-alt-right"></i>
+                                                {{ __('Assign') }}
+                                                <strong>{{ __('Cancel Request') }}</strong> {{ __('to') }}
+                                                <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
                                                 <multiselect v-model="cancelRequest"
@@ -116,10 +117,10 @@
                                         <tr>
                                             <td class="assignable-name text-right">
                                                 {{ __('Assign') }} <strong>{{ __('Edit Data') }}</strong> {{ __('to') }}
-                                                <i  class="assignable-arrow fas fa-long-arrow-alt-right"></i>
+                                                <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <multiselect v-model="processData"
+                                                <multiselect v-model="processEditData"
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="true"
@@ -141,16 +142,18 @@
                             </div>
                         </div>
                     </div>
-                    <div id="card-footer-pre-import" class="card-footer bg-light" align="right" v-if="! importing && ! imported">
+                    <div id="card-footer-pre-import" class="card-footer bg-light" align="right"
+                         v-if="! importing && ! imported">
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
-                            {{__('Cancel')}}
+                            {{__('Cancel xx')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="importFile"
                                 :disabled="uploaded == false">
                             {{__('Import')}}
                         </button>
                     </div>
-                    <div id="card-footer-post-import" class="card-footer bg-light" align="right" v-if="imported" v-cloak>
+                    <div id="card-footer-post-import" class="card-footer bg-light" align="right" v-if="imported"
+                         v-cloak>
                         <div v-if="assignable">
                             <button type="button" class="btn btn-outline-secondary" @click="onAssignmentCancel">
                                 {{__('Cancel')}}
@@ -241,7 +244,7 @@
           usersAndGroups: [],
           users: [],
           cancelRequest: [],
-          processData: [],
+          processEditData: [],
         },
         filters: {
           titleCase: function (value) {
@@ -269,25 +272,51 @@
                 let groups = response.data.data.map(item => {
                   return {
                     'id': item.id,
-                    'fullname': item.name
+                    'fullname': item.name,
+                    'group': true,
                   }
                 });
                 this.usersAndGroups = [];
                 this.usersAndGroups.push({
                   'type': '{{__('Users')}}',
-                  'items' : users ? users : []
+                  'items': users ? users : []
                 });
                 this.usersAndGroups.push({
                   'type': '{{__('Groups')}}',
-                  'items' : groups ? groups : []
+                  'items': groups ? groups : []
                 });
               });
           },
+          formatAssignee(data) {
+            let response = {};
+
+            response['users'] = [];
+            response['groups'] = [];
+
+            data.forEach(item => {
+              if (item.group) {
+                response['groups'].push(parseInt(item.id));
+              } else {
+                response['users'].push(parseInt(item.id));
+              }
+            });
+            return response;
+          },
           onAssignmentSave() {
-            alert('save');
+            ProcessMaker.apiClient.post('/processes/import/assignments',
+              {
+                "assignable": this.assignable,
+                'cancelRequest' : this.formatAssignee(this.cancelRequest),
+                'processEditData': this.formatAssignee(this.processEditData)
+              }
+            ).then(response => {
+              console.log(response);
+              this.onCancel();
+            });
           },
           onAssignmentCancel() {
             alert('cancel');
+            this.onCancel();
           },
           handleFile(e) {
             this.file = this.$refs.file.files[0];

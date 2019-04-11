@@ -641,13 +641,52 @@ class ProcessController extends Controller
      *     ),
      * )
      */
-    public function import(Request $request)
+    public function import(Process $process, Request $request)
     {
         $import = ImportProcess::dispatchNow($request->file('file')->get());
         return response([
             'status' => $import->status,
             'assignable' => $import->assignable,
         ], 200);
+    }
+
+    /**
+     * Import Assignments of process.
+     *
+     * @param $process
+     *
+     * @return Response
+     *
+     * @OA\Post(
+     *     path="/processes/import",
+     *     summary="Import a new process",
+     *     operationId="importProcess",
+     *     tags={"Processes"},
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     description="file to upload",
+     *                     property="file",
+     *                     type="file",
+     *                     format="file",
+     *                 ),
+     *                 required={"file"}
+     *             )
+     *         )
+     *     ),
+     * )
+     */
+    public function importAssignments(Request $request)
+    {
+
     }
 
     /**

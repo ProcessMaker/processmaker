@@ -66,6 +66,7 @@ Route::group(
     Route::get('processes/{process}', 'ProcessController@show')->name('processes.show')->middleware('can:view-processes');
     Route::post('processes/{process}/export', 'ProcessController@export')->name('processes.export')->middleware('can:export-processes');
     Route::post('processes/import', 'ProcessController@import')->name('processes.import')->middleware('can:import-processes');
+    Route::post('processes/{process}/import/assignments', 'ProcessController@importAssignments')->name('processes.import.assignments')->middleware('can:import-processes');
     Route::post('processes', 'ProcessController@store')->name('processes.store')->middleware('can:create-processes');
     Route::put('processes/{process}', 'ProcessController@update')->name('processes.update')->middleware('can:edit-processes');
     Route::delete('processes/{process}', 'ProcessController@destroy')->name('processes.destroy')->middleware('can:archive-processes');
