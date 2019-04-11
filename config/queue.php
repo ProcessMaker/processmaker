@@ -65,7 +65,7 @@ return [
     |
     */
     'failed' => [
-        'database' => env('DB_CONNECTION', 'workflow'),
+        'database' => env('DB_CONNECTION', 'spark'),
         'table' => 'failed_jobs',
     ],
 ];
