@@ -18,6 +18,7 @@ import {
     intermediateTimerEvent,
     eventBasedGateway,
     intermediateMessageCatchEvent,
+    callActivity,
 } from '@processmaker/spark-modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
@@ -42,6 +43,7 @@ let nodeTypes = [
     endEvent,
     task,
     scriptTask,
+    callActivity,
     exclusiveGateway,
     //inclusiveGateway,
     parallelGateway,
@@ -196,6 +198,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
             name: 'scriptRef'
         }
     });
+
     registerInspectorExtension(scriptTask, {
         component: 'ConfigEditor',
         config: {

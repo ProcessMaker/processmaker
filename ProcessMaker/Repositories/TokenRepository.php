@@ -9,6 +9,7 @@ use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -17,8 +18,10 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
+use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Models\ProcessCollaboration;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -74,7 +77,8 @@ class TokenRepository implements TokenRepositoryInterface
         $this->addUserToData($token->getInstance(), $user);
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
-        $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
+//        $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
+        $token->element_type = $this->getActivityType($activity);
         $token->element_name = $activity->getName();
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
@@ -321,5 +325,45 @@ class TokenRepository implements TokenRepositoryInterface
     public function persistEventBasedGatewayActivated(EventBasedGatewayInterface $eventBasedGateway, TokenInterface $passedToken, CollectionInterface $consumedTokens)
     {
         Log::info('persistEventBasedGatewayActivated');
+    }
+
+    private function getActivityType($activity)
+    {
+        if ($activity instanceof  ScriptTaskInterface) {
+            return 'scriptTask';
+        }
+
+        if ($activity instanceof  CallActivityInterface) {
+            return 'callActivity';
+        }
+
+        if ($activity instanceof  ActivityInterface) {
+            return 'task';
+        }
+
+        return 'task';
+    }
+
+    /**
+     * Persists a Call Activity Activated
+     *
+     * @param TokenInterface $token
+     * @param ExecutionInstanceInterface $subprocess
+     * @return void
+     */
+    public function persistCallActivityActivated(TokenInterface $token, ExecutionInstanceInterface $subprocess)
+    {
+        $source = $token->getInstance();
+        if ($source->process_collaboration_id === null) {
+            $collaboration = new ProcessCollaboration();
+            $collaboration->process_id = $source->process->getKey();
+            $collaboration->saveOrFail();
+            $source->process_collaboration_id = $collaboration->getKey();
+            $source->saveOrFail();
+        }
+        $subprocess->process_collaboration_id = $source->process_collaboration_id;
+        $subprocess->saveOrFail();
+        $token->subprocess_request_id = $subprocess->id;
+        $token->saveOrFail();
     }
 }
