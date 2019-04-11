@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Illuminate\Http\Response;
 
 class OAuthTest extends TestCase
 {
@@ -82,7 +83,7 @@ class OAuthTest extends TestCase
                         'DELETE',
                         '/oauth/clients/' . $this->json['id']
                     );
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_NO_CONTENT);
         
         $response= $this->actingAs($this->user, 'api')
                         ->json('GET', '/oauth/clients');
