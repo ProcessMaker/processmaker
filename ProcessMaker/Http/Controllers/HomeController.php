@@ -10,6 +10,8 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-      return redirect('/requests');
+      if (Auth::check()) {
+        return redirect('/requests');
+      }
     }
 }
