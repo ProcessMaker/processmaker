@@ -34,7 +34,7 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
 * Execute `php artisan spark:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
   * Specify `localhost` as your local database server
   * Specify `3306` as your local database port
-  * Specify `workflow` as your local database name
+  * Specify `spark` as your local database name
   * Specify `homestead` as your local database username
   * Specify `secret` as your local database password
   * Specify `https://spark.local.processmaker.com` as your application url
