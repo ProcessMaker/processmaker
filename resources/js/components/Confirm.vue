@@ -12,8 +12,8 @@
                     <p :class="classMessage"><span v-html="message"></span></p>
                 </div>
                 <div class="modal-footer">
-                    <button id="cancel" type="button" class="float-right btn btn-outline-secondary ml-2" data-dismiss="modal" @click="onDeny">Cancel</button>
-                    <button id="confirm" type="button" class="float-right btn btn-secondary ml-2" @click="onConfirm">Confirm</button>
+                    <button id="cancel" type="button" class="float-right btn btn-outline-secondary ml-2" data-dismiss="modal" @click="onDeny">{{ $t('Cancel') }}</button>
+                    <button id="confirm" type="button" class="float-right btn btn-secondary ml-2" @click="onConfirm">{{ $t('Confirm') }}</button>
                 </div>
             </div>
         </div>

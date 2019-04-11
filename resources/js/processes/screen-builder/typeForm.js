@@ -1,7 +1,7 @@
 import Vue from 'vue';
-import initialControls from "@processmaker/vue-form-builder/src/form-builder-controls";
-import globalProperties from "@processmaker/vue-form-builder/src/global-properties";
-import FormText from "@processmaker/vue-form-builder/src/components/renderer/form-text";
+import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
+import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
+import FormText from "@processmaker/spark-screen-builder/src/components/renderer/form-text";
 import FileDownload from "./components/file-download"
 import FileUpload from "./components/form/file-upload"
 
@@ -22,21 +22,21 @@ initialControls.push({
             label: 'New File Upload'
         },
         inspector: [{
-                type: "FormInput",
-                field: "label",
-                config: {
-                    label: "Text Label",
-                    helper: "The text to display",
-                }
-            },
-            {
-                type: "FormInput",
-                field: "name",
-                config: {
-                    label: 'Upload Name',
-                    helper: "The name of the upload",
-                }
+            type: "FormInput",
+            field: "label",
+            config: {
+                label: "Text Label",
+                helper: "The text to display",
             }
+        },
+        {
+            type: "FormInput",
+            field: "name",
+            config: {
+                label: 'Upload Name',
+                helper: "The name of the upload",
+            }
+        }
         ]
     }
 });
@@ -54,21 +54,21 @@ initialControls.push({
             label: 'New File Download'
         },
         inspector: [{
-                type: "FormInput",
-                field: "label",
-                config: {
-                    label: "Text Label",
-                    helper: "The text to display",
-                }
-            },
-            {
-                type: "FormInput",
-                field: "name",
-                config: {
-                    label: 'Download Name',
-                    helper: "The name of the Download",
-                }
+            type: "FormInput",
+            field: "label",
+            config: {
+                label: "Text Label",
+                helper: "The text to display",
             }
+        },
+        {
+            type: "FormInput",
+            field: "name",
+            config: {
+                label: 'Download Name',
+                helper: "The name of the Download",
+            }
+        }
         ]
     }
 });
@@ -86,4 +86,4 @@ ProcessMaker.EventBus.$on('screen-builder-init', (manager) => {
             initialControls[i].builderBinding
         );
     }
-}, );
+});

@@ -3,9 +3,9 @@ import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
 import VueRouter from "vue-router";
 import datetime_format from "../js/data/datetime_formats.json"
+import translator from "./modules/lang.js"
 
-
-
+window.__ = translator;
 window._ = require("lodash");
 window.Popper = require("popper.js").default;
 
@@ -16,8 +16,6 @@ window.Popper = require("popper.js").default;
  */
 
 window.$ = window.jQuery = require("jquery");
-
-require("bootstrap");
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -30,7 +28,43 @@ window.Vue = require("vue");
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
 
+/**
+ * Setup Translations
+ */
+import i18next from 'i18next';
+import Backend from 'i18next-chained-backend';
+import LocalStorageBackend from 'i18next-localstorage-backend';
+import XHR from 'i18next-xhr-backend';
+import VueI18Next from '@panter/vue-i18next';
+
+window.Vue.use(VueI18Next)
+let translationsLoaded = false
+i18next.use(Backend).init({
+    lng: document.documentElement.lang,
+    keySeparator: false,
+    parseMissingKeyHandler(value) {
+        if (!translationsLoaded) { return value }
+        // Report that a translation is missing
+        window.ProcessMaker.missingTranslation(value)
+        // Fallback to showing the english version
+        return value
+    },
+    backend: {
+        backends: [
+            LocalStorageBackend, // Try cache first
+            XHR,
+        ],
+        backendOptions: [
+            { versions: { en: 6, es: 6 } }, // change this to invalidate cache
+            { loadPath: '/i18next/fetch/{{lng}}/_default' },
+        ],
+    }
+}).then(() => { translationsLoaded = true })
+// Make $t available to all vue instances
+Vue.mixin({ i18n: new VueI18Next(i18next) })
+
 window.ProcessMaker = {
+
     /**
      * A general use global event bus that can be used
      */
@@ -84,6 +118,13 @@ window.ProcessMaker = {
      */
     unreadNotifications(messageIds = [], urls = []) {
         return window.ProcessMaker.apiClient.put('/unread_notifications', { message_ids: messageIds, routes: urls });
+    },
+
+    missingTranslations: new Set(),
+    missingTranslation(value) {
+        if (this.missingTranslations.has(value)) { return }
+        this.missingTranslations.add(value)
+        console.warn('Missing Translation:', value)
     },
 };
 
