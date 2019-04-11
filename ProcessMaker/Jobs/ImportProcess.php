@@ -188,13 +188,39 @@ class ImportProcess implements ShouldQueue
     {
         $this->assignable = collect([]);
 
-        $this->parseAssignableStarEvent();
+        $this->parseAssignableStartEvent();
         $this->parseAssignableTasks();
         $this->parseAssignableScripts();
         $this->parseAssignableEnvironmentVariables();
 
-        if (! $this->assignable->count()) {
+        if (!$this->assignable->count()) {
             $this->assignable = null;
+        }
+    }
+
+    /**
+     * Look for any assignable Start event and add them to the assignable list.
+     *
+     * @return void
+     */
+    private function parseAssignableStartEvent()
+    {
+        $humanTasks = ['startEvent'];
+        foreach ($humanTasks as $humanTask) {
+            $tasks = $this->definitions->getElementsByTagName($humanTask);
+            foreach ($tasks as $task) {
+                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                $eventDefinition = $task->getElementsByTagName('timerEventDefinition');
+                if (!$assignment && $eventDefinition->count() === 0) {
+                    $this->assignable->push((object)[
+                        'type' => 'startEvent',
+                        'id' => $task->getAttribute('id'),
+                        'name' => $task->getAttribute('name'),
+                        'prefix' => __('Assign Start Event'),
+                        'suffix' => __('to'),
+                    ]);
+                }
+            }
         }
     }
 
@@ -210,34 +236,9 @@ class ImportProcess implements ShouldQueue
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
                 $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-                if (! $assignment) {
-                    $this->assignable->push((object) [
+                if (!$assignment) {
+                    $this->assignable->push((object)[
                         'type' => 'task',
-                        'id' => $task->getAttribute('id'),
-                        'name' => $task->getAttribute('name'),
-                        'prefix' => __('Assign task'),
-                        'suffix' => __('to'),
-                    ]);
-                }
-            }
-        }
-    }
-
-    /**
-     * Look for any assignable tasks and add them to the assignable list.
-     *
-     * @return void
-     */
-    private function parseAssignableStarEvent()
-    {
-        $humanTasks = ['startEvent'];
-        foreach ($humanTasks as $humanTask) {
-            $tasks = $this->definitions->getElementsByTagName($humanTask);
-            foreach ($tasks as $task) {
-                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-                if (! $assignment) {
-                    $this->assignable->push((object) [
-                        'type' => 'startEvent',
                         'id' => $task->getAttribute('id'),
                         'name' => $task->getAttribute('name'),
                         'prefix' => __('Assign task'),
@@ -256,7 +257,7 @@ class ImportProcess implements ShouldQueue
     private function parseAssignableScripts()
     {
         foreach ($this->new['scripts'] as $script) {
-            $this->assignable->push((object) [
+            $this->assignable->push((object)[
                 'type' => 'script',
                 'id' => $script->id,
                 'name' => $script->title,
@@ -274,7 +275,7 @@ class ImportProcess implements ShouldQueue
     private function parseAssignableEnvironmentVariables()
     {
         foreach ($this->new['environment_variables'] as $environmentVariable) {
-            $this->assignable->push((object) [
+            $this->assignable->push((object)[
                 'type' => 'environment_variable',
                 'id' => $environmentVariable->id,
                 'name' => $environmentVariable->name,
@@ -292,7 +293,7 @@ class ImportProcess implements ShouldQueue
      */
     private function removeAssignedEntities()
     {
-        $humanTasks = ['startEvent', 'task', 'userTask'];
+        $humanTasks = ['task', 'userTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
@@ -563,7 +564,7 @@ class ImportProcess implements ShouldQueue
      */
     private function parseFileV1()
     {
-        
+
         $this->saveEnvironmentVariables($this->file->environment_variables);
         $this->saveProcessCategory($this->file->process_category);
         $this->saveProcess($this->file->process);
@@ -572,7 +573,7 @@ class ImportProcess implements ShouldQueue
         $this->parseAssignables();
         $this->saveBpmn();
 
-        return (object) [
+        return (object)[
             'status' => collect($this->status),
             'assignable' => $this->assignable,
         ];
