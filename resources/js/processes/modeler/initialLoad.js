@@ -17,7 +17,6 @@ import {
     serviceTask,
     startTimerEvent,
     intermediateTimerEvent,
-    // intermediateMessageCatchEvent,
     callActivity,
     eventBasedGateway,
     intermediateMessageCatchEvent
@@ -46,7 +45,6 @@ let nodeTypes = [
     task,
     scriptTask,
     callActivity,
-    // intermediateMessageCatchEvent,
     exclusiveGateway,
     // inclusiveGateway,
     parallelGateway,

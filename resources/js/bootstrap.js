@@ -55,7 +55,7 @@ i18next.use(Backend).init({
             XHR,
         ],
         backendOptions: [
-            { versions: { en: 6, es: 6 }}, // change this to invalidate cache
+            { versions: { en: 6, es: 6 } }, // change this to invalidate cache
             { loadPath: '/i18next/fetch/{{lng}}/_default' },
         ],
     }
@@ -64,7 +64,7 @@ i18next.use(Backend).init({
 Vue.mixin({ i18n: new VueI18Next(i18next) })
 
 window.ProcessMaker = {
-   
+
     /**
      * A general use global event bus that can be used
      */
@@ -190,8 +190,29 @@ window.Echo = new Echo({
 });
 
 if (userID) {
+    // Session timeout
+    let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
+    window.ProcessMaker.AccountTimeoutLength = parseInt(document.head.querySelector("meta[name=\"timeout-length\"]").content);
+
+    window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
+    window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
+        if (e.data.method === 'countdown') {
+            window.ProcessMaker.sessionModal('Session Warning', '<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>', e.data.data.time);
+        }
+        if (e.data.method === 'timedOut') {
+            window.location = '/logout';
+        }
+    });
+
+    window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: window.ProcessMaker.AccountTimeoutLength } });
+
     window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
         .notification((token) => {
             ProcessMaker.pushNotification(token);
+        })
+        .listen('.SessionStarted', (e) => {
+            let lifetime = parseInt(e.lifetime);
+            window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: lifetime } });
+            window.ProcessMaker.closeSessionModal();
         });
 }

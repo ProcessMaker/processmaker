@@ -216,7 +216,7 @@ class Process extends Model implements HasMedia
             foreach ($this->taskNotifiableTypes as $notifiable) {
                 foreach ($this->taskNotificationTypes as $notification) {
                     $setting = $group->where('notifiable_type', $notifiable)
-                        ->where('notification_type', $notification);
+                                     ->where('notification_type', $notification);
 
                     if ($setting->count()) {
                         $value = true;
