@@ -4,8 +4,6 @@ namespace ProcessMaker\Models;
 
 use Log;
 use Carbon\Carbon;
-use ProcessMaker\Models\User;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Managers\TaskSchedulerManager;
@@ -60,7 +58,6 @@ use Throwable;
  */
 class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMedia
 {
-
     use ExecutionInstanceTrait;
     use SerializeToIso8601;
     use HasMediaTrait;
@@ -140,7 +137,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             $manager = new TaskSchedulerManager();
             $manager->registerIntermediateTimerEvents($model);
         });
-
     }
 
     /**
@@ -169,15 +165,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @param string $entity
      * @param string $notificationType
-     * 
+     *
      * @return array
-     */    
+     */
     public function getNotifiables($notificationType)
     {
         $userIds = collect([]);
-        
+
         $process = $this->process()->first();
-        
+
         $notifiableTypes = $process->notification_settings()
                                    ->where('notification_type', $notificationType)
                                    ->whereNull('element_id')
@@ -186,13 +182,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         foreach ($notifiableTypes as $notifiableType) {
             $userIds = $userIds->merge($this->getNotifiableUserIds($notifiableType));
         }
-        
+
         $userIds = $userIds->unique();
-        
+
         $notifiables = $notifiableTypes->implode(', ');
         $users = $userIds->implode(', ');
         Log::debug("Sending request $notificationType notification to $notifiables (users: $users)");
-        
+
         return User::whereIn('id', $userIds)->get();
     }
 
@@ -239,7 +235,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             return null;
         }
 
-
         //get the first token that is and end event to get the summary screen
         $definition = $endEvents->first()->getDefinition();
         $screen = empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
@@ -271,8 +266,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function collaboration()
     {
-        return $this->belongsTo(ProcessCollaboration::class,
-                'process_collaboration_id');
+        return $this->belongsTo(
+            ProcessCollaboration::class,
+            'process_collaboration_id'
+        );
     }
 
     /**
@@ -344,8 +341,14 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function participants()
     {
-        return $this->hasManyThrough(User::class, ProcessRequestToken::class,
-                    'process_request_id', 'id', $this->getKeyName(), 'user_id')
+        return $this->hasManyThrough(
+            User::class,
+            ProcessRequestToken::class,
+            'process_request_id',
+            'id',
+            $this->getKeyName(),
+            'user_id'
+        )
                 ->distinct();
     }
 
@@ -398,5 +401,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->errors = $errors;
         $this->status = 'ERROR';
         $this->save();
+    }
+
+    public function childRequests()
+    {
+        return $this->hasMany(ProcessRequest::class, 'parent_request_id');
+    }
+
+    public function parentRequest()
+    {
+        return $this->belongsTo(ProcessRequest::class, 'parent_request_id');
     }
 }

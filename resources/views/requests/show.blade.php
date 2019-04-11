@@ -203,6 +203,24 @@
                                     </button>
                                 </li>
                             @endif
+                            @if($request->parentRequest)
+                            <li class="list-group-item">
+                              <h5>{{__('Parent Request')}}</h5>
+                              <i class="fas fa-circle text-success"></i>
+                            <a href="/requests/{{$request->parentRequest->getKey()}}">{{$request->parentRequest->name}}</a>
+                            </li>
+                            @endif
+                            @if(count($request->childRequests))
+                            <li class="list-group-item">
+                              <h5>{{__('Child Requests')}}</h5>
+                              @foreach($request->childRequests as $childRequest)
+                              <div>
+                              <i class="fas fa-circle text-success"></i>
+                              <a href="/requests/{{$childRequest->getKey()}}">{{$childRequest->name}}</a>
+                              </div>
+                              @endforeach
+                            </li>
+                            @endif
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
