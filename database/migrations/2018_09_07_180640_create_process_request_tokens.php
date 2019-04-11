@@ -26,6 +26,7 @@ class CreateProcessRequestTokens extends Migration
             $table->string('element_name')->nullable();
             $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH', 'TRIGGERED'])
                     ->default('ACTIVE');
+            $table->string('subprocess_start_event_id')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('due_at')->nullable();
             $table->boolean('due_notified')->default(false);
@@ -37,6 +38,7 @@ class CreateProcessRequestTokens extends Migration
             $table->index('process_id');
             $table->index('process_request_id');
             $table->index('subprocess_request_id');
+            $table->index('subprocess_start_event_id');
             $table->index('user_id');
 
             // Foreign keys

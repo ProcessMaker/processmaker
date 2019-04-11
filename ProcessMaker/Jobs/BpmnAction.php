@@ -34,7 +34,13 @@ abstract class BpmnAction implements ShouldQueue
         if ($instance && $instance->collaboration) {
             foreach ($instance->collaboration->requests as $request) {
                 if ($request->getKey() !== $instance->getKey()) {
-                    $definitions->getEngine()->loadExecutionInstance($request->getKey());
+                    if ($request->process->id === $processModel->id) {
+                        $definitions->getEngine()->loadExecutionInstance($request->getKey());
+                    } else {
+                        $engine = $request->process->getDefinitions()->getEngine();
+                        $engine->currentInstance = $instance;
+                        $engine->loadExecutionInstance($request->getKey());
+                    }
                 }
             }
         }

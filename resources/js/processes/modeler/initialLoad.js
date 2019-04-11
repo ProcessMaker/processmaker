@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 // Our initial node types to register with our modeler
 import {
     association,
@@ -16,9 +17,9 @@ import {
     serviceTask,
     startTimerEvent,
     intermediateTimerEvent,
-    eventBasedGateway,
-    intermediateMessageCatchEvent,
     callActivity,
+    eventBasedGateway,
+    intermediateMessageCatchEvent
 } from '@processmaker/spark-modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
@@ -45,7 +46,7 @@ let nodeTypes = [
     scriptTask,
     callActivity,
     exclusiveGateway,
-    //inclusiveGateway,
+    // inclusiveGateway,
     parallelGateway,
     sequenceFlow,
     association,
