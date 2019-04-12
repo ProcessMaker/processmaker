@@ -271,7 +271,7 @@
               .then(response => {
                 let groups = response.data.data.map(item => {
                   return {
-                    'id': 'group-' +item.id,
+                    'id': 'group-' + item.id,
                     'fullname': item.name
                   }
                 });
@@ -348,6 +348,10 @@
                 }
               }
             ).then(response => {
+              if (!response.data.status) {
+                ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger');
+                return;
+              }
               this.options = response.data.status;
               this.assignable = response.data.assignable;
               this.processId = response.data.process.id;

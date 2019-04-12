@@ -1,6 +1,7 @@
 <?php
 namespace ProcessMaker\Repositories;
 
+use ProcessMaker\Models\CallActivity;
 use ProcessMaker\Models\DataStore;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Message;
@@ -24,7 +25,7 @@ class DefinitionsRepository implements RepositoryInterface
 
     public function createCallActivity()
     {
-        
+        return new CallActivity();
     }
 
     public function createExecutionInstanceRepository()

@@ -25,6 +25,9 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
         Route::get('screens', 'ScreenController@index')->name('screens.index')->middleware('can:view-screens');
         Route::get('screens/{screen}/edit', 'ScreenController@edit')->name('screens.edit')->middleware('can:edit-screens,screen');
+        Route::get('screens/{screen}/export', 'ScreenController@export')->name('screens.export')->middleware('can:export-screens');
+        Route::get('screens/import', 'ScreenController@import')->name('screens.import')->middleware('can:import-screens');
+        Route::get('screens/{screen}/download/{key}', 'ScreenController@download')->name('screens.download')->middleware('can:export-screens');
         Route::get('screen-builder/{screen}/edit', 'ScreenBuilderController@edit')->name('screen-builder.edit')->middleware('can:edit-screens,screen');
 
         Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');
@@ -55,6 +58,8 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
 
+    Route::post('/keep-alive', 'Auth\LoginController@keepAlive')->name('keep-alive');
+
     Route::get('requests/{type}', 'RequestController@index')
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
@@ -80,7 +85,7 @@ Broadcast::routes();
 
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
-$this->post('login', 'Auth\LoginController@login');
+$this->post('login', 'Auth\LoginController@loginWithoutIntended');
 $this->get('logout', 'Auth\LoginController@logout')->name('logout');
 
 // Password Reset Routes...

@@ -37,7 +37,7 @@ class ExportProcess implements ShouldQueue
      *
      * @var string|null
      */
-    private $filePath;
+    protected $filePath;
 
     /**
      * The final contents of our file.
@@ -51,7 +51,7 @@ class ExportProcess implements ShouldQueue
      *
      * @var array[]
      */
-    private $package = [];
+    protected $package = [];
 
     /**
      * Create a new job instance, set the process, get BPMN definitions, and
@@ -211,7 +211,7 @@ class ExportProcess implements ShouldQueue
      *
      * @return void
      */
-    private function encodeFile()
+    protected function encodeFile()
     {
         $this->fileContents = json_encode($this->package);
         $this->fileContents = base64_encode($this->fileContents);
@@ -223,7 +223,7 @@ class ExportProcess implements ShouldQueue
      *
      * @return boolean
      */
-    private function saveFile()
+    protected function saveFile()
     {
         $bytes = file_put_contents($this->filePath, $this->fileContents);
         if ($bytes !== false) {
@@ -236,7 +236,7 @@ class ExportProcess implements ShouldQueue
      *
      * @return string
      */
-    private function cacheFile()
+    protected function cacheFile()
     {
         $key = sha1($this->fileContents);
         $value = $this->fileContents;

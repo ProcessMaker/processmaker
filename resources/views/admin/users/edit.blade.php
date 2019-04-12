@@ -184,13 +184,7 @@
 
                                             <div class="form-group col">
                                                 {!! Form::label('language', __('Language')) !!}
-                                                {!! Form::select('language', ['us_en' => 'English (US)'], $user->language,
-                                                ['id' =>
-                                                'language','class'=>
-                                                'form-control',
-                                                'v-model' => 'formData.language',
-                                                'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.language}']) !!}
+                                                <b-form-select v-model="formData.language" :options="langs"></b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.language">
                                                     @{{errors.language}}
                                                 </div>
@@ -516,6 +510,7 @@
         data() {
           return {
             formData: @json($user),
+            langs: @json($availableLangs),
             image: '',
             errors: {
               username: null,
@@ -599,9 +594,11 @@
           },
           validatePassword() {
             if (!this.formData.password && !this.formData.confpassword) {
+              delete this.formData.password;
               return true;
             }
             if (this.formData.password.trim() === '' && this.formData.confpassword.trim() === '') {
+              delete this.formData.password;
               return true
             }
             if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {
@@ -628,6 +625,9 @@
                   this.onClose();
                 }
               })
+              .catch(error => {
+                this.errors = error.response.data.errors;
+              });
           },
           permissionUpdate() {
             if (this.adminHasChanged) {
@@ -683,9 +683,9 @@
           },
           deleteToken(tokenId) {
             ProcessMaker.confirmModal(
-              "Caution!",
-              "Are you sure to delete the token " + tokenId.substr(0, 7) +
-              "? Any services using it will no longer have access.",
+              __("Caution!"),
+              __("Are you sure to delete the token ") + tokenId.substr(0, 7) +
+              __("? Any services using it will no longer have access."),
               "",
               () => {
                 ProcessMaker.apiClient({

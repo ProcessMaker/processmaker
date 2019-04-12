@@ -21,7 +21,11 @@ class SetLocale
     public function handle(Request $request, Closure $next)
     {
         // Grab the locale
-        $locale = $request->route('lang');
+        $locale = config('locale');
+        $user = \Auth::user();
+        if ($user && $user->language !== null) {
+            $locale = \Auth::user()->language;
+        }
         if ($locale) {
             // Use the App facade to set the locale for our request lifecycle
             App::setLocale($locale);

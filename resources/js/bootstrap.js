@@ -3,8 +3,9 @@ import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
 import VueRouter from "vue-router";
 import datetime_format from "../js/data/datetime_formats.json"
+import translator from "./modules/lang.js"
 
-
+window.__ = translator;
 window._ = require("lodash");
 window.Popper = require("popper.js").default;
 
@@ -15,8 +16,6 @@ window.Popper = require("popper.js").default;
  */
 
 window.$ = window.jQuery = require("jquery");
-
-require("bootstrap");
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -29,7 +28,43 @@ window.Vue = require("vue");
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
 
+/**
+ * Setup Translations
+ */
+import i18next from 'i18next';
+import Backend from 'i18next-chained-backend';
+import LocalStorageBackend from 'i18next-localstorage-backend';
+import XHR from 'i18next-xhr-backend';
+import VueI18Next from '@panter/vue-i18next';
+
+window.Vue.use(VueI18Next)
+let translationsLoaded = false
+i18next.use(Backend).init({
+    lng: document.documentElement.lang,
+    keySeparator: false,
+    parseMissingKeyHandler(value) {
+        if (!translationsLoaded) { return value }
+        // Report that a translation is missing
+        window.ProcessMaker.missingTranslation(value)
+        // Fallback to showing the english version
+        return value
+    },
+    backend: {
+        backends: [
+            LocalStorageBackend, // Try cache first
+            XHR,
+        ],
+        backendOptions: [
+            { versions: { en: 6, es: 6 } }, // change this to invalidate cache
+            { loadPath: '/i18next/fetch/{{lng}}/_default' },
+        ],
+    }
+}).then(() => { translationsLoaded = true })
+// Make $t available to all vue instances
+Vue.mixin({ i18n: new VueI18Next(i18next) })
+
 window.ProcessMaker = {
+
     /**
      * A general use global event bus that can be used
      */
@@ -45,7 +80,7 @@ window.ProcessMaker = {
      *
      * @returns {void}
      */
-    pushNotification (notification) {
+    pushNotification(notification) {
         if (this.notifications.filter(x => x.id === notification).length === 0) {
             this.notifications.push(notification);
         }
@@ -59,8 +94,8 @@ window.ProcessMaker = {
      *
      * @param urls
      */
-    removeNotifications (messageIds = [], urls = []) {
-        return window.ProcessMaker.apiClient.put('/read_notifications', {message_ids: messageIds, routes: urls}).then(() => {
+    removeNotifications(messageIds = [], urls = []) {
+        return window.ProcessMaker.apiClient.put('/read_notifications', { message_ids: messageIds, routes: urls }).then(() => {
             messageIds.forEach(function (messageId) {
                 ProcessMaker.notifications.splice(ProcessMaker.notifications.findIndex(x => x.id === messageId), 1);
             });
@@ -81,8 +116,15 @@ window.ProcessMaker = {
      *
      * @param urls
      */
-    unreadNotifications (messageIds = [], urls = []) {
-        return window.ProcessMaker.apiClient.put('/unread_notifications', {message_ids: messageIds, routes: urls});
+    unreadNotifications(messageIds = [], urls = []) {
+        return window.ProcessMaker.apiClient.put('/unread_notifications', { message_ids: messageIds, routes: urls });
+    },
+
+    missingTranslations: new Set(),
+    missingTranslation(value) {
+        if (this.missingTranslations.has(value)) { return }
+        this.missingTranslations.add(value)
+        console.warn('Missing Translation:', value)
     },
 };
 
@@ -148,8 +190,29 @@ window.Echo = new Echo({
 });
 
 if (userID) {
+    // Session timeout
+    let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
+    window.ProcessMaker.AccountTimeoutLength = parseInt(document.head.querySelector("meta[name=\"timeout-length\"]").content);
+
+    window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
+    window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
+        if (e.data.method === 'countdown') {
+            window.ProcessMaker.sessionModal('Session Warning', '<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>', e.data.data.time);
+        }
+        if (e.data.method === 'timedOut') {
+            window.location = '/logout';
+        }
+    });
+
+    window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: window.ProcessMaker.AccountTimeoutLength } });
+
     window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
         .notification((token) => {
             ProcessMaker.pushNotification(token);
+        })
+        .listen('.SessionStarted', (e) => {
+            let lifetime = parseInt(e.lifetime);
+            window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: lifetime } });
+            window.ProcessMaker.closeSessionModal();
         });
 }

@@ -44,6 +44,7 @@ ol.breadcrumb {
 @endsection
 
 @section('js')
+  <script src="{{mix('js/leave-warning.js')}}"></script>
   <script>
   window.ProcessMaker.modeler = {
     process: @json($process),

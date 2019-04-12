@@ -30,16 +30,20 @@ class Kernel extends HttpKernel
             \ProcessMaker\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
+            \ProcessMaker\Http\Middleware\SessionStarted::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,   // In case we want to log users out after changing password, we need this
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,         // This is disabled until all routes are handled by our new engine
+            //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,  
+            \ProcessMaker\Http\Middleware\SetLocale::class,       // This is disabled until all routes are handled by our new engine
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \ProcessMaker\Http\Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
+            
 
 
         ],
         'api' => [
+            \ProcessMaker\Http\Middleware\SetLocale::class,
             // Empty middleware for api
             // @todo Determine if we need throttling.  Currently it interrupts test suites
             // However, we haven't had a product decision on utilizing throttling or not
@@ -62,7 +66,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'sanitize' => \ProcessMaker\Http\Middleware\SanitizeInput::class,
         'setlang' => \ProcessMaker\Http\Middleware\SetLanguage::class,
-        'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
-        'session' => \Illuminate\Session\Middleware\StartSession::class,
+        'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class
     ];
 }

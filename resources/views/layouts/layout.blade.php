@@ -16,6 +16,8 @@
     <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
     <meta name="broadcasting-host" content="{{config('broadcasting.host')}}">
     <meta name="broadcasting-key" content="{{config('broadcasting.key')}}">
+    <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
+    <meta name="timeout-length" content="{{ config('session.lifetime') }}">
     @endif
     @if(Session::has('_alert'))
       <meta name="alert" content="show">
@@ -27,7 +29,7 @@
       <meta name="alertMessage" content="{{$message}}">
     @endif
 
-    <title>@yield('title',__('Welcome')) - {{__('ProcessMaker')}}</title>
+    <title>@yield('title',__('Welcome')) - {{__('ProcessMaker Spark')}}</title>
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
@@ -67,8 +69,8 @@
 
 <div id="api-error" class="error-content">
   <div>
-    <h1>{{('Sorry! API failed to load')}}</h1>
-    <p>{{('Something went wrong. Try refreshing the application')}}</p>
+    <h1>{{__('Sorry! API failed to load')}}</h1>
+    <p>{{__('Something went wrong. Try refreshing the application')}}</p>
   </div>
 </div>
 <!-- Scripts -->

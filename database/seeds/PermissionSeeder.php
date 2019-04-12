@@ -46,6 +46,8 @@ class PermissionSeeder extends Seeder
             'delete-screens',
             'edit-screens',
             'view-screens',
+            'export-screens',
+            'import-screens',
         ],
         'Scripts' => [
             'create-scripts',

@@ -127,10 +127,7 @@
 
                         <div class="form-group col">
                             {!! Form::label('language', __('Language')) !!}
-                            {!! Form::select('language', ['us_en' => 'English (US)'], $currentUser->language, ['id' => 'language','class'=>
-                            'form-control',
-                            'v-model' => 'formData.language',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.language}']) !!}
+                            <b-form-select v-model="formData.language" :options="langs"></b-form-select>
                             <div class="invalid-feedback" v-if="errors.language">@{{errors.language}}</div>
                         </div>
                     </div>
@@ -228,7 +225,7 @@
 
 @section('js')
 	<script src="{{mix('js/admin/profile/edit.js')}}"></script>
-	
+
     <script>
         new Vue({
             el: '#exampleModal',
@@ -294,6 +291,7 @@
             el: '#profileForm',
             data: {
                 formData: @json($currentUser),
+                langs: @json($availableLangs),
                 errors: {
                     username: null,
                     firstname: null,
@@ -321,7 +319,7 @@
                     }
                     ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
                         .then((response) => {
-                            ProcessMaker.alert('Your profile was saved.', 'success')
+                            ProcessMaker.alert(__('Your profile was saved.'), 'success')
                             window.ProcessMaker.events.$emit('update-profile-avatar');
                         })
                         .catch(error => {
@@ -343,9 +341,11 @@
                 },
                 validatePassword() {
                     if (!this.formData.password && !this.formData.confPassword) {
+                        delete this.formData.password;
                         return true;
                     }
                     if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
+                        delete this.formData.password;
                         return true
                     }
 					if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {

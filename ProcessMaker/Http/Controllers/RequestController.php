@@ -95,10 +95,13 @@ class RequestController extends Controller
 
         $canCancel = Auth::user()->can('cancel', $request->process);
         $canViewComments = Auth::user()->hasPermissionsFor('comments')->count() > 0;
+        $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
 
         $files = $request->getMedia();
 
-        return view('requests.show', compact('request', 'files', 'canCancel', 'canViewComments'));
+        return view('requests.show', compact(
+            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete'
+        ));
     }
 
     public function downloadFiles(ProcessRequest $requestID, Media $fileID)

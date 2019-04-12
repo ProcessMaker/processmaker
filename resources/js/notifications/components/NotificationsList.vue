@@ -3,7 +3,7 @@
 
         <vuetable :dataManager="dataManager" :sortOrder="sortOrder" :css="css" :api-mode="false"
                   @vuetable:pagination-data="onPaginationData" :fields="fields" :data="data" data-path="data"
-                  pagination-path="meta">
+                  pagination-path="meta" :noDataTemplate="$t('No Data Available')">
 
             <template slot="subject" slot-scope="props">
                 <i class="fas fa-ban" v-if="props.rowData.type==='PROCESS_CANCELED'"></i>
@@ -29,7 +29,7 @@
             </template>
 
         </vuetable>
-        <pagination single="Task" plural="Tasks" :perPageSelectEnabled="true" @changePerPage="changePerPage"
+        <pagination :single="$t('Task')" :plural="$t('Tasks')" :perPageSelectEnabled="true" @changePerPage="changePerPage"
                     @vuetable-pagination:change-page="onPageChange" ref="pagination"></pagination>
     </div>
 </template>
@@ -53,23 +53,23 @@
                 ],
                 fields: [
                     {
-                        title: "STATUS",
+                        title: () => this.$t("Status"),
                         name: "__slot:changeStatus",
                         sortField: "read_at",
                         width:"80px"
                     },
                     {
-                        title: "USER",
+                        title: () => this.$t("User"),
                         name: "userName",
                         sortField: "userName",
                     },
                     {
-                        title: "SUBJECT",
+                        title: () => this.$t("Subject"),
                         name: "__slot:subject",
                         sortField: "name",
                     },
                     {
-                        title: "DATE CREATED",
+                        title: () => this.$t("Created"),
                         name: "created_at",
                         sortField: "created_at"
                     }
@@ -80,7 +80,7 @@
             let params = new URL(document.location).searchParams;
             let successRouting = params.get("successfulRouting") === "true";
             if (successRouting) {
-                ProcessMaker.alert("The request was completed.", "success");
+                ProcessMaker.alert($t("The request was completed."), "success");
             }
         },
         methods: {

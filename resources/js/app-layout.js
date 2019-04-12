@@ -6,6 +6,7 @@ import notifications from "./components/requests/notifications";
 import {
     Navbar
 } from "bootstrap-vue/es/components";
+import sessionModal from "./components/Session";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
@@ -15,6 +16,7 @@ import Multiselect from 'vue-multiselect/src/Multiselect';
  */
 import moment from "moment"
 import moment_timezone from "moment-timezone";
+import __ from "./modules/lang";
 if (window.ProcessMaker && window.ProcessMaker.user) {
     moment.tz.setDefault(window.ProcessMaker.user.timezone);
     moment.defaultFormat = window.ProcessMaker.user.datetime_format;
@@ -42,20 +44,23 @@ window.ProcessMaker.navbar = new Vue({
         Navbar,
         requestModal,
         notifications,
+        sessionModal,
         ConfirmationModal,
         NavbarProfile
     },
     data() {
         return {
             messages: ProcessMaker.notifications,
-            alertShow: false,
-            alertText: "",
-            alertVariant: "",
+            alerts: [],
             confirmTitle: "",
             confirmMessage: "",
             confirmVariant: "",
             confirmCallback: "",
-            confirmShow: false
+            confirmShow: false,
+            sessionShow: false,
+            sessionTitle: "",
+            sessionMessage: "",
+            sessionTime: ""
         };
     },
     mounted() {
@@ -73,11 +78,29 @@ window.ProcessMaker.navbar = new Vue({
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant) {
-    ProcessMaker.navbar.alertText = msg;
-    ProcessMaker.navbar.alertShow = true;
-    ProcessMaker.navbar.alertVariant = String(variant);
+window.ProcessMaker.alert = function (msg, variant, showValue = 60) {
+    if (showValue === 0) {
+        // Just show it indefinitely, no countdown
+        showValue = true;
+    }
+    ProcessMaker.navbar.alerts.push({
+        alertText: msg,
+        alertShow: showValue,
+        alertVariant: String(variant)
+    })
 };
+
+// Setup our login modal
+window.ProcessMaker.sessionModal = function (title, message, time) {
+    ProcessMaker.navbar.sessionTitle = title || __("Session Warning");
+    ProcessMaker.navbar.sessionMessage = message || __("Your session is about to expire.");
+    ProcessMaker.navbar.sessionTime = time;
+    ProcessMaker.navbar.sessionShow = true;
+};
+
+window.ProcessMaker.closeSessionModal = function () {
+    ProcessMaker.navbar.sessionShow = false;
+}
 
 // Set out own specific confirm modal.
 window.ProcessMaker.confirmModal = function (title, message, variant, callback) {
@@ -94,14 +117,10 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     // response.config.url (extract resource name)
     return response;
 }, (error) => {
-    if (error.response.status == 422 && error.config.context) {
-        // This is a standard laravel validation error
-        error.config.context.errors = error.response.data.errors;
-        ProcessMaker.alert(
-            'An error occurred. Check the form for errors in red text.',
-            'danger'
-        );
-        error.config._defaultErrorShown = true;
+    switch (error.response.status) {
+        case 401:
+            window.location = "/login"
+            break;
     }
     return Promise.reject(error);
 });

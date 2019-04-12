@@ -18,11 +18,14 @@
 
 @section('content')
     <div id="screen-container" style="display: contents !important">
-        <screen-builder :screen="{{$screen}}"></screen-builder>
+        <screen-builder :screen="{{$screen}}"
+                        :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}">
+        </screen-builder>
     </div>
 @endsection
 
 @section('js')
+    <script src="{{mix('js/leave-warning.js')}}"></script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach

@@ -1,3 +1,4 @@
+/* eslint-disable func-names */
 // Our initial node types to register with our modeler
 import {
     association,
@@ -15,8 +16,11 @@ import {
     messageFlow,
     serviceTask,
     startTimerEvent,
-    intermediateTimerEvent
-} from '@processmaker/modeler';
+    intermediateTimerEvent,
+    callActivity,
+    eventBasedGateway,
+    intermediateMessageCatchEvent
+} from '@processmaker/spark-modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import TaskNotifications from './components/inspector/TaskNotifications';
@@ -37,22 +41,76 @@ Vue.component('Webhook', Webhook);
 Vue.component('StartPermission', StartPermission);
 
 let nodeTypes = [
-    startEvent,
     endEvent,
     task,
     scriptTask,
+    callActivity,
     exclusiveGateway,
-    //inclusiveGateway,
+    // inclusiveGateway,
     parallelGateway,
     sequenceFlow,
-    textAnnotation,
     association,
     pool,
     poolLane,
     messageFlow,
-    serviceTask
+    serviceTask,
+    textAnnotation,
+    eventBasedGateway,
+    intermediateMessageCatchEvent,
 ]
 ProcessMaker.nodeTypes.push(...nodeTypes);
+
+// Implement user list and group list for intermediate catch event
+// eslint-disable-next-line func-names
+(function () {
+    const activeUsers = [],
+        activeGroups = [],
+        inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[1];
+    inspector.items[4] = {
+        component: 'FormSelect',
+        config: {
+            label: 'Allowed User',
+            helper: 'Select allowed user',
+            name: 'allowedUsers',
+            options: activeUsers
+        }
+    };
+    window.ProcessMaker.apiClient
+        .get("/users", {
+        })
+        .then((response) => {
+            response.data.data.forEach((item) => {
+                activeUsers.push({
+                    value: item.id,
+                    content: item.fullname
+                });
+            });
+        })
+        .catch(() => {
+        });
+    inspector.items[5] = {
+        component: 'FormSelect',
+        config: {
+            label: 'Allowed Group',
+            helper: 'Select allowed group',
+            name: 'allowedUsers',
+            options: activeGroups
+        }
+    };
+    window.ProcessMaker.apiClient
+        .get("/groups", {
+        })
+        .then((response) => {
+            response.data.data.forEach((item) => {
+                activeGroups.push({
+                    value: item.id,
+                    content: item.name
+                });
+            });
+        })
+        .catch(() => {
+        });
+})();
 
 // Set default properties for task
 task.definition = function definition(moddle) {
@@ -62,28 +120,30 @@ task.definition = function definition(moddle) {
     });
 };
 
-ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
+ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
+    // Register start events
+    registerNode(startEvent);
+    registerNode(startTimerEvent, definition => {
+        const eventDefinitions = definition.get('eventDefinitions');
+        if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
+        return 'processmaker-modeler-start-timer-event';
+        }
+    });
+    registerNode(intermediateTimerEvent, definition => {
+        const eventDefinitions = definition.get('eventDefinitions');
+        if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
+        return 'processmaker-modeler-intermediate-catch-timer-event';
+        }
+    });
+
     /* Register basic node types */
     for (const node of nodeTypes) {
         registerNode(node);
     }
 
-    registerNode(startTimerEvent, definition => {
-        const eventDefinitions = definition.get('eventDefinitions');
-        if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-          return 'processmaker-modeler-start-timer-event';
-        }
-      });
-      registerNode(intermediateTimerEvent, definition => {
-        const eventDefinitions = definition.get('eventDefinitions');
-        if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-          return 'processmaker-modeler-intermediate-catch-timer-event';
-        }
-      });
-
     /* Add a BPMN extension */
     registerBpmnExtension('pm', bpmnExtension);
-    
+
     /* Register extension for webhooks */
     registerInspectorExtension(startEvent, {
         component: 'Webhook',
@@ -93,7 +153,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
             name: ''
         }
     });
-    
+
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {
         component: 'StartPermission',
@@ -139,6 +199,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({registerNode, registerBpmnExtension,
             name: 'scriptRef'
         }
     });
+
     registerInspectorExtension(scriptTask, {
         component: 'ConfigEditor',
         config: {

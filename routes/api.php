@@ -44,6 +44,8 @@ Route::group(
     Route::put('screens/{screen}', 'ScreenController@update')->name('screens.update')->middleware('can:edit-screens');
     Route::put('screens/{screen}/duplicate', 'ScreenController@duplicate')->name('screens.duplicate')->middleware('can:create-screens');
     Route::delete('screens/{screen}', 'ScreenController@destroy')->name('screens.destroy')->middleware('can:delete-screens');
+    Route::post('screens/{screen}/export', 'ScreenController@export')->name('screens.export')->middleware('can:export-screens');
+    Route::post('screens/import', 'ScreenController@import')->name('screens.import')->middleware('can:import-screens');
 
     // Screen Categories
     Route::get('screen_categories', 'ScreenCategoryController@index')->name('screen_categories.index')->middleware('can:view-screens');
@@ -100,6 +102,7 @@ Route::group(
     Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:view,request');
     Route::put('requests/{request}', 'ProcessRequestController@update')->name('requests.update')->middleware('can:update,request');
     Route::delete('requests/{request}', 'ProcessRequestController@destroy')->name('requests.destroy')->middleware('can:destroy,request');
+    Route::post('requests/{request}/events/{event}', 'ProcessRequestController@activateIntermediateEvent')->name('requests.update,request');
 
     // Request Files
     Route::get('requests/{request}/files', 'ProcessRequestFileController@index')->name('requests.files.index')->middleware('can:view,request');
