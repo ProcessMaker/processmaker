@@ -254,7 +254,7 @@
         ProcessMaker.apiClient.post('screens/' + this.screen.id + '/export')
           .then(response => {
             window.location = response.data.url;
-            ProcessMaker.alert('The screen was exported.', 'success');
+            ProcessMaker.alert(this.$t('The screen was exported.'), 'success');
           })
           .catch(error => {
             ProcessMaker.alert(error.response.data.error, 'danger');
@@ -278,7 +278,7 @@
               if (exportScreen) {
                 this.exportScreen();
               }
-              ProcessMaker.alert($t(" Successfully saved"), "success");
+              ProcessMaker.alert(this.$t(" Successfully saved"), "success");
             });
         }
       }
