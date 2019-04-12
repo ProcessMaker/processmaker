@@ -2,19 +2,20 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
-use Notification;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Notification;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
+use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Facades\WorkflowManager;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
@@ -112,7 +113,7 @@ class ProcessRequestController extends Controller
         if (!empty($filterBase)) {
             $filter = '%' . $filterBase . '%';
             $query->where(function ($query) use ($filter, $filterBase) {
-                $query->whereHas('participants', function ($query) use ($filter) {
+                    $query->whereHas('participants', function ($query) use ($filter) {
                     $query->Where('firstname', 'like', $filter);
                     $query->orWhere('lastname', 'like', $filter);
                 })->orWhere('name', 'like', $filter)
@@ -208,6 +209,18 @@ class ProcessRequestController extends Controller
                 throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
+            return response([], 204);
+        }
+        if ($httpRequest->post('status') === 'COMPLETED') {
+            if (! Auth::user()->is_administrator) {
+                throw new AuthorizationException(__('Not authorized to complete this request.'));
+            }
+            if ($request->status != 'ERROR') {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => __('Only requests with status: ERROR can be manually completed')
+                ]);
+            }
+            $this->completeRequest($request);
             return response([], 204);
         }
         $fields = $httpRequest->json()->all();
@@ -406,6 +419,31 @@ class ProcessRequestController extends Controller
         $request->tokens()->update(['status' => 'CLOSED']);
     }
 
+    /**
+     * Manually complete a request
+     *
+     * @param ProcessRequest $request
+     * @throws \Throwable
+     */
+    private function completeRequest(ProcessRequest $request)
+    {
+        $notifiables = $request->getNotifiables('completed');
+        Notification::send($notifiables, new ProcessCanceledNotification($request));
+
+        // Terminate request
+        TerminateRequest::dispatchNow($request);
+
+        $user = \Auth::user();
+        Comment::create([
+            'type' => 'LOG',
+            'user_id' => $user->id,
+            'commentable_type' => ProcessRequest::class,
+            'commentable_id' => $request->id,
+            'subject' => __('Process Manually Completed'),
+            'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
+        ]);
+    }
+    
     /**
      * Get task name by token fields and request
      *
