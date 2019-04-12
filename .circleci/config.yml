@@ -224,7 +224,7 @@ jobs:
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "php ~/builds/$BUILD_NAME/artisan storage:link"
             echo "Deployed to https://${BUILD_NAME}.spark.qa.processmaker.net/"
-            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon. Excluding QUEUE for now.
+            # Run containerDeploy.sh script to spin up redis docker container, laravel-echo-server, and horizon.
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
             ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
