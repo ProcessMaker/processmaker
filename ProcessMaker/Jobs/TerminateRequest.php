@@ -30,6 +30,10 @@ class TerminateRequest extends BpmnAction implements ShouldQueue
      */
     public function action(ProcessRequest $instance)
     {
+        // Close all active tokens
         $instance->close();
+        // Close process request
+        $instance->status = 'COMPLETED';
+        $instance->save();
     }
 }
