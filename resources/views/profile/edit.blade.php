@@ -225,7 +225,7 @@
 
 @section('js')
 	<script src="{{mix('js/admin/profile/edit.js')}}"></script>
-	
+
     <script>
         new Vue({
             el: '#exampleModal',
@@ -341,9 +341,11 @@
                 },
                 validatePassword() {
                     if (!this.formData.password && !this.formData.confPassword) {
+                        delete this.formData.password;
                         return true;
                     }
                     if (this.formData.password.trim() === '' && this.formData.confPassword.trim() === '') {
+                        delete this.formData.password;
                         return true
                     }
 					if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {
