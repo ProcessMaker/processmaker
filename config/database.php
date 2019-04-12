@@ -10,7 +10,7 @@ return [
     | you may use many connections at once using the Database library.
     |
     */
-    'default' => env('DB_CONNECTION', 'workflow'),
+    'default' => env('DB_CONNECTION', 'spark'),
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -27,12 +27,12 @@ return [
     |
     */
     'connections' => [
-        'workflow' => [
+        'spark' => [
             'driver' => 'mysql',
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'workflow'),
-            'username' => env('DB_USERNAME', 'workflow'),
+            'database' => env('DB_DATABASE', 'spark'),
+            'username' => env('DB_USERNAME', 'homestead'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
