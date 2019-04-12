@@ -145,7 +145,7 @@
                     <div id="card-footer-pre-import" class="card-footer bg-light" align="right"
                          v-if="! importing && ! imported">
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
-                            {{__('Cancel xx')}}
+                            {{__('Cancel')}}
                         </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="importFile"
                                 :disabled="uploaded == false">
@@ -271,9 +271,8 @@
               .then(response => {
                 let groups = response.data.data.map(item => {
                   return {
-                    'id': item.id,
-                    'fullname': item.name,
-                    'group': true,
+                    'id': 'group-' +item.id,
+                    'fullname': item.name
                   }
                 });
                 this.usersAndGroups = [];
@@ -288,34 +287,38 @@
               });
           },
           formatAssignee(data) {
-            let response = {};
+            let id,
+              response = {};
 
             response['users'] = [];
             response['groups'] = [];
 
             data.forEach(item => {
-              if (item.group) {
-                response['groups'].push(parseInt(item.id));
-              } else {
+              if (typeof item.id === "number") {
                 response['users'].push(parseInt(item.id));
+              } else {
+                id = item.id.split('-');
+                response['groups'].push(parseInt(id[1]));
               }
             });
             return response;
           },
           onAssignmentSave() {
-            ProcessMaker.apiClient.post('/processes/import/assignments',
+            ProcessMaker.apiClient.post('/processes/' + this.processId + '/import/assignments',
               {
                 "assignable": this.assignable,
-                'cancelRequest' : this.formatAssignee(this.cancelRequest),
-                'processEditData': this.formatAssignee(this.processEditData)
-              }
-            ).then(response => {
-              console.log(response);
-              this.onCancel();
-            });
+                'cancel_request': this.formatAssignee(this.cancelRequest),
+                'edit_data': this.formatAssignee(this.processEditData)
+              })
+              .then(response => {
+                ProcessMaker.alert('{{__('All assignments were saved.')}}', 'success');
+                this.onCancel();
+              })
+              .catch(error => {
+                ProcessMaker.alert('{{__('Unable cannot save the assignments.')}}', 'danger');
+              });
           },
           onAssignmentCancel() {
-            alert('cancel');
             this.onCancel();
           },
           handleFile(e) {
@@ -347,6 +350,7 @@
             ).then(response => {
               this.options = response.data.status;
               this.assignable = response.data.assignable;
+              this.processId = response.data.process.id;
               let message = '{{__('The process was imported.')}}';
               let variant = 'success';
               for (let item in this.options) {

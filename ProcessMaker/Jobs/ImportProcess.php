@@ -560,7 +560,7 @@ class ImportProcess implements ShouldQueue
     /**
      * Parse files with version 1
      *
-     * @return array
+     * @return object
      */
     private function parseFileV1()
     {
@@ -576,6 +576,7 @@ class ImportProcess implements ShouldQueue
         return (object)[
             'status' => collect($this->status),
             'assignable' => $this->assignable,
+            'process' => $this->new['process']
         ];
     }
 
