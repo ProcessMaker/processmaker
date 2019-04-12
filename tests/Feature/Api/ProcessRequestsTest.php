@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
@@ -10,7 +9,6 @@ use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Comment;
 
@@ -21,10 +19,9 @@ use ProcessMaker\Models\Comment;
  */
 class ProcessRequestsTest extends TestCase
 {
-
     use RequestHelper;
     use WithFaker;
-    
+
     public $withPermissions = true;
 
     const API_TEST_URL = '/requests';
@@ -88,7 +85,6 @@ class ProcessRequestsTest extends TestCase
         );
     }
 
-
     /**
      * Get a list of Request with parameters
      */
@@ -131,7 +127,7 @@ class ProcessRequestsTest extends TestCase
             'process_id' => $process->id,
         ]);
         $query = '?page=2&per_page=3&order_by=name';
-        
+
         $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
         //Validate the header status code
@@ -143,7 +139,7 @@ class ProcessRequestsTest extends TestCase
 
         // keys should be re-indexed so they get converted to
         // arrays instead of objects on json_encode
-        $this->assertEquals([0,1], array_keys($json['data']));
+        $this->assertEquals([0, 1], array_keys($json['data']));
     }
 
     /**
@@ -223,7 +219,6 @@ class ProcessRequestsTest extends TestCase
         $response->assertStatus(422);
     }
 
-
     /**
      * Update request in process
      */
@@ -283,7 +278,7 @@ class ProcessRequestsTest extends TestCase
         $admin = $this->user;
         $nonAdmin = factory(User::class)->create(['is_administrator' => false]);
 
-        // Create a process and a process request       
+        // Create a process and a process request
         $process = factory(Process::class)->create();
         $request = factory(ProcessRequest::class)->create(['user_id' => $nonAdmin->id, 'process_id' => $process->id]);
 
@@ -291,12 +286,12 @@ class ProcessRequestsTest extends TestCase
         $this->user = $nonAdmin;
         $route = route('api.requests.update', [$request->id]);
         $response = $this->apiCall('PUT', $route, [
-                    'status' => 'CANCELED',
-                ]);
+            'status' => 'CANCELED',
+        ]);
 
         // Confirm the user does not have access
         $response->assertStatus(403);
-    
+
         // Add the user to the list of users that can cancel
         $this->user = $admin;
         $route = route('api.processes.update', [$process->id]);
@@ -305,21 +300,21 @@ class ProcessRequestsTest extends TestCase
             'description' => 'Update Test',
             'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []]
         ]);
-        
+
         // Assert that the API returned a valid response
         $response->assertStatus(200, $response);
-        
+
         // Attempt to cancel the request
         $this->user = $nonAdmin;
         $route = route('api.requests.update', [$request->id]);
         $response = $this->apiCall('PUT', $route, [
             'status' => 'CANCELED',
         ]);
-        
+
         // Assert that the API updated
         $response->assertStatus(204);
     }
-    
+
     /**
      * Test ability to complete a request if it has the status: ERROR
      */
@@ -338,7 +333,7 @@ class ProcessRequestsTest extends TestCase
         // Confirm the user does not have access
         $response->assertStatus(403);
         $this->assertEquals('Not authorized to complete this request.', $response->json()['message']);
-        
+
         // Make user admin again
         $this->user->is_administrator = true;
         $this->user->saveOrFail();
@@ -353,7 +348,7 @@ class ProcessRequestsTest extends TestCase
 
         $request->status = 'ERROR';
         $request->saveOrFail();
-        
+
         $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED']);
         $response->assertStatus(204);
 
@@ -362,7 +357,7 @@ class ProcessRequestsTest extends TestCase
 
         // Verify comment added
         $this->assertEquals(
-            $this->user->fullname . " manually completed the request from an error state",
+            $this->user->fullname . ' manually completed the request from an error state',
             Comment::first()->body
         );
 
