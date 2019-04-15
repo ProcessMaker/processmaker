@@ -190,6 +190,7 @@ class ImportProcess implements ShouldQueue
 
         $this->parseAssignableStartEvent();
         $this->parseAssignableTasks();
+        $this->parseAssignableCallActivity();
         $this->parseAssignableScripts();
         $this->parseAssignableEnvironmentVariables();
 
@@ -205,21 +206,40 @@ class ImportProcess implements ShouldQueue
      */
     private function parseAssignableStartEvent()
     {
-        $humanTasks = ['startEvent'];
-        foreach ($humanTasks as $humanTask) {
-            $tasks = $this->definitions->getElementsByTagName($humanTask);
-            foreach ($tasks as $task) {
-                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-                $eventDefinition = $task->getElementsByTagName('timerEventDefinition');
-                if (!$assignment && $eventDefinition->count() === 0) {
-                    $this->assignable->push((object)[
-                        'type' => 'startEvent',
-                        'id' => $task->getAttribute('id'),
-                        'name' => $task->getAttribute('name'),
-                        'prefix' => __('Assign Start Event'),
-                        'suffix' => __('to'),
-                    ]);
-                }
+        $tasks = $this->definitions->getElementsByTagName('startEvent');
+        foreach ($tasks as $task) {
+            $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+            $eventDefinition = $task->getElementsByTagName('timerEventDefinition');
+            if (!$assignment && $eventDefinition->count() === 0) {
+                $this->assignable->push((object)[
+                    'type' => 'startEvent',
+                    'id' => $task->getAttribute('id'),
+                    'name' => $task->getAttribute('name'),
+                    'prefix' => __('Assign Start Event'),
+                    'suffix' => __('to'),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Look for any assignable Call Activity and add them to the assignable list.
+     *
+     * @return void
+     */
+    private function parseAssignableCallActivity()
+    {
+        $tasks = $this->definitions->getElementsByTagName('callActivity');
+        foreach ($tasks as $task) {
+            $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'calledElement');
+            if (!$assignment) {
+                $this->assignable->push((object)[
+                    'type' => 'callActivity',
+                    'id' => $task->getAttribute('id'),
+                    'name' => $task->getAttribute('name'),
+                    'prefix' => __('Assign Call Activity'),
+                    'suffix' => __('to'),
+                ]);
             }
         }
     }

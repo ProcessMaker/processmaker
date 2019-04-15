@@ -24,7 +24,7 @@
                         <div id="pre-import" v-if="! importing && ! imported">
                             <h5 class="card-title">{{__('You are about to import a Process.')}}</h5>
                             <p class="card-text">{{__('You can reassign users, groups, and environment variables after import.')}}</p>
-                            <input type="file" ref="file" class="d-none" @change="handleFile" accept=".bpm4">
+                            <input type="file" ref="file" class="d-none" @change="handleFile" accept=".spark">
                             <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                                 <i class="fas fa-upload"></i>
                                 {{__('Browse')}}
@@ -87,6 +87,19 @@
                                                              label="fullname"
                                                              v-if="item.type == 'script'"
                                                              @search-change="loadUsers($event, false)"
+                                                             class="assignable-input">
+                                                </multiselect>
+                                                <multiselect v-model="item.value"
+                                                             placeholder="{{__('Type to search process')}}"
+                                                             :options="processes"
+                                                             :multiple="false"
+                                                             track-by="id"
+                                                             :show-labels="false"
+                                                             :searchable="true"
+                                                             :internal-search="false"
+                                                             label="name"
+                                                             v-if="item.type == 'callActivity'"
+                                                             @search-change="loadProcess($event)"
                                                              class="assignable-input">
                                                 </multiselect>
                                             </td>
@@ -243,6 +256,7 @@
           selectedUser: null,
           usersAndGroups: [],
           users: [],
+          processes: [],
           cancelRequest: [],
           processEditData: [],
         },
@@ -283,6 +297,20 @@
                 this.usersAndGroups.push({
                   'type': '{{__('Groups')}}',
                   'items': groups ? groups : []
+                });
+              });
+          },
+          loadProcess(filter) {
+            filter =
+            ProcessMaker.apiClient
+              .get("processes?order_direction=asc&status=active&include=events" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+              .then(response => {
+
+                this.processes = response.data.data.map(item => {
+                  return {
+                    'id': item.events[0].ownerProcessId + '-' + item.id,
+                    'name': item.name
+                  }
                 });
               });
           },

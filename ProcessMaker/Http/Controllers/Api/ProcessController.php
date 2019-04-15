@@ -690,10 +690,13 @@ class ProcessController extends Controller
 
             //Update assignments in scripts
             $xmlAssignable = [];
+            $callActivity = [];
             foreach ($assignable as $assign) {
                 if ($assign['type'] === 'script') {
                     Script::where('id', $assign['id'])
                         ->update(['run_as_user_id' => $assign['value']['id']]);
+                } elseif ($assign['type'] === 'callActivity') {
+                    $callActivity[] = $assign;
                 } else {
                     $xmlAssignable[] = $assign;
                 }
@@ -707,7 +710,7 @@ class ProcessController extends Controller
                 foreach ($elements as $element) {
                     $id = $element->getAttributeNode('id')->value;
                     foreach ($xmlAssignable as $assign) {
-                        if ($assign['id'] == $id) {
+                        if ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
                             $value = $assign['value']['id'];
                             if (is_int($value)) {
                                 $element->setAttribute('pm:assignment', 'user');
@@ -719,6 +722,19 @@ class ProcessController extends Controller
                                 $element->setAttribute('pm:assignmentGroup', 'group');
                                 $element->setAttribute('pm:assignedGroups', $value);
                             }
+                        }
+                    }
+                }
+            }
+
+            //Update assignments call Activity
+            if ($callActivity) {
+                $elements = $definitions->getElementsByTagName('callActivity');
+                foreach ($elements as $element) {
+                    $id = $element->getAttributeNode('id')->value;
+                    foreach ($callActivity as $assign) {
+                        if ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
+                            $element->setAttribute('calledElement', $assign['value']['id']);
                         }
                     }
                 }

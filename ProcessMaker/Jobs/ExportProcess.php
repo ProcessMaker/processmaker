@@ -87,6 +87,12 @@ class ExportProcess implements ShouldQueue
             }
         }
 
+        //remove assignments to call Activity
+        $callActivity = $this->definitions->getElementsByTagName('callActivity');
+        foreach ($callActivity as $task) {
+            $task->removeAttribute('calledElement');
+        }
+
         $this->process->bpmn = $this->definitions->saveXML();
     }
 
