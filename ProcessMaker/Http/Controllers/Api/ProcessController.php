@@ -692,7 +692,7 @@ class ProcessController extends Controller
             $xmlAssignable = [];
             $callActivity = [];
             foreach ($assignable as $assign) {
-                if ($assign['type'] === 'script') {
+                if ($assign['type'] === 'script' && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
                     Script::where('id', $assign['id'])
                         ->update(['run_as_user_id' => $assign['value']['id']]);
                 } elseif ($assign['type'] === 'callActivity') {
@@ -754,7 +754,9 @@ class ProcessController extends Controller
             $this->editDataAssignments($process, $request);
         }
 
-        return new Resource($process->refresh());
+        return response([
+            'process' => $process->refresh()
+        ], 204);
     }
 
     /**
