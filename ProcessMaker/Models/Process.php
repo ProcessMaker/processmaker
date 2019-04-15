@@ -97,6 +97,7 @@ class Process extends Model implements HasMedia
         'user_id',
         'created_at',
         'updated_at',
+        'has_timer_start_events',
     ];
 
     /**
@@ -148,6 +149,10 @@ class Process extends Model implements HasMedia
         'assigned',
         'completed',
         'due',
+    ];
+
+    protected $appends = [
+        'has_timer_start_events',
     ];
 
     /**
@@ -728,7 +733,7 @@ class Process extends Model implements HasMedia
      *
      * @return boolean
      */
-    public function hasTimerStartEvents()
+    public function getHasTimerStartEventsAttribute()
     {
         foreach ($this->getStartEvents() as $event) {
             $hasTimerStartEvent = false;

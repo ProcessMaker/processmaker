@@ -731,15 +731,15 @@ class ProcessTest extends TestCase
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/ProcessStartTimerEvent.bpmn'),
         ]);
-        // Assertion: Process::hasTimerStartEvents() should return true
-        $this->assertTrue($process->hasTimerStartEvents());
+        // Assertion: Process::has_timer_start_events should return true
+        $this->assertTrue($process->has_timer_start_events);
 
         // Loads a process without an start timer event
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/SingleTask.bpmn'),
         ]);
-        // Assertion: Process::hasTimerStartEvents() should return false
-        $this->assertFalse($process->hasTimerStartEvents());
+        // Assertion: Process::has_timer_start_events should return false
+        $this->assertFalse($process->has_timer_start_events);
     }
 }
