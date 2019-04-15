@@ -380,6 +380,9 @@
                 ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger');
                 return;
               }
+              this.loadUsers();
+              this.loadUsers('', true);
+              this.loadProcess();
               this.options = response.data.status;
               this.assignable = response.data.assignable;
               this.processId = response.data.process.id;

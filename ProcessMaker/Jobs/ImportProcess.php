@@ -371,12 +371,13 @@ class ImportProcess implements ShouldQueue
      *
      * @param string|integer $oldId
      * @param string|integer $newId
+     * @param Process $process
      *
      * @return void
      */
-    private function updateScreenRefs($oldId, $newId)
+    private function updateScreenRefs($oldId, $newId, $process)
     {
-        $humanTasks = ['task', 'userTask'];
+        $humanTasks = ['task', 'userTask', 'endEvent'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
@@ -386,6 +387,13 @@ class ImportProcess implements ShouldQueue
                 }
             }
         }
+
+        //Update id screen cancel process
+        if ($process->cancel_screen_id && $process->cancel_screen_id === $oldId) {
+            $this->new['process']->cancel_screen_id = $newId;
+            $this->new['process']->save();
+        }
+
     }
 
     /**
@@ -393,10 +401,11 @@ class ImportProcess implements ShouldQueue
      * then save it to the database.
      *
      * @param object[] $screens
+     * @param Process $process
      *
      * @return void
      */
-    private function saveScreens($screens)
+    private function saveScreens($screens, $process)
     {
         try {
             $this->new['screens'] = [];
@@ -411,7 +420,7 @@ class ImportProcess implements ShouldQueue
                 $new->created_at = $this->formatDate($screen->created_at);
                 $new->save();
 
-                $this->updateScreenRefs($screen->id, $new->id);
+                $this->updateScreenRefs($screen->id, $new->id, $process);
 
                 $this->new['screens'][] = $new;
             }
@@ -589,7 +598,7 @@ class ImportProcess implements ShouldQueue
         $this->saveProcessCategory($this->file->process_category);
         $this->saveProcess($this->file->process);
         $this->saveScripts($this->file->scripts);
-        $this->saveScreens($this->file->screens);
+        $this->saveScreens($this->file->screens, $this->file->process);
         $this->parseAssignables();
         $this->saveBpmn();
 

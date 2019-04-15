@@ -129,13 +129,18 @@ class ExportProcess implements ShouldQueue
 
         $screenIds = [];
 
-        $humanTasks = ['task', 'userTask'];
+        $humanTasks = ['task', 'userTask', 'endEvent'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
                 $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
                 $screenIds[] = $screenRef;
             }
+        }
+
+        //Add cancel screen
+        if ($this->process->cancel_screen_id) {
+            $screenIds[] = $this->process->cancel_screen_id;
         }
 
         if (count($screenIds)) {
