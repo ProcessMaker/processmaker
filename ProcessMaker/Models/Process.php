@@ -728,7 +728,7 @@ class Process extends Model implements HasMedia
      *
      * @return boolean
      */
-    public function hasStartEvents()
+    public function hasTimerStartEvents()
     {
         foreach ($this->getStartEvents() as $event) {
             $hasTimerStartEvent = false;

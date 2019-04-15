@@ -102,7 +102,7 @@
                                     <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                             </multiselect>
                         </div>
-                        @if($process->hasStartEvents())
+                        @if($process->hasTimerStartEvents())
                         <div class="form-group p-0">
                             {!! Form::label('pauseTimerStartEvents', __('Pause Timer Start Events')) !!}
                             <input type="checkbox" v-model="formData.pause_timer_start" >
