@@ -8,7 +8,6 @@ use DB;
 use DOMXPath;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use ProcessMaker\Models\EnvironmentVariable;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
@@ -192,7 +191,6 @@ class ImportProcess implements ShouldQueue
         $this->parseAssignableTasks();
         $this->parseAssignableCallActivity();
         $this->parseAssignableScripts();
-        $this->parseAssignableEnvironmentVariables();
 
         if (!$this->assignable->count()) {
             $this->assignable = null;
@@ -288,24 +286,6 @@ class ImportProcess implements ShouldQueue
     }
 
     /**
-     * Look for environment variables and add them to the assignable list.
-     *
-     * @return void
-     */
-    private function parseAssignableEnvironmentVariables()
-    {
-        foreach ($this->new['environment_variables'] as $environmentVariable) {
-            $this->assignable->push((object)[
-                'type' => 'environment_variable',
-                'id' => $environmentVariable->id,
-                'name' => $environmentVariable->name,
-                'prefix' => __('Set environment variable'),
-                'suffix' => __('to'),
-            ]);
-        }
-    }
-
-    /**
      * Parse the BPMN, looking for any task assignments to users and/or groups,
      * then remove them along with any referenced users or groups.
      *
@@ -327,45 +307,7 @@ class ImportProcess implements ShouldQueue
         }
     }
 
-    /**
-     * Create a new EnvironmentVariable model for each environment variable
-     * object in the imported file, then save it to the database if it
-     * does not match the name of an existing environment variable.
-     *
-     * @param object[] $environmentVariables
-     *
-     * @return void
-     */
-    private function saveEnvironmentVariables($environmentVariables)
-    {
-        try {
-            $this->new['environment_variables'] = [];
-
-            $this->prepareStatus('environment_variables', count($environmentVariables) > 0);
-            foreach ($environmentVariables as $environmentVariable) {
-                //Find duplicates of the environment variable's name
-                $dupe = EnvironmentVariable::where('name', $environmentVariable->name)->get();
-
-                //If no duplicate, save it!
-                if (!$dupe->count()) {
-                    $new = new EnvironmentVariable;
-                    $new->name = $environmentVariable->name;
-                    $new->description = $environmentVariable->description;
-                    $new->value = '';
-                    $new->created_at = $this->formatDate($environmentVariable->created_at);
-                    $new->save();
-
-                    $this->new['environment_variables'][] = $new;
-                }
-            }
-            $this->finishStatus('environment_variables');
-        } catch (\Exception $e) {
-            $this->finishStatus('environment_variables', true);
-        }
-
-    }
-
-    /**
+     /**
      * Pass an old screen ID and a new screen ID, then replace any references
      * within the BPMN to the old ID with the new ID.
      *
@@ -594,7 +536,6 @@ class ImportProcess implements ShouldQueue
     private function parseFileV1()
     {
 
-        $this->saveEnvironmentVariables($this->file->environment_variables);
         $this->saveProcessCategory($this->file->process_category);
         $this->saveProcess($this->file->process);
         $this->saveScripts($this->file->scripts);
@@ -648,10 +589,6 @@ class ImportProcess implements ShouldQueue
     protected function resetStatus()
     {
         $this->status = [];
-        $this->status['environment_variables'] = [
-            'label' => __('Environment Variables'),
-            'success' => false,
-            'message' => __('Starting')];
 
         $this->status['process_category'] = [
             'label' => __('Process Category'),
