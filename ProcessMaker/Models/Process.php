@@ -735,8 +735,8 @@ class Process extends Model implements HasMedia
      */
     public function getHasTimerStartEventsAttribute()
     {
+        $hasTimerStartEvent = false;
         foreach ($this->getStartEvents() as $event) {
-            $hasTimerStartEvent = false;
             foreach ($event['eventDefinitions'] as $definition) {
                 $hasTimerStartEvent = $hasTimerStartEvent || $definition instanceof TimerEventDefinitionInterface;
             }

@@ -321,6 +321,7 @@ class ProcessTest extends TestCase
             [
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => static::$DO_NOT_SEND,
+                'has_timer_start_events' => static::$DO_NOT_SEND,
             ]
         );
 
@@ -331,6 +332,7 @@ class ProcessTest extends TestCase
             [
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => $category->id,
+                'has_timer_start_events' => static::$DO_NOT_SEND,
             ]
         );
     }
