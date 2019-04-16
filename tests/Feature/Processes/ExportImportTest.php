@@ -119,9 +119,13 @@ class ExportImportTest extends TestCase
             if ($item['type'] === 'callActivity') {
                 $item['value'] = factory(Process::class)->create(['name' => 'process test', 'status' => 'ACTIVE'])->toArray();
             } else {
-                $new = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
-                if (!isset($new['firstname']) && $item['type'] !== 'script') {
-                    $new['id'] = 'group-' . $new['id'];
+                if ($item['type'] === 'script') {
+                    $new = factory(User::class)->create(['status' => 'ACTIVE'])->toArray();
+                } else {
+                    $new = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
+                    if (!isset($new['firstname'])) {
+                        $new['id'] = 'group-' . $new['id'];
+                    }
                 }
                 $item['value'] = $new;
             }
