@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -113,13 +114,14 @@ class ExportImportTest extends TestCase
         $assignable = [];
         $faker = Faker::create();
 
+        //Create assignments in startEvent, task, userTask, callActivity
         foreach ($response->json('assignable') as $item) {
             if ($item['type'] === 'callActivity') {
-                $item['value'] = factory(Process::class)->create(['name'=> 'process test', 'status'=> 'ACTIVE']);
+                $item['value'] = factory(Process::class)->create(['name' => 'process test', 'status' => 'ACTIVE'])->toArray();
             } else {
-                $new = $faker->randomElement([factory(User::class)->create(['status'=> 'ACTIVE']), factory(Group::class)->create(['status'=> 'ACTIVE'])]);
-                if(!isset($new->firstname) && $item['type'] !== 'script' ) {
-                    $new->id = 'group-' . $new->id;
+                $new = $faker->randomElement([factory(User::class)->create(['status' => 'ACTIVE'])->toArray(), factory(Group::class)->create(['status' => 'ACTIVE'])->toArray()]);
+                if (!isset($new['firstname']) && $item['type'] !== 'script') {
+                    $new['id'] = 'group-' . $new['id'];
                 }
                 $item['value'] = $new;
             }
@@ -127,10 +129,11 @@ class ExportImportTest extends TestCase
             $assignable[] = $item;
         }
 
-        $cancelGroup1 = factory(Group::class)->create(['name'=> 'groupCancelRequest', 'status'=> 'ACTIVE']);
-        $cancelUser1 = factory(User::class)->create(['firstname'=> 'userCancelRequest', 'status'=> 'ACTIVE']);
-        $ediGroup1 = factory(Group::class)->create(['name'=> 'groupEditData', 'status'=> 'ACTIVE']);
-        $ediUser1 = factory(User::class)->create(['firstname'=> 'userEditData', 'status'=> 'ACTIVE']);
+        //Create assignments in Cancel Request and Edit Data
+        $cancelGroup1 = factory(Group::class)->create(['name' => 'groupCancelRequest', 'status' => 'ACTIVE']);
+        $cancelUser1 = factory(User::class)->create(['firstname' => 'userCancelRequest', 'status' => 'ACTIVE']);
+        $ediGroup1 = factory(Group::class)->create(['name' => 'groupEditData', 'status' => 'ACTIVE']);
+        $ediUser1 = factory(User::class)->create(['firstname' => 'userEditData', 'status' => 'ACTIVE']);
         $cancelRequest = [
             'users' => [$cancelUser1->id],
             'groups' => [$cancelGroup1->id]
@@ -160,6 +163,50 @@ class ExportImportTest extends TestCase
         $this->assertEquals($ediGroup1->id, $process->groupsCanEditData()->get()[0]->id);
         $this->assertEquals($ediUser1->id, $process->usersCanEditData()->get()[0]->id);
 
+        $definitions = $process->getDefinitions();
+
+        //verify assignments in Start event, task and userTask
+        $tags = ['startEvent', 'task', 'userTask'];
+        foreach ($tags as $tag) {
+            $elements = $definitions->getElementsByTagName($tag);
+            foreach ($elements as $element) {
+                $id = $element->getAttributeNode('id')->value;
+                foreach ($assignable as $assign) {
+                    if ($assign['id'] == $id) {
+                        $value = $assign['value']['id'];
+                        if (is_int($value)) {
+                            $this->assertEquals('user', $element->getAttributeNode('pm:assignment')->value);
+                            $this->assertEquals($value, $element->getAttributeNode('pm:assignedUsers')->value);
+                        } else {
+                            $value = explode('-', $value);
+                            $value = $value[1];
+                            $this->assertEquals('group', $element->getAttributeNode('pm:assignment')->value);
+                            $this->assertEquals('group', $element->getAttributeNode('pm:assignment')->value);
+                            $this->assertEquals($value, $element->getAttributeNode('pm:assignedGroups')->value);
+                        }
+                    }
+                }
+            }
+        }
+
+        //Verify assignments in callActivity
+        $elements = $definitions->getElementsByTagName('callActivity');
+        foreach ($elements as $element) {
+            $id = $element->getAttributeNode('id')->value;
+            foreach ($assignable as $assign) {
+                if ($assign['id'] == $id) {
+                    $this->assertEquals($assign['value']['id'], $element->getAttributeNode('calledElement')->value);
+                }
+            }
+        }
+
+        //Verify assignments in scripts run as
+        foreach ($assignable as $assign) {
+            if ($assign['type'] === 'script') {
+                $script = Script::find($assign['id']);
+                $this->assertEquals($assign['value']['id'], $script->run_as_user_id);
+            }
+        }
 
     }
 }
