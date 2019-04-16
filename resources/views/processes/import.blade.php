@@ -23,7 +23,15 @@
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
                             <h5 class="card-title">{{__('You are about to import a Process.')}}</h5>
-                            <p class="card-text">{{__('You can reassign users, groups, and environment variables after import.')}}</p>
+                            <p class="card-text d-flex justify-content-center">{{__('You can reassign users, groups after import.')}}</p>
+                            <div class="d-flex justify-content-center">
+                                <b-card header-class="d-flex bg-white align-items-center card-size-header border-0"
+                                        class="d-flex flex-row card-border border-0" style="width: 40em;">
+                                    <i slot="header" class='fas fa-exclamation-circle fa-4x'></i>
+                                    {{__('ProcessMaker Spark does not import Environment Variables or Enterprise Packages. You must manually configure these features.')}}
+                                </b-card>
+                            </div>
+
                             <input type="file" ref="file" class="d-none" @change="handleFile" accept=".spark">
                             <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                                 <i class="fas fa-upload"></i>
