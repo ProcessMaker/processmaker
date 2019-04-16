@@ -1,10 +1,15 @@
 <template>
     <div>
-        <div v-for="file in files.data" v-if="loaded">
-            <b-btn class="mb-2" variant="primary" @click="onClick(file)">
-                <i class="fas fa-file-download"></i> {{$t('Download')}}
-            </b-btn>
-            {{file.file_name}}
+        <template  v-if="loaded && files.data && files.data.length !== 0">
+            <div v-for="file in files.data">
+                <b-btn class="mb-2" variant="primary" @click="onClick(file)">
+                    <i class="fas fa-file-download"></i> {{$t('Download')}}
+                </b-btn>
+                {{file.file_name}}
+            </div>
+        </template>
+        <div v-else>
+            {{$t('No files available for download')}}
         </div>
     </div>
 </template>
