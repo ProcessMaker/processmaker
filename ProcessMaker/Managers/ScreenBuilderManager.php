@@ -1,9 +1,12 @@
 <?php
 namespace ProcessMaker\Managers;
 
+use Illuminate\Support\Facades\Storage;
+
 class ScreenBuilderManager
 {
     private $javascriptRegistry;
+    const SCREEN_BUILDER_EXTENSIONS_FILE = 'screen-builder-components.js';
 
     /**
      * Start our screen builder manager, creating an empty javascript registry
@@ -11,6 +14,14 @@ class ScreenBuilderManager
     public function __construct()
     {
         $this->javascriptRegistry = [];
+        $directories = glob('vendor/processmaker/packages/*', GLOB_ONLYDIR);
+        foreach($directories as $directory) {
+            $extensionsFile = $directory . '/js/' . ScreenBuilderManager::SCREEN_BUILDER_EXTENSIONS_FILE;
+            $files = glob($extensionsFile);
+            if (count($files) > 0){
+                $this->addScript('/' . $files[0]);
+            }
+        }
     }
 
     /**
