@@ -35,7 +35,7 @@ return [
     'dateformat' => env('DATE_FORMAT', 'm/d/Y h:i A'),
 
     // The system locale
-    'locale' => 'en',
+    'locale' => env('APP_LANG', 'en'),
 
     // The fallback locale
     'fallback_locale' => 'en',
@@ -52,9 +52,9 @@ return [
     'web_client_application_id' => env('PM_CLIENT_ID', 'x-pm-local-client'),
 
     // The processmaker BPM scripts configuration
-    'bpm_scripts_home' => env('BPM_SCRIPTS_HOME', '/home/vagrant'),
-    'bpm_scripts_docker' => env('BPM_SCRIPTS_DOCKER', '/usr/bin/docker'),
-    'bpm_scripts_docker_mode' => env('BPM_SCRIPTS_DOCKER_MODE', 'binding'),
+    'spark_scripts_home' => env('SPARK_SCRIPTS_HOME', '/home/vagrant'),
+    'spark_scripts_docker' => env('SPARK_SCRIPTS_DOCKER', '/usr/bin/docker'),
+    'spark_scripts_docker_mode' => env('SPARK_SCRIPTS_DOCKER_MODE', 'binding'),
 
     // The url of our host from inside the docker
     'docker_host_url' => env('DOCKER_HOST_URL', preg_replace('/(\w+):\/\/([^:\/]+)(\:\d+)?/', '$1://172.17.0.1$3',

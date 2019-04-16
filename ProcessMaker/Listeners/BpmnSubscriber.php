@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Listeners;
 
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -20,6 +21,9 @@ use ProcessMaker\Notifications\ProcessCreatedNotification;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
 use ProcessMaker\Notifications\ActivityCompletedNotification;
+use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\MessageEventDefinitionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 
 /**
  * Description of BpmnSubscriber
@@ -27,7 +31,6 @@ use ProcessMaker\Notifications\ActivityCompletedNotification;
  */
 class BpmnSubscriber
 {
-
     /**
      * When a process instance is completed.
      *
@@ -49,7 +52,7 @@ class BpmnSubscriber
     public function onProcessCreated(ProcessInstanceCreatedEvent $event)
     {
         Log::info('Process created: ' . json_encode($event->instance->getProperties()));
-        
+
         $notifiables = $event->instance->getNotifiables('started');
         Notification::send($notifiables, new ProcessCreatedNotification($event->instance));
     }
@@ -117,6 +120,30 @@ class BpmnSubscriber
         WorkflowManager::runServiceTask($serviceTask, $token);
     }
 
+    public function onIntermediateCatchEventActivated(IntermediateCatchEventInterface $event, TokenInterface $token)
+    {
+        $messages = [
+            MessageEventDefinitionInterface::class => 'System is waiting to receive message ":event"',
+            TimerEventDefinitionInterface::class => 'System has schedules to execute a timer ":event"'
+        ];
+        foreach ($event->getEventDefinitions() as $eventDefinition) {
+            foreach ($messages as $interface => $message) {
+                if (is_subclass_of($eventDefinition, $interface)) {
+                    $comment = new Comment([
+                        'user_id' => null,
+                        'commentable_type' => ProcessRequest::class,
+                        'commentable_id' => $token->getInstance()->id,
+                        'subject' => __($message, ['event' => $event->getName()]),
+                        'body' => __($message, ['event' => $event->getName()]),
+                        'type' => 'LOG'
+                    ]);
+                    $comment->save();
+                    break;
+                }
+            }
+        }
+    }
+
     /**
      * Subscription.
      *
@@ -133,5 +160,7 @@ class BpmnSubscriber
         $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
         $events->listen(ScriptTaskInterface::EVENT_SCRIPT_TASK_ACTIVATED, static::class . '@onScriptTaskActivated');
         $events->listen(ServiceTaskInterface::EVENT_SERVICE_TASK_ACTIVATED, static::class . '@onServiceTaskActivated');
+
+        $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
     }
 }

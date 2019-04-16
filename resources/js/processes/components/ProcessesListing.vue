@@ -11,6 +11,7 @@
         :data="data"
         data-path="data"
         pagination-path="meta"
+        :noDataTemplate="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">{{props.rowData.name}}</template>
 
@@ -30,7 +31,7 @@
                 variant="link"
                 @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Edit')"
+                :title="$t('Edit')"
                 v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
@@ -39,7 +40,7 @@
                 variant="link"
                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Configure')"
+                :title="$t('Configure')"
                 v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
@@ -48,7 +49,7 @@
                 variant="link"
                 @click="onAction('export-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Export')"
+                :title="$t('Export')"
                 v-if="permission.includes('export-processes')"
               >
                 <i class="fas fa-file-export fa-lg fa-fw"></i>
@@ -57,7 +58,7 @@
                 variant="link"
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Archive')"
+                :title="$t('Archive')"
                 v-if="permission.includes('archive-processes') && props.rowData.status === 'ACTIVE'"
               >
                 <i class="fas fa-download fa-lg fa-fw"></i>
@@ -66,7 +67,7 @@
                 variant="link"
                 @click="onAction('restore-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="__('Restore')"
+                :title="$t('Restore')"
                 v-if="permission.includes('archive-processes') && props.rowData.status === 'INACTIVE'"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
@@ -77,8 +78,8 @@
       </vuetable>
 
       <pagination
-        single="Process"
-        plural="Processes"
+        :single="$t('Process')"
+        :plural="$t('Processes')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -90,7 +91,6 @@
 
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
-import __ from "../../modules/lang";
 
 export default {
   mixins: [datatableMixin],
@@ -108,29 +108,29 @@ export default {
 
       fields: [
         {
-          title: __("Name"),
+          title: () => this.$t("Name"),
           name: "__slot:name",
           field: "name",
           sortField: "name"
         },
         {
-          title: __("Category"),
+          title: () => this.$t("Category"),
           name: "category.name",
           sortField: "category.name"
         },
         {
-          title: __("Owner"),
+          title: () => this.$t("Owner"),
           name: "__slot:owner",
           callback: this.formatUserName
         },
         {
-          title: __("Modified"),
+          title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: __("Created"),
+          title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -144,9 +144,6 @@ export default {
   },
 
   methods: {
-    __(variable) {
-      return __(variable);
-    },
     goToEdit(data) {
       window.location = "/processes/" + data + "/edit";
     },
@@ -172,7 +169,7 @@ export default {
             .put("processes/" + data.id + "/restore")
             .then(response => {
               ProcessMaker.alert(
-                __("The process was restored."),
+                this.$t("The process was restored."),
                 "success"
               );
               this.$emit("reload");
@@ -180,8 +177,8 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            __("Caution!"),
-            __("Are you sure you want to archive the process '") +
+            this.$t("Caution!"),
+            this.$t("Are you sure you want to archive the process '") +
               data.name +
               "'?",
             "",
@@ -190,7 +187,7 @@ export default {
                 .delete("processes/" + data.id)
                 .then(response => {
                   ProcessMaker.alert(
-                    __("The process was archived."),
+                    this.$t("The process was archived."),
                     "warning"
                   );
                   this.$emit("reload");

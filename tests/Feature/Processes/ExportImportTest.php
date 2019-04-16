@@ -63,7 +63,7 @@ class ExportImportTest extends TestCase
         // Test to ensure we can download the exported file
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.bpm4');
+        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.spark');
         
         // Get our file contents (we have to do it this way because of
         // Symfony's weird response API)
@@ -74,7 +74,7 @@ class ExportImportTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'leave_absence_request.bpm4', null, null, null, true);
+        $file = new UploadedFile($fileName, 'leave_absence_request.spark', null, null, null, true);
         
         // Test to ensure our standard user cannot import a process
         $this->user = $standardUser;

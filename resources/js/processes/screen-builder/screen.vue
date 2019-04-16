@@ -4,16 +4,16 @@
             <nav class="navbar navbar-expand-md override">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" @click="mode = 'editor'" href="#">Editor</a>
+                        <a class="nav-link" @click="mode = 'editor'" href="#">{{ $t('Editor') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" @click="mode = 'preview'" href="#">Preview</a>
+                        <a class="nav-link" @click="mode = 'preview'" href="#">{{ $t('Preview') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" @click="openComputedProperties" href="#">Computed Properties</a>
+                        <a class="nav-link" @click="openComputedProperties" href="#">{{ $t('Computed Properties') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" @click="openCustomCSS" href="#">Custom CSS</a>
+                        <a class="nav-link" @click="openCustomCSS" href="#">{{ $t('Custom CSS') }}</a>
                     </li>
                 </ul>
 
@@ -48,12 +48,12 @@
         <div v-show="displayPreview" class="h-100" style="display: contents !important">
             <div id="preview"  class="d-flex h-100">
                 <div id="data-input" class="w-25 border overflow-auto">
-                    <div class="card-header">Data Input</div>
+                    <div class="card-header">{{$t('Data Input')}}</div>
                     <div class="card-body mb-5">
                         <div class="alert"
                              :class="{'alert-success': previewInputValid, 'alert-danger': !previewInputValid}">
-                            <span v-if="previewInputValid">Valid JSON Data Object</span>
-                            <span v-else>Invalid JSON Data Object</span>
+                            <span v-if="previewInputValid">{{$t('Valid JSON Data Object')}}</span>
+                            <span v-else>{{$t('Invalid JSON Data Object')}}</span>
                         </div>
                         <form-text-area rows="20" v-model="previewInput"></form-text-area>
                     </div>
@@ -77,7 +77,7 @@
                 </div>
 
                 <div id="data-preview" class="w-25 border overflow-auto">
-                    <div class="card-header">Data Preview</div>
+                    <div class="card-header">{{$t('Data Preview')}}</div>
                     <div class="card-body mb-5">
                         <vue-json-pretty :data="previewData"></vue-json-pretty>
                     </div>
@@ -89,12 +89,13 @@
 </template>
 
 <script>
-  import ComputedProperties from "@processmaker/vue-form-builder/src/components/computed-properties";
-  import CustomCSS from "@processmaker/vue-form-builder/src/components/custom-css.vue";
-  import VueFormBuilder from "@processmaker/vue-form-builder/src/components/vue-form-builder";
-  import VueFormRenderer from "@processmaker/vue-form-builder/src/components/vue-form-renderer";
+  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties";
+  import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css.vue";
+  import VueFormBuilder from "@processmaker/spark-screen-builder/src/components/vue-form-builder";
+  import VueFormRenderer from "@processmaker/spark-screen-builder/src/components/vue-form-renderer";
   import VueJsonPretty from "vue-json-pretty";
   import {FormTextArea} from "@processmaker/vue-form-elements/src/components";
+  import _ from "lodash";
 
   export default {
     data() {
@@ -222,14 +223,22 @@
           builderBinding
           ] = builderComponent;
       },
+      refreshSession: _.throttle(function() {
+        ProcessMaker.apiClient({
+            method: 'POST',
+            url: '/keep-alive',
+            baseURL: '/',
+          })
+      }, 60000),
       updateConfig(newConfig) {
         this.config = newConfig;
+        this.refreshSession();
       },
       updatePreview(data) {
         this.previewData = data;
       },
       previewSubmit() {
-        alert("Preview Screen was Submitted");
+        alert(this.$t("Preview Screen was Submitted"));
       },
       onClose() {
         window.location.href = "/processes/screens";
@@ -245,7 +254,7 @@
         ProcessMaker.apiClient.post('screens/' + this.screen.id + '/export')
           .then(response => {
             window.location = response.data.url;
-            ProcessMaker.alert('The screen was exported.', 'success');
+            ProcessMaker.alert(this.$t('The screen was exported.'), 'success');
           })
           .catch(error => {
             ProcessMaker.alert(error.response.data.error, 'danger');
@@ -254,7 +263,7 @@
       saveScreen(exportScreen) {
         this.checkForErrors();
         if (this.errors == true) {
-          ProcessMaker.alert("This screen has validation errors.", "danger");
+          ProcessMaker.alert(this.$t("This screen has validation errors."), "danger");
         } else {
           ProcessMaker.apiClient
             .put("screens/" + this.screen.id, {
@@ -269,7 +278,7 @@
               if (exportScreen) {
                 this.exportScreen();
               }
-              ProcessMaker.alert(" Successfully saved", "success");
+              ProcessMaker.alert(this.$t(" Successfully saved"), "success");
             });
         }
       }

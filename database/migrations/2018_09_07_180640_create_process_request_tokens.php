@@ -19,12 +19,14 @@ class CreateProcessRequestTokens extends Migration
             $table->unsignedInteger('user_id')->nullable();
             $table->unsignedInteger('process_id');
             $table->unsignedInteger('process_request_id');
+            $table->unsignedInteger('subprocess_request_id')->nullable();
             // Element points to a bpmn element, not another model
             $table->string('element_id');
             $table->string('element_type');
             $table->string('element_name')->nullable();
             $table->enum('status', ['ACTIVE', 'FAILING', 'COMPLETED', 'CLOSED', 'EVENT_CATCH', 'TRIGGERED'])
                     ->default('ACTIVE');
+            $table->string('subprocess_start_event_id')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('due_at')->nullable();
             $table->boolean('due_notified')->default(false);
@@ -35,11 +37,14 @@ class CreateProcessRequestTokens extends Migration
             // Indexes
             $table->index('process_id');
             $table->index('process_request_id');
+            $table->index('subprocess_request_id');
+            $table->index('subprocess_start_event_id');
             $table->index('user_id');
 
             // Foreign keys
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('process_request_id')->references('id')->on('process_requests')->onDelete('cascade');
+            $table->foreign('subprocess_request_id')->references('id')->on('process_requests')->onDelete('cascade');
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
