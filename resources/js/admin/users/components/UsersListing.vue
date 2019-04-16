@@ -13,6 +13,9 @@
         :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
+      <template slot="avatar" slot-scope="props">
+        <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
+      </template>
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
@@ -53,6 +56,9 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import AvatarImage from "../../../components/AvatarImage";
+Vue.component("avatar-image", AvatarImage);
+
 
 export default {
   mixins: [datatableMixin],
@@ -78,6 +84,11 @@ export default {
           title: () => this.$t("Full Name"),
           name: "fullname",
           sortField: "fullname"
+        },
+        {
+          title: () => this.$t("Avatar"),
+          name: "__slot:avatar",
+          field: "user"
         },
         {
           title: () => this.$t("Status"),
