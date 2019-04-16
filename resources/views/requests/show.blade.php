@@ -184,7 +184,7 @@
                             </li>
 
                             @if($canCancel == true)
-                                <template v-if="statusLabel == 'In Progress' && canCancel == true">
+                                <template>
                                     <li class="list-group-item">
                                         <h5>{{__('Cancel Request')}}</h5>
                                         <button type="button" class="btn btn-outline-danger btn-block"

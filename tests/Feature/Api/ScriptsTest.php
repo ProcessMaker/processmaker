@@ -267,7 +267,7 @@ class ScriptsTest extends TestCase
         $this->assertEquals($version->language, $original_attributes['language']);
         $this->assertEquals($version->code, $original_attributes['code']);
         $this->assertEquals((string)$version->created_at, (string)$yesterday);
-        $this->assertEquals($version->updated_at, $script->updated_at);
+        $this->assertLessThan(3, $version->updated_at->diffInSeconds($script->updated_at));
     }
 
     /**

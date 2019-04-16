@@ -41,7 +41,7 @@ jobs:
           command: |
             mkdir ~/.ssh
             echo $BUILDBOT_HOST_IDENTIFIER >> ~/.ssh/known_hosts
-            echo $QA_PM4BUILDS_HOST_IDENTIFIER	>> ~/.ssh/known_hosts
+            echo $QA_SPARKBUILDS_HOST_IDENTIFIER	>> ~/.ssh/known_hosts
             chmod 0600 ~/.ssh/known_hosts
 
       - checkout
@@ -206,32 +206,32 @@ jobs:
           name: "QA Deploy"
           command: |
             # Delete existing target QA directory, if it exists
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "rm -Rf ~/builds/$BUILD_NAME"
             # Create new target QA directory
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mkdir ~/builds/$BUILD_NAME"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "mkdir ~/builds/$BUILD_NAME"
             # Copy over packaged qa deployment
-            scp -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-pm4builds:~/builds/$BUILD_NAME/
+            scp -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-sparkbuilds:~/builds/$BUILD_NAME/
             # Extract to qa deployment dir
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
             # Restart nginx and php-fpm to clear cache
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service nginx restart"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo service php-fpm restart"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "sudo service nginx restart"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "sudo service php-fpm restart"
             # Create MYSQL Database
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
             # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
             # Setup Media Link
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "php ~/builds/$BUILD_NAME/artisan storage:link"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "php ~/builds/$BUILD_NAME/artisan storage:link"
             echo "Deployed to https://${BUILD_NAME}.spark.qa.processmaker.net/"
-            # Run containerDeploy.sh script to spin up Redis docker container, laravel-echo-server, and horizon. Excluding QUEUE for now.
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
+            # Run containerDeploy.sh script to spin up redis docker container, laravel-echo-server, and horizon.
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
-            ssh -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-pm4builds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
 
       - run:
           name: "SauceLabs Browser Tests: Chrome"
-          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
+          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
           environment:
             DB_DATABASE: "circle_test"
             RUN_MSSQL_TESTS: "true"
@@ -239,7 +239,7 @@ jobs:
 
       - run:
           name: "SauceLabs Browser Tests: Firefox"
-          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
           environment:
             SAUCELABS_BROWSER: "firefox"
             SAUCELABS_PLATFORM: "Windows 10"
@@ -247,7 +247,7 @@ jobs:
 
       - run:
           name: "SauceLabs Browser Tests: Edge"
-          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
           environment:
             SAUCELABS_BROWSER: "MicrosoftEdge"
             SAUCELABS_PLATFORM: "Windows 10"
@@ -255,7 +255,7 @@ jobs:
 
       - run:
           name: "SauceLabs Browser Tests: Safari"
-          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
           environment:
             SAUCELABS_BROWSER: "safari"
             SAUCELABS_PLATFORM: "macOS 10.13"
@@ -263,4 +263,4 @@ jobs:
 
       - run:
           name: "Final QA Artisan DB Migration"
-          command: "ssh -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-pm4builds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
+          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
