@@ -16,10 +16,10 @@
                 <xsd:attribute name="dueIn" type="xsd:decimal"/>
                 <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
-                <xsd:attribute name="assignment" type="xsd:string" default="requester"/>
+                <xsd:attribute name="assignment" type="xsd:string" default="requestor"/>
                 <xsd:attribute name="assignedUsers" type="xsd:string"/>
                 <xsd:attribute name="assignedGroups" type="xsd:string"/>
-                <xsd:attribute name="assignedByValue" type="xsd:string"/>
+                <xsd:attribute name="assignmentRules" type="xsd:string"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
             </xsd:extension>
         </xsd:complexContent>
@@ -33,10 +33,10 @@
                 <xsd:attribute name="dueIn" type="xsd:decimal"/>
                 <xsd:attribute name="notifyAfterRouting" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="notifyToRequestCreator" type="xsd:boolean" default="false"/>
-                <xsd:attribute name="assignment" type="xsd:string" default="requester"/>
+                <xsd:attribute name="assignment" type="xsd:string" default="requestor"/>
                 <xsd:attribute name="assignedUsers" type="xsd:string"/>
                 <xsd:attribute name="assignedGroups" type="xsd:string"/>
-                <xsd:attribute name="assignedByValue" type="xsd:string"/>
+                <xsd:attribute name="assignmentRules" type="xsd:string"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
             </xsd:extension>
         </xsd:complexContent>
@@ -73,6 +73,42 @@
             <xsd:extension base="bpmn:tEndEvent">
                 <xsd:attribute name="screenRef" type="xsd:string" use="optional"/>
                 <xsd:attribute name="screenVersion" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="tPmStartEvent">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tStartEvent">
+                <xsd:attribute name="assignment" type="xsd:string" use="optional"/>
+                <xsd:attribute name="assignedUsers" type="xsd:string" use="optional"/>
+                <xsd:attribute name="assignedGroups" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="tPmIntermediateCatchEvent">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tIntermediateCatchEvent">
+                <xsd:attribute name="allowedUsers" type="xsd:string" use="optional"/>
+                <xsd:attribute name="allowedGroups" type="xsd:string" use="optional"/>
+                <xsd:attribute name="whitelist" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="tPmMessageEventDefinition">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tMessageEventDefinition">
+                <xsd:attribute name="dataName" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="tPmSequenceFlow">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tSequenceFlow">
+                <xsd:attribute name="startEvent" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

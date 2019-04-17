@@ -206,7 +206,7 @@
                             @if($request->parentRequest)
                             <li class="list-group-item">
                               <h5>{{__('Parent Request')}}</h5>
-                              <i class="fas fa-circle text-success"></i>
+                              <i :class="requestStatusClass('{{$request->parentRequest->status}}')"></i>
                             <a href="/requests/{{$request->parentRequest->getKey()}}">{{$request->parentRequest->name}}</a>
                             </li>
                             @endif
@@ -215,7 +215,7 @@
                               <h5>{{__('Child Requests')}}</h5>
                               @foreach($request->childRequests as $childRequest)
                               <div>
-                              <i class="fas fa-circle text-success"></i>
+                              <i :class="requestStatusClass('{{$childRequest->status}}')"></i>
                               <a href="/requests/{{$childRequest->getKey()}}">{{$childRequest->name}}</a>
                               </div>
                               @endforeach
@@ -405,6 +405,18 @@
           },
         },
         methods: {
+          requestStatusClass(status) {
+            status = status.toLowerCase();
+            let bubbleColor = {
+              active: "text-success",
+              inactive: "text-danger",
+              error: "text-danger",
+              draft: "text-warning",
+              archived: "text-info",
+              completed: "text-primary",
+            };
+            return 'fas fa-circle ' + bubbleColor[status] + ' small';
+          },
           // Data editor
           updateRequestData() {
             const data = JSON.parse(this.jsonData);
