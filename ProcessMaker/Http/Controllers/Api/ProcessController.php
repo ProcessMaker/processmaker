@@ -78,9 +78,10 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = ($status === 'inactive')
-            ? Process::inactive()->with($include)
-            : Process::active()->with($include);
+        $processes = Process::active()->with($include);
+        if ($status === 'inactive') {
+            $processes = Process::inactive()->with($include);
+        }
 
         $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
@@ -153,10 +154,6 @@ class ProcessController extends Controller
     {
         $request->validate(Process::rules());
         $data = $request->json()->all();
-
-        if (!isset($data['status'])) {
-            $data['status'] = 'ACTIVE';
-        }
 
         if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
