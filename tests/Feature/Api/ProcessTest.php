@@ -2,18 +2,13 @@
 
 namespace Tests\Feature\Api;
 
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
-use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessCollaboration;
-use ProcessMaker\Models\ProcessPermission;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -27,11 +22,10 @@ use ProcessMaker\Providers\WorkflowServiceProvider as PM;
  */
 class ProcessTest extends TestCase
 {
-
     use WithFaker;
     use RequestHelper;
     use ResourceAssertionsTrait;
-    
+
     public $withPermissions = true;
 
     protected $resource = 'processes';
@@ -80,7 +74,7 @@ class ProcessTest extends TestCase
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
-        
+
         // Add process permission to user
         $this->user->permissions()->attach(Permission::byName('view-processes'));
 
@@ -180,7 +174,7 @@ class ProcessTest extends TestCase
         $process->usersCanStart('StartEventUID')->attach([
             $this->user->id => ['method' => 'START', 'node' => 'StartEventUID']
         ]);
-        
+
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(201, $response);
     }
@@ -314,7 +308,8 @@ class ProcessTest extends TestCase
     {
         //Create a process without category
         $this->assertModelCreationFails(
-            Process::class, [
+            Process::class,
+            [
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => null,
             ]
@@ -322,21 +317,24 @@ class ProcessTest extends TestCase
 
         //Create a process without sending the category
         $this->assertCorrectModelCreation(
-            Process::class, [
+            Process::class,
+            [
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => static::$DO_NOT_SEND,
+                'has_timer_start_events' => static::$DO_NOT_SEND,
             ]
         );
 
         //Create a process with a category
         $category = factory(ProcessCategory::class)->create();
         $this->assertCorrectModelCreation(
-            Process::class, [
+            Process::class,
+            [
                 'user_id' => static::$DO_NOT_SEND,
                 'process_category_id' => $category->id,
+                'has_timer_start_events' => static::$DO_NOT_SEND,
             ]
         );
-
     }
 
     /**
@@ -614,35 +612,35 @@ class ProcessTest extends TestCase
             'status' => 'ACTIVE'
         ]);
         $id = $process->id;
-        
+
         // Assert that the process is listed
         $response = $this->apiCall('GET', '/processes');
         $response->assertJsonFragment(['id' => $id]);
-        
+
         // Assert that the process is not listed in the archive
         $response = $this->apiCall('GET', '/processes?status=inactive');
         $response->assertJsonMissing(['id' => $id]);
-        
+
         // Archive the process
         $response = $this->apiCall('DELETE', "/processes/{$id}");
         $response->assertStatus(204);
-        
+
         // Assert that the process is listed in the archive
         $response = $this->apiCall('GET', '/processes?status=inactive');
         $response->assertJsonFragment(['id' => $id]);
-        
+
         // Assert that the process is not listed on the main index
         $response = $this->apiCall('GET', '/processes');
         $response->assertJsonMissing(['id' => $id]);
-        
+
         // Restore the process
         $response = $this->apiCall('PUT', "/processes/{$id}/restore");
         $response->assertStatus(200);
-        
+
         // Assert that the process is listed
         $response = $this->apiCall('GET', '/processes');
         $response->assertJsonFragment(['id' => $id]);
-        
+
         // Assert that the process is not listed in the archive
         $response = $this->apiCall('GET', '/processes?status=inactive');
         $response->assertJsonMissing(['id' => $id]);
@@ -660,7 +658,7 @@ class ProcessTest extends TestCase
             'status' => 'ACTIVE',
             'bpmn' => $bpmn,
         ]);
-        
+
         $definitions = $process->getDefinitions();
         $element = $definitions->findElementById($node);
         $element->setAttributeNS(PM::PROCESS_MAKER_NS, 'assignment', 'user');
@@ -673,7 +671,7 @@ class ProcessTest extends TestCase
             $user->id,
             $process->usersCanStart($node)->first()->id
         );
-        
+
         // test that they are removed
         $definitions = $process->getDefinitions();
         $element = $definitions->findElementById($node);
@@ -681,7 +679,7 @@ class ProcessTest extends TestCase
         $element->removeAttributeNS(PM::PROCESS_MAKER_NS, 'assignedUsers');
         $process->bpmn = $definitions->saveXML();
         $process->save();
-        
+
         $this->assertEquals(0, $process->usersCanStart($node)->count());
     }
 
@@ -694,7 +692,7 @@ class ProcessTest extends TestCase
 
         // Add process permission to user
         $this->user->permissions()->attach(Permission::byName('view-processes'));
-        
+
         // Prepare a process
         $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
         $node = 'StartEventUID';
@@ -719,7 +717,31 @@ class ProcessTest extends TestCase
         foreach ($json['data'] as $process) {
             $events = array_merge($events, $process['events']);
         }
-        
+
         $this->assertEquals(1, count($events));
+    }
+
+    /**
+     * Tests Process::hasTimerStartEvents()
+     *
+     * @return void
+     */
+    public function testHasPauseTimerStartEvents()
+    {
+        // Loads a process with an start timer event
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ProcessStartTimerEvent.bpmn'),
+        ]);
+        // Assertion: Process::has_timer_start_events should return true
+        $this->assertTrue($process->has_timer_start_events);
+
+        // Loads a process without an start timer event
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/SingleTask.bpmn'),
+        ]);
+        // Assertion: Process::has_timer_start_events should return false
+        $this->assertFalse($process->has_timer_start_events);
     }
 }

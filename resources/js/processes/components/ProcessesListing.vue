@@ -29,6 +29,24 @@
             <div class="popout">
               <b-btn
                 variant="link"
+                @click="onAction('unpause-start-timer', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                :title="$t('Play start timer events')"
+                v-if="props.rowData.has_timer_start_events && props.rowData.pause_timer_start"
+              >
+                <i class="fas fa-play fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
+                @click="onAction('pause-start-timer', props.rowData, props.rowIndex)"
+                v-b-tooltip.hover
+                :title="$t('Pause start timer events')"
+                v-if="props.rowData.has_timer_start_events && !props.rowData.pause_timer_start"
+              >
+                <i class="fas fa-pause fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
                 @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Edit')"
@@ -154,7 +172,38 @@ export default {
       window.location = "/processes/" + data + "/export";
     },
     onAction(action, data, index) {
+      let putData;
       switch (action) {
+        case "unpause-start-timer":
+          putData = Object.assign({}, data);
+          putData.pause_timer_start = false;
+          delete putData.category;
+          delete putData.user;
+          ProcessMaker.apiClient
+            .put("processes/" + data.id, putData)
+            .then(response => {
+              ProcessMaker.alert(
+                this.$t("The process was restored."),
+                "success"
+              );
+              this.$emit("reload");
+            });
+          break;
+        case "pause-start-timer":
+          putData = Object.assign({}, data);
+          putData.pause_timer_start = true;
+          delete putData.category;
+          delete putData.user;
+          ProcessMaker.apiClient
+            .put("processes/" + data.id, putData)
+            .then(response => {
+              ProcessMaker.alert(
+                this.$t("The process was restored."),
+                "success"
+              );
+              this.$emit("reload");
+            });
+          break;
         case "edit-designer":
           this.goToDesigner(data.id);
           break;

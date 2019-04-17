@@ -102,10 +102,6 @@
                                     <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                             </multiselect>
                         </div>
-                        <div class="form-group p-0">
-                            {!! Form::label('pauseTimerStartEvents', __('Pause Timer Start Events')) !!}
-                            <input type="checkbox" v-model="formData.pause_timer_start" >
-                        </div>
                         <div class="d-flex justify-content-end mt-2">
                             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                             {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
