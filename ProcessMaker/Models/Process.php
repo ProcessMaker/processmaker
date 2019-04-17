@@ -12,6 +12,7 @@ use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
@@ -96,6 +97,7 @@ class Process extends Model implements HasMedia
         'user_id',
         'created_at',
         'updated_at',
+        'has_timer_start_events',
     ];
 
     /**
@@ -147,6 +149,10 @@ class Process extends Model implements HasMedia
         'assigned',
         'completed',
         'due',
+    ];
+
+    protected $appends = [
+        'has_timer_start_events',
     ];
 
     /**
@@ -720,5 +726,21 @@ class Process extends Model implements HasMedia
     public function assignments()
     {
         return $this->hasMany(ProcessTaskAssignment::class);
+    }
+
+    /**
+     * Return true if the process has an Timer Start Event
+     *
+     * @return boolean
+     */
+    public function getHasTimerStartEventsAttribute()
+    {
+        $hasTimerStartEvent = false;
+        foreach ($this->getStartEvents() as $event) {
+            foreach ($event['eventDefinitions'] as $definition) {
+                $hasTimerStartEvent = $hasTimerStartEvent || $definition instanceof TimerEventDefinitionInterface;
+            }
+        }
+        return $hasTimerStartEvent;
     }
 }

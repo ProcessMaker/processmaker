@@ -108,16 +108,16 @@ export default {
     },
     doDelete(item) {
       ProcessMaker.confirmModal(
-        $t("Caution!"),
-        $t("Are you sure you want to delete the auth client ") +
+        this.$t("Caution!"),
+        this.$t("Are you sure you want to delete the auth client ") +
           item.name +
-          $t("?"),
+          this.$t("?"),
         "",
         () => {
           ProcessMaker.apiClient
             .delete("/oauth/clients/" + item.id, { baseURL: "/" })
             .then(() => {
-              ProcessMaker.alert($t('The auth client was deleted.'), 'success');
+              ProcessMaker.alert(this.$t('The auth client was deleted.'), 'success');
               this.fetch();
             });
         }

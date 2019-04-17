@@ -106,10 +106,10 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            $t("Caution!"),
-            $t("Are you sure you want to delete the environment variable ") +
+            this.$t("Caution!"),
+            this.$t("Are you sure you want to delete the environment variable ") +
               data.name +
-              $t("?"),
+              this.$t("?"),
             "",
             () => {
               this.$emit("delete", data);

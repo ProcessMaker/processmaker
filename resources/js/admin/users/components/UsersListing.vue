@@ -13,6 +13,9 @@
         :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
+      <template slot="avatar" slot-scope="props">
+        <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
+      </template>
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
@@ -53,6 +56,9 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import AvatarImage from "../../../components/AvatarImage";
+Vue.component("avatar-image", AvatarImage);
+
 
 export default {
   mixins: [datatableMixin],
@@ -78,6 +84,11 @@ export default {
           title: () => this.$t("Full Name"),
           name: "fullname",
           sortField: "fullname"
+        },
+        {
+          title: () => this.$t("Avatar"),
+          name: "__slot:avatar",
+          field: "user"
         },
         {
           title: () => this.$t("Status"),
@@ -137,16 +148,16 @@ export default {
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            $t("Caution!"),
-            $t("Are you sure you want to delete the user ") +
+            this.$t("Caution!"),
+            this.$t("Are you sure you want to delete the user ") +
               data.fullname +
-              $t("?"),
+              this.$t("?"),
             "",
             () => {
               ProcessMaker.apiClient
                 .delete("users/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert($t("The user was deleted."), "danger");
+                  ProcessMaker.alert(this.$t("The user was deleted."), "danger");
                   this.$emit("reload");
                 });
             }
