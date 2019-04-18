@@ -21,7 +21,7 @@
                 </div>
             </span>
 
-            <p>{{ $t("We've made it easy for you to make the following Requests.") }}</p>
+            <p>{{ $t("We've made it easy for you to start a Request for the following Processes. Select a Process to start your Request.") }}</p>
             <div v-if="Object.keys(processes).length && !loading" class="process-list p-4">
                 <div class="category" v-for="(category, index) in processes">
                     <h3 class="name">{{index}}</h3>
