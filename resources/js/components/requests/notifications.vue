@@ -12,10 +12,10 @@
       <b-badge pill variant="danger" v-if="totalMessages>9" id="info-large">9+</b-badge>
     </a>
     <b-popover :target="'exPopover1-bottom'" :placement="'bottomleft'" triggers="click blur">
-      <h3 class="popover-header">{{$t('New Tasks')}}</h3>
+      <h3 class="popover-header">{{$t('Notifications')}}</h3>
       <ul class="list-unstyled tasklist">
         <li v-if="messages.length == 0">
-          {{$t('No Tasks Found')}}
+          {{$t('No Notifications Found')}}
           <hr>
         </li>
         <li v-for="(task, index) in messages" v-if="index <= 5">
