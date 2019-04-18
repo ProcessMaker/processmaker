@@ -103,15 +103,15 @@
       },
       onDelete(data, index) {
         let that = this;
-        console.log(data);
         ProcessMaker.confirmModal(
           this.$t("Caution!"),
           "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.fullname}) + "</b>",
+          null,
           function () {
             ProcessMaker.apiClient
               .delete("group_members/" + data.id)
               .then(response => {
-                ProcessMaker.alert($t("The user was removed from the group."), "success");
+                ProcessMaker.alert(this.$t("The user was removed from the group."), "success");
                 that.fetch();
               });
           }
