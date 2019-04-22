@@ -120,7 +120,7 @@ export default {
     let params = new URL(document.location).searchParams;
     let successRouting = params.get("successfulRouting") === "true";
     if (successRouting) {
-      ProcessMaker.alert($t("The request was completed."), "success");
+      ProcessMaker.alert(this.$t("The request was completed."), "success");
     }
   },
   methods: {
