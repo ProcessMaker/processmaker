@@ -122,7 +122,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!! Form::label('postal', __('Postal code')) !!}
+                                                {!! Form::label('postal', __('Postal Code')) !!}
                                                 {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=>
                                                 'form-control', 'v-model'
                                                 => 'formData.postal', 'v-bind:class' => '{\'form-control\':true,
@@ -149,7 +149,7 @@
                                         <h2 class="mt-2">{{__('Localization')}}</h2>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!!Form::label('datetime_format', __('Date format'));!!}
+                                                {!!Form::label('datetime_format', __('Date Format'));!!}
                                                 {!!Form::select('datetime_format',
                                                 $datetimeFormats,
                                                 'formData.datetime_format',
@@ -167,7 +167,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!!Form::label('timezone', __('Time zone'));!!}
+                                                {!!Form::label('timezone', __('Time Zone'));!!}
                                                 {!!Form::select('timezone',
                                                 $timezones,
                                                 'formData.timezone',
