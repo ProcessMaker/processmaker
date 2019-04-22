@@ -150,16 +150,11 @@
                                         <div class="row">
                                             <div class="form-group col">
                                                 {!!Form::label('datetime_format', __('Date format'));!!}
-                                                {!!Form::select('datetime_format',
-                                                $datetimeFormats,
-                                                'formData.datetime_format',
-                                                ['id' => 'datetime_format',
-                                                'class' => 'form-control',
-                                                'v-model' => 'formData.datetime_format',
-                                                'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.datetime_format}'
-                                                ])
-                                                !!}
+                                                <b-form-select id="datetime_format" v-model="formData.datetime_format" :options="datetimeFormats">
+                                                  <template slot="first">
+                                                    <option :value="null" disabled>@{{appFormat}}</option>
+                                                  </template>
+                                                </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">
                                                     @{{errors.datetime_format}}
                                                 </div>
@@ -168,16 +163,11 @@
                                         <div class="row">
                                             <div class="form-group col">
                                                 {!!Form::label('timezone', __('Time zone'));!!}
-                                                {!!Form::select('timezone',
-                                                $timezones,
-                                                'formData.timezone',
-                                                ['id'=>'timezone',
-                                                'class'=> 'form-control',
-                                                'v-model'=> 'formData.timezone',
-                                                'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.datetimeFormat}'
-                                                ])
-                                                !!}
+                                                <b-form-select id="timezone" v-model="formData.timezone" :options="timezones">
+                                                  <template slot="first">
+                                                    <option :value="null" disabled>@{{appTimezone}}</option>
+                                                  </template>
+                                                </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
                                                 </div>
                                             </div>
@@ -511,6 +501,10 @@
           return {
             formData: @json($user),
             langs: @json($availableLangs),
+            timezones: @json($timezones),
+            appTimezone: @json($appTimezone),
+            datetimeFormats: @json($datetimeFormats),
+            appFormat: @json($appFormat),
             image: '',
             errors: {
               username: null,
