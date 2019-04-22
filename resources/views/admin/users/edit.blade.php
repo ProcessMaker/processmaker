@@ -150,7 +150,7 @@
                                         <div class="row">
                                             <div class="form-group col">
                                                 {!!Form::label('datetime_format', __('Date format'));!!}
-                                                <b-form-select id="datetime_format" v-model="formData.datetime_format" :options="datetimeFormats">
+                                                <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
                                                   <template slot="first">
                                                     <option :value="null" disabled>@{{appFormat}}</option>
                                                   </template>
@@ -163,7 +163,7 @@
                                         <div class="row">
                                             <div class="form-group col">
                                                 {!!Form::label('timezone', __('Time zone'));!!}
-                                                <b-form-select id="timezone" v-model="formData.timezone" :options="timezones">
+                                                <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
                                                   <template slot="first">
                                                     <option :value="null" disabled>@{{appTimezone}}</option>
                                                   </template>
@@ -174,7 +174,7 @@
 
                                             <div class="form-group col">
                                                 {!! Form::label('language', __('Language')) !!}
-                                                <b-form-select v-model="formData.language" :options="langs"></b-form-select>
+                                                <b-form-select v-model="formData.language" :options="langs" class="form-control"></b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.language">
                                                     @{{errors.language}}
                                                 </div>
