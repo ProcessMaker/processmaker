@@ -120,7 +120,6 @@ export default {
   beforeCreate() {
     let params = (new URL(document.location)).searchParams;
     this.status = params.get('status');
-    console.log(this.status)
   },
   mounted: function mounted() {
     let params = new URL(document.location).searchParams;
