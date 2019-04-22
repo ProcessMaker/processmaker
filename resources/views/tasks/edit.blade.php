@@ -92,9 +92,11 @@
                                     <div>
                                         <br>
                                         <span>
+                                @if ($task->advanceStatus === 'open')
                                 <button class="btn btn-outline-secondary btn-block" @click="show">
                                     <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                 </button>
+                                @endif
                                 <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}" @hide="cancelReassign"
                                          v-cloak>
                                     <div class="form-group">
