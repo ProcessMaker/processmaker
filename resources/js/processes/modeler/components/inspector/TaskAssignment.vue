@@ -40,36 +40,10 @@
                              :searchable="true"
                              :internal-search="false"
                              :helper="helper"
-                             @search-change="load">
+                             @search-change="load($event, 'assignment')">
                 </multiselect>
             </div>
         </div>
-
-        <!--<div class="form-group" v-if="showAssignOneUser">
-          <label>{{ $t('Assigned User') }}</label>
-          <div v-if="loadingUsers">{{ $t('Loading...') }}</div>
-          <select v-else class="form-control" :value="assignedUserGetter" @input="assignedUserSetter">
-            <option></option>
-            <option v-for="(row, index) in users"
-                    v-bind:value="row.id"
-                    :selected="row.id == assignedUserGetter">
-              {{ $t(row.fullname)}}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group" v-if="showAssignGroup">
-          <label>{{ $t('Assigned Group') }}</label>
-          <div v-if="loadingGroups">{{ $t('Loading...') }}</div>
-          <select v-else class="form-control" :value="assignedGroupGetter" @input="assignedGroupSetter">
-            <option></option>
-            <option v-for="(row, index) in groups"
-                    v-bind:value="row.id"
-                    :selected="row.id == assignedGroupGetter">
-              {{$t(row.name)}}
-            </option>
-          </select>
-        </div>-->
 
         <form-checkbox :label="$t('Allow Reassignment')"
                        :checked="allowReassignmentGetter"
@@ -93,7 +67,8 @@
 
                     <div class="form-group">
                         <label>{{ $t('Expression') }}</label>
-                        <input class="form-control" ref="specialAssignmentsInput" type="text" v-model="assignmentExpression">
+                        <input class="form-control" ref="specialAssignmentsInput" type="text"
+                               v-model="assignmentExpression">
                     </div>
 
                     <div class="form-group">
@@ -123,36 +98,10 @@
                                          :searchable="true"
                                          :internal-search="false"
                                          :helper="helper"
-                                         @search-change="load">
+                                         @search-change="load($event, 'expression')">
                             </multiselect>
                         </div>
                     </div>
-
-                    <!--<div class="form-group" v-if="showSpecialAssignOneUser">
-                        <label>{{ $t('Assigned User') }}</label>
-                        <div v-if="loadingUsers">{{ $t('Loading...') }}</div>
-                        <select v-else class="form-control" v-model="userAssignmentExpression">
-                            <option></option>
-                            <option v-for="(row, index) in users"
-                                    v-bind:value="row.id"
-                                    :selected="row.id == this.userAssignmentExpression">
-                                {{$t(row.fullname)}}
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" v-if="showSpecialAssignGroup">
-                        <label>{{ $t('Assigned Group')}}</label>
-                        <div v-if="loadingGroups">{{ $t('Loading...')}}</div>
-                        <select v-else class="form-control" v-model="groupAssignmentExpression">
-                            <option></option>
-                            <option v-for="(row, index) in groups"
-                                    v-bind:value="row.id"
-                                    :selected="row.id == groupAssignmentExpression">
-                                {{ $t(row.name) }}
-                            </option>
-                        </select>
-                    </div>-->
 
                     <div class="form-group form-group-actions">
                         <button type="button"
@@ -170,19 +119,21 @@
                 </div>
             </div>
 
-            <div v-for="(row, index) in specialAssignments"
+            <div v-for="(row, index) in specialAssignmentsData"
                  class="list-group-item list-group-item-action pt-0 pb-0"
                  :class="{'bg-primary': false}">
                 <template>
                     <div class="special-assignment-section">
-                        <div class="special-assignment-value" :title="row.expression"><strong>{{$t(row.expression)}}</strong></div>
-                        <div class="btn-special-assignment-delete" @click="removeSpecialAssignment(row)"><i class="fa fa-trash"></i>
+                        <div class="special-assignment-value" :title="row.expression">
+                            <strong>{{$t(row.expression)}}</strong></div>
+                        <div class="btn-special-assignment-delete" @click="removeSpecialAssignment(row)"><i
+                                class="fa fa-trash"></i>
                         </div>
                     </div>
                     <div class="special-assignment-section">
                         <div class="special-assignment-value">{{ $t('Assigned to') }}
                             <strong v-if="row.type == 'requester'">{{$t(row.type)}}</strong>
-                            <strong v-else>{{getAssigneeName(row)}}</strong>
+                            <strong v-else>{{$t(row.assignmentName)}}</strong>
                         </div>
                     </div>
                 </template>
@@ -203,9 +154,7 @@
         loadingGroups: true,
         addingSpecialAssignment: false,
         assignmentExpression: "",
-        //userAssignmentExpression: "",
         userNameAssignmentExpression: "",
-        //groupAssignmentExpression: "",
         typeAssignmentExpression: "",
 
         content: null,
@@ -214,6 +163,7 @@
         loading: false,
         loadingAssign: false,
         contentExpression: null,
+        specialAssignmentsData: [],
       };
     },
     computed: {
@@ -264,9 +214,15 @@
       },
 
       showSpecialAssignOneUser() {
+        if (this.typeAssignmentExpression === "user") {
+          this.load('', 'expression');
+        }
         return this.typeAssignmentExpression === "user";
       },
       showSpecialAssignGroup() {
+        if (this.typeAssignmentExpression === "group") {
+          this.load('', 'expression');
+        }
         return this.typeAssignmentExpression === "group";
       },
       specialAssignmentsListGetter() {
@@ -304,47 +260,23 @@
         this.$set(this.node, "allowReassignment", value);
         this.$emit("input", this.value);
       },
-      /**
-       * Load the list of assigned users
-       */
-      loadUsersAndGroups() {
-        this.loadingUsers = true;
-        this.users = [];
-        let params = Object.assign({per_page: 10000}, this.params);
-        ProcessMaker.apiClient
-          .get("/users", {
-            params: params
-          })
-          .then(response => {
-            this.users.push(...response.data.data);
-            this.loadingUsers = false;
-          });
-
-        this.loadingGroups = true;
-        this.groups = [];
-        ProcessMaker.apiClient
-          .get("/groups", {
-            params: params
-          })
-          .then(response => {
-            this.groups.push(...response.data.data);
-            this.loadingGroups = false;
-          });
-      },
       load(filter, type) {
-        console.log(filter);
-        console.log(type);
-        this.options = [];
-        if (this.assignmentGetter === 'user') {
-          this.loadUsers(filter, 'options');
-        } else if (this.assignmentGetter === 'group') {
-          this.loadGroups(filter, 'options');
+        if (type === 'assignment') {
+          this.options = [];
+          if (this.assignmentGetter === 'user') {
+            this.loadUsers(filter, 'options');
+          } else if (this.assignmentGetter === 'group') {
+            this.loadGroups(filter, 'options');
+          }
         }
 
-        if (this.typeAssignmentExpression === 'user') {
-          this.loadUsers(filter, 'optionsExpression');
-        } else if (this.typeAssignmentExpression === 'group') {
-          this.loadGroups(filter, 'optionsExpression');
+        if (type === 'expression') {
+          this.optionsExpression = [];
+          if (this.typeAssignmentExpression === 'user') {
+            this.loadUsers(filter, 'optionsExpression');
+          } else if (this.typeAssignmentExpression === 'group') {
+            this.loadGroups(filter, 'optionsExpression');
+          }
         }
       },
       loadUsers(filter, container) {
@@ -453,11 +385,19 @@
         this.$set(this.node, "assignment", event.target.value);
         this.$emit("input", this.value);
         this.content = [];
-        this.load()
+        this.load('', 'assignment');
       },
 
       removeSpecialAssignment(assignment) {
         this.specialAssignments = this.specialAssignments.filter(function (obj) {
+          return (
+            obj.type !== assignment.type ||
+            obj.expression !== assignment.expression ||
+            obj.assignee !== assignment.assignee
+          );
+        });
+
+        this.specialAssignmentsData = this.specialAssignmentsData.filter(function (obj) {
           return (
             obj.type !== assignment.type ||
             obj.expression !== assignment.expression ||
@@ -482,19 +422,14 @@
           this.assignmentExpression = "";
           this.typeAssignmentExpression = "";
           this.contentExpression = null;
-          //this.userAssignmentExpression = "";
-          //this.groupAssignmentExpression = "";
         }
       },
 
       saveSpecialAssignment() {
-        /*let selectedAssignee = this.userAssignmentExpression
-          ? this.userAssignmentExpression
-          : this.groupAssignmentExpression;*/
 
         let byExpression = {
           type: this.typeAssignmentExpression,
-          assignee: this.contentExpression.id,
+          assignee: this.contentExpression ? this.contentExpression.id : '',
           expression: this.assignmentExpression
         };
 
@@ -505,11 +440,17 @@
             "assignmentRules",
             JSON.stringify(this.specialAssignments)
           );
+
+          this.specialAssignmentsData.push({
+            type: this.typeAssignmentExpression,
+            assignee: this.contentExpression ? this.contentExpression.id : '',
+            expression: this.assignmentExpression,
+            assignmentName: this.contentExpression ? this.contentExpression.name : '',
+          });
+
           this.assignmentExpression = "";
           this.typeAssignmentExpression = "";
           this.contentExpression = null;
-          //this.userAssignmentExpression = "";
-          //this.groupAssignmentExpression = "";
         }
 
         this.addingSpecialAssignment = false;
@@ -519,51 +460,65 @@
         this.specialAssignments = this.specialAssignmentsListGetter
           ? JSON.parse(this.specialAssignmentsListGetter)
           : [];
-      },
 
-      getAssigneeName(assignment) {
-        if (assignment.type === 'requester') {
-          return '';
-        }
-
-        if (assignment.type === "user") {
-          console.log(assignment);
-          ProcessMaker.apiClient
-            .get("users/" + assignment.assignee)
-            .then(response => {
-              console.log(response.data);
-              return response.data.fullname;
-            })
-            .catch(err => {
-              return "";
-            });
-        }
-        if (assignment.type === "group") {
-          console.log(assignment);
-          ProcessMaker.apiClient
-            .get("groups/" + assignment.assignee)
-            .then(response => {
-              console.log(response.data);
-              return response.data.name;
-            })
-            .catch(err => {
-              return "";
-            });
-        }
-
-        /*if (assignment.type === "user") {
-          let user = this.users.find(obj => {
-            return obj.id === assignment.assignee;
+        this.specialAssignments.forEach(item => {
+          let exists = false;
+          this.specialAssignmentsData.forEach(assignee => {
+            if (assignee.type === item.type && assignee.assignee === item.assignee) {
+              exists = true;
+            }
           });
-          return user ? user.fullname : "";
-        }*/
 
-        return "";
-      }
+          if (exists) {
+            return;
+          }
+          if (item.type === 'requester') {
+            this.specialAssignmentsData.push({
+              type: item.type,
+              assignee: item.assignee,
+              expression: item.expression
+            });
+            return;
+          }
+          if (item.type === "user") {
+            ProcessMaker.apiClient
+              .get("users/" + item.assignee)
+              .then(response => {
+                this.specialAssignmentsData.push({
+                  type: item.type,
+                  assignee: item.assignee,
+                  expression: item.expression,
+                  assignmentName: response.data.fullname
+                });
+              })
+              .catch(err => {
+                item.assignmentName = '';
+                this.specialAssignmentsData.push(item);
+                return "";
+              });
+          }
+          if (item.type === "group") {
+            ProcessMaker.apiClient
+              .get("groups/" + item.assignee)
+              .then(response => {
+                this.specialAssignmentsData.push({
+                  type: item.type,
+                  assignee: item.assignee,
+                  expression: item.expression,
+                  assignmentName: response.data.name
+                });
+              })
+              .catch(err => {
+                item.assignmentName = '';
+                this.specialAssignmentsData.push(item);
+                return "";
+              });
+          }
+        });
+      },
     },
     mounted() {
       this.loadAssigned();
-      //this.loadUsersAndGroups();
       this.loadSpecialAssignments();
     },
     watch: {
