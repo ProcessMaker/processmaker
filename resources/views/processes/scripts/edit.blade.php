@@ -28,12 +28,6 @@
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('language', __('Language')) !!}
-                        {!! Form::select('language', $scriptFormats, 'null', ['id' => 'language','class'=> 'form-control', 'v-model' => 'formData.language',
-                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.language}']) !!}
-                        <div class="invalid-feedback" v-for="language in errors.language">@{{language}}</div>
-                    </div>
-                    <div class="form-group">
                         <label class="typo__label">{{__('Run script as')}}</label>
                         <multiselect v-model="selectedUser"
                                      label="fullname"
