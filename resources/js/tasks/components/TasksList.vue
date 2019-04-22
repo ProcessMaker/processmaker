@@ -77,6 +77,7 @@ export default {
   data() {
     return {
       orderBy: "due_at",
+      status: "",
 
       sortOrder: [
         {
@@ -104,7 +105,7 @@ export default {
           field: "user"
         },
         {
-          title: () => this.$t("Due"),
+          title: this.status === 'CLOSED' ? () => this.$t("Completed") : () => this.$t("Due"),
           name: "due_at",
           callback: this.formatDueDate,
           sortField: "due_at"
@@ -115,6 +116,11 @@ export default {
         }
       ]
     };
+  },
+  beforeCreate() {
+    let params = (new URL(document.location)).searchParams;
+    this.status = params.get('status');
+    console.log(this.status)
   },
   mounted: function mounted() {
     let params = new URL(document.location).searchParams;
