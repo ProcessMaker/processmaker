@@ -1,6 +1,7 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <loading v-if="apiDataLoading || apiNoResults" ref="loader"/>
+    <div v-else class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -55,13 +56,14 @@
 
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
 
 Vue.component("avatar-image", AvatarImage);
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter", "type"],
   data() {
     return {
@@ -171,7 +173,6 @@ export default {
       return data;
     },
     fetch() {
-      this.loading = true;
       switch (this.type) {
         case "":
           this.additionalParams = "&type=started_me";
@@ -201,7 +202,6 @@ export default {
         )
         .then(response => {
           this.data = this.transform(response.data);
-          this.loading = false;
         });
     }
   }

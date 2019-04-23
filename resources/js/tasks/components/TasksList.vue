@@ -1,6 +1,12 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <loading v-if="apiDataLoading || apiNoResults"
+      :empty="$t('Congratulations')"
+      :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
+      empty-icon="beach"
+      ref="loader"
+    />
+    <div v-else class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -66,13 +72,14 @@
 
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
 
 Vue.component("avatar-image", AvatarImage);
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter"],
   data() {
     return {
@@ -165,7 +172,6 @@ export default {
     },
 
     fetch() {
-      this.loading = true;
       if (this.cancelToken) {
         this.cancelToken();
         this.cancelToken = null;
@@ -193,7 +199,6 @@ export default {
         )
         .then(response => {
           this.data = this.transform(response.data);
-          this.loading = false;
           if (response.data.meta.in_overdue > 0) {
             this.$emit("in-overdue", response.data.meta.in_overdue);
           }

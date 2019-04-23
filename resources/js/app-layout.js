@@ -111,12 +111,19 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
     ProcessMaker.navbar.confirmShow = true;
 };
 
+window.ProcessMaker.apiClient.interceptors.request.use((request) => {
+    window.ProcessMaker.EventBus.$emit("api-client-loading", request);
+    return request;
+});
+
 window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     // TODO: this could be used to show a default "created/upated/deleted resource" alert
     // response.config.method (PUT, POST, DELETE)
     // response.config.url (extract resource name)
+    window.ProcessMaker.EventBus.$emit("api-client-done", response);
     return response;
 }, (error) => {
+    window.ProcessMaker.EventBus.$emit("api-client-error", error);
     switch (error.response.status) {
         case 401:
             window.location = "/login"
