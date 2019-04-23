@@ -20,6 +20,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
+use ProcessMaker\Jobs\CancelRequest;
 
 class ProcessRequestController extends Controller
 {
@@ -113,7 +114,7 @@ class ProcessRequestController extends Controller
         if (!empty($filterBase)) {
             $filter = '%' . $filterBase . '%';
             $query->where(function ($query) use ($filter, $filterBase) {
-                    $query->whereHas('participants', function ($query) use ($filter) {
+                $query->whereHas('participants', function ($query) use ($filter) {
                     $query->Where('firstname', 'like', $filter);
                     $query->orWhere('lastname', 'like', $filter);
                 })->orWhere('name', 'like', $filter)
@@ -212,7 +213,7 @@ class ProcessRequestController extends Controller
             return response([], 204);
         }
         if ($httpRequest->post('status') === 'COMPLETED') {
-            if (! Auth::user()->is_administrator) {
+            if (!Auth::user()->is_administrator) {
                 throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
             if ($request->status != 'ERROR') {
@@ -407,16 +408,7 @@ class ProcessRequestController extends Controller
      */
     private function cancelRequestToken(ProcessRequest $request)
     {
-        //notify to the user that started the request, its cancellation
-        $notifiables = $request->getNotifiables('canceled');
-        Notification::send($notifiables, new ProcessCanceledNotification($request));
-
-        //cancel request
-        $request->status = 'CANCELED';
-        $request->saveOrFail();
-
-        //Closed tokens
-        $request->tokens()->update(['status' => 'CLOSED']);
+        CancelRequest::dispatchNow($request);
     }
 
     /**
@@ -443,7 +435,7 @@ class ProcessRequestController extends Controller
             'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
         ]);
     }
-    
+
     /**
      * Get task name by token fields and request
      *

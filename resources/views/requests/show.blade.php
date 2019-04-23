@@ -183,7 +183,7 @@
                                 <span v-if="!userRequested">{{__('Webhook')}}</span>
                             </li>
 
-                            @if($canCancel == true)
+                            @if($canCancel == true && $request->status === 'ACTIVE')
                                 <template>
                                     <li class="list-group-item">
                                         <h5>{{__('Cancel Request')}}</h5>
