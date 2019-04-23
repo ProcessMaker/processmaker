@@ -38,7 +38,7 @@
                             <b-btn variant="link"
                                    @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
                                    v-b-tooltip.hover
-                                   :title="$t('Duplicate')"
+                                   :title="$t('Copy')"
                                    v-if="permission.includes('create-screens')">
                                 <i class="fas fa-copy fa-lg fa-fw"></i>
                             </b-btn>

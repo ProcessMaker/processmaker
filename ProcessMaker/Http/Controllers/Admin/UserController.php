@@ -56,7 +56,8 @@ class UserController extends Controller
                 return $result;
             }
         );
-
+        $appTimezone = getenv('APP_TIMEZONE');
+        $appFormat = getenv('DATE_FORMAT');
         $datetimeFormats = array_reduce(JsonData::datetimeFormats(),
             function ($result, $item) {
                 $result[$item['format']] = $item['title'];
@@ -72,6 +73,8 @@ class UserController extends Controller
             'permissionGroups',
             'states',
             'timezones',
+            'appFormat',
+            'appTimezone',
             'countries',
             'datetimeFormats',
             'availableLangs'
