@@ -70,6 +70,22 @@
                                             </td>
                                             <td class="assignable-entity">
                                                 <multiselect v-model="item.value"
+                                                             placeholder="{{__('Type to search task')}}"
+                                                             :options="usersAndGroups"
+                                                             :multiple="false"
+                                                             track-by="id"
+                                                             :show-labels="false"
+                                                             :searchable="true"
+                                                             :internal-search="false"
+                                                             label="fullname"
+                                                             v-if="item.type == 'task'"
+                                                             group-values="items"
+                                                             group-label="type"
+                                                             @search-change="loadUsers($event, true, 'task')"
+                                                             @open="loadUsers($event, true, 'task')"
+                                                             class="assignable-input">
+                                                </multiselect>
+                                                <multiselect v-model="item.value"
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
@@ -78,10 +94,11 @@
                                                              :searchable="true"
                                                              :internal-search="false"
                                                              label="fullname"
-                                                             v-if="item.type == 'task' || item.type == 'startEvent'"
+                                                             v-if="item.type == 'startEvent'"
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
+                                                             @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
@@ -95,6 +112,7 @@
                                                              label="fullname"
                                                              v-if="item.type == 'script'"
                                                              @search-change="loadUsers($event, false)"
+                                                             @opem="loadUsers"
                                                              class="assignable-input">
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
@@ -108,6 +126,7 @@
                                                              label="name"
                                                              v-if="item.type == 'callActivity'"
                                                              @search-change="loadProcess($event)"
+                                                             @open="loadProcess"
                                                              class="assignable-input">
                                                 </multiselect>
                                             </td>
@@ -131,6 +150,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
+                                                             @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                 </multiselect>
                                             </td>
@@ -153,6 +173,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
+                                                             @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                 </multiselect>
                                             </td>
@@ -275,19 +296,19 @@
           }
         },
         methods: {
-          loadUsers(filter, getGroups) {
+          loadUsers(filter, getGroups, type) {
             ProcessMaker.apiClient
               .get("users" + (typeof filter === 'string' ? '?filter=' + filter : ''))
               .then(response => {
                 let users = response.data.data;
                 if (getGroups) {
-                  this.loadUsersAndGroups(filter, users)
+                  this.loadUsersAndGroups(filter, users, type)
                 } else {
                   this.users = users;
                 }
               });
           },
-          loadUsersAndGroups(filter, users) {
+          loadUsersAndGroups(filter, users, type) {
             ProcessMaker.apiClient
               .get("groups" + (typeof filter === 'string' ? '?filter=' + filter : ''))
               .then(response => {
@@ -298,6 +319,22 @@
                   }
                 });
                 this.usersAndGroups = [];
+                if (type === 'task') {
+                  this.usersAndGroups.push({
+                    'type': '',
+                    'items': [
+                      {
+                        'id': 'requester',
+                        'fullname': '{{__('Requester')}}'
+                      },
+                      {
+                        'id': 'previous_task_assignee',
+                        'fullname': '{{__('Previous Task Assignee')}}'
+                      },
+                    ]
+                  });
+                }
+
                 this.usersAndGroups.push({
                   'type': '{{__('Users')}}',
                   'items': users ? users : []
@@ -310,17 +347,16 @@
           },
           loadProcess(filter) {
             filter =
-            ProcessMaker.apiClient
-              .get("processes?order_direction=asc&status=active&include=events" + (typeof filter === 'string' ? '&filter=' + filter : ''))
-              .then(response => {
-
-                this.processes = response.data.data.map(item => {
-                  return {
-                    'id': item.events[0].ownerProcessId + '-' + item.id,
-                    'name': item.name
-                  }
+              ProcessMaker.apiClient
+                .get("processes?order_direction=asc&status=active&include=events" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+                .then(response => {
+                  this.processes = response.data.data.map(item => {
+                    return {
+                      'id': item.events[0].ownerProcessId + '-' + item.id,
+                      'name': item.name
+                    }
+                  });
                 });
-              });
           },
           formatAssignee(data) {
             let id,
@@ -383,32 +419,31 @@
                   'Content-Type': 'multipart/form-data'
                 }
               }
-            ).then(response => {
-              if (!response.data.status) {
-                ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger');
-                return;
-              }
-              this.loadUsers();
-              this.loadUsers('', true);
-              this.loadProcess();
-              this.options = response.data.status;
-              this.assignable = response.data.assignable;
-              this.processId = response.data.process.id;
-              let message = '{{__('The process was imported.')}}';
-              let variant = 'success';
-              for (let item in this.options) {
-                if (!this.options[item].success) {
-                  message = '{{__('The process was imported, but with errors.')}}';
-                  variant = 'warning'
+            )
+              .then(response => {
+                if (!response.data.status) {
+                  ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger');
+                  return;
                 }
-              }
-              ProcessMaker.alert(message, variant);
-              this.importing = false;
-              this.imported = true;
-            })
+
+                this.options = response.data.status;
+                this.assignable = response.data.assignable;
+                this.processId = response.data.process.id;
+                let message = '{{__('The process was imported.')}}';
+                let variant = 'success';
+                for (let item in this.options) {
+                  if (!this.options[item].success) {
+                    message = '{{__('The process was imported, but with errors.')}}';
+                    variant = 'warning'
+                  }
+                }
+                ProcessMaker.alert(message, variant);
+                this.importing = false;
+                this.imported = true;
+              })
               .catch(error => {
                 this.submitted = false;
-                ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger')
+                ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger');
               });
           }
         }

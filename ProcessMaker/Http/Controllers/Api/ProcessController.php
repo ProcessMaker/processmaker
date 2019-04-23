@@ -712,12 +712,14 @@ class ProcessController extends Controller
                             if (is_int($value)) {
                                 $element->setAttribute('pm:assignment', 'user');
                                 $element->setAttribute('pm:assignedUsers', $value);
-                            } else {
+                            } else if (strpos($value, '-') !== false) {
                                 $value = explode('-', $value);
                                 $value = $value[1];
                                 $element->setAttribute('pm:assignment', 'group');
                                 $element->setAttribute('pm:assignmentGroup', 'group');
                                 $element->setAttribute('pm:assignedGroups', $value);
+                            } else {
+                                $element->setAttribute('pm:assignment', $value);
                             }
                         }
                     }
