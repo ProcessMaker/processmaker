@@ -6,25 +6,25 @@ use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessWebhook;
-use ProcessMaker\Http\Resources\ProcessWebhook as WebhookResource;
+use ProcessMaker\Models\ProcessWebEntry;
+use ProcessMaker\Http\Resources\ProcessWebEntry as WebEntryResource;
 use Ramsey\Uuid\Uuid;
 
-class ProcessWebhookController extends Controller
+class ProcessWebEntryController extends Controller
 {
     /**
-     * Display the specified webhook.
+     * Display the specified web entry.
      *
      * @param Request $request
      * @param Process $process
      *
-     * @return \ProcessMaker\Http\Resources\ProcessWebhook
+     * @return \ProcessMaker\Http\Resources\ProcessWebEntry
      * 
      * @OA\Get(
-     *     path="/processes/{process_id}/webhooks/",
-     *     summary="Get the webhook for a start node",
-     *     operationId="getProcessWebhook",
-     *     tags={"Process Webhooks"},
+     *     path="/processes/{process_id}/web_entries/",
+     *     summary="Get the web entry for a start node",
+     *     operationId="getProcessWebEntry",
+     *     tags={"Process Web Entries"},
      *     @OA\Parameter(
      *         name="process_id",
      *         description="ID of process",
@@ -45,34 +45,34 @@ class ProcessWebhookController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the webhook",
+     *         description="Successfully found the web entry",
      *     ),
      * )
      */
     public function show(Request $request, Process $process)
     {
         $node = $request->input('node');
-        $result = ProcessWebhook::where([
+        $result = ProcessWebEntry::where([
             'process_id' => $process->id,
             'node' => $node,
         ])->first();
 
-        return new WebhookResource($result);
+        return new WebEntryResource($result);
     }
 
     /**
-     * Save a new webhook.
+     * Save a new web entry.
      *
      * @param Request $request
      * @param Process $process
      *
-     * @return \ProcessMaker\Http\Resources\ProcessWebhook
+     * @return \ProcessMaker\Http\Resources\ProcessWebEntry
      * 
      * @OA\Post(
-     *     path="/processes/{process_id}/webhooks/",
-     *     summary="Save a new webhook for a start node",
-     *     operationId="createProcessWebhook",
-     *     tags={"Process Webhooks"},
+     *     path="/processes/{process_id}/web_entries/",
+     *     summary="Save a new web entry for a start node",
+     *     operationId="createProcessWebEntry",
+     *     tags={"Process Web Entries"},
      *     @OA\Parameter(
      *         name="process_id",
      *         description="ID of process",
@@ -93,33 +93,33 @@ class ProcessWebhookController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully saved the webhook",
+     *         description="Successfully saved the web entry",
      *     ),
      * )
      */
     public function store(Request $request, Process $process)
     {
-        $result = ProcessWebhook::create([
+        $result = ProcessWebEntry::create([
             'process_id' => $process->id,
             'node' => $request->input('node'),
             'token' => Uuid::uuid4()->toString(),
         ]);
-        return new WebhookResource($result);
+        return new WebEntryResource($result);
     }
 
     /**
-     * Delete a webhook.
+     * Delete a web entry.
      *
      * @param Request $request
      * @param Process $process
      *
-     * @return \ProcessMaker\Http\Resources\ProcessWebhook
+     * @return \ProcessMaker\Http\Resources\ProcessWebEntry
      * 
      * @OA\Delete(
-     *     path="/processes/{process_id}/webhooks/",
-     *     summary="Delete (revoke) a webhook for a start node",
-     *     operationId="deleteProcessWebhook",
-     *     tags={"Process Webhooks"},
+     *     path="/processes/{process_id}/web_entries/",
+     *     summary="Delete (revoke) a web entries for a start node",
+     *     operationId="deleteProcessWebEntry",
+     *     tags={"Process Web Entries"},
      *     @OA\Parameter(
      *         name="process_id",
      *         description="ID of process",
@@ -140,19 +140,19 @@ class ProcessWebhookController extends Controller
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="Successfully deleted the webhook",
+     *         description="Successfully deleted the web entry",
      *     ),
      * )
      */
     public function destroy(Request $request, Process $process)
     {
         $node = $request->input('node');
-        $webhook = ProcessWebhook::where([
+        $web_entry = ProcessWebEntry::where([
             'process_id' => $process->id,
             'node' => $node,
         ])->firstOrFail();
 
-        $webhook->delete();
+        $web_entry->delete();
 
         return response(null, 204);
     }

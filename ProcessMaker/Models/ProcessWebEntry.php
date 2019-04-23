@@ -4,7 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 /**
- * Represents a webhook for a process and start event node
+ * Represents a web entry a process and start event node
  *
  * @property string $id
  * @property integer $process_id
@@ -14,11 +14,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon $created_at
  *
  * @OA\Schema(
- *   schema="ProcessWebhookEditable",
+ *   schema="ProcessWebEntryEditable",
  * ),
  * @OA\Schema(
- *   schema="ProcessWebhook",
- *   allOf={@OA\Schema(ref="#/components/schemas/ProcessWebhookEditable")},
+ *   schema="ProcessWebEntry",
+ *   allOf={@OA\Schema(ref="#/components/schemas/ProcessWebEntryEditable")},
  *   @OA\Property(property="id", type="integer", format="id"),
  *   @OA\Property(property="process_id", type="integer", format="id"),
  *   @OA\Property(property="node", type="string"),
@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
-class ProcessWebhook extends Model
+class ProcessWebEntry extends Model
 {
     protected $fillable = [
         'process_id',
@@ -51,6 +51,6 @@ class ProcessWebhook extends Model
 
     public function url()
     {
-        return route('webhook.start_event', ['token' => $this->token]);
+        return route('web_entry.start_event', ['token' => $this->token]);
     }
 }

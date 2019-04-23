@@ -1,16 +1,10 @@
 <template>
     <div class="form-group">
         <label>{{ $t(label) }}</label>
-        <span class="float-right">
-            <a v-if="!enabled" href="#" @click="enable">{{ $t('Enable') }}</a>
-            <a v-if="enabled" href="#" @click="disable">{{ $t('Disable') }}</a>
-        </span>
-        <div v-if="enabled">
-            <div v-if="loading">{{ $t('Loading...') }}</div>
-            <div v-else>
-                <input class="form-control" :readonly="fieldDisabled" v-model="url" ref="webhookUrlInput" />
-                <a href="#" @click="copy">{{ $t('Copy To Clipboard') }}</a>
-            </div>
+        <div v-if="loading">{{ $t('Loading...') }}</div>
+        <div v-else>
+            <input class="form-control" :readonly="fieldDisabled" v-model="url" ref="webEntryUrlInput" />
+            <a href="#" @click="copy">{{ $t('Copy To Clipboard') }}</a>
         </div>
     </div>
 </template>
@@ -27,11 +21,6 @@
                 fieldDisabled: true,
             };
         },
-        computed: {
-            enabled() {
-                return this.url !== null
-            }
-        },
         mounted() {
             this.load();
         },
@@ -42,24 +31,18 @@
             processId() {
                 return window.ProcessMaker.modeler.process.id;
             },
-            enable() {
-                this.createNewApiCall();
-            },
-            disable() {
-                this.revoke();
-            },
             endpoint() {
-                return "/processes/" + this.processId() + '/webhooks/?node=' + this.node();
+                return "/processes/" + this.processId() + '/web_entries/?node=' + this.node();
             },
             load() {
                 this.loading = true;
                 ProcessMaker.apiClient
                         .get(this.endpoint())
                         .then(response => {
-                            if (response.data.webhook === null) {
+                            if (response.data.web_entry === null) {
                                 this.url = null;
                             } else {
-                                this.url = response.data.webhook.url;
+                                this.url = response.data.web_entry.url;
                             }
                         })
                         .catch(err => {
@@ -71,14 +54,14 @@
             revoke() {
                 ProcessMaker.confirmModal(
                     "Caution!",
-                    "<p>Are you sure you want to disable this webhook? If you re-enable the webhook later, it will have a different URL.</p>",
+                    "<p>Are you sure you want to disable this web entry? If you re-enable the web entry later, it will have a different URL.</p>",
                     "",
                     () => { this.revokeApiCall() }
                 );
             },
             copy() {
                 this.fieldDisabled = false;
-                this.$refs.webhookUrlInput.select()
+                this.$refs.webEntryUrlInput.select()
                 document.execCommand('copy')
                 this.fieldDisabled = true;
             },
@@ -100,7 +83,7 @@
                 ProcessMaker.apiClient
                         .post(this.endpoint())
                         .then(response => {
-                            this.url = response.data.webhook.url;
+                            this.url = response.data.web_entry.url;
                         })
                         .catch(err => {
                         })

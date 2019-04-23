@@ -4,38 +4,38 @@ namespace ProcessMaker\Http\Controllers;
 
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use ProcessMaker\Models\ProcessWebhook;
+use ProcessMaker\Models\ProcessWebEntry;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestsResource;
 
-class WebhookController extends Controller
+class WebEntryController extends Controller
 {
     function startEvent(Request $request)
     {
-        $webhook = ProcessWebhook::where([
+        $web_entry = ProcessWebEntry::where([
             'token' => $request->input('token')
         ])->first();
 
-        if (!$webhook) {
+        if (!$web_entry) {
             return response('Invalid Token', 404);
         }
 
-        $definitions = $webhook->process->getDefinitions();
-        if (!$definitions->findElementById($webhook->node)) {
+        $definitions = $web_entry->process->getDefinitions();
+        if (!$definitions->findElementById($web_entry->node)) {
             return abort(404);
         }
 
-        $event = $definitions->getEvent($webhook->node);
+        $event = $definitions->getEvent($web_entry->node);
         $data = $request->post();
 
         //Trigger the start event
-        $processRequest = WorkflowManager::triggerStartEvent($webhook->process, $event, $data);
+        $processRequest = WorkflowManager::triggerStartEvent($web_entry->process, $event, $data);
 
         if ($request->header('accept') !== null && strcasecmp($request->header('accept'), 'application/json') === 0) {
             return new ProcessRequestsResource($processRequest);
         }
         else {
-            return view('webhook.success');
+            return view('web_entry.success');
         }
     }
 }

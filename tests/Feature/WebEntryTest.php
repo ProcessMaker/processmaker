@@ -3,24 +3,24 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessWebhook;
+use ProcessMaker\Models\ProcessWebEntry;
 
-class WebhookTest extends TestCase
+class WebEntryTest extends TestCase
 {
     use RequestHelper;
 
-    public function testStartEventFromWebhook() {
+    public function testStartEventFromWebEntry() {
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('SingleTask.bpmn'),
         ]);
 
-        $webhook = factory(ProcessWebhook::class)->create([
+        $web_entry= factory(ProcessWebEntry::class)->create([
             'process_id' => $process->id,
             'node' => 'StartEventUID',
             'token' => 'abc123',
         ]);
 
-        $response = $this->post($webhook->url(), ['someData' => 'something'], ['Accept' => 'application/json']);
+        $response = $this->post($web_entry->url(), ['someData' => 'something'], ['Accept' => 'application/json']);
         $response->assertStatus(201);
         
         $request = $process->requests->first();

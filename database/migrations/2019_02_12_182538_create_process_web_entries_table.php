@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProcessWebhooksTable extends Migration
+class CreateProcessWebEntriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateProcessWebhooksTable extends Migration
      */
     public function up()
     {
-        Schema::create('process_webhooks', function (Blueprint $table) {
+        Schema::create('process_web_entries', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('process_id');
             $table->string('node');
@@ -31,6 +31,6 @@ class CreateProcessWebhooksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('process_webhooks');
+        Schema::dropIfExists('process_web_entries');
     }
 }

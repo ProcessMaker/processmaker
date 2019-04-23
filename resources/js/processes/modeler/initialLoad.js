@@ -28,7 +28,7 @@ import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
-import Webhook from './components/inspector/Webhook';
+import WebEntry from './components/inspector/WebEntry';
 import StartPermission from './components/inspector/StartPermission';
 
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
@@ -37,7 +37,7 @@ Vue.component('ExpressionEditor', ExpressionEditor);
 Vue.component('TaskAssignment', TaskAssignment);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
-Vue.component('Webhook', Webhook);
+Vue.component('WebEntry', WebEntry);
 Vue.component('StartPermission', StartPermission);
 
 let nodeTypes = [
@@ -144,11 +144,11 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
     /* Add a BPMN extension */
     registerBpmnExtension('pm', bpmnExtension);
 
-    /* Register extension for webhooks */
+    /* Register extension for web entry */
     registerInspectorExtension(startEvent, {
-        component: 'Webhook',
+        component: 'WebEntry',
         config: {
-            label: 'Webhook',
+            label: 'Web Entry',
             helper: '',
             name: ''
         }

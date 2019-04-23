@@ -161,7 +161,7 @@
                                 <avatar-image v-if="userRequested" size="32"
                                               class="d-inline-flex pull-left align-items-center"
                                               :input-data="userRequested"></avatar-image>
-                                <p v-if="!userRequested">{{__('Webhook')}}</p>
+                                <p v-if="!userRequested">{{__('Web Entry')}}</p>
                             </li>
                         </ul>
                     </div>

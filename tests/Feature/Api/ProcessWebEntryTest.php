@@ -5,26 +5,26 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Models\ProcessWebhook;
+use ProcessMaker\Models\ProcessWebEntry;
 
-class ProcessWebhookTest extends TestCase
+class ProcessWebEntryTest extends TestCase
 {
     use RequestHelper;
     
-    public function testGetWebhook()
+    public function testGetWebEntry()
     {
         $process = factory(Process::class)->create([
             'user_id' => $this->user->id
         ]);
 
-        $route = route('api.process_webhooks.show', [
+        $route = route('api.process_web_entries.show', [
             'id' => $process->id,
             'node' => 'node_1'
         ]);
         $response = $this->apiCall('GET', $route);
         $response->assertJson([]);
 
-        factory(ProcessWebhook::class)->create([
+        factory(ProcessWebEntry::class)->create([
             'process_id' => $process->id,
             'node' => 'node_1',
             'token' => 'abc123',
@@ -32,43 +32,43 @@ class ProcessWebhookTest extends TestCase
 
         $response = $this->apiCall('GET', $route);
         $json = $response->json();
-        $response->assertJson(['webhook' => [
+        $response->assertJson(['web_entry' => [
             'process_id' => $process->id,
             'node' => 'node_1',
-            'url' => route('webhook.start_event', ['token' => 'abc123'])
+            'url' => route('web_entry.start_event', ['token' => 'abc123'])
         ]]);
     }
 
-    public function testCreateWebhook()
+    public function testCreateWebEntry()
     {
         $process = factory(Process::class)->create([
             'user_id' => $this->user->id
         ]);
-        $route = route('api.process_webhooks.show', [
+        $route = route('api.process_web_entries.show', [
             'id' => $process->id,
             'node' => 'node_1',
         ]);
         $response = $this->apiCall('POST', $route);
 
-        $webhook = ProcessWebhook::first();
-        $this->assertEquals($process->id, $webhook->process_id);
-        $this->assertEquals('node_1', $webhook->node);
-        $this->assertRegExp('/[a-zA-Z0-9-]{36}/', $webhook->token);
+        $web_entry = ProcessWebEntry::first();
+        $this->assertEquals($process->id, $web_entry->process_id);
+        $this->assertEquals('node_1', $web_entry->node);
+        $this->assertRegExp('/[a-zA-Z0-9-]{36}/', $web_entry->token);
         
-        $response->assertJson(['webhook' => [
+        $response->assertJson(['web_entry' => [
             'process_id' => $process->id,
             'node' => 'node_1',
-            'url' => route('webhook.start_event', ['token' => $webhook->token])
+            'url' => route('web_entry.start_event', ['token' => $web_entry->token])
         ]]);
     }
 
-    public function testDeleteWebhook()
+    public function testDeleteWebEntry()
     {
         $process = factory(Process::class)->create([
             'user_id' => $this->user->id
         ]);
 
-        $route = route('api.process_webhooks.destroy', [
+        $route = route('api.process_web_entries.destroy', [
             'id' => $process->id,
             'node' => 'node_1'
         ]);
@@ -76,17 +76,17 @@ class ProcessWebhookTest extends TestCase
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(404);
 
-        factory(ProcessWebhook::class)->create([
+        factory(ProcessWebEntry::class)->create([
             'process_id' => $process->id,
             'node' => 'node_1',
             'token' => 'abc123',
         ]);
         
-        $this->assertEquals(1, ProcessWebhook::count());
+        $this->assertEquals(1, ProcessWebEntry::count());
 
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(204);
 
-        $this->assertEquals(0, ProcessWebhook::count());
+        $this->assertEquals(0, ProcessWebEntry::count());
     }
 }

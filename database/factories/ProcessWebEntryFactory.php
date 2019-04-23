@@ -1,12 +1,12 @@
 <?php
 
 use Faker\Generator as Faker;
-use ProcessMaker\Models\ProcessWebhook;
+use ProcessMaker\Models\ProcessWebEntry;
 
 /**
  * Model factory for a process category.
  */
-$factory->define(ProcessWebhook::class, function (Faker $faker) {
+$factory->define(ProcessWebEntry::class, function (Faker $faker) {
     return [
         'node' => $faker->slug,
         'process_id' => function () {
