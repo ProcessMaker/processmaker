@@ -395,7 +395,7 @@
               "ACTIVE": "{{__('Created')}}",
               "COMPLETED": "{{__('Completed')}}",
               "CANCELED": "{{__('Canceled')}}",
-              "ERROR": "{{__('Canceled')}}",
+              "ERROR": "{{__('Error')}}",
             };
 
             return status[this.request.status.toUpperCase()];

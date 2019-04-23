@@ -246,6 +246,7 @@ class ScriptsTest extends TestCase
         //Post saved success
         $yesterday = \Carbon\Carbon::now()->subDay();
         $script = factory(Script::class)->create([
+            'description' => 'ufufu',
             'created_at' => $yesterday,
         ]);
         $original_attributes = $script->getAttributes();
@@ -253,6 +254,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'title' => $script->title,
             'language' => 'lua',
+            'description' => 'jdbsdfkj',
             'code' => $faker->sentence(3),
             'run_as_user_id' => $user->id
         ]);
