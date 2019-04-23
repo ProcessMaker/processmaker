@@ -48,7 +48,7 @@
                                                 'v-bind:class' => '{\'form-control\':true,
                                                 \'is-invalid\':errors.firstname}']) !!}
                                                 <div class="invalid-feedback" v-if="errors.firstname">
-                                                    @{{errors.firstname}}
+                                                    @{{errors.firstname[0]}}
                                                 </div>
                                             </div>
                                             <div class="form-group col">
@@ -58,7 +58,7 @@
                                                 => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true,
                                                 \'is-invalid\':errors.lastname}']) !!}
                                                 <div class="invalid-feedback" v-if="errors.lastname">
-                                                    @{{errors.description}}
+                                                    @{{errors.lastname[0]}}
                                                 </div>
                                             </div>
                                         </div>
