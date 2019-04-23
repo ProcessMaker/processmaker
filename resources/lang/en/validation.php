@@ -114,5 +114,7 @@ return [
     
     'attributes' => [
         'title' => 'name',
+        'firstname' => 'First Name',
+        'lastname' => "Last Name"
     ],
 ];
