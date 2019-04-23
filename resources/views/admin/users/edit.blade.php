@@ -132,15 +132,11 @@
                                             </div>
                                             <div class="form-group col">
                                                 {!! Form::label('country', __('Country')) !!}
-                                                {!! Form::select('country',
-                                                $countries,
-                                                'formData.country',
-                                                ['id' => 'country',
-                                                'class'=> 'form-control',
-                                                'v-model' => 'formData.country',
-                                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.country}'
-                                                ])
-                                                !!}
+                                                <b-form-select v-model="formData.country" :options="countries" placeholder="Select" class="form-control">
+                                                    <template slot="first">
+                                                        <option :value="null" disabled>{{__('Select')}}</option>
+                                                    </template>
+                                                </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.country">
                                                     @{{errors.country}}
                                                 </div>
@@ -511,6 +507,7 @@
           return {
             formData: @json($user),
             langs: @json($availableLangs),
+            countries: @json($countries),
             image: '',
             errors: {
               username: null,
