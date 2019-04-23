@@ -79,7 +79,7 @@
 
                         <div class="form-group">
                             <label class="typo__label">{{__('Run script as')}}</label>
-                            <multiselect v-model="selectedUser" label="fullname" :options="users"
+                            <multiselect v-model="selectedUser" label="fullname" :options="users" placeholder="Select"
                                          :searchable="true"></multiselect>
                         <small class="form-text text-muted">{{__('Select a user to set the API access of the Script')}}</small>
                         </div>

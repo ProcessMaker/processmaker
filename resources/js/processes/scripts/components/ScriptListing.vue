@@ -46,7 +46,7 @@
                 variant="link"
                 @click="onAction('duplicate-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="$t('Duplicate')"
+                :title="$t('Copy')"
                 v-if="permission.includes('create-scripts')"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>

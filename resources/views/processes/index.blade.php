@@ -92,7 +92,7 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('process_category_id', __('Category'))!!}
-                                {!! Form::select('process_category_id', [null => ''] + $processCategories, null, [
+                                {!! Form::select('process_category_id', [null => __('Select')] + $processCategories, null, [
                                 'class'=> 'form-control',
                                 'v-model'=> 'process_category_id',
                                 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
