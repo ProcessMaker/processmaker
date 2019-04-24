@@ -48,10 +48,15 @@ window.ProcessMaker.navbar = new Vue({
         ConfirmationModal,
         NavbarProfile
     },
+    watch: {
+        alerts (array) {
+            this.saveLocalAlerts(array);
+        },
+    },
     data() {
         return {
             messages: ProcessMaker.notifications,
-            alerts: [],
+            alerts: this.loadLocalAlerts(),
             confirmTitle: "",
             confirmMessage: "",
             confirmVariant: "",
@@ -62,6 +67,20 @@ window.ProcessMaker.navbar = new Vue({
             sessionMessage: "",
             sessionTime: ""
         };
+    },
+    methods: {
+        loadLocalAlerts () {
+            try {
+                return window.localStorage.sparkAlerts &&
+                    window.localStorage.sparkAlerts.substr(0, 1) === "["
+                    ? JSON.parse(window.localStorage.sparkAlerts) : [];
+            } catch (e) {
+                return [];
+            }
+        },
+        saveLocalAlerts (array) {
+            window.localStorage.sparkAlerts = JSON.stringify(array);
+        },
     },
     mounted() {
         Vue.nextTick() // This is needed to override the default alert method.
