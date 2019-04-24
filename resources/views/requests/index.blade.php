@@ -77,7 +77,18 @@
                         <multiselect v-model="status" :options="statusOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="requestor" :options="requestorOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>
+                        <multiselect 
+                        v-model="requestor" 
+                        @search-change="getUsers" 
+                        :select-label="''" 
+                        :loading="isLoading" 
+                        open-direction="bottom" 
+                        label="username" 
+                        :options="requestorOptions" 
+                        :multiple="true" 
+                        :limit="1" 
+                        :limit-text="count => `+${count}`" 
+                        placeholder="Select"></multiselect>
                     </div>
                     <div class="col">
                         <multiselect v-model="participants" :options="participantsOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>

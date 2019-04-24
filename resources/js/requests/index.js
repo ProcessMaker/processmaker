@@ -32,6 +32,16 @@ new Vue({
                     this.isLoading = false
                     setTimeout(3000)
                 });
+        },
+        getUsers(query) {
+            this.isLoading = true
+            ProcessMaker.apiClient
+                .get("/users?&per_page=50" + "&filter=" + query)
+                .then(response => {
+                    this.requestorOptions = response.data.data;
+                    this.isLoading = false
+                    setTimeout(3000)
+                });
         }
     }
 });
