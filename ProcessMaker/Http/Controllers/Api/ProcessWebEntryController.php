@@ -61,7 +61,7 @@ class ProcessWebEntryController extends Controller
     }
 
     /**
-     * Save a new web entry.
+     * Create or update a web entry.
      *
      * @param Request $request
      * @param Process $process
@@ -70,7 +70,7 @@ class ProcessWebEntryController extends Controller
      * 
      * @OA\Post(
      *     path="/processes/{process_id}/web_entries/",
-     *     summary="Save a new web entry for a start node",
+     *     summary="Save create or update a web entry for a start node. Set mode to null to delete",
      *     operationId="createProcessWebEntry",
      *     tags={"Process Web Entries"},
      *     @OA\Parameter(
@@ -99,10 +99,14 @@ class ProcessWebEntryController extends Controller
      */
     public function store(Request $request, Process $process)
     {
-        $result = ProcessWebEntry::create([
+        $result = ProcessWebEntry::updateOrCreate([
             'process_id' => $process->id,
             'node' => $request->input('node'),
-            'token' => Uuid::uuid4()->toString(),
+        ],[
+            'mode' => $request->input('mode'),
+            'completed_action' => $request->input('completed_action'),
+            'completed_screen_id' => $request->input('completed_screen_id'),
+            'completed_url' => $request->input('completed_url'),
         ]);
         return new WebEntryResource($result);
     }

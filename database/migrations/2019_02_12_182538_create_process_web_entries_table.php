@@ -17,10 +17,14 @@ class CreateProcessWebEntriesTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('process_id');
             $table->string('node');
-            $table->string('token')->unique();
+            $table->string('mode')->nullable();
+            $table->string('completed_action')->default('SCREEN');
+            $table->unsignedInteger('completed_screen_id')->nullable();
+            $table->string('completed_url')->nullable();
             $table->timestamps();
             
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            $table->foreign('completed_screen_id')->references('id')->on('screens');
         });
     }
 

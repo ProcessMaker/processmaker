@@ -76,7 +76,6 @@ Route::group(
 
     Route::get('processes/{process}/web_entries', 'ProcessWebEntryController@show')->name('process_web_entries.show')->middleware('can:view-processes');
     Route::post('processes/{process}/web_entries', 'ProcessWebEntryController@store')->name('process_web_entries.store')->middleware('can:edit-processes');
-    Route::delete('processes/{process}/web_entries', 'ProcessWebEntryController@destroy')->name('process_web_entries.destroy')->middleware('can:edit-processes');
 
     // List of Processes that the user can start
     Route::get('start_processes', 'ProcessController@startProcesses')->name('processes.start'); //Filtered in controller

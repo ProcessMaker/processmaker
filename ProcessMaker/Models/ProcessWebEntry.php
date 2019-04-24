@@ -22,7 +22,10 @@ use Illuminate\Database\Eloquent\Model;
  *   @OA\Property(property="id", type="integer", format="id"),
  *   @OA\Property(property="process_id", type="integer", format="id"),
  *   @OA\Property(property="node", type="string"),
- *   @OA\Property(property="token", type="string"),
+ *   @OA\Property(property="mode", type="string"),
+ *   @OA\Property(property="completed_action", type="string"),
+ *   @OA\Property(property="completed_screen_id", type="integer", format="id"),
+ *   @OA\Property(property="completed_url", type="string"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
@@ -32,7 +35,10 @@ class ProcessWebEntry extends Model
     protected $fillable = [
         'process_id',
         'node',
-        'token',
+        'mode',
+        'completed_action',
+        'completed_screen_id',
+        'completed_url',
     ];
 
     public static function rules($existing = null)
@@ -40,7 +46,10 @@ class ProcessWebEntry extends Model
         return [
             'process_id' => 'exists:processes,id',
             'node' => 'required|string',
-            'token' => 'required|string|unique',
+            'mode' => 'required|in:AUTHENTICATED,ANONYMOUS|nullable',
+            'completed_action' => 'required|in:SCREEN,URL',
+            'completed_screen_id' => 'exists:screen,id|nullable',
+            'completed_url' => 'string|nullable',
         ];
     }
 

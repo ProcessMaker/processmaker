@@ -144,16 +144,6 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
     /* Add a BPMN extension */
     registerBpmnExtension('pm', bpmnExtension);
 
-    /* Register extension for web entry */
-    registerInspectorExtension(startEvent, {
-        component: 'WebEntry',
-        config: {
-            label: 'Web Entry',
-            helper: '',
-            name: ''
-        }
-    });
-
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {
         component: 'StartPermission',
@@ -161,6 +151,16 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
             label: 'Permission To Start',
             helper: '',
             name: 'id',
+        }
+    });
+
+    /* Register extension for web entry */
+    registerInspectorExtension(startEvent, {
+        component: 'WebEntry',
+        config: {
+            label: 'Web Entry',
+            helper: '',
+            name: ''
         }
     });
 

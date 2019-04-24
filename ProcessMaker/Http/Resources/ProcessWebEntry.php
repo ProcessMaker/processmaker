@@ -11,12 +11,6 @@ class ProcessWebEntry extends ApiResource
      */
     public function toArray($request)
     {
-        $array = ['web_entry' => parent::toArray($request)];
-        if (empty($array['web_entry'])) {
-            $array['web_entry'] = null;
-            return $array;
-        }
-        $array['web_entry']['url'] = $this->url();
-        return $array;
+        return parent::toArray($request);
     }
 }
