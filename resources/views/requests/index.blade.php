@@ -60,16 +60,16 @@
 
                 <div class="search row mt-2 bg-light p-2" v-if="advanced == false">
                     <div class="col">
-                        <multiselect v-model="value" :options="options"></multiselect>
+                        <multiselect v-model="processes" :options="processOptions" :multiple="true" placeholder="Select"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="value" :options="options"></multiselect>
+                        <multiselect v-model="status" :options="statusOptions" :multiple="true" placeholder="Select"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="value" :options="options"></multiselect>
+                        <multiselect v-model="requestor" :options="requestorOptions" :multiple="true" placeholder="Select"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="value" :options="options"></multiselect>
+                        <multiselect v-model="participants" :options="participantsOptions" :multiple="true" placeholder="Select"></multiselect>
                     </div>
                     <div class="col mt-2" align="right">
                         <i class="fas fa-search text-secondary"></i>

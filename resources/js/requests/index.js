@@ -6,8 +6,14 @@ new Vue({
     data: {
         filter: "",
         title: "All Request",
-        value: null,
-        options: ['list', 'of', 'options'],
+        processes: null,
+        status: null,
+        requestor: null,
+        participants: null,
+        processOptions: ['list', 'of', 'options'],
+        statusOptions: ['list', 'of', 'options'],
+        requestorOptions: ['list', 'of', 'options'],
+        participantsOptions: ['list', 'of', 'options'],
         advanced: false
     },
     el: "#requests-listing",
