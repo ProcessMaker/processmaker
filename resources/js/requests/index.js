@@ -10,14 +10,28 @@ new Vue({
         status: null,
         requestor: null,
         participants: null,
-        processOptions: ['list', 'of', 'options'],
+        processOptions: [],
         statusOptions: ['list', 'of', 'options'],
         requestorOptions: ['list', 'of', 'options'],
         participantsOptions: ['list', 'of', 'options'],
-        advanced: false
+        advanced: false,
+        isLoading: false
     },
     el: "#requests-listing",
     components: { RequestsListing, Multiselect },
+    mounted() {
+        this.getProcesses('')
+    },
     methods: {
+        getProcesses(query) {
+            this.isLoading = true
+            ProcessMaker.apiClient
+                .get("/processes?&per_page=50" + "&filter=" + query)
+                .then(response => {
+                    this.processOptions = response.data.data;
+                    this.isLoading = false
+                    setTimeout(3000)
+                });
+        }
     }
 });

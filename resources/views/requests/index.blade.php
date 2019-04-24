@@ -60,16 +60,27 @@
 
                 <div class="search row mt-2 bg-light p-2" v-if="advanced == false">
                     <div class="col">
-                        <multiselect v-model="processes" :options="processOptions" :multiple="true" placeholder="Select"></multiselect>
+                        <multiselect 
+                        v-model="processes" 
+                        @search-change="getProcesses" 
+                        :select-label="''" 
+                        :loading="isLoading" 
+                        open-direction="bottom" 
+                        label="name" 
+                        :options="processOptions" 
+                        :multiple="true" 
+                        :limit="1" 
+                        :limit-text="count => `+${count}`" 
+                        placeholder="Select"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="status" :options="statusOptions" :multiple="true" placeholder="Select"></multiselect>
+                        <multiselect v-model="status" :options="statusOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="requestor" :options="requestorOptions" :multiple="true" placeholder="Select"></multiselect>
+                        <multiselect v-model="requestor" :options="requestorOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="participants" :options="participantsOptions" :multiple="true" placeholder="Select"></multiselect>
+                        <multiselect v-model="participants" :options="participantsOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>
                     </div>
                     <div class="col mt-2" align="right">
                         <i class="fas fa-search text-secondary"></i>
