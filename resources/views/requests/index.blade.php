@@ -58,21 +58,33 @@
 
                 </b-card-group>
 
-                <div class="row">
-                    <div class="col mt-2">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                            </div>
-                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
-                        </div>
+                <div class="search row mt-2 bg-light p-2" v-if="advanced == false">
+                    <div class="col">
+                        <multiselect v-model="value" :options="options"></multiselect>
                     </div>
-                    <div class="col-8" align="right">
-                        
+                    <div class="col">
+                        <multiselect v-model="value" :options="options"></multiselect>
                     </div>
-                </div>                
+                    <div class="col">
+                        <multiselect v-model="value" :options="options"></multiselect>
+                    </div>
+                    <div class="col">
+                        <multiselect v-model="value" :options="options"></multiselect>
+                    </div>
+                    <div class="col mt-2" align="right">
+                        <i class="fas fa-search text-secondary"></i>
+                        <a class="text-primary ml-3" @click="advanced = true">Advanced</a>
+                    </div>
+                </div>  
+                <div v-if="advanced == true" class="search row mt-2 bg-light p-2">
+                    <div class="col-10 form-group">
+                        <input type="text" class="form-control" placeholder="PMQL">
+                    </div>
+                    <div class="col mt-2" align="right">
+                        <i class="fas fa-search text-secondary"></i>
+                        <a class="text-primary ml-3" @click="advanced = false">Basic</a>
+                    </div>
+                </div>              
             </template>
             <requests-listing ref="requestList" :filter="filter" type="{{ $type }}"></requests-listing>
         </div>
@@ -86,6 +98,11 @@
 
 @section('css')
 <style>
+    .search {
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        margin-left: -1px;
+        margin-right: -1px;
+    }
     .has-search .form-control {
         padding-left: 2.375rem;
     }
