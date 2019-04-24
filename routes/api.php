@@ -74,9 +74,6 @@ Route::group(
     Route::put('processes/{processId}/restore', 'ProcessController@restore')->name('processes.restore')->middleware('can:archive-processes');
     Route::post('process_events/{process}', 'ProcessController@triggerStartEvent')->name('process_events.trigger')->middleware('can:start,process');
 
-    Route::get('processes/{process}/web_entries', 'ProcessWebEntryController@show')->name('process_web_entries.show')->middleware('can:view-processes');
-    Route::post('processes/{process}/web_entries', 'ProcessWebEntryController@store')->name('process_web_entries.store')->middleware('can:edit-processes');
-
     // List of Processes that the user can start
     Route::get('start_processes', 'ProcessController@startProcesses')->name('processes.start'); //Filtered in controller
 

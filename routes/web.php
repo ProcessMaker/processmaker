@@ -102,6 +102,3 @@ $this->delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->nam
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
-
-// Public web entry (verified by token in controller)
-$this->post('web_entries/start_event', 'WebEntryController@startEvent')->name('web_entry.start_event');
