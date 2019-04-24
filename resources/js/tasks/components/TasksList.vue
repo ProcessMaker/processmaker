@@ -29,6 +29,10 @@
           <avatar-image size="25" :input-data="props.rowData.user" hide-name="true"></avatar-image>
         </template>
 
+        <template slot="dueDate" slot-scope="props">
+          <span :class="props.rowData.status === 'CLOSED' ? 'text-dark' : classDueDate(props.rowData.due_at)">{{formatDate(props.rowData.due_at)}}</span>
+        </template>
+
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
@@ -106,8 +110,8 @@ export default {
         },
         {
           title: this.status === 'CLOSED' ? () => this.$t("Completed") : () => this.$t("Due"),
-          name: "due_at",
-          callback: this.formatDueDate,
+          name: "__slot:dueDate",
+          field: "request",
           sortField: "due_at"
         },
         {
@@ -140,15 +144,11 @@ export default {
         window.location = link;
       }
     },
-    formatDueDate(value) {
+    classDueDate(value) {
       let dueDate = moment(value);
       let now = moment();
       let diff = dueDate.diff(now, "hours");
-      let color =
-        diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-dark";
-      return (
-        '<span class="' + color + '">' + this.formatDate(dueDate) + "</span>"
-      );
+      return diff < 0 ? "text-danger" : (diff <= 1 ? "text-warning" : "text-dark");
     },
     getTaskStatus() {
       let path = new URL(location.href);
