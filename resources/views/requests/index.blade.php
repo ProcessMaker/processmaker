@@ -73,7 +73,7 @@
                     </div>
                     <div class="col mt-2" align="right">
                         <i class="fas fa-search text-secondary"></i>
-                        <a class="text-primary ml-3" @click="advanced = true">Advanced</a>
+                        <a class="text-primary ml-3" @click="advanced = true">{{__('Advanced')}}</a>
                     </div>
                 </div>  
                 <div v-if="advanced == true" class="search row mt-2 bg-light p-2">
@@ -82,7 +82,7 @@
                     </div>
                     <div class="col mt-2" align="right">
                         <i class="fas fa-search text-secondary"></i>
-                        <a class="text-primary ml-3" @click="advanced = false">Basic</a>
+                        <a class="text-primary ml-3" @click="advanced = false">{{__('Basic')}}</a>
                     </div>
                 </div>              
             </template>
