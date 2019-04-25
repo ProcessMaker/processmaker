@@ -688,5 +688,14 @@
     "Your account has been timed out for security.": "Your account has been timed out for security.",
     "Please log in to continue your work on this page.": "Please log in to continue your work on this page.",
     "Avatar": "Avatar",
-    "Copy": "Copy"
+    "Copy": "Copy",
+    "Reset": "Reset",
+    "Send Email": "Send Email",
+    "Communication": "Communication",
+    "Email body": "Email body",
+    "Email subject": "Email subject",
+    "Recipient's email address": "Recipient's email address",
+    "Recipient's name": "Recipient's name",
+    "What Screen Should Be Used For Sending This Email": "What Screen Should Be Used For Sending This Email"
+    
 }
