@@ -85,11 +85,10 @@ class RequestTest extends TestCase
         $Request_id = factory(ProcessRequest::class)->create()->id;
         // get the URL
         $response = $this->webCall('GET', '/requests/' . $Request_id);
-
         $response->assertStatus(200);
         // check the correct view is called
         $response->assertViewIs('requests.show');
-        $response->assertSee('Cancel Request');
+        $response->assertSee('Requested By');
     }
 
     public function testShowRouteWithAssignedUser()
