@@ -56,6 +56,8 @@ let nodeTypes = [
     eventBasedGateway,
     intermediateMessageCatchEvent,
 ]
+
+ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
 
 // Implement user list and group list for intermediate catch event
