@@ -112,7 +112,7 @@
                                                              label="fullname"
                                                              v-if="item.type == 'script'"
                                                              @search-change="loadUsers($event, false)"
-                                                             @opem="loadUsers"
+                                                             @open="loadUsers"
                                                              class="assignable-input">
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
