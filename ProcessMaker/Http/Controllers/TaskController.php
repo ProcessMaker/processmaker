@@ -44,7 +44,7 @@ class TaskController extends Controller
             ->update(['read_at' => Carbon::now()]);
 
         $manager = new ScreenBuilderManager();
-        event(new ScreenBuilderStarting($manager, $task->getScreen()));
+        event(new ScreenBuilderStarting($manager, $task->getScreen()->type));
 
         return view('tasks.edit', ['task' => $task, 'dueLabels' => self::$dueLabels, 'manager' => $manager]);
     }
