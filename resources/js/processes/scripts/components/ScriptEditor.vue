@@ -1,64 +1,84 @@
 <template>
-    <div id="editor-container">
-        <div class="toolbar">
-            <nav class="navbar navbar-expand-md override">
-                <span> {{script.title}} ({{scriptFormat}})</span>
-                <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-                    <ul class="navbar-nav">
-                        <li class="nav-item ">
-                            <a href="#" title="Save Script" @click="save">
-                                <i class="fas fa-save"></i>
-                            </a>
-                        </li>
-                        <li class="nav-item ">
-                            <a href="#" @click="onClose" title="Return to Designer">
-                                <i class="fas fa-times"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+    <b-container class="h-100">
+        <b-card no-body class="h-100">
+            <b-card-header class="text-right">
+                <b-button title="Save Script" @click="save" size="sm">
+                    <i class="fas fa-save"/>
+                </b-button>
+            </b-card-header>
 
-            </nav>
-        </div>
-        <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="editor" :class="{hidden: resizing}"></monaco-editor>
-        <div class="editor" v-if="resizing"></div>
-        <div class="preview border-top">
-            <div class="data border-right">
-                <div class=" p-1 bg-secondary border-bottom text-white">Input Data JSON</div>
-                <monaco-editor :options="monacoOptions" v-model="preview.data" language="json" class="editor" :class="{hidden: resizing}"></monaco-editor>
-            </div>
-            <div class="config border-right">
-                <div class="p-1 bg-secondary border-bottom text-white">Script Config JSON</div>
-                <monaco-editor :options="monacoOptions" v-model="preview.config" language="json" class="editor" :class="{hidden: resizing}"></monaco-editor>
+            <b-card-body>
+                <b-row class="h-100">
+                    <b-col cols="8" class="h-100">
+                        <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="editor h-100" :class="{hidden: resizing}"/>
+                    </b-col>
+                    <b-col>
+                        <b-list-group class="w-100">
+                            <b-list-group-item class="bg-light">
+                                <b-row>
+                                    <b-col>{{ $t('Debugger') }}</b-col>
+                                    <b-col align-self="end" cols="4" class="text-right">
+                                        <b-button
+                                            class="text-capitalize pl-3 pr-3"
+                                            :disabled="preview.executing"
+                                            @click="execute"
+                                            size="sm"
+                                        >
+                                            <i class="fas fa-caret-square-right"/>
+                                            {{ $t('Run') }}
+                                        </b-button>
+                                    </b-col>
+                                </b-row>
+                            </b-list-group-item>
+                        </b-list-group>
 
-            </div>
-            <div class="output">
-                <div class="p-1 bg-secondary border-bottom text-white">Script Output</div>
-                <div class="btn-group" role="group">
-                    <button :disabled="preview.executing" @click="execute" class="btn btn-primary"><i class="fas fa-play-circle"></i></button>
-                    <div class="col"></div>
-                    <div class="col p-2 text-right">
-                        <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
-                        <i v-if="preview.success" class="fas fa-check text-success"></i>
-                        <i v-if="preview.failure" class="fas fa-times-circle text-danger"></i>
+                        <!-- <collapsable-section title="Configuration">
+                            <span>The side panel!</span>
+                        </collapsable-section> -->
+                    </b-col>
+                </b-row>
+
+                <!-- <div class="editor" v-if="resizing"></div>
+                <div class="preview border-top">
+                    <div class="data border-right">
+                        <div class=" p-1 bg-secondary border-bottom text-white">Input Data JSON</div>
+                        <monaco-editor :options="monacoOptions" v-model="preview.data" language="json" class="editor" :class="{hidden: resizing}"></monaco-editor>
                     </div>
-                </div>
-                <div class="content" style="overflow: auto; width: 100%;">
-                    <pre v-if="preview.success" v-text="preview.output"></pre>
-                    <div v-if="preview.failure" class="w-100">
-                        <div class="text-light bg-danger">{{preview.error.exception}}</div>
-                        <div class="text-light text-monospace small">{{preview.error.message}}</div>
-                    </div>
-                </div>
+                    <div class="config border-right">
+                        <div class="p-1 bg-secondary border-bottom text-white">Script Config JSON</div>
+                        <monaco-editor :options="monacoOptions" v-model="preview.config" language="json" class="editor" :class="{hidden: resizing}"></monaco-editor>
 
-            </div>
-        </div>
-    </div>
+                    </div>
+                    <div class="output">
+                        <div class="p-1 bg-secondary border-bottom text-white">Script Output</div>
+                        <div class="btn-group" role="group">
+                            <button :disabled="preview.executing" @click="execute" class="btn btn-primary"><i class="fas fa-play-circle"></i></button>
+                            <div class="col"></div>
+                            <div class="col p-2 text-right">
+                                <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
+                                <i v-if="preview.success" class="fas fa-check text-success"></i>
+                                <i v-if="preview.failure" class="fas fa-times-circle text-danger"></i>
+                            </div>
+                        </div>
+                        <div class="content" style="overflow: auto; width: 100%;">
+                            <pre v-if="preview.success" v-text="preview.output"></pre>
+                            <div v-if="preview.failure" class="w-100">
+                                <div class="text-light bg-danger">{{preview.error.exception}}</div>
+                                <div class="text-light text-monospace small">{{preview.error.message}}</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div> -->
+            </b-card-body>
+        </b-card>
+    </b-container>
 </template>
 
 <script>
     import MonacoEditor from "vue-monaco";
     import _ from "lodash";
+    import CollapsableSection from "./CollapsableSection";
 
     export default {
         props: ["process", "script", "scriptFormat"],
@@ -80,7 +100,8 @@
             };
         },
         components: {
-            MonacoEditor
+            MonacoEditor,
+            CollapsableSection
         },
         mounted() {
             window.addEventListener("resize", this.handleResize);
@@ -148,8 +169,12 @@
 </script>
 
 <style lang="scss">
-
     .container {
+        max-width: 100%;
+        padding: 0 0 0 0;
+    }
+
+    /* .container {
         max-width: 100%;
         padding: 0 0 0 0;
     }
@@ -223,6 +248,6 @@
                 padding-right: 15px;
             }
         }
-    }
+    } */
 </style>
 
