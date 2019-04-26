@@ -18,7 +18,7 @@
       <div v-if="loadingUsers">{{ $t('Loading...') }}</div>
       <select v-else class="form-control" :value="assignedUserGetter" @input="assignedUserSetter">
         <option></option>
-        <option v-for="(row, index) in users" :key="index" :value="row.id">{{ $t(row.fullname) }}</option>
+        <option v-for="(row, index) in users" :key="index" :value="row.id">{{ row.fullname }}</option>
       </select>
     </div>
 
@@ -27,7 +27,7 @@
       <div v-if="loadingGroups">{{ $t('Loading...') }}</div>
       <select v-else class="form-control" :value="assignedGroupGetter" @input="assignedGroupSetter">
         <option></option>
-        <option v-for="(row, index) in groups" :key="index" :value="row.id">{{ $t(row.name) }}</option>
+        <option v-for="(row, index) in groups" :key="index" :value="row.id">{{ row.name }}</option>
       </select>
     </div>
   </div>
