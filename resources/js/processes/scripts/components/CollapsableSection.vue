@@ -1,20 +1,20 @@
 <template>
-  <b-card no-body>
-    <b-card-header>
+  <div>
+    <b-list-group-item class="bg-light">
       <b-row v-b-toggle="'accordion-' + title">
-        <b-col>{{title}}</b-col>
+        <b-col>{{ title }}</b-col>
         <b-col align-self="end" cols="1">
           <i class="fas fa-chevron-down accordion-icon"/>
         </b-col>
       </b-row>
-    </b-card-header>
+    </b-list-group-item>
 
     <b-collapse :id="'accordion-' + title">
-      <b-card-body>
+      <b-list-group-item>
         <slot/>
-      </b-card-body>
+      </b-list-group-item>
     </b-collapse>
-  </b-card>
+  </div>
 </template>
 
 <script>

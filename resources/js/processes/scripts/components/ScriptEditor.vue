@@ -7,13 +7,13 @@
                 </b-button>
             </b-card-header>
 
-            <b-card-body>
+            <b-card-body class="overflow-hidden">
                 <b-row class="h-100">
                     <b-col cols="8" class="h-100">
-                        <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="editor h-100" :class="{hidden: resizing}"/>
+                        <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="h-100" :class="{hidden: resizing}"/>
                     </b-col>
-                    <b-col>
-                        <b-list-group class="w-100">
+                    <b-col class="h-100">
+                        <b-list-group class="w-100 h-100 overflow-auto">
                             <b-list-group-item class="bg-light">
                                 <b-row>
                                     <b-col>{{ $t('Debugger') }}</b-col>
@@ -30,11 +30,66 @@
                                     </b-col>
                                 </b-row>
                             </b-list-group-item>
-                        </b-list-group>
 
-                        <!-- <collapsable-section title="Configuration">
-                            <span>The side panel!</span>
-                        </collapsable-section> -->
+                            <b-list-group-item class="bg-light">
+                                <b-row v-b-toggle.configuration>
+                                    <b-col>
+                                        <i class="fas fa-cog"/>
+                                        Configuration
+                                    </b-col>
+                                    <b-col align-self="end" cols="1">
+                                    <i class="fas fa-chevron-down accordion-icon"/>
+                                    </b-col>
+                                </b-row>
+                            </b-list-group-item>
+                            <b-list-group-item class="border-bottom-0 p-0">
+                                <b-collapse id="configuration">
+                                    <monaco-editor :options="monacoOptions" v-model="preview.config" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
+                                </b-collapse>
+                            </b-list-group-item>
+
+                            <b-list-group-item class="bg-light">
+                                <b-row v-b-toggle.input>
+                                    <b-col>
+                                        <i class="fas fa-sign-in-alt"/>
+                                        Sample Input
+                                    </b-col>
+                                    <b-col align-self="end" cols="1">
+                                    <i class="fas fa-chevron-down accordion-icon"/>
+                                    </b-col>
+                                </b-row>
+                            </b-list-group-item>
+                            <b-list-group-item class="border-bottom-0 p-0">
+                                <b-collapse id="input">
+                                    <monaco-editor :options="monacoOptions" v-model="preview.data" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
+                                </b-collapse>
+                            </b-list-group-item>
+
+                            <b-list-group-item class="bg-light">
+                                <b-row v-b-toggle.output>
+                                    <b-col>
+                                        <i class="far fa-caret-square-right"/>
+                                        Output
+                                    </b-col>
+                                    <b-col align-self="end" cols="1">
+                                    <i class="fas fa-chevron-down accordion-icon"/>
+                                    </b-col>
+                                </b-row>
+                            </b-list-group-item>
+                            <b-list-group-item class="border-bottom-0 p-0">
+                                <b-collapse id="output" class="bg-dark">
+                                    <div class="output">
+                                        <pre v-if="preview.success"><samp>{{ preview.output }}</samp></pre>
+                                        <div v-if="preview.failure">
+                                            <div class="text-light bg-danger">{{preview.error.exception}}</div>
+                                            <div class="text-light text-monospace small">{{preview.error.message}}</div>
+                                        </div>
+                                    </div>
+                                </b-collapse>
+                            </b-list-group-item>
+
+                            <b-list-group-item class="flex-fill"/>
+                        </b-list-group>
                     </b-col>
                 </b-row>
 
@@ -71,6 +126,10 @@
                     </div>
                 </div> -->
             </b-card-body>
+
+            <b-card-footer>
+                Language: {{ script.language }}
+            </b-card-footer>
         </b-card>
     </b-container>
 </template>
@@ -78,7 +137,6 @@
 <script>
     import MonacoEditor from "vue-monaco";
     import _ from "lodash";
-    import CollapsableSection from "./CollapsableSection";
 
     export default {
         props: ["process", "script", "scriptFormat"],
@@ -100,8 +158,7 @@
             };
         },
         components: {
-            MonacoEditor,
-            CollapsableSection
+            MonacoEditor
         },
         mounted() {
             window.addEventListener("resize", this.handleResize);
@@ -168,11 +225,28 @@
     };
 </script>
 
-<style lang="scss">
-    .container {
-        max-width: 100%;
-        padding: 0 0 0 0;
-    }
+<style lang="scss" scoped>
+.container {
+    max-width: 100%;
+    padding: 0 0 0 0;
+}
+
+.accordion-icon {
+  transition: all 200ms;
+}
+
+.collapsed .accordion-icon {
+  transform: rotate(-90deg);
+}
+
+.editor-inspector {
+    width: 300px;
+    height: 300px;
+}
+
+.output {
+    min-height: 300px;
+}
 
     /* .container {
         max-width: 100%;
