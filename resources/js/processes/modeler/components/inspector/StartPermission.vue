@@ -6,6 +6,7 @@
         class="form-control"
         :value="assignmentGetter"
         @input="assignmentSetter"
+        ref="startSelect"
       >
         <option value=""></option>
         <option value="user">{{ $t('User') }}</option>
