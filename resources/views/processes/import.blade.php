@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col">
                 <div class="card text-center">
-                    <div class="card-header bg-light" align="left">
+                    <div class="card-header bg-white" align="left">
                         <h5>{{__('Import Process')}}</h5>
                     </div>
                     <div class="card-body">
@@ -29,7 +29,7 @@
                             {{__('Browse')}}
                         </button>
                     </div>
-                    <div class="card-footer bg-light" align="right">
+                    <div class="card-footer bg-white" align="right">
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{__('Cancel')}}
                         </button>
