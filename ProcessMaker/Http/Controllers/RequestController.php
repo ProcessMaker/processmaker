@@ -9,10 +9,12 @@ use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class RequestController extends Controller
 {
     use HasMediaTrait;
+    use SearchAutocompleteTrait;
 
     /**
      * Get the list of requests.
