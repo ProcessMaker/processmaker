@@ -83,7 +83,7 @@
                         :select-label="''" 
                         :loading="isLoading" 
                         open-direction="bottom" 
-                        label="username" 
+                        label="fullname" 
                         :options="requestorOptions" 
                         :multiple="true" 
                         :limit="1" 

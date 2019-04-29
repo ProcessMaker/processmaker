@@ -12,7 +12,7 @@ new Vue({
         participants: null,
         processOptions: [],
         statusOptions: ['list', 'of', 'options'],
-        requestorOptions: ['list', 'of', 'options'],
+        requestorOptions: [],
         participantsOptions: ['list', 'of', 'options'],
         advanced: false,
         isLoading: false
@@ -21,6 +21,7 @@ new Vue({
     components: { RequestsListing, Multiselect },
     mounted() {
         this.getProcesses('')
+        this.getUsers('')
     },
     methods: {
         getProcesses(query) {
@@ -36,12 +37,12 @@ new Vue({
         getUsers(query) {
             this.isLoading = true
             ProcessMaker.apiClient
-                .get("/users?&per_page=50" + "&filter=" + query)
-                .then(response => {
-                    this.requestorOptions = response.data.data;
-                    this.isLoading = false
-                    setTimeout(3000)
-                });
+              .get("/requests/search?type=requester&filter=" + query, {baseURL: ''})
+              .then(response => {
+                this.requestorOptions = response.data;
+                this.isLoading = false
+                setTimeout(3000)
+              });
         }
     }
 });
