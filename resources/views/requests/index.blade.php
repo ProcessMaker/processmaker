@@ -67,14 +67,15 @@
                         :loading="isLoading" 
                         open-direction="bottom" 
                         label="name" 
-                        :options="processOptions" 
+                        :options="processOptions"
+                        :track-by="'id'"
                         :multiple="true" 
                         :limit="1" 
                         :limit-text="count => `+${count}`" 
-                        placeholder="Select"></multiselect>
+                        placeholder="Process"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="status" :options="statusOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>
+                        <multiselect v-model="status" :options="statusOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Status"></multiselect>
                     </div>
                     <div class="col">
                         <multiselect 
@@ -85,10 +86,11 @@
                         open-direction="bottom" 
                         label="fullname" 
                         :options="requestorOptions" 
+                        :track-by="'id'"
                         :multiple="true" 
                         :limit="1" 
                         :limit-text="count => `+${count}`" 
-                        placeholder="Select">
+                        placeholder="Requester"></multiselect>
                             <template slot="option" slot-scope="props">
                                 <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
                             <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
@@ -97,7 +99,7 @@
                         </multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="participants" :options="participantsOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>
+                        <multiselect v-model="participants" :options="participantsOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Participants"></multiselect>
                     </div>
                     <div class="col mt-2" align="right">
                         <i class="fas fa-search text-secondary"></i>
