@@ -26,10 +26,13 @@ new Vue({
         this.getUsers('')
     },
     methods: {
+        getInitials(firstname, lastname) {
+            return firstname.match(/./u)[0] + lastname.match(/./u)[0]
+        },
         getProcesses(query) {
             this.isLoading = true
             ProcessMaker.apiClient
-                .get("/requests/search?type=process&filter=" + query, {baseURL: ''})
+                .get("/requests/search?type=process&filter=" + query, { baseURL: '' })
                 .then(response => {
                     this.processOptions = response.data;
                     this.isLoading = false

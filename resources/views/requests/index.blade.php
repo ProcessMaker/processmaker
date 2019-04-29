@@ -91,7 +91,7 @@
                         placeholder="Select">
                             <template slot="option" slot-scope="props">
                                 <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
-                                <span v-else class="placeholder bg-warning text-white p-1">PM</span>
+                            <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
                                 <span class="ml-1">@{{props.option.fullname}}</span>
                             </template>
                         </multiselect>
@@ -159,9 +159,14 @@
         height: 27px;
         border-radius: 50%;
     }
-    .placeholder {
-        width:25px;
-        height: 25px;
+    .initials {
+        display:inline-block;
+        text-align: center;
+        font-size: 12px;
+        max-width:25px;
+        max-height: 25px;
+        min-width:25px;
+        min-height: 25px;
         border-radius: 50%;
     }
 </style>
