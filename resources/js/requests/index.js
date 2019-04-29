@@ -27,9 +27,9 @@ new Vue({
         getProcesses(query) {
             this.isLoading = true
             ProcessMaker.apiClient
-                .get("/processes?&per_page=50" + "&filter=" + query)
+                .get("/requests/search?type=process&filter=" + query, {baseURL: ''})
                 .then(response => {
-                    this.processOptions = response.data.data;
+                    this.processOptions = response.data;
                     this.isLoading = false
                     setTimeout(3000)
                 });

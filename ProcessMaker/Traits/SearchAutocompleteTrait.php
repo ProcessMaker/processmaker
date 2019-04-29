@@ -5,7 +5,7 @@ use DB;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Process;
 
 trait SearchAutocompleteTrait
 {
@@ -21,6 +21,23 @@ trait SearchAutocompleteTrait
         } else {
             return abort(404);
         }
+    }
+    
+    private function searchProcess($query)
+    {
+        if (empty($query)) {
+            $results = Process::limit(50)->get();
+        } else {
+            $results = Process::pmql('name = "' . $query . '"', function($expression) {
+                return function($query) use($expression) {
+                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                };
+            })->get();
+        }
+        
+        return $results->map(function ($user) {
+            return $user->only(['id', 'name']);
+        });
     }
     
     private function searchRequester($query)
