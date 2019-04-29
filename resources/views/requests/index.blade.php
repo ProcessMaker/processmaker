@@ -88,7 +88,13 @@
                         :multiple="true" 
                         :limit="1" 
                         :limit-text="count => `+${count}`" 
-                        placeholder="Select"></multiselect>
+                        placeholder="Select">
+                            <template slot="option" slot-scope="props">
+                                <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
+                                <span v-else class="placeholder bg-warning text-white p-1">PM</span>
+                                <span class="ml-1">@{{props.option.fullname}}</span>
+                            </template>
+                        </multiselect>
                     </div>
                     <div class="col">
                         <multiselect v-model="participants" :options="participantsOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Select"></multiselect>
@@ -147,6 +153,16 @@
 
     .card-size-header {
         width: 90px;
+    }
+    .option__image {
+        width:27px;
+        height: 27px;
+        border-radius: 50%;
+    }
+    .placeholder {
+        width:25px;
+        height: 25px;
+        border-radius: 50%;
     }
 </style>
 @endsection

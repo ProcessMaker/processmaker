@@ -1,6 +1,8 @@
 import Vue from "vue";
 import RequestsListing from "./components/RequestsListing";
 import Multiselect from 'vue-multiselect'
+import AvatarImage from "../components/AvatarImage";
+Vue.component("avatar-image", AvatarImage);
 
 new Vue({
     data: {
@@ -37,12 +39,12 @@ new Vue({
         getUsers(query) {
             this.isLoading = true
             ProcessMaker.apiClient
-              .get("/requests/search?type=requester&filter=" + query, {baseURL: ''})
-              .then(response => {
-                this.requestorOptions = response.data;
-                this.isLoading = false
-                setTimeout(3000)
-              });
+                .get("/requests/search?type=requester&filter=" + query, { baseURL: '' })
+                .then(response => {
+                    this.requestorOptions = response.data;
+                    this.isLoading = false
+                    setTimeout(3000)
+                });
         }
     }
 });
