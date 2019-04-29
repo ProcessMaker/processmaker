@@ -102,7 +102,7 @@ class RequestController extends Controller
         $files = $request->getMedia();
 
         $manager = new ScreenBuilderManager();
-        event(new ScreenBuilderStarting($manager, $request->summary_screen->type));
+        event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
         return view('requests.show', compact(
             'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager'
