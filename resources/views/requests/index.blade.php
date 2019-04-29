@@ -90,7 +90,7 @@
                         :multiple="true" 
                         :limit="1" 
                         :limit-text="count => `+${count}`" 
-                        placeholder="Requester"></multiselect>
+                        placeholder="Requester">
                             <template slot="option" slot-scope="props">
                                 <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
                             <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
