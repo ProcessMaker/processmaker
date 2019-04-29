@@ -58,28 +58,45 @@ trait SearchAutocompleteTrait
     
     private function searchParticipants($query)
     {
-        $results = [];
+        $results = [
+            'users' => [
+                'label' => 'Users',
+                'items' => [],
+            ],
+            'groups' => [
+                'label' => 'Groups',
+                'items' => [],
+            ],
+        ];
         
-        $results['users'] = User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
-            return function($query) use($expression) {
-                $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
-            };
-        })->get();
+        if (empty($query)) {
+            $results['users']['items'] = User::limit(50)->get();
+            $results['groups']['items'] = Group::limit(50)->get();
+        }else {
+            $results['users']['items'] = User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
+                return function($query) use($expression) {
+                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                };
+            })->get();        
+            
+            $results['groups']['items'] = Group::pmql('name = "' . $query . '"', function($expression) {
+                return function($query) use($expression) {
+                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                };
+            })->get();
+        }
 
-        $results['users'] = $results['users']->map(function ($user) {
-            return $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
-        });        
-        
-        $results['groups'] = Group::pmql('name = "' . $query . '"', function($expression) {
-            return function($query) use($expression) {
-                $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
-            };
-        })->get();
-        
-        $results['groups'] = $results['groups']->map(function ($group) {
+        $results['users']['items'] = $results['users']['items']->map(function ($user) {
+            $user = $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
+            $user['name'] = $user['fullname'];
+            unset($user['fullname']);
+            return $user;
+        });
+
+        $results['groups']['items'] = $results['groups']['items']->map(function ($group) {
             return $group->only(['id', 'name']);
         });
-        
+
         return $results;
     }
 
