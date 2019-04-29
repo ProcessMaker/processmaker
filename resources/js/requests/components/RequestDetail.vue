@@ -4,7 +4,7 @@
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
-        :css="css"
+        :css="css.table"
         :api-mode="false"
         :fields="fields"
         :data="data"
