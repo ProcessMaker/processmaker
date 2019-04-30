@@ -8,11 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Notification;
+use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
@@ -120,6 +122,35 @@ class ProcessRequestController extends Controller
                     ->orWhere('id', 'like', $filterBase)
                     ->orWhere('status', 'like', $filter);
             });
+        }
+
+        $pmql = $request->input('pmql', '');    
+        if (!empty($pmql)) {
+            try {
+                $query->pmql($pmql, function($expression) {
+                    
+                    //Handle process name
+                    if ($expression->field->field() == 'process.name') {
+                        return function($query) use($expression) {
+                            $processes = Process::where('name', $expression->value->value())->get();
+                            $query->whereIn('process_id', $processes->pluck('id'));
+                        };
+                    }
+                    
+                    //Handle participants
+                    if ($expression->field->field() == 'participant') {
+                        return function($query) use($expression) {
+                            $requests = ProcessRequest::whereHas('participants', function($query) use ($expression) {
+                                $query->where('user_id', $expression->value->value());
+                            })->get();
+
+                            $query->whereIn('process_id', $requests->pluck('id'));
+                        };
+                    }
+                });
+            } catch (QueryException | SyntaxError $e) {
+                return response([], 400);
+            }
         }
 
         $response = $query
