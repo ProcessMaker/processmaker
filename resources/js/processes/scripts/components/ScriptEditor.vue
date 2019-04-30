@@ -7,14 +7,14 @@
                 </b-button>
             </b-card-header>
 
-            <b-card-body class="overflow-hidden">
+            <b-card-body class="overflow-hidden p-4">
                 <b-row class="h-100">
                     <b-col cols="9" class="h-100">
                         <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="h-100" :class="{hidden: resizing}"/>
                     </b-col>
                     <b-col class="h-100">
                         <b-list-group class="w-100 h-100 overflow-auto">
-                            <b-list-group-item class="bg-light">
+                            <b-list-group-item class="card-header">
                                 <b-row>
                                     <b-col>{{ $t('Debugger') }}</b-col>
                                     <b-col align-self="end" cols="4" class="text-right">
@@ -31,13 +31,13 @@
                                 </b-row>
                             </b-list-group-item>
 
-                            <b-list-group-item class="bg-light">
+                            <b-list-group-item class="card-header">
                                 <b-row v-b-toggle.configuration>
                                     <b-col>
                                         <i class="fas fa-cog"/>
                                         Configuration
                                     </b-col>
-                                    <b-col align-self="end" cols="1">
+                                    <b-col align-self="end" cols="1" class="mr-2">
                                     <i class="fas fa-chevron-down accordion-icon"/>
                                     </b-col>
                                 </b-row>
@@ -48,13 +48,13 @@
                                 </b-collapse>
                             </b-list-group-item>
 
-                            <b-list-group-item class="bg-light">
+                            <b-list-group-item class="card-header">
                                 <b-row v-b-toggle.input>
                                     <b-col>
                                         <i class="fas fa-sign-in-alt"/>
                                         Sample Input
                                     </b-col>
-                                    <b-col align-self="end" cols="1">
+                                    <b-col align-self="end" cols="1" class="mr-2">
                                     <i class="fas fa-chevron-down accordion-icon"/>
                                     </b-col>
                                 </b-row>
@@ -71,7 +71,7 @@
                                         <i class="far fa-caret-square-right"/>
                                         Output
                                     </b-col>
-                                    <b-col align-self="end" cols="1">
+                                    <b-col align-self="end" cols="1" class="mr-2">
                                     <i class="fas fa-chevron-down accordion-icon"/>
                                     </b-col>
                                 </b-row>
@@ -229,6 +229,10 @@
 .container {
     max-width: 100%;
     padding: 0 0 0 0;
+}
+
+.card-header {
+  background: #f7f7f7;
 }
 
 .accordion-icon {
