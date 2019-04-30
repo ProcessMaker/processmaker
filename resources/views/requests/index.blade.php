@@ -64,7 +64,7 @@
                         v-model="processes" 
                         @search-change="getProcesses" 
                         :select-label="''" 
-                        :loading="isLoading" 
+                        :loading="isLoading.process" 
                         open-direction="bottom" 
                         label="name" 
                         :options="processOptions"
@@ -75,17 +75,28 @@
                         placeholder="Process"></multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="status" :options="statusOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Status"></multiselect>
+                        <multiselect
+                        v-model="status"
+                        :select-label="''" 
+                        :loading="isLoading.status"
+                        open-direction="bottom"
+                        label="name"
+                        :options="statusOptions"
+                        track-by="value"
+                        :multiple="true"
+                        :limit="1"
+                        :limit-text="count => `+${count}`"
+                        placeholder="Status"></multiselect>
                     </div>
                     <div class="col">
                         <multiselect 
-                        v-model="requestor" 
-                        @search-change="getUsers" 
+                        v-model="requester" 
+                        @search-change="getRequesters" 
                         :select-label="''" 
-                        :loading="isLoading" 
+                        :loading="isLoading.requester" 
                         open-direction="bottom" 
                         label="fullname" 
-                        :options="requestorOptions" 
+                        :options="requesterOptions" 
                         :track-by="'id'"
                         :multiple="true" 
                         :limit="1" 
@@ -102,7 +113,8 @@
                         <multiselect 
                         v-model="participants" 
                         :options="participantsOptions" 
-                        :loading="isLoading" 
+                        :select-label="''" 
+                        :loading="isLoading.participants" 
                         group-values="items" 
                         group-label="label" 
                         :group-select="true"
@@ -114,6 +126,19 @@
                         :limit="1" 
                         :limit-text="count => `+${count}`" 
                         placeholder="Participants">
+                            <template slot="option" slot-scope="props">
+                                <span v-if="props.option.$isLabel">
+                                    <span>@{{props.option.$groupLabel}}</span>
+                                </span>
+                                <span v-if="props.option.username">
+                                    <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
+                                    <span v-else class="initials bg-warning text-white p-1">@{{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                    <span class="ml-1">@{{props.option.name}}</span>
+                                </span>
+                                <span v-else>
+                                    <span class="ml-1">@{{props.option.name}}</span>
+                                </span>
+                            </template>
                     </multiselect>
                     </div>
                     <div class="col mt-2" align="right">

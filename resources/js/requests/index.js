@@ -10,28 +10,51 @@ new Vue({
         title: "All Request",
         processes: null,
         status: null,
-        requestor: null,
+        requester: null,
         participants: null,
         processOptions: [],
-        statusOptions: ['list', 'of', 'options'],
-        requestorOptions: [],
+        statusOptions: [],
+        requesterOptions: [],
         participantsOptions: [],
         advanced: false,
-        isLoading: false
+        isLoading: {
+          process: false,
+          requester: false,
+          status: false,
+          participants: false,  
+        }
     },
     el: "#requests-listing",
     components: { RequestsListing, Multiselect },
     mounted() {
+        this.getStatus('')
         this.getProcesses('')
-        this.getUsers('')
+        this.getRequesters('')
         this.getParticipants('')
     },
     methods: {
+        test(option) {
+          console.log('OPTION', option);
+        },
         getInitials(firstname, lastname) {
-            return firstname.match(/./u)[0] + lastname.match(/./u)[0]
+            if (firstname) {
+              return firstname.match(/./u)[0] + lastname.match(/./u)[0]
+            } else {
+              return null;
+            }
+        },
+        getStatus() {
+          this.isLoading.status = true;
+          ProcessMaker.apiClient
+              .get("/requests/search?type=status", { baseURL: '' })
+              .then(response => {
+                  this.statusOptions = response.data;
+                  this.isLoading = false
+                  setTimeout(3000)
+              });
         },
         getProcesses(query) {
-            this.isLoading = true
+            this.isLoading.process = true
             ProcessMaker.apiClient
                 .get("/requests/search?type=process&filter=" + query, { baseURL: '' })
                 .then(response => {
@@ -40,18 +63,18 @@ new Vue({
                     setTimeout(3000)
                 });
         },
-        getUsers(query) {
-            this.isLoading = true
+        getRequesters(query) {
+            this.isLoading.requester = true
             ProcessMaker.apiClient
                 .get("/requests/search?type=requester&filter=" + query, { baseURL: '' })
                 .then(response => {
-                    this.requestorOptions = response.data;
+                    this.requesterOptions = response.data;
                     this.isLoading = false
                     setTimeout(3000)
                 });
         },
         getParticipants(query) {
-            this.isLoading = true
+            this.isLoading.participants = true
             ProcessMaker.apiClient
                 .get("/requests/search?type=participants&filter=" + query, { baseURL: '' })
                 .then(response => {
