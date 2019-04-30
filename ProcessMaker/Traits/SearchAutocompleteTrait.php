@@ -59,41 +59,41 @@ trait SearchAutocompleteTrait
     private function searchParticipants($query)
     {
         $results = [
-            'users' => [
+            [
                 'label' => 'Users',
                 'items' => [],
             ],
-            'groups' => [
+            [
                 'label' => 'Groups',
                 'items' => [],
             ],
         ];
         
         if (empty($query)) {
-            $results['users']['items'] = User::limit(50)->get();
-            $results['groups']['items'] = Group::limit(50)->get();
+            $results[1]['items'] = Group::limit(25)->get();
+            $results[0]['items'] = User::limit(25)->get();
         }else {
-            $results['users']['items'] = User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
-                return function($query) use($expression) {
-                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
-                };
-            })->get();        
-            
-            $results['groups']['items'] = Group::pmql('name = "' . $query . '"', function($expression) {
+            $results[1]['items'] = Group::pmql('name = "' . $query . '"', function($expression) {
                 return function($query) use($expression) {
                     $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
                 };
             })->get();
+
+            $results[0]['items'] = User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
+                return function($query) use($expression) {
+                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                };
+            })->get();        
         }
 
-        $results['users']['items'] = $results['users']['items']->map(function ($user) {
+        $results[0]['items'] = $results[0]['items']->map(function ($user) {
             $user = $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
             $user['name'] = $user['fullname'];
             unset($user['fullname']);
             return $user;
         });
 
-        $results['groups']['items'] = $results['groups']['items']->map(function ($group) {
+        $results[1]['items'] = $results[1]['items']->map(function ($group) {
             return $group->only(['id', 'name']);
         });
 
