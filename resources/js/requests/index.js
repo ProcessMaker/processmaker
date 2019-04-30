@@ -8,15 +8,16 @@ new Vue({
     data: {
         filter: "",
         title: "All Request",
-        processes: null,
-        status: null,
-        requester: null,
-        participants: null,
+        process: [],
+        status: [],
+        requester: [],
+        participants: [],
         processOptions: [],
         statusOptions: [],
         requesterOptions: [],
         participantsOptions: [],
         advanced: false,
+        pmql: '',
         isLoading: {
           process: false,
           requester: false,
@@ -33,8 +34,56 @@ new Vue({
         this.getParticipants('')
     },
     methods: {
-        test(option) {
-          console.log('OPTION', option);
+        runSearch() {          
+          let clauses = [];
+          
+          //Parse process
+          if (this.process.length) {
+            let string = '';
+            this.process.forEach((process, key) => {
+              string += 'process_request.process.id = "' + process.id + '"';
+              if (key < this.process.length - 1) string += ' OR ';
+            });
+            clauses.push(string);
+          }
+          
+          //Parse status
+          if (this.status.length) {
+            let string = '';
+            this.status.forEach((status, key) => {
+              string += 'process_request.status = "' + status.value + '"';
+              if (key < this.status.length - 1) string += ' OR ';
+            });
+            clauses.push(string);
+          }
+          
+          //Parse requester
+          if (this.requester.length) {
+            let string = '';
+            this.requester.forEach((requester, key) => {
+              string += 'process_request.user_id = "' + requester.id + '"';
+              if (key < this.requester.length - 1) string += ' OR ';
+            });
+            clauses.push(string);
+          }
+          
+          //Parse participants
+          if (this.participants.length) {
+            let string = '';
+            this.participants.forEach((participants, key) => {
+              string += 'process_request.participant_id = "' + participants.id + '"';
+              if (key < this.participants.length - 1) string += ' OR ';
+            });
+            clauses.push(string);
+          }
+          
+          this.pmql = '';
+          clauses.forEach((string, key) => {
+            this.pmql += '(';
+            this.pmql += string;
+            this.pmql += ')';
+            if (key < clauses.length - 1) this.pmql += ' AND ';
+          });
         },
         getInitials(firstname, lastname) {
             if (firstname) {
