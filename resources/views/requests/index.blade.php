@@ -142,7 +142,7 @@
                     </multiselect>
                     </div>
                     <div class="col mt-2" align="right">
-                        <i class="fas fa-search text-secondary"></i>
+                        <button class="btn btn-default" @click="runSearch"><i class="fas fa-search text-secondary"></i></button>
                         <a class="text-primary ml-3" @click="advanced = true">{{__('Advanced')}}</a>
                     </div>
                 </div>  
