@@ -61,7 +61,7 @@
                 <div class="search row mt-2 bg-light p-2" v-if="advanced == false">
                     <div class="col">
                         <multiselect 
-                        v-model="processes" 
+                        v-model="process" 
                         @search-change="getProcesses" 
                         :select-label="''" 
                         :loading="isLoading.process" 
