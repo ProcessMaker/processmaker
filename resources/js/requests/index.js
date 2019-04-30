@@ -36,6 +36,7 @@ new Vue({
     methods: {
         runSearch() {
           this.buildPmql();
+          this.$refs.requestList.fetch(true);
         },
         buildPmql() {          
           let clauses = [];

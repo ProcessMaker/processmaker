@@ -160,7 +160,7 @@
                     </div>
                 </div>              
             </template>
-            <requests-listing ref="requestList" :filter="filter" type="{{ $type }}"></requests-listing>
+            <requests-listing ref="requestList" :pmql="pmql" type="{{ $type }}"></requests-listing>
         </div>
     </div>
 </div>

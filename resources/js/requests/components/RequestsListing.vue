@@ -62,7 +62,7 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "type"],
+  props: ["pmql", "type"],
   data() {
     return {
       orderBy: "id",
@@ -170,7 +170,7 @@ export default {
       }
       return data;
     },
-    fetch() {
+    fetch(resetPagination) {
       this.loading = true;
       switch (this.type) {
         case "":
@@ -182,6 +182,10 @@ export default {
         default:
           this.additionalParams = "&type=" + this.type;
       }
+      
+      if (resetPagination) {
+        this.page = 1;
+      }
 
       // Load from our api client
       ProcessMaker.apiClient
@@ -191,8 +195,8 @@ export default {
             "&per_page=" +
             this.perPage +
             "&include=process,participants" +
-            "&filter=" +
-            this.filter +
+            "&pmql=" +
+            this.pmql +
             "&order_by=" +
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
