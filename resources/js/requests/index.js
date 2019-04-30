@@ -49,7 +49,7 @@ new Vue({
               .get("/requests/search?type=status", { baseURL: '' })
               .then(response => {
                   this.statusOptions = response.data;
-                  this.isLoading = false
+                  this.isLoading.status = false
                   setTimeout(3000)
               });
         },
@@ -59,7 +59,7 @@ new Vue({
                 .get("/requests/search?type=process&filter=" + query, { baseURL: '' })
                 .then(response => {
                     this.processOptions = response.data;
-                    this.isLoading = false
+                    this.isLoading.process = false
                     setTimeout(3000)
                 });
         },
@@ -69,7 +69,7 @@ new Vue({
                 .get("/requests/search?type=requester&filter=" + query, { baseURL: '' })
                 .then(response => {
                     this.requesterOptions = response.data;
-                    this.isLoading = false
+                    this.isLoading.requester = false
                     setTimeout(3000)
                 });
         },
@@ -79,7 +79,7 @@ new Vue({
                 .get("/requests/search?type=participants&filter=" + query, { baseURL: '' })
                 .then(response => {
                     this.participantsOptions = response.data;
-                    this.isLoading = false
+                    this.isLoading.participants = false
                     setTimeout(3000)
                 });
         }
