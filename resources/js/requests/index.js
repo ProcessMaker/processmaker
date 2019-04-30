@@ -34,14 +34,17 @@ new Vue({
         this.getParticipants('')
     },
     methods: {
-        runSearch() {          
+        runSearch() {
+          this.buildPmql();
+        },
+        buildPmql() {          
           let clauses = [];
           
           //Parse process
           if (this.process.length) {
             let string = '';
             this.process.forEach((process, key) => {
-              string += 'process_request.process.id = "' + process.id + '"';
+              string += 'process.name = "' + process.name + '"';
               if (key < this.process.length - 1) string += ' OR ';
             });
             clauses.push(string);
@@ -51,7 +54,7 @@ new Vue({
           if (this.status.length) {
             let string = '';
             this.status.forEach((status, key) => {
-              string += 'process_request.status = "' + status.value + '"';
+              string += 'status = "' + status.value + '"';
               if (key < this.status.length - 1) string += ' OR ';
             });
             clauses.push(string);
@@ -61,7 +64,7 @@ new Vue({
           if (this.requester.length) {
             let string = '';
             this.requester.forEach((requester, key) => {
-              string += 'process_request.user_id = "' + requester.id + '"';
+              string += 'user_id = "' + requester.id + '"';
               if (key < this.requester.length - 1) string += ' OR ';
             });
             clauses.push(string);
@@ -71,7 +74,7 @@ new Vue({
           if (this.participants.length) {
             let string = '';
             this.participants.forEach((participants, key) => {
-              string += 'process_request.participant_id = "' + participants.id + '"';
+              string += 'participant = "' + participants.id + '"';
               if (key < this.participants.length - 1) string += ' OR ';
             });
             clauses.push(string);
@@ -83,7 +86,7 @@ new Vue({
             this.pmql += string;
             this.pmql += ')';
             if (key < clauses.length - 1) this.pmql += ' AND ';
-          });
+          });          
         },
         getInitials(firstname, lastname) {
             if (firstname) {

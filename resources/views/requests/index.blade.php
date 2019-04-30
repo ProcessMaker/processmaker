@@ -63,6 +63,7 @@
                         <multiselect 
                         v-model="process" 
                         @search-change="getProcesses" 
+                        @input="buildPmql"
                         :select-label="''" 
                         :loading="isLoading.process" 
                         open-direction="bottom" 
@@ -78,6 +79,7 @@
                         <multiselect
                         v-model="status"
                         :select-label="''" 
+                        @input="buildPmql"
                         :loading="isLoading.status"
                         open-direction="bottom"
                         label="name"
@@ -92,6 +94,7 @@
                         <multiselect 
                         v-model="requester" 
                         @search-change="getRequesters" 
+                        @input="buildPmql"
                         :select-label="''" 
                         :loading="isLoading.requester" 
                         open-direction="bottom" 
@@ -119,6 +122,7 @@
                         group-label="label" 
                         :group-select="true"
                         @search-change="getParticipants" 
+                        @input="buildPmql"
                         :multiple="true" 
                         :track-by="'track'"
                         open-direction="bottom" 
@@ -148,7 +152,7 @@
                 </div>  
                 <div v-if="advanced == true" class="search row mt-2 bg-light p-2">
                     <div class="col-10 form-group">
-                        <input type="text" class="form-control" placeholder="PMQL">
+                        <input type="text" class="form-control" placeholder="PMQL" v-model="pmql">
                     </div>
                     <div class="col mt-2" align="right">
                         <i class="fas fa-search text-secondary"></i>
