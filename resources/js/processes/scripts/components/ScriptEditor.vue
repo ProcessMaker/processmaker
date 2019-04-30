@@ -65,7 +65,7 @@
                                 </b-collapse>
                             </b-list-group-item>
 
-                            <b-list-group-item class="bg-light">
+                            <b-list-group-item class="card-header">
                                 <b-row v-b-toggle.output>
                                     <b-col>
                                         <i class="far fa-caret-square-right"/>
@@ -128,7 +128,7 @@
             </b-card-body>
 
             <b-card-footer>
-                Language: {{ script.language }}
+                Language: <span class="text-uppercase">{{ script.language }}</span>
             </b-card-footer>
         </b-card>
     </b-container>
