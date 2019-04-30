@@ -89,12 +89,15 @@ trait SearchAutocompleteTrait
         $results[0]['items'] = $results[0]['items']->map(function ($user) {
             $user = $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
             $user['name'] = $user['fullname'];
+            $user['track'] = 'user-' . $user['id'];
             unset($user['fullname']);
             return $user;
         });
 
         $results[1]['items'] = $results[1]['items']->map(function ($group) {
-            return $group->only(['id', 'name']);
+            $group = $group->only(['id', 'name']);
+            $group['track'] = 'group-' . $group['id'];
+            return $group;
         });
 
         return $results;

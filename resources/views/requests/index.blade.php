@@ -108,7 +108,7 @@
                         :group-select="true"
                         @search-change="getParticipants" 
                         :multiple="true" 
-                        :track-by="'id'"
+                        :track-by="'track'"
                         open-direction="bottom" 
                         label="name" 
                         :limit="1" 
