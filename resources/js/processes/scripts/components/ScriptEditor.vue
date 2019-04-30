@@ -15,9 +15,9 @@
                     <b-col class="h-100">
                         <b-list-group class="w-100 h-100 overflow-auto">
                             <b-list-group-item class="card-header">
-                                <b-row>
+                                <b-row class="d-flex align-items-center">
                                     <b-col>{{ $t('Debugger') }}</b-col>
-                                    <b-col align-self="end" cols="4" class="text-right">
+                                    <b-col align-self="end" class="text-right">
                                         <b-button
                                             class="text-capitalize pl-3 pr-3"
                                             :disabled="preview.executing"
