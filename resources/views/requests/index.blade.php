@@ -99,7 +99,22 @@
                         </multiselect>
                     </div>
                     <div class="col">
-                        <multiselect v-model="participants" :options="participantsOptions" :multiple="true" :limit="1" :limit-text="count => `+${count}`" placeholder="Participants"></multiselect>
+                        <multiselect 
+                        v-model="participants" 
+                        :options="participantsOptions" 
+                        :loading="isLoading" 
+                        group-values="items" 
+                        group-label="label" 
+                        :group-select="true"
+                        @search-change="getParticipants" 
+                        :multiple="true" 
+                        :track-by="'id'"
+                        open-direction="bottom" 
+                        label="name" 
+                        :limit="1" 
+                        :limit-text="count => `+${count}`" 
+                        placeholder="Participants">
+                    </multiselect>
                     </div>
                     <div class="col mt-2" align="right">
                         <i class="fas fa-search text-secondary"></i>

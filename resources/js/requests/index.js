@@ -15,7 +15,7 @@ new Vue({
         processOptions: [],
         statusOptions: ['list', 'of', 'options'],
         requestorOptions: [],
-        participantsOptions: ['list', 'of', 'options'],
+        participantsOptions: [],
         advanced: false,
         isLoading: false
     },
@@ -24,6 +24,7 @@ new Vue({
     mounted() {
         this.getProcesses('')
         this.getUsers('')
+        this.getParticipants('')
     },
     methods: {
         getInitials(firstname, lastname) {
@@ -45,6 +46,16 @@ new Vue({
                 .get("/requests/search?type=requester&filter=" + query, { baseURL: '' })
                 .then(response => {
                     this.requestorOptions = response.data;
+                    this.isLoading = false
+                    setTimeout(3000)
+                });
+        },
+        getParticipants(query) {
+            this.isLoading = true
+            ProcessMaker.apiClient
+                .get("/requests/search?type=participants&filter=" + query, { baseURL: '' })
+                .then(response => {
+                    this.participantsOptions = response.data;
                     this.isLoading = false
                     setTimeout(3000)
                 });
