@@ -76,10 +76,10 @@
                                     </b-col>
                                 </b-row>
                             </b-list-group-item>
-                            <b-list-group-item class="border-bottom-0 p-0">
-                                <b-collapse id="output" class="bg-dark">
-                                    <div class="output">
-                                        <pre v-if="preview.success"><samp>{{ preview.output }}</samp></pre>
+                            <b-list-group-item class="border-bottom-0 p-0 h-100">
+                                <b-collapse id="output" class="bg-dark h-100">
+                                    <div class="output text-white">
+                                        <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
                                         <div v-if="preview.failure">
                                             <div class="text-light bg-danger">{{preview.error.exception}}</div>
                                             <div class="text-light text-monospace small">{{preview.error.message}}</div>
@@ -87,8 +87,6 @@
                                     </div>
                                 </b-collapse>
                             </b-list-group-item>
-
-                            <b-list-group-item class="flex-fill"/>
                         </b-list-group>
                     </b-col>
                 </b-row>
