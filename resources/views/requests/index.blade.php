@@ -160,13 +160,18 @@
                     </div>
                 </div>              
             </template>
-            <requests-listing ref="requestList" :pmql="pmql" type="{{ $type }}"></requests-listing>
+            <requests-listing ref="requestList"></requests-listing>
         </div>
     </div>
 </div>
 @endsection
 
 @section('js')
+<script>
+    //Data needed for default search
+    window.Processmaker.user = @json($currentUser);
+    window.Processmaker.status = '{{ $type }}';
+</script>
 <script src="{{mix('js/requests/index.js')}}"></script>
 @endsection
 

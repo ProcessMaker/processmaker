@@ -62,7 +62,6 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin],
-  props: ["pmql", "type"],
   data() {
     return {
       orderBy: "id",
@@ -111,6 +110,27 @@ export default {
         }
       ]
     };
+  },
+  beforeCreate() {
+    switch (Processmaker.status) {
+      case "":
+        this.$parent.requester.push(Processmaker.user);
+        break;
+      case "in_progress":
+        this.$parent.status.push({
+          name: 'In Progress',
+          value: 'ACTIVE'
+        });
+        break;
+      case "completed":
+        this.$parent.status.push({
+          name: 'Completed',
+          value: 'COMPLETED'
+        });
+        break;
+    }
+    
+    this.$parent.buildPmql();
   },
   methods: {
     onAction(action, data, index) {
@@ -172,16 +192,6 @@ export default {
     },
     fetch(resetPagination) {
       this.loading = true;
-      switch (this.type) {
-        case "":
-          this.additionalParams = "&type=started_me";
-          break;
-        case "all":
-          this.additionalParams = "";
-          break;
-        default:
-          this.additionalParams = "&type=" + this.type;
-      }
       
       if (resetPagination) {
         this.page = 1;
@@ -196,7 +206,7 @@ export default {
             this.perPage +
             "&include=process,participants" +
             "&pmql=" +
-            this.pmql +
+            this.$parent.pmql +
             "&order_by=" +
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +

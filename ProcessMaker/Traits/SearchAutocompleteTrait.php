@@ -2,6 +2,7 @@
 namespace ProcessMaker\Traits;
 
 use DB;
+use Auth;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
@@ -52,15 +53,19 @@ trait SearchAutocompleteTrait
     
     private function searchRequester($query)
     {
+        $results = collect([]);
+        $results->push(Auth::user());
+    
         if (empty($query)) {
-            $results = User::limit(50)->get();
+            $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
         } else {
-            $results = User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
+            $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
                 return function($query) use($expression) {
                     $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
                 };
-            })->get();
+            })->where('id', '!=', Auth::user()->id)->limit(49)->get());
         }
+        
         return $results->map(function ($user) {
             return $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
         });  

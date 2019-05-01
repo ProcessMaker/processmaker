@@ -45,9 +45,11 @@ class RequestController extends Controller
         if(array_key_exists($type,$types)){
           $title = $types[$type];
         }
+        
+        $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
         return view('requests.index', compact(
-            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title']
+            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title', 'currentUser']
         ));
     }
     private function calculate($type)
