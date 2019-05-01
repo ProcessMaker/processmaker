@@ -155,7 +155,7 @@
                         <input type="text" class="form-control" placeholder="PMQL" v-model="pmql">
                     </div>
                     <div class="col mt-2" align="right">
-                        <i class="fas fa-search text-secondary"></i>
+                        <button class="btn btn-default" @click="runSearch(true)"><i class="fas fa-search text-secondary"></i></button>
                         <a class="text-primary ml-3" @click="advanced = false">{{__('Basic')}}</a>
                     </div>
                 </div>              

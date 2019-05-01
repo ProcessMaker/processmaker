@@ -34,8 +34,10 @@ new Vue({
         this.getParticipants('')
     },
     methods: {
-        runSearch() {
-          this.buildPmql();
+        runSearch(advanced) {
+          if (! advanced) {
+            this.buildPmql();
+          }
           this.$refs.requestList.fetch(true);
         },
         buildPmql() {          
