@@ -1,6 +1,9 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <div v-show="loading" class="overlay">
+      <i class="fas fa-circle-notch fa-spin fa-2x text-success"></i>
+    </div>
+    <div class="card card-body table-card vuetable-wrapper">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -10,7 +13,8 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :noDataTemplate="showMessage()"
+        @vuetable:loaded="hideLoader"
         pagination-path="meta"
       >
         <template slot="ids" slot-scope="props">
@@ -140,6 +144,19 @@ export default {
           break;
       }
     },
+    showMessage() {
+      if(this.loading) {
+        return "    "
+      }else {
+        return "No Data Available"
+      }
+    },
+    showLoader() {
+      this.loading = true
+    },
+    hideLoader() {
+      this.loading = false
+    },
     openRequest(data, index) {
       window.location.href = "/requests/" + data.id;
     },
@@ -225,4 +242,12 @@ export default {
   }
 };
 </script>
-
+<style>
+	.overlay { 
+		position: absolute; 
+		z-index: 10; 
+    width: 100%;
+    text-align: center;
+    top: 272px
+	}
+</style>
