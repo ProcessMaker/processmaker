@@ -126,8 +126,9 @@ class ProcessRequestController extends Controller
         }
 
         $pmql = $request->input('pmql', '');    
-        if (!empty($pmql)) {
-            try {
+        
+        try {
+            if (!empty($pmql)) {
                 $query->pmql($pmql, function($expression) {
                     
                     //Handle process name
@@ -149,17 +150,16 @@ class ProcessRequestController extends Controller
                         };
                     }
                 });
-                
-                $response = $query->orderBy(
-                    $request->input('order_by', 'name'),
-                    $request->input('order_direction', 'ASC')
-                )->get();
-                
-            } catch (QueryException $e) {
-                return response(['message' => __('Your PMQL search could not be completed.')], 400);
-            } catch (SyntaxError $e) {
-                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
+                
+            $response = $query->orderBy(
+                $request->input('order_by', 'name'),
+                $request->input('order_direction', 'ASC')
+            )->get();
+        } catch (QueryException $e) {
+            return response(['message' => __('Your PMQL search could not be completed.')], 400);
+        } catch (SyntaxError $e) {
+            return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
         }
         
         if (isset($response)) {
