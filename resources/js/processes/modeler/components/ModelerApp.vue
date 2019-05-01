@@ -17,10 +17,13 @@
 
       <validation-status :validation-errors="validationErrors"/>
     </statusbar>
-    <b-modal ref="uploadmodal" id="uploadmodal" centered :title="$t('Upload BPMN File')" :cancel-title="$t('Cancel')" :ok-title="$t('Ok')">
+    <b-modal ref="uploadmodal" id="uploadmodal" centered :title="$t('Upload BPMN File')">
       <file-upload @input-file="handleUpload">
-        {{ $t('Upload file') }}
+        <button class="btn btn-secondary"><i class="fas fa-upload fa-fw"></i>{{ $t('Upload file') }}</button>
       </file-upload>
+      <div slot="modal-footer">
+        <button class="btn btn-outline-secondary" @click="closeModal">{{ $t('Cancel') }}</button>
+      </div>
     </b-modal>
   </div>
 </template>
@@ -87,6 +90,9 @@ export default {
       }
 
       reader.readAsText(fileObject.file);
+    },
+    closeModal() {
+      this.$refs.modal.hide()
     },
     getTaskNotifications() {
       var notifications = {};

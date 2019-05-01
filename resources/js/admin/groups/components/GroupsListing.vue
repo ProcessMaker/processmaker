@@ -134,6 +134,7 @@ export default {
       ProcessMaker.confirmModal(
         this.$t('Caution!'),
         "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.name}) + "</b>",
+        "",
         function() {
           ProcessMaker.apiClient.delete("groups/" + data.id).then(response => {
             ProcessMaker.alert(this.$t("The group was deleted."), "success");

@@ -122,7 +122,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!! Form::label('postal', __('Postal code')) !!}
+                                                {!! Form::label('postal', __('Postal Code')) !!}
                                                 {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=>
                                                 'form-control', 'v-model'
                                                 => 'formData.postal', 'v-bind:class' => '{\'form-control\':true,
