@@ -1,5 +1,8 @@
 <template>
   <div class="data-table">
+    <div class="overlay">
+      <i class="fas fa-circle-notch fa-spin fa-2x text-success"></i>
+    </div>
     <div class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
@@ -208,5 +211,13 @@ export default {
 };
 </script>
 
-
+<style>
+	.overlay { 
+		position: absolute; 
+		z-index: 10; 
+    width: 100%;
+    text-align: center;
+    top: 272px
+	}
+</style>
 
