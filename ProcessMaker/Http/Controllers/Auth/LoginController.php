@@ -38,8 +38,21 @@ class LoginController extends Controller
         $this->middleware('guest')->except(['logout', 'keepAlive']);
     }
 
-    public function loginWithoutIntended(Request $request) {
-        $request->session()->put('url.intended', false);
+    public function loginWithIntendedCheck(Request $request) {
+        $intended = redirect()->intended()->getTargetUrl();
+        if ($intended) {
+            // Check if the route is a fallback, meaning it's invalid (like favicon.ico)
+            $route = app('router')->getRoutes() ->match(
+                app('request') ->create($intended)
+            );
+            if ($route->isFallback) {
+                $intended = false;
+            }
+
+            // Getting intended deletes it, so put in back
+            $request->session()->put('url.intended', $intended);
+        }
+        \Log::info("INTENDED FROM POST ----- $intended");
         return $this->login($request);
     }
 
