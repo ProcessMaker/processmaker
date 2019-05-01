@@ -143,7 +143,7 @@ class GenerateMenus
           if(\Auth::check() && \Auth::user()->can('view-environment_variables')) {
               $submenu->add(__('Environment Variables'), [
                   'route' => 'environment-variables.index',
-                  'icon' => 'fa-cogs',
+                  'icon' => 'fa-lock',
                   'id' => 'process-environment'
               ]);
           }
