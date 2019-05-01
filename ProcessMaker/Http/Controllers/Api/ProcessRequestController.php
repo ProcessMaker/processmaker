@@ -161,10 +161,14 @@ class ProcessRequestController extends Controller
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
-
-        $response = $response->filter(function ($processRequest) {
-            return Auth::user()->can('view', $processRequest);
-        })->values();
+        
+        if (isset($response)) {
+            $response = $response->filter(function ($processRequest) {
+                return Auth::user()->can('view', $processRequest);
+            })->values();            
+        } else {
+            $response = collect([]);
+        }
 
         return new ApiCollection($response);
     }
