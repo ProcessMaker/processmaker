@@ -9,7 +9,8 @@ use ProcessMaker\Models\User;
  * Model factory for a process
  */
 $factory->define(Process::class, function (Faker $faker) {
-    $emptyProcess = $faker->file(Process::getProcessTemplatesPath());
+    $files = glob(Process::getProcessTemplatesPath() . '/*.bpmn');
+    $emptyProcess = $faker->randomElement($files);
     return [
         'name' => $faker->unique()->sentence(3),
         'bpmn' => file_get_contents($emptyProcess),
