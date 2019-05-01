@@ -3,7 +3,7 @@
     <div class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
-        :css="css.table"
+        :css="css"
         :api-mode="false"
         :fields="fields"
         :data="data"

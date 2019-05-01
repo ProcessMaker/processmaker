@@ -3,7 +3,7 @@
         <div class="card card-body table-card">
             <vuetable :dataManager="dataManager"
                       :sortOrder="sortOrder"
-                      :css="css.table"
+                      :css="css"
                       :api-mode="false"
                       @vuetable:pagination-data="onPaginationData"
                       :fields="fields"
