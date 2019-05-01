@@ -216,6 +216,10 @@ export default {
         .then(response => {
           this.data = this.transform(response.data);
           this.loading = false;
+        })
+        .catch(error => {
+          window.ProcessMaker.alert(error.response.data.message, "danger");
+          this.data = [];
         });
     }
   }
