@@ -28,10 +28,7 @@ new Vue({
     el: "#requests-listing",
     components: { RequestsListing, Multiselect },
     mounted() {
-        this.getStatus('')
-        this.getProcesses('')
-        this.getRequesters('')
-        this.getParticipants('')
+        this.getAll()
     },
     methods: {
         runSearch(advanced) {
@@ -97,6 +94,25 @@ new Vue({
             } else {
               return null;
             }
+        },
+        allLoading(value) {
+          this.isLoading.process = value;
+          this.isLoading.status = value;
+          this.isLoading.requester = value;
+          this.isLoading.participants = value;
+        },
+        getAll(){
+          this.allLoading(true);
+          ProcessMaker.apiClient
+              .get("/requests/search?type=all", { baseURL: '' })
+              .then(response => {
+                  this.processOptions = response.data.process;
+                  this.statusOptions = response.data.status;
+                  this.requesterOptions = response.data.requester;
+                  this.participantsOptions = response.data.participants;
+                  this.allLoading(false);
+                  setTimeout(3000)
+              });
         },
         getStatus() {
           this.isLoading.status = true;

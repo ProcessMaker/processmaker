@@ -24,6 +24,16 @@ trait SearchAutocompleteTrait
         }
     }
     
+    private function searchAll($query)
+    {
+        return [
+            'status' => $this->searchStatus($query),
+            'process' => $this->searchProcess($query),
+            'requester' => $this->searchRequester($query),
+            'participants' => $this->searchParticipants($query),
+        ];
+    }
+    
     private function searchStatus()
     {
         return [
