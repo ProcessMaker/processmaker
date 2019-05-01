@@ -12,7 +12,7 @@
                     <b-col cols="9" class="h-100">
                         <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="h-100" :class="{hidden: resizing}"/>
                     </b-col>
-                    <b-col class="h-100">
+                    <b-col cols="3" class="h-100">
                         <b-list-group class="w-100 h-100 overflow-auto">
                             <b-list-group-item class="card-header">
                                 <b-row class="d-flex align-items-center">
