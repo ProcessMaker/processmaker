@@ -690,5 +690,7 @@
     "Avatar": "Avatar",
     "Copy": "Copy",
     "Advanced": "Advanced",
-    "Basic": "Basic"
+    "Basic": "Basic",
+    "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
+    "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax."
 }

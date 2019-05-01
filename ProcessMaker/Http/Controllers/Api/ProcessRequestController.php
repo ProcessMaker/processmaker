@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Notification;
 use ProcessMaker\Query\SyntaxError;
+use Illuminate\Database\QueryException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
@@ -148,17 +149,18 @@ class ProcessRequestController extends Controller
                         };
                     }
                 });
-            } catch (QueryException | SyntaxError $e) {
-                return response([], 400);
+                
+                $response = $query->orderBy(
+                    $request->input('order_by', 'name'),
+                    $request->input('order_direction', 'ASC')
+                )->get();
+                
+            } catch (QueryException $e) {
+                return response(['message' => __('Your PMQL search could not be completed.')], 400);
+            } catch (SyntaxError $e) {
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
-
-        $response = $query
-            ->orderBy(
-                $request->input('order_by', 'name'),
-                $request->input('order_direction', 'ASC')
-            )
-            ->get();
 
         $response = $response->filter(function ($processRequest) {
             return Auth::user()->can('view', $processRequest);
