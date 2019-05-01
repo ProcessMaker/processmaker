@@ -18,14 +18,14 @@
         <div class="row">
             <div class="col">
                 <div class="card text-center">
-                    <div class="card-header bg-white" align="left">
+                    <div class="card-header bg-light" align="left">
                         <h5>{{__('Export Screen')}}</h5>
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{__('You are about to export a Screen.')}}</h5>
                         <p class="card-text">{{__('All the configurations of the screen will be exported.')}}</p>
                     </div>
-                    <div class="card-footer bg-white" align="right">
+                    <div class="card-footer bg-light" align="right">
                         <button type="button" class="btn btn-outline-secondary" @click="onCancel">
                             {{__('Cancel')}}
                         </button>
