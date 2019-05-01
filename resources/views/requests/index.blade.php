@@ -71,9 +71,11 @@
                         :options="processOptions"
                         :track-by="'id'"
                         :multiple="true" 
-                        :limit="1" 
-                        :limit-text="count => `+${count}`" 
-                        placeholder="Process"></multiselect>
+                        placeholder="Process">
+                            <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('processes selected') }}</span>
+                            </template>
+                        </multiselect>
                     </div>
                     <div class="col">
                         <multiselect
@@ -86,9 +88,11 @@
                         :options="statusOptions"
                         track-by="value"
                         :multiple="true"
-                        :limit="1"
-                        :limit-text="count => `+${count}`"
-                        placeholder="Status"></multiselect>
+                        placeholder="Status">
+                            <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('statuses selected') }}</span>
+                            </template>
+                        </multiselect>
                     </div>
                     <div class="col">
                         <multiselect 
@@ -102,9 +106,10 @@
                         :options="requesterOptions" 
                         :track-by="'id'"
                         :multiple="true" 
-                        :limit="1" 
-                        :limit-text="count => `+${count}`" 
                         placeholder="Requester">
+                            <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('requesters selected') }}</span>
+                            </template>
                             <template slot="option" slot-scope="props">
                                 <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
                             <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
@@ -127,9 +132,10 @@
                         :track-by="'track'"
                         open-direction="bottom" 
                         label="name" 
-                        :limit="1" 
-                        :limit-text="count => `+${count}`" 
                         placeholder="Participants">
+                            <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('participants selected') }}</span>
+                            </template>
                             <template slot="option" slot-scope="props">
                                 <span v-if="props.option.$isLabel">
                                     <span>@{{props.option.$groupLabel}}</span>
