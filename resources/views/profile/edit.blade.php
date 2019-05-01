@@ -19,13 +19,13 @@
                             {!! Form::label('firstname', __('First Name')) !!}
                             {!! Form::text('firstname', null, ['id' => 'firstname','class'=> 'form-control', 'v-model' => 'formData.firstname',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}']) !!}
-                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname}}</div>
+                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname[0]}}</div>
                         </div>
                         <div class="form-group col">
                             {!! Form::label('lastname', __('Last Name')) !!}
                             {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}']) !!}
-                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.description}}</div>
+                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.lastname[0]}}</div>
                         </div>
                     </div>
                     <h2 class="mt-2">{{__('Contact Information')}}</h2>
