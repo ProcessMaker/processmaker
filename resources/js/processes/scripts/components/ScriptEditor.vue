@@ -136,6 +136,7 @@
                     .put("scripts/" + this.script.id, {
                         code: this.code,
                         title: this.script.title,
+                        description: this.script.description,
                         language: this.script.language,
                         run_as_user_id: this.script.run_as_user_id
                     })
