@@ -56,7 +56,7 @@
                       :options="nameOptions"
                       :track-by="'name'"
                       :multiple="true" 
-                      placeholder="Name">
+                      placeholder="Task">
                           <template slot="selection" slot-scope="{ values, search, isOpen }">
                               <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('names') }}</span>
                           </template>

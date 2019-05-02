@@ -95,7 +95,7 @@ export default {
       ],
       fields: [
         {
-          title: () => this.$t("Name"),
+          title: () => this.$t("Task"),
           name: "__slot:name",
           field: "element_name",
           sortField: "element_name"
