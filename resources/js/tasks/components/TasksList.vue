@@ -127,6 +127,17 @@ export default {
   beforeCreate() {
     let params = (new URL(document.location)).searchParams;
     this.status = params.get('status');
+
+    switch (this.status) {
+      case "CLOSED":
+        this.$parent.status.push({
+          name: 'Completed',
+          value: 'CLOSED'
+        });
+        break;
+    }
+    
+    this.$parent.buildPmql();
   },
   mounted: function mounted() {
     let params = new URL(document.location).searchParams;
