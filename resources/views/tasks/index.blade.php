@@ -22,7 +22,7 @@
       </b-alert>
     </div>
   </div>
-  <div class="search row mt-2 bg-light p-2" v-if="advanced == false">
+  <div id="search" class="row mt-2 bg-light p-2" v-if="advanced == false">
     <div class="col">
         <multiselect 
         v-model="task" 
@@ -96,9 +96,9 @@
 <script src="{{mix('js/tasks/index.js')}}"></script>
 @endsection
 <style>
-  .search {
-      border: 1px solid rgba(0, 0, 0, 0.125);
-      margin-left: -1px;
-      margin-right: -1px;
+  #search {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    margin-left: -1px;
+    margin-right: -1px;
   }
 </style>
