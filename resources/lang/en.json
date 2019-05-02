@@ -694,7 +694,7 @@
     "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
     "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax.",
     "Advanced Search": "Advanced Search",
-    "Basic Search": "Basic Search"
+    "Basic Search": "Basic Search",
     "processes": "processes",
     "statuses": "statuses",
     "requesters": "requesters",
