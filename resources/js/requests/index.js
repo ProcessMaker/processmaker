@@ -31,6 +31,16 @@ new Vue({
         this.getAll()
     },
     methods: {
+        toggleAdvanced() {
+          if (this.advanced) {
+            this.advanced = false;
+          } else {
+            this.advanced = true;
+            Vue.nextTick().then(() => {
+              this.$refs.search_input.focus();
+            });
+          }
+        },
         runSearch(advanced) {
           if (! advanced) {
             this.buildPmql();

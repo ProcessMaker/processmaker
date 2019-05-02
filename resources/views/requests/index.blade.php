@@ -58,113 +58,121 @@
 
                 </b-card-group>
 
-                <div class="search row mt-2 bg-light p-2" v-if="advanced == false">
-                    <div class="col">
-                        <multiselect 
-                        v-model="process" 
-                        @search-change="getProcesses" 
-                        @input="buildPmql"
-                        :select-label="''" 
-                        :loading="isLoading.process" 
-                        open-direction="bottom" 
-                        label="name" 
-                        :options="processOptions"
-                        :track-by="'id'"
-                        :multiple="true" 
-                        placeholder="Process">
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('processes selected') }}</span>
-                            </template>
-                        </multiselect>
+                <div id="search-bar" class="search mt-2 bg-light p-2" >
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <div id="search-dropdowns" v-if="! advanced" class="row">
+                                <div class="col-3">
+                                    <multiselect 
+                                    v-model="process" 
+                                    @search-change="getProcesses" 
+                                    @input="buildPmql"
+                                    :select-label="''" 
+                                    :loading="isLoading.process" 
+                                    open-direction="bottom" 
+                                    label="name" 
+                                    :options="processOptions"
+                                    :track-by="'id'"
+                                    :multiple="true" 
+                                    placeholder="Process">
+                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('processes selected') }}</span>
+                                        </template>
+                                    </multiselect>
+                                </div>
+                                <div class="col-3">
+                                    <multiselect
+                                    v-model="status"
+                                    :select-label="''" 
+                                    @input="buildPmql"
+                                    :loading="isLoading.status"
+                                    open-direction="bottom"
+                                    label="name"
+                                    :options="statusOptions"
+                                    track-by="value"
+                                    :multiple="true"
+                                    placeholder="Status">
+                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('statuses selected') }}</span>
+                                        </template>
+                                    </multiselect>
+                                </div>
+                                <div class="col-3">
+                                    <multiselect 
+                                    v-model="requester" 
+                                    @search-change="getRequesters" 
+                                    @input="buildPmql"
+                                    :select-label="''" 
+                                    :loading="isLoading.requester" 
+                                    open-direction="bottom" 
+                                    label="fullname" 
+                                    :options="requesterOptions" 
+                                    :track-by="'id'"
+                                    :multiple="true" 
+                                    placeholder="Requester">
+                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('requesters selected') }}</span>
+                                        </template>
+                                        <template slot="option" slot-scope="props">
+                                            <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
+                                        <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                            <span class="ml-1">@{{props.option.fullname}}</span>
+                                        </template>
+                                    </multiselect>
+                                </div>
+                                <div class="col-3">
+                                    <multiselect 
+                                    v-model="participants" 
+                                    :options="participantsOptions" 
+                                    :select-label="''" 
+                                    :loading="isLoading.participants" 
+                                    group-values="items" 
+                                    group-label="label" 
+                                    :group-select="true"
+                                    @search-change="getParticipants" 
+                                    @input="buildPmql"
+                                    :multiple="true" 
+                                    :track-by="'track'"
+                                    open-direction="bottom" 
+                                    label="name" 
+                                    placeholder="Participants">
+                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('participants selected') }}</span>
+                                        </template>
+                                        <template slot="option" slot-scope="props">
+                                            <span v-if="props.option.$isLabel">
+                                                <span>@{{props.option.$groupLabel}}</span>
+                                            </span>
+                                            <span v-if="props.option.username">
+                                                <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
+                                                <span v-else class="initials bg-warning text-white p-1">@{{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                                <span class="ml-1">@{{props.option.name}}</span>
+                                            </span>
+                                            <span v-else>
+                                                <span class="ml-1">@{{props.option.name}}</span>
+                                            </span>
+                                        </template>
+                                    </multiselect>
+                                </div>
+                            </div>
+                            <div id="search-manual" v-if="advanced">
+                                <input ref="search_input" type="text" class="form-control" placeholder="PMQL" v-model="pmql">
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div id="search-actions">
+                                <div v-if="! advanced">
+                                    <b-btn variant="primary" @click="runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
+                                    <b-btn variant="secondary" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Advanced Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
+                                </div>
+                                <div v-if="advanced">
+                                    <b-btn variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
+                                    <b-btn variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col">
-                        <multiselect
-                        v-model="status"
-                        :select-label="''" 
-                        @input="buildPmql"
-                        :loading="isLoading.status"
-                        open-direction="bottom"
-                        label="name"
-                        :options="statusOptions"
-                        track-by="value"
-                        :multiple="true"
-                        placeholder="Status">
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('statuses selected') }}</span>
-                            </template>
-                        </multiselect>
-                    </div>
-                    <div class="col">
-                        <multiselect 
-                        v-model="requester" 
-                        @search-change="getRequesters" 
-                        @input="buildPmql"
-                        :select-label="''" 
-                        :loading="isLoading.requester" 
-                        open-direction="bottom" 
-                        label="fullname" 
-                        :options="requesterOptions" 
-                        :track-by="'id'"
-                        :multiple="true" 
-                        placeholder="Requester">
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('requesters selected') }}</span>
-                            </template>
-                            <template slot="option" slot-scope="props">
-                                <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
-                            <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                                <span class="ml-1">@{{props.option.fullname}}</span>
-                            </template>
-                        </multiselect>
-                    </div>
-                    <div class="col">
-                        <multiselect 
-                        v-model="participants" 
-                        :options="participantsOptions" 
-                        :select-label="''" 
-                        :loading="isLoading.participants" 
-                        group-values="items" 
-                        group-label="label" 
-                        :group-select="true"
-                        @search-change="getParticipants" 
-                        @input="buildPmql"
-                        :multiple="true" 
-                        :track-by="'track'"
-                        open-direction="bottom" 
-                        label="name" 
-                        placeholder="Participants">
-                            <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('participants selected') }}</span>
-                            </template>
-                            <template slot="option" slot-scope="props">
-                                <span v-if="props.option.$isLabel">
-                                    <span>@{{props.option.$groupLabel}}</span>
-                                </span>
-                                <span v-if="props.option.username">
-                                    <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
-                                    <span v-else class="initials bg-warning text-white p-1">@{{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                                    <span class="ml-1">@{{props.option.name}}</span>
-                                </span>
-                                <span v-else>
-                                    <span class="ml-1">@{{props.option.name}}</span>
-                                </span>
-                            </template>
-                    </multiselect>
-                    </div>
-                    <div class="col mt-2" align="right">
-                        <button class="btn btn-default" @click="runSearch"><i class="fas fa-search text-secondary"></i></button>
-                        <a class="text-primary ml-3" @click="advanced = true">{{__('Advanced')}}</a>
-                    </div>
-                </div>  
-                <div v-if="advanced == true" class="search row mt-2 bg-light p-2">
-                    <div class="col-10 form-group">
-                        <input type="text" class="form-control" placeholder="PMQL" v-model="pmql">
-                    </div>
-                    <div class="col mt-2" align="right">
-                        <button class="btn btn-default" @click="runSearch(true)"><i class="fas fa-search text-secondary"></i></button>
-                        <a class="text-primary ml-3" @click="advanced = false">{{__('Basic')}}</a>
-                    </div>
-                </div>              
+                </div>               
             </template>
             <requests-listing ref="requestList"></requests-listing>
         </div>
@@ -183,6 +191,42 @@
 
 @section('css')
 <style>
+    #search-bar {
+        height: 59px;
+        max-height: 59px;
+    }
+    
+    #search-manual input {
+        border: 1px solid #e8e8e8;
+        border-radius: 5px;
+        color: gray;
+        height: 41px;
+    }
+
+    #search-dropdowns {
+        padding: 0 11px;
+    }
+
+    #search-dropdowns .col-3 {
+        padding: 0 4px;
+    }
+    
+    #search-actions button {
+        display: inline-block;
+        float: left;
+        height: 41px;
+        margin-left: 8px;
+    }
+    
+    .multiselect__placeholder {
+        padding-top: 1px;
+    }
+    
+    .multiselect__single {
+        padding-bottom: 2px;
+        padding-top: 2px;
+    }
+
     .search {
         border: 1px solid rgba(0, 0, 0, 0.125);
         margin-left: -1px;
