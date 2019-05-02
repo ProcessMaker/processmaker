@@ -231,6 +231,7 @@ export default {
             this.perPage +
             "&filter=" +
             this.filter +
+            "&statusfilter=ACTIVE,CLOSED" +
             this.getSortParam(),
           {
             cancelToken: new CancelToken(c => {

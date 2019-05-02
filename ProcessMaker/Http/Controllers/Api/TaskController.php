@@ -115,6 +115,18 @@ class TaskController extends Controller
 
         $pmql = $request->input('pmql', '');    
         
+        $statusFilter = $request->input('statusfilter', '');
+        if ($statusFilter) {
+            $statusFilter = explode(',', $statusFilter);
+            foreach ($statusFilter as $key => $status) {
+                if ($key == 0) {
+                    $query->where('process_request_tokens.status', trim(mb_strtoupper($status)));
+                } else {
+                    $query->orWhere('process_request_tokens.status', trim(mb_strtoupper($status)));
+                }
+            }
+        }
+
         try {
             if (!empty($pmql)) {
                 $query->pmql($pmql, function($expression) {
