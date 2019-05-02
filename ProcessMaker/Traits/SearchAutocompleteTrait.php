@@ -134,19 +134,19 @@ trait SearchAutocompleteTrait
         return $results;
     }
 
-    public function searchTasks() 
+    public function searchTasks($query) 
     {
-        dd("HEEEY TASKS");
+        dd("HEEEY TASKS", $query);
     }
 
-    public function searchRequests() 
+    public function searchRequests($query) 
     {
-        dd("HEEEY REQUESTS");
+        dd("HEEEY REQUESTS", $query);
     }
 
-    public function searchAssignee() 
+    public function searchAssignee($query) 
     {
-        dd("HEEEY ASSIGNEE");
+        dd("HEEEY ASSIGNEE", $query);
     }
 
 }
