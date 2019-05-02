@@ -271,6 +271,7 @@ class ImportProcess implements ShouldQueue
                 $new->type = $screen->type;
                 $new->config = $screen->config;
                 $new->computed = $screen->computed;
+                $new->custom_css = $screen->custom_css;
                 $new->created_at = $this->formatDate($screen->created_at);
                 $new->save();
 

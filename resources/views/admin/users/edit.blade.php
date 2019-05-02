@@ -48,7 +48,7 @@
                                                 'v-bind:class' => '{\'form-control\':true,
                                                 \'is-invalid\':errors.firstname}']) !!}
                                                 <div class="invalid-feedback" v-if="errors.firstname">
-                                                    @{{errors.firstname}}
+                                                    @{{errors.firstname[0]}}
                                                 </div>
                                             </div>
                                             <div class="form-group col">
@@ -58,7 +58,7 @@
                                                 => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true,
                                                 \'is-invalid\':errors.lastname}']) !!}
                                                 <div class="invalid-feedback" v-if="errors.lastname">
-                                                    @{{errors.description}}
+                                                    @{{errors.lastname[0]}}
                                                 </div>
                                             </div>
                                         </div>
@@ -122,7 +122,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!! Form::label('postal', __('Postal code')) !!}
+                                                {!! Form::label('postal', __('Postal Code')) !!}
                                                 {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=>
                                                 'form-control', 'v-model'
                                                 => 'formData.postal', 'v-bind:class' => '{\'form-control\':true,
@@ -617,6 +617,7 @@
                 }
               })
               .catch(error => {
+                console.log(error);
                 this.errors = error.response.data.errors;
               });
           },
