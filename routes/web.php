@@ -68,7 +68,7 @@ Route::group(['middleware' => ['auth', 'sanitize']], function () {
     Route::get('requests', 'RequestController@index')->name('requests.index');
     Route::get('requests/{request}', 'RequestController@show')->name('requests.show');
 
-
+    Route::get('tasks/search', 'TaskController@search')->name('tasks.search');
     Route::get('tasks', 'TaskController@index')->name('tasks.index');
     Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show');
     Route::get('tasks/{task}/edit', 'TaskController@edit')->name('tasks.edit');
