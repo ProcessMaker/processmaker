@@ -249,20 +249,18 @@ class ImportProcess implements ShouldQueue
      */
     private function parseAssignableTasks()
     {
+        //tasks that should always be assigned
         $humanTasks = ['task', 'userTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
-                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-                if (!$assignment) {
-                    $this->assignable->push((object)[
-                        'type' => 'task',
-                        'id' => $task->getAttribute('id'),
-                        'name' => $task->getAttribute('name'),
-                        'prefix' => __('Assign task'),
-                        'suffix' => __('to'),
-                    ]);
-                }
+                $this->assignable->push((object)[
+                    'type' => 'task',
+                    'id' => $task->getAttribute('id'),
+                    'name' => $task->getAttribute('name'),
+                    'prefix' => __('Assign task'),
+                    'suffix' => __('to'),
+                ]);
             }
         }
     }
