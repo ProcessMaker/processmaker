@@ -5,9 +5,15 @@ import VueRouter from "vue-router";
 import datetime_format from "../js/data/datetime_formats.json"
 import translator from "./modules/lang.js"
 
+
 window.__ = translator;
 window._ = require("lodash");
 window.Popper = require("popper.js").default;
+
+/**
+ * Give node plugins access to our custom screen builder components
+ */
+window.SparkComponents = require("../js/processes/screen-builder/components")
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support

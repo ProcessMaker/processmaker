@@ -159,7 +159,6 @@
                         </div>
                     </div>
                 </div>
-
                 @if($canViewComments === true)
                     <div>
                         <comments commentable_id="{{ $request->getKey() }}"
