@@ -1,147 +1,210 @@
 <template>
-    <div id="form-container" class="d-flex flex-column h-100 mb-3">
-        <div id="form-toolbar" class="d-block">
-            <nav class="navbar navbar-expand-md override">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" @click="mode = 'editor'" href="#">{{ $t('Editor') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" @click="mode = 'preview'" href="#">{{ $t('Preview') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" @click="openComputedProperties" href="#">{{ $t('Computed Properties') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" @click="openCustomCSS" href="#">{{ $t('Custom CSS') }}</a>
-                    </li>
-                </ul>
+  <div class="container h-100 pt-4">
+    <div id="app" class="card h-100">
+      <div class="card-header">
+        <div class="row">
+          <div class="col">
+            <b-button-group size="sm">
+              <b-button :variant="displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'editor'">
+                <i class="fas fa-drafting-compass pr-1"></i>{{ $t('Design') }}
+              </b-button>
+              <b-button :variant="!displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'preview'">
+                <i class="fas fa-cogs pr-1"></i>{{ $t('Preview') }}
+              </b-button>
+            </b-button-group>
+          </div>
 
-                <ul class="navbar-nav pull-right">
-                    <li class="nav-item" v-if="permission.includes('export-screens')">
-                        <a :class="classExportScreen" @click="beforeExportScreen" href="#">
-                            <i class="fas fa-file-export"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" @click="saveScreen(false)" href="#">
-                            <i class="fas fa-save"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" @click="onClose" href="#">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+          <div class="col text-right">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+              <button type="button" class="btn btn-secondary" title="Calculated Properties" @click="openComputedProperties">
+                <i class="fas fa-flask"></i>
+                Calcs
+              </button>
+              <button type="button" class="btn btn-secondary mr-2" title="Custom CSS" @click="openCustomCSS">
+                <i class="fab fa-css3"></i>
+                CSS
+              </button>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
+          </div>
         </div>
+      </div>
 
         <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
-        <custom-CSS v-model="customCSS" ref="customCSS" :css-errors="cssErrors"/>
-        <vue-form-builder
-                @change="updateConfig"
-                ref="screenBuilder"
-                v-show="displayBuilder"
-                config="config"
-                computed="computed"/>
-        <div v-show="displayPreview" class="h-100" style="display: contents !important">
-            <div id="preview"  class="d-flex h-100">
-                <div id="data-input" class="w-25 border overflow-auto">
-                    <div class="card-header">{{$t('Data Input')}}</div>
-                    <div class="card-body mb-5">
-                        <div class="alert"
-                             :class="{'alert-success': previewInputValid, 'alert-danger': !previewInputValid}">
-                            <span v-if="previewInputValid">{{$t('Valid JSON Data Object')}}</span>
-                            <span v-else>{{$t('Invalid JSON Data Object')}}</span>
-                        </div>
-                        <form-text-area rows="20" v-model="previewInput"></form-text-area>
-                    </div>
-                </div>
+        <custom-CSS v-model="customCSS" ref="customCSS" :cssErrors="cssErrors"/>
+        <vue-form-builder :validationErrors="validationErrors" ref="builder" @change="updateConfig" :class="displayBuilder ? 'd-flex' : 'd-none'" />
 
-                <div id="renderer-container" class="w-50 p-4 pt-5 overflow-auto">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-sm">
-                                <vue-form-renderer
-                                        ref="renderer"
-                                        @submit="previewSubmit"
-                                        v-model="previewData"
-                                        :config="config"
-                                        :computed="computed"
-                                        :custom-css="customCSS"
-                                        v-on:css-errors="cssErrors = $event"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="data-preview" class="w-25 border overflow-auto">
-                    <div class="card-header">{{$t('Data Preview')}}</div>
-                    <div class="card-body mb-5">
-                        <vue-json-pretty :data="previewData"></vue-json-pretty>
-                    </div>
-                </div>
+        <div id="preview" v-show="displayPreview" class="flex-grow-1 p-4 pl-5 pr-5">
+          <div class="row h-100">
+            <div id="renderer-container" class="col-8">
+              <div class="row h-100">
+                  <div class="card-body border overflow-auto mr-5">
+                      <vue-form-renderer ref="renderer"
+                                          v-model="previewData"
+                                          @submit="previewSubmit"
+                                          :config="config"
+                                          :computed="computed"
+                                          :custom-css="customCSS"
+                                          v-on:css-errors="cssErrors = $event"/>
+                  </div>
+              </div>
             </div>
+
+            <div class="data-container col-4 border overflow-auto pr-0 pl-0">
+              <div id="data-preview" class="overflow-auto">
+                <div class="card-header">Inspector</div>
+                <b-button v-b-toggle.dataPreview variant="outline-*" class="text-left card-header d-flex align-items-center sticky-top header-bg w-100" @click="showDataPreview = !showDataPreview">
+                  <i class="fas fa-file-code mr-2"></i>
+                    Data Preview
+                  <i class="fas fa-angle-down ml-auto" :class="{ 'fas fa-angle-right' : !showDataPreview }"></i>
+                </b-button>
+
+                <b-collapse id="dataPreview">
+                  <vue-json-pretty :data="previewData" class="card-body"></vue-json-pretty>
+                </b-collapse>
+              </div>
+
+              <div id="data-input" class="overflow-auto">
+                  <b-button v-b-toggle.dataInput variant="outline-*" class="text-left card-header d-flex align-items-center sticky-top header-bg w-100" @click="showDataInput = !showDataInput">
+                    <i class="fas fa-file-import mr-2"></i>
+                      Data Input
+                    <i class="fas fa-angle-down ml-auto" :class="{ 'fas fa-angle-right' : !showDataInput }"></i>
+                  </b-button>
+
+                  <b-collapse id="dataInput">
+                      <form-text-area class="dataInput" rows="8" v-model="previewInput"></form-text-area>
+                  </b-collapse>
+              </div>
+            </div>
+          </div>
         </div>
 
+        <div class="card-footer text-muted d-flex justify-content-end align-items-center">
+            <div>
+              <span class="custom-control custom-switch">
+              <input v-model="toggleValidation" type="checkbox" class="custom-control-input" id="customSwitch1" checked>
+              <label class="custom-control-label" for="customSwitch1"> Screen Validation
+              </label>
+              </span>
+            </div>
+
+            <div v-if="showValidationErrors" class="validation-panel position-absolute shadow border overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
+                <div v-if="!previewInputValid" class="p-3 font-weight-bold text-dark">
+                  <i class="fas fa-times-circle text-danger mr-3"></i>
+                  {{$t('Invalid JSON Data Object')}}
+                </div>
+                <b-button variant="link" class="validation__message d-flex align-items-center p-3"
+                          v-for="(validation,index) in validationErrors"
+                          :key="index"
+                          @click="focusInspector(validation)">
+                  <i class="fas fa-times-circle text-danger d-block mr-3"></i>
+                  <span class="ml-2 text-dark font-weight-bold text-left">
+                    {{ validation.item.component }}
+                    <span class="d-block font-weight-normal">{{ validation.message }}</span>
+                  </span>
+                </b-button>
+                <span v-if="!allErrors" class="d-flex justify-content-center align-items-center h-100">No Errors</span>
+            </div>
+
+            <div class="ml-3" @click="showValidationErrors = !showValidationErrors">
+              <button type="button" class="btn btn-light btn-sm">
+                <i class="fas fa-angle-double-up"></i>
+                Open Console
+                <span v-if="allErrors === 0" class="badge badge-success">
+                  <i class="fas fa-check-circle "></i>
+                  {{ allErrors }}
+                </span>
+
+                <span v-else class="badge badge-danger">
+                  <i class="fas fa-times-circle "></i>
+                  {{ allErrors }}
+                </span>
+              </button>
+            </div>
+        </div>
     </div>
+  </div>
 </template>
 
 <script>
-  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties";
+  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties.vue";
   import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css.vue";
-  import VueFormBuilder from "@processmaker/spark-screen-builder/src/components/vue-form-builder";
-  import VueFormRenderer from "@processmaker/spark-screen-builder/src/components/vue-form-renderer";
-  import VueJsonPretty from "vue-json-pretty";
-  import {FormTextArea} from "@processmaker/vue-form-elements/src/components";
-  import _ from "lodash";
+  import VueFormBuilder from "@processmaker/spark-screen-builder";
+  import VueFormRenderer from "@processmaker/spark-screen-builder";
+  import VueJsonPretty from 'vue-json-pretty';
+
+  // Bring in our initial set of controls
+  import controlConfig from "@processmaker/spark-screen-builder/src/form-builder-controls";
+  import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
+  import {
+    FormTextArea,
+  } from "@processmaker/vue-form-elements";
+
+import Validator from "validatorjs";
+
+  Validator.register('attr-value', value => {
+    return value.match(/^[a-zA-Z0-9-_]+$/);
+  }, 'Must be letters, numbers, underscores or dashes');
 
   export default {
+    name: "app",
     data() {
       return {
         mode: "editor",
+        // Computed properties
         computed: [],
-        customCSS: "",
-        errors: false,
-        cssErrors: "",
         config: [
           {
             name: "Default",
-            items: [],
-            computed: []
+            computed: [],
+            items: []
           }
         ],
-        previewData: null,
-        previewInput: "{}"
+        previewData: {},
+        previewInput: '{}',
+        customCSS: "",
+        cssErrors: '',
+        showValidationErrors: false,
+        toggleValidation: true,
+        showDataPreview: false,
+        showDataInput: false,
       };
     },
     components: {
-      CustomCSS,
       ComputedProperties,
-      VueFormRenderer,
+      CustomCSS,
       VueFormBuilder,
+      VueFormRenderer,
       VueJsonPretty,
       FormTextArea
     },
     watch: {
+      mode(mode) {
+        if (mode === 'preview') {
+          this.previewData = this.previewInput ? JSON.parse(this.previewInput) : null;
+        }
+      },
+      config() {
+        // Reset the preview data with clean object to start
+        this.previewData = {}
+      },
       previewInput() {
         if (this.previewInputValid) {
           // Copy data over
-          this.previewData = JSON.parse(this.previewInput);
+          this.previewData = JSON.parse(this.previewInput)
         } else {
-          this.previewData = {};
+          this.previewData = {}
         }
       }
     },
     computed: {
-      classExportScreen() {
-        let classExport = 'nav-link';
-        if (this.$refs.screenBuilder && this.$refs.screenBuilder.validationErrors
-          && this.$refs.screenBuilder.validationErrors.length > 0) {
-          classExport = 'nav-link disabled';
+      previewInputValid() {
+        try {
+          JSON.parse(this.previewInput)
+          return true
+        } catch (err) {
+          return false
         }
-        return classExport;
       },
       displayBuilder() {
         return this.mode === 'editor';
@@ -149,79 +212,82 @@
       displayPreview() {
         return this.mode === 'preview';
       },
-      previewInputValid() {
-        try {
-          if (
-            typeof this.previewInput === "string" &&
-            this.previewInput.length === 0
-          ) {
-            return false;
-          }
-          if (
-            typeof this.previewInput === "object" &&
-            Object.keys(this.previewInput).length === 0
-          ) {
-            return true;
-          }
-          JSON.parse(this.previewInput);
-          return true;
-        } catch (err) {
-          return false;
+      allErrors() {
+        let errorCount = 0;
+
+        if(!this.previewInputValid) {
+          errorCount++;
         }
-      }
+
+        return this.validationErrors.length + errorCount
+      },
+      validationErrors() {
+        const validationErrors = [];
+        this.config.forEach(page => {
+          page.items.forEach(item => {
+            let data = item.config ? item.config : {};
+            let rules = {};
+            item.inspector.forEach(property => {
+              if (property.config.validation) {
+                rules[property.field] = property.config.validation;
+              }
+            });
+            let validator = new Validator(data, rules);
+            // Validation will not run until you call passes/fails on it
+            if(!validator.passes()) {
+              Object.keys(validator.errors.errors).forEach(field => {
+                validator.errors.errors[field].forEach(error => {
+                  validationErrors.push({
+                    message: error,
+                    page: page,
+                    item: item,
+                  });
+                });
+              });
+            }
+          });
+        });
+        return this.toggleValidation ? validationErrors : [] ;
+      },
     },
-    props: ["process", "screen", 'permission'],
     mounted() {
-      // Add our initial controls
       // Iterate through our initial config set, calling this.addControl
-      // Call our init lifecycle event
-      ProcessMaker.EventBus.$emit("screen-builder-init", this);
-      this.$refs.screenBuilder.config = this.screen.config
-        ? this.screen.config
-        : [
-          {
-            name: "Default",
-            items: []
-          }
-        ];
+      controlConfig.forEach(config => {
+        config.control.inspector.push(...globalProperties[0].inspector);
 
-      this.computed = this.screen.computed ? this.screen.computed : [];
-      this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
-
-      this.$refs.screenBuilder.computed = this.screen.computed
-        ? this.screen.computed
-        : [];
-
-      if (this.screen.title) {
-        this.$refs.screenBuilder.config[0].name = this.screen.title;
-      }
-      this.updatePreview(new Object());
-      this.previewInput = "{}";
-      ProcessMaker.EventBus.$emit("screen-builder-start", this);
+        this.addControl(
+          config.control,
+          config.rendererComponent,
+          config.rendererBinding,
+          config.builderComponent,
+          config.builderBinding
+        );
+      });
     },
     methods: {
+      focusInspector(validate) {
+        this.$refs.builder.focusInspector(validate);
+      },
       openComputedProperties() {
         this.$refs.computedProperties.show();
       },
       openCustomCSS() {
         this.$refs.customCSS.show();
       },
-      addControl(
-        control,
-        rendererComponent,
-        rendererBinding,
-        builderComponent,
-        builderBinding
-      ) {
+      updateConfig(newConfig) {
+        this.config = newConfig
+      },
+      updatePreview(data) {
+        this.previewData = data
+      },
+      previewSubmit() {
+        alert("Preview Form was Submitted")
+      },
+      addControl(control, rendererComponent, rendererBinding, builderComponent, builderBinding) {
         // Add it to the renderer
-        this.$refs.renderer.$options.components[
-          rendererBinding
-          ] = rendererComponent;
-        // Add it to the screen builder
-        this.$refs.screenBuilder.addControl(control);
-        this.$refs.screenBuilder.$options.components[
-          builderBinding
-          ] = builderComponent;
+        this.$refs.renderer.$options.components[rendererBinding] = rendererComponent;
+        // Add it to the form builder
+        this.$refs.builder.addControl(control, builderComponent, builderBinding)
       },
       refreshSession: _.throttle(function() {
         ProcessMaker.apiClient({
@@ -230,22 +296,8 @@
             baseURL: '/',
           })
       }, 60000),
-      updateConfig(newConfig) {
-        this.config = newConfig;
-        this.refreshSession();
-      },
-      updatePreview(data) {
-        this.previewData = data;
-      },
-      previewSubmit() {
-        alert(this.$t("Preview Screen was Submitted"));
-      },
       onClose() {
         window.location.href = "/processes/screens";
-      },
-      checkForErrors() {
-        this.errors = this.$refs.screenBuilder.validationErrors
-                && this.$refs.screenBuilder.validationErrors.length > 0;
       },
       beforeExportScreen() {
         this.saveScreen(true);
@@ -284,32 +336,32 @@
       }
     }
   };
-
 </script>
 
 <style lang="scss">
+    @import "~bootstrap/dist/css/bootstrap";
 
-     .override {
-        background-color: #b6bfc6;
-        padding: 10px;
-        height: 40px;
-        font-size: 18px;
-        font-style: normal;
-        font-stretch: normal;
-        line-height: normal;
-        letter-spacing: normal;
-        text-align: left;
-        color: #ffffff;
-
-        .nav-item {
-            padding-top: 0;
-        }
-
-        a.nav-link,
-        a.nav-link:hover {
-            color: white !important;
-            font-weight: 400;
-        }
+    html,
+    body {
+        height: 100%;
+        min-height: 100%;
+        max-height: 100%;
+        overflow: hidden;
     }
 
+    .header-bg {
+      background: #f7f7f7;
+    }
+
+    .validation-panel {
+      background: #f7f7f7;
+      height: 10rem;
+      width: 21.35rem;
+      bottom: 4rem;
+      right: 0;
+    }
+
+    .dataInput {
+      margin-top: -25px;
+    }
 </style>
