@@ -178,7 +178,7 @@ export default {
       }
       let bubbleColor = {
         "ACTIVE": "text-success",
-        "CLOSED": "text-danger",
+        "CLOSED": "text-primary",
       };
       return (
         '<i class="fas fa-circle ' +
