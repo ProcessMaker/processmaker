@@ -22,53 +22,61 @@
       </b-alert>
     </div>
   </div>
-  <div id="search-bar" class="search mt-2 bg-light p-2" >
+  <div id="search-bar" class="search mt-2 bg-light p-2" vcloak>
       <div class="d-flex">
           <div class="flex-grow-1">
               <div id="search-dropdowns" v-if="! advanced" class="row">
-                  <div class="col-3">
+                  <div class="col-4">
                       <multiselect 
-                      v-model="task" 
-                      @search-change="getTasks" 
-                      @input="buildPmql"
-                      :select-label="''" 
-                      :loading="isLoading.tasks" 
-                      open-direction="bottom" 
-                      label="name" 
-                      :options="taskOptions"
-                      :track-by="'id'"
-                      :multiple="true" 
-                      placeholder="Task">
-                      </multiselect>
-                  </div>
-                  <div class="col-3">
-                      <multiselect
-                      v-model="request"
-                      :select-label="''" 
+                      v-model="request" 
                       @search-change="getRequests" 
                       @input="buildPmql"
-                      :loading="isLoading.request"
-                      open-direction="bottom"
-                      label="name"
-                      :options="requestOptions"
-                      track-by="value"
-                      :multiple="true"
-                      placeholder="Request">
-                      </multiselect>
-                  </div>
-                  <div class="col-3">
-                      <multiselect 
-                      v-model="assignee" 
-                      @search-change="getAssignees" 
-                      @input="buildPmql"
                       :select-label="''" 
-                      :loading="isLoading.assignee" 
+                      :loading="isLoading.request" 
                       open-direction="bottom" 
-                      label="fullname" 
-                      :options="assigneeOptions" 
+                      label="name" 
+                      :options="requestOptions"
                       :track-by="'id'"
                       :multiple="true" 
-                      placeholder="Assinee">
+                      placeholder="Request">
+                          <template slot="selection" slot-scope="{ values, search, isOpen }">
+                              <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('requests') }}</span>
+                          </template>
+                      </multiselect>
+                  </div>
+                  <div class="col-4">
+                      <multiselect 
+                      v-model="name" 
+                      @search-change="getNames" 
+                      @input="buildPmql"
+                      :select-label="''" 
+                      :loading="isLoading.name" 
+                      open-direction="bottom" 
+                      label="name" 
+                      :options="nameOptions"
+                      :track-by="'name'"
+                      :multiple="true" 
+                      placeholder="Name">
+                          <template slot="selection" slot-scope="{ values, search, isOpen }">
+                              <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('names') }}</span>
+                          </template>
+                      </multiselect>
+                  </div>
+                  <div class="col-4">
+                      <multiselect
+                      v-model="status"
+                      :select-label="''" 
+                      @input="buildPmql"
+                      :loading="isLoading.status"
+                      open-direction="bottom"
+                      label="name"
+                      :options="statusOptions"
+                      track-by="value"
+                      :multiple="true"
+                      placeholder="Status">
+                          <template slot="selection" slot-scope="{ values, search, isOpen }">
+                              <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('statuses') }}</span>
+                          </template>
                       </multiselect>
                   </div>
               </div>
@@ -91,7 +99,7 @@
       </div>
   </div>  
   <div class="container-fluid">
-    <tasks-list :filter="filter" @in-overdue="setInOverdueMessage"></tasks-list>
+    <tasks-list ref="taskList" :filter="filter" @in-overdue="setInOverdueMessage"></tasks-list>
   </div>
 </div>
 @endsection
@@ -99,6 +107,8 @@
 @section('js')
 <script src="{{mix('js/tasks/index.js')}}"></script>
 @endsection
+
+@section('css')
 <style>
   #search-bar {
       height: 59px;
@@ -116,7 +126,7 @@
       padding: 0 11px;
   }
 
-  #search-dropdowns .col-3 {
+  #search-dropdowns .col-4 {
       padding: 0 4px;
   }
   
@@ -180,3 +190,4 @@
       border-radius: 50%;
   }
 </style>
+@endsection

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 
 trait SearchAutocompleteTrait
 {
@@ -56,8 +58,8 @@ trait SearchAutocompleteTrait
             })->get();
         }
         
-        return $results->map(function ($user) {
-            return $user->only(['id', 'name']);
+        return $results->map(function ($process) {
+            return $process->only(['id', 'name']);
         });
     }
     
@@ -133,20 +135,67 @@ trait SearchAutocompleteTrait
 
         return $results;
     }
-
-    public function searchTasks($query) 
+    
+    private function searchTaskAll($query)
     {
-        dd("HEEEY TASKS", $query);
+        return [
+            'request' => $this->searchRequest($query),
+            'name' => $this->searchName($query),
+            'status' => $this->searchTaskStatus($query),
+        ];
     }
-
-    public function searchRequests($query) 
+    
+    private function searchTaskStatus()
     {
-        dd("HEEEY REQUESTS", $query);
+        return [
+            ['name' => 'In Progress', 'value' => 'ACTIVE'],
+            ['name' => 'Completed', 'value' => 'CLOSED'],
+        ];
     }
-
-    public function searchAssignee($query) 
+    
+    private function searchName($query)
     {
-        dd("HEEEY ASSIGNEE", $query);
+        if (empty($query)) {
+            $results = ProcessRequestToken::limit(50);
+        } else {
+            $results = ProcessRequestToken::pmql('element_name = "' . $query . '"', function($expression) {
+                return function($query) use($expression) {
+                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                };
+            });
+        }
+        
+        $tasks = $results->where('element_type', 'task')->get();
+        
+        $results = [];
+        
+        foreach ($tasks as $task) {
+            $results[$task->element_name] = $task->element_name;
+        }
+        
+        $return = [];
+        
+        foreach ($results as $result) {
+            $return[] = ['name' => $result];
+        }
+        
+        return $return;    
     }
-
+    
+    private function searchRequest($query)
+    {
+        if (empty($query)) {
+            $results = ProcessRequest::limit(50)->get();
+        } else {
+            $results = ProcessRequest::pmql('name = "' . $query . '"', function($expression) {
+                return function($query) use($expression) {
+                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                };
+            })->get();
+        }
+        
+        return $results->map(function ($request) {
+            return $request->only(['id', 'name']);
+        });
+    }
 }

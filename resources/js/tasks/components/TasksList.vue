@@ -193,8 +193,8 @@ export default {
           "tasks?page=" +
             this.page +
             "&include=process,processRequest,processRequest.user,user" +
-            "&status=" +
-            this.getTaskStatus() +
+            "&pmql=" +
+            this.$parent.pmql +
             "&per_page=" +
             this.perPage +
             "&filter=" +
@@ -212,6 +212,10 @@ export default {
           if (response.data.meta.in_overdue > 0) {
             this.$emit("in-overdue", response.data.meta.in_overdue);
           }
+        })
+        .catch(error => {
+          window.ProcessMaker.alert(error.response.data.message, "danger");
+          this.data = [];
         });
     }
   }

@@ -8,20 +8,20 @@ new Vue({
         filter: "",
         inOverdueMessage: "",
         advanced: false,
-        isLoading: {
-            task: false,
-            request: false,
-            assignee: false,
-        },
         title: "All Request",
         value: null,
         pmql: "",
-        task: "",
-        request: "",
-        assignee: "",
-        taskOptions: [],
+        request: [],
+        name: [],
+        status: [],
         requestOptions: [],
-        assigneeOptions: [],
+        nameOptions: [],
+        statusOptions: [],
+        isLoading: {
+          request: false,
+          name: false,
+          status: false,
+        }
     },
     components: { TasksList, Multiselect },
     mounted() {
@@ -43,52 +43,105 @@ new Vue({
             }
         },
         runSearch(advanced) {
-            console.log("runSearch", advanced)
+          if (! advanced) {
+            this.buildPmql();
+          }
+          this.$refs.taskList.fetch(true);
         },
-        buildPmql() {
-            console.log("buildPML")
+        buildPmql() {          
+          let clauses = [];
+          
+          //Parse request
+          if (this.request.length) {
+            let string = '';
+            this.request.forEach((request, key) => {
+              string += 'request.name = "' + request.name + '"';
+              if (key < this.request.length - 1) string += ' OR ';
+            });
+            clauses.push(string);
+          }
+                    
+          //Parse names
+          if (this.name.length) {
+            let string = '';
+            this.name.forEach((name, key) => {
+              string += 'name = "' + name.name + '"';
+              if (key < this.name.length - 1) string += ' OR ';
+            });
+            clauses.push(string);
+          }
+
+          //Parse status
+          if (this.status.length) {
+            let string = '';
+            this.status.forEach((status, key) => {
+              string += 'status = "' + status.value + '"';
+              if (key < this.status.length - 1) string += ' OR ';
+            });
+            clauses.push(string);
+          }
+          
+          this.pmql = '';
+          clauses.forEach((string, key) => {
+            this.pmql += '(';
+            this.pmql += string;
+            this.pmql += ')';
+            if (key < clauses.length - 1) this.pmql += ' AND ';
+          });          
         },
         getInitials(firstname, lastname) {
-            console.log("intitals")
+            if (firstname) {
+              return firstname.match(/./u)[0] + lastname.match(/./u)[0]
+            } else {
+              return null;
+            }
         },
         allLoading(value) {
-            this.isLoading.task = value;
-            this.isLoading.request = value;
-            this.isLoading.assignee = value;
+          this.isLoading.request = value;
+          this.isLoading.status = value;
+          this.isLoading.name = value;
         },
-        getAll() {
-            console.log("GETALL")
+        getAll(){
+          this.allLoading(true);
+          ProcessMaker.apiClient
+              .get("/tasks/search?type=task_all", { baseURL: '' })
+              .then(response => {
+                  this.requestOptions = response.data.request;
+                  this.statusOptions = response.data.status;
+                  this.nameOptions = response.data.name;
+                  this.allLoading(false);
+                  setTimeout(3000)
+              });
         },
-        getTasks(query) {
-            this.isLoading.task = true
-            ProcessMaker.apiClient
-                .get("/tasks/search?type=tasks&filter=" + query, { baseURL: '' })
-                .then(response => {
-                    this.taskOptions = response.data;
-                    this.isLoading.task = false
-                    setTimeout(3000)
-                });
+        getStatus() {
+          this.isLoading.status = true;
+          ProcessMaker.apiClient
+              .get("/tasks/search?type=task_status", { baseURL: '' })
+              .then(response => {
+                  this.statusOptions = response.data;
+                  this.isLoading.status = false
+                  setTimeout(3000)
+              });
         },
         getRequests(query) {
-            this.isLoading.requests = true
+            this.isLoading.request = true
             ProcessMaker.apiClient
-                .get("/tasks/search?type=requests&filter=" + query, { baseURL: '' })
+                .get("/tasks/search?type=request&filter=" + query, { baseURL: '' })
                 .then(response => {
-                    this.requestsOptions = response.data;
-                    this.isLoading.requests = false
+                    this.requestOptions = response.data;
+                    this.isLoading.request = false
                     setTimeout(3000)
                 });
         },
-        getAssignees(query) {
-            this.isLoading.assignee = true
+        getNames(query) {
+            this.isLoading.name = true
             ProcessMaker.apiClient
-                .get("/tasks/search?type=assignee&filter=" + query, { baseURL: '' })
+                .get("/tasks/search?type=name&filter=" + query, { baseURL: '' })
                 .then(response => {
-                    this.assigneeOptions = response.data;
-                    this.isLoading.assignee = false
+                    this.nameOptions = response.data;
+                    this.isLoading.name = false
                     setTimeout(3000)
                 });
-        },
-
+        }
     }
 });
