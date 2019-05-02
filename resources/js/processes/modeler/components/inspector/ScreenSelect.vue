@@ -59,9 +59,15 @@
       }
     },
     methods: {
+      type() {
+        if (this.params && this.params.type) {
+          return this.params.type
+        }
+        return 'FORM'
+      },
       load(filter) {
         ProcessMaker.apiClient
-          .get("screens?order_direction=asc&status=active&type=FORM" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+          .get("screens?order_direction=asc&status=active&type=" + this.type() + (typeof filter === 'string' ? '&filter=' + filter : ''))
           .then(response => {
             this.loading = false;
             this.screens = response.data.data;
