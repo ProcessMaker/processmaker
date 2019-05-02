@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <div class="overlay">
+    <div v-show="loading" class="overlay">
       <i class="fas fa-circle-notch fa-spin fa-2x text-success"></i>
     </div>
     <div class="card card-body table-card">
@@ -13,7 +13,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :noDataTemplate="showMessage()"
         pagination-path="meta"
       >
         <template slot="name" slot-scope="props">
@@ -147,6 +147,13 @@ export default {
         window.location = link;
       }
     },
+    showMessage() {
+      if(this.loading) {
+        return "    "
+      }else {
+        return "No Data Available"
+      }
+    },
     classDueDate(value) {
       let dueDate = moment(value);
       let now = moment();
@@ -213,11 +220,11 @@ export default {
 
 <style>
 	.overlay { 
-		position: absolute; 
+		position: relative; 
 		z-index: 10; 
     width: 100%;
     text-align: center;
-    top: 272px
+    top: 89px
 	}
 </style>
 
