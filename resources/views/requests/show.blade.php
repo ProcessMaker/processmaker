@@ -182,17 +182,18 @@
                                               :input-data="requestBy" display-name="true"></avatar-image>
                                 <span v-if="!userRequested">{{__('Webhook')}}</span>
                             </li>
-
-                            @if($canCancel == true)
-                                <template>
-                                    <li class="list-group-item">
-                                        <h5>{{__('Cancel Request')}}</h5>
-                                        <button type="button" class="btn btn-outline-danger btn-block"
-                                                data-toggle="modal" data-target="#cancelModal">
-                                            <i class="fas fa-stop-circle"></i> {{__('Cancel')}}
-                                        </button>
-                                    </li>
-                                </template>
+                            @if ($request->status === 'ACTIVE')
+                              @if($canCancel == true)
+                                  <template>
+                                      <li class="list-group-item">
+                                          <h5>{{__('Cancel Request')}}</h5>
+                                          <button type="button" class="btn btn-outline-danger btn-block"
+                                                  data-toggle="modal" data-target="#cancelModal">
+                                              <i class="fas fa-stop-circle"></i> {{__('Cancel')}}
+                                          </button>
+                                      </li>
+                                  </template>
+                              @endif
                             @endif
                             @if($canManuallyComplete == true)
                                 <li class="list-group-item">
@@ -395,7 +396,7 @@
               "ACTIVE": "{{__('Created')}}",
               "COMPLETED": "{{__('Completed')}}",
               "CANCELED": "{{__('Canceled')}}",
-              "ERROR": "{{__('Canceled')}}",
+              "ERROR": "{{__('Error')}}",
             };
 
             return status[this.request.status.toUpperCase()];

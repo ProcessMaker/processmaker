@@ -19,13 +19,13 @@
                             {!! Form::label('firstname', __('First Name')) !!}
                             {!! Form::text('firstname', null, ['id' => 'firstname','class'=> 'form-control', 'v-model' => 'formData.firstname',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.firstname}']) !!}
-                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname}}</div>
+                            <div class="invalid-feedback" v-if="errors.firstname">@{{errors.firstname[0]}}</div>
                         </div>
                         <div class="form-group col">
                             {!! Form::label('lastname', __('Last Name')) !!}
                             {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4, 'class'=> 'form-control', 'v-model'
                             => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.lastname}']) !!}
-                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.description}}</div>
+                            <div class="invalid-feedback" v-if="errors.lastname">@{{errors.lastname[0]}}</div>
                         </div>
                     </div>
                     <h2 class="mt-2">{{__('Contact Information')}}</h2>
@@ -82,15 +82,11 @@
                         </div>
                         <div class="form-group col">
                             {!! Form::label('country', __('Country')) !!}
-                            {!! Form::select('country',
-                                $countries,
-                                'formData.country',
-                                ['id' => 'country',
-                                    'class'=> 'form-control',
-                                    'v-model' => 'formData.country',
-                                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.country}'
-                                ])
-                             !!}
+                             <b-form-select v-model="formData.country" :options="countries" placeholder="Select" class="form-control">
+                                <template slot="first">
+                                    <option :value="null" disabled>{{__('Select')}}</option>
+                                </template>
+                             </b-form-select>
                             <div class="invalid-feedback" v-if="errors.country">@{{errors.country}}</div>
                         </div>
                     </div>
@@ -292,6 +288,7 @@
             data: {
                 formData: @json($currentUser),
                 langs: @json($availableLangs),
+                countries: @json($countries),
                 errors: {
                     username: null,
                     firstname: null,
