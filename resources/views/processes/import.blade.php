@@ -319,7 +319,7 @@
                 this.usersAndGroups = [];
                 if (type === 'task') {
                   this.usersAndGroups.push({
-                    'type': '',
+                    'type': '{{__('Special Assignments')}}',
                     'items': [
                       {
                         'id': 'requester',
