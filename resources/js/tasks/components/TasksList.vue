@@ -101,6 +101,12 @@ export default {
           sortField: "element_name"
         },
         {
+          title: () => this.$t("Status"),
+          name: "status",
+          sortField: "status",
+          callback: this.formatStatus
+        },
+        {
           title: () => this.$t("Request"),
           name: "__slot:requestName",
           field: "request",
@@ -164,6 +170,20 @@ export default {
       }else {
         return "No Data Available"
       }
+    },
+    formatStatus(status) {
+      status = status.toLowerCase();
+      let bubbleColor = {
+        completed: "text-success",
+        closed: "text-danger",
+      };
+      return (
+        '<i class="fas fa-circle ' +
+        bubbleColor[status] +
+        ' small"></i> ' +
+        status.charAt(0).toUpperCase() +
+        status.slice(1)
+      );
     },
     classDueDate(value) {
       let dueDate = moment(value);
