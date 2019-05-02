@@ -136,7 +136,17 @@ trait SearchAutocompleteTrait
 
     public function searchTasks() 
     {
-        dd("HEEEY");
+        dd("HEEEY TASKS");
+    }
+
+    public function searchRequests() 
+    {
+        dd("HEEEY REQUESTS");
+    }
+
+    public function searchAssignee() 
+    {
+        dd("HEEEY ASSIGNEE");
     }
 
 }
