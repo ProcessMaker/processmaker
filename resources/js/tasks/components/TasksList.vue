@@ -172,17 +172,18 @@ export default {
       }
     },
     formatStatus(status) {
-      status = status.toLowerCase();
+      let statusNames = {
+        "ACTIVE" : this.$t('In Progress'),
+        "CLOSED" : this.$t('Completed')
+      }
       let bubbleColor = {
-        completed: "text-success",
-        closed: "text-danger",
+        "ACTIVE": "text-success",
+        "CLOSED": "text-danger",
       };
       return (
         '<i class="fas fa-circle ' +
-        bubbleColor[status] +
-        ' small"></i> ' +
-        status.charAt(0).toUpperCase() +
-        status.slice(1)
+        bubbleColor[status] + 
+        ' small"></i> ' + statusNames[status]
       );
     },
     classDueDate(value) {
