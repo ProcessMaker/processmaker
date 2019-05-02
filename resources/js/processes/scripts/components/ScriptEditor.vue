@@ -198,6 +198,9 @@
 
 .card-header {
   background: #f7f7f7;
+  cursor: pointer;
+  user-select: none;
+
 }
 
 .accordion-icon {
@@ -209,8 +212,9 @@
 }
 
 .editor-inspector {
-    width: 300px;
-    height: 300px;
+    // width: 300px;
+    height: 200px;
+    border: 1px solid red;
 }
 
 .output {
