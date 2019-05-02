@@ -11,10 +11,6 @@
       <modeler ref="modeler" @validate="validationErrors = $event" />
     </div>
     <statusbar>
-      <template slot="secondary">
-        {{$t('Last Saved:')}} {{lastSaved}}
-      </template>
-
       <validation-status :validation-errors="validationErrors"/>
     </statusbar>
     <b-modal ref="uploadmodal" id="uploadmodal" centered :title="$t('Upload BPMN File')" :cancel-title="$t('Cancel')" :ok-title="$t('Ok')">
@@ -133,36 +129,62 @@ export default {
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
+body,
+html {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+}
+
 #modeler-app {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
   display: flex;
   flex-direction: column;
-  position: absolute;
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
-  max-height: 100%;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+
   .modeler-container {
     flex-grow: 1;
     overflow: hidden;
   }
+
   .navbar {
     font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 1.2em;
-    background-color: #b6bfc6;
+    background-color: #3397e1;
     color: white;
     border-bottom: 1px solid grey;
     padding-right: 16px;
     padding-left: 16px;
 
+    .actions {
+      button {
+        border-radius: 4px;
+        display: inline-block;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        padding-left: 8px;
+        padding-right: 8px;
+        background-color: grey;
+        color: white;
+        border-width: 1px;
+        border-color: darkgrey;
+        margin-right: 8px;
+        font-weight: bold;
+      }
+    }
   }
 }
 </style>
