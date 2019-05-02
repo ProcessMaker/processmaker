@@ -27,11 +27,6 @@
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('type', __('Type')) !!}
-                        {!! Form::select('type', [$screen->type => mb_convert_case($screen->type, MB_CASE_TITLE)], 'null',
-                        ['id' => 'type', 'class'=> 'form-control disabled', 'disabled' => 'disabled']) !!}
-                    </div>
-                    <div class="form-group">
                         {!! Form::label('description', __('Description')) !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
