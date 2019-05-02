@@ -23,7 +23,7 @@
                     <div class="card-body">
                         <div id="pre-import" v-if="! importing && ! imported">
                             <h5 class="card-title">{{__('You are about to import a Process.')}}</h5>
-                            <p class="card-text d-flex justify-content-center">{{__('You can reassign users, groups after import.')}}</p>
+                            <p class="card-text d-flex justify-content-center">{{__('After importing, you can reassign users and groups to your Process.')}}</p>
                             <div class="d-flex justify-content-center">
                                 <b-card header-class="d-flex bg-white align-items-center card-size-header border-0"
                                         class="d-flex flex-row card-border border-0" style="width: 40em;">
@@ -197,9 +197,6 @@
                     <div id="card-footer-post-import" class="card-footer bg-light" align="right" v-if="imported"
                          v-cloak>
                         <div v-if="assignable">
-                            <button type="button" class="btn btn-outline-secondary" @click="onAssignmentCancel">
-                                {{__('Cancel')}}
-                            </button>
                             <button type="button" class="btn btn-secondary ml-2" @click="onAssignmentSave">
                                 {{__('Save')}}
                             </button>
@@ -258,6 +255,7 @@
             border-color: #b6bfc6;
             border-radius: 5px;
             min-width: 300px;
+            height: 40px;
         }
 
         .card-title i {
