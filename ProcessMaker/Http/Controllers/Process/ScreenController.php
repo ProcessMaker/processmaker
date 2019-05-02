@@ -19,11 +19,8 @@ class ScreenController extends Controller
      */
     public function index()
     {
-        $screenTypes = ScreenType::all();
-        $types = [];
-        foreach ($screenTypes as $item) {
-            $types[$item->name] = $item->name;
-        }
+        $screenTypes = ScreenType::pluck('name', 'name');
+        $types = $screenTypes->all();
 
         return view('processes.screens.index', compact('types'));
     }
