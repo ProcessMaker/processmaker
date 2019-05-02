@@ -9,10 +9,9 @@ new Vue({
         inOverdueMessage: "",
         advanced: false,
         isLoading: {
-            process: false,
-            requester: false,
-            status: false,
-            participants: false,
+            task: false,
+            request: false,
+            assignee: false,
         },
         title: "All Request",
         value: null,
@@ -43,22 +42,43 @@ new Vue({
             console.log("intitals")
         },
         allLoading(value) {
-            this.isLoading.process = value;
-            this.isLoading.status = value;
-            this.isLoading.requester = value;
-            this.isLoading.participants = value;
+            this.isLoading.task = value;
+            this.isLoading.request = value;
+            this.isLoading.assignee = value;
         },
         getAll() {
-            console.log("GETAL:L")
+            console.log("GETALL")
         },
-        getTasks() {
-            console.log('tasks')
+        getTasks(query) {
+            this.isLoading.task = true
+            ProcessMaker.apiClient
+                .get("/tasks/search?type=tasks&filter=" + query, { baseURL: '' })
+                .then(response => {
+                    this.taskOptions = response.data;
+                    this.isLoading.task = false
+                    setTimeout(3000)
+                });
+        },
+        getRequests(query) {
+            this.isLoading.requests = true
+            ProcessMaker.apiClient
+                .get("/tasks/search?type=requests&filter=" + query, { baseURL: '' })
+                .then(response => {
+                    this.requestsOptions = response.data;
+                    this.isLoading.requests = false
+                    setTimeout(3000)
+                });
         },
         getAssignee(query) {
-            console.log("ASSIGNEE")
+            this.isLoading.assignee = true
+            ProcessMaker.apiClient
+                .get("/tasks/search?type=assignee&filter=" + query, { baseURL: '' })
+                .then(response => {
+                    this.assigneeOptions = response.data;
+                    this.isLoading.assignee = false
+                    setTimeout(3000)
+                });
         },
-        getRequests() {
-            console.log("REQUESTS")
-        }
+
     }
 });
