@@ -17,6 +17,7 @@
                             <b-list-group-item class="card-header">
                                 <b-row class="d-flex align-items-center">
                                     <b-col>{{ $t('Debugger') }}</b-col>
+
                                     <b-col align-self="end" class="text-right">
                                         <b-button
                                             class="text-capitalize pl-3 pr-3"
@@ -77,7 +78,7 @@
                                 </b-row>
                             </b-list-group-item>
                             <b-list-group-item class="border-bottom-0 p-0 h-100">
-                                <b-collapse id="output" class="bg-dark h-100">
+                                <b-collapse id="output" class="bg-dark h-100" :visible="preview.output">
                                     <div class="output text-white">
                                         <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
                                         <div v-if="preview.failure">
@@ -92,8 +93,13 @@
                 </b-row>
             </b-card-body>
 
-            <b-card-footer>
+            <b-card-footer class="d-flex">
                 Language: <span class="text-uppercase">{{ script.language }}</span>
+                <span class="ml-auto">
+                    <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
+                    <i v-if="preview.success" class="fas fa-check text-success"></i>
+                    <i v-if="preview.failure" class="fas fa-times-circle text-danger"></i>
+                </span>
             </b-card-footer>
         </b-card>
     </b-container>
@@ -116,7 +122,7 @@
                     executing: false,
                     data: "{}",
                     config: "{}",
-                    output: '',
+                    output: undefined,
                     success: false,
                     failure: false,
                 }
@@ -139,14 +145,14 @@
 
         methods: {
             outputResponse(response) {
+                this.preview.output = response.response;
+
                 if (response.status === 200) {
                     this.preview.executing = false;
-                    this.preview.output = response.response;
                     this.preview.success = true;
                 } else {
                     this.preview.executing = false;
                     this.preview.failure = true;
-                    this.preview.output = response.response;
                     this.preview.error = response.response;
                 }
             },
@@ -161,6 +167,7 @@
                 this.preview.executing = true;
                 this.preview.success = false;
                 this.preview.failure = false;
+                this.preview.output = undefined;
                 // Attempt to execute a script, using our temp variables
                 ProcessMaker.apiClient
                     .post("scripts/" + this.script.id + "/preview", {
@@ -220,5 +227,6 @@
 .output {
     min-height: 300px;
 }
+
 </style>
 
