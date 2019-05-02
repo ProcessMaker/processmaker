@@ -134,4 +134,9 @@ trait SearchAutocompleteTrait
         return $results;
     }
 
+    public function searchTasks() 
+    {
+        dd("HEEEY");
+    }
+
 }
