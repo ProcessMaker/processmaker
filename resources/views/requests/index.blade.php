@@ -76,7 +76,7 @@
                                     :multiple="true" 
                                     placeholder="Process">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('processes selected') }}</span>
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('processes') }}</span>
                                         </template>
                                     </multiselect>
                                 </div>
@@ -93,7 +93,7 @@
                                     :multiple="true"
                                     placeholder="Status">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('statuses selected') }}</span>
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('statuses') }}</span>
                                         </template>
                                     </multiselect>
                                 </div>
@@ -111,7 +111,7 @@
                                     :multiple="true" 
                                     placeholder="Requester">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('requesters selected') }}</span>
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('requesters') }}</span>
                                         </template>
                                         <template slot="option" slot-scope="props">
                                             <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
@@ -137,7 +137,7 @@
                                     label="name" 
                                     placeholder="Participants">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('participants selected') }}</span>
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('participants') }}</span>
                                         </template>
                                         <template slot="option" slot-scope="props">
                                             <span v-if="props.option.$isLabel">
