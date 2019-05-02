@@ -32,6 +32,16 @@ new Vue({
             let taskText = (inOverdue > 1) ? "tasks" : "task";
             this.inOverdueMessage = "You have " + inOverdue + " overdue " + taskText + " pending";
         },
+        toggleAdvanced() {
+            if (this.advanced) {
+                this.advanced = false;
+            } else {
+                this.advanced = true;
+                Vue.nextTick().then(() => {
+                    this.$refs.search_input.focus();
+                });
+            }
+        },
         runSearch(advanced) {
             console.log("runSearch", advanced)
         },
@@ -69,7 +79,7 @@ new Vue({
                     setTimeout(3000)
                 });
         },
-        getAssignee(query) {
+        getAssignees(query) {
             this.isLoading.assignee = true
             ProcessMaker.apiClient
                 .get("/tasks/search?type=assignee&filter=" + query, { baseURL: '' })
