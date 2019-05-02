@@ -692,5 +692,7 @@
     "Advanced": "Advanced",
     "Basic": "Basic",
     "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
-    "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax."
+    "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax.",
+    "Advanced Search": "Advanced Search",
+    "Basic Search": "Basic Search"
 }

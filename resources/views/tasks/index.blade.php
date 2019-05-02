@@ -22,74 +22,74 @@
       </b-alert>
     </div>
   </div>
-                <div id="search-bar" class="search mt-2 bg-light p-2" >
-                    <div class="d-flex">
-                        <div class="flex-grow-1">
-                            <div id="search-dropdowns" v-if="! advanced" class="row">
-                                <div class="col-3">
-                                    <multiselect 
-                                    v-model="task" 
-                                    @search-change="getTasks" 
-                                    @input="buildPmql"
-                                    :select-label="''" 
-                                    :loading="isLoading.tasks" 
-                                    open-direction="bottom" 
-                                    label="name" 
-                                    :options="taskOptions"
-                                    :track-by="'id'"
-                                    :multiple="true" 
-                                    placeholder="Task">
-                                    </multiselect>
-                                </div>
-                                <div class="col-3">
-                                    <multiselect
-                                    v-model="request"
-                                    :select-label="''" 
-                                    @search-change="getRequests" 
-                                    @input="buildPmql"
-                                    :loading="isLoading.request"
-                                    open-direction="bottom"
-                                    label="name"
-                                    :options="requestOptions"
-                                    track-by="value"
-                                    :multiple="true"
-                                    placeholder="Request">
-                                    </multiselect>
-                                </div>
-                                <div class="col-3">
-                                    <multiselect 
-                                    v-model="assignee" 
-                                    @search-change="getAssignees" 
-                                    @input="buildPmql"
-                                    :select-label="''" 
-                                    :loading="isLoading.assignee" 
-                                    open-direction="bottom" 
-                                    label="fullname" 
-                                    :options="assigneeOptions" 
-                                    :track-by="'id'"
-                                    :multiple="true" 
-                                    placeholder="Assinee">
-                                    </multiselect>
-                                </div>
-                            </div>
-                            <div id="search-manual" v-if="advanced">
-                                <input ref="search_input" type="text" class="form-control" placeholder="PMQL" v-model="pmql">
-                            </div>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <div id="search-actions">
-                                <div v-if="! advanced">
-                                    <b-btn variant="primary" @click="runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
-                                    <b-btn variant="secondary" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Advanced Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                                </div>
-                                <div v-if="advanced">
-                                    <b-btn variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
-                                    <b-btn variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>  
+  <div id="search-bar" class="search mt-2 bg-light p-2" >
+      <div class="d-flex">
+          <div class="flex-grow-1">
+              <div id="search-dropdowns" v-if="! advanced" class="row">
+                  <div class="col-3">
+                      <multiselect 
+                      v-model="task" 
+                      @search-change="getTasks" 
+                      @input="buildPmql"
+                      :select-label="''" 
+                      :loading="isLoading.tasks" 
+                      open-direction="bottom" 
+                      label="name" 
+                      :options="taskOptions"
+                      :track-by="'id'"
+                      :multiple="true" 
+                      placeholder="Task">
+                      </multiselect>
+                  </div>
+                  <div class="col-3">
+                      <multiselect
+                      v-model="request"
+                      :select-label="''" 
+                      @search-change="getRequests" 
+                      @input="buildPmql"
+                      :loading="isLoading.request"
+                      open-direction="bottom"
+                      label="name"
+                      :options="requestOptions"
+                      track-by="value"
+                      :multiple="true"
+                      placeholder="Request">
+                      </multiselect>
+                  </div>
+                  <div class="col-3">
+                      <multiselect 
+                      v-model="assignee" 
+                      @search-change="getAssignees" 
+                      @input="buildPmql"
+                      :select-label="''" 
+                      :loading="isLoading.assignee" 
+                      open-direction="bottom" 
+                      label="fullname" 
+                      :options="assigneeOptions" 
+                      :track-by="'id'"
+                      :multiple="true" 
+                      placeholder="Assinee">
+                      </multiselect>
+                  </div>
+              </div>
+              <div id="search-manual" v-if="advanced">
+                  <input ref="search_input" type="text" class="form-control" placeholder="PMQL" v-model="pmql">
+              </div>
+          </div>
+          <div class="flex-shrink-0">
+              <div id="search-actions">
+                  <div v-if="! advanced">
+                      <b-btn variant="primary" @click="runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
+                      <b-btn variant="secondary" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Advanced Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
+                  </div>
+                  <div v-if="advanced">
+                      <b-btn variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
+                      <b-btn variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>  
   <div class="container-fluid">
     <tasks-list :filter="filter" @in-overdue="setInOverdueMessage"></tasks-list>
   </div>
