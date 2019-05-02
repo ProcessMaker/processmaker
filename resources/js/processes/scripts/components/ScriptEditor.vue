@@ -13,26 +13,26 @@
                         <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="h-100" :class="{hidden: resizing}"/>
                     </b-col>
                     <b-col cols="3" class="h-100">
+                        <div class="card-header">
+                            <b-row class="d-flex align-items-center">
+                                <b-col>{{ $t('Debugger') }}</b-col>
+
+                                <b-col align-self="end" class="text-right">
+                                    <b-button
+                                        class="text-capitalize pl-3 pr-3"
+                                        :disabled="preview.executing"
+                                        @click="execute"
+                                        size="sm"
+                                    >
+                                        <i class="fas fa-caret-square-right"/>
+                                        {{ $t('Run') }}
+                                    </b-button>
+                                </b-col>
+                            </b-row>
+                        </div>
                         <b-list-group class="w-100 h-100 overflow-auto">
-                            <b-list-group-item class="card-header">
-                                <b-row class="d-flex align-items-center">
-                                    <b-col>{{ $t('Debugger') }}</b-col>
-
-                                    <b-col align-self="end" class="text-right">
-                                        <b-button
-                                            class="text-capitalize pl-3 pr-3"
-                                            :disabled="preview.executing"
-                                            @click="execute"
-                                            size="sm"
-                                        >
-                                            <i class="fas fa-caret-square-right"/>
-                                            {{ $t('Run') }}
-                                        </b-button>
-                                    </b-col>
-                                </b-row>
-                            </b-list-group-item>
-
-                            <b-list-group-item class="card-header">
+                            
+                            <b-list-group-item class="card-header interactable">
                                 <b-row v-b-toggle.configuration>
                                     <b-col>
                                         <i class="fas fa-cog"/>
@@ -45,11 +45,11 @@
                             </b-list-group-item>
                             <b-list-group-item class="border-bottom-0 p-0">
                                 <b-collapse id="configuration">
-                                    <monaco-editor :options="monacoOptions" v-model="preview.config" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
+                                    <monaco-editor :options="{ ...monacoOptions, minimap: { enabled: false } }" v-model="preview.config" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
                                 </b-collapse>
                             </b-list-group-item>
 
-                            <b-list-group-item class="card-header">
+                            <b-list-group-item class="card-header interactable">
                                 <b-row v-b-toggle.input>
                                     <b-col>
                                         <i class="fas fa-sign-in-alt"/>
@@ -62,11 +62,11 @@
                             </b-list-group-item>
                             <b-list-group-item class="border-bottom-0 p-0">
                                 <b-collapse id="input">
-                                    <monaco-editor :options="monacoOptions" v-model="preview.data" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
+                                    <monaco-editor :options="{ ...monacoOptions, minimap: { enabled: false } }" v-model="preview.data" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
                                 </b-collapse>
                             </b-list-group-item>
 
-                            <b-list-group-item class="card-header">
+                            <b-list-group-item class="card-header interactable">
                                 <b-row v-b-toggle.output>
                                     <b-col>
                                         <i class="far fa-caret-square-right"/>
@@ -78,7 +78,7 @@
                                 </b-row>
                             </b-list-group-item>
                             <b-list-group-item class="border-bottom-0 p-0 h-100">
-                                <b-collapse id="output" class="bg-dark h-100" :visible="preview.output">
+                                <b-collapse id="output" class="bg-dark h-100">
                                     <div class="output text-white">
                                         <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
                                         <div v-if="preview.failure">
@@ -115,14 +115,14 @@
             return {
                 resizing: false,
                 monacoOptions: {
-                    automaticLayout: true
+                    automaticLayout: true,
                 },
                 code: this.script.code,
                 preview: {
                     executing: false,
                     data: "{}",
                     config: "{}",
-                    output: undefined,
+                    output: '',
                     success: false,
                     failure: false,
                 }
@@ -187,7 +187,9 @@
                         code: this.code,
                         title: this.script.title,
                         language: this.script.language,
-                        run_as_user_id: this.script.run_as_user_id
+                        run_as_user_id: this.script.run_as_user_id,
+                        timeout: this.script.timeout,
+                        description: this.script.description
                     })
                     .then(response => {
                         ProcessMaker.alert(__("The script was saved."), "success");
@@ -205,9 +207,11 @@
 
 .card-header {
   background: #f7f7f7;
+}
+
+.interactable {
   cursor: pointer;
   user-select: none;
-
 }
 
 .accordion-icon {
@@ -219,9 +223,7 @@
 }
 
 .editor-inspector {
-    // width: 300px;
     height: 200px;
-    border: 1px solid red;
 }
 
 .output {
