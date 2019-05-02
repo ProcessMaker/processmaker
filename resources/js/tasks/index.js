@@ -20,9 +20,9 @@ new Vue({
         task: "",
         request: "",
         assignee: "",
-        taskOptions: ['list', 'of', 'options'],
-        requestOptions: ['list', 'of', 'options'],
-        assigneeOptions: ['list', 'of', 'options'],
+        taskOptions: [],
+        requestOptions: [],
+        assigneeOptions: [],
     },
     components: { TasksList, Multiselect },
     mounted() {
@@ -57,5 +57,8 @@ new Vue({
         getAssignee(query) {
             console.log("ASSIGNEE")
         },
+        getRequests() {
+            console.log("REQUESTS")
+        }
     }
 });

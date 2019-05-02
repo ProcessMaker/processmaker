@@ -43,6 +43,7 @@
         <multiselect
         v-model="request"
         :select-label="''" 
+        @search-change="getRequests" 
         @input="buildPmql"
         :loading="isLoading.request"
         open-direction="bottom"
@@ -77,7 +78,7 @@
         <a class="text-primary ml-3" @click="advanced = true">{{__('Advanced')}}</a>
     </div>
 </div>  
-<div v-if="advanced == true" class="search row mt-2 bg-light p-2">
+<div v-show="advanced == true" class="row mt-2 bg-light p-2" id="search">
     <div class="col-10 form-group">
         <input type="text" class="form-control" placeholder="PMQL" v-model="pmql">
     </div>
