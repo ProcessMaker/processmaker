@@ -174,8 +174,7 @@ class ProcessRequestController extends Controller
                             $requests = ProcessRequest::whereHas('participants', function($query) use ($expression) {
                                 $query->where('username', $expression->value->value());
                             })->get();
-
-                            $query->whereIn('process_id', $requests->pluck('process_id'));
+                            $query->whereIn('id', $requests->pluck('id'));
                         };
                     }
                 });
