@@ -22,7 +22,7 @@ class CreateProcessTable extends Migration
             $table->text('description');
             $table->string('name');
             $table->unsignedInteger('cancel_screen_id')->nullable();
-            $table->enum('status', ['ACTIVE', 'INACTIVE']);
+            $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
             $table->boolean('pause_timer_start')->default(0);
             $table->softDeletes();
             $table->timestamps();
