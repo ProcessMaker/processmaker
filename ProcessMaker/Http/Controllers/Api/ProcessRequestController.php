@@ -130,12 +130,22 @@ class ProcessRequestController extends Controller
         try {
             if (!empty($pmql)) {
                 $query->pmql($pmql, function($expression) {
-                    
-                    //Handle process name
-                    if ($expression->field->field() == 'process.name') {
+                    //Handle process/request name
+                    if ($expression->field->field() == 'request') {
                         return function($query) use($expression) {
                             $processes = Process::where('name', $expression->value->value())->get();
                             $query->whereIn('process_id', $processes->pluck('id'));
+                        };
+                    }
+                    
+                    //Handle requester
+                    if ($expression->field->field() == 'requester') {
+                        return function($query) use($expression) {
+                            $requests = ProcessRequest::whereHas('user', function($query) use ($expression) {
+                                $query->where('username', $expression->value->value());
+                            })->get();
+
+                            $query->whereIn('process_id', $requests->pluck('id'));
                         };
                     }
                     
@@ -143,7 +153,7 @@ class ProcessRequestController extends Controller
                     if ($expression->field->field() == 'participant') {
                         return function($query) use($expression) {
                             $requests = ProcessRequest::whereHas('participants', function($query) use ($expression) {
-                                $query->where('user_id', $expression->value->value());
+                                $query->where('username', $expression->value->value());
                             })->get();
 
                             $query->whereIn('process_id', $requests->pluck('id'));

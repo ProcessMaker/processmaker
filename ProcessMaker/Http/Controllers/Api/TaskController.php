@@ -132,7 +132,7 @@ class TaskController extends Controller
                 $query->pmql($pmql, function($expression) {
                     
                     //Handle request name
-                    if ($expression->field->field() == 'request.name') {
+                    if ($expression->field->field() == 'request') {
                         return function($query) use($expression) {
                             $processRequests = ProcessRequest::where('name', $expression->value->value())->get();
                             $query->whereIn('process_request_tokens.process_request_id', $processRequests->pluck('id'));
@@ -140,7 +140,7 @@ class TaskController extends Controller
                     }
 
                     //Handle task name
-                    if ($expression->field->field() == 'name') {
+                    if ($expression->field->field() == 'task') {
                         return function($query) use($expression) {
                             $query->where('process_request_tokens.element_name', $expression->value->value());
                         };
