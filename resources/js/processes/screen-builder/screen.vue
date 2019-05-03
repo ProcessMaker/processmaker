@@ -25,14 +25,14 @@
                 CSS
               </button>
             </div>
-            <button type="button" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
+            <button type="button" @click="saveScreen(false)" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
           </div>
         </div>
       </div>
 
         <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
         <custom-CSS v-model="customCSS" ref="customCSS" :cssErrors="cssErrors"/>
-        <vue-form-builder :validationErrors="validationErrors" ref="builder" @change="updateConfig" :class="displayBuilder ? 'd-flex' : 'd-none'" />
+        <vue-form-builder :validationErrors="validationErrors" :config="config" ref="builder" @change="updateConfig" :class="displayBuilder ? 'd-flex' : 'd-none'" />
 
         <div id="preview" v-show="displayPreview" class="flex-grow-1 p-4 pl-5 pr-5">
           <div class="row h-100">
@@ -129,8 +129,8 @@
 <script>
   import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties.vue";
   import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css.vue";
-  import VueFormBuilder from "@processmaker/spark-screen-builder";
-  import VueFormRenderer from "@processmaker/spark-screen-builder";
+  import {VueFormBuilder} from "@processmaker/spark-screen-builder";
+  import {VueFormRenderer} from "@processmaker/spark-screen-builder";
   import VueJsonPretty from 'vue-json-pretty';
 
   // Bring in our initial set of controls
@@ -139,6 +139,7 @@
   import {
     FormTextArea,
   } from "@processmaker/vue-form-elements";
+  import _ from "lodash";
 
 import Validator from "validatorjs";
 
@@ -146,8 +147,9 @@ import Validator from "validatorjs";
     return value.match(/^[a-zA-Z0-9-_]+$/);
   }, 'Must be letters, numbers, underscores or dashes');
 
+console.log("VueFormBuilder", VueFormBuilder);
   export default {
-    name: "app",
+    props: ["process", "screen", 'permission'],
     data() {
       return {
         mode: "editor",
@@ -251,18 +253,27 @@ import Validator from "validatorjs";
       },
     },
     mounted() {
-      // Iterate through our initial config set, calling this.addControl
-      controlConfig.forEach(config => {
-        config.control.inspector.push(...globalProperties[0].inspector);
-
-        this.addControl(
-          config.control,
-          config.rendererComponent,
-          config.rendererBinding,
-          config.builderComponent,
-          config.builderBinding
-        );
-      });
+      // Call our init lifecycle event
+      ProcessMaker.EventBus.$emit("screen-builder-init", this);
+      this.$refs.builder.config = this.screen.config
+        ? this.screen.config
+        : [
+          {
+            name: "Default",
+            items: []
+          }
+        ];
+      this.computed = this.screen.computed ? this.screen.computed : [];
+      this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
+      this.$refs.builder.computed = this.screen.computed
+        ? this.screen.computed
+        : [];
+      if (this.screen.title) {
+        this.$refs.builder.config[0].name = this.screen.title;
+      }
+      this.updatePreview(new Object());
+      this.previewInput = "{}";
+      ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
       focusInspector(validate) {
@@ -276,6 +287,7 @@ import Validator from "validatorjs";
       },
       updateConfig(newConfig) {
         this.config = newConfig
+        this.refreshSession();
       },
       updatePreview(data) {
         this.previewData = data
@@ -313,8 +325,7 @@ import Validator from "validatorjs";
           });
       },
       saveScreen(exportScreen) {
-        this.checkForErrors();
-        if (this.errors == true) {
+        if (this.allErrors !== 0) {
           ProcessMaker.alert(this.$t("This screen has validation errors."), "danger");
         } else {
           ProcessMaker.apiClient
