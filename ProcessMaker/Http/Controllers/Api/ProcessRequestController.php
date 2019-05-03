@@ -164,8 +164,7 @@ class ProcessRequestController extends Controller
                             $requests = ProcessRequest::whereHas('user', function($query) use ($expression) {
                                 $query->where('username', $expression->value->value());
                             })->get();
-
-                            $query->whereIn('process_id', $requests->pluck('id'));
+                            $query->whereIn('process_id', $requests->pluck('process_id'));
                         };
                     }
                     
@@ -176,12 +175,12 @@ class ProcessRequestController extends Controller
                                 $query->where('username', $expression->value->value());
                             })->get();
 
-                            $query->whereIn('process_id', $requests->pluck('id'));
+                            $query->whereIn('process_id', $requests->pluck('process_id'));
                         };
                     }
                 });
             }
-                
+
             $response = $query->orderBy(
                 $request->input('order_by', 'name'),
                 $request->input('order_direction', 'ASC')
