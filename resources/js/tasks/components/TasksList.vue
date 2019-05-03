@@ -263,11 +263,12 @@ export default {
 
 <style>
 	.overlay { 
-		position: relative; 
+		position: absolute; 
 		z-index: 10; 
     width: 100%;
     text-align: center;
-    top: 89px
+    top: 276px;
+    left: 5px;
 	}
 </style>
 
