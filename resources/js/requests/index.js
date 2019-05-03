@@ -54,7 +54,7 @@ new Vue({
           if (this.process.length) {
             let string = '';
             this.process.forEach((process, key) => {
-              string += 'process.name = "' + process.name + '"';
+              string += 'request = "' + process.name + '"';
               if (key < this.process.length - 1) string += ' OR ';
             });
             clauses.push(string);
@@ -74,7 +74,7 @@ new Vue({
           if (this.requester.length) {
             let string = '';
             this.requester.forEach((requester, key) => {
-              string += 'user_id = "' + requester.id + '"';
+              string += 'requester = "' + requester.username + '"';
               if (key < this.requester.length - 1) string += ' OR ';
             });
             clauses.push(string);
@@ -84,7 +84,7 @@ new Vue({
           if (this.participants.length) {
             let string = '';
             this.participants.forEach((participants, key) => {
-              string += 'participant = "' + participants.id + '"';
+              string += 'participant = "' + participants.username + '"';
               if (key < this.participants.length - 1) string += ' OR ';
             });
             clauses.push(string);

@@ -55,7 +55,7 @@ new Vue({
           if (this.request.length) {
             let string = '';
             this.request.forEach((request, key) => {
-              string += 'request.name = "' + request.name + '"';
+              string += 'request = "' + request.name + '"';
               if (key < this.request.length - 1) string += ' OR ';
             });
             clauses.push(string);
@@ -65,7 +65,7 @@ new Vue({
           if (this.name.length) {
             let string = '';
             this.name.forEach((name, key) => {
-              string += 'name = "' + name.name + '"';
+              string += 'task = "' + name.name + '"';
               if (key < this.name.length - 1) string += ' OR ';
             });
             clauses.push(string);

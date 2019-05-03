@@ -123,34 +123,23 @@
                                 <div class="col-3">
                                     <multiselect 
                                     v-model="participants" 
-                                    :options="participantsOptions" 
-                                    :select-label="''" 
-                                    :loading="isLoading.participants" 
-                                    group-values="items" 
-                                    group-label="label" 
-                                    :group-select="true"
                                     @search-change="getParticipants" 
                                     @input="buildPmql"
-                                    :multiple="true" 
-                                    :track-by="'track'"
+                                    :select-label="''" 
+                                    :loading="isLoading.participants" 
                                     open-direction="bottom" 
-                                    label="name" 
+                                    label="fullname" 
+                                    :options="participantsOptions" 
+                                    :track-by="'id'"
+                                    :multiple="true" 
                                     placeholder="Participants">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('participants') }}</span>
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('requesters') }}</span>
                                         </template>
                                         <template slot="option" slot-scope="props">
-                                            <span v-if="props.option.$isLabel">
-                                                <span>@{{props.option.$groupLabel}}</span>
-                                            </span>
-                                            <span v-if="props.option.username">
-                                                <img v-if="props.option.avatar && props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
-                                                <span v-else class="initials bg-warning text-white p-1">@{{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                                                <span class="ml-1">@{{props.option.name}}</span>
-                                            </span>
-                                            <span v-else>
-                                                <span class="ml-1">@{{props.option.name}}</span>
-                                            </span>
+                                            <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
+                                        <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                            <span class="ml-1">@{{props.option.fullname}}</span>
                                         </template>
                                     </multiselect>
                                 </div>
