@@ -5,9 +5,9 @@
         <div v-else>
             <multiselect v-model="content"
                          track-by="id"
-                         label="title"
+                         label="name"
                          :placeholder="$t('type here to search')"
-                         :options="scripts"
+                         :options="groups"
                          :multiple="false"
                          :show-labels="false"
                          :searchable="true"
@@ -32,7 +32,7 @@
       return {
         content: "",
         loading: true,
-        scripts: []
+        groups: []
       };
     },
     computed: {
@@ -44,7 +44,7 @@
       // Load selected item.
       if (!this.content && this.value) {
         ProcessMaker.apiClient
-          .get("scripts/"+ this.value)
+          .get("groups/"+ this.value)
           .then(response => {
             this.content = response.data;
           });
@@ -61,10 +61,10 @@
     methods: {
       load(filter) {
         ProcessMaker.apiClient
-          .get("scripts?order_direction=asc" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+          .get("groups?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
           .then(response => {
             this.loading = false;
-            this.scripts = response.data.data;
+            this.groups = response.data.data;
           })
           .catch(err => {
             this.loading = false;

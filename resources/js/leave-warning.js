@@ -6,12 +6,15 @@ new Vue({
         }
     },
     created() {
-        window.addEventListener('beforeunload', this.handler)
-        window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', (e) => {
-            if (e.data.method === 'timedOut') {
-                this.isTimedOut = true;
-            }
-        });
+        window.addEventListener('beforeunload', this.handler);
+        if (window.ProcessMaker && window.ProcessMaker.AccountTimeoutWorker) {
+            window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', (e) => {
+                if (e.data.method === 'timedOut') {
+                    this.isTimedOut = true;
+                }
+            });
+        }
+
     },
     methods: {
         handler(event) {

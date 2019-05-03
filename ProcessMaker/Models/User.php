@@ -125,6 +125,8 @@ class User extends Authenticatable implements HasMedia
 
         return [
             'username' => ['required', 'alpha_dash', 'min:4', 'max:255' , $unique],
+            'firstname' => 'required',
+            'lastname' => 'required',
             'email' => ['required', 'email', $unique],
             'status' => ['required', 'in:ACTIVE,INACTIVE'],
             'password' => 'required|sometimes|min:6'

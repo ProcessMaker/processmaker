@@ -19,6 +19,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @property array content
  * @property array config
  * @property array computed
+ * @property array custom_css
  * @property string label
  * @property Carbon type
  * @property \Carbon\Carbon $updated_at
