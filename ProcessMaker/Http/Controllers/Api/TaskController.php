@@ -27,6 +27,12 @@ class TaskController extends Controller
     public $doNotSanitize = [
         //
     ];
+    
+    private $statusMap = [
+        'In Progress' => 'ACTIVE',
+        'Completed' => 'CLOSED',
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -149,7 +155,13 @@ class TaskController extends Controller
                     //Handle task status
                     if ($expression->field->field() == 'status') {
                         return function($query) use($expression) {
-                            $query->where('process_request_tokens.status', $expression->value->value());
+                            $value = $expression->value->value();
+
+                            if (array_key_exists($value, $this->statusMap)) {
+                                $value = $this->statusMap[$value];
+                            }
+                            
+                            $query->where('process_request_tokens.status', $value);
                         };
                     }
                 });

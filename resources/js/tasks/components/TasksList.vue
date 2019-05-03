@@ -138,13 +138,13 @@ export default {
       case "CLOSED":
         this.$parent.status.push({
           name: 'Completed',
-          value: 'CLOSED'
+          value: 'Completed'
         });
         break;
       default:
         this.$parent.status.push({
           name: 'In Progress',
-          value: 'ACTIVE'
+          value: 'In Progress'
         });
         break;
     }

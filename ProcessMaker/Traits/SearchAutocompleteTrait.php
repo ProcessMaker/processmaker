@@ -39,10 +39,10 @@ trait SearchAutocompleteTrait
     private function searchStatus()
     {
         return [
-            ['name' => 'In Progress', 'value' => 'ACTIVE'],
-            ['name' => 'Completed', 'value' => 'COMPLETED'],
-            ['name' => 'Error', 'value' => 'ERROR'],
-            ['name' => 'Canceled', 'value' => 'CANCELED'],
+            ['name' => 'In Progress', 'value' => 'In Progress'],
+            ['name' => 'Completed', 'value' => 'Completed'],
+            ['name' => 'Error', 'value' => 'Error'],
+            ['name' => 'Canceled', 'value' => 'Canceled'],
         ];
     }
     
@@ -115,8 +115,8 @@ trait SearchAutocompleteTrait
     private function searchTaskStatus()
     {
         return [
-            ['name' => 'In Progress', 'value' => 'ACTIVE'],
-            ['name' => 'Completed', 'value' => 'CLOSED'],
+            ['name' => 'In Progress', 'value' => 'In Progress'],
+            ['name' => 'Completed', 'value' => 'Completed'],
         ];
     }
     

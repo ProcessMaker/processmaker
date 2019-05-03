@@ -37,6 +37,13 @@ class ProcessRequestController extends Controller
     public $doNotSanitize = [
         'data'
     ];
+    
+    private $statusMap = [
+        'In Progress' => 'ACTIVE',
+        'Completed' => 'COMPLETED',
+        'Error' => 'ERROR',
+        'Canceled' => 'CANCELED',
+    ];
 
     /**
      * Display a listing of the resource.
@@ -135,6 +142,19 @@ class ProcessRequestController extends Controller
                         return function($query) use($expression) {
                             $processes = Process::where('name', $expression->value->value())->get();
                             $query->whereIn('process_id', $processes->pluck('id'));
+                        };
+                    }
+                    
+                    //Handle status
+                    if ($expression->field->field() == 'status') {
+                        return function($query) use($expression) {
+                            $value = $expression->value->value();
+                            
+                            if (array_key_exists($value, $this->statusMap)) {
+                                $query->where('status', $this->statusMap[$value]);
+                            } else {
+                                $query->where('status', $value);
+                            }
                         };
                     }
                     

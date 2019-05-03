@@ -123,13 +123,13 @@ export default {
       case "in_progress":
         this.$parent.status.push({
           name: 'In Progress',
-          value: 'ACTIVE'
+          value: 'In Progress'
         });
         break;
       case "completed":
         this.$parent.status.push({
           name: 'Completed',
-          value: 'COMPLETED'
+          value: 'Completed'
         });
         break;
     }
