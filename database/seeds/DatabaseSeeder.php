@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             PermissionSeeder::class,
-            GroupSeeder::class
+            GroupSeeder::class,
+            ScreenTypeSeeder::class
         ]);
         $this->callPluginSeeders();
     }

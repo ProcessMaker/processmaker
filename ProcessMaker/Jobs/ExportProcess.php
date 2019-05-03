@@ -74,17 +74,20 @@ class ExportProcess implements ShouldQueue
      */
     private function removeAssignedEntities()
     {
-        $humanTasks = ['task', 'userTask'];
+        $humanTasks = ['startEvent', 'task', 'userTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
-                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-                if ($assignment == 'user' || $assignment == 'group') {
-                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
-                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedGroups');
-                }
+                $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
+                $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedGroups');
             }
+        }
+
+        //remove assignments to call Activity
+        $callActivity = $this->definitions->getElementsByTagName('callActivity');
+        foreach ($callActivity as $task) {
+            $task->removeAttribute('calledElement');
         }
 
         $this->process->bpmn = $this->definitions->saveXML();
@@ -123,8 +126,8 @@ class ExportProcess implements ShouldQueue
 
         $screenIds = [];
 
-        $humanTasks = ['task', 'userTask'];
-        foreach($humanTasks as $humanTask) {
+        $humanTasks = ['task', 'userTask', 'endEvent'];
+        foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
                 $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
@@ -132,10 +135,15 @@ class ExportProcess implements ShouldQueue
             }
         }
 
+        //Add cancel screen
+        if ($this->process->cancel_screen_id) {
+            $screenIds[] = $this->process->cancel_screen_id;
+        }
+
         if (count($screenIds)) {
             $screens = Screen::whereIn('id', $screenIds)->get();
 
-            $screens->each(function($screen) {
+            $screens->each(function ($screen) {
                 $this->package['screens'][] = $screen->toArray();
             });
         }
@@ -158,10 +166,10 @@ class ExportProcess implements ShouldQueue
             $scriptIds[] = $scriptRef;
         }
 
-        if(count($scriptIds)) {
+        if (count($scriptIds)) {
             $scripts = Script::whereIn('id', $scriptIds)->get();
 
-            $scripts->each(function($scripts) {
+            $scripts->each(function ($scripts) {
                 $this->package['scripts'][] = $scripts->toArray();
             });
         }
