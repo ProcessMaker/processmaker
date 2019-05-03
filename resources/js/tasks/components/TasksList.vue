@@ -141,6 +141,12 @@ export default {
           value: 'CLOSED'
         });
         break;
+      default:
+        this.$parent.status.push({
+          name: 'In Progress',
+          value: 'ACTIVE'
+        });
+        break;
     }
     
     this.$parent.buildPmql();
