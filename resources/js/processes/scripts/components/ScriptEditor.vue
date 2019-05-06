@@ -13,7 +13,7 @@
                         <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="h-100" :class="{hidden: resizing}"/>
                     </b-col>
                     <b-col cols="3" class="h-100">
-                        <div class="card-header">
+                        <div class="light-gray-background">
                             <b-row class="d-flex align-items-center">
                                 <b-col>{{ $t('Debugger') }}</b-col>
 
@@ -31,8 +31,8 @@
                             </b-row>
                         </div>
                         <b-list-group class="w-100 h-100 overflow-auto">
-                            
-                            <b-list-group-item class="card-header interactable">
+
+                            <b-list-group-item class="light-gray-background interactable">
                                 <b-row v-b-toggle.configuration>
                                     <b-col>
                                         <i class="fas fa-cog"/>
@@ -49,7 +49,7 @@
                                 </b-collapse>
                             </b-list-group-item>
 
-                            <b-list-group-item class="card-header interactable">
+                            <b-list-group-item class="light-gray-background interactable">
                                 <b-row v-b-toggle.input>
                                     <b-col>
                                         <i class="fas fa-sign-in-alt"/>
@@ -66,7 +66,7 @@
                                 </b-collapse>
                             </b-list-group-item>
 
-                            <b-list-group-item class="card-header interactable">
+                            <b-list-group-item class="light-gray-background interactable">
                                 <b-row v-b-toggle.output>
                                     <b-col>
                                         <i class="far fa-caret-square-right"/>
@@ -205,7 +205,7 @@
     padding: 0 0 0 0;
 }
 
-.card-header {
+.light-gray-background {
   background: #f7f7f7;
 }
 
@@ -229,6 +229,4 @@
 .output {
     min-height: 300px;
 }
-
 </style>
-
