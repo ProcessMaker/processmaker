@@ -3,7 +3,7 @@
     <template>
       <div class="px-2 py-3" v-for="value in comments">
         <avatar-image v-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
-        <img v-else src="../../../resources/img/systemAvatar.png" id="systemAvatar">
+        <img v-else src="/images/systemAvatar.png" id="systemAvatar">
         <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
         &nbsp;-
         {{value.body}}
