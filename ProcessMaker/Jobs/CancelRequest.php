@@ -21,7 +21,7 @@ class CancelRequest extends BpmnAction implements ShouldQueue
      */
     public function __construct(ProcessRequest $instance)
     {
-        $this->definitionsId = $instance->process()->first()->getKey();
+        $this->definitionsId = $instance->process->getKey();
         $this->instanceId = $instance->getKey();
     }
 
