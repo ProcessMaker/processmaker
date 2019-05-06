@@ -321,7 +321,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function scopeCompleted($query)
     {
-        $query->where('status', '=', 'COMPLETED');
+        $query->where(function ($query) {
+            $query->where('status', '=', 'COMPLETED')
+                ->orWhere('status', '=', 'CANCELED');
+        });
     }
 
     /**
@@ -332,6 +335,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function scopeNotCompleted($query)
     {
         $query->where('status', '!=', 'COMPLETED');
+        $query->where('status', '!=', 'CANCELED');
     }
 
     /**

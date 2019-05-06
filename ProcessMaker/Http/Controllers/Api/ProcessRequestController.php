@@ -113,7 +113,7 @@ class ProcessRequestController extends Controller
         if (!empty($filterBase)) {
             $filter = '%' . $filterBase . '%';
             $query->where(function ($query) use ($filter, $filterBase) {
-                    $query->whereHas('participants', function ($query) use ($filter) {
+                $query->whereHas('participants', function ($query) use ($filter) {
                     $query->Where('firstname', 'like', $filter);
                     $query->orWhere('lastname', 'like', $filter);
                 })->orWhere('name', 'like', $filter)
@@ -212,7 +212,7 @@ class ProcessRequestController extends Controller
             return response([], 204);
         }
         if ($httpRequest->post('status') === 'COMPLETED') {
-            if (! Auth::user()->is_administrator) {
+            if (!Auth::user()->is_administrator) {
                 throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
             if ($request->status != 'ERROR') {
@@ -350,7 +350,7 @@ class ProcessRequestController extends Controller
             }
         }
 
-        $data = (array) request()->json()->all();
+        $data = (array)request()->json()->all();
 
         // Trigger the catch event
         WorkflowManager::completeCatchEvent($process, $request, $token, $data);
@@ -443,7 +443,7 @@ class ProcessRequestController extends Controller
             'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
         ]);
     }
-    
+
     /**
      * Get task name by token fields and request
      *
