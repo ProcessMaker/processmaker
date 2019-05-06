@@ -13,6 +13,7 @@ use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Query\Traits\PMQL;
 use Throwable;
 
 /**
@@ -61,6 +62,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use ExecutionInstanceTrait;
     use SerializeToIso8601;
     use HasMediaTrait;
+    use PMQL;
 
     /**
      * The attributes that aren't mass assignable.
