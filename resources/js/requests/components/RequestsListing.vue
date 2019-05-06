@@ -1,6 +1,9 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <div v-show="loading" class="overlay">
+      <i class="fas fa-circle-notch fa-spin fa-2x text-success"></i>
+    </div>
+    <div class="card card-body table-card vuetable-wrapper">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -10,7 +13,8 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :noDataTemplate="showMessage()"
+        @vuetable:loaded="hideLoader"
         pagination-path="meta"
       >
         <template slot="ids" slot-scope="props">
@@ -62,7 +66,6 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin],
-  props: ["filter", "type"],
   data() {
     return {
       orderBy: "id",
@@ -112,6 +115,27 @@ export default {
       ]
     };
   },
+  beforeCreate() {
+    switch (Processmaker.status) {
+      case "":
+        this.$parent.requester.push(Processmaker.user);
+        break;
+      case "in_progress":
+        this.$parent.status.push({
+          name: 'In Progress',
+          value: 'In Progress'
+        });
+        break;
+      case "completed":
+        this.$parent.status.push({
+          name: 'Completed',
+          value: 'Completed'
+        });
+        break;
+    }
+    
+    this.$parent.buildPmql();
+  },
   methods: {
     onAction(action, data, index) {
       switch (action) {
@@ -119,6 +143,19 @@ export default {
           this.openRequest(data, index);
           break;
       }
+    },
+    showMessage() {
+      if(this.loading) {
+        return "    "
+      }else {
+        return "No Data Available"
+      }
+    },
+    showLoader() {
+      this.loading = true
+    },
+    hideLoader() {
+      this.loading = false
     },
     openRequest(data, index) {
       window.location.href = "/requests/" + data.id;
@@ -170,17 +207,11 @@ export default {
       }
       return data;
     },
-    fetch() {
+    fetch(resetPagination) {
       this.loading = true;
-      switch (this.type) {
-        case "":
-          this.additionalParams = "&type=started_me";
-          break;
-        case "all":
-          this.additionalParams = "";
-          break;
-        default:
-          this.additionalParams = "&type=" + this.type;
+      
+      if (resetPagination) {
+        this.page = 1;
       }
 
       // Load from our api client
@@ -191,8 +222,8 @@ export default {
             "&per_page=" +
             this.perPage +
             "&include=process,participants" +
-            "&filter=" +
-            this.filter +
+            "&pmql=" +
+            this.$parent.pmql +
             "&order_by=" +
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
@@ -202,9 +233,21 @@ export default {
         .then(response => {
           this.data = this.transform(response.data);
           this.loading = false;
+        })
+        .catch(error => {
+          window.ProcessMaker.alert(error.response.data.message, "danger");
+          this.data = [];
         });
     }
   }
 };
 </script>
-
+<style>
+	.overlay { 
+		position: absolute; 
+		z-index: 10; 
+    width: 100%;
+    text-align: center;
+    top: 272px
+	}
+</style>
