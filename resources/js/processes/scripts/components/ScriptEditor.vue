@@ -13,88 +13,92 @@
                         <monaco-editor :options="monacoOptions" v-model="code" :language="script.language" class="h-100" :class="{hidden: resizing}"/>
                     </b-col>
                     <b-col cols="3" class="h-100">
-                        <div class="light-gray-background">
-                            <b-row class="d-flex align-items-center">
-                                <b-col>{{ $t('Debugger') }}</b-col>
+                        <b-card no-body class="h-100">
+                            <b-card-header class="light-gray-background">
+                                    <b-row class="d-flex align-items-center">
+                                        <b-col>{{ $t('Debugger') }}</b-col>
 
-                                <b-col align-self="end" class="text-right">
-                                    <b-button
-                                        class="text-capitalize pl-3 pr-3"
-                                        :disabled="preview.executing"
-                                        @click="execute"
-                                        size="sm"
-                                    >
-                                        <i class="fas fa-caret-square-right"/>
-                                        {{ $t('Run') }}
-                                    </b-button>
-                                </b-col>
-                            </b-row>
-                        </div>
-                        <b-list-group class="w-100 h-100 overflow-auto">
+                                        <b-col align-self="end" class="text-right">
+                                            <b-button
+                                                class="text-capitalize pl-3 pr-3"
+                                                :disabled="preview.executing"
+                                                @click="execute"
+                                                size="sm"
+                                            >
+                                                <i class="fas fa-caret-square-right"/>
+                                                {{ $t('Run') }}
+                                            </b-button>
+                                        </b-col>
+                                    </b-row>
+                            </b-card-header>
 
-                            <b-list-group-item class="light-gray-background interactable">
-                                <b-row v-b-toggle.configuration>
-                                    <b-col>
-                                        <i class="fas fa-cog"/>
-                                        Configuration
-                                    </b-col>
-                                    <b-col align-self="end" cols="1" class="mr-2">
-                                    <i class="fas fa-chevron-down accordion-icon"/>
-                                    </b-col>
-                                </b-row>
-                            </b-list-group-item>
-                            <b-list-group-item class="border-bottom-0 p-0">
-                                <b-collapse id="configuration">
-                                    <monaco-editor :options="{ ...monacoOptions, minimap: { enabled: false } }" v-model="preview.config" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
-                                </b-collapse>
-                            </b-list-group-item>
+                            <b-card-body class="overflow-hidden p-0">
+                                <b-list-group class="w-100 h-100 overflow-auto">
+                                    <b-list-group-item class="script-toggle border-0 mb-0">
+                                        <b-row v-b-toggle.configuration>
+                                            <b-col>
+                                                <i class="fas fa-cog"/>
+                                                Configuration
+                                            </b-col>
+                                            <b-col align-self="end" cols="1" class="mr-2">
+                                            <i class="fas fa-chevron-down accordion-icon"/>
+                                            </b-col>
+                                        </b-row>
+                                    </b-list-group-item>
+                                    <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
+                                        <b-collapse id="configuration">
+                                            <monaco-editor :options="{ ...monacoOptions, minimap: { enabled: false } }" v-model="preview.config" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
+                                        </b-collapse>
+                                    </b-list-group-item>
 
-                            <b-list-group-item class="light-gray-background interactable">
-                                <b-row v-b-toggle.input>
-                                    <b-col>
-                                        <i class="fas fa-sign-in-alt"/>
-                                        Sample Input
-                                    </b-col>
-                                    <b-col align-self="end" cols="1" class="mr-2">
-                                    <i class="fas fa-chevron-down accordion-icon"/>
-                                    </b-col>
-                                </b-row>
-                            </b-list-group-item>
-                            <b-list-group-item class="border-bottom-0 p-0">
-                                <b-collapse id="input">
-                                    <monaco-editor :options="{ ...monacoOptions, minimap: { enabled: false } }" v-model="preview.data" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
-                                </b-collapse>
-                            </b-list-group-item>
+                                    <b-list-group-item class="script-toggle border-0 mb-0">
+                                        <b-row v-b-toggle.input>
+                                            <b-col>
+                                                <i class="fas fa-sign-in-alt"/>
+                                                Sample Input
+                                            </b-col>
+                                            <b-col align-self="end" cols="1" class="mr-2">
+                                            <i class="fas fa-chevron-down accordion-icon"/>
+                                            </b-col>
+                                        </b-row>
+                                    </b-list-group-item>
+                                    <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
+                                        <b-collapse id="input">
+                                            <monaco-editor :options="{ ...monacoOptions, minimap: { enabled: false } }" v-model="preview.data" language="json" class="editor-inspector" :class="{hidden: resizing}"/>
+                                        </b-collapse>
+                                    </b-list-group-item>
 
-                            <b-list-group-item class="light-gray-background interactable">
-                                <b-row v-b-toggle.output>
-                                    <b-col>
-                                        <i class="far fa-caret-square-right"/>
-                                        Output
-                                    </b-col>
-                                    <b-col align-self="end" cols="1" class="mr-2">
-                                    <i class="fas fa-chevron-down accordion-icon"/>
-                                    </b-col>
-                                </b-row>
-                            </b-list-group-item>
-                            <b-list-group-item class="border-bottom-0 p-0 h-100">
-                                <b-collapse id="output" class="bg-dark h-100">
-                                    <div class="output text-white">
-                                        <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
-                                        <div v-if="preview.failure">
-                                            <div class="text-light bg-danger">{{preview.error.exception}}</div>
-                                            <div class="text-light text-monospace small">{{preview.error.message}}</div>
-                                        </div>
-                                    </div>
-                                </b-collapse>
-                            </b-list-group-item>
-                        </b-list-group>
+                                    <b-list-group-item class="script-toggle border-0 mb-0">
+                                        <b-row v-b-toggle.output>
+                                            <b-col>
+                                                <i class="far fa-caret-square-right"/>
+                                                Output
+                                            </b-col>
+                                            <b-col align-self="end" cols="1" class="mr-2">
+                                                <i class="fas fa-chevron-down accordion-icon"/>
+                                            </b-col>
+                                        </b-row>
+                                    </b-list-group-item>
+                                    <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
+                                        <b-collapse id="output" class="bg-dark">
+                                            <div class="output text-white">
+                                                <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
+                                                <div v-if="preview.failure">
+                                                    <div class="text-light bg-danger">{{preview.error.exception}}</div>
+                                                    <div class="text-light text-monospace small">{{preview.error.message}}</div>
+                                                </div>
+                                            </div>
+                                        </b-collapse>
+                                    </b-list-group-item>
+                                </b-list-group>
+                            </b-card-body>
+                        </b-card>
                     </b-col>
                 </b-row>
             </b-card-body>
 
             <b-card-footer class="d-flex">
-                Language: <span class="text-uppercase">{{ script.language }}</span>
+                <span class="text-secondary text-sm">Language: <span class="text-uppercase">{{ script.language }}</span></span>
                 <span class="ml-auto">
                     <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
                     <i v-if="preview.success" class="fas fa-check text-success"></i>
@@ -205,21 +209,18 @@
     padding: 0 0 0 0;
 }
 
-.light-gray-background {
-  background: #f7f7f7;
-}
-
-.interactable {
-  cursor: pointer;
-  user-select: none;
+.script-toggle {
+    cursor: pointer;
+    user-select: none;
+    background: #f7f7f7;
 }
 
 .accordion-icon {
-  transition: all 200ms;
+    transition: all 200ms;
 }
 
 .collapsed .accordion-icon {
-  transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 
 .editor-inspector {
