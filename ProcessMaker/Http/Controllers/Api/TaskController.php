@@ -72,6 +72,7 @@ class TaskController extends Controller
         $query = ProcessRequestToken
             ::join('process_requests as request', 'request.id', '=', 'process_request_tokens.process_request_id')
             ->join('users as user', 'user.id', '=', 'process_request_tokens.user_id')
+            ->where('process_request_tokens.user_id', '=', Auth::id())
             ->select('process_request_tokens.*');
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
