@@ -134,7 +134,7 @@
                                     :multiple="true" 
                                     placeholder="Participants">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('requesters') }}</span>
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
                                         </template>
                                         <template slot="option" slot-scope="props">
                                             <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
