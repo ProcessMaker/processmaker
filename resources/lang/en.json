@@ -698,5 +698,7 @@
     "processes": "processes",
     "statuses": "statuses",
     "requesters": "requesters",
-    "participants": "participants"
+    "participants": "participants",
+    "The process was archived.": "The process was archived.",
+    "Are you sure you want to archive the process ": "Are you sure you want to archive the process "
 }
