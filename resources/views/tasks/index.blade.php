@@ -75,7 +75,7 @@
                       :multiple="true"
                       placeholder="Status">
                           <template slot="selection" slot-scope="{ values, search, isOpen }">
-                              <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ _('statuses') }}</span>
+                              <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('statuses') }}</span>
                           </template>
                       </multiselect>
                   </div>
