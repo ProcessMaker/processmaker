@@ -25,6 +25,7 @@
                 CSS
               </button>
             </div>
+            <button v-if="permission.includes('export-screens')" type="button" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
             <button type="button" @click="saveScreen(false)" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
           </div>
         </div>
@@ -276,6 +277,9 @@ console.log("VueFormBuilder", VueFormBuilder);
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
+      beforeExportScreen() {
+        this.saveScreen(true);
+      },
       focusInspector(validate) {
         this.$refs.builder.focusInspector(validate);
       },
@@ -317,7 +321,7 @@ console.log("VueFormBuilder", VueFormBuilder);
       exportScreen() {
         ProcessMaker.apiClient.post('screens/' + this.screen.id + '/export')
           .then(response => {
-            window.location = response.data.url;
+            window.open(response.data.url);
             ProcessMaker.alert(this.$t('The screen was exported.'), 'success');
           })
           .catch(error => {
