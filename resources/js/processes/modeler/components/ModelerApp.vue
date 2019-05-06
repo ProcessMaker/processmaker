@@ -154,10 +154,10 @@ html {
   color: #2c3e50;
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
 
   .modeler-container {
     flex-grow: 1;
