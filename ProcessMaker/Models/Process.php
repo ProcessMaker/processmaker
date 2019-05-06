@@ -21,6 +21,7 @@ use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Query\Traits\PMQL;
 
 /**
  * Represents a business process definition.
@@ -86,6 +87,7 @@ class Process extends Model implements HasMedia
     use ProcessTaskAssignmentsTrait;
     use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
+    use PMQL;
 
     /**
      * The attributes that aren't mass assignable.

@@ -14,9 +14,11 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HasAuthorization;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Query\Traits\PMQL;
 
 class User extends Authenticatable implements HasMedia
 {
+    use PMQL;
     use HasApiTokens;
     use Notifiable;
     use HasMediaTrait;
