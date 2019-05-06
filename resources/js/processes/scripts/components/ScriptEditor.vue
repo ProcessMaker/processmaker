@@ -69,7 +69,12 @@
                                     </b-list-group-item>
 
                                     <b-list-group-item class="script-toggle border-0 mb-0">
-                                        <b-row v-b-toggle.output>
+                                        <b-row
+                                            :class="outputOpen ? null : 'collapsed'"
+                                            :aria-expanded="outputOpen ? 'true' : 'false'"
+                                            aria-controls="output"
+                                            @click="outputOpen = !outputOpen"
+                                        >
                                             <b-col>
                                                 <i class="far fa-caret-square-right"/>
                                                 Output
@@ -80,7 +85,7 @@
                                         </b-row>
                                     </b-list-group-item>
                                     <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                                        <b-collapse id="output" class="bg-dark">
+                                        <b-collapse id="output" class="bg-dark" :visible="outputOpen">
                                             <div class="output text-white">
                                                 <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
                                                 <div v-if="preview.failure">
@@ -129,8 +134,16 @@
                     output: '',
                     success: false,
                     failure: false,
-                }
+                },
+                outputOpen: false,
             };
+        },
+        watch: {
+            'preview.output'(output) {
+                if (output && !this.outputOpen) {
+                    this.outputOpen = true;
+                }
+            },
         },
         components: {
             MonacoEditor
