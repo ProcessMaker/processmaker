@@ -20,7 +20,7 @@
         </li>
         <li v-for="(task, index) in messages" v-if="index <= 5">
           <div class="d-flex align-items-end flex-column float-right">
-            <small class="float-right muted">{{ moment(task.dateTime).format() }}</small>
+            <small class="float-right muted" v-b-tooltip.hover :title="moment(task.created_at).format()">{{ moment(task.created_at).fromNow() }}</small>
             <div
               class="badge badge-pill badge-info float-right mt-1"
               style="cursor:pointer"
