@@ -169,7 +169,7 @@
         ProcessMaker.apiClient
           .put("screens/" + this.dupScreen.id + "/duplicate", this.dupScreen)
           .then(response => {
-            ProcessMaker.alert($t('The screen was duplicated.'), "success");
+            ProcessMaker.alert(this.$t('The screen was duplicated.'), "success");
             this.hideModal();
             this.fetch();
           })
