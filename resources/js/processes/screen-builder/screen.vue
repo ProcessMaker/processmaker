@@ -1,5 +1,5 @@
 <template>
-  <div class="container h-100 pt-4">
+  <div class="h-100">
     <div id="app" class="card h-100">
       <div class="card-header">
         <div class="row">
