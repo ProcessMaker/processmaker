@@ -77,8 +77,8 @@ class UsersTest extends TestCase
 
     public function testDefaultValuesOfUser()
     {
-        putenv('APP_TIMEZONE=Test/test');
-        putenv('DATE_FORMAT=testFormat');
+        putenv('APP_TIMEZONE=Africa/Niamey');
+        putenv('DATE_FORMAT=d/M/Y');
 
         // Create a user without setting fields that have default
         $faker = Faker::create();
