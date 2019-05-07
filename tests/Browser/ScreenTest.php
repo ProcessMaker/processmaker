@@ -58,7 +58,7 @@ class ScreenTest extends DuskTestCase
                 ->type('description', 'Screen created for test')
                 ->click('#createScreen .modal-footer .btn.btn-secondary')
                 //save successfully and redirect
-                ->waitFor('#form-container')
+                ->waitFor('#screen-container')
                 ->assertSee('Controls')
                 ->assertSee('Inspector');
         });
@@ -81,13 +81,13 @@ class ScreenTest extends DuskTestCase
             //display form builder, show or hide controls
             $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
                 //wait for Editor screens
-                ->waitFor('#form-container')
+                ->waitFor('#screen-container')
                 ->assertSee('Controls')
                 ->assertSee('Inspector')
                 //change to Screen Preview
-                ->click('.navbar-nav.mr-auto:nth-child(1n) li:nth-child(2n)')
-                ->waitForText('Data Input')
-                ->assertSee('Data Input')
+                ->click('#app > div.card-header > div > div:nth-child(1) > div > button.btn.btn-outline-secondary')
+                ->waitForText('DATA INPUT')
+                ->assertSee('DATA INPUT')
                 //Check all fields are displayed
                 ->assertSee('Field 1')
                 //by default fields are hidden
@@ -144,7 +144,7 @@ class ScreenTest extends DuskTestCase
             //display form builder, show or hide controls
             $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
                 //wait for Editor screens
-                ->waitFor('#form-container')
+                ->waitFor('#screen-container')
                 ->assertSee('Controls')
                 ->assertSee('Inspector')
                 //display link for export
@@ -188,7 +188,7 @@ class ScreenTest extends DuskTestCase
             //display form builder, show or hide controls
             $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
                 //wait for Editor screens
-                ->waitFor('#form-container')
+                ->waitFor('#screen-container')
                 ->assertSee('Controls')
                 ->assertSee('Inspector')
                 //display link for export
