@@ -1,21 +1,20 @@
 <template>
     <div class="form-group">
         <label>{{ $t(label)}}</label>
-        <div v-if="loading">{{ $t('Loading...') }}</div>
-        <div v-else>
-            <multiselect v-model="content"
-                         track-by="id"
-                         label="title"
-                         :placeholder="$t('type here to search')"
-                         :options="screens"
-                         :multiple="false"
-                         :show-labels="false"
-                         :searchable="true"
-                         :internal-search="false"
-                         :helper="helper"
-                         @search-change="load">
-            </multiselect>
-        </div>
+        <multiselect v-model="content"
+                     track-by="id"
+                     label="title"
+                     :loading="loading"
+                     :placeholder="$t('type here to search')"
+                     :options="screens"
+                     :multiple="false"
+                     :show-labels="false"
+                     :searchable="true"
+                     :internal-search="false"
+                     @open="load"
+                     @search-change="load">
+        </multiselect>
+        <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
     </div>
 </template>
 
@@ -31,7 +30,7 @@
     data() {
       return {
         content: "",
-        loading: true,
+        loading: false,
         screens: []
       };
     },
@@ -40,21 +39,24 @@
         return this.$parent.$parent.highlightedNode.definition;
       }
     },
-    mounted() {
-      // Load selected item.
-      if (!this.content && this.value) {
-        ProcessMaker.apiClient
-          .get("screens/"+ this.value)
-          .then(response => {
-            this.content = response.data;
-          });
-      }
-      this.load();
-    },
     watch: {
       content: {
         handler() {
           this.$emit("input", this.content.id);
+        }
+      },
+      value: {
+        handler() {
+          // Load selected item.
+          if (!this.content && this.value) {
+            this.loading = true;
+            ProcessMaker.apiClient
+              .get("screens/"+ this.value)
+              .then(response => {
+                this.content = response.data;
+                this.loading = false;
+              });
+          }
         }
       }
     },
@@ -69,6 +71,7 @@
           },
           this.params
         );
+        this.loading = true;
         ProcessMaker.apiClient
           .get('screens', {
             params: params
