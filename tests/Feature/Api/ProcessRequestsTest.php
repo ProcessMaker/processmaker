@@ -279,8 +279,8 @@ class ProcessRequestsTest extends TestCase
         $nonAdmin = factory(User::class)->create(['is_administrator' => false]);
 
         // Create a process and a process request
-        $process = factory(Process::class)->create();
-        $request = factory(ProcessRequest::class)->create(['user_id' => $nonAdmin->id, 'process_id' => $process->id]);
+        $request = factory(ProcessRequest::class)->create(['user_id' => $nonAdmin->id]);
+        $process = $request->process;
 
         // Attempt to cancel a request
         $this->user = $nonAdmin;

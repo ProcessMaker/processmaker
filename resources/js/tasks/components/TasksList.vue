@@ -230,6 +230,8 @@ export default {
             this.$parent.pmql +
             "&per_page=" +
             this.perPage +
+            "&user_id=" +
+            window.ProcessMaker.user.id +
             "&filter=" +
             this.filter +
             "&statusfilter=ACTIVE,CLOSED" +
