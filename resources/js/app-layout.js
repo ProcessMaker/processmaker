@@ -131,7 +131,7 @@ window.addEventListener('unhandledrejection', function (event) {
     if (error.config && error.config._defaultErrorShown) {
         // Already handeled
         event.preventDefault(); // stops the unhandled rejection error
-    } else if (error.response.data && error.response.data.message) {
+    } else if (error.response && error.response.data && error.response.data.message) {
         window.ProcessMaker.alert(error.response.data.message, "danger");
     } else if (error.message) {
         window.ProcessMaker.alert(error.message, "danger");

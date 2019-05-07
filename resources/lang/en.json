@@ -688,5 +688,17 @@
     "Your account has been timed out for security.": "Your account has been timed out for security.",
     "Please log in to continue your work on this page.": "Please log in to continue your work on this page.",
     "Avatar": "Avatar",
-    "Copy": "Copy"
+    "Copy": "Copy",
+    "Advanced": "Advanced",
+    "Basic": "Basic",
+    "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
+    "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax.",
+    "Advanced Search": "Advanced Search",
+    "Basic Search": "Basic Search",
+    "processes": "processes",
+    "statuses": "statuses",
+    "requesters": "requesters",
+    "participants": "participants",
+    "The process was archived.": "The process was archived.",
+    "Are you sure you want to archive the process ": "Are you sure you want to archive the process "
 }
