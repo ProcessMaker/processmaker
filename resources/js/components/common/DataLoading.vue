@@ -95,6 +95,9 @@
 </script>
     
 <style lang="scss" scoped>
+    .jumbotron {
+        background-color: transparent;
+    }
     .icon-container {
         display:inline-block;
         width: 5em;

@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <loading v-if="apiDataLoading || apiNoResults" ref="loader"/>
+    <data-loading v-if="apiDataLoading || apiNoResults" ref="loader" />
     <div v-else class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
@@ -11,8 +11,6 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="showMessage()"
-        @vuetable:loaded="hideLoader"
         pagination-path="meta"
       >
         <template slot="ids" slot-scope="props">

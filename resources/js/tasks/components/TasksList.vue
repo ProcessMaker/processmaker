@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <loading v-if="apiDataLoading || apiNoResults"
+    <data-loading v-if="apiDataLoading || apiNoResults"
       :empty="$t('Congratulations')"
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
       empty-icon="beach"
@@ -16,7 +16,6 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="showMessage()"
         pagination-path="meta"
       >
         <template slot="name" slot-scope="props">
@@ -172,13 +171,6 @@ export default {
       if (action === "showRequestSummary") {
         let link = "/requests/" + rowData.process_request.id;
         window.location = link;
-      }
-    },
-    showMessage() {
-      if(this.loading) {
-        return "    "
-      }else {
-        return "No Data Available"
       }
     },
     formatStatus(status) {
