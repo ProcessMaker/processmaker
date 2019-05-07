@@ -2,6 +2,7 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\ScreenType;
 
 class ScreenBuilderManager
 {
@@ -40,18 +41,10 @@ class ScreenBuilderManager
         return $this->javascriptRegistry;
     }
 
-    public function addPackageScripts($type)
+    public function addPackageScripts($type = 'DISPLAY')
     {
         // Depending of the form type we load the correct file with the components to display
-        switch ($type) {
-            case 'FORM':
-                $extensionsFile = 'screen-builder-form-components.js';
-                break;
-            default:
-                $extensionsFile = 'screen-builder-display-components.js';
-                break;
-
-        }
+        $extensionsFile = 'screen-builder-' . strtolower($type) . '-components.js';
 
         $directories = glob('vendor/processmaker/packages/*', GLOB_ONLYDIR);
         foreach($directories as $directory) {
