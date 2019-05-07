@@ -7,16 +7,115 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ExportImportTest extends TestCase
 {
     use RequestHelper;
 
     public $withPermissions = true;
+    
+    /**
+     * Test to ensure screens and scripts are referenced
+     * by the proper nodes upon process import.
+     *
+     * @return void
+     */
+    public function testProcessImportRefs()
+    {
+        // Create a pre-existing screen and script
+        factory(Screen::class, 1)->create(['title' => 'Existing Screen']);
+        factory(Script::class, 1)->create(['title' => 'Existing Script']);
+
+        // Assert that they now exist
+        $this->assertDatabaseHas('screens', ['id' => 1, 'title' => 'Existing Screen']);
+        $this->assertDatabaseHas('scripts', ['id' => 1, 'title' => 'Existing Script']);
+        
+        // Set path and name of file to import
+        $filePath = 'tests/storage/process/';
+        $fileName = 'test_process_import_refs.spark';
+        
+        // Load file to import
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+
+        // Import process
+        $response = $this->apiCall('POST', '/processes/import', [
+            'file' => $file,
+        ]);
+        
+        // Assert newly imported process and elements exist
+        $this->assertDatabaseHas('processes', ['id' => 1, 'name' => 'Test Process 01']);
+        $this->assertDatabaseHas('screens', ['id' => 2, 'title' => 'Screen 01']);
+        $this->assertDatabaseHas('screens', ['id' => 3, 'title' => 'Screen 02']);
+        $this->assertDatabaseHas('scripts', ['id' => 2, 'title' => 'Script 01']);
+        $this->assertDatabaseHas('scripts', ['id' => 3, 'title' => 'Script 02']);
+        
+        // Get BPMN
+        $definitions = Process::find(1)->getDefinitions();
+        
+        // Check screen refs & script refs
+        $this->checkScreenRefs($definitions);
+        $this->checkScriptRefs($definitions);
+    }
+
+    /**
+     * Part of TestProcessImportRefs: check screen references in BPMN.
+     *
+     * @return void
+     */
+    private function checkScreenRefs($definitions)
+    {
+        // Map of names to their expected reference ID
+        $map = [
+            'Human Task 1' => 2,
+            'Human Task 2' => 3,
+        ];
+        
+        // For each of the human tasks...
+        $tasks = $definitions->getElementsByTagName('task');
+        foreach ($tasks as $task) {
+            // Obtain the name and screen ref
+            $name = $task->getAttribute('name');
+            $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
+            
+            // Assert that the screen ref matches the expected screen ref
+            if (array_key_exists($name, $map)) {
+                $this->assertEquals($map[$name], $screenRef);
+            }
+        }
+    }
+
+    /**
+     * Part of TestProcessImportRefs: check script references in BPMN.
+     *
+     * @return void
+     */
+    private function checkScriptRefs($definitions)
+    {
+        // Map of names to their expected reference ID
+        $map = [
+            'Script Task 1' => 2,
+            'Script Task 2' => 3,
+        ];
+
+        // For each of the script tasks...        
+        $tasks = $definitions->getElementsByTagName('scriptTask');
+        foreach ($tasks as $task) {
+            // Obtain the name and script ref
+            $name = $task->getAttribute('name');
+            $scriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
+
+            // Assert that the script ref matches the expected script ref            
+            if (array_key_exists($name, $map)) {
+                $this->assertEquals($map[$name], $scriptRef);
+            }
+        }
+    }
 
     /**
      * Test to ensure we can export and import
