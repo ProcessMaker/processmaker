@@ -21,7 +21,8 @@
             }
             return ['To Do Tasks', route('tasks.index')];
         },
-        $task->processRequest->name => route('requests.show', ['id' => $task->processRequest->id]),
+        $task->processRequest->name =>
+            Auth::user()->can('view', $task->processRequest) ? route('requests.show', ['id' => $task->processRequest->id]) : null,
         $task->element_name => null,
     ]])
 

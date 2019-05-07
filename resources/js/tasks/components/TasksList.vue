@@ -16,7 +16,7 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :noDataTemplate="showMessage()"
         pagination-path="meta"
       >
         <template slot="name" slot-scope="props">
@@ -33,6 +33,10 @@
 
         <template slot="assignee" slot-scope="props">
           <avatar-image size="25" :input-data="props.rowData.user" hide-name="true"></avatar-image>
+        </template>
+
+        <template slot="dueDate" slot-scope="props">
+          <span :class="props.rowData.status === 'CLOSED' ? 'text-dark' : classDueDate(props.rowData.due_at)">{{formatDate(props.rowData.due_at)}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
@@ -84,6 +88,7 @@ export default {
   data() {
     return {
       orderBy: "due_at",
+      status: "",
 
       sortOrder: [
         {
@@ -94,10 +99,16 @@ export default {
       ],
       fields: [
         {
-          title: () => this.$t("Name"),
+          title: () => this.$t("Task"),
           name: "__slot:name",
           field: "element_name",
           sortField: "element_name"
+        },
+        {
+          title: () => this.$t("Status"),
+          name: "status",
+          sortField: "status",
+          callback: this.formatStatus
         },
         {
           title: () => this.$t("Request"),
@@ -111,9 +122,9 @@ export default {
           field: "user"
         },
         {
-          title: () => this.$t("Due"),
-          name: "due_at",
-          callback: this.formatDueDate,
+          title: this.status === 'CLOSED' ? () => this.$t("Completed") : () => this.$t("Due"),
+          name: "__slot:dueDate",
+          field: "request",
           sortField: "due_at"
         },
         {
@@ -122,6 +133,27 @@ export default {
         }
       ]
     };
+  },
+  beforeCreate() {
+    let params = (new URL(document.location)).searchParams;
+    this.status = params.get('status');
+
+    switch (this.status) {
+      case "CLOSED":
+        this.$parent.status.push({
+          name: 'Completed',
+          value: 'Completed'
+        });
+        break;
+      default:
+        this.$parent.status.push({
+          name: 'In Progress',
+          value: 'In Progress'
+        });
+        break;
+    }
+    
+    this.$parent.buildPmql();
   },
   mounted: function mounted() {
     let params = new URL(document.location).searchParams;
@@ -142,15 +174,33 @@ export default {
         window.location = link;
       }
     },
-    formatDueDate(value) {
+    showMessage() {
+      if(this.loading) {
+        return "    "
+      }else {
+        return "No Data Available"
+      }
+    },
+    formatStatus(status) {
+      let statusNames = {
+        "ACTIVE" : this.$t('In Progress'),
+        "CLOSED" : this.$t('Completed')
+      }
+      let bubbleColor = {
+        "ACTIVE": "text-success",
+        "CLOSED": "text-primary",
+      };
+      return (
+        '<i class="fas fa-circle ' +
+        bubbleColor[status] + 
+        ' small"></i> ' + statusNames[status]
+      );
+    },
+    classDueDate(value) {
       let dueDate = moment(value);
       let now = moment();
       let diff = dueDate.diff(now, "hours");
-      let color =
-        diff < 0 ? "text-danger" : diff <= 1 ? "text-warning" : "text-dark";
-      return (
-        '<span class="' + color + '">' + this.formatDate(dueDate) + "</span>"
-      );
+      return diff < 0 ? "text-danger" : (diff <= 1 ? "text-warning" : "text-dark");
     },
     getTaskStatus() {
       let path = new URL(location.href);
@@ -184,12 +234,13 @@ export default {
           "tasks?page=" +
             this.page +
             "&include=process,processRequest,processRequest.user,user" +
-            "&status=" +
-            this.getTaskStatus() +
+            "&pmql=" +
+            this.$parent.pmql +
             "&per_page=" +
             this.perPage +
             "&filter=" +
             this.filter +
+            "&statusfilter=ACTIVE,CLOSED" +
             this.getSortParam(),
           {
             cancelToken: new CancelToken(c => {
@@ -202,11 +253,15 @@ export default {
           if (response.data.meta.in_overdue > 0) {
             this.$emit("in-overdue", response.data.meta.in_overdue);
           }
+        })
+        .catch(error => {
+          window.ProcessMaker.alert(error.response.data.message, "danger");
+          this.data = [];
         });
     }
   }
 };
 </script>
 
-
-
+<style>
+</style>

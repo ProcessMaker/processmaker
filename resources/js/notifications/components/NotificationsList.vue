@@ -13,8 +13,7 @@
                 <i class="fas fa-check-circle" v-if="props.rowData.type==='TASK_COMPLETED'"></i>
                 <i class="fas fa-user-friends" v-if="props.rowData.type==='TASK_REASSIGNED'"></i>
                 <i class="fas fa-comment-alt" v-if="props.rowData.type==='MESSAGE'"></i>
-                &nbsp;<a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
-                &nbsp;
+                <a v-bind:href="props.rowData.url">#{{ props.rowData.request_id }} {{props.rowData.name}}</a>
                 ({{props.rowData.processName}})
             </template>
 

@@ -30,3 +30,4 @@ storage/api-docs/api-docs.json
 storage/ssl
 storage/api/*
 npm.sh
+laravel-echo-server.lock

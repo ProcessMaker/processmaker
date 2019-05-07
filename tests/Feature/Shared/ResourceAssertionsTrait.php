@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Shared;
 
 use Illuminate\Foundation\Testing\TestResponse;
@@ -9,7 +10,6 @@ use Illuminate\Foundation\Testing\TestResponse;
  */
 trait ResourceAssertionsTrait
 {
-
     protected static $DO_NOT_SEND = 'DO_NOT_SEND';
 
     protected $errorStructure = [
@@ -62,7 +62,12 @@ trait ResourceAssertionsTrait
     {
         $route = route('api.' . $this->resource . '.store');
         $base = factory($modelClass)->make($attributes);
-        $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
+        $array = $base->toArray();
+        foreach ($attributes as $key => $value) {
+            if ($value === static::$DO_NOT_SEND) {
+                unset($array[$key]);
+            }
+        }
         $response = $this->apiCall('POST', $route, $array);
         $this->assertStatus(201, $response);
         $response->assertJsonStructure($this->structure);
@@ -123,7 +128,7 @@ trait ResourceAssertionsTrait
      */
     protected function assertCorrectModelDeletion($id)
     {
-        $route = route('api.'. $this->resource . '.destroy', [$id]);
+        $route = route('api.' . $this->resource . '.destroy', [$id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(204);
         $this->assertEmpty($response->getContent());
@@ -155,10 +160,9 @@ trait ResourceAssertionsTrait
      */
     protected function assertModelUpdate($modelClass, array $attributes = [])
     {
-
         $yesterday = \Carbon\Carbon::now()->subDay();
         $base = factory($modelClass)->create([
-            "created_at" => $yesterday,
+            'created_at' => $yesterday,
         ]);
         $original_attributes = $base->getAttributes();
 
@@ -169,7 +173,7 @@ trait ResourceAssertionsTrait
         $this->assertStatus(200, $response);
         $response->assertJsonStructure($this->structure);
         $this->assertArraySubset($fields, $response->json());
-        
+
         // assert it creates a script version
         $base->refresh();
         $version = $base->versions()->first();
@@ -189,7 +193,6 @@ trait ResourceAssertionsTrait
      */
     protected function assertModelUpdateFails($modelClass, array $attributes = [], array $errors = [])
     {
-
         $base = factory($modelClass)->create();
 
         $route = route('api.' . $this->resource . '.update', [$base->id]);
@@ -234,7 +237,9 @@ trait ResourceAssertionsTrait
     {
         $status = $response->getStatusCode();
         $this->assertEquals(
-            $expected, $status, "Expected status code {$expected} but received {$status}.\n"
+            $expected,
+            $status,
+            "Expected status code {$expected} but received {$status}.\n"
             . $response->getContent()
         );
     }

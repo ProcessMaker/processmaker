@@ -122,8 +122,12 @@ export default {
             "&include=processesCount"
         )
         .then(response => {
-          this.data = this.transform(response.data);
-          this.loading = false;
+          if(this.data.length === 0){
+              $('#createProcessCategory').modal('show')
+            }else {
+              this.data = this.transform(response.data);
+              this.loading = false;
+            }
         });
     },
     transform(data) {
@@ -141,6 +145,7 @@ export default {
           ProcessMaker.confirmModal(
             this.$t('Caution!'),
             "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.name}) + "</b>",
+            "",
             () => {
               this.$emit("delete", data);
             }

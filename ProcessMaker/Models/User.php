@@ -14,9 +14,11 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HasAuthorization;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Query\Traits\PMQL;
 
 class User extends Authenticatable implements HasMedia
 {
+    use PMQL;
     use HasApiTokens;
     use Notifiable;
     use HasMediaTrait;
@@ -125,6 +127,8 @@ class User extends Authenticatable implements HasMedia
 
         return [
             'username' => ['required', 'alpha_dash', 'min:4', 'max:255' , $unique],
+            'firstname' => 'required',
+            'lastname' => 'required',
             'email' => ['required', 'email', $unique],
             'status' => ['required', 'in:ACTIVE,INACTIVE'],
             'password' => 'required|sometimes|min:6'

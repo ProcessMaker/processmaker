@@ -8,11 +8,14 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Notification;
+use ProcessMaker\Query\SyntaxError;
+use Illuminate\Database\QueryException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
@@ -33,6 +36,13 @@ class ProcessRequestController extends Controller
      */
     public $doNotSanitize = [
         'data'
+    ];
+    
+    private $statusMap = [
+        'In Progress' => 'ACTIVE',
+        'Completed' => 'COMPLETED',
+        'Error' => 'ERROR',
+        'Canceled' => 'CANCELED',
     ];
 
     /**
@@ -113,7 +123,7 @@ class ProcessRequestController extends Controller
         if (!empty($filterBase)) {
             $filter = '%' . $filterBase . '%';
             $query->where(function ($query) use ($filter, $filterBase) {
-                    $query->whereHas('participants', function ($query) use ($filter) {
+                $query->whereHas('participants', function ($query) use ($filter) {
                     $query->Where('firstname', 'like', $filter);
                     $query->orWhere('lastname', 'like', $filter);
                 })->orWhere('name', 'like', $filter)
@@ -122,16 +132,71 @@ class ProcessRequestController extends Controller
             });
         }
 
-        $response = $query
-            ->orderBy(
+        $pmql = $request->input('pmql', '');    
+        
+        try {
+            if (!empty($pmql)) {
+                $query->pmql($pmql, function($expression) {
+                    //Handle process/request name
+                    if ($expression->field->field() == 'request') {
+                        return function($query) use($expression) {
+                            $processes = Process::where('name', $expression->value->value())->get();
+                            $query->whereIn('process_id', $processes->pluck('id'));
+                        };
+                    }
+                    
+                    //Handle status
+                    if ($expression->field->field() == 'status') {
+                        return function($query) use($expression) {
+                            $value = $expression->value->value();
+                            
+                            if (array_key_exists($value, $this->statusMap)) {
+                                $query->where('status', $this->statusMap[$value]);
+                            } else {
+                                $query->where('status', $value);
+                            }
+                        };
+                    }
+                    
+                    //Handle requester
+                    if ($expression->field->field() == 'requester') {
+                        return function($query) use($expression) {
+                            $requests = ProcessRequest::whereHas('user', function($query) use ($expression) {
+                                $query->where('username', $expression->value->value());
+                            })->get();
+                            $query->whereIn('process_id', $requests->pluck('process_id'));
+                        };
+                    }
+                    
+                    //Handle participants
+                    if ($expression->field->field() == 'participant') {
+                        return function($query) use($expression) {
+                            $requests = ProcessRequest::whereHas('participants', function($query) use ($expression) {
+                                $query->where('username', $expression->value->value());
+                            })->get();
+                            $query->whereIn('id', $requests->pluck('id'));
+                        };
+                    }
+                });
+            }
+
+            $response = $query->orderBy(
                 $request->input('order_by', 'name'),
                 $request->input('order_direction', 'ASC')
-            )
-            ->get();
-
-        $response = $response->filter(function ($processRequest) {
-            return Auth::user()->can('view', $processRequest);
-        })->values();
+            )->get();
+        } catch (QueryException $e) {
+            return response(['message' => __('Your PMQL search could not be completed.')], 400);
+        } catch (SyntaxError $e) {
+            return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
+        }
+        
+        if (isset($response)) {
+            $response = $response->filter(function ($processRequest) {
+                return Auth::user()->can('view', $processRequest);
+            })->values();            
+        } else {
+            $response = collect([]);
+        }
 
         return new ApiCollection($response);
     }
@@ -212,7 +277,7 @@ class ProcessRequestController extends Controller
             return response([], 204);
         }
         if ($httpRequest->post('status') === 'COMPLETED') {
-            if (! Auth::user()->is_administrator) {
+            if (!Auth::user()->is_administrator) {
                 throw new AuthorizationException(__('Not authorized to complete this request.'));
             }
             if ($request->status != 'ERROR') {
@@ -350,7 +415,7 @@ class ProcessRequestController extends Controller
             }
         }
 
-        $data = (array) request()->json()->all();
+        $data = (array)request()->json()->all();
 
         // Trigger the catch event
         WorkflowManager::completeCatchEvent($process, $request, $token, $data);
@@ -443,7 +508,7 @@ class ProcessRequestController extends Controller
             'body' => $user->fullname . ' ' . __('manually completed the request from an error state'),
         ]);
     }
-    
+
     /**
      * Get task name by token fields and request
      *

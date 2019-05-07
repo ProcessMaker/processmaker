@@ -6,18 +6,15 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessRequests;
-use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessPermission;
-use ProcessMaker\Models\User;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
@@ -81,9 +78,10 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = ($status === 'inactive')
-                        ? Process::inactive()->with($include)
-                        : Process::active()->with($include);
+        $processes = Process::active()->with($include);
+        if ($status === 'inactive') {
+            $processes = Process::inactive()->with($include);
+        }
 
         $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
@@ -157,10 +155,6 @@ class ProcessController extends Controller
         $request->validate(Process::rules());
         $data = $request->json()->all();
 
-        if (! isset($data['status'])) {
-            $data['status'] = 'ACTIVE';
-        }
-
         if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
                 ['message' => 'The bpm definition is not valid',
@@ -229,13 +223,12 @@ class ProcessController extends Controller
                 422);
         }
 
-        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings','cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
+        $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
 
         // Catch errors to send more specific status
         try {
             $process->saveOrFail();
-        }
-        catch (TaskDoesNotHaveUsersException $e) {
+        } catch (TaskDoesNotHaveUsersException $e) {
             return response(
                 ['message' => $e->getMessage(),
                     'errors' => ['bpmn' => $e->getMessage()]],
@@ -250,40 +243,12 @@ class ProcessController extends Controller
 
         //If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
-            //Adding method to users array
-            $cancelUsers = [];
-            foreach ($request->input('cancel_request')['users'] as $item) {
-                $cancelUsers[$item] = ['method' => 'CANCEL'];
-            }
-
-            //Adding method to groups array
-            $cancelGroups = [];
-            foreach ($request->input('cancel_request')['groups'] as $item) {
-                $cancelGroups[$item] = ['method' => 'CANCEL'];
-            }
-
-            //Syncing users and groups that can cancel this process
-            $process->usersCanCancel()->sync($cancelUsers, ['method' => 'CANCEL']);
-            $process->groupsCanCancel()->sync($cancelGroups, ['method' => 'CANCEL']);
+            $this->cancelRequestAssignment($process, $request);
         }
 
-        //If we are specifying cancel assignments...
+        //If we are specifying edit data assignments...
         if ($request->has('edit_data')) {
-            //Adding method to users array
-            $editDataUsers = [];
-            foreach ($request->input('edit_data')['users'] as $item) {
-                $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
-            }
-
-            //Adding method to groups array
-            $editDataGroups = [];
-            foreach ($request->input('edit_data')['groups'] as $item) {
-                $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
-            }
-
-            //Syncing users and groups that can cancel this process
-            $process->usersCanEditData()->sync($editDataUsers, ['method' => 'EDIT_DATA']);
-            $process->groupsCanEditData()->sync($editDataGroups, ['method' => 'EDIT_DATA']);
+            $this->editDataAssignments($process, $request);
         }
 
         //Save any request notification settings...
@@ -297,6 +262,44 @@ class ProcessController extends Controller
         }
 
         return new Resource($process->refresh());
+    }
+
+    private function cancelRequestAssignment(Process $process, Request $request)
+    {
+        //Adding method to users array
+        $cancelUsers = [];
+        foreach ($request->input('cancel_request')['users'] as $item) {
+            $cancelUsers[$item] = ['method' => 'CANCEL'];
+        }
+
+        //Adding method to groups array
+        $cancelGroups = [];
+        foreach ($request->input('cancel_request')['groups'] as $item) {
+            $cancelGroups[$item] = ['method' => 'CANCEL'];
+        }
+
+        //Syncing users and groups that can cancel this process
+        $process->usersCanCancel()->sync($cancelUsers, ['method' => 'CANCEL']);
+        $process->groupsCanCancel()->sync($cancelGroups, ['method' => 'CANCEL']);
+    }
+
+    private function editDataAssignments(Process $process, Request $request)
+    {
+        //Adding method to users array
+        $editDataUsers = [];
+        foreach ($request->input('edit_data')['users'] as $item) {
+            $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
+        }
+
+        //Adding method to groups array
+        $editDataGroups = [];
+        foreach ($request->input('edit_data')['groups'] as $item) {
+            $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
+        }
+
+        //Syncing users and groups that can cancel this process
+        $process->usersCanEditData()->sync($editDataUsers, ['method' => 'EDIT_DATA']);
+        $process->groupsCanEditData()->sync($editDataGroups, ['method' => 'EDIT_DATA']);
     }
 
     private function saveRequestNotifications($process, $request)
@@ -355,8 +358,7 @@ class ProcessController extends Controller
 
             try {
                 $validation = $document->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $schemaErrors = $document->getValidationErrors();
                 $schemaErrors[] = $e->getMessage();
             }
@@ -459,15 +461,15 @@ class ProcessController extends Controller
             ->orderBy(...$orderBy)
             ->get();
 
-        foreach($processes as $key => $process) {
+        foreach ($processes as $key => $process) {
             //filter he start events that can be used manually (no timer start events);
             # TODO: startEvents is not a real property on Process.
             # Move below to $process->getManualStartEvents();
-            $process->startEvents = $process->events->filter(function($event) {
+            $process->startEvents = $process->events->filter(function ($event) {
                 $eventIsTimerStart = collect($event['eventDefinitions'])
-                                        ->filter(function($eventDefinition){
-                                            return get_class($eventDefinition) == TimerEventDefinition::class;
-                                        })->count() > 0;
+                        ->filter(function ($eventDefinition) {
+                            return get_class($eventDefinition) == TimerEventDefinition::class;
+                        })->count() > 0;
                 return !$eventIsTimerStart;
             });
 
@@ -515,7 +517,7 @@ class ProcessController extends Controller
     public function restore(Request $request, $processId)
     {
         $process = Process::find($processId);
-        $process->status='ACTIVE';
+        $process->status = 'ACTIVE';
         $process->save();
         return new Resource($process->refresh());
     }
@@ -561,7 +563,7 @@ class ProcessController extends Controller
      */
     public function destroy(Process $process)
     {
-        $process->status='INACTIVE';
+        $process->status = 'INACTIVE';
         $process->save();
 
         return response('', 204);
@@ -603,7 +605,7 @@ class ProcessController extends Controller
             $url = url("/processes/{$process->id}/download/{$fileKey}");
             return ['url' => $url];
         } else {
-            return response(['error' => __('Unable to Export Process')], 500) ;
+            return response(['error' => __('Unable to Export Process')], 500);
         }
     }
 
@@ -641,10 +643,119 @@ class ProcessController extends Controller
      *     ),
      * )
      */
-    public function import(Request $request)
+    public function import(Process $process, Request $request)
     {
-        $success = ImportProcess::dispatchNow($request->file('file')->get());
-        return ['status' => $success];
+        $import = ImportProcess::dispatchNow($request->file('file')->get());
+        return response([
+            'status' => $import->status,
+            'assignable' => $import->assignable,
+            'process' => $import->process
+        ]);
+    }
+
+    /**
+     * Import Assignments of process.
+     *
+     * @param Process $process
+     * @param Request $request
+     *
+     * @return Resource
+     * @throws \Throwable
+     *
+     *
+     * @OA\Post(
+     *     path="/processes/{process_id}/import/assignments",
+     *     summary="Update assignments after import",
+     *     operationId="assignmentProcess",
+     *     tags={"Processes"},
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *     ),
+     * )
+     */
+    public function importAssignments(Process $process, Request $request)
+    {
+        //If we are specifying assignments...
+        if ($request->has('assignable')) {
+            $assignable = $request->input('assignable');
+
+            //Update assignments in scripts
+            $xmlAssignable = [];
+            $callActivity = [];
+            foreach ($assignable as $assign) {
+                if ($assign['type'] === 'script' && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
+                    Script::where('id', $assign['id'])
+                        ->update(['run_as_user_id' => $assign['value']['id']]);
+                } elseif ($assign['type'] === 'callActivity') {
+                    $callActivity[] = $assign;
+                } else {
+                    $xmlAssignable[] = $assign;
+                }
+            }
+
+            //Update assignments in start Events, task, user Tasks
+            $definitions = $process->getDefinitions();
+            $tags = ['startEvent', 'task', 'userTask'];
+            foreach ($tags as $tag) {
+                $elements = $definitions->getElementsByTagName($tag);
+                foreach ($elements as $element) {
+                    $id = $element->getAttributeNode('id')->value;
+                    foreach ($xmlAssignable as $assign) {
+                        if ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
+                            $value = $assign['value']['id'];
+                            if (is_int($value)) {
+                                $element->setAttribute('pm:assignment', 'user');
+                                $element->setAttribute('pm:assignedUsers', $value);
+                            } else if (strpos($value, '-') !== false) {
+                                $value = explode('-', $value);
+                                $value = $value[1];
+                                $element->setAttribute('pm:assignment', 'group');
+                                $element->setAttribute('pm:assignmentGroup', 'group');
+                                $element->setAttribute('pm:assignedGroups', $value);
+                            } else {
+                                $element->setAttribute('pm:assignment', $value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Update assignments call Activity
+            if ($callActivity) {
+                $elements = $definitions->getElementsByTagName('callActivity');
+                foreach ($elements as $element) {
+                    $id = $element->getAttributeNode('id')->value;
+                    foreach ($callActivity as $assign) {
+                        if ($assign['id'] == $id && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
+                            $element->setAttribute('calledElement', $assign['value']['id']);
+                        }
+                    }
+                }
+            }
+
+            $process->bpmn = $definitions->saveXML();
+            $process->saveOrFail();
+        }
+
+        //If we are specifying cancel assignments...
+        if ($request->has('cancel_request')) {
+            $this->cancelRequestAssignment($process, $request);
+        }
+
+        //If we are specifying edit data assignments...
+        if ($request->has('edit_data')) {
+            $this->editDataAssignments($process, $request);
+        }
+
+        return response([
+            'process' => $process->refresh()
+        ], 204);
     }
 
     /**

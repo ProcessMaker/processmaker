@@ -9,10 +9,12 @@ use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class RequestController extends Controller
 {
     use HasMediaTrait;
+    use SearchAutocompleteTrait;
 
     /**
      * Get the list of requests.
@@ -43,9 +45,11 @@ class RequestController extends Controller
         if(array_key_exists($type,$types)){
           $title = $types[$type];
         }
+        
+        $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
         return view('requests.index', compact(
-            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title']
+            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title', 'currentUser']
         ));
     }
     private function calculate($type)

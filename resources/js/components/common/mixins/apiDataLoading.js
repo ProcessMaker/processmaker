@@ -1,8 +1,8 @@
-import Loading from "../../../components/common/DataLoading";
+import DataLoading from "../../../components/common/DataLoading";
 
 export default {
     components: {
-        Loading,
+        DataLoading,
     },
     data() {
         return {

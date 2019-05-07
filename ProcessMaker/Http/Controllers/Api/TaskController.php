@@ -9,6 +9,10 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
+use ProcessMaker\Query\SyntaxError;
+use Illuminate\Database\QueryException;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 
@@ -23,6 +27,12 @@ class TaskController extends Controller
     public $doNotSanitize = [
         //
     ];
+    
+    private $statusMap = [
+        'In Progress' => 'ACTIVE',
+        'Completed' => 'CLOSED',
+    ];
+
     /**
      * Display a listing of the resource.
      *
@@ -72,9 +82,11 @@ class TaskController extends Controller
         $query = ProcessRequestToken
             ::join('process_requests as request', 'request.id', '=', 'process_request_tokens.process_request_id')
             ->join('users as user', 'user.id', '=', 'process_request_tokens.user_id')
+            ->where('process_request_tokens.user_id', '=', Auth::id())
             ->select('process_request_tokens.*');
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
@@ -94,6 +106,8 @@ class TaskController extends Controller
                 $query->where(is_string($key) ? $key : $column, 'like', $filter);
             }
         }
+        
+        
         //list only display elements type task
         $query->where('element_type', '=', 'task');
         $query->orderBy(
@@ -104,9 +118,63 @@ class TaskController extends Controller
             ->where('status', 'ACTIVE')
             ->where('due_at', '<', Carbon::now());
 
-        $inOverdue = $inOverdueQuery->count();
+        $inOverdue = $inOverdueQuery->count();   
 
-        $response = $query->get();
+        $pmql = $request->input('pmql', '');    
+        
+        $statusFilter = $request->input('statusfilter', '');
+        if ($statusFilter) {
+            $statusFilter = explode(',', $statusFilter);
+            foreach ($statusFilter as $key => $status) {
+                if ($key == 0) {
+                    $query->where('process_request_tokens.status', trim(mb_strtoupper($status)));
+                } else {
+                    $query->orWhere('process_request_tokens.status', trim(mb_strtoupper($status)));
+                }
+            }
+        }
+
+        try {
+            if (!empty($pmql)) {
+                $query->pmql($pmql, function($expression) {
+                    
+                    //Handle request name
+                    if ($expression->field->field() == 'request') {
+                        return function($query) use($expression) {
+                            $processRequests = ProcessRequest::where('name', $expression->value->value())->get();
+                            $query->whereIn('process_request_tokens.process_request_id', $processRequests->pluck('id'));
+                        };
+                    }
+
+                    //Handle task name
+                    if ($expression->field->field() == 'task') {
+                        return function($query) use($expression) {
+                            $query->where('process_request_tokens.element_name', $expression->value->value());
+                        };
+                    }
+
+                    //Handle task status
+                    if ($expression->field->field() == 'status') {
+                        return function($query) use($expression) {
+                            $value = $expression->value->value();
+
+                            if (array_key_exists($value, $this->statusMap)) {
+                                $value = $this->statusMap[$value];
+                            }
+                            
+                            $query->where('process_request_tokens.status', $value);
+                        };
+                    }
+                });
+            }
+
+            $response = $query->get();
+            
+        } catch (QueryException $e) {
+            return response(['message' => __('Your PMQL search could not be completed.')], 400);
+        } catch (SyntaxError $e) {
+            return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
+        }
 
         $response = $response->filter(function($processRequestToken) {
             return Auth::user()->can('view', $processRequestToken);

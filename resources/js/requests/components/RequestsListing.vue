@@ -11,7 +11,8 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="$t('No Data Available')"
+        :noDataTemplate="showMessage()"
+        @vuetable:loaded="hideLoader"
         pagination-path="meta"
       >
         <template slot="ids" slot-scope="props">
@@ -64,7 +65,6 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "type"],
   data() {
     return {
       orderBy: "id",
@@ -113,6 +113,27 @@ export default {
         }
       ]
     };
+  },
+  beforeCreate() {
+    switch (Processmaker.status) {
+      case "":
+        this.$parent.requester.push(Processmaker.user);
+        break;
+      case "in_progress":
+        this.$parent.status.push({
+          name: 'In Progress',
+          value: 'In Progress'
+        });
+        break;
+      case "completed":
+        this.$parent.status.push({
+          name: 'Completed',
+          value: 'Completed'
+        });
+        break;
+    }
+    
+    this.$parent.buildPmql();
   },
   methods: {
     onAction(action, data, index) {
@@ -172,16 +193,10 @@ export default {
       }
       return data;
     },
-    fetch() {
-      switch (this.type) {
-        case "":
-          this.additionalParams = "&type=started_me";
-          break;
-        case "all":
-          this.additionalParams = "";
-          break;
-        default:
-          this.additionalParams = "&type=" + this.type;
+    fetch(resetPagination) {
+      
+      if (resetPagination) {
+        this.page = 1;
       }
 
       // Load from our api client
@@ -192,8 +207,8 @@ export default {
             "&per_page=" +
             this.perPage +
             "&include=process,participants" +
-            "&filter=" +
-            this.filter +
+            "&pmql=" +
+            this.$parent.pmql +
             "&order_by=" +
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
@@ -207,4 +222,5 @@ export default {
   }
 };
 </script>
-
+<style>
+</style>

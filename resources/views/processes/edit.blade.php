@@ -145,8 +145,7 @@
                                         <td class="notify">{{__('Notify Participants')}}</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input v-model="formData.notifications.participants.started" type="checkbox" class="custom-control-input" id="notify-participants-started">
-                                                <label class="custom-control-label" for="notify-participants-started"></label>
+                                                
                                             </div>
                                         </td>
                                         <td class="action">
@@ -270,16 +269,16 @@
         .card-body-nav-tabs {
             border-top: 0;
         }
-        
+
         .nav-tabs .nav-link.active {
             background: white;
             border-bottom: 0;
         }
-        
+
         #table-notifications {
             margin-bottom: 20px;
         }
-        
+
         #table-notifications th {
             border-top: 0;
         }
@@ -291,7 +290,7 @@
         #table-notifications td.action {
             width: 20%;
         }
-    
+
         .inline-input {
             margin-right: 6px;
         }
