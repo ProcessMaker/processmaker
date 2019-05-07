@@ -122,7 +122,7 @@ export default {
             "&include=processesCount"
         )
         .then(response => {
-          if(this.data.length === 0){
+          if(response.data.data.length === 0){
               $('#createProcessCategory').modal('show')
             }else {
               this.data = this.transform(response.data);
