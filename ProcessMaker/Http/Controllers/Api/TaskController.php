@@ -82,7 +82,6 @@ class TaskController extends Controller
         $query = ProcessRequestToken
             ::join('process_requests as request', 'request.id', '=', 'process_request_tokens.process_request_id')
             ->join('users as user', 'user.id', '=', 'process_request_tokens.user_id')
-            ->where('process_request_tokens.user_id', '=', Auth::id())
             ->select('process_request_tokens.*');
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
@@ -98,7 +97,7 @@ class TaskController extends Controller
                     ->orWhere('user.lastname', 'like', $filter);
             });
         }
-        $filterByFields = ['process_id', 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
+        $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
         $parameters = $request->all();
         foreach ($parameters as $column => $filter) {
             if (in_array($column, $filterByFields)) {
