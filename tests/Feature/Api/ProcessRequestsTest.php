@@ -390,4 +390,25 @@ class ProcessRequestsTest extends TestCase
         //Validate the header status code
         $response->assertStatus(405);
     }
+
+    public function testListCanceledProcessRequests()
+    {
+        ProcessRequest::query()->delete();
+
+        factory(ProcessRequest::class, 5)->create(['status' => 'ACTIVE']);
+        factory(ProcessRequest::class, 3)->create(['status' => 'COMPLETED']);
+        factory(ProcessRequest::class, 1)->create(['status' => 'CANCELED']);
+
+        // The list of requests should show just ACTIVE requests
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?type=in_progress');
+        $this->assertEquals(5, $response->json()['meta']['total']);
+
+        // The list of completed include de CANCELED requests
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?type=completed');
+        $this->assertEquals(4, $response->json()['meta']['total']);
+
+        // The list of all requests includes everything
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?type=all');
+        $this->assertEquals(9, $response->json()['meta']['total']);
+    }
 }

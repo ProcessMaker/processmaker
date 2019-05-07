@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Query\Traits\PMQL;
 
 /**
  * Represents a group definition.
@@ -36,6 +37,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  */
 class Group extends Model
 {
+    use PMQL;
     use SerializeToIso8601;
 
     protected $fillable = [
