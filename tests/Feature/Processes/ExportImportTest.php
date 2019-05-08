@@ -20,6 +20,8 @@ class ExportImportTest extends TestCase
 
     public $withPermissions = true;
     
+    private $definitions, $process, $screen01, $screen02, $script01, $script02;
+    
     /**
      * Test to ensure screens and scripts are referenced
      * by the proper nodes upon process import.
@@ -33,8 +35,8 @@ class ExportImportTest extends TestCase
         factory(Script::class, 1)->create(['title' => 'Existing Script']);
 
         // Assert that they now exist
-        $this->assertDatabaseHas('screens', ['id' => 1, 'title' => 'Existing Screen']);
-        $this->assertDatabaseHas('scripts', ['id' => 1, 'title' => 'Existing Script']);
+        $this->assertDatabaseHas('screens', ['title' => 'Existing Screen']);
+        $this->assertDatabaseHas('scripts', ['title' => 'Existing Script']);
         
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
@@ -48,19 +50,19 @@ class ExportImportTest extends TestCase
             'file' => $file,
         ]);
         
-        // Assert newly imported process and elements exist
-        $this->assertDatabaseHas('processes', ['id' => 1, 'name' => 'Test Process 01']);
-        $this->assertDatabaseHas('screens', ['id' => 2, 'title' => 'Screen 01']);
-        $this->assertDatabaseHas('screens', ['id' => 3, 'title' => 'Screen 02']);
-        $this->assertDatabaseHas('scripts', ['id' => 2, 'title' => 'Script 01']);
-        $this->assertDatabaseHas('scripts', ['id' => 3, 'title' => 'Script 02']);
+        // Retrieve the newly imported elements
+        $this->process = Process::where('name', 'Test Process 01')->first();
+        $this->screen01 = Screen::where('title', 'Screen 01')->first();
+        $this->screen02 = Screen::where('title', 'Screen 02')->first();
+        $this->script01 = Script::where('title', 'Script 01')->first();
+        $this->script02 = Script::where('title', 'Script 02')->first();
         
         // Get BPMN
-        $definitions = Process::find(1)->getDefinitions();
+        $this->definitions = $this->process->getDefinitions();
         
         // Check screen refs & script refs
-        $this->checkScreenRefs($definitions);
-        $this->checkScriptRefs($definitions);
+        $this->checkScreenRefs();
+        $this->checkScriptRefs();
     }
 
     /**
@@ -68,16 +70,16 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    private function checkScreenRefs($definitions)
+    private function checkScreenRefs()
     {
         // Map of names to their expected reference ID
         $map = [
-            'Human Task 1' => 2,
-            'Human Task 2' => 3,
+            'Human Task 1' => $this->screen01->id,
+            'Human Task 2' => $this->screen02->id,
         ];
         
         // For each of the human tasks...
-        $tasks = $definitions->getElementsByTagName('task');
+        $tasks = $this->definitions->getElementsByTagName('task');
         foreach ($tasks as $task) {
             // Obtain the name and screen ref
             $name = $task->getAttribute('name');
@@ -95,16 +97,16 @@ class ExportImportTest extends TestCase
      *
      * @return void
      */
-    private function checkScriptRefs($definitions)
+    private function checkScriptRefs()
     {
         // Map of names to their expected reference ID
         $map = [
-            'Script Task 1' => 2,
-            'Script Task 2' => 3,
+            'Script Task 1' => $this->script01->id,
+            'Script Task 2' => $this->script02->id,
         ];
 
         // For each of the script tasks...        
-        $tasks = $definitions->getElementsByTagName('scriptTask');
+        $tasks = $this->definitions->getElementsByTagName('scriptTask');
         foreach ($tasks as $task) {
             // Obtain the name and script ref
             $name = $task->getAttribute('name');
