@@ -20,12 +20,14 @@
         </li>
         <li v-for="(task, index) in messages" v-if="index <= 5">
           <div class="d-flex align-items-end flex-column float-right">
-            <small class="float-right muted">{{ moment(task.dateTime).format() }}</small>
+            <small class="float-right muted" v-b-tooltip.hover :title="moment(task.created_at).format()">{{ moment(task.created_at).fromNow() }}</small>
             <div
-              class="badge badge-pill badge-info float-right mt-1"
+              class="text-info float-right mt-1"
               style="cursor:pointer"
               @click="remove(task)"
-            >{{$t('Dismiss')}}</div>
+              v-b-tooltip.hover
+              :title="$t('Dismiss Alert')"
+            ><i class="fa fa-trash"></i></div>
           </div>
 
           <h3>

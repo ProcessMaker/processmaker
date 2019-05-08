@@ -23,6 +23,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
+use ProcessMaker\Jobs\CancelRequest;
 
 class ProcessRequestController extends Controller
 {
@@ -472,16 +473,7 @@ class ProcessRequestController extends Controller
      */
     private function cancelRequestToken(ProcessRequest $request)
     {
-        //notify to the user that started the request, its cancellation
-        $notifiables = $request->getNotifiables('canceled');
-        Notification::send($notifiables, new ProcessCanceledNotification($request));
-
-        //cancel request
-        $request->status = 'CANCELED';
-        $request->saveOrFail();
-
-        //Closed tokens
-        $request->tokens()->update(['status' => 'CLOSED']);
+        CancelRequest::dispatchNow($request);
     }
 
     /**
