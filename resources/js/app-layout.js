@@ -71,7 +71,6 @@ window.ProcessMaker.navbar = new Vue({
     methods: {
         alertDismissed (alert) {
             const index = this.alerts.indexOf(alert);
-            console.log(alert, index);
             index > -1 ? this.alerts.splice(index, 1) : null;
             this.saveLocalAlerts(this.alerts);
         },
@@ -85,7 +84,8 @@ window.ProcessMaker.navbar = new Vue({
             }
         },
         saveLocalAlerts (array) {
-            window.localStorage.sparkAlerts = JSON.stringify(array);
+            const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
+            window.localStorage.sparkAlerts = JSON.stringify(nextScreenAlerts);
         },
     },
     mounted() {
@@ -103,7 +103,7 @@ window.ProcessMaker.navbar = new Vue({
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant, showValue = 60) {
+window.ProcessMaker.alert = function (msg, variant, showValue = 60, stayNextScreen = false) {
     if (showValue === 0) {
         // Just show it indefinitely, no countdown
         showValue = true;
@@ -111,7 +111,8 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 60) {
     ProcessMaker.navbar.alerts.push({
         alertText: msg,
         alertShow: showValue,
-        alertVariant: String(variant)
+        alertVariant: String(variant),
+        stayNextScreen: stayNextScreen
     })
 };
 

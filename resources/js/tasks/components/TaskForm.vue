@@ -56,6 +56,7 @@ export default {
       ProcessMaker.apiClient
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(function() {
+          window.ProcessMaker.alert('Task Completed Successfully', 'success', 60, true);
           document.location.href = "/tasks";
         });
     },
