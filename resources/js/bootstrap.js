@@ -39,6 +39,9 @@ import VueI18Next from '@panter/vue-i18next';
 
 window.Vue.use(VueI18Next)
 let translationsLoaded = false
+let mdates = JSON.parse(
+    document.head.querySelector("meta[name=\"i18n-mdate\"]").content
+)
 i18next.use(Backend).init({
     lng: document.documentElement.lang,
     keySeparator: false,
@@ -55,7 +58,7 @@ i18next.use(Backend).init({
             XHR,
         ],
         backendOptions: [
-            { versions: { en: 6, es: 6 } }, // change this to invalidate cache
+            { versions: mdates },
             { loadPath: '/i18next/fetch/{{lng}}/_default' },
         ],
     }

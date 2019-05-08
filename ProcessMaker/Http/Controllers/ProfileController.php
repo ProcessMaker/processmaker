@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\JsonData;
+use ProcessMaker\i18nHelper;
 
 
 class ProfileController extends Controller
@@ -19,13 +20,8 @@ class ProfileController extends Controller
         $currentUser = \Auth::user();
         $states = JsonData::states();
         $countries = JsonData::countries();
-        $availableLangs = [];
-        foreach (scandir(resource_path('lang')) as $file) {
-            preg_match("/([a-z]{2})\.json/", $file, $matches);
-            if (!empty($matches)) {
-                $availableLangs[] = $matches[1];
-            }
-        }
+        $availableLangs = i18nHelper::availableLangs();
+        
         $timezones = array_reduce(JsonData::timezones(),
             function ($result, $item) {
                 $result[$item] = $item;
