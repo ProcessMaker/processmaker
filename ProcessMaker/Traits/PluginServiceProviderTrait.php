@@ -14,6 +14,7 @@ trait PluginServiceProviderTrait
 {
 
     private $modelerScripts = [];
+    private $packages = [];
 
     /**
      * Boot the PM plug-in.
@@ -26,6 +27,8 @@ trait PluginServiceProviderTrait
             \Illuminate\Support\Facades\Log::info(static::class . ' updated');
             Cache::forever($key, static::version);
         }
+        \Illuminate\Support\Facades\Log::info(static::name . ' package name');
+        $this->registerPackage(static::name);
         Event::listen(ModelerStarting::class, [$this, 'modelerStarting']);
     }
 
@@ -58,7 +61,7 @@ trait PluginServiceProviderTrait
      */
     protected function updateVersion()
     {
-        
+
     }
 
     /**
@@ -78,5 +81,15 @@ trait PluginServiceProviderTrait
     protected function registerSeeder($seederClass)
     {
         LoadPluginSeeders::registerSeeder($seederClass);
+    }
+
+    protected function registerPackage($package)
+    {
+        $this->packages[] = $package;
+    }
+
+    public function isRegisteredPackage($name)
+    {
+        return in_array($name, $this->packages, true);
     }
 }
