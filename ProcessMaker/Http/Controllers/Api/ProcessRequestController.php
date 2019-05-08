@@ -474,6 +474,9 @@ class ProcessRequestController extends Controller
     private function cancelRequestToken(ProcessRequest $request)
     {
         CancelRequest::dispatchNow($request);
+        // Close process request
+        $request->status = 'CANCELED';
+        $request->save();
     }
 
     /**
