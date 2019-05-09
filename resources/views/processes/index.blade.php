@@ -100,6 +100,11 @@
                                     @{{category}}
                                 </div>
                             </div>
+                            <div class="form-group d-flex justify-content-between">
+                                <label>{{__("Upload BPMN File (optional)")}}</label>
+                                <button @click="browse" class="btn btn-secondary"><i class="fas fa-upload fa-fw"></i>{{ __('Upload file') }}</button>
+                                <input type="file" class="custom-file-input d-none" ref="customFile" @change="onFileChange">
+                            </div>
                         </div>
                     @else
                         <div class="modal-body">
@@ -137,10 +142,21 @@
               process_category_id: '',
               addError: {},
               status: '',
+              bpmn: '',
               processCategories: @json($processCategories),
               disabled: false
             },
             methods: {
+              browse() {
+                this.$refs.customFile.click();
+              },
+              onFileChange(fileObject) {
+                var reader = new FileReader();
+                reader.readAsDataURL(fileObject.target.files[0]);
+                reader.addEventListener("load",  () => {
+                this.bpmn = reader.result;
+                }, false);
+              },
               onClose() {
                 this.name = '';
                 this.description = '';
@@ -168,7 +184,8 @@
                 ProcessMaker.apiClient.post("/processes", {
                   name: this.name,
                   description: this.description,
-                  process_category_id: this.process_category_id
+                  process_category_id: this.process_category_id,
+                  bpmn: this.bpmn
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The process was created.')}}', 'success')
