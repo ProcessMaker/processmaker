@@ -75,6 +75,56 @@ class UsersTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function testDefaultValuesOfUser()
+    {
+        putenv('APP_TIMEZONE=Africa/Niamey');
+        putenv('DATE_FORMAT=d/M/Y');
+
+        // Create a user without setting fields that have default
+        $faker = Faker::create();
+        $url = self::API_TEST_URL;
+        $response = $this->apiCall('POST', $url, [
+            'username' => 'username1',
+            'firstname' => 'name',
+            'lastname' => 'name',
+            'email' => $faker->email,
+            'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+            'password' => $faker->sentence(10)
+        ]);
+
+        $response->assertStatus(201);
+
+        // Validate that the created user has the correct default values
+        $createdUser = $response->json();
+        $this->assertNotNull($createdUser['timezone'], env('APP_TIMEZONE'));
+        $this->assertNotNull($createdUser['datetime_format'], env('DATE_FORMAT'));
+
+
+        // Create a user setting fields that have default
+        $timeZone = 'Test/Test';
+        $dateFormat = 'testFormat';
+        $faker = Faker::create();
+        $url = self::API_TEST_URL;
+        $response = $this->apiCall('POST', $url, [
+            'username' => 'username2',
+            'firstname' => 'name',
+            'lastname' => 'name',
+            'email' => $faker->email,
+            'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+            'password' => $faker->sentence(10),
+            'timezone' => $timeZone,
+            'datetime_format' => $dateFormat
+        ]);
+
+        $response->assertStatus(201);
+
+        // Validate that the created user has the correct values
+        $createdUser = $response->json();
+        $this->assertEquals($createdUser['timezone'], $timeZone);
+        $this->assertEquals($createdUser['datetime_format'], $dateFormat);
+
+    }
+
     /**
      * Can not create a user with an existing username
      */

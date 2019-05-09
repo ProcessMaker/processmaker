@@ -1,6 +1,5 @@
 @extends('layouts.minimal')
 @section('content')
-
 <div align="container">
   <div align="center" class="p-5">
     <img src={{asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'))}}>

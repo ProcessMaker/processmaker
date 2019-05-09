@@ -25,7 +25,6 @@
                 CSS
               </button>
             </div>
-            <button v-if="permission.includes('export-screens')" type="button" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
             <button type="button" @click="saveScreen(false)" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
           </div>
         </div>
@@ -128,14 +127,12 @@
 </template>
 
 <script>
-  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties.vue";
-  import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css.vue";
-  import {VueFormBuilder} from "@processmaker/spark-screen-builder";
-  import {VueFormRenderer} from "@processmaker/spark-screen-builder";
+  import {VueFormBuilder, VueFormRenderer, FormBuilderControls as controlConfig} from "@processmaker/spark-screen-builder";
+  import "@processmaker/spark-screen-builder/dist/vue-form-builder.css";
+  import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
 
   // Bring in our initial set of controls
-  import controlConfig from "@processmaker/spark-screen-builder/src/form-builder-controls";
   import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
   import {
     FormTextArea,
@@ -174,8 +171,6 @@ console.log("VueFormBuilder", VueFormBuilder);
       };
     },
     components: {
-      ComputedProperties,
-      CustomCSS,
       VueFormBuilder,
       VueFormRenderer,
       VueJsonPretty,

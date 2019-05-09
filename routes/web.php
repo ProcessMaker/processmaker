@@ -86,7 +86,7 @@ Broadcast::routes();
 
 // Authentication Routes...
 $this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
-$this->post('login', 'Auth\LoginController@loginWithoutIntended');
+$this->post('login', 'Auth\LoginController@loginWithIntendedCheck');
 $this->get('logout', 'Auth\LoginController@logout')->name('logout');
 
 // Password Reset Routes...
@@ -103,6 +103,3 @@ $this->delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->nam
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
-
-// Public webhook entry (verified by token in controller)
-$this->post('webhook/start_event', 'WebhookController@startEvent')->name('webhook.start_event');
