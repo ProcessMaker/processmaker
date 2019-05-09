@@ -25,7 +25,6 @@
                 CSS
               </button>
             </div>
-            <button v-if="permission.includes('export-screens')" type="button" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
             <button type="button" @click="saveScreen(false)" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
           </div>
         </div>
