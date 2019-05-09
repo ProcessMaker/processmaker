@@ -1,9 +1,12 @@
 <template>
   <div class="data-table">
-    <div v-show="loading" class="overlay">
-      <i class="fas fa-circle-notch fa-spin fa-2x text-success"></i>
-    </div>
-    <div class="card card-body table-card">
+    <data-loading v-if="apiDataLoading || apiNoResults"
+      :empty="$t('Congratulations')"
+      :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
+      empty-icon="beach"
+      ref="loader"
+    />
+    <div v-else class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -13,7 +16,6 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="showMessage()"
         pagination-path="meta"
       >
         <template slot="name" slot-scope="props">
@@ -73,13 +75,14 @@
 
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
 
 Vue.component("avatar-image", AvatarImage);
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter"],
   data() {
     return {
@@ -170,13 +173,6 @@ export default {
         window.location = link;
       }
     },
-    showMessage() {
-      if(this.loading) {
-        return "    "
-      }else {
-        return "No Data Available"
-      }
-    },
     formatStatus(status) {
       let statusNames = {
         "ACTIVE" : this.$t('In Progress'),
@@ -218,7 +214,6 @@ export default {
     },
 
     fetch() {
-      this.loading = true;
       if (this.cancelToken) {
         this.cancelToken();
         this.cancelToken = null;
@@ -249,7 +244,6 @@ export default {
         )
         .then(response => {
           this.data = this.transform(response.data);
-          this.loading = false;
           if (response.data.meta.in_overdue > 0) {
             this.$emit("in-overdue", response.data.meta.in_overdue);
           }
@@ -264,13 +258,4 @@ export default {
 </script>
 
 <style>
-	.overlay { 
-		position: absolute; 
-		z-index: 10; 
-    width: 100%;
-    text-align: center;
-    top: 276px;
-    left: 5px;
-	}
 </style>
-
