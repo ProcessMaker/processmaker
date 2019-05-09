@@ -39,6 +39,9 @@
         return this.$parent.$parent.highlightedNode.definition;
       }
     },
+    mounted() {
+      this.loadValue();
+    },
     watch: {
       content: {
         handler() {
@@ -47,20 +50,23 @@
       },
       value: {
         handler() {
-          // Load selected item.
-          if (!this.content && this.value) {
-            this.loading = true;
-            ProcessMaker.apiClient
-              .get("screens/"+ this.value)
-              .then(response => {
-                this.content = response.data;
-                this.loading = false;
-              });
-          }
+          this.loadValue();
         }
       }
     },
     methods: {
+      loadValue() {
+        // Load selected item.
+        if (!this.content && this.value) {
+          this.loading = true;
+          ProcessMaker.apiClient
+            .get("screens/"+ this.value)
+            .then(response => {
+              this.content = response.data;
+              this.loading = false;
+            });
+        }
+      },
       load(filter) {
         let params = Object.assign(
           {

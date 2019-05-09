@@ -2,9 +2,12 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\ModelerStarting;
 use Illuminate\Support\Facades\Event;
+use ProcessMaker\Managers\PackageManager;
 
 /**
  * Add functionality to control a PM plug-in
@@ -14,7 +17,6 @@ trait PluginServiceProviderTrait
 {
 
     private $modelerScripts = [];
-    private $packages = [];
 
     /**
      * Boot the PM plug-in.
@@ -27,8 +29,9 @@ trait PluginServiceProviderTrait
             \Illuminate\Support\Facades\Log::info(static::class . ' updated');
             Cache::forever($key, static::version);
         }
-        \Illuminate\Support\Facades\Log::info(static::name . ' package name');
-        $this->registerPackage(static::name);
+        if (defined("static::name")) {
+            $this->registerPackage(static::name);
+        }
         Event::listen(ModelerStarting::class, [$this, 'modelerStarting']);
     }
 
@@ -40,7 +43,9 @@ trait PluginServiceProviderTrait
     public function modelerStarting(ModelerStarting $event)
     {
         foreach ($this->modelerScripts as $path => $public) {
-            $event->manager->addScript(mix($path, $public));
+            if (File::exists(public_path() . '/' . $public)) {
+                $event->manager->addScript(mix($path, $public));
+            }
         }
     }
 
@@ -83,13 +88,34 @@ trait PluginServiceProviderTrait
         LoadPluginSeeders::registerSeeder($seederClass);
     }
 
+    /**
+     * Register package installed
+     *
+     * @param $package
+     */
     protected function registerPackage($package)
     {
-        $this->packages[] = $package;
+        App::make(PackageManager::class)->addPackage($package);
     }
 
-    public function isRegisteredPackage($name)
+    /**
+     * Verify package is in register installed
+     *
+     * @param $name
+     * @return bool
+     */
+    public function isRegisteredPackage($package)
     {
-        return in_array($name, $this->packages, true);
+        return App::make(PackageManager::class)->isRegistered($package);
+    }
+
+    /**
+     * Remove package of list installed
+     *
+     * @param $name
+     */
+    public function removePackage($package)
+    {
+        App::make(PackageManager::class)->remove($package);
     }
 }

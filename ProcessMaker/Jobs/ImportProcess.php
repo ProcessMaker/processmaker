@@ -520,28 +520,32 @@ class ImportProcess implements ShouldQueue
     private function validatePackages($process)
     {
         try {
-            $packages = [];
+            $response = true;
 
             $new = new Process;
             $new->bpmn = $process->bpmn;
             $definitions = $new->getDefinitions();
+            $packages = [];
 
             $tasks = $definitions->getElementsByTagName('serviceTask');
             foreach ($tasks as $task) {
                 $implementation = $task->getAttribute('implementation');
                 if ($implementation) {
                     $implementation = explode('/', $implementation);
-                    $exists = $this->isRegisteredPackage($implementation[0]);
-                    $packages = [];
-                    $packages['label'] = $implementation[0];
-                    $packages['success'] = $exists;
-                    $packages['message'] = $exists ? __('Package installed') : __('The package is not installed');
-                    //array_unshift($this->status, [$implementation[0] => $packages]);
-                    $this->status = array_merge([$implementation[0] => $packages], $this->status);
+                    if (!in_array($implementation[0], $packages, true)) {
+                        $packages[] = $implementation[0];
+                        $exists = $this->isRegisteredPackage($implementation[0]);
+                        $response = $exists === false ? false : $response;
+                        $package = [];
+                        $package['label'] = $implementation[0];
+                        $package['success'] = $exists;
+                        $package['message'] = $exists ? __('Package installed') : __('The package is not installed');
+                        $this->status = array_merge([$implementation[0] => $package], $this->status);
+                    }
                 }
             }
 
-            return false;
+            return $response;
         } catch (\Exception $e) {
             return false;
         }
