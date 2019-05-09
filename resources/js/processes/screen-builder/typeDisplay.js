@@ -15,7 +15,7 @@ let initialControls = [{
         label: "Text",
         component: "FormText",
         "editor-component": "FormText",
-        "editor-icon": require("./font-solid.svg"),
+        "fa-icon": "fas fa-align-justify",
         config: {
             label: "New Text",
             fontSize: "1em",
@@ -85,7 +85,7 @@ let initialControls = [{
         label: "File Download",
         component: "FileDownload",
         "editor-component": "FormText",
-        "editor-icon": require("./components/file-download.png"),
+        "fa-icon": "fas fa-file-download",
         config: {
             label: "Download File"
         },
@@ -117,7 +117,7 @@ let initialControls = [{
         label: "Multi Column",
         component: "FormMultiColumn",
         "editor-component": "FormMultiColumn",
-        "editor-icon": require("./columns-solid.svg"),
+        "fa-icon": "fas fa-table",
         container: true,
         // Default items container
         items: [
@@ -144,7 +144,7 @@ let initialControls = [{
         label: "Record List",
         component: "FormRecordList",
         "editor-component": "FormText",
-        "editor-icon": require("./th-list-solid.svg"),
+        "fa-icon": "fas fa-th-list",
         config: {
             name: "",
             label: "New Record List",

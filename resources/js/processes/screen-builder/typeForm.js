@@ -20,7 +20,7 @@ initialControls.push({
         label: "File Upload",
         component: "FileUpload",
         "editor-component": "FileUpload",
-        "editor-icon": require("./components/form/file-upload.png"),
+        "fa-icon": "fas fa-file-upload",
         config: {
             label: "New File Upload"
         },
@@ -52,7 +52,7 @@ initialControls.push({
         label: "File Download",
         component: "FileDownload",
         "editor-component": "FormText",
-        "editor-icon": require("./components/file-download.png"),
+        "fa-icon": "fas fa-file-download",
         config: {
             label: "New File Download"
         },
