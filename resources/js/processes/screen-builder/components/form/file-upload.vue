@@ -25,7 +25,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass"],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint"],
   mounted() {
     // we need to be able to remove the classes from the npm package
     let element = document.querySelectorAll(
@@ -86,6 +86,9 @@ export default {
       this.$emit("input", this.content);
     },
     getTargetUrl() {
+      if (this.endpoint) {
+        return this.endpoint;
+      }
       this.requestID = document.head.querySelector(
         'meta[name="request-id"]'
       ).content;
