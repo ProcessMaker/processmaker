@@ -4,6 +4,7 @@ namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Managers\ModelerManager;
+use ProcessMaker\Managers\PackageManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use Laravel\Horizon\Horizon;
@@ -37,6 +38,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
         if(!$this->app->environment('production')) {
             $this->app->register(\Laravel\Dusk\DuskServiceProvider::class);
         }
+
+        $this->app->singleton(PackageManager::class, function () {
+            return new PackageManager();
+        });
 
         /**
          * Maps our Modeler Manager as a singleton. The Modeler Manager is used

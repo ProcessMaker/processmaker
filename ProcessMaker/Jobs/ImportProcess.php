@@ -19,10 +19,11 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Traits\PluginServiceProviderTrait;
 
 class ImportProcess implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, PluginServiceProviderTrait;
 
     /**
      * The original contents of the imported file.
@@ -408,7 +409,7 @@ class ImportProcess implements ShouldQueue
             }
         }
     }
-    
+
     /**
      * Complete the process of updating script refs.
      *
@@ -550,6 +551,41 @@ class ImportProcess implements ShouldQueue
         }
     }
 
+    private function validatePackages($process)
+    {
+        try {
+            $response = true;
+
+            $new = new Process;
+            $new->bpmn = $process->bpmn;
+            $definitions = $new->getDefinitions();
+            $packages = [];
+
+            $tasks = $definitions->getElementsByTagName('serviceTask');
+            foreach ($tasks as $task) {
+                $implementation = $task->getAttribute('implementation');
+                if ($implementation) {
+                    $implementation = explode('/', $implementation);
+                    if (!in_array($implementation[0], $packages, true)) {
+                        $packages[] = $implementation[0];
+                        $exists = $this->isRegisteredPackage($implementation[0]);
+                        $response = $exists === false ? false : $response;
+                        $package = [];
+                        $package['label'] = $implementation[0];
+                        $package['success'] = $exists;
+                        $package['message'] = $exists ? __('Package installed') : __('The package is not installed');
+                        $this->status = array_merge([$implementation[0] => $package], $this->status);
+                    }
+                }
+            }
+
+            return $response;
+        } catch (\Exception $e) {
+            return false;
+        }
+
+    }
+
     /**
      * Save the BPMN with any adjustments that have been made along the way.
      *
@@ -568,6 +604,14 @@ class ImportProcess implements ShouldQueue
      */
     private function parseFileV1()
     {
+        if (!$this->validatePackages($this->file->process)) {
+            return (object)[
+                'status' => collect($this->status),
+                'assignable' => [],
+                'process' => []
+            ];
+        }
+
         $this->saveProcessCategory($this->file->process_category);
         $this->saveProcess($this->file->process);
         $this->saveScripts($this->file->scripts);
