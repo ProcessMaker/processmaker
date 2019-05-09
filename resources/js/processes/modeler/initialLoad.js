@@ -30,7 +30,6 @@ import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
-import Webhook from './components/inspector/Webhook';
 import StartPermission from './components/inspector/StartPermission';
 
 Vue.component('UserSelect', UserSelect);
@@ -41,7 +40,6 @@ Vue.component('ExpressionEditor', ExpressionEditor);
 Vue.component('TaskAssignment', TaskAssignment);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
-Vue.component('Webhook', Webhook);
 Vue.component('StartPermission', StartPermission);
 
 let nodeTypes = [
@@ -62,12 +60,14 @@ let nodeTypes = [
     eventBasedGateway,
     intermediateMessageCatchEvent,
 ]
+
+ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
 
 // Implement user list and group list for intermediate catch event
 // eslint-disable-next-line func-names
 (function () {
-    const inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[1];
+    const inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[0];
     inspector.items[4] = {
         component: 'UserSelect',
         config: {
@@ -117,16 +117,6 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
 
     /* Add a BPMN extension */
     registerBpmnExtension('pm', bpmnExtension);
-
-    /* Register extension for webhooks */
-    registerInspectorExtension(startEvent, {
-        component: 'Webhook',
-        config: {
-            label: 'Webhook',
-            helper: '',
-            name: ''
-        }
-    });
 
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {

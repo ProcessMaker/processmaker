@@ -159,7 +159,6 @@
                         </div>
                     </div>
                 </div>
-
                 @if($canViewComments === true)
                     <div>
                         <comments commentable_id="{{ $request->getKey() }}"
@@ -180,7 +179,7 @@
                                 <avatar-image v-if="userRequested" size="32"
                                               class="d-inline-flex pull-left align-items-center"
                                               :input-data="requestBy" display-name="true"></avatar-image>
-                                <span v-if="!userRequested">{{__('Webhook')}}</span>
+                                <span v-if="!userRequested">{{__('Web Entry')}}</span>
                             </li>
 
                             @if($canCancel == true && $request->status === 'ACTIVE')
