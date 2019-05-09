@@ -1,9 +1,7 @@
 <template>
   <div class="data-table">
-    <div v-show="loading" class="overlay">
-      <i class="fas fa-circle-notch fa-spin fa-2x text-success"></i>
-    </div>
-    <div class="card card-body table-card vuetable-wrapper">
+    <data-loading v-if="apiDataLoading || apiNoResults" ref="loader" />
+    <div v-else class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -13,8 +11,6 @@
         :fields="fields"
         :data="data"
         data-path="data"
-        :noDataTemplate="showMessage()"
-        @vuetable:loaded="hideLoader"
         pagination-path="meta"
       >
         <template slot="ids" slot-scope="props">
@@ -59,13 +55,14 @@
 
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
 import AvatarImage from "../../components/AvatarImage";
 import moment from "moment";
 
 Vue.component("avatar-image", AvatarImage);
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   data() {
     return {
       orderBy: "id",
@@ -144,19 +141,6 @@ export default {
           break;
       }
     },
-    showMessage() {
-      if(this.loading) {
-        return "    "
-      }else {
-        return "No Data Available"
-      }
-    },
-    showLoader() {
-      this.loading = true
-    },
-    hideLoader() {
-      this.loading = false
-    },
     openRequest(data, index) {
       window.location.href = "/requests/" + data.id;
     },
@@ -208,7 +192,6 @@ export default {
       return data;
     },
     fetch(resetPagination) {
-      this.loading = true;
       
       if (resetPagination) {
         this.page = 1;
@@ -232,22 +215,10 @@ export default {
         )
         .then(response => {
           this.data = this.transform(response.data);
-          this.loading = false;
-        })
-        .catch(error => {
-          window.ProcessMaker.alert(error.response.data.message, "danger");
-          this.data = [];
         });
     }
   }
 };
 </script>
 <style>
-	.overlay { 
-		position: absolute; 
-		z-index: 10; 
-    width: 100%;
-    text-align: center;
-    top: 272px
-	}
 </style>

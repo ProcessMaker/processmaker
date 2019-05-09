@@ -78,13 +78,23 @@
                             <h4 style="margin:0; padding:0; line-height:1">{{__($task->advanceStatus)}}</h4>
                         </div>
                         <ul class="list-group list-group-flush w-100">
-                            <li class="list-group-item">
+                            <li class="list-group-item" v-if="showDueAtDates">
                                 <i class='far fa-calendar-alt'></i>
                                 <small> {{__($dueLabels[$task->advanceStatus])}} @{{ moment(dateDueAt).fromNow() }}
                                 </small>
                                 <br>
                                 @{{ moment(dateDueAt).format() }}
                             </li>
+
+
+                            <li class="list-group-item" v-if="!showDueAtDates">
+                                <i class='far fa-calendar-alt'></i>
+                                <small> {{__($dueLabels[$task->advanceStatus])}} @{{ moment().to(moment(completedAt)) }}
+                                </small>
+                                <br>
+                                @{{ moment(completedAt).format() }}
+                            </li>
+
                             <li class="list-group-item">
                                 <h5>{{__('Assigned To')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
@@ -217,6 +227,12 @@
           },
           createdAt() {
             return this.task.created_at;
+          },
+          completedAt() {
+            return this.task.completed_at;
+          },
+          showDueAtDates() {
+            return this.task.status !== 'CLOSED';
           },
           disabled() {
             return this.selectedUser ? this.selectedUser.length === 0 : true;
