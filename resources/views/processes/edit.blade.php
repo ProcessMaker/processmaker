@@ -145,8 +145,7 @@
                                         <td class="notify">{{__('Notify Participants')}}</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input v-model="formData.notifications.participants.started" type="checkbox" class="custom-control-input" id="notify-participants-started">
-                                                <label class="custom-control-label" for="notify-participants-started"></label>
+                                                
                                             </div>
                                         </td>
                                         <td class="action">

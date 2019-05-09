@@ -10,9 +10,12 @@ use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessRequestToken;
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class TaskController extends Controller
 {
+    use SearchAutocompleteTrait;
+    
     private static $dueLabels = [
         'open' => 'Due ',
         'completed' => 'Completed ',

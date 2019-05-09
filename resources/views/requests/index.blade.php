@@ -58,34 +58,169 @@
 
                 </b-card-group>
 
-                <div class="row">
-                    <div class="col mt-2">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="basic-addon1">
-                                    <i class="fas fa-search"></i>
-                                </span>
+                <div id="search-bar" class="search mt-2 bg-light p-2" >
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <div id="search-dropdowns" v-if="! advanced" class="row">
+                                <div class="col-3">
+                                    <multiselect 
+                                    v-model="process" 
+                                    @search-change="getProcesses" 
+                                    @input="buildPmql"
+                                    :select-label="''" 
+                                    :loading="isLoading.process" 
+                                    open-direction="bottom" 
+                                    label="name" 
+                                    :options="processOptions"
+                                    :track-by="'id'"
+                                    :multiple="true" 
+                                    placeholder="Process">
+                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('processes') }}</span>
+                                        </template>
+                                    </multiselect>
+                                </div>
+                                <div class="col-3">
+                                    <multiselect
+                                    v-model="status"
+                                    :select-label="''" 
+                                    @input="buildPmql"
+                                    :loading="isLoading.status"
+                                    open-direction="bottom"
+                                    label="name"
+                                    :options="statusOptions"
+                                    track-by="value"
+                                    :multiple="true"
+                                    placeholder="Status">
+                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('statuses') }}</span>
+                                        </template>
+                                    </multiselect>
+                                </div>
+                                <div class="col-3">
+                                    <multiselect 
+                                    v-model="requester" 
+                                    @search-change="getRequesters" 
+                                    @input="buildPmql"
+                                    :select-label="''" 
+                                    :loading="isLoading.requester" 
+                                    open-direction="bottom" 
+                                    label="fullname" 
+                                    :options="requesterOptions" 
+                                    :track-by="'id'"
+                                    :multiple="true" 
+                                    placeholder="Requester">
+                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
+                                        </template>
+                                        <template slot="option" slot-scope="props">
+                                            <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
+                                        <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                            <span class="ml-1">@{{props.option.fullname}}</span>
+                                        </template>
+                                    </multiselect>
+                                </div>
+                                <div class="col-3">
+                                    <multiselect 
+                                    v-model="participants" 
+                                    @search-change="getParticipants" 
+                                    @input="buildPmql"
+                                    :select-label="''" 
+                                    :loading="isLoading.participants" 
+                                    open-direction="bottom" 
+                                    label="fullname" 
+                                    :options="participantsOptions" 
+                                    :track-by="'id'"
+                                    :multiple="true" 
+                                    placeholder="Participants">
+                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
+                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
+                                        </template>
+                                        <template slot="option" slot-scope="props">
+                                            <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
+                                        <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                            <span class="ml-1">@{{props.option.fullname}}</span>
+                                        </template>
+                                    </multiselect>
+                                </div>
                             </div>
-                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+                            <div id="search-manual" v-if="advanced">
+                                <input ref="search_input" type="text" class="form-control" placeholder="PMQL" v-model="pmql">
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div id="search-actions">
+                                <div v-if="! advanced">
+                                    <b-btn variant="primary" @click="runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
+                                    <b-btn variant="secondary" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Advanced Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
+                                </div>
+                                <div v-if="advanced">
+                                    <b-btn variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
+                                    <b-btn variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-8" align="right">
-                        
-                    </div>
-                </div>                
+                </div>               
             </template>
-            <requests-listing ref="requestList" :filter="filter" type="{{ $type }}"></requests-listing>
+            <requests-listing ref="requestList"></requests-listing>
         </div>
     </div>
 </div>
 @endsection
 
 @section('js')
+<script>
+    //Data needed for default search
+    window.Processmaker.user = @json($currentUser);
+    window.Processmaker.status = '{{ $type }}';
+</script>
 <script src="{{mix('js/requests/index.js')}}"></script>
 @endsection
 
 @section('css')
 <style>
+    #search-bar {
+        height: 59px;
+        max-height: 59px;
+    }
+    
+    #search-manual input {
+        border: 1px solid #e8e8e8;
+        border-radius: 5px;
+        color: gray;
+        height: 41px;
+    }
+
+    #search-dropdowns {
+        padding: 0 11px;
+    }
+
+    #search-dropdowns .col-3 {
+        padding: 0 4px;
+    }
+    
+    #search-actions button {
+        display: inline-block;
+        float: left;
+        height: 41px;
+        margin-left: 8px;
+    }
+    
+    .multiselect__placeholder {
+        padding-top: 1px;
+    }
+    
+    .multiselect__single {
+        padding-bottom: 2px;
+        padding-top: 2px;
+    }
+
+    .search {
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        margin-left: -1px;
+        margin-right: -1px;
+    }
     .has-search .form-control {
         padding-left: 2.375rem;
     }
@@ -108,6 +243,21 @@
 
     .card-size-header {
         width: 90px;
+    }
+    .option__image {
+        width:27px;
+        height: 27px;
+        border-radius: 50%;
+    }
+    .initials {
+        display:inline-block;
+        text-align: center;
+        font-size: 12px;
+        max-width:25px;
+        max-height: 25px;
+        min-width:25px;
+        min-height: 25px;
+        border-radius: 50%;
     }
 </style>
 @endsection
