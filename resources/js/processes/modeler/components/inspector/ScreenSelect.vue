@@ -1,11 +1,12 @@
 <template>
-    <div class="form-group">
+    <div class="form-group" :class="{'has-error':error}">
         <label>{{ $t(label)}}</label>
         <div v-if="loading">{{ $t('Loading...') }}</div>
         <div v-else>
             <multiselect v-model="content"
                          track-by="id"
                          label="title"
+                         :class="{'border border-danger':error}"
                          :placeholder="$t('type here to search')"
                          :options="screens"
                          :multiple="false"
@@ -15,6 +16,7 @@
                          :helper="helper"
                          @search-change="load">
             </multiselect>
+            <small v-if="error" class="text-danger">{{error}}</small>
         </div>
     </div>
 </template>
@@ -32,7 +34,8 @@
       return {
         content: "",
         loading: true,
-        screens: []
+        screens: [],
+        error: '',
       };
     },
     computed: {
@@ -41,22 +44,39 @@
       }
     },
     mounted() {
-      // Load selected item.
-      if (!this.content && this.value) {
-        ProcessMaker.apiClient
-          .get("screens/"+ this.value)
-          .then(response => {
-            this.content = response.data;
-          });
-      }
       this.load();
     },
     watch: {
       content: {
         handler() {
-          this.$emit("input", this.content.id);
+          if (this.content) {
+            this.error = '';
+            this.$emit("input", this.content.id);
+          }
         }
-      }
+      },
+      value: {
+        immediate: true,
+        handler() {
+          // Load selected item.
+          if (this.value) {
+            ProcessMaker.apiClient
+              .get("screens/"+ this.value)
+              .then(response => {
+                this.content = response.data;
+              })
+              .catch(error => {
+                if (error.response.status == 404) {
+                  this.content = '';
+                  this.error = this.$t('Selected screen not found');
+                }
+              });
+          } else {
+            this.content = '';
+            this.error = '';
+          }
+        },
+      },
     },
     methods: {
       load(filter) {
