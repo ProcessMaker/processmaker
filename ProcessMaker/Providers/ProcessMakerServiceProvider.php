@@ -55,6 +55,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
         });
         // Listen to the events for our core screen types and add our javascript
         Event::listen(ScreenBuilderStarting::class, function($event) {
+            // Add any extensions to form builder/renderer from packages
+            $event->manager->addPackageScripts($event->type);
+
             switch($event->type) {
                 case 'FORM':
                     $event->manager->addScript(mix('js/processes/screen-builder/typeForm.js'));
