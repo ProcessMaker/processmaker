@@ -358,23 +358,6 @@
             };
             return 'card-header text-capitalize text-white ' + header[this.request.status.toUpperCase()];
           },
-          statusLabel() {
-            let label = {
-              "ACTIVE": 'In Progress',
-              "COMPLETED": 'Completed',
-              "CANCELED": 'Canceled',
-              "ERROR": 'Error'
-            };
-
-            if (this.request.status.toUpperCase() === 'COMPLETED') {
-              this.status = 'Completed'
-            }
-            if (this.request.status.toUpperCase() === 'CANCELED') {
-              this.status = 'Canceled'
-            }
-
-            return label[this.request.status.toUpperCase()];
-          },
           labelDate() {
             let label = {
               "ACTIVE": 'Created',
@@ -396,7 +379,7 @@
           },
           statusLabel() {
             let status = {
-              "ACTIVE": "{{__('Created')}}",
+              "ACTIVE": "{{__('In Progress')}}",
               "COMPLETED": "{{__('Completed')}}",
               "CANCELED": "{{__('Canceled')}}",
               "ERROR": "{{__('Error')}}",
