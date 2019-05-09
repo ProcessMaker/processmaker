@@ -48,10 +48,15 @@ window.ProcessMaker.navbar = new Vue({
         ConfirmationModal,
         NavbarProfile
     },
+    watch: {
+        alerts (array) {
+            this.saveLocalAlerts(array);
+        },
+    },
     data() {
         return {
             messages: ProcessMaker.notifications,
-            alerts: [],
+            alerts: this.loadLocalAlerts(),
             confirmTitle: "",
             confirmMessage: "",
             confirmVariant: "",
@@ -62,6 +67,26 @@ window.ProcessMaker.navbar = new Vue({
             sessionMessage: "",
             sessionTime: ""
         };
+    },
+    methods: {
+        alertDismissed (alert) {
+            const index = this.alerts.indexOf(alert);
+            index > -1 ? this.alerts.splice(index, 1) : null;
+            this.saveLocalAlerts(this.alerts);
+        },
+        loadLocalAlerts () {
+            try {
+                return window.localStorage.sparkAlerts &&
+                    window.localStorage.sparkAlerts.substr(0, 1) === "["
+                    ? JSON.parse(window.localStorage.sparkAlerts) : [];
+            } catch (e) {
+                return [];
+            }
+        },
+        saveLocalAlerts (array) {
+            const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
+            window.localStorage.sparkAlerts = JSON.stringify(nextScreenAlerts);
+        },
     },
     mounted() {
         Vue.nextTick() // This is needed to override the default alert method.
@@ -78,7 +103,7 @@ window.ProcessMaker.navbar = new Vue({
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support
-window.ProcessMaker.alert = function (msg, variant, showValue = 60) {
+window.ProcessMaker.alert = function (msg, variant, showValue = 60, stayNextScreen = false) {
     if (showValue === 0) {
         // Just show it indefinitely, no countdown
         showValue = true;
@@ -86,7 +111,8 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 60) {
     ProcessMaker.navbar.alerts.push({
         alertText: msg,
         alertShow: showValue,
-        alertVariant: String(variant)
+        alertVariant: String(variant),
+        stayNextScreen: stayNextScreen
     })
 };
 
