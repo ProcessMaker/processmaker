@@ -267,6 +267,11 @@
 @endsection
 
 @section('js')
+
+    @foreach($manager->getScripts() as $script)
+        <script src="{{$script}}"></script>
+    @endforeach
+
     <script src="{{mix('js/requests/show.js')}}"></script>
     <script>
       new Vue({

@@ -324,7 +324,7 @@ class ImportProcess implements ShouldQueue
             foreach ($tasks as $task) {
                 $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
                 if ($screenRef == $oldId) {
-                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $newId);
+                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRefNew', $newId);
                 }
             }
         }
@@ -334,7 +334,24 @@ class ImportProcess implements ShouldQueue
             $this->new['process']->cancel_screen_id = $newId;
             $this->new['process']->save();
         }
+    }
 
+    /**
+     * Complete the process of updating screen refs.
+     *
+     * @return void
+     */
+    private function completeScreenRefs()
+    {
+        $humanTasks = ['task', 'userTask', 'endEvent'];
+        foreach ($humanTasks as $humanTask) {
+            $tasks = $this->definitions->getElementsByTagName($humanTask);
+            foreach ($tasks as $task) {
+                $newScreenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRefNew');
+                $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRefNew');
+                $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef', $newScreenRef);
+            }
+        }
     }
 
     /**
@@ -366,6 +383,7 @@ class ImportProcess implements ShouldQueue
 
                 $this->new['screens'][] = $new;
             }
+            $this->completeScreenRefs();
             $this->finishStatus('screens');
         } catch (\Exception $e) {
             $this->finishStatus('screens', true);
@@ -387,8 +405,23 @@ class ImportProcess implements ShouldQueue
         foreach ($tasks as $task) {
             $scriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
             if ($scriptRef == $oldId) {
-                $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $newId);
+                $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRefNew', $newId);
             }
+        }
+    }
+
+    /**
+     * Complete the process of updating script refs.
+     *
+     * @return void
+     */
+    private function completeScriptRefs()
+    {
+        $tasks = $this->definitions->getElementsByTagName('scriptTask');
+        foreach ($tasks as $task) {
+            $newScriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRefNew');
+            $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRefNew');
+            $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef', $newScriptRef);
         }
     }
 
@@ -418,6 +451,7 @@ class ImportProcess implements ShouldQueue
 
                 $this->new['scripts'][] = $new;
             }
+            $this->completeScriptRefs();
             $this->finishStatus('scripts');
         } catch (\Exception $e) {
             $this->finishStatus('scripts', true);
