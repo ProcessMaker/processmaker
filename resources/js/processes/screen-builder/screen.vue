@@ -128,14 +128,10 @@
 </template>
 
 <script>
-  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties.vue";
-  import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css.vue";
-  import {VueFormBuilder} from "@processmaker/spark-screen-builder";
-  import {VueFormRenderer} from "@processmaker/spark-screen-builder";
+  import {VueFormBuilder, VueFormRenderer, FormBuilderControls as controlConfig} from "@processmaker/spark-screen-builder";
   import VueJsonPretty from 'vue-json-pretty';
 
   // Bring in our initial set of controls
-  import controlConfig from "@processmaker/spark-screen-builder/src/form-builder-controls";
   import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
   import {
     FormTextArea,
@@ -174,8 +170,6 @@ console.log("VueFormBuilder", VueFormBuilder);
       };
     },
     components: {
-      ComputedProperties,
-      CustomCSS,
       VueFormBuilder,
       VueFormRenderer,
       VueJsonPretty,

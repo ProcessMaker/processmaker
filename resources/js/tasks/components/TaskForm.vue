@@ -3,15 +3,17 @@
 </template>
 
 <script>
-import VueFormRenderer from "@processmaker/spark-screen-builder/src/components/vue-form-renderer";
+import {
+  VueFormRenderer,
+  OptionsList,
+  PageSelect,
+  FormMultiColumn,
+  MultiColumn,
+  FormText,
+  FormButton,
+  FormRecordList
+} from '@processmaker/spark-screen-builder';
 
-import OptionsList from "@processmaker/spark-screen-builder/src/components/inspector/options-list";
-import PageSelect from "@processmaker/spark-screen-builder/src/components/inspector/page-select";
-import FormMultiColumn from "@processmaker/spark-screen-builder/src/components/renderer/form-multi-column";
-import MultiColumn from "@processmaker/spark-screen-builder/src/components/editor/multi-column";
-import FormText from "@processmaker/spark-screen-builder/src/components/renderer/form-text";
-import FormButton from "@processmaker/spark-screen-builder/src/components/renderer/form-button";
-import FormRecordList from "@processmaker/spark-screen-builder/src/components/renderer/form-record-list";
 import FileUpload from "../../processes/screen-builder/components/form/file-upload";
 import FileDownload from "../../processes/screen-builder/components/file-download";
 
