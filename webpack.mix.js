@@ -29,6 +29,12 @@ mix.webpackConfig({
             Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
         }
     },
+    resolveLoader: {
+        modules: [
+            path.resolve(__dirname, 'node_modules'),
+            'node_modules'
+        ],
+    },
     node: { fs: 'empty' }
 }).js('resources/js/app-layout.js', 'public/js')
     .js('resources/js/processes/modeler/index.js', 'public/js/processes/modeler')
