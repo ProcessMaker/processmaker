@@ -356,8 +356,6 @@ console.log("VueFormBuilder", VueFormBuilder);
 </script>
 
 <style lang="scss">
-    @import "~bootstrap/dist/css/bootstrap";
-
     html,
     body {
         height: 100%;
