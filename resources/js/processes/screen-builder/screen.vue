@@ -109,11 +109,11 @@
         </div>
 
         <div v-if="showValidationErrors" class="validation-panel position-absolute shadow border overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
-            <div v-if="!previewInputValid" class="p-3 font-weight-bold text-dark">
+            <div v-if="!previewInputValid" class="p-3 font-weight-bold text-dark text-capitalize">
               <i class="fas fa-times-circle text-danger mr-3"></i>
               {{$t('Invalid JSON Data Object')}}
             </div>
-            <b-button variant="link" class="validation__message d-flex align-items-center p-3"
+            <b-button variant="link" class="validation__message d-flex align-items-center p-3 text-capitalize"
                       v-for="(validation,index) in validationErrors"
                       :key="index"
                       @click="focusInspector(validation)">
@@ -123,7 +123,7 @@
                 <span class="d-block font-weight-normal">{{ validation.message }}</span>
               </span>
             </b-button>
-            <span v-if="!allErrors" class="d-flex justify-content-center align-items-center h-100">No Errors</span>
+            <span v-if="!allErrors" class="d-flex justify-content-center align-items-center h-100 text-capitalize">No Errors</span>
         </div>
       </b-card-footer>
     </b-card>
