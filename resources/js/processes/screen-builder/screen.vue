@@ -6,10 +6,10 @@
         <b-row>
           <b-col>
             <b-button-group size="sm">
-              <b-button :variant="displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'editor'">
+              <b-button :variant="displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'editor'" class="text-capitalize">
                 <i class="fas fa-drafting-compass pr-1"></i>{{ $t('Design') }}
               </b-button>
-              <b-button :variant="!displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'preview'">
+              <b-button :variant="!displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'preview'" class="text-capitalize">
                 <i class="fas fa-cogs pr-1"></i>{{ $t('Preview') }}
               </b-button>
             </b-button-group>
@@ -17,11 +17,11 @@
 
           <b-col class="text-right" v-if="displayBuilder && !displayPreview">
             <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" class="btn btn-secondary" title="Calculated Properties" @click="openComputedProperties">
+              <button type="button" class="btn btn-secondary text-capitalize" title="Calculated Properties" @click="openComputedProperties">
                 <i class="fas fa-flask"></i>
                 Calcs
               </button>
-              <button type="button" class="btn btn-secondary mr-2" title="Custom CSS" @click="openCustomCSS">
+              <button type="button" class="btn btn-secondary mr-2 text-capitalize" title="Custom CSS" @click="openCustomCSS">
                 <i class="fab fa-css3"></i>
                 CSS
               </button>
@@ -58,7 +58,7 @@
 
               <b-card-body class="p-0">
                 <b-button v-b-toggle.dataPreview variant="outline"
-                  class="text-left card-header d-flex align-items-center w-100"
+                  class="text-left card-header d-flex align-items-center w-100 text-capitalize"
                   @click="showDataPreview = !showDataPreview">
                   <i class="fas fa-file-code mr-2"></i>
                     {{ $t('Data Preview') }}
@@ -70,7 +70,7 @@
                 </b-collapse>
 
                 <b-button v-b-toggle.dataInput variant="outline"
-                  class="text-left card-header d-flex align-items-center w-100"
+                  class="text-left card-header d-flex align-items-center w-100 text-capitalize"
                   @click="showDataInput = !showDataInput">
                   <i class="fas fa-file-import mr-2"></i>
                     {{ $t('Data Input') }}
@@ -93,7 +93,7 @@
         </b-form-checkbox>
 
         <div class="ml-3" @click="showValidationErrors = !showValidationErrors">
-          <button type="button" class="btn btn-light btn-sm">
+          <button type="button" class="btn btn-light btn-sm text-capitalize">
             <i class="fas fa-angle-double-up"></i>
             {{ $t('Open Console') }}
             <span v-if="allErrors === 0" class="badge badge-success">
