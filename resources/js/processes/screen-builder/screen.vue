@@ -93,7 +93,7 @@
         </b-form-checkbox>
 
         <div class="ml-3" @click="showValidationErrors = !showValidationErrors">
-          <button type="button" class="btn btn-light btn-sm text-capitalize">
+          <button type="button" class="btn btn-sm text-capitalize">
             <i class="fas fa-angle-double-up"></i>
             {{ $t('Open Console') }}
             <span v-if="allErrors === 0" class="badge badge-success">
