@@ -133,8 +133,12 @@
                 name: response.data.fullname
               };
             })
-            .catch(err => {
+            .catch(error => {
               this.loading = false;
+              if (error.response.status == 404) {
+                this.content = '';
+                this.error = this.$t('Selected user not found');
+              }
             });
         } else if (this.type === 'group') {
           value = _.get(node, "assignedGroups");
@@ -153,6 +157,10 @@
             })
             .catch(err => {
               this.loading = false;
+              if (error.response.status == 404) {
+                this.content = '';
+                this.error = this.$t('Selected group not found');
+              }
             });
         }
       },
