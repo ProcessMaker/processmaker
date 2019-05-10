@@ -4,7 +4,7 @@ import {
     association,
     endEvent,
     exclusiveGateway,
-    // inclusiveGateway,
+    inclusiveGateway,
     parallelGateway,
     sequenceFlow,
     startEvent,
@@ -48,7 +48,7 @@ let nodeTypes = [
     scriptTask,
     callActivity,
     exclusiveGateway,
-    // inclusiveGateway,
+    inclusiveGateway,
     parallelGateway,
     sequenceFlow,
     association,
@@ -67,7 +67,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 // Implement user list and group list for intermediate catch event
 // eslint-disable-next-line func-names
 (function () {
-    const inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[0];
+    const inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[1];
     inspector.items[4] = {
         component: 'UserSelect',
         config: {
