@@ -1,21 +1,22 @@
 <template>
     <div class="form-group">
-        <label>{{ $t(label)}}</label>
-        <div v-if="loading">{{ $t('Loading...') }}</div>
-        <div v-else>
-            <multiselect v-model="content"
-                         track-by="id"
-                         label="name"
-                         :placeholder="$t('type here to search')"
-                         :options="groups"
-                         :multiple="false"
-                         :show-labels="false"
-                         :searchable="true"
-                         :internal-search="false"
-                         :helper="helper"
-                         @search-change="load">
-            </multiselect>
-        </div>
+        <label>{{ $t(label) }}</label>
+        <multiselect v-model="content"
+                     track-by="id"
+                     label="name"
+                     :class="{'border border-danger':error}"
+                     :loading="loading"
+                     :placeholder="$t('type here to search')"
+                     :options="groups"
+                     :multiple="false"
+                     :show-labels="false"
+                     :searchable="true"
+                     :internal-search="false"
+                     @open="load"
+                     @search-change="load">
+        </multiselect>
+        <small v-if="error" class="text-danger">{{ error }}</small>
+        <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
     </div>
 </template>
 
@@ -31,8 +32,9 @@
     data() {
       return {
         content: "",
-        loading: true,
-        groups: []
+        loading: false,
+        groups: [],
+        error: ''
       };
     },
     computed: {
@@ -40,22 +42,36 @@
         return this.$parent.$parent.highlightedNode.definition;
       }
     },
-    mounted() {
-      // Load selected item.
-      if (!this.content && this.value) {
-        ProcessMaker.apiClient
-          .get("groups/"+ this.value)
-          .then(response => {
-            this.content = response.data;
-          });
-      }
-      this.load();
-    },
     watch: {
       content: {
         handler() {
           this.$emit("input", this.content.id);
         }
+      },
+      value: {
+        immediate: true,
+        handler() {
+          // Load selected item.
+          if (this.value) {
+            this.loading = true;
+            ProcessMaker.apiClient
+              .get("groups/"+ this.value)
+              .then(response => {
+                this.loading = false;
+                this.content = response.data;
+              })
+              .catch(error => {
+                this.loading = false;
+                if (error.response.status == 404) {
+                  this.content = '';
+                  this.error = this.$t('Selected group not found');
+                }
+              });
+          } else {
+            this.content = '';
+            this.error = '';
+          }
+        },
       }
     },
     methods: {
