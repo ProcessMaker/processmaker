@@ -20,12 +20,11 @@
     </div>
 </template>
 
-
 <script>
   import Multiselect from "vue-multiselect";
 
   export default {
-    props: ["value", "label", "helper", "params"],
+    props: ["value", "label", "helper", "params", "requiredMessage"],
     components: {
       Multiselect
     },
@@ -44,10 +43,13 @@
     },
     watch: {
       content: {
+        immediate: true,
         handler() {
           if (this.content) {
             this.error = '';
             this.$emit("input", this.content.id);
+          } else if (this.requiredMessage) {
+            this.error = this.requiredMessage
           }
         }
       },
@@ -72,7 +74,11 @@
               });
           } else {
             this.content = '';
-            this.error = '';
+            if (this.requiredMessage) {
+              this.error = this.requiredMessage
+            } else {
+              this.error = '';
+            }
           }
         },
       }
