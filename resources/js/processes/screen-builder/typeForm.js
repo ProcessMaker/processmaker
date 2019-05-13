@@ -99,8 +99,8 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
 
         for (let j = 0; j < item.control.inspector.length; j++) {
             let config = item.control.inspector[j].config;
-            if (config.label === "Field Name") {
-                config.validation = "regex:/^(?:[\$A-Z_a-z])(?:[\$0-9A-Z_a-z])*$/|required";
+            if (config.label === 'Field Name') {
+                config.validation = 'regex:/^(?:[A-Z_a-z])(?:[0-9A-Z_a-z])*$/|required';
             }
         }
     }
