@@ -26,6 +26,8 @@
                 CSS
               </button>
             </div>
+
+            <button v-if="permission.includes('export-screens')" type="button" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
             <button @click="saveScreen(false)" type="button" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
           </b-col>
 
@@ -154,7 +156,6 @@ import Validator from "validatorjs";
     return value.match(/^[a-zA-Z0-9-_]+$/);
   }, 'Must be letters, numbers, underscores or dashes');
 
-console.log("VueFormBuilder", VueFormBuilder);
   export default {
     props: ["process", "screen", 'permission'],
     data() {

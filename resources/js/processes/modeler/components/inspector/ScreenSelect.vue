@@ -1,6 +1,6 @@
 <template>
     <div class="form-group" :class="{'has-error':error}">
-        <label>{{ $t(label)}}</label>
+        <label>{{ $t(label) }}</label>
         <multiselect v-model="content"
                      track-by="id"
                      label="title"
@@ -15,24 +15,23 @@
                      @open="load"
                      @search-change="load">
         </multiselect>
-        <small v-if="error" class="text-danger">{{error}}</small>
+        <small v-if="error" class="text-danger">{{ error }}</small>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
     </div>
 </template>
-
 
 <script>
   import Multiselect from "vue-multiselect";
 
   export default {
-    props: ["value", "label", "helper", "params"],
+    props: ["value", "label", "helper", "params", "requiredMessage"],
     components: {
       Multiselect
     },
     data() {
       return {
         content: "",
-        loading: true,
+        loading: false,
         screens: [],
         error: ''
       };
@@ -44,10 +43,13 @@
     },
     watch: {
       content: {
+        immediate: true,
         handler() {
           if (this.content) {
             this.error = '';
             this.$emit("input", this.content.id);
+          } else if (this.requiredMessage) {
+            this.error = this.requiredMessage
           }
         }
       },
@@ -72,7 +74,11 @@
               });
           } else {
             this.content = '';
-            this.error = '';
+            if (this.requiredMessage) {
+              this.error = this.requiredMessage
+            } else {
+              this.error = '';
+            }
           }
         },
       }

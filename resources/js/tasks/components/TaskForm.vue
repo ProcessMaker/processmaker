@@ -10,9 +10,10 @@ import {
   FormMultiColumn,
   MultiColumn,
   FormText,
-  FormButton,
+  renderer,
   FormRecordList
 } from '@processmaker/spark-screen-builder';
+const FormButton = renderer.FormButton;
 
 import FileUpload from "../../processes/screen-builder/components/form/file-upload";
 import FileDownload from "../../processes/screen-builder/components/file-download";
