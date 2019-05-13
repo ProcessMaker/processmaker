@@ -461,17 +461,8 @@
           ? JSON.parse(this.specialAssignmentsListGetter)
           : [];
 
+        this.specialAssignmentsData.splice(0);
         this.specialAssignments.forEach(item => {
-          let exists = false;
-          this.specialAssignmentsData.forEach(assignee => {
-            if (assignee.type === item.type && assignee.assignee === item.assignee) {
-              exists = true;
-            }
-          });
-
-          if (exists) {
-            return;
-          }
           if (item.type === 'requester') {
             this.specialAssignmentsData.push({
               type: item.type,

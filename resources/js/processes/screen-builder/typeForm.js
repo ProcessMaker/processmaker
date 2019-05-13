@@ -5,8 +5,8 @@ import FileUpload from "./components/form/file-upload";
 
 import {
     FormText,
-    FormBuilderControls as initialControls
 } from "@processmaker/spark-screen-builder";
+import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
 
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
