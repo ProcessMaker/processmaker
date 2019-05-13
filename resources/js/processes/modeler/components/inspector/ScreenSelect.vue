@@ -1,6 +1,6 @@
 <template>
     <div class="form-group" :class="{'has-error':error}">
-        <label>{{ $t(label)}}</label>
+        <label>{{ $t(label) }}</label>
         <multiselect v-model="content"
                      track-by="id"
                      label="title"
@@ -15,7 +15,7 @@
                      @open="load"
                      @search-change="load">
         </multiselect>
-        <small v-if="error" class="text-danger">{{error}}</small>
+        <small v-if="error" class="text-danger">{{ error }}</small>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
     </div>
 </template>
@@ -32,7 +32,7 @@
     data() {
       return {
         content: "",
-        loading: true,
+        loading: false,
         screens: [],
         error: ''
       };
