@@ -13,7 +13,7 @@
         __('Processes') => route('processes.index'),
         __('Import') => null,
     ]])
-    <div class="container" id="importProcess">
+    <div class="container mb-3" id="importProcess">
         <div class="row">
             <div class="col">
                 <div class="card text-center">
@@ -419,15 +419,23 @@
               }
             )
               .then(response => {
+                let message = '{{__('Unable to import the process.')}}';
                 if (!response.data.status) {
-                  ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger');
+                  ProcessMaker.alert(message, 'danger');
                   return;
                 }
 
                 this.options = response.data.status;
+                this.importing = false;
+                this.imported = true;
+
+                if (!response.data.process.id) {
+                  ProcessMaker.alert(message, 'danger');
+                  return;
+                }
                 this.assignable = response.data.assignable;
                 this.processId = response.data.process.id;
-                let message = '{{__('The process was imported.')}}';
+                message = '{{__('The process was imported.')}}';
                 let variant = 'success';
                 for (let item in this.options) {
                   if (!this.options[item].success) {
@@ -436,8 +444,6 @@
                   }
                 }
                 ProcessMaker.alert(message, variant);
-                this.importing = false;
-                this.imported = true;
               })
               .catch(error => {
                 this.submitted = false;

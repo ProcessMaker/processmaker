@@ -1,41 +1,39 @@
 <template>
     <div class="form-group" :class="{'has-error':error}">
-        <label>{{ $t(label)}}</label>
-        <div v-if="loading">{{ $t('Loading...') }}</div>
-        <div v-else>
-            <multiselect v-model="content"
-                         track-by="id"
-                         label="title"
-                         :class="{'border border-danger':error}"
-                         :placeholder="$t('type here to search')"
-                         :options="screens"
-                         :multiple="false"
-                         :show-labels="false"
-                         :searchable="true"
-                         :internal-search="false"
-                         :helper="helper"
-                         @search-change="load">
-            </multiselect>
-            <small v-if="error" class="text-danger">{{error}}</small>
-        </div>
+        <label>{{ $t(label) }}</label>
+        <multiselect v-model="content"
+                     track-by="id"
+                     label="title"
+                     :class="{'border border-danger':error}"
+                     :loading="loading"
+                     :placeholder="$t('type here to search')"
+                     :options="screens"
+                     :multiple="false"
+                     :show-labels="false"
+                     :searchable="true"
+                     :internal-search="false"
+                     @open="load"
+                     @search-change="load">
+        </multiselect>
+        <small v-if="error" class="text-danger">{{ error }}</small>
+        <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
     </div>
 </template>
-
 
 <script>
   import Multiselect from "vue-multiselect";
 
   export default {
-    props: ["value", "label", "helper", "params"],
+    props: ["value", "label", "helper", "params", "requiredMessage"],
     components: {
       Multiselect
     },
     data() {
       return {
         content: "",
-        loading: true,
+        loading: false,
         screens: [],
-        error: '',
+        error: ''
       };
     },
     computed: {
@@ -43,15 +41,15 @@
         return this.$parent.$parent.highlightedNode.definition;
       }
     },
-    mounted() {
-      this.load();
-    },
     watch: {
       content: {
+        immediate: true,
         handler() {
           if (this.content) {
             this.error = '';
             this.$emit("input", this.content.id);
+          } else if (this.requiredMessage) {
+            this.error = this.requiredMessage
           }
         }
       },
@@ -60,12 +58,15 @@
         handler() {
           // Load selected item.
           if (this.value) {
+            this.loading = true;
             ProcessMaker.apiClient
-              .get("screens/"+ this.value)
+              .get("screens/" + this.value)
               .then(response => {
+                this.loading = false;
                 this.content = response.data;
               })
               .catch(error => {
+                this.loading = false;
                 if (error.response.status == 404) {
                   this.content = '';
                   this.error = this.$t('Selected screen not found');
@@ -73,10 +74,14 @@
               });
           } else {
             this.content = '';
-            this.error = '';
+            if (this.requiredMessage) {
+              this.error = this.requiredMessage
+            } else {
+              this.error = '';
+            }
           }
         },
-      },
+      }
     },
     methods: {
       type() {
@@ -89,12 +94,13 @@
         let params = Object.assign(
           {
             type: this.type(),
-            order_direction : 'asc',
+            order_direction: 'asc',
             status: 'active',
-            filter : (typeof filter === 'string' ? filter : '')
+            filter: (typeof filter === 'string' ? filter : '')
           },
           this.params
         );
+        this.loading = true;
         ProcessMaker.apiClient
           .get('screens', {
             params: params
