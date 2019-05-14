@@ -736,5 +736,19 @@
     "Are you sure you want to delete the user": "Are you sure you want to delete the user",
     "Are you sure you want to delete the auth client": "Are you sure you want to delete the auth client",
     "You don't currently have any tasks assigned to you": "You don't currently have any tasks assigned to you",
-    "Congratulations": "Congratulations"
+    "Congratulations": "Congratulations",
+    "global": "global",
+    "The Name of the Call Activity": "The Name of the Call Activity",
+    "configuration": "configuration",
+    "Allowed User": "Allowed User",
+    "Select allowed user": "Select allowed user",
+    "Allowed Group": "Allowed Group",
+    "Select allowed group": "Select allowed group",
+    "whitelist": "whitelist",
+    "Reset": "Reset",
+    "Select...": "Select...",
+    "hour": "hour",
+    "type here to search": "type here to search",
+    "name": "name",
+    "[Select Active Process]": "[Select Active Process]"
 }
