@@ -63,6 +63,7 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
+  props: ["type"],
   data() {
     return {
       orderBy: "id",
@@ -196,6 +197,8 @@ export default {
       if (resetPagination) {
         this.page = 1;
       }
+
+      this.additionalParams = ((this.type === '') ? '&type=started_me': '&type=' + this.type);
 
       // Load from our api client
       ProcessMaker.apiClient
