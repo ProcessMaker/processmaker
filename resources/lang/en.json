@@ -694,6 +694,9 @@
     "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
     "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax.",
     "Advanced Search": "Advanced Search",
+    "Loading": "Loading",
+    "Please wait while your content is loaded": "Please wait while your content is loaded",
+    "No Results": "No Results",
     "Basic Search": "Basic Search",
     "processes": "processes",
     "statuses": "statuses",
@@ -731,5 +734,7 @@
     "You are about to export a Screen.": "You are about to export a Screen.",
     "All the configurations of the screen will be exported.": "All the configurations of the screen will be exported.",
     "Are you sure you want to delete the user": "Are you sure you want to delete the user",
-    "Are you sure you want to delete the auth client": "Are you sure you want to delete the auth client"
+    "Are you sure you want to delete the auth client": "Are you sure you want to delete the auth client",
+    "You don't currently have any tasks assigned to you": "You don't currently have any tasks assigned to you",
+    "Congratulations": "Congratulations"
 }
