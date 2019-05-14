@@ -3,10 +3,10 @@ import globalProperties from "@processmaker/spark-screen-builder/src/global-prop
 import FileDownload from "./components/file-download";
 import FileUpload from "./components/form/file-upload";
 
-import {
-    FormText,
-} from "@processmaker/spark-screen-builder";
-import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
+import {renderer} from "@processmaker/spark-screen-builder";
+import {FormBuilderControls as initialControls} from "@processmaker/spark-screen-builder";
+
+const {FormText} = renderer;
 
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
