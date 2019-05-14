@@ -171,7 +171,7 @@
                 <template v-if="statusLabel">
                     <div class="card">
                         <div :class="classStatusCard">
-                            <h4 style="margin:0; padding:0; line-height:1">@{{ statusLabel }}</h4>
+                            <h4 style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</h4>
                         </div>
                         <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item">

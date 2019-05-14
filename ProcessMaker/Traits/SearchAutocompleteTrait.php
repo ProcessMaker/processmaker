@@ -16,7 +16,7 @@ trait SearchAutocompleteTrait
     {
         $type = $request->input('type');
         $query = $request->input('filter');
-        
+
         if (method_exists($this, camel_case("search $type"))) {
             $method = camel_case("search $type");
             $results = $this->$method($query);
@@ -25,7 +25,7 @@ trait SearchAutocompleteTrait
             return abort(404);
         }
     }
-    
+
     private function searchAll($query)
     {
         return [
@@ -35,17 +35,17 @@ trait SearchAutocompleteTrait
             'participants' => $this->searchParticipants($query),
         ];
     }
-    
+
     private function searchStatus()
     {
         return [
-            ['name' => 'In Progress', 'value' => 'In Progress'],
-            ['name' => 'Completed', 'value' => 'Completed'],
-            ['name' => 'Error', 'value' => 'Error'],
-            ['name' => 'Canceled', 'value' => 'Canceled'],
+            ['name' => __('In Progress'), 'value' => 'In Progress'],
+            ['name' => __('Completed'), 'value' => 'Completed'],
+            ['name' => __('Error'), 'value' => 'Error'],
+            ['name' => __('Canceled'), 'value' => 'Canceled'],
         ];
     }
-    
+
     private function searchProcess($query)
     {
         if (empty($query)) {
@@ -57,17 +57,17 @@ trait SearchAutocompleteTrait
                 };
             })->get();
         }
-        
+
         return $results->map(function ($process) {
             return $process->only(['id', 'name']);
         });
     }
-    
+
     private function searchRequester($query)
     {
         $results = collect([]);
         $results->push(Auth::user());
-    
+
         if (empty($query)) {
             $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
         } else {
@@ -77,17 +77,17 @@ trait SearchAutocompleteTrait
                 };
             })->where('id', '!=', Auth::user()->id)->limit(49)->get());
         }
-        
+
         return $results->map(function ($user) {
             return $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
-        });  
+        });
     }
-    
+
     private function searchParticipants($query)
     {
         $results = collect([]);
         $results->push(Auth::user());
-    
+
         if (empty($query)) {
             $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
         } else {
@@ -97,12 +97,12 @@ trait SearchAutocompleteTrait
                 };
             })->where('id', '!=', Auth::user()->id)->limit(49)->get());
         }
-        
+
         return $results->map(function ($user) {
             return $user->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
-        });  
+        });
     }
-    
+
     private function searchTaskAll($query)
     {
         return [
@@ -111,15 +111,15 @@ trait SearchAutocompleteTrait
             'status' => $this->searchTaskStatus($query),
         ];
     }
-    
+
     private function searchTaskStatus()
     {
         return [
-            ['name' => 'In Progress', 'value' => 'In Progress'],
-            ['name' => 'Completed', 'value' => 'Completed'],
+            ['name' => __('In Progress'), 'value' => 'In Progress'],
+            ['name' => __('Completed'), 'value' => 'Completed'],
         ];
     }
-    
+
     private function searchName($query)
     {
         if (empty($query)) {
@@ -131,24 +131,24 @@ trait SearchAutocompleteTrait
                 };
             });
         }
-        
+
         $tasks = $results->where('element_type', 'task')->get();
-        
+
         $results = [];
-        
+
         foreach ($tasks as $task) {
             $results[$task->element_name] = $task->element_name;
         }
-        
+
         $return = [];
-        
+
         foreach ($results as $result) {
             $return[] = ['name' => $result];
         }
-        
-        return $return;    
+
+        return $return;
     }
-    
+
     private function searchRequest($query)
     {
         if (empty($query)) {
@@ -160,7 +160,7 @@ trait SearchAutocompleteTrait
                 };
             })->get();
         }
-        
+
         return $results->map(function ($request) {
             return $request->only(['id', 'name']);
         });

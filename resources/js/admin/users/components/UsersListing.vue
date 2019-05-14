@@ -149,7 +149,7 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the user ") +
+            this.$t("Are you sure you want to delete the user") + ' ' +
               data.fullname +
               this.$t("?"),
             "",

@@ -50,7 +50,7 @@
                                     <span class="fa-li">
                                         <i :class="item.success ? 'fas fa-check text-success' : 'fas fa-times text-danger'"></i>
                                     </span>
-                                    @{{ item.message }} <strong>@{{ item.label }}</strong>
+                                    @{{ $t(item.message) }} <strong>@{{ item.label }}</strong>
                                 </li>
                             </ul>
                             <div id="post-import-assignable" v-if="assignable" v-cloak>
@@ -65,7 +65,7 @@
                                         <tbody>
                                         <tr v-for="item in assignable">
                                             <td class="assignable-name text-right">
-                                                @{{ item.prefix }} <strong>@{{item.name }}</strong> @{{ item.suffix }}
+                                                @{{ $t(item.prefix) }} <strong>@{{item.name }}</strong> @{{ $t(item.suffix) }}
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">

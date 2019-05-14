@@ -2,7 +2,10 @@
     <div class="data-table">
         <div class="card card-body table-card">
             <vuetable :api-mode="false"
-                :fields='fields' :data="errors" data-path="data">
+                      :no-data-template="$t('No Data Available')"
+                      :fields='fields'
+                      :data="errors"
+                      data-path="data">
                 <template slot="message" slot-scope="props">
                     <h5>{{props.rowData.message}}</h5>
                     <p class="error-body">{{props.rowData.body}}</p>
@@ -30,17 +33,17 @@
                 additionalParams: "",
                 fields: [
                     {
-                        title: "Error",
+                      title: () => this.$t("Error"),
                         name: "__slot:message",
                         sortField: "message",
                     },
                     {
-                        title: "Time",
+                      title: () => this.$t("Time"),
                         name: "__slot:datetime",
                         sortField: "created_at",
                     },
                     {
-                        title: "Element",
+                      title: () => this.$t("Element"),
                         name: "__slot:element",
                         sortField: "element_name",
                     },
