@@ -113,27 +113,6 @@ export default {
       ]
     };
   },
-  beforeCreate() {
-    switch (Processmaker.status) {
-      case "":
-        this.$parent.requester.push(Processmaker.user);
-        break;
-      case "in_progress":
-        this.$parent.status.push({
-          name: 'In Progress',
-          value: 'In Progress'
-        });
-        break;
-      case "completed":
-        this.$parent.status.push({
-          name: 'Completed',
-          value: 'Completed'
-        });
-        break;
-    }
-    
-    this.$parent.buildPmql();
-  },
   methods: {
     onAction(action, data, index) {
       switch (action) {
