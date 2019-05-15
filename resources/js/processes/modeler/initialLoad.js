@@ -58,7 +58,7 @@ let nodeTypes = [
     serviceTask,
     textAnnotation,
     eventBasedGateway,
-    intermediateMessageCatchEvent,
+    intermediateMessageCatchEvent
 ]
 
 ProcessMaker.nodeTypes.push(startEvent);
@@ -67,7 +67,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 // Implement user list and group list for intermediate catch event
 // eslint-disable-next-line func-names
 (function () {
-    const inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[1];
+    const inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[0];
     inspector.items[4] = {
         component: 'UserSelect',
         config: {
