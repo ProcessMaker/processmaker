@@ -5,31 +5,29 @@ namespace ProcessMaker\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
-use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessRequestToken;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class TaskController extends Controller
 {
     use SearchAutocompleteTrait;
-    
+
     private static $dueLabels = [
-        'open' => 'Due ',
-        'completed' => 'Completed ',
-        'overdue' => 'Due ',
+        'open' => 'Due',
+        'completed' => 'Completed',
+        'overdue' => 'Due',
     ];
 
     public function index()
     {
         $title = 'To Do Tasks';
-        
+
         if(Request::input('status') == 'CLOSED'){
             $title = 'Completed Tasks';
         }
-        
+
         return view('tasks.index', compact('title'));
     }
 

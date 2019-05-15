@@ -133,9 +133,9 @@ export default {
       return (
         '<i class="fas fa-circle ' +
         bubbleColor[status] +
-        ' small"></i> ' +
-        status.charAt(0).toUpperCase() +
-        status.slice(1)
+        ' small"></i><span class="text-capitalize"> ' +
+        this.$t(status) +
+      '</span>'
       );
     },
     goToEdit(data) {
@@ -149,7 +149,7 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the user ") +
+            this.$t("Are you sure you want to delete the user") + ' ' +
               data.fullname +
               this.$t("?"),
             "",

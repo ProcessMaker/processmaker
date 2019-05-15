@@ -86,8 +86,8 @@ class ScreenTest extends DuskTestCase
                 ->assertSee('Inspector')
                 //change to Screen Preview
                 ->click('#app > div.card-header > div > div:nth-child(1) > div > button.btn.btn-outline-secondary')
-                ->waitForText('DATA INPUT')
-                ->assertSee('DATA INPUT')
+                ->waitForText('Data Input')
+                ->assertSee('Data Input')
                 //Check all fields are displayed
                 ->assertSee('Field 1')
                 //by default fields are hidden

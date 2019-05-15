@@ -22,6 +22,9 @@ if (window.ProcessMaker && window.ProcessMaker.user) {
     moment.defaultFormat = window.ProcessMaker.user.datetime_format;
     moment.defaultFormatUtc = window.ProcessMaker.user.datetime_format;
 }
+if (document.documentElement.lang) {
+    moment.locale(document.documentElement.lang);
+}
 Vue.prototype.moment = moment;
 //initializing global instance of a moment object
 window.moment = moment;

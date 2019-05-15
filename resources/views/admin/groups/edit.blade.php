@@ -56,7 +56,7 @@
                         </div>
                         <div class="form-group">
                             {!! Form::label('status', __('Status')) !!}
-                            {!! Form::select('status', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'], null, [
+                            {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, [
                             'id' => 'status',
                             'class' => 'form-control',
                             'v-model' => 'formData.status',
