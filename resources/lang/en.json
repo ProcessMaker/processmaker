@@ -361,6 +361,8 @@
     "We can't find a user with that e-mail address.": "We can't find a user with that e-mail address.",
     "active": "active",
     "inactive": "inactive",
+    "Active": "Active",
+    "Inactive": "Inactive",
     "display": "display",
     "form": "form",
     "No Data Available": "No Data Available",
@@ -777,5 +779,6 @@
     "Control Not Found": "Control Not Found",
     "No Errors": "No Errors",
     ":user has completed the task :task_name": ":user has completed the task :task_name",
-    "The System": "The System"
+    "The System": "The System",
+    "Add Users": "Add Users"
 }
