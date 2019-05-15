@@ -94,8 +94,7 @@
           '<i class="fas fa-circle ' +
           bubbleColor[status] +
           ' small"></i> ' +
-          status.charAt(0).toUpperCase() +
-          status.slice(1)
+          this.$t(status.charAt(0).toUpperCase() + status.slice(1))
         );
       },
       onEdit(data, index) {

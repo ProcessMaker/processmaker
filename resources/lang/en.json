@@ -775,5 +775,7 @@
     "Clear Color Selection": "Clear Color Selection",
     "Drag an element here": "Drag an element here",
     "Control Not Found": "Control Not Found",
-    "No Errors": "No Errors"
+    "No Errors": "No Errors",
+    ":user has completed the task :task_name": ":user has completed the task :task_name",
+    "The System": "The System"
 }
