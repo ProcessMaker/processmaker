@@ -29,7 +29,11 @@
       </b-card-footer>
     </b-card>
 
-    <b-modal ref="uploadmodal" id="uploadmodal" :title="$t('Upload BPMN File')">
+    <b-modal ref="uploadmodal"
+             id="uploadmodal"
+             :title="$t('Upload BPMN File')"
+             :cancel-title="$t('Cancel')"
+             :ok-title="$t('Ok')">
       <file-upload @input-file="handleUpload">
         {{ $t('Upload file') }}
       </file-upload>

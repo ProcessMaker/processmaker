@@ -10,9 +10,10 @@ import {
   FormMultiColumn,
   MultiColumn,
   FormText,
-  FormButton,
+  renderer,
   FormRecordList
 } from '@processmaker/spark-screen-builder';
+const FormButton = renderer.FormButton;
 
 import FileUpload from "../../processes/screen-builder/components/form/file-upload";
 import FileDownload from "../../processes/screen-builder/components/file-download";
@@ -54,11 +55,11 @@ export default {
   mounted() {},
   methods: {
     submit() {
-      var self = this;
+      let message = this.$t('Task Completed Successfully');
       ProcessMaker.apiClient
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(function() {
-          window.ProcessMaker.alert('Task Completed Successfully', 'success', 60, true);
+          window.ProcessMaker.alert(message, 'success', 60, true);
           document.location.href = "/tasks";
         });
     },

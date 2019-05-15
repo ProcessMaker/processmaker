@@ -109,7 +109,7 @@ export default {
     doDelete(item) {
       ProcessMaker.confirmModal(
         this.$t("Caution!"),
-        this.$t("Are you sure you want to delete the auth client ") +
+        this.$t("Are you sure you want to delete the auth client") + ' ' +
           item.name +
           this.$t("?"),
         "",

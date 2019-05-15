@@ -22,14 +22,14 @@ class CommentsSubscriber
     {
         $token     = $event->token;
         $user_id   = $token->user ? $token->user_id : null;
-        $user_name = $token->user ? $token->user->fullname : 'The System';
+        $user_name = $token->user ? $token->user->fullname : __('The System');
         Comment::create([
             'type' => 'LOG',
             'user_id' => $user_id,
             'commentable_type' => ProcessRequest::class,
             'commentable_id' => $token->process_request_id,
             'subject' => 'Task Complete',
-            'body' => $user_name . " " . __('has completed the task') . " " . $token->element_name,
+            'body' => __(":user has completed the task :task_name", ['user' => $user_name, 'task_name' => $token->element_name]),
         ]);
     }
 

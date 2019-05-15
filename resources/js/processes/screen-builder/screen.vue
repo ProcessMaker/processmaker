@@ -1,133 +1,144 @@
 <template>
   <div class="h-100">
-    <div id="app" class="card h-100">
-      <div class="card-header">
-        <div class="row">
-          <div class="col">
+    <b-card no-body class="h-100 bg-white" id="app">
+      <!-- Card Header -->
+      <b-card-header>
+        <b-row>
+          <b-col>
             <b-button-group size="sm">
-              <b-button :variant="displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'editor'">
+              <b-button :variant="displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'editor'" class="text-capitalize">
                 <i class="fas fa-drafting-compass pr-1"></i>{{ $t('Design') }}
               </b-button>
-              <b-button :variant="!displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'preview'">
+              <b-button :variant="!displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'preview'" class="text-capitalize">
                 <i class="fas fa-cogs pr-1"></i>{{ $t('Preview') }}
               </b-button>
             </b-button-group>
-          </div>
+          </b-col>
 
-          <div class="col text-right">
+          <b-col class="text-right" v-if="displayBuilder && !displayPreview">
             <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" class="btn btn-secondary" title="Calculated Properties" @click="openComputedProperties">
+              <button type="button" class="btn btn-secondary text-capitalize" :title="$t('Calculated Properties')" @click="openComputedProperties">
                 <i class="fas fa-flask"></i>
-                Calcs
+                {{ $t('Calcs') }}
               </button>
-              <button type="button" class="btn btn-secondary mr-2" title="Custom CSS" @click="openCustomCSS">
+              <button type="button" class="btn btn-secondary mr-2 text-capitalize" :title="$t('Custom CSS')" @click="openCustomCSS">
                 <i class="fab fa-css3"></i>
-                CSS
+                {{ $t('CSS') }}
               </button>
             </div>
-            <button type="button" @click="saveScreen(false)" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
-          </div>
-        </div>
-      </div>
 
-        <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
-        <custom-CSS v-model="customCSS" ref="customCSS" :cssErrors="cssErrors"/>
-        <vue-form-builder :validationErrors="validationErrors" :config="config" ref="builder" @change="updateConfig" :class="displayBuilder ? 'd-flex' : 'd-none'" />
+            <button v-if="permission.includes('export-screens')" type="button" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
+            <button @click="saveScreen(false)" type="button" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
+          </b-col>
 
-        <div id="preview" v-show="displayPreview" class="flex-grow-1 p-4 pl-5 pr-5">
-          <div class="row h-100">
-            <div id="renderer-container" class="col-8">
-              <div class="row h-100">
-                  <div class="card-body border overflow-auto mr-5">
-                      <vue-form-renderer ref="renderer"
-                                          v-model="previewData"
-                                          @submit="previewSubmit"
-                                          :config="config"
-                                          :computed="computed"
-                                          :custom-css="customCSS"
-                                          v-on:css-errors="cssErrors = $event"/>
-                  </div>
-              </div>
-            </div>
+        </b-row>
+      </b-card-header>
 
-            <div class="data-container col-4 border overflow-auto pr-0 pl-0">
-              <div id="data-preview" class="overflow-auto">
-                <div class="card-header">Inspector</div>
-                <b-button v-b-toggle.dataPreview variant="outline-*" class="text-left card-header d-flex align-items-center sticky-top header-bg w-100" @click="showDataPreview = !showDataPreview">
+      <!-- Card Body -->
+      <b-card-body class="overflow-auto ml-3 mr-3">
+        <!-- Vue-form-builder -->
+        <vue-form-builder :validationErrors="validationErrors" ref="builder" @change="updateConfig" :class="displayBuilder ? 'd-flex' : 'd-none'" />
+
+        <!-- Preview -->
+        <b-row class="h-100" id="preview" v-show="displayPreview">
+          <b-col cols="8" class="overflow-auto h-100 border rounded">
+            <vue-form-renderer ref="renderer"
+              v-model="previewData"
+              class="p-3 overflow-auto"
+              @submit="previewSubmit"
+              :config="config"
+              :computed="computed"
+              :custom-css="customCSS"
+              v-on:css-errors="cssErrors = $event"/>
+          </b-col>
+
+          <b-col cols="4" class="overflow-hidden h-100 pr-0 pl-4">
+            <b-card no-body class="p-0">
+              <b-card-header class="stick-top">
+                {{ $t('Inspector') }}
+              </b-card-header>
+
+              <b-card-body class="p-0">
+                <b-button v-b-toggle.dataInput variant="outline"
+                  class="text-left card-header d-flex align-items-center w-100 text-capitalize"
+                  @click="showDataInput = !showDataInput">
+                  <i class="fas fa-file-import mr-2"></i>
+                    {{ $t('Data Input') }}
+                  <i class="fas fa-angle-down ml-auto" :class="{ 'fas fa-angle-right' : !showDataInput }"></i>
+                </b-button>
+
+                <b-collapse id="dataInput" visible class="overflow-auto">
+                  <form-text-area class="data-height h-100 dataInput"  v-model="previewInput"></form-text-area>
+                </b-collapse>
+
+                <b-button v-b-toggle.dataPreview variant="outline"
+                  class="text-left card-header d-flex align-items-center w-100 text-capitalize"
+                  @click="showDataPreview = !showDataPreview">
                   <i class="fas fa-file-code mr-2"></i>
-                    Data Preview
+                    {{ $t('Data Preview') }}
                   <i class="fas fa-angle-down ml-auto" :class="{ 'fas fa-angle-right' : !showDataPreview }"></i>
                 </b-button>
 
-                <b-collapse id="dataPreview">
-                  <vue-json-pretty :data="previewData" class="card-body"></vue-json-pretty>
+                <b-collapse id="dataPreview" visible class="mt-2 overflow-auto">
+                  <vue-json-pretty  :data="previewData" class="p-2 data-height"></vue-json-pretty>
                 </b-collapse>
-              </div>
+              </b-card-body>
+            </b-card>
+          </b-col>
+        </b-row>
+      </b-card-body>
 
-              <div id="data-input" class="overflow-auto">
-                  <b-button v-b-toggle.dataInput variant="outline-*" class="text-left card-header d-flex align-items-center sticky-top header-bg w-100" @click="showDataInput = !showDataInput">
-                    <i class="fas fa-file-import mr-2"></i>
-                      Data Input
-                    <i class="fas fa-angle-down ml-auto" :class="{ 'fas fa-angle-right' : !showDataInput }"></i>
-                  </b-button>
+      <!-- Card Footer -->
+      <b-card-footer class="d-flex d-flex justify-content-end align-items-center">
+        <b-form-checkbox v-model="toggleValidation" name="check-button" switch>
+          {{ $t('Screen Validation') }}
+        </b-form-checkbox>
 
-                  <b-collapse id="dataInput">
-                      <form-text-area class="dataInput" rows="8" v-model="previewInput"></form-text-area>
-                  </b-collapse>
-              </div>
-            </div>
-          </div>
+        <div class="ml-3" @click="showValidationErrors = !showValidationErrors">
+          <button type="button" class="btn btn-sm text-capitalize">
+            <i class="fas fa-angle-double-up"></i>
+            {{ $t('Open Console') }}
+            <span v-if="allErrors === 0" class="badge badge-success">
+              <i class="fas fa-check-circle "></i>
+              {{ $t(allErrors) }}
+            </span>
+
+            <span v-else class="badge badge-danger">
+              <i class="fas fa-times-circle "></i>
+              {{ $t(allErrors) }}
+            </span>
+          </button>
         </div>
 
-        <div class="card-footer text-muted d-flex justify-content-end align-items-center">
-            <div>
-              <span class="custom-control custom-switch">
-              <input v-model="toggleValidation" type="checkbox" class="custom-control-input" id="customSwitch1" checked>
-              <label class="custom-control-label" for="customSwitch1"> Screen Validation
-              </label>
+        <div v-if="showValidationErrors" class="validation-panel position-absolute shadow border overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
+            <div v-if="!previewInputValid" class="p-3 font-weight-bold text-dark text-capitalize">
+              <i class="fas fa-times-circle text-danger mr-3"></i>
+              {{$t('Invalid JSON Data Object')}}
+            </div>
+            <b-button variant="link" class="validation__message d-flex align-items-center p-3 text-capitalize"
+                      v-for="(validation,index) in validationErrors"
+                      :key="index"
+                      @click="focusInspector(validation)">
+              <i class="fas fa-times-circle text-danger d-block mr-3"></i>
+              <span class="ml-2 text-dark font-weight-bold text-left">
+                {{ validation.item.component }}
+                <span class="d-block font-weight-normal">{{ validation.message }}</span>
               </span>
-            </div>
-
-            <div v-if="showValidationErrors" class="validation-panel position-absolute shadow border overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
-                <div v-if="!previewInputValid" class="p-3 font-weight-bold text-dark">
-                  <i class="fas fa-times-circle text-danger mr-3"></i>
-                  {{$t('Invalid JSON Data Object')}}
-                </div>
-                <b-button variant="link" class="validation__message d-flex align-items-center p-3"
-                          v-for="(validation,index) in validationErrors"
-                          :key="index"
-                          @click="focusInspector(validation)">
-                  <i class="fas fa-times-circle text-danger d-block mr-3"></i>
-                  <span class="ml-2 text-dark font-weight-bold text-left">
-                    {{ validation.item.component }}
-                    <span class="d-block font-weight-normal">{{ validation.message }}</span>
-                  </span>
-                </b-button>
-                <span v-if="!allErrors" class="d-flex justify-content-center align-items-center h-100">No Errors</span>
-            </div>
-
-            <div class="ml-3" @click="showValidationErrors = !showValidationErrors">
-              <button type="button" class="btn btn-light btn-sm">
-                <i class="fas fa-angle-double-up"></i>
-                Open Console
-                <span v-if="allErrors === 0" class="badge badge-success">
-                  <i class="fas fa-check-circle "></i>
-                  {{ allErrors }}
-                </span>
-
-                <span v-else class="badge badge-danger">
-                  <i class="fas fa-times-circle "></i>
-                  {{ allErrors }}
-                </span>
-              </button>
-            </div>
+            </b-button>
+            <span v-if="!allErrors" class="d-flex justify-content-center align-items-center h-100 text-capitalize">{{ $t('No Errors') }}</span>
         </div>
-    </div>
+      </b-card-footer>
+    </b-card>
+    <!-- Modals -->
+    <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
+    <custom-CSS v-model="customCSS" ref="customCSS" :cssErrors="cssErrors"/>
   </div>
 </template>
 
 <script>
   import {VueFormBuilder, VueFormRenderer, FormBuilderControls as controlConfig} from "@processmaker/spark-screen-builder";
+  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties";
+  import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css";
   import "@processmaker/spark-screen-builder/dist/vue-form-builder.css";
   import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
@@ -145,7 +156,6 @@ import Validator from "validatorjs";
     return value.match(/^[a-zA-Z0-9-_]+$/);
   }, 'Must be letters, numbers, underscores or dashes');
 
-console.log("VueFormBuilder", VueFormBuilder);
   export default {
     props: ["process", "screen", 'permission'],
     data() {
@@ -174,7 +184,9 @@ console.log("VueFormBuilder", VueFormBuilder);
       VueFormBuilder,
       VueFormRenderer,
       VueJsonPretty,
-      FormTextArea
+      FormTextArea,
+      ComputedProperties,
+      CustomCSS
     },
     watch: {
       mode(mode) {
@@ -340,7 +352,7 @@ console.log("VueFormBuilder", VueFormBuilder);
               if (exportScreen) {
                 this.exportScreen();
               }
-              ProcessMaker.alert(this.$t(" Successfully saved"), "success");
+              ProcessMaker.alert(this.$t("Successfully saved"), "success");
             });
         }
       }
@@ -349,8 +361,6 @@ console.log("VueFormBuilder", VueFormBuilder);
 </script>
 
 <style lang="scss">
-    @import "~bootstrap/dist/css/bootstrap";
-
     html,
     body {
         height: 100%;

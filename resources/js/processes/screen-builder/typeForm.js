@@ -5,8 +5,8 @@ import FileUpload from "./components/form/file-upload";
 
 import {
     FormText,
-    FormBuilderControls as initialControls
 } from "@processmaker/spark-screen-builder";
+import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
 
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
@@ -99,8 +99,8 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
 
         for (let j = 0; j < item.control.inspector.length; j++) {
             let config = item.control.inspector[j].config;
-            if (config.label === "Field Name") {
-                config.validation = "regex:/^(?:[\$A-Z_a-z])(?:[\$0-9A-Z_a-z])*$/|required";
+            if (config.label === 'Field Name') {
+                config.validation = 'regex:/^(?:[A-Z_a-z])(?:[0-9A-Z_a-z])*$/|required';
             }
         }
     }
