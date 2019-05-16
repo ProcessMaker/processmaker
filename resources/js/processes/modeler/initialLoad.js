@@ -123,7 +123,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
         config: {
             label: 'Permission To Start',
             helper: '',
-            name: 'id',
+            name: 'startPermission',
         }
     });
 
@@ -142,7 +142,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
         config: {
             label: "Task Assignment",
             helper: "",
-            name: "id"
+            name: "taskAssignment"
         }
     });
     registerInspectorExtension(task, {
@@ -168,7 +168,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
         config: {
             label: 'Script Configuration',
             helper: 'Configuration JSON for the script task',
-            name: 'id',
+            name: 'scriptConfiguration',
             property: 'config',
         }
     });
