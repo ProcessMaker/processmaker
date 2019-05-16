@@ -7,9 +7,9 @@ import VueFormElements from "@processmaker/vue-form-elements";
 
 Vue.use(VueFormElements);
 
-import {
-    FormText,
-} from "@processmaker/spark-screen-builder";
+import { renderer } from "@processmaker/spark-screen-builder";
+
+let FormText = renderer.FormText;
 
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
@@ -47,7 +47,7 @@ initialControls.push({
     }
 });
 initialControls.push({
-    rendererComponent: "FormText",
+    rendererComponent: FormText,
     rendererBinding: "FormText",
     builderComponent: FileDownload,
     builderBinding: "FileDownload",
