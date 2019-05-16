@@ -639,6 +639,7 @@
     "The Name of the Lane": "The Name of the Lane",
     "Script Task": "Script Task",
     "The name of the script task": "The name of the script task",
+    "Declare as global": "Declare as global",
     "Sequence Flow": "Sequence Flow",
     "Service Task": "Service Task",
     "Start Event": "Start Event",

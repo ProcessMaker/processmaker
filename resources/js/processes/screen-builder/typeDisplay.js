@@ -1,7 +1,10 @@
-import {renderer} from "@processmaker/spark-screen-builder";
-import FileDownload from "./components/file-download.vue";
+import FileDownload from "./components/file-download";
 
-const {FormText, FormRecordList, FormMultiColumn} = renderer;
+import {
+    FormMultiColumn,
+    FormText,
+    FormRecordList
+} from "@processmaker/spark-screen-builder";
 
 let initialControls = [{
     builderComponent: FormText,

@@ -136,7 +136,7 @@
 </template>
 
 <script>
-  import {VueFormBuilder, VueFormRenderer} from "@processmaker/spark-screen-builder";
+  import {VueFormBuilder, VueFormRenderer, FormBuilderControls as controlConfig} from "@processmaker/spark-screen-builder";
   import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties";
   import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css";
   import "@processmaker/spark-screen-builder/dist/vue-form-builder.css";
