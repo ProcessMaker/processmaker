@@ -67,8 +67,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 // Implement user list and group list for intermediate catch event
 // eslint-disable-next-line func-names
 (function () {
-    const inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[1];
-    inspector.items[4] = {
+    intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[4] = {
         component: 'UserSelect',
         config: {
             label: 'Allowed User',
@@ -76,7 +75,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
             name: 'allowedUsers',
         }
     };
-    inspector.items[5] = {
+    intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[5] = {
         component: 'GroupSelect',
         config: {
             label: 'Allowed Group',
