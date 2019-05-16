@@ -3,12 +3,8 @@ import globalProperties from "@processmaker/spark-screen-builder/src/global-prop
 import FileDownload from "./components/file-download";
 import FileUpload from "./components/form/file-upload";
 
-import {
-    renderer,
-} from "@processmaker/spark-screen-builder";
 import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
 import VueFormElements from "@processmaker/vue-form-elements";
-const FormText = renderer.FormText;
 
 Vue.use(VueFormElements);
 
@@ -48,7 +44,7 @@ initialControls.push({
     }
 });
 initialControls.push({
-    rendererComponent: FormText,
+    rendererComponent: "FormText",
     rendererBinding: "FormText",
     builderComponent: FileDownload,
     builderBinding: "FileDownload",
