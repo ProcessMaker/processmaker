@@ -55,11 +55,11 @@ export default {
   mounted() {},
   methods: {
     submit() {
-      var self = this;
+      let message = this.$t('Task Completed Successfully');
       ProcessMaker.apiClient
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(function() {
-          window.ProcessMaker.alert('Task Completed Successfully', 'success', 60, true);
+          window.ProcessMaker.alert(message, 'success', 60, true);
           document.location.href = "/tasks";
         });
     },
