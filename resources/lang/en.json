@@ -777,5 +777,7 @@
     "Control Not Found": "Control Not Found",
     "No Errors": "No Errors",
     ":user has completed the task :task_name": ":user has completed the task :task_name",
-    "The System": "The System"
+    "The System": "The System",
+    "Debugger": "Debugger",
+    "Run": "Run"
 }
