@@ -2,11 +2,16 @@ import Vue from "vue";
 import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
 import FileDownload from "./components/file-download";
 import FileUpload from "./components/form/file-upload";
-
 import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
 import VueFormElements from "@processmaker/vue-form-elements";
 
 Vue.use(VueFormElements);
+
+import {
+    FormText,
+} from "@processmaker/spark-screen-builder";
+
+import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
 
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
