@@ -29,7 +29,7 @@ return [
     'connections' => [
         'spark' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => env('DB_HOSTNAME', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'spark'),
             'username' => env('DB_USERNAME', 'homestead'),
