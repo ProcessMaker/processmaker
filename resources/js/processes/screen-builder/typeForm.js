@@ -7,7 +7,10 @@ import {
     renderer,
 } from "@processmaker/spark-screen-builder";
 import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
+import VueFormElements from "@processmaker/vue-form-elements";
 const FormText = renderer.FormText;
+
+Vue.use(VueFormElements);
 
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
