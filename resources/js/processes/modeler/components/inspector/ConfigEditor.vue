@@ -30,7 +30,7 @@
     export default {
         props: ["value", "label", "helper", "property"],
         data() {
-            const node = this.$parent.$parent.highlightedNode.definition;
+            const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
             return {
                 monacoOptions: {
                     automaticLayout: true,
