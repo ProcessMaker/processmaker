@@ -9,10 +9,12 @@ import {
   PageSelect,
   FormMultiColumn,
   MultiColumn,
-  FormText,
-  renderer,
   FormRecordList
 } from '@processmaker/spark-screen-builder';
+
+import { renderer } from "@processmaker/spark-screen-builder";
+
+let FormText = renderer.FormText;
 const FormButton = renderer.FormButton;
 
 import FileUpload from "../../processes/screen-builder/components/form/file-upload";
