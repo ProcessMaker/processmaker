@@ -1,10 +1,10 @@
 import FileDownload from "./components/file-download";
 
-import {
-    FormMultiColumn,
-    FormText,
-    FormRecordList
-} from "@processmaker/spark-screen-builder";
+import { renderer } from "@processmaker/spark-screen-builder";
+
+let FormText = renderer.FormText;
+let FormRecordList = renderer.FormText;
+let FormMultiColumn = renderer.FormText;
 
 let initialControls = [{
     builderComponent: FormText,

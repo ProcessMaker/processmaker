@@ -189,13 +189,13 @@
         },
         computed: {
           process() {
-            return this.$parent.$parent.$parent.$parent.process;
+            return this.$parent.$parent.$parent.$parent.$parent.$parent.process;
           },
           modelerId() {
-            return this.$parent.$parent.highlightedNode._modelerId;
+            return this.$parent.$parent.$parent.$parent.highlightedNode._modelerId;
           },
           node() {
-            return this.$parent.$parent.highlightedNode;
+            return this.$parent.$parent.$parent.$parent.highlightedNode;
           },
           nodeId() {
             return this.node.definition.id;
