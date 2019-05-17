@@ -14,7 +14,7 @@ export default {
          * Get the value of the edited property
          */
         propertyGetter() {
-            const node = this.$parent.$parent.highlightedNode.definition;
+            const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
             const value = _.get(node, this.property);
             return value;
         }
@@ -24,7 +24,7 @@ export default {
          * Update the value of the editer property
          */
         propertySetter (value) {
-            const node = this.$parent.$parent.highlightedNode.definition;
+            const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
             _.set(node, this.property, value);
             this.$emit('input', this.value);
         },
