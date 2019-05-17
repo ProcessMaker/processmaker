@@ -564,12 +564,13 @@
     }
 
     .special-assignment-header {
-    label {
-        padding-top: 4px;
-    }
+        label {
+            padding-top: 4px;
+        }
     }
 
     .special-assignment-wrapper {
+        width: 100%;
         height: 0;
         opacity: 0;
         overflow: hidden;
