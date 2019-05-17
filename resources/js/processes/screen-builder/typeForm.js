@@ -4,12 +4,11 @@ import FileDownload from "./components/file-download";
 import FileUpload from "./components/form/file-upload";
 import initialControls from "@processmaker/spark-screen-builder/src/form-builder-controls";
 import VueFormElements from "@processmaker/vue-form-elements";
+import {renderer} from "@processmaker/spark-screen-builder";
 
 Vue.use(VueFormElements);
 
-import { renderer } from "@processmaker/spark-screen-builder";
-
-let FormText = renderer.FormText;
+const {FormText} = renderer;
 
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
