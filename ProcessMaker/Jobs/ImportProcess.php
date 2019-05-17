@@ -68,6 +68,17 @@ class ImportProcess implements ShouldQueue
      * @var array
      */
     protected $status = [];
+    
+    /**
+     * In order to handle backwards compatibility with previous packages, an
+     * array with a previous package name as the key, and the updated
+     * package name as the value.
+     *
+     * @var array
+     */
+    private $backwardCompatiblePackageMap = [
+        'processmaker-communication-email-send' => 'spark-connector-send-email',
+    ];
 
     /**
      * Create a new job instance and set the file contents.
@@ -551,6 +562,23 @@ class ImportProcess implements ShouldQueue
         }
     }
 
+    /**
+     * Handle the edge case of packages that have been renamed but are still
+     * referenced in old .spark files.
+     *
+     * @param string $package
+     *
+     * @return boolean
+     */
+    private function isBackwardCompatiblePackage($package)
+    {
+        if (array_key_exists($package, $this->backwardCompatiblePackageMap)) {
+            return $this->isRegisteredPackage($this->backwardCompatiblePackageMap[$package]);
+        }
+        
+        return false;
+    }
+
     private function validatePackages($process)
     {
         try {
@@ -569,6 +597,9 @@ class ImportProcess implements ShouldQueue
                     if (!in_array($implementation[0], $packages, true)) {
                         $packages[] = $implementation[0];
                         $exists = $this->isRegisteredPackage($implementation[0]);
+                        if (! $exists) {
+                            $exists = $this->isBackwardCompatiblePackage($implementation[0]);
+                        }
                         $response = $exists === false ? false : $response;
                         $package = [];
                         $package['label'] = $implementation[0];
