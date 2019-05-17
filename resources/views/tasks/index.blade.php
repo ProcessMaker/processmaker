@@ -27,36 +27,36 @@
           <div class="flex-grow-1">
               <div id="search-dropdowns" v-if="! advanced" class="row">
                   <div class="col-4">
-                      <multiselect 
-                      v-model="request" 
-                      @search-change="getRequests" 
+                      <multiselect
+                      v-model="request"
+                      @search-change="getRequests"
                       @input="buildPmql"
-                      :select-label="''" 
-                      :loading="isLoading.request" 
-                      open-direction="bottom" 
-                      label="name" 
+                      :select-label="''"
+                      :loading="isLoading.request"
+                      open-direction="bottom"
+                      label="name"
                       :options="requestOptions"
                       :track-by="'id'"
-                      :multiple="true" 
-                      placeholder="Request">
+                      :multiple="true"
+                      :placeholder="$t('Request')">
                           <template slot="selection" slot-scope="{ values, search, isOpen }">
                               <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requests') }}</span>
                           </template>
                       </multiselect>
                   </div>
                   <div class="col-4">
-                      <multiselect 
-                      v-model="name" 
-                      @search-change="getNames" 
+                      <multiselect
+                      v-model="name"
+                      @search-change="getNames"
                       @input="buildPmql"
-                      :select-label="''" 
-                      :loading="isLoading.name" 
-                      open-direction="bottom" 
-                      label="name" 
+                      :select-label="''"
+                      :loading="isLoading.name"
+                      open-direction="bottom"
+                      label="name"
                       :options="nameOptions"
                       :track-by="'name'"
-                      :multiple="true" 
-                      placeholder="Task">
+                      :multiple="true"
+                      :placeholder="$t('Task')">
                           <template slot="selection" slot-scope="{ values, search, isOpen }">
                               <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('names') }}</span>
                           </template>
@@ -65,7 +65,7 @@
                   <div class="col-4">
                       <multiselect
                       v-model="status"
-                      :select-label="''" 
+                      :select-label="''"
                       @input="buildPmql"
                       :loading="isLoading.status"
                       open-direction="bottom"
@@ -73,7 +73,7 @@
                       :options="statusOptions"
                       track-by="value"
                       :multiple="true"
-                      placeholder="Status">
+                      :placeholder="$t('Status')">
                           <template slot="selection" slot-scope="{ values, search, isOpen }">
                               <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('statuses') }}</span>
                           </template>
@@ -97,7 +97,7 @@
               </div>
           </div>
       </div>
-  </div>  
+  </div>
   <div class="container-fluid">
     <tasks-list ref="taskList" :filter="filter" @in-overdue="setInOverdueMessage"></tasks-list>
   </div>
@@ -114,7 +114,7 @@
       height: 59px;
       max-height: 59px;
   }
-  
+
   #search-manual input {
       border: 1px solid #e8e8e8;
       border-radius: 5px;
@@ -129,18 +129,18 @@
   #search-dropdowns .col-4 {
       padding: 0 4px;
   }
-  
+
   #search-actions button {
       display: inline-block;
       float: left;
       height: 41px;
       margin-left: 8px;
   }
-  
+
   .multiselect__placeholder {
       padding-top: 1px;
   }
-  
+
   .multiselect__single {
       padding-bottom: 2px;
       padding-top: 2px;

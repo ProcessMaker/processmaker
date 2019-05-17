@@ -17,13 +17,13 @@
 
           <b-col class="text-right" v-if="displayBuilder && !displayPreview">
             <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" class="btn btn-secondary text-capitalize" title="Calculated Properties" @click="openComputedProperties">
+              <button type="button" class="btn btn-secondary text-capitalize" :title="$t('Calculated Properties')" @click="openComputedProperties">
                 <i class="fas fa-flask"></i>
-                Calcs
+                {{ $t('Calcs') }}
               </button>
-              <button type="button" class="btn btn-secondary mr-2 text-capitalize" title="Custom CSS" @click="openCustomCSS">
+              <button type="button" class="btn btn-secondary mr-2 text-capitalize" :title="$t('Custom CSS')" @click="openCustomCSS">
                 <i class="fab fa-css3"></i>
-                CSS
+                {{ $t('CSS') }}
               </button>
             </div>
 
@@ -55,7 +55,7 @@
           <b-col cols="4" class="overflow-hidden h-100 pr-0 pl-4">
             <b-card no-body class="p-0">
               <b-card-header class="stick-top">
-                Inspector
+                {{ $t('Inspector') }}
               </b-card-header>
 
               <b-card-body class="p-0">
@@ -91,7 +91,7 @@
       <!-- Card Footer -->
       <b-card-footer class="d-flex d-flex justify-content-end align-items-center">
         <b-form-checkbox v-model="toggleValidation" name="check-button" switch>
-          Screen Validation
+          {{ $t('Screen Validation') }}
         </b-form-checkbox>
 
         <div class="ml-3" @click="showValidationErrors = !showValidationErrors">
@@ -125,7 +125,7 @@
                 <span class="d-block font-weight-normal">{{ validation.message }}</span>
               </span>
             </b-button>
-            <span v-if="!allErrors" class="d-flex justify-content-center align-items-center h-100 text-capitalize">No Errors</span>
+            <span v-if="!allErrors" class="d-flex justify-content-center align-items-center h-100 text-capitalize">{{ $t('No Errors') }}</span>
         </div>
       </b-card-footer>
     </b-card>
@@ -352,7 +352,7 @@ import Validator from "validatorjs";
               if (exportScreen) {
                 this.exportScreen();
               }
-              ProcessMaker.alert(this.$t(" Successfully saved"), "success");
+              ProcessMaker.alert(this.$t("Successfully saved"), "success");
             });
         }
       }

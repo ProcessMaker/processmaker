@@ -63,18 +63,18 @@
                         <div class="flex-grow-1">
                             <div id="search-dropdowns" v-if="! advanced" class="row">
                                 <div class="col-3">
-                                    <multiselect 
-                                    v-model="process" 
-                                    @search-change="getProcesses" 
+                                    <multiselect
+                                    v-model="process"
+                                    @search-change="getProcesses"
                                     @input="buildPmql"
-                                    :select-label="''" 
-                                    :loading="isLoading.process" 
-                                    open-direction="bottom" 
-                                    label="name" 
+                                    :select-label="''"
+                                    :loading="isLoading.process"
+                                    open-direction="bottom"
+                                    label="name"
                                     :options="processOptions"
                                     :track-by="'id'"
-                                    :multiple="true" 
-                                    placeholder="Process">
+                                    :multiple="true"
+                                    :placeholder="$t('Process')">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('processes') }}</span>
                                         </template>
@@ -83,7 +83,7 @@
                                 <div class="col-3">
                                     <multiselect
                                     v-model="status"
-                                    :select-label="''" 
+                                    :select-label="''"
                                     @input="buildPmql"
                                     :loading="isLoading.status"
                                     open-direction="bottom"
@@ -91,25 +91,25 @@
                                     :options="statusOptions"
                                     track-by="value"
                                     :multiple="true"
-                                    placeholder="Status">
+                                    :placeholder="$t('Status')">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('statuses') }}</span>
                                         </template>
                                     </multiselect>
                                 </div>
                                 <div class="col-3">
-                                    <multiselect 
-                                    v-model="requester" 
-                                    @search-change="getRequesters" 
+                                    <multiselect
+                                    v-model="requester"
+                                    @search-change="getRequesters"
                                     @input="buildPmql"
-                                    :select-label="''" 
-                                    :loading="isLoading.requester" 
-                                    open-direction="bottom" 
-                                    label="fullname" 
-                                    :options="requesterOptions" 
+                                    :select-label="''"
+                                    :loading="isLoading.requester"
+                                    open-direction="bottom"
+                                    label="fullname"
+                                    :options="requesterOptions"
                                     :track-by="'id'"
-                                    :multiple="true" 
-                                    placeholder="Requester">
+                                    :multiple="true"
+                                    :placeholder="$t('Requester')">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
                                         </template>
@@ -121,18 +121,18 @@
                                     </multiselect>
                                 </div>
                                 <div class="col-3">
-                                    <multiselect 
-                                    v-model="participants" 
-                                    @search-change="getParticipants" 
+                                    <multiselect
+                                    v-model="participants"
+                                    @search-change="getParticipants"
                                     @input="buildPmql"
-                                    :select-label="''" 
-                                    :loading="isLoading.participants" 
-                                    open-direction="bottom" 
-                                    label="fullname" 
-                                    :options="participantsOptions" 
+                                    :select-label="''"
+                                    :loading="isLoading.participants"
+                                    open-direction="bottom"
+                                    label="fullname"
+                                    :options="participantsOptions"
                                     :track-by="'id'"
-                                    :multiple="true" 
-                                    placeholder="Participants">
+                                    :multiple="true"
+                                    :placeholder="$t('Participants')">
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
                                         </template>
@@ -161,7 +161,7 @@
                             </div>
                         </div>
                     </div>
-                </div>               
+                </div>
             </template>
             <requests-listing  type="{{ $type }}" ref="requestList"></requests-listing>
         </div>
@@ -184,7 +184,7 @@
         height: 59px;
         max-height: 59px;
     }
-    
+
     #search-manual input {
         border: 1px solid #e8e8e8;
         border-radius: 5px;
@@ -199,18 +199,18 @@
     #search-dropdowns .col-3 {
         padding: 0 4px;
     }
-    
+
     #search-actions button {
         display: inline-block;
         float: left;
         height: 41px;
         margin-left: 8px;
     }
-    
+
     .multiselect__placeholder {
         padding-top: 1px;
     }
-    
+
     .multiselect__single {
         padding-bottom: 2px;
         padding-top: 2px;

@@ -149,7 +149,7 @@ export default {
         '<i class="fas fa-circle text-' +
         color +
         '"></i> <span>' +
-        label +
+        this.$t(label) +
         "</span>"
       );
     },
@@ -172,7 +172,7 @@ export default {
       return data;
     },
     fetch(resetPagination) {
-      
+
       if (resetPagination) {
         this.page = 1;
       }
