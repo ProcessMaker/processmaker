@@ -48,7 +48,7 @@
                 this.code = this.propertyGetter;
             },
             code() {
-                const node = this.$parent.$parent.highlightedNode.definition;
+                const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
                 _.set(node, this.property, this.code);
                 this.$emit('input', this.value);
             },
@@ -58,7 +58,7 @@
              * Get the value of the edited property
              */
             propertyGetter() {
-                const node = this.$parent.$parent.highlightedNode.definition;
+                const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
                 const value = _.get(node, this.property);
                 return value;
             }
