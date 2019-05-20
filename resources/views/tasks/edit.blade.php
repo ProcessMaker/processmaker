@@ -33,7 +33,7 @@
 
                     @if ($task->processRequest->status === 'ACTIVE')
                         @can('editData', $task->processRequest)
-                            <ul id="tabHeader" role="tablist" class="nav nav-tabs">
+                            <ul id="tabHeader" role="tablist" class="nav nav-tabs mb-3">
                                 <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
                                                         aria-controls="tab-form" aria-selected="true"
                                                         class="nav-link active">{{__('Form')}}</a></li>
