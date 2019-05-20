@@ -81,7 +81,7 @@ class WorkflowManager
     public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data)
     {
         //Validate data
-        $this->validateData($data);
+        $this->validateData($data, $definitions);
         //Schedule BPMN Action
         return StartEvent::dispatchNow($definitions, $event, $data);
     }
@@ -98,7 +98,7 @@ class WorkflowManager
     public function callProcess(Definitions $definitions, ProcessInterface $process, array $data)
     {
         //Validate data
-        $this->validateData($data);
+        $this->validateData($data, $definitions);
         //Validate user permissions
         //Validate BPMN rules
         //Log BPMN actions
@@ -152,10 +152,10 @@ class WorkflowManager
      *
      * @return void
      */
-    protected function validateData(array $data) {
+    protected function validateData(array $data, Definitions $Definitions) {
         $this->validator = Validator::make($data, []);
         foreach($this->validations as $validation) {
-            call_user_func($validation, $this->validator);
+            call_user_func($validation, $this->validator, $Definitions);
         }
         $this->validator->validate($data);
     }
