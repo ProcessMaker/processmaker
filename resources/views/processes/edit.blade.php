@@ -21,8 +21,12 @@
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config" role="tab"
                         aria-controls="nav-config" aria-selected="true">{{__('Configuration')}}</a>
-                        <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications" role="tab"
-                           aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
+                    <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications" role="tab"
+                        aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
+                    @foreach ($addons as $addon)
+                    <a class="nav-item nav-link" id="{{$addon['id'] . '-tab'}}" data-toggle="tab" href="{{'#' . $addon['id']}}" role="tab"
+                        aria-controls="nav-notifications" aria-selected="true">{{$addon['title']}}</a>
+                    @endforeach
                 </div>
             </nav>
             <div class="card card-body card-body-nav-tabs">
@@ -169,6 +173,11 @@
                             {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
                     </div>
+                    @foreach ($addons as $addon)
+                    <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel" aria-labelledby="nav-notifications-tab">
+                        {!! ($addon['content']) !!}
+                    </div>
+                    @endforeach
                 </div>
             </div>
 
