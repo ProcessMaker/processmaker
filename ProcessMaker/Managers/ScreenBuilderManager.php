@@ -48,8 +48,8 @@ class ScreenBuilderManager
 
         $directories = glob('vendor/processmaker/packages/*', GLOB_ONLYDIR);
         foreach($directories as $directory) {
-            $extensionsFile = $directory . '/js/' . $extensionsFile;
-            $files = glob($extensionsFile);
+            $extensionsFullName = $directory . '/js/' . $extensionsFile;
+            $files = glob($extensionsFullName);
             if (count($files) > 0){
                 $this->addScript('/' . $files[0]);
             }
