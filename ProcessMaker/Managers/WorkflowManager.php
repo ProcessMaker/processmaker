@@ -17,9 +17,24 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use Illuminate\Support\Facades\Validator;
 
 class WorkflowManager
 {
+
+    /**
+     * Attached validation callbacks
+     *
+     * @var array
+     */
+    protected $validations = [];
+
+    /**
+     * Data Validator
+     *
+     * @var \Illuminate\Contracts\Validation\Validator $validator
+     */
+    protected $validator;
 
     /**
      * Complete a task.
@@ -28,15 +43,30 @@ class WorkflowManager
      * @param ExecutionInstanceInterface $instance
      * @param TokenInterface $token
      * @param array $data
+     *
+     * @return void
      */
     public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
+        //Validate data
+        $this->validateData($data);
         CompleteActivity::dispatchNow($definitions, $instance, $token, $data);
     }
 
-    public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface
-    $token, array $data)
+    /**
+     * Complete a catch event
+     *
+     * @param Definitions $definitions
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface $token
+     * @param array $data
+     *
+     * @return void
+     */
+    public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
+        //Validate data
+        $this->validateData($data);
         CatchEvent::dispatchNow($definitions, $instance, $token, $data);
     }
 
@@ -50,7 +80,8 @@ class WorkflowManager
      */
     public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data)
     {
-        //@todo Validate user permissions
+        //Validate data
+        $this->validateData($data);
         //Schedule BPMN Action
         return StartEvent::dispatchNow($definitions, $event, $data);
     }
@@ -66,6 +97,8 @@ class WorkflowManager
      */
     public function callProcess(Definitions $definitions, ProcessInterface $process, array $data)
     {
+        //Validate data
+        $this->validateData($data);
         //Validate user permissions
         //Validate BPMN rules
         //Log BPMN actions
@@ -99,5 +132,31 @@ class WorkflowManager
         $instance = $token->processRequest;
         $process = $instance->process;
         RunServiceTask::dispatch($process, $instance, $token, []);
+    }
+
+    /**
+     * Attach validation event
+     *
+     * @param callable $callback
+     * @return void
+     */
+    public function onDataValidation($callback)
+    {
+        $this->validations[] = $callback;
+    }
+
+    /**
+     * Validate data
+     *
+     * @param array $data
+     *
+     * @return void
+     */
+    protected function validateData(array $data) {
+        $this->validator = Validator::make($data, []);
+        foreach($this->validations as $validation) {
+            call_user_func($validation, $this->validator);
+        }
+        $this->validator->validate($data);
     }
 }
