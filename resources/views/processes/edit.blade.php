@@ -175,7 +175,7 @@
                     </div>
                     @foreach ($addons as $addon)
                     <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel" aria-labelledby="nav-notifications-tab">
-                        {!! ($addon['content']) !!}
+                        {!! $addon['content'] !!}
                     </div>
                     @endforeach
                 </div>
@@ -189,8 +189,17 @@
 
 @section('js')
     <script>
+        var addons = [];
+    </script>
+    @foreach ($addons as $addon)
+    @if (!empty($addon['script']))
+        {!! $addon['script'] !!}
+    @endif
+    @endforeach
+    <script>
         test = new Vue({
             el: '#editProcess',
+            mixins: addons,
             data() {
                 return {
                     formData: @json($process),

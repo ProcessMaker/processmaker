@@ -42,8 +42,12 @@ import Backend from 'i18next-chained-backend';
 import LocalStorageBackend from 'i18next-localstorage-backend';
 import XHR from 'i18next-xhr-backend';
 import VueI18Next from '@panter/vue-i18next';
+import {install as VuetableInstall} from 'vuetable-2';
+import Pagination from "./components/common/Pagination";
 
-window.Vue.use(VueI18Next)
+window.Vue.use(VueI18Next);
+VuetableInstall(window.Vue);
+window.Vue.component('pagination', Pagination);
 let translationsLoaded = false
 let mdates = JSON.parse(
     document.head.querySelector("meta[name=\"i18n-mdate\"]").content
