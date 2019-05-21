@@ -156,6 +156,11 @@ import Validator from "validatorjs";
     return value.match(/^[a-zA-Z0-9-_]+$/);
   }, 'Must be letters, numbers, underscores or dashes');
 
+const defaultScreenConfig = [{
+  name: "Default",
+  items: []
+}];
+
   export default {
     props: ["process", "screen", 'permission'],
     data() {
@@ -263,14 +268,7 @@ import Validator from "validatorjs";
     mounted() {
       // Call our init lifecycle event
       ProcessMaker.EventBus.$emit("screen-builder-init", this);
-      this.$refs.builder.config = this.screen.config
-        ? this.screen.config
-        : [
-          {
-            name: "Default",
-            items: []
-          }
-        ];
+      this.$refs.builder.config = this.screen.config || defaultScreenConfig;
       this.computed = this.screen.computed ? this.screen.computed : [];
       this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
       this.$refs.builder.computed = this.screen.computed
