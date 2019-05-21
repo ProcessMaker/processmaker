@@ -49,7 +49,7 @@ class WorkflowManager
     public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
         //Validate data
-        $this->validateData($data);
+        $this->validateData($data, $definitions);
         CompleteActivity::dispatchNow($definitions, $instance, $token, $data);
     }
 
@@ -66,7 +66,7 @@ class WorkflowManager
     public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
         //Validate data
-        $this->validateData($data);
+        $this->validateData($data, $definitions);
         CatchEvent::dispatchNow($definitions, $instance, $token, $data);
     }
 
