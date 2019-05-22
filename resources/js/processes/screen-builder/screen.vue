@@ -37,7 +37,14 @@
       <!-- Card Body -->
       <b-card-body class="overflow-auto ml-3 mr-3">
         <!-- Vue-form-builder -->
-        <vue-form-builder :validationErrors="validationErrors" ref="builder" @change="updateConfig" :class="displayBuilder ? 'd-flex' : 'd-none'" />
+        <vue-form-builder
+          :validationErrors="validationErrors"
+          :initialConfig="screen.config"
+          :title="screen.title"
+          :class="displayBuilder ? 'd-flex' : 'd-none'"
+          ref="builder"
+          @change="updateConfig"
+        />
 
         <!-- Preview -->
         <b-row class="h-100" id="preview" v-show="displayPreview">
@@ -263,22 +270,8 @@ import Validator from "validatorjs";
     mounted() {
       // Call our init lifecycle event
       ProcessMaker.EventBus.$emit("screen-builder-init", this);
-      this.$refs.builder.config = this.screen.config
-        ? this.screen.config
-        : [
-          {
-            name: "Default",
-            items: []
-          }
-        ];
       this.computed = this.screen.computed ? this.screen.computed : [];
       this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
-      this.$refs.builder.computed = this.screen.computed
-        ? this.screen.computed
-        : [];
-      if (this.screen.title) {
-        this.$refs.builder.config[0].name = this.screen.title;
-      }
       this.updatePreview(new Object());
       this.previewInput = "{}";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
