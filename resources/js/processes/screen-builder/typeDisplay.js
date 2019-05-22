@@ -1,10 +1,13 @@
-import FileDownload from "./components/file-download";
+import {renderer, FormBuilderControls} from "@processmaker/spark-screen-builder";
+import FileDownload from "./components/file-download.vue";
 
-import { renderer } from "@processmaker/spark-screen-builder";
+const {
+    FormMultiColumn,
+    FormText,
+    FormRecordList
+} = renderer;
 
-let FormText = renderer.FormText;
-let FormRecordList = renderer.FormText;
-let FormMultiColumn = renderer.FormText;
+const TableControl = FormBuilderControls.find(control => control.editorComponent === FormMultiColumn)
 
 let initialControls = [{
     builderComponent: FormText,
@@ -108,33 +111,7 @@ let initialControls = [{
         ]
     }
 },
-{
-    editorComponent: FormMultiColumn,
-    editorBinding: "FormMultiColumn",
-    rendererComponent: FormMultiColumn,
-    rendererBinding: "FormMultiColumn",
-    control: {
-        label: "Multi Column",
-        component: "FormMultiColumn",
-        "editor-component": "FormMultiColumn",
-        "fa-icon": "fas fa-table",
-        container: true,
-        // Default items container
-        items: [
-            [],
-            []
-        ],
-        config: {},
-        inspector: [{
-            type: "FormText",
-            config: {
-                label: "MultiColumn"
-            }
-        }
-
-        ]
-    }
-},
+TableControl,
 {
     editorComponent: FormText,
     editorBinding: "FormText",
