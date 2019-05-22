@@ -33,14 +33,14 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
   * If you need to change the ip address to something else to avoid conflicts on your network, modify the `Homestead.yaml` file accordingly. Do not commit this change to the repository.
 * Execute `vagrant up` in the project directory to bring up the laravel homestead virtual machine
 * Execute `vagrant ssh` to ssh into the newly created virtual machine
-* Execute `php artisan spark:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
+* Execute `php artisan bpm:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
   * Specify `localhost` as your local database server
   * Specify `3306` as your local database port
-  * Specify `spark` as your local database name
+  * Specify `workflow` as your local database name
   * Specify `homestead` as your local database username
   * Specify `secret` as your local database password
-  * Specify `https://spark.local.processmaker.com` as your application url
-* Visit `https://spark.local.processmaker.com` in your browser to access the application
+  * Specify `https://bpm4.local.processmaker.com` as your application url
+* Visit `https://bpm4.local.processmaker.com` in your browser to access the application
   * Login with the username of `admin` and password of `admin`
 
 When developing, make sure to turn on debugging in your `.env` so you can see the actual error instead of the Whoops page.

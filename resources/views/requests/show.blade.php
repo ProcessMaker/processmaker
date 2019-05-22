@@ -87,7 +87,7 @@
                                     </div>
                                 </template>
                                 <template v-else>
-                                    <table class="vuetable table table-hover">
+                                    <table class="vuetable table table-hover mt-3 border">
                                         <thead>
                                         <tr>
                                             <th scope="col">{{ __('Key') }}</th>
@@ -104,7 +104,7 @@
                                 </template>
                             </template>
                             <template v-else>
-                                <div class="card m-3">
+                                <div class="card mt-3">
                                     <div class="card-header">
                                         <h5>
                                             {{ __('Request In Progress') }}

@@ -1,5 +1,5 @@
 <!-- data edit -->
-<div class="card card-body">
+<div class="card card-body mt-3">
     <div class="form-group">
         <button type="button" class="btn btn-sm float-right btn-success" @click="updateRequestData()">
             <i class="fas fa-save"></i>
