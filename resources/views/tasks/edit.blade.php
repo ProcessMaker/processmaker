@@ -47,13 +47,20 @@
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                             @if ($task->getScreen() && ($task->advanceStatus==='open' || $task->advanceStatus==='overdue'))
                                 <div class="card card-body">
-                                    <task-screen process-id="{{$task->processRequest->process->getKey()}}"
+                                    <task-screen ref="taskScreen"
+                                                 process-id="{{$task->processRequest->process->getKey()}}"
                                                  instance-id="{{$task->processRequest->getKey()}}"
                                                  token-id="{{$task->getKey()}}"
                                                  :screen="{{json_encode($task->getScreen()->config)}}"
                                                  :computed="{{json_encode($task->getScreen()->computed)}}"
                                                  :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
-                                                 :data="{{json_encode($task->processRequest->data, JSON_FORCE_OBJECT)}}"/>
+                                                 :data="{{json_encode($task->processRequest->data, JSON_FORCE_OBJECT)}}">
+                                    </task-screen>
+                                    @if ($task->getBpmnDefinition()->nodeName==='manualTask')
+                                    <footer>
+                                      <button class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
+                                    </footer>
+                                    @endif
                                 </div>
                             @elseif ($task->advanceStatus==='completed')
                                 <div class="card card-body" align="center">
@@ -239,6 +246,12 @@
           }
         },
         methods: {
+          /**
+           * Submit the task screen
+           */
+          submitTaskScreen() {
+            this.$refs.taskScreen.submit();
+          },
           // Data editor
           updateRequestData() {
             const data = JSON.parse(this.jsonData);

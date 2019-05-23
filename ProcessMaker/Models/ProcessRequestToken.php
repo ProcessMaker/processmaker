@@ -202,7 +202,6 @@ class ProcessRequestToken extends Model implements TokenInterface
         return $this->belongsTo(User::class, 'user_id');
     }
 
-
     /**
      * Get the BPMN definition of the element where the token is.
      *
@@ -216,6 +215,17 @@ class ProcessRequestToken extends Model implements TokenInterface
             return [];
         }
         return $element->getBpmnElementInstance()->getProperties();
+    }
+
+    /**
+     * Get the BPMN element node where the token is currently located.
+     *
+     * @return \ProcessMaker\Nayra\Storage\BpmnElement
+     */
+    public function getBpmnDefinition()
+    {
+        $definitions = $this->processRequest->process->getDefinitions();
+        return $definitions->findElementById($this->element_id);
     }
 
     /**
