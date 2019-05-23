@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Facade;
  * @method mixed triggerStartEvent($definitions, $event, array $data)
  * @method mixed runScripTask(\ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface $scriptTask, Token $token)
  * @method mixed runServiceTask(\ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface $serviceTask, Token $token)
+ * @method void onDataValidation(callable $callback)
+ * @method void validateData(array $data, $definitions)
  */
 class WorkflowManager extends Facade
 {

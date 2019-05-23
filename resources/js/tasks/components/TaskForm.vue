@@ -56,6 +56,15 @@ export default {
   },
   mounted() {},
   methods: {
+    displayErrors(errors) {
+      const messages = [];
+      Object.keys(errors).forEach((key) => {
+        errors[key].forEach((message) => {
+          messages.push(message);
+        });
+      });
+      return messages.join("\n");
+    },
     submit() {
       let message = this.$t('Task Completed Successfully');
       ProcessMaker.apiClient
@@ -63,6 +72,11 @@ export default {
         .then(function() {
           window.ProcessMaker.alert(message, 'success', 60, true);
           document.location.href = "/tasks";
+        })
+        .catch(error => {
+          let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;
+          ProcessMaker.alert(error.response.data.message, 'danger');
+          ProcessMaker.alert(message, 'danger');
         });
     },
     update(data) {
