@@ -25,7 +25,7 @@
                         aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
                     @foreach ($addons as $addon)
                     <a class="nav-item nav-link" id="{{$addon['id'] . '-tab'}}" data-toggle="tab" href="{{'#' . $addon['id']}}" role="tab"
-                        aria-controls="nav-notifications" aria-selected="true">{{$addon['title']}}</a>
+                       aria-controls="nav-notifications" aria-selected="true">{{ __($addon['title']) }}</a>
                     @endforeach
                 </div>
             </nav>
@@ -149,7 +149,7 @@
                                         <td class="notify">{{__('Notify Participants')}}</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                
+
                                             </div>
                                         </td>
                                         <td class="action">
