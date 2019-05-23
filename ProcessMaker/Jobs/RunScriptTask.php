@@ -4,15 +4,14 @@ namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Throwable;
-use ProcessMaker\Models\User;
-use ProcessMaker\Exception\ScriptException;
-use ProcessMaker\Facades\WorkflowManager;
 
 class RunScriptTask extends BpmnAction implements ShouldQueue
 {

@@ -5,6 +5,7 @@ namespace ProcessMaker\Jobs;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
