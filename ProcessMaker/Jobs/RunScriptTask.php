@@ -12,6 +12,7 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Throwable;
 use ProcessMaker\Models\User;
 use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Facades\WorkflowManager;
 
 class RunScriptTask extends BpmnAction implements ShouldQueue
 {
@@ -42,7 +43,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      *
      * @return void
      */
-    public function action(TokenInterface $token, ScriptTaskInterface $element)
+    public function action(TokenInterface $token, ScriptTaskInterface $element, Definitions $processModel)
     {
         $scriptRef = $element->getProperty('scriptRef');
         Log::info('Script started: ' . $scriptRef);
@@ -72,6 +73,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             $response = $script->runScript($data, $configuration);
             // Update data
             if (is_array($response['output'])) {
+                // Validate data
+                WorkflowManager::validateData($response['output'], $processModel);
                 foreach ($response['output'] as $key => $value) {
                     $dataStore->putData($key, $value);
                 }

@@ -152,7 +152,7 @@ class WorkflowManager
      *
      * @return void
      */
-    protected function validateData(array $data, Definitions $Definitions) {
+    public function validateData(array $data, Definitions $Definitions) {
         $this->validator = Validator::make($data, []);
         foreach($this->validations as $validation) {
             call_user_func($validation, $this->validator, $Definitions);

@@ -40,7 +40,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      *
      * @return void
      */
-    public function action(TokenInterface $token, ServiceTaskInterface $element)
+    public function action(TokenInterface $token, ServiceTaskInterface $element, Definitions $processModel)
     {
         $implementation = $element->getImplementation();
         Log::info('Service task started: ' . $implementation);
@@ -52,26 +52,32 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         }
         $dataStore = $token->getInstance()->getDataStore();
         $data = $dataStore->getData();
-        if (empty($implementation)) {
-            Log::error('Service task implementation not defined');
-            throw new ScriptException('Service task implementation not defined');
-        } else {
-            $script = Script::where('key', $implementation)->first();
-        }
-        if (empty($script)) {
-            Log::error('Service task not implemented: ' . $implementation);
-            throw new ScriptException('Service task not implemented: ' . $implementation);
-        }
-        $response = $script->runScript($data, $configuration);
-        if (is_array($response['output'])) {
-            foreach ($response['output'] as $key => $value) {
-                $dataStore->putData($key, $value);
+        try {
+            if (empty($implementation)) {
+                Log::error('Service task implementation not defined');
+                throw new ScriptException('Service task implementation not defined');
+            } else {
+                $script = Script::where('key', $implementation)->first();
+            }
+            if (empty($script)) {
+                Log::error('Service task not implemented: ' . $implementation);
+                throw new ScriptException('Service task not implemented: ' . $implementation);
+            }
+            $response = $script->runScript($data, $configuration);
+            if (is_array($response['output'])) {
+                // Validate data
+                WorkflowManager::validateData($response['output'], $processModel);
+                foreach ($response['output'] as $key => $value) {
+                    $dataStore->putData($key, $value);
+                }
             }
             $element->complete($token);
             Log::info('Service task completed: ' . $implementation);
-        } else {
-            $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
-            Log::info('Service task failed: ' . $implementation . ' - ' . $response['output']);
+        } catch (Throwable $exception) {
+            // Change to error status
+            $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+            $token->getInstance()->logError($exception, $element);
+            Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
         }
     }
 }
