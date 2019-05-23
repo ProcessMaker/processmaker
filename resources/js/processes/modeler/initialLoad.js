@@ -192,4 +192,11 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
             params: { type: 'DISPLAY' }
         }
     });
+    registerInspectorExtension(manualTask, {
+        component: "TaskNotifications",
+        config: {
+            label: "Task Notifications",
+            helper: "Users that should be notified about task events"
+        }
+    });
 });
