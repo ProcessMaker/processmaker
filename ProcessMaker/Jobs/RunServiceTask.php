@@ -11,6 +11,7 @@ use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use Throwable;
 
 class RunServiceTask extends BpmnAction implements ShouldQueue
 {
@@ -76,7 +77,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             Log::info('Service task completed: ' . $implementation);
         } catch (Throwable $exception) {
             // Change to error status
-            $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);
+            $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
             $token->getInstance()->logError($exception, $element);
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
         }
