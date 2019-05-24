@@ -53,6 +53,7 @@
               v-model="previewData"
               class="p-3 overflow-auto"
               @submit="previewSubmit"
+              :mode="mode"
               :config="config"
               :computed="computed"
               :custom-css="customCSS"
