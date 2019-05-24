@@ -56,7 +56,7 @@
                                                  :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
                                                  :data="{{json_encode($task->processRequest->data, JSON_FORCE_OBJECT)}}">
                                     </task-screen>
-                                    @if ($task->getBpmnDefinition()->nodeName==='manualTask')
+                                    @if ($task->getBpmnDefinition()->localName==='manualTask')
                                     <footer>
                                       <button class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
                                     </footer>
