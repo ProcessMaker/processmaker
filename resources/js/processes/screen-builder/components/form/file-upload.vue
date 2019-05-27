@@ -64,7 +64,10 @@ export default {
   data() {
     return {
       content: "",
-      validator: null,
+      validator: {
+        errorCount: 0,
+        errors: [],
+      },
       requestID: null,
       options: {
         target: this.getTargetUrl,
@@ -84,7 +87,7 @@ export default {
             ]
         },
         singleFile: true
-      }
+      },
     };
   },
   methods: {
@@ -94,9 +97,13 @@ export default {
       }
     },
     complete() {
+      // Unblock submit
+      this.validator.errorCount = 0;
       window.onbeforeunload = function(e) {};
     },
     start() {
+      // Block submit until files are loaded
+      this.validator.errorCount = 1;
       window.onbeforeunload = function(e) {
         return true;
       };
