@@ -1,4 +1,4 @@
-<template>
+ea<template>
   <div class="h-100">
     <b-card no-body class="h-100 bg-white" id="app">
       <!-- Card Header -->
@@ -75,7 +75,6 @@
                 </b-button>
 
                 <b-collapse v-model="showDataInput" id="showDataInput">
-                  <!-- <form-text-area class="data-input mb-0 data-collapse" v-model="previewInput"></form-text-area> -->
                   <monaco-editor :options="monacoOptions" :minimap="{ enabled:false }" class="data-collapse" v-model="previewInput" language="json"/>
                 </b-collapse>
 
@@ -156,7 +155,6 @@
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
   import {
-    FormTextArea,
   } from "@processmaker/vue-form-elements";
   import _ from "lodash";
 
@@ -199,7 +197,6 @@ import Validator from "validatorjs";
       VueFormBuilder,
       VueFormRenderer,
       VueJsonPretty,
-      FormTextArea,
       ComputedProperties,
       CustomCSS,
       MonacoEditor
@@ -383,19 +380,11 @@ import Validator from "validatorjs";
       right: 0;
     }
 
-    .data-input {
-      margin-top: -25px;
-       textarea.form-control {
-        height: calc(100% - 25px);
-        resize: none;
-      }
-    }
-
     .preview-inspector {
       max-width: 265px;
     }
 
     .data-collapse {
-      height: 250px;
+      height: 225px;
     }
 </style>
