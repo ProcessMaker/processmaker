@@ -75,7 +75,7 @@
                 </b-button>
 
                 <b-collapse v-model="showDataInput" id="showDataInput">
-                  <monaco-editor :options="monacoOptions" :minimap="{ enabled:false }" class="data-collapse" v-model="previewInput" language="json"/>
+                  <monaco-editor :options="monacoOptions" class="data-collapse" v-model="previewInput" language="json"/>
                 </b-collapse>
 
                 <b-button variant="outline"
