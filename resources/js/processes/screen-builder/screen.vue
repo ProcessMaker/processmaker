@@ -294,7 +294,6 @@ import Validator from "validatorjs";
         this.config = newConfig
         this.refreshSession();
         ProcessMaker.EventBus.$emit("new-changes");
-
       },
       updatePreview(data) {
         this.previewData = data
