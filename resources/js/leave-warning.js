@@ -1,30 +1,31 @@
-import Vue from "vue";
-new Vue({
-    data() {
-        return {
-            isTimedOut: false
-        }
-    },
-    created() {
-        window.addEventListener('beforeunload', this.handler);
-        if (window.ProcessMaker && window.ProcessMaker.AccountTimeoutWorker) {
-            window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', (e) => {
-                if (e.data.method === 'timedOut') {
-                    this.isTimedOut = true;
-                }
-            });
-        }
+let isTimedOut = false;
+let noUnsavedChanges = true;
 
-    },
-    methods: {
-        handler(event) {
-            if (this.isTimedOut) {
-                event.preventDefault();
-                return;
-            }
-            let confirmationMessage = __('Are you sure you want to leave?');
-            event.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
-            return confirmationMessage;
+console.log('leave-warning created');
+console.log('isTimedOut', isTimedOut);
+console.log('noUnsavedChanges', noUnsavedChanges);
+
+if (window.ProcessMaker) {
+    const {AccountTimeoutWorker, EventBus} = window.ProcessMaker;
+
+    AccountTimeoutWorker && AccountTimeoutWorker.addEventListener("message", (event) => {
+        if (event.data.method === "timedOut") {
+            isTimedOut = true;
         }
+    });
+
+    EventBus.$on("save-changes", () => { noUnsavedChanges = true; });
+    EventBus.$on("new-changes", () => { noUnsavedChanges = false; });
+}
+
+window.addEventListener("beforeunload", (event) => {
+    if (isTimedOut || noUnsavedChanges) {
+        event.preventDefault();
+        return;
     }
+
+    let confirmationMessage = __("Are you sure you want to leave?");
+    event.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
+
+    return confirmationMessage;
 });

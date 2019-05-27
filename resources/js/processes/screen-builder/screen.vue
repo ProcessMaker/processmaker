@@ -293,6 +293,8 @@ import Validator from "validatorjs";
       updateConfig(newConfig) {
         this.config = newConfig
         this.refreshSession();
+        ProcessMaker.EventBus.$emit("new-changes");
+
       },
       updatePreview(data) {
         this.previewData = data
@@ -347,6 +349,7 @@ import Validator from "validatorjs";
                 this.exportScreen();
               }
               ProcessMaker.alert(this.$t("Successfully saved"), "success");
+              ProcessMaker.EventBus.$emit("save-changes");
             });
         }
       }
