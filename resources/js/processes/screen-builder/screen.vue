@@ -1,4 +1,4 @@
-ea<template>
+<template>
   <div class="h-100">
     <b-card no-body class="h-100 bg-white" id="app">
       <!-- Card Header -->
