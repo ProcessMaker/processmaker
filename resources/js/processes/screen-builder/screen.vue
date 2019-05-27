@@ -75,7 +75,8 @@
                 </b-button>
 
                 <b-collapse v-model="showDataInput" id="showDataInput">
-                  <form-text-area class="data-input mb-0 data-collapse" v-model="previewInput"></form-text-area>
+                  <!-- <form-text-area class="data-input mb-0 data-collapse" v-model="previewInput"></form-text-area> -->
+                  <monaco-editor :options="monacoOptions" :minimap="{ enabled:false }" class="data-collapse" v-model="previewInput" language="json"/>
                 </b-collapse>
 
                 <b-button variant="outline"
@@ -150,6 +151,7 @@
   import "@processmaker/spark-screen-builder/dist/vue-form-builder.css";
   import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
+  import MonacoEditor from "vue-monaco";
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
@@ -186,6 +188,11 @@ import Validator from "validatorjs";
         toggleValidation: true,
         showDataPreview: true,
         showDataInput: true,
+        monacoOptions: {
+          automaticLayout: true,
+          lineNumbers: 'off',
+          minimap: false,
+        },
       };
     },
     components: {
@@ -194,7 +201,8 @@ import Validator from "validatorjs";
       VueJsonPretty,
       FormTextArea,
       ComputedProperties,
-      CustomCSS
+      CustomCSS,
+      MonacoEditor
     },
     watch: {
       mode(mode) {
