@@ -1,10 +1,6 @@
 let isTimedOut = false;
 let noUnsavedChanges = true;
 
-console.log('leave-warning created');
-console.log('isTimedOut', isTimedOut);
-console.log('noUnsavedChanges', noUnsavedChanges);
-
 if (window.ProcessMaker) {
     const {AccountTimeoutWorker, EventBus} = window.ProcessMaker;
 
