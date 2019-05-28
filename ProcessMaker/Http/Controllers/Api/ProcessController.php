@@ -153,7 +153,14 @@ class ProcessController extends Controller
     public function store(Request $request)
     {
         $request->validate(Process::rules());
-        $data = $request->json()->all();
+        $data = $request->all();
+        //Validate if exists file bpmn
+        if ($request->has('file')) {
+            $data['bpmn'] = $request->file('file')->get();
+            $request->request->add(['bpmn' => $data['bpmn']]);
+            $request->request->remove('file');
+            unset($data['file']);
+        }
 
         if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
@@ -350,7 +357,7 @@ class ProcessController extends Controller
      */
     private function validateBpmn(Request $request)
     {
-        $data = $request->json()->all();
+        $data = $request->all();
         $schemaErrors = null;
         if (isset($data['bpmn'])) {
             $document = new BpmnDocument();
