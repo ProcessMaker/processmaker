@@ -93,30 +93,25 @@ class UserController extends Controller
 
         return new ApiCollection($response);
     }
-
-    /**
+    
+     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  id  $id
      * @return \Illuminate\Http\Response
      *
-     *     @OA\Get(
-     *     path="/users/{user_id}",
-     *     summary="Get single user by ID",
-     *     operationId="getUserById",
+     *     @OA\Post(
+     *     path="/users",
+     *     summary="Save a new users",
+     *     operationId="createUser",
      *     tags={"Users"},
-     *     @OA\Parameter(
-     *         description="ID of user to return",
-     *         in="path",
-     *         name="user_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="Successfully found the process",
+     *         response=201,
+     *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
      * )
@@ -146,21 +141,26 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  id  $id
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      *
-     *     @OA\Post(
-     *     path="/users",
-     *     summary="Save a new users",
-     *     operationId="createUser",
+     *     @OA\Get(
+     *     path="/users/{user_id}",
+     *     summary="Get single user by ID",
+     *     operationId="getUserById",
      *     tags={"Users"},
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
+     *     @OA\Parameter(
+     *         description="ID of user to return",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
      *     ),
      *     @OA\Response(
-     *         response=201,
-     *         description="success",
+     *         response=200,
+     *         description="Successfully found the process",
      *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
      * )
