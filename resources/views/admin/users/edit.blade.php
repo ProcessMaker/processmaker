@@ -196,7 +196,7 @@
 
                                         <div class="form-group">
                                             {!!Form::label('status', __('Status')) !!}
-                                            {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'],
+                                            {!!Form::select('size', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')],
                                             'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
                                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
                                             <div class="invalid-feedback" v-if="errors.email">@{{errors.status}}</div>
