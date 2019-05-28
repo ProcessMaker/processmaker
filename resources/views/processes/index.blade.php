@@ -194,7 +194,6 @@
                 formData.append('name', this.name);
                 formData.append('description', this.description);
                 formData.append('process_category_id', this.process_category_id);
-                formData.append('bpmn', this.bpmn);
                 if (this.file) {
                   formData.append('file', this.file);
                 }
