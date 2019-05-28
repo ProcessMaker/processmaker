@@ -381,11 +381,11 @@
                 'edit_data': this.formatAssignee(this.processEditData)
               })
               .then(response => {
-                ProcessMaker.alert('{{__('All assignments were saved.')}}', 'success');
+                ProcessMaker.alert(this.$t('All assignments were saved.'), 'success');
                 this.onCancel();
               })
               .catch(error => {
-                ProcessMaker.alert('{{__('Unable cannot save the assignments.')}}', 'danger');
+                ProcessMaker.alert(this.$t('Unable cannot save the assignments.'), 'danger');
               });
           },
           onAssignmentCancel() {
@@ -435,11 +435,11 @@
                 }
                 this.assignable = response.data.assignable;
                 this.processId = response.data.process.id;
-                message = '{{__('The process was imported.')}}';
+                message = this.$t('The process was imported.');
                 let variant = 'success';
                 for (let item in this.options) {
                   if (!this.options[item].success) {
-                    message = '{{__('The process was imported, but with errors.')}}';
+                    message = this.$t('The process was imported, but with errors.');
                     variant = 'warning'
                   }
                 }
@@ -447,7 +447,7 @@
               })
               .catch(error => {
                 this.submitted = false;
-                ProcessMaker.alert('{{__('Unable to import the process.')}}', 'danger');
+                ProcessMaker.alert(this.$t('Unable to import the process.'), 'danger');
               });
           }
         }
