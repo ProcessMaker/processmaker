@@ -76,7 +76,7 @@
     <b-modal ref="myModalRef" :title="$t('Duplicate Script')" centered>
       <form>
         <div class="form-group">
-          <label for="title">Name</label>
+          <label for="title">{{ $t('Name') }}</label>
           <input
             type="text"
             class="form-control"
@@ -87,11 +87,11 @@
           <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
-          <label for="description">Description</label>
+          <label for="description">{{ $t('Description') }}</label>
           <textarea class="form-control" id="description" rows="3" v-model="dupScript.description"></textarea>
         </div>
         <div class="form-group">
-          <label for="type">Language</label>
+          <label for="type">{{ $t('Language') }}</label>
           <select class="form-control" id="type" disabled>
             <option>{{dupScript.language}}</option>
           </select>
@@ -211,9 +211,7 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the script ") +
-              data.title +
-              this.$t("?"),
+            this.$t('Are you sure you want to delete {{item}}?', {item: data.title}),
             "",
             () => {
               this.$emit("delete", data);
