@@ -80,8 +80,9 @@
                         <div class="form-group">
                             <label class="typo__label">{{__('Run script as')}}</label>
                             <multiselect v-model="selectedUser" label="fullname" :options="users" :placeholder="$t('Select')"
-                                         :searchable="true"></multiselect>
-                        <small class="form-text text-muted">{{__('Select a user to set the API access of the Script')}}</small>
+                                         :searchable="true" :class="{'is-invalid': addError.run_as_user_id}"></multiselect>
+                            <small class="form-text text-muted" v-if="! addError.run_as_user_id">{{__('Select a user to set the API access of the Script')}}</small>
+                            <div class="invalid-feedback" v-for="run_as_user_id in addError.run_as_user_id">@{{run_as_user_id}}</div>
                         </div>
 
                         <div class="form-group">
