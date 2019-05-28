@@ -509,14 +509,14 @@
           },
           completeRequest() {
             ProcessMaker.confirmModal(
-              __("Caution!"),
-              __("Are you sure you want to complete this request?"),
+              this.$t("Caution!"),
+              this.$t("Are you sure you want to complete this request?"),
               "",
               () => {
                 ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
                   status: 'COMPLETED'
                 }).then(() => {
-                  ProcessMaker.alert(__('Request Completed'), 'success')
+                  ProcessMaker.alert(this.$t('Request Completed'), 'success')
                   location.reload()
                 })
               })

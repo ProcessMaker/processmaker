@@ -805,5 +805,6 @@
     " overdue ": " overdue ",
     " pending": " pending",
     "The request was canceled.": "The request was canceled.",
-    "Manually Complete Request": "Manually Complete Request"
+    "Manually Complete Request": "Manually Complete Request",
+    "Are you sure you want to complete this request?": "Are you sure you want to complete this request?"
 }
