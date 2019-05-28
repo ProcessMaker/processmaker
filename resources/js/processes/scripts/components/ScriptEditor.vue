@@ -38,7 +38,7 @@
                                         <b-row v-b-toggle.configuration>
                                             <b-col>
                                                 <i class="fas fa-cog"/>
-                                                Configuration
+                                                {{ $t('Configuration') }}
                                             </b-col>
                                             <b-col align-self="end" cols="1" class="mr-2">
                                             <i class="fas fa-chevron-down accordion-icon"/>
@@ -55,7 +55,7 @@
                                         <b-row v-b-toggle.input>
                                             <b-col>
                                                 <i class="fas fa-sign-in-alt"/>
-                                                Sample Input
+                                                {{ $t('Sample Input') }}
                                             </b-col>
                                             <b-col align-self="end" cols="1" class="mr-2">
                                             <i class="fas fa-chevron-down accordion-icon"/>
@@ -77,7 +77,7 @@
                                         >
                                             <b-col>
                                                 <i class="far fa-caret-square-right"/>
-                                                Output
+                                                {{ $t('Output') }}
                                             </b-col>
                                             <b-col align-self="end" cols="1" class="mr-2">
                                                 <i class="fas fa-chevron-down accordion-icon"/>
