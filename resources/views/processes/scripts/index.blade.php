@@ -166,9 +166,6 @@
                   .catch(error => {
                     this.disabled = false;
                     if (error.response.status && error.response.status === 422) {
-                      if (error.response.data.errors.run_as_user_id !== undefined) {
-                        ProcessMaker.alert(error.response.data.errors.run_as_user_id[0], 'danger');
-                      }
                       this.addError = error.response.data.errors;
                     }
                   })
