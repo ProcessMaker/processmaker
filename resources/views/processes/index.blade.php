@@ -100,10 +100,15 @@
                                     @{{category}}
                                 </div>
                             </div>
-                            <div class="form-group d-flex justify-content-between">
-                                <label>{{__("Upload BPMN File (optional)")}}</label>
-                                <button @click="browse" class="btn btn-secondary"><i class="fas fa-upload fa-fw"></i>{{ __('Upload file') }}</button>
-                                <input type="file" class="custom-file-input d-none" ref="customFile" @change="onFileChange">
+                            <div class="form-group">
+                                {!! Form::label('fileName', __('Upload BPMN File (optional)')) !!}
+                                <div class="input-group">
+                                    <input type="text" name="fileName" class="form-control" v-model="selectedFile">
+                                    <button @click="browse" class="btn btn-secondary"><i class="fas fa-upload"></i>
+                                        {{__('Upload file')}}
+                                    </button>
+                                    <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange" accept=".bpmn">
+                                </div>
                             </div>
                         </div>
                     @else
@@ -137,6 +142,7 @@
             el: '#addProcess',
             data: {
               name: '',
+              selectedFile: '',
               categoryOptions: '',
               description: '',
               process_category_id: '',
@@ -150,12 +156,15 @@
               browse() {
                 this.$refs.customFile.click();
               },
-              onFileChange(fileObject) {
-                var reader = new FileReader();
-                reader.readAsDataURL(fileObject.target.files[0]);
-                reader.addEventListener("load",  () => {
-                this.bpmn = reader.result;
-                }, false);
+              onFileChange(e) {
+                let files = e.target.files || e.dataTransfer.files;
+
+                if (!files.length) {
+                  return;
+                }
+
+                this.selectedFile = files[0].name;
+                this.file = this.$refs.customFile.files[0];
               },
               onClose() {
                 this.name = '';
@@ -181,12 +190,21 @@
                 }
                 this.disabled = true;
 
-                ProcessMaker.apiClient.post("/processes", {
-                  name: this.name,
-                  description: this.description,
-                  process_category_id: this.process_category_id,
-                  bpmn: this.bpmn
-                })
+                let formData = new FormData();
+                formData.append('name', this.name);
+                formData.append('description', this.description);
+                formData.append('process_category_id', this.process_category_id);
+                formData.append('bpmn', this.bpmn);
+                if (this.file) {
+                  formData.append('file', this.file);
+                }
+
+                ProcessMaker.apiClient.post("/processes", formData,
+                  {
+                    headers: {
+                      'Content-Type': 'multipart/form-data'
+                    }
+                  })
                   .then(response => {
                     ProcessMaker.alert('{{__('The process was created.')}}', 'success')
                     window.location = "/modeler/" + response.data.id
