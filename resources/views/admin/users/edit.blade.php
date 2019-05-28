@@ -670,14 +670,14 @@
               .then((result) => {
                 this.newToken = result.data;
                 this.loadTokens();
-                ProcessMaker.alert("{{__('Access token generated successfully')}}", "success");
+                ProcessMaker.alert(this.$t('Access token generated successfully'), "success");
               })
           },
           deleteToken(tokenId) {
             ProcessMaker.confirmModal(
-              __("Caution!"),
-              __("Are you sure to delete the token ") + tokenId.substr(0, 7) +
-              __("? Any services using it will no longer have access."),
+              this.$t("Caution!"),
+              this.$t("Are you sure to delete the token ") + tokenId.substr(0, 7) +
+              this.$t("? Any services using it will no longer have access."),
               "",
               () => {
                 ProcessMaker.apiClient({
