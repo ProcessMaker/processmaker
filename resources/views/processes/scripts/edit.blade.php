@@ -32,8 +32,10 @@
                         <multiselect v-model="selectedUser"
                                      label="fullname"
                                      :options="options"
-                                     :searchable="true">
+                                     :searchable="true"
+                                     :class="{'is-invalid': errors.run_as_user_id}">
                         </multiselect>
+                        <div class="invalid-feedback" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
                     </div>
                     <div class="form-group">
                         {!! Form::label('description', __('Description')) !!}
@@ -118,9 +120,6 @@
               })
               .catch(error => {
                 if (error.response.status && error.response.status === 422) {
-                  if (error.response.data.errors.run_as_user_id !== undefined) {
-                    ProcessMaker.alert(error.response.data.errors.run_as_user_id[0], 'danger');
-                  }
                   this.errors = error.response.data.errors;
                 }
               });
