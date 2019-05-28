@@ -1,7 +1,7 @@
 <template>
   <div>
     <label v-uni-for="name">{{ label }}</label>
-    <uploader :options="options" ref="uploader">
+    <uploader :options="options" ref="uploader" @complete="complete" @upload-start="start" @file-removed="removed">
       <uploader-unsupport></uploader-unsupport>
       <uploader-drop id="uploaderMain" class="form-control-file">
         <p>{{$t('Drop files here to upload or')}}</p>
@@ -52,12 +52,22 @@ export default {
         classList[this.controlClass] = true;
       }
       return classList;
-    }
+    },
+    inProgress() {
+      let inProgress = false;
+      this.$refs.uploader.fileList.forEach((file) => {
+        inProgress = inProgress || (file._prevProgress<1);
+      });
+      return inProgress;
+    },
   },
   data() {
     return {
       content: "",
-      validator: null,
+      validator: {
+        errorCount: 0,
+        errors: [],
+      },
       requestID: null,
       options: {
         target: this.getTargetUrl,
@@ -77,10 +87,27 @@ export default {
             ]
         },
         singleFile: true
-      }
+      },
     };
   },
   methods: {
+    removed() {
+      if (!this.inProgress) {
+        this.complete();
+      }
+    },
+    complete() {
+      // Unblock submit
+      this.validator.errorCount = 0;
+      window.onbeforeunload = function(e) {};
+    },
+    start() {
+      // Block submit until files are loaded
+      this.validator.errorCount = 1;
+      window.onbeforeunload = function(e) {
+        return true;
+      };
+    },
     updateValue(e) {
       this.content = e.target.value;
       this.$emit("input", this.content);
