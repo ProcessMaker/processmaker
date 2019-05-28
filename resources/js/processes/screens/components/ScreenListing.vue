@@ -137,7 +137,8 @@
           {
             title: this.$t("Type"),
             name: "type",
-            sortField: "type"
+            sortField: "type",
+            callback: this.formatType
           },
           {
             title: this.$t("Modified"),
@@ -160,6 +161,9 @@
     },
 
     methods: {
+      formatType(type) {
+        return this.$t(_.startCase(_.toLower(type)))
+      },
       showModal() {
         this.$refs.myModalRef.show();
       },
