@@ -34,7 +34,11 @@ export default {
         },
         // Data manager takes new sorting and calls our fetch method
         dataManager(sortOrder, pagination) {
-            this.orderBy = sortOrder[0].field;
+            if (sortOrder[0].sortField != undefined) {
+              this.orderBy = sortOrder[0].sortField;
+            } else {
+              this.orderBy = sortOrder[0].field;
+            }
             this.orderDirection = sortOrder[0].direction;
             this.fetch();
         },
