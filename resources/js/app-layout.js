@@ -153,10 +153,8 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     return response;
 }, (error) => {
     window.ProcessMaker.EventBus.$emit("api-client-error", error);
-    switch (error.response.status) {
-        case 401:
-            window.location = "/login"
-            break;
+    if (error.response && error.response.status && error.response.status === 401) {
+        window.location = "/login";
     }
     return Promise.reject(error);
 });
