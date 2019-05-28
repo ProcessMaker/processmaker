@@ -19,7 +19,7 @@ class ScreenController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        'config',
+        'content',
     ];
 
     /**

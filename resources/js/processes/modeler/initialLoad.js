@@ -10,6 +10,7 @@ import {
     startEvent,
     task,
     scriptTask,
+    manualTask,
     pool,
     poolLane,
     textAnnotation,
@@ -46,6 +47,7 @@ let nodeTypes = [
     endEvent,
     task,
     scriptTask,
+    manualTask,
     callActivity,
     exclusiveGateway,
     inclusiveGateway,
@@ -59,7 +61,7 @@ let nodeTypes = [
     textAnnotation,
     eventBasedGateway,
     intermediateMessageCatchEvent,
-]
+];
 
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
@@ -67,8 +69,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 // Implement user list and group list for intermediate catch event
 // eslint-disable-next-line func-names
 (function () {
-    const inspector = intermediateMessageCatchEvent.inspectorConfig[0].items[1];
-    inspector.items[4] = {
+    intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[4] = {
         component: 'UserSelect',
         config: {
             label: 'Allowed User',
@@ -76,7 +77,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
             name: 'allowedUsers',
         }
     };
-    inspector.items[5] = {
+    intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[5] = {
         component: 'GroupSelect',
         config: {
             label: 'Allowed Group',
@@ -124,7 +125,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
         config: {
             label: 'Permission To Start',
             helper: '',
-            name: 'id',
+            name: 'startPermission',
         }
     });
 
@@ -143,7 +144,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
         config: {
             label: "Task Assignment",
             helper: "",
-            name: "id"
+            name: "taskAssignment"
         }
     });
     registerInspectorExtension(task, {
@@ -169,7 +170,7 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
         config: {
             label: 'Script Configuration',
             helper: 'Configuration JSON for the script task',
-            name: 'id',
+            name: 'scriptConfiguration',
             property: 'config',
         }
     });
@@ -180,6 +181,22 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
             helper: 'Summary screen that will be displayed when process finish with this End event.',
             name: 'screenRef',
             params: { type: 'DISPLAY' }
+        }
+    });
+    registerInspectorExtension(manualTask, {
+        component: 'ModelerScreenSelect',
+        config: {
+            label: 'Summary screen',
+            helper: 'Summary screen that will be displayed when process finish with this End event.',
+            name: 'screenRef',
+            params: { type: 'DISPLAY' }
+        }
+    });
+    registerInspectorExtension(manualTask, {
+        component: "TaskNotifications",
+        config: {
+            label: "Task Notifications",
+            helper: "Users that should be notified about task events"
         }
     });
 });

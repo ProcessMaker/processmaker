@@ -6,7 +6,16 @@
                     <div>
                         <span class="name" v-html="transformedName"></span>
                         <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
-                        <i v-show="spin===process.id + '.' + event.id" class="fa fa-spinner fa-spin fa-fw"></i>
+                        <i v-show="(spin===process.id + '.' + event.id) && !error" class="fa fa-spinner fa-spin fa-fw"></i>
+                        <a href="javascript:void(0)"
+                          class="text-danger"
+                          v-show="(spin===process.id + '.' + event.id) && error"
+                          :id="'process-tip-' + process.id + '.' + event.id"
+                          ><i class="fas fa-exclamation-circle"></i></a>
+                        <b-tooltip
+                          :target="'process-tip-' + process.id + '.' + event.id" placement="right">
+                          {{error}}
+                        </b-tooltip>
                     </div>
                     <div ref="description" class="description" v-html="truncatedDescription"></div>
                 </div>
@@ -21,7 +30,7 @@
                         <span class="name" v-html="transformedName"></span>
                     </div>
                     <div ref="description" class="description warn">
-                        This process can not be started because it does not have a start event.
+                        {{$t('This process can not be started because it does not have a start event.')}}
                     </div>
                 </div>
             </div>
@@ -31,15 +40,28 @@
 </template>
 
 <script>
+import { TooltipPlugin } from 'bootstrap-vue/es/components'
+Vue.use(TooltipPlugin)
   export default {
     props: ["name", "description", "filter", "id", "process"],
     data() {
       return {
         disabled: false,
-        spin: 0
+        spin: 0,
+        error: '',
+        showtip: true,
       }
     },
     methods: {
+      displayErrors(errors) {
+        const messages = [];
+        Object.keys(errors).forEach((key) => {
+          errors[key].forEach((message) => {
+            messages.push(message);
+          });
+        });
+        return messages.join("\n");
+      },
       newRequestLink(process, event) {
         if (this.disabled) {
           return
@@ -48,6 +70,7 @@
         //Start a process
         this.spin = process.id + '.' + event.id;
         let startEventId = event.id;
+        this.error = '';
         window.ProcessMaker.apiClient.post('/process_events/' + this.process.id + '?event=' + startEventId)
           .then((response) => {
             this.spin = 0;
@@ -56,6 +79,8 @@
           })
           .catch(error => {
             this.disabled = false;
+            let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;
+            this.error = message;
           });
       }
     },

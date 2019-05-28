@@ -707,7 +707,7 @@
     "The process was archived.": "The process was archived.",
     "Are you sure you want to archive the process ": "Are you sure you want to archive the process ",
     "Restore": "Restore",
-    "Error":"Error",
+    "Error": "Error",
     "Time": "Time",
     "Element": "Element",
     "Canceled": "Canceled",
@@ -771,7 +771,7 @@
     "Colspan": "Colspan",
     "No files available for download": "No files available for download",
     "Screen Validation": "Screen Validation",
-    "Calculated Properties" : "Calculated Properties",
+    "Calculated Properties": "Calculated Properties",
     "Calcs": "Calcs",
     "CSS": "CSS",
     "Clear Color Selection": "Clear Color Selection",
@@ -780,5 +780,11 @@
     "No Errors": "No Errors",
     ":user has completed the task :task_name": ":user has completed the task :task_name",
     "The System": "The System",
-    "Add Users": "Add Users"
+    "Debugger": "Debugger",
+    "Run": "Run",
+    "Upload BPMN File (optional)": "Upload BPMN File (optional)",
+    "The name of the manual task": "The name of the manual task",
+    "Variable Name": "Variable Name",
+    "The Name of the variable": "The Name of the variable",
+    "Manual Task": "Manual Task"
 }

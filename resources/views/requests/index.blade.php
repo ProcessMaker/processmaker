@@ -163,7 +163,7 @@
                     </div>
                 </div>
             </template>
-            <requests-listing ref="requestList"></requests-listing>
+            <requests-listing  type="{{ $type }}" ref="requestList"></requests-listing>
         </div>
     </div>
 </div>

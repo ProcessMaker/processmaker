@@ -71,7 +71,7 @@ abstract class BpmnAction implements ShouldQueue
         $data = isset($this->data) ? $this->data : null;
 
         //Do the action
-        $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data'));
+        $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
 
         //Run engine to the next state
         try {

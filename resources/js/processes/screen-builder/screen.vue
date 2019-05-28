@@ -37,50 +37,59 @@
       <!-- Card Body -->
       <b-card-body class="overflow-auto ml-3 mr-3">
         <!-- Vue-form-builder -->
-        <vue-form-builder :validationErrors="validationErrors" ref="builder" @change="updateConfig" :class="displayBuilder ? 'd-flex' : 'd-none'" />
+        <vue-form-builder
+          :validationErrors="validationErrors"
+          :initialConfig="screen.config"
+          :title="screen.title"
+          :class="displayBuilder ? 'd-flex' : 'd-none'"
+          ref="builder"
+          @change="updateConfig"
+        />
 
         <!-- Preview -->
         <b-row class="h-100" id="preview" v-show="displayPreview">
-          <b-col cols="8" class="overflow-auto h-100 border rounded">
+          <b-col class="overflow-auto h-100 border rounded mr-4">
             <vue-form-renderer ref="renderer"
               v-model="previewData"
               class="p-3 overflow-auto"
               @submit="previewSubmit"
+              :mode="mode"
               :config="config"
               :computed="computed"
               :custom-css="customCSS"
               v-on:css-errors="cssErrors = $event"/>
           </b-col>
 
-          <b-col cols="4" class="overflow-hidden h-100 pr-0 pl-4">
-            <b-card no-body class="p-0">
+          <b-col class="overflow-hidden h-100 preview-inspector p-0">
+            <b-card no-body class="p-0 h-100">
               <b-card-header class="stick-top">
                 {{ $t('Inspector') }}
               </b-card-header>
 
-              <b-card-body class="p-0">
-                <b-button v-b-toggle.dataInput variant="outline"
-                  class="text-left card-header d-flex align-items-center w-100 text-capitalize"
+              <b-card-body class="p-0 overflow-auto">
+                <b-button variant="outline"
+                  class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
                   @click="showDataInput = !showDataInput">
                   <i class="fas fa-file-import mr-2"></i>
                     {{ $t('Data Input') }}
-                  <i class="fas fa-angle-down ml-auto" :class="{ 'fas fa-angle-right' : !showDataInput }"></i>
+                  <i class="fas ml-auto" :class="showDataInput ? 'fa-angle-right' : 'fa-angle-down'"></i>
                 </b-button>
 
-                <b-collapse id="dataInput" visible class="overflow-auto">
-                  <form-text-area class="data-height h-100 dataInput"  v-model="previewInput"></form-text-area>
+                <b-collapse v-model="showDataInput" id="showDataInput">
+                  <monaco-editor :options="monacoOptions" class="data-collapse" v-model="previewInput" language="json"/>
                 </b-collapse>
 
-                <b-button v-b-toggle.dataPreview variant="outline"
-                  class="text-left card-header d-flex align-items-center w-100 text-capitalize"
+                <b-button variant="outline"
+                  class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
+                  data-toggle="collapse"
                   @click="showDataPreview = !showDataPreview">
                   <i class="fas fa-file-code mr-2"></i>
                     {{ $t('Data Preview') }}
-                  <i class="fas fa-angle-down ml-auto" :class="{ 'fas fa-angle-right' : !showDataPreview }"></i>
+                  <i class="fas ml-auto" :class="showDataPreview ? 'fa-angle-right' : 'fa-angle-down'"></i>
                 </b-button>
 
-                <b-collapse id="dataPreview" visible class="mt-2 overflow-auto">
-                  <vue-json-pretty  :data="previewData" class="p-2 data-height"></vue-json-pretty>
+                <b-collapse v-model="showDataPreview" id="showDataPreview" class="mt-2">
+                  <vue-json-pretty :data="previewData" class="p-2 data-collapse"></vue-json-pretty>
                 </b-collapse>
               </b-card-body>
             </b-card>
@@ -136,17 +145,17 @@
 </template>
 
 <script>
-  import {VueFormBuilder, VueFormRenderer, FormBuilderControls as controlConfig} from "@processmaker/spark-screen-builder";
+  import {VueFormBuilder, VueFormRenderer} from "@processmaker/spark-screen-builder";
   import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties";
   import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css";
   import "@processmaker/spark-screen-builder/dist/vue-form-builder.css";
   import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
+  import MonacoEditor from "vue-monaco";
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
   import {
-    FormTextArea,
   } from "@processmaker/vue-form-elements";
   import _ from "lodash";
 
@@ -176,17 +185,22 @@ import Validator from "validatorjs";
         cssErrors: '',
         showValidationErrors: false,
         toggleValidation: true,
-        showDataPreview: false,
-        showDataInput: false,
+        showDataPreview: true,
+        showDataInput: true,
+        monacoOptions: {
+          automaticLayout: true,
+          lineNumbers: 'off',
+          minimap: false,
+        },
       };
     },
     components: {
       VueFormBuilder,
       VueFormRenderer,
       VueJsonPretty,
-      FormTextArea,
       ComputedProperties,
-      CustomCSS
+      CustomCSS,
+      MonacoEditor
     },
     watch: {
       mode(mode) {
@@ -263,22 +277,8 @@ import Validator from "validatorjs";
     mounted() {
       // Call our init lifecycle event
       ProcessMaker.EventBus.$emit("screen-builder-init", this);
-      this.$refs.builder.config = this.screen.config
-        ? this.screen.config
-        : [
-          {
-            name: "Default",
-            items: []
-          }
-        ];
       this.computed = this.screen.computed ? this.screen.computed : [];
       this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
-      this.$refs.builder.computed = this.screen.computed
-        ? this.screen.computed
-        : [];
-      if (this.screen.title) {
-        this.$refs.builder.config[0].name = this.screen.title;
-      }
       this.updatePreview(new Object());
       this.previewInput = "{}";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
@@ -299,6 +299,7 @@ import Validator from "validatorjs";
       updateConfig(newConfig) {
         this.config = newConfig
         this.refreshSession();
+        ProcessMaker.EventBus.$emit("new-changes");
       },
       updatePreview(data) {
         this.previewData = data
@@ -353,6 +354,7 @@ import Validator from "validatorjs";
                 this.exportScreen();
               }
               ProcessMaker.alert(this.$t("Successfully saved"), "success");
+              ProcessMaker.EventBus.$emit("save-changes");
             });
         }
       }
@@ -381,7 +383,11 @@ import Validator from "validatorjs";
       right: 0;
     }
 
-    .dataInput {
-      margin-top: -25px;
+    .preview-inspector {
+      max-width: 265px;
+    }
+
+    .data-collapse {
+      height: 225px;
     }
 </style>

@@ -13,9 +13,12 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Jobs\ExportProcess;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class ProcessController extends Controller
 {
+    use HasControllerAddons;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -73,8 +76,9 @@ class ProcessController extends Controller
         $canStart = $this->listCan('Start', $process);
         $canCancel = $this->listCan('Cancel', $process);
         $canEditData = $this->listCan('EditData', $process);
+        $addons = $this->getPluginAddons('edit', compact(['process']));
 
-        return view('processes.edit', compact(['process', 'categories', 'screens', 'list', 'canCancel', 'canStart', 'canEditData']));
+        return view('processes.edit', compact(['process', 'categories', 'screens', 'list', 'canCancel', 'canStart', 'canEditData', 'addons']));
     }
 
     /**

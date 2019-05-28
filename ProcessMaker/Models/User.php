@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -24,6 +25,7 @@ class User extends Authenticatable implements HasMedia
     use HasMediaTrait;
     use HasAuthorization;
     use SerializeToIso8601;
+    use SoftDeletes;
 
     //Disk
     public const DISK_PROFILE = 'profile';
