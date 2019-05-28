@@ -786,5 +786,11 @@
     "The name of the manual task": "The name of the manual task",
     "Variable Name": "Variable Name",
     "The Name of the variable": "The Name of the variable",
-    "Manual Task": "Manual Task"
+    "Manual Task": "Manual Task",
+    "Filter Controls": "Filter Controls",
+    "Collection Select": "Collection Select",
+    "New Collection Select": "New Collection Select",
+    "Collections": "Collections",
+    "Select a collection and fill the fields that will be used in the dropdownlist": "Select a collection and fill the fields that will be used in the dropdownlist",
+    "Dismiss Alert": "Dismiss Alert"
 }
