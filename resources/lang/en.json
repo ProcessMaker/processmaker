@@ -809,5 +809,7 @@
     "Are you sure you want to complete this request?": "Are you sure you want to complete this request?",
     "The process was restored.": "The process was restored.",
     "Language:": "Language:",
-    "The group was deleted.": "The group was deleted."
+    "The group was deleted.": "The group was deleted.",
+    "Type to search task": "Type to search task",
+    "The following items should be configured to ensure your process is functional.": "The following items should be configured to ensure your process is functional."
 }
