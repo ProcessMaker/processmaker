@@ -210,7 +210,7 @@
                         description: this.script.description
                     })
                     .then(response => {
-                        ProcessMaker.alert(__("The script was saved."), "success");
+                        ProcessMaker.alert(this.$t("The script was saved."), "success");
                     });
             }
         }

@@ -113,7 +113,7 @@
               timeout: this.formData.timeout,
             })
               .then(response => {
-                ProcessMaker.alert('{{__('The script was saved.')}}', 'success');
+                ProcessMaker.alert(this.$t('The script was saved.'), 'success');
                 this.onClose();
               })
               .catch(error => {
