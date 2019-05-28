@@ -497,7 +497,7 @@
               status: 'CANCELED'
             })
               .then(response => {
-                ProcessMaker.alert('The request was canceled.', 'success');
+                ProcessMaker.alert(this.$t('The request was canceled.'), 'success');
                 window.location.reload();
               })
               .catch(error => {
