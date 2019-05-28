@@ -130,12 +130,6 @@ export default {
             }
         });
     },
-    transform(data) {
-      // format in a way vuetable is expecting
-      data = Object.assign({}, data, data.meta, { meta: null });
-      return data;
-    },
-    onPaginationData() {},
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
