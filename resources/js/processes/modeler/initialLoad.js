@@ -10,6 +10,7 @@ import {
     startEvent,
     task,
     scriptTask,
+    manualTask,
     pool,
     poolLane,
     textAnnotation,
@@ -46,6 +47,7 @@ let nodeTypes = [
     endEvent,
     task,
     scriptTask,
+    manualTask,
     callActivity,
     exclusiveGateway,
     inclusiveGateway,
@@ -59,7 +61,7 @@ let nodeTypes = [
     textAnnotation,
     eventBasedGateway,
     intermediateMessageCatchEvent,
-]
+];
 
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
@@ -179,6 +181,22 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
             helper: 'Summary screen that will be displayed when process finish with this End event.',
             name: 'screenRef',
             params: { type: 'DISPLAY' }
+        }
+    });
+    registerInspectorExtension(manualTask, {
+        component: 'ModelerScreenSelect',
+        config: {
+            label: 'Summary screen',
+            helper: 'Summary screen that will be displayed when process finish with this End event.',
+            name: 'screenRef',
+            params: { type: 'DISPLAY' }
+        }
+    });
+    registerInspectorExtension(manualTask, {
+        component: "TaskNotifications",
+        config: {
+            label: "Task Notifications",
+            helper: "Users that should be notified about task events"
         }
     });
 });
