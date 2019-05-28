@@ -797,5 +797,7 @@
     "Output": "Output",
     "Duplicate Script": "Duplicate Script",
     "Select a user to set the API access of the Script": "Select a user to set the API access of the Script",
-    "Successfully imported": "Successfully imported"
+    "Successfully imported": "Successfully imported",
+    "Importing": "Importing",
+    "All assignments were saved.": "All assignments were saved."
 }
