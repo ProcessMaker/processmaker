@@ -155,8 +155,6 @@
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
-  import {
-  } from "@processmaker/vue-form-elements";
   import _ from "lodash";
 
 import Validator from "validatorjs";
