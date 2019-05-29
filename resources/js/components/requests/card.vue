@@ -84,66 +84,6 @@ Vue.use(TooltipPlugin)
     .card-text {
       font-size: 0.75em;
     }
-
-    // .process-card {
-    //     cursor: pointer;
-    //     width: 354px;
-    //     height: 91px;
-    //     border-radius: 2px;
-    //     background-color: #f7f9fa;
-    //     border: solid 1px #eeeeee;
-    //     margin-right: 16px;
-    //     margin-bottom: 16px;
-    //     border-left: 2px solid #00bf9c;
-
-    //     .inner {
-    //         padding: 14px 23px;
-    //         height: 91px;
-
-    //         .name {
-    //             font-size: 14px;
-    //             font-weight: bold;
-    //             font-style: normal;
-    //             font-stretch: normal;
-    //             line-height: normal;
-    //             letter-spacing: normal;
-    //             color: #313131;
-    //             overflow: hidden;
-    //             white-space: nowrap;
-    //             -ms-text-overflow: ellipsis;
-    //             text-overflow: ellipsis;
-    //             width: 100%;
-    //         }
-
-    //         .description {
-    //             margin-top: 9px;
-    //             font-size: 12px;
-    //             height: 32px;
-    //             font-weight: normal;
-    //             font-style: normal;
-    //             font-stretch: normal;
-    //             line-height: normal;
-    //             letter-spacing: normal;
-    //             color: #788793;
-    //             overflow: hidden;
-    //         }
-
-    //         .warn {
-    //             font-style: italic
-    //         }
-    //     }
-
-    //     &:hover {
-    //         .name {
-    //             color: #00bf9c;
-
-    //             & /deep/ .filtered {
-    //                 color: #00bf9c;
-    //             }
-    //         }
-
-    //     }
-    // }
 </style>
 
 
