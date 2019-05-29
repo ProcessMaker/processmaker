@@ -74,6 +74,14 @@
   // font-size: 14px;
 }
 
+.multiselect.is-invalid .multiselect__tags {
+    border-color: $danger;
+}
+
+.multiselect.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
 body,
 html {
   width: 100%;
