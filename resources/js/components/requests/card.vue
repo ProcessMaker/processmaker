@@ -8,14 +8,16 @@
                         <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
                         <i v-show="(spin===process.id + '.' + event.id) && !error" class="fa fa-spinner fa-spin fa-fw"></i>
                         <a href="javascript:void(0)"
-                          class="text-danger"
-                          v-show="(spin===process.id + '.' + event.id) && error"
-                          :id="'process-tip-' + process.id + '.' + event.id"
-                          ><i class="fas fa-exclamation-circle"></i></a>
-                        <b-tooltip
-                          :target="'process-tip-' + process.id + '.' + event.id" placement="right">
+                              class="text-danger"
+                              v-show="(spin===process.id + '.' + event.id) && error"
+                              :id="'process-tip-' + process.id + '.' + event.id"
+                        >
+                            <i class="fas fa-exclamation-circle"></i>
+                        </a>
+                        <b-tooltip :target="'process-tip-' + process.id + '.' + event.id" placement="right">
                           {{error}}
                         </b-tooltip>
+                        <span class="invalid-feedback d-block">{{error}}</span>
                     </div>
                     <div ref="description" class="description" v-html="truncatedDescription"></div>
                 </div>
@@ -79,7 +81,9 @@ Vue.use(TooltipPlugin)
           })
           .catch(error => {
             this.disabled = false;
-            let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;
+            let message = error && error.response.data.message
+                            || error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors)
+                            || error && error.message;
             this.error = message;
           });
       }
@@ -123,7 +127,7 @@ Vue.use(TooltipPlugin)
 
     .process-card {
         cursor: pointer;
-        width: 354px;
+        width: 100%;
         height: 91px;
         border-radius: 2px;
         background-color: #f7f9fa;

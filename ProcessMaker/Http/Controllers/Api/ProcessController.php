@@ -815,7 +815,12 @@ class ProcessController extends Controller
         $event = $definitions->getEvent($id);
         $data = request()->post();
         //Trigger the start event
-        $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
+        try {
+            $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
+        }
+        catch (\Exception $e) {
+            abort(500, $e->getMessage());
+        }
         return new ProcessRequests($processRequest);
     }
 
