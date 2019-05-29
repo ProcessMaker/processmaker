@@ -10,21 +10,26 @@
                  ref="requestModalAdd"
                  :title="$t('New Request')"
                  hide-footer>
-            <span class="float-right">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text">
-                            <i class="fas fa-search"></i>
-                        </div>
-                    </div>
-                    <input class="form-control form-control-sm" v-model="filter" :placeholder="$t('Search') + '...'">
-                </div>
-            </span>
 
-            <p>{{ $t("We've made it easy for you to start a Request for the following Processes. Select a Process to start your Request.") }}</p>
+            <b-row no-gutters>
+              <b-col cols="8">
+                <p>{{ $t("We've made it easy for you to start a Request for the following Processes. Select a Process to start your Request.") }}</p>
+              </b-col>
+              <b-col cols="4">
+                
+                <b-input-group>
+                  <b-input-group-text slot="prepend">
+                    <i class="fas fa-search"></i>
+                  </b-input-group-text>
+                  <b-form-input v-model="filter" :placeholder="$t('Search') + '...'"></b-form-input>
+                </b-input-group>
+
+              </b-col>
+            </b-row>
+
             <div v-if="Object.keys(processes).length && !loading" class="process-list p-4">
-                <div class="category" v-for="(category, index) in processes">
-                    <h3 class="name">{{index}}</h3>
+                <div v-for="(category, index) in processes">
+                    <h3>{{index}}</h3>
                     <process-card v-for="(process,index) in category"
                                   :filter="filter"
                                   :key="index"
@@ -171,41 +176,4 @@
 </script>
 
 <style lang="scss" scoped>
-    .requests-modal {
-        .loading,
-        .no-requests {
-            padding: 32px 60px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .process-list {
-            //flex-grow: 1;
-            overflow: auto;
-
-            .category {
-                padding-bottom: 32px;
-
-                .name {
-                    font-size: 16px;
-                    font-weight: bold;
-                    font-style: normal;
-                    font-stretch: normal;
-                    line-height: normal;
-                    letter-spacing: normal;
-                    color: #788793;
-                }
-            }
-
-            .processes {
-                display: flex;
-                flex-flow: row wrap;
-            }
-        }
-
-        &.show {
-            display: flex;
-            flex-direction: column;
-        }
-    }
 </style>
