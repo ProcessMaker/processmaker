@@ -32,6 +32,7 @@
                       @search-change="getRequests"
                       @input="buildPmql"
                       :select-label="''"
+                      :deselect-label="''"
                       :loading="isLoading.request"
                       open-direction="bottom"
                       label="name"
@@ -50,6 +51,7 @@
                       @search-change="getNames"
                       @input="buildPmql"
                       :select-label="''"
+                      :deselect-label="''"
                       :loading="isLoading.name"
                       open-direction="bottom"
                       label="name"
@@ -66,6 +68,7 @@
                       <multiselect
                       v-model="status"
                       :select-label="''"
+                      :deselect-label="''"
                       @input="buildPmql"
                       :loading="isLoading.status"
                       open-direction="bottom"

@@ -31,6 +31,8 @@
                         <label class="typo__label">{{__('Run script as')}}</label>
                         <multiselect v-model="selectedUser"
                                      label="fullname"
+                                     :select-label="''"
+                                     :deselect-label="''"
                                      :options="options"
                                      :searchable="true"
                                      :class="{'is-invalid': errors.run_as_user_id}">

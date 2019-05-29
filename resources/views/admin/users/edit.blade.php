@@ -341,6 +341,8 @@
                             <multiselect v-model="selectedGroup"
                                          placeholder="{{__('Select group or type here to search groups')}}"
                                          :options="groups"
+                                         :select-label="''"
+                                         :deselect-label="''"
                                          :multiple="true"
                                          track-by="name"
                                          :custom-label="customLabel"

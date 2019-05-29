@@ -128,6 +128,8 @@
                                 <multiselect v-model="selectedUsers"
                                              placeholder="{{__('Select user or type here to search users')}}"
                                              :options="availableUsers"
+                                             :select-label="''"
+                                             :deselect-label="''"
                                              :multiple="true"
                                              track-by="fullname"
                                              :custom-label="customLabel"
