@@ -811,5 +811,6 @@
     "Language:": "Language:",
     "The group was deleted.": "The group was deleted.",
     "Type to search task": "Type to search task",
-    "The following items should be configured to ensure your process is functional.": "The following items should be configured to ensure your process is functional."
+    "The following items should be configured to ensure your process is functional.": "The following items should be configured to ensure your process is functional.",
+    "The bpm definition is not valid": "The bpm definition is not valid"
 }
