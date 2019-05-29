@@ -12,7 +12,7 @@
       <b-badge pill variant="danger" v-if="totalMessages>9" id="info-large">9+</b-badge>
     </a>
     <b-popover :target="'exPopover1-bottom'" :placement="'bottomleft'" triggers="click blur">
-      <h3 class="popover-header">{{$t('Notifications')}}</h3>
+      <h3 class="popover-header bg-light">{{$t('Notifications')}}</h3>
       <ul class="list-unstyled tasklist">
         <li v-if="messages.length == 0">
           {{$t('No Notifications Found')}}
@@ -144,10 +144,8 @@ export default {
 
 <style lang="scss" scoped>
 .popover-header {
-  background-color: #fff;
   font-size: 18px;
   font-weight: 600;
-  color: #333333;
   margin: -12px;
   margin-top: -8px;
   margin-bottom: 18px;
