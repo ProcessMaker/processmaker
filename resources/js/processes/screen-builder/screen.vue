@@ -53,6 +53,7 @@
               v-model="previewData"
               class="p-3 overflow-auto"
               @submit="previewSubmit"
+              :mode="mode"
               :config="config"
               :computed="computed"
               :custom-css="customCSS"
@@ -75,7 +76,7 @@
                 </b-button>
 
                 <b-collapse v-model="showDataInput" id="showDataInput">
-                  <form-text-area class="data-input mb-0 data-collapse" v-model="previewInput"></form-text-area>
+                  <monaco-editor :options="monacoOptions" class="data-collapse" v-model="previewInput" language="json"/>
                 </b-collapse>
 
                 <b-button variant="outline"
@@ -150,12 +151,10 @@
   import "@processmaker/spark-screen-builder/dist/vue-form-builder.css";
   import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
+  import MonacoEditor from "vue-monaco";
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
-  import {
-    FormTextArea,
-  } from "@processmaker/vue-form-elements";
   import _ from "lodash";
 
 import Validator from "validatorjs";
@@ -167,17 +166,17 @@ import Validator from "validatorjs";
   export default {
     props: ["process", "screen", 'permission'],
     data() {
+      const defaultConfig = [{
+        name: "Default",
+        computed: [],
+        items: []
+      }];
+
       return {
         mode: "editor",
         // Computed properties
         computed: [],
-        config: [
-          {
-            name: "Default",
-            computed: [],
-            items: []
-          }
-        ],
+        config: this.screen.config || defaultConfig,
         previewData: {},
         previewInput: '{}',
         customCSS: "",
@@ -186,15 +185,20 @@ import Validator from "validatorjs";
         toggleValidation: true,
         showDataPreview: true,
         showDataInput: true,
+        monacoOptions: {
+          automaticLayout: true,
+          lineNumbers: 'off',
+          minimap: false,
+        },
       };
     },
     components: {
       VueFormBuilder,
       VueFormRenderer,
       VueJsonPretty,
-      FormTextArea,
       ComputedProperties,
-      CustomCSS
+      CustomCSS,
+      MonacoEditor
     },
     watch: {
       mode(mode) {
@@ -293,6 +297,7 @@ import Validator from "validatorjs";
       updateConfig(newConfig) {
         this.config = newConfig
         this.refreshSession();
+        ProcessMaker.EventBus.$emit("new-changes");
       },
       updatePreview(data) {
         this.previewData = data
@@ -347,6 +352,7 @@ import Validator from "validatorjs";
                 this.exportScreen();
               }
               ProcessMaker.alert(this.$t("Successfully saved"), "success");
+              ProcessMaker.EventBus.$emit("save-changes");
             });
         }
       }
@@ -375,19 +381,11 @@ import Validator from "validatorjs";
       right: 0;
     }
 
-    .data-input {
-      margin-top: -25px;
-       textarea.form-control {
-        height: calc(100% - 25px);
-        resize: none;
-      }
-    }
-
     .preview-inspector {
       max-width: 265px;
     }
 
     .data-collapse {
-      height: 250px;
+      height: 225px;
     }
 </style>

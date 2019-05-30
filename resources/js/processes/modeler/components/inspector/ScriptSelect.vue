@@ -4,6 +4,8 @@
         <multiselect v-model="content"
                      track-by="id"
                      label="title"
+                     :select-label="''"
+                     :deselect-label="''"
                      :class="{'border border-danger':error}"
                      :loading="loading"
                      :placeholder="$t('type here to search')"

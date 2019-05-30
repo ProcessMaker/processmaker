@@ -46,6 +46,7 @@ class CreateUsersTable extends Migration
             $table->dateTime('loggedin_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
 
         });
     }

@@ -56,7 +56,7 @@
                         </div>
                         <div class="form-group">
                             {!! Form::label('status', __('Status')) !!}
-                            {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, [
+                            {!! Form::select('status', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')], null, [
                             'id' => 'status',
                             'class' => 'form-control',
                             'v-model' => 'formData.status',
@@ -128,6 +128,8 @@
                                 <multiselect v-model="selectedUsers"
                                              placeholder="{{__('Select user or type here to search users')}}"
                                              :options="availableUsers"
+                                             :select-label="''"
+                                             :deselect-label="''"
                                              :multiple="true"
                                              track-by="fullname"
                                              :custom-label="customLabel"
@@ -265,7 +267,7 @@
             this.resetErrors();
             ProcessMaker.apiClient.put('groups/' + this.formData.id, this.formData)
               .then(response => {
-                ProcessMaker.alert('{{__('Update Group Successfully')}}', 'success');
+                ProcessMaker.alert(this.$t('Update Group Successfully'), 'success');
                 this.onClose();
               })
               .catch(error => {
@@ -293,7 +295,7 @@
               group_id: this.formData.id
             })
               .then(response => {
-                ProcessMaker.alert('{{__('Group Permissions Updated Successfully ')}}', 'success');
+                ProcessMaker.alert(this.$t('Group Permissions Updated Successfully'), 'success');
                 this.onClose();
               })
           }

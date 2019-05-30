@@ -43,10 +43,8 @@ class Kernel extends HttpKernel
 
         ],
         'api' => [
-            \ProcessMaker\Http\Middleware\SetLocale::class,
-            // Empty middleware for api
-            // @todo Determine if we need throttling.  Currently it interrupts test suites
-            // However, we haven't had a product decision on utilizing throttling or not
+            // API Middleware is defined with routeMiddleware below.
+            // See routes/api.php
         ],
     ];
     /**
@@ -65,7 +63,7 @@ class Kernel extends HttpKernel
         'permission' => \ProcessMaker\Http\Middleware\PermissionCheck::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'sanitize' => \ProcessMaker\Http\Middleware\SanitizeInput::class,
-        'setlang' => \ProcessMaker\Http\Middleware\SetLanguage::class,
+        'setlocale' => \ProcessMaker\Http\Middleware\SetLocale::class,
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class
     ];
 }

@@ -122,6 +122,8 @@
                                         <multiselect v-model="selectedUser"
                                                      placeholder="{{__('Select the user to reassign to the task')}}"
                                                      :options="usersList"
+                                                     :select-label="''"
+                                                     :deselect-label="''"
                                                      :multiple="false"
                                                      track-by="fullname"
                                                      :show-labels="false"

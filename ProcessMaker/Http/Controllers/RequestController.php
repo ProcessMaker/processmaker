@@ -31,7 +31,7 @@ class RequestController extends Controller
         
         //load counters
         $query = ProcessRequest::query();
-        if (!Auth::user()->is_administrator) {
+        if (!Auth::user()->is_administrator && !Auth::user()->can('view-all_requests')) {
             $query->startedMe(Auth::user()->id);
         }
 
@@ -58,7 +58,7 @@ class RequestController extends Controller
     {
         $result = 0;
         $query = ProcessRequest::query();
-        if (!Auth::user()->is_administrator) {
+        if (!Auth::user()->is_administrator && !Auth::user()->can('view-all_requests')) {
             $query->startedMe(Auth::user()->id);
         }
 

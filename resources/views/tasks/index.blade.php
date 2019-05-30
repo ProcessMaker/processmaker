@@ -32,6 +32,7 @@
                       @search-change="getRequests"
                       @input="buildPmql"
                       :select-label="''"
+                      :deselect-label="''"
                       :loading="isLoading.request"
                       open-direction="bottom"
                       label="name"
@@ -50,13 +51,14 @@
                       @search-change="getNames"
                       @input="buildPmql"
                       :select-label="''"
+                      :deselect-label="''"
                       :loading="isLoading.name"
                       open-direction="bottom"
                       label="name"
                       :options="nameOptions"
                       :track-by="'name'"
                       :multiple="true"
-                      :placeholder="$t('Task')">
+                      :placeholder="_.startCase(_.camelCase($t('Task')))">
                           <template slot="selection" slot-scope="{ values, search, isOpen }">
                               <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('names') }}</span>
                           </template>
@@ -66,6 +68,7 @@
                       <multiselect
                       v-model="status"
                       :select-label="''"
+                      :deselect-label="''"
                       @input="buildPmql"
                       :loading="isLoading.status"
                       open-direction="bottom"

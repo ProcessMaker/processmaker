@@ -497,7 +497,7 @@
               status: 'CANCELED'
             })
               .then(response => {
-                ProcessMaker.alert('The request was canceled.', 'success');
+                ProcessMaker.alert(this.$t('The request was canceled.'), 'success');
                 window.location.reload();
               })
               .catch(error => {
@@ -509,14 +509,14 @@
           },
           completeRequest() {
             ProcessMaker.confirmModal(
-              __("Caution!"),
-              __("Are you sure you want to complete this request?"),
+              this.$t("Caution!"),
+              this.$t("Are you sure you want to complete this request?"),
               "",
               () => {
                 ProcessMaker.apiClient.put(`requests/${this.requestId}`, {
                   status: 'COMPLETED'
                 }).then(() => {
-                  ProcessMaker.alert(__('Request Completed'), 'success')
+                  ProcessMaker.alert(this.$t('Request Completed'), 'success')
                   location.reload()
                 })
               })
