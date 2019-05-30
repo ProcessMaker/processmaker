@@ -51,7 +51,7 @@
     "@processmaker/processmaker-bpmn-moddle": "^0.4.0",
     "@processmaker/spark-modeler": "^0.15.1",
     "@processmaker/spark-screen-builder": "^0.16.0",
-    "@processmaker/vue-form-elements": "^0.10.0",
+    "@processmaker/vue-form-elements": "^0.10.1",
     "babel-eslint": "^10.0.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "bootstrap": "^4.3",
