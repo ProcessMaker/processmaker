@@ -59,12 +59,12 @@
         ],
         fields: [
           {
-            title: this.$t("Name"),
+            title: () => this.$t("Name"),
             name: "name",
             sortField: "name"
           },
           {
-            title: this.$t("Description"),
+            title: () => this.$t("Description"),
             name: "description",
             sortField: "description"
           },
