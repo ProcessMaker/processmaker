@@ -7,10 +7,6 @@
         </b-card-text>
 
         <div class="ml-auto">
-          <b-btn variant="secondary" size="sm" v-b-modal="'uploadmodal'" class="mr-2">
-            <i class="fas fa-upload mr-1"/>
-            {{ $t('Upload XML') }}
-          </b-btn>
           <b-btn variant="secondary" size="sm" @click="saveBpmn">
             <i class="fas fa-save mr-1"/>
             {{ $t('Save') }}
@@ -28,16 +24,6 @@
         </statusbar>
       </b-card-footer>
     </b-card>
-
-    <b-modal ref="uploadmodal"
-             id="uploadmodal"
-             :title="$t('Upload BPMN File')"
-             :cancel-title="$t('Cancel')"
-             :ok-title="$t('Ok')">
-      <file-upload @input-file="handleUpload">
-        {{ $t('Upload file') }}
-      </file-upload>
-    </b-modal>
   </b-container>
 </template>
 
@@ -110,14 +96,7 @@ export default {
           })
         }
       });
-    },
-    handleUpload(fileObject) {
-      if (!fileObject) {
-        return;
-      }
-
-      reader.readAsText(fileObject.file);
-    },
+    }
   },
   mounted() {
     reader.onloadend = () => {
