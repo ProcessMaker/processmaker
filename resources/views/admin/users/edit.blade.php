@@ -189,6 +189,15 @@
                                                           :input-data="options"></avatar-image>
                                         </div>
                                         <div class="form-group">
+                                          {!!Form::label('title', __('Job Title')) !!}
+                                           <b-form-input
+                                              id="input-1"
+                                              class="mb-2"
+                                              v-model="formData.title"
+                                              type="text"
+                                              required
+                                              placeholder="Job Title"
+                                            ></b-form-input>
                                             @include('shared.input',
                                                 ['type' => 'text', 'name' => 'username', 'label' => __('Username')]
                                             )
