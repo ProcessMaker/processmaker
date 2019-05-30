@@ -29,16 +29,11 @@
 
 <script>
 import { Modeler, Statusbar, ValidationStatus } from "@processmaker/spark-modeler";
-import FileUpload from 'vue-upload-component';
-import FilerSaver from 'file-saver';
-
-const reader = new FileReader();
 
 export default {
   name: 'ModelerApp',
   components: {
     Modeler,
-    FileUpload,
     ValidationStatus,
     Statusbar,
   },
@@ -99,11 +94,6 @@ export default {
     }
   },
   mounted() {
-    reader.onloadend = () => {
-      this.$refs.modeler.loadXML(reader.result);
-      this.$refs.uploadmodal.hide();
-    };
-
     ProcessMaker.$modeler = this.$refs.modeler;
 
     window.ProcessMaker.EventBus.$on('modeler-change', this.refreshSession);
@@ -111,14 +101,3 @@ export default {
 };
 </script>
 
-<style lang="scss">
-/* body,
-html {
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
-} */
-</style>
