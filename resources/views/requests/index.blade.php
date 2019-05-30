@@ -45,7 +45,7 @@
                             <h6 class="card-text">{{__('Completed')}}</h6>
                         </a>
                     </b-card>
-                    @if (Auth::user()->is_administrator)
+                    @can('view-all_requests')
                     <b-card header-class="d-flex align-items-center justify-content-center card-size-header border-0"
                         text-variant="white" class="bg-warning mb-3 d-flex flex-row  card-border border-0">
                         <i slot="header" class='fas fa-clipboard fa-2x'></i>
@@ -54,7 +54,7 @@
                             <h6 class="card-text">{{__('All Requests')}}</h6>
                         </a>
                     </b-card>
-                    @endif
+                    @endcan
 
                 </b-card-group>
 
