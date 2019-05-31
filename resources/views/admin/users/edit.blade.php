@@ -189,6 +189,18 @@
                                                           :input-data="options"></avatar-image>
                                         </div>
                                         <div class="form-group">
+                                            @include('shared.input',
+                                                ['type' => 'text', 'name' => 'username', 'label' => __('Username')]
+                                            )
+                                        </div>
+                                        <div class="form-group">
+                                            {!!Form::label('status', __('Status')) !!}
+                                            {!!Form::select('size', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')],
+                                            'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
+                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
+                                            <div class="invalid-feedback" v-if="errors.email">@{{errors.status}}</div>
+                                        </div>
+                                        <div class="form-group">
                                           {!!Form::label('title', __('Job Title')) !!}
                                            <b-form-input
                                               id="input-1"
@@ -198,19 +210,7 @@
                                               required
                                               placeholder="Job Title"
                                             ></b-form-input>
-                                            @include('shared.input',
-                                                ['type' => 'text', 'name' => 'username', 'label' => __('Username')]
-                                            )
                                         </div>
-
-                                        <div class="form-group">
-                                            {!!Form::label('status', __('Status')) !!}
-                                            {!!Form::select('size', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')],
-                                            'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
-                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
-                                            <div class="invalid-feedback" v-if="errors.email">@{{errors.status}}</div>
-                                        </div>
-
                                         <div class="form-group">
                                             <small class="form-text text-muted">
                                                 {{__('Leave the password blank to keep the current password:')}}
