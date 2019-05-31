@@ -155,8 +155,6 @@
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
-  import {
-  } from "@processmaker/vue-form-elements";
   import _ from "lodash";
 
 import Validator from "validatorjs";
@@ -168,17 +166,17 @@ import Validator from "validatorjs";
   export default {
     props: ["process", "screen", 'permission'],
     data() {
+      const defaultConfig = [{
+        name: "Default",
+        computed: [],
+        items: []
+      }];
+
       return {
         mode: "editor",
         // Computed properties
         computed: [],
-        config: [
-          {
-            name: "Default",
-            computed: [],
-            items: []
-          }
-        ],
+        config: this.screen.config || defaultConfig,
         previewData: {},
         previewInput: '{}',
         customCSS: "",

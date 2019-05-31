@@ -83,7 +83,7 @@ class GenerateMenus
         });
         Menu::make('sidebar_request', function ($menu) {
           $submenu = $menu->add(__('Request'));
-          $submenu->add(__('Started By Me'), [
+          $submenu->add(__('My Requests'), [
               'route' => ['requests_by_type', ''],
               'icon' => 'fa-id-badge',
           ]);
