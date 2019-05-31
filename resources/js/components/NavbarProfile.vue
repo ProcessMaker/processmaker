@@ -1,15 +1,22 @@
 <template>
   <div id="userMenu">
-    <avatar-image
+    
+    
+    <a
+      data-toggle="dropdown"
+      href="#"
+      aria-expanded="false"
+      id="profileMenu"
+    ><avatar-image
       id="avatarMenu"
       class-container="d-flex m-1"
       size="40"
       class-image="m-1"
       :input-data="information"
-    ></avatar-image>
+    ></avatar-image></a>
 
     <b-popover
-      target="avatarMenu"
+      target="profileMenu"
       triggers="click blur"
       placement="bottomleft"
       container="userMenu"
