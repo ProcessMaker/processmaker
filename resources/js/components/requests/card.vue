@@ -5,11 +5,9 @@
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              <strong>
-                {{transformedName}}
-                <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
-                <a href="#" @click="showRequestDetails">...</a>
-              </strong>
+              {{transformedName}}
+              <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
+              <a href="#" @click="showRequestDetails">...</a>
             </div>
             <div class="col-2 text-right">
               <a href="#" @click="newRequestLink(process, event)" class="btn btn-primary btn-sm">
@@ -97,8 +95,3 @@ export default {
   }
 };
 </script>
-<style lang="sass" scoped>
-.cursor-pointer{
-  cursor: pointer;
-}
-</style>
