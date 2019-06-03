@@ -13,7 +13,7 @@ class CreateProcessRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('process_requests', function (Blueprint $table) {
+        Schema::connection('data')->create('process_requests', function (Blueprint $table) {
             //Columns
             $table->increments('id');
             $table->unsignedInteger('process_id');
@@ -37,24 +37,6 @@ class CreateProcessRequestsTable extends Migration
             $table->index('process_collaboration_id');
             $table->index('parent_request_id');
             $table->index('participant_id');
-
-            //Foreign keys
-            //If the collaboration is deleted the request stays without collaboration
-            $table->foreign('process_collaboration_id')
-                ->references('id')->on('process_collaborations')
-                ->onDelete('set null');
-            //A process can not be deleted if it has requests
-            $table->foreign('process_id')
-                ->references('id')->on('processes')
-                ->onDelete('restrict');
-            //An user can not be deleted if it has requests
-            $table->foreign('user_id')
-                ->references('id')->on('users')
-                ->onDelete('restrict');
-            //A request delete child requests in cascade
-            $table->foreign('parent_request_id')
-                ->references('id')->on('process_requests')
-                ->onDelete('cascade');
         });
     }
 
@@ -65,6 +47,6 @@ class CreateProcessRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('process_requests');
+        Schema::connection('data')->dropIfExists('process_requests');
     }
 }
