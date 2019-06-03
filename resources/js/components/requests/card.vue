@@ -2,17 +2,25 @@
   <div>
     <div>
       <div class="card" v-for="event in process.startEvents" :key="event.id">
-        <div class="card-header">
-          {{transformedName}}
-          <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
-        </div>
         <div class="card-body">
-          <p class="card-text text-muted">{{process.description}}</p>
-        </div>
-        <div class="card-footer">
-          <a href="#" @click="newRequestLink(process, event)" class="btn btn-primary btn-sm">
-            <i class="fas fa-caret-square-right"></i> Start
-          </a>
+          <div class="row">
+            <div class="col-10">
+              <strong>
+                {{transformedName}}
+                <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
+                <a href="#" @click="showRequestDetails">...</a>
+              </strong>
+            </div>
+            <div class="col-2 text-right">
+              <a href="#" @click="newRequestLink(process, event)" class="btn btn-primary btn-sm">
+                <i class="fas fa-caret-square-right"></i> Start
+              </a>
+            </div>
+          </div>
+          <div v-if="showdetail">
+            <hr>
+            <p class="card-text text-muted">{{process.description}}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -29,7 +37,8 @@ export default {
     return {
       disabled: false,
       spin: 0,
-      showtip: true
+      showtip: true,
+      showdetail: false
     };
   },
   methods: {
@@ -48,6 +57,13 @@ export default {
           var instance = response.data;
           window.location = "/requests";
         });
+    },
+    showRequestDetails: function(id) {
+      if (this.showdetail == false) {
+        this.showdetail = true;
+      } else {
+        this.showdetail = false;
+      }
     }
   },
   computed: {
@@ -81,3 +97,8 @@ export default {
   }
 };
 </script>
+<style lang="sass" scoped>
+.cursor-pointer{
+  cursor: pointer;
+}
+</style>
