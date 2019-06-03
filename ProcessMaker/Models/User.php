@@ -27,6 +27,8 @@ class User extends Authenticatable implements HasMedia
     use SerializeToIso8601;
     use SoftDeletes;
 
+    protected $connection = 'spark';
+
     //Disk
     public const DISK_PROFILE = 'profile';
     //collection media library
@@ -196,7 +198,7 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
-    
+
     public function groups()
     {
         return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
@@ -239,7 +241,7 @@ class User extends Authenticatable implements HasMedia
      * cause errors from time to time.
      *
      * @return string
-     */    
+     */
     public function setAvatarAttribute($value = null)
     {
         if ($value) {

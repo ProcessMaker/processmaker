@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\Model;
 class ScreenType extends Model
 {
 
+    protected $connection = 'spark';
+
     public $timestamps = false;
 
     protected $fillable = [

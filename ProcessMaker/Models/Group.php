@@ -40,6 +40,8 @@ class Group extends Model
     use PMQL;
     use SerializeToIso8601;
 
+    protected $connection = 'spark';
+
     protected $fillable = [
         'name',
         'description',
@@ -55,7 +57,7 @@ class Group extends Model
             'status' => 'in:ACTIVE,INACTIVE'
         ];
     }
-    
+
     public function permissions()
     {
         return $this->morphToMany('ProcessMaker\Models\Permission', 'assignable');

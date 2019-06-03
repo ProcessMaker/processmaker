@@ -48,6 +48,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Media extends Model
 {
+    protected $connection = 'spark';
 
     /**
      * The attributes that are mass assignable.
