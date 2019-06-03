@@ -40,8 +40,25 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => 'InnoDB',
+        ],
+        'data' => [
+            'driver' => env('DATA_DB_DRIVER', 'mysql'),
+            'host' => env('DATA_DB_HOST', '127.0.0.1'),
+            'port' => env('DATA_DB_PORT', '3306'),
+            'database' => env('DATA_DB_DATABASE', 'spark'),
+            'username' => env('DATA_DB_USERNAME', 'homestead'),
+            'password' => env('DATA_DB_PASSWORD', ''),
+            'unix_socket' => env('DATA_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
         ]
     ],
+    /**
+     * Enable the use of an external connection to store tables
+     * that contains customer's data
+     */
+    'enable_external_connection' => env('DATA_DB_PASSWORD', false),
     /*
     |--------------------------------------------------------------------------
     | Migration Repository Table
