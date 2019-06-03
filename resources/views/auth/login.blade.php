@@ -1,4 +1,7 @@
 @extends('layouts.minimal')
+@section('title')
+Login
+@endsection
 @section('content')
 <div align="container">
   <div align="center" class="p-5">
