@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\Models\Media as Model;
 
 /**
  * Represents media files stored in the database
