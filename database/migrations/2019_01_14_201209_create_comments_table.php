@@ -13,7 +13,7 @@ class CreateCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::connection('data')->create('comments', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id')->nullable(); // could be a system-generated comment
             $table->morphs('commentable');
@@ -25,8 +25,6 @@ class CreateCommentsTable extends Migration
 
             $table->index('user_id');
             $table->index(['commentable_id','commentable_type']);
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -37,6 +35,6 @@ class CreateCommentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comments');
+        Schema::connection('data')->dropIfExists('comments');
     }
 }
