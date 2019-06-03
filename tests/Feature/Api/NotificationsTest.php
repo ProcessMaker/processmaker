@@ -81,7 +81,7 @@ class NotificationsTest extends TestCase
      */
     public function testNotificationListDates()
     {
-        User::delete();
+        User::query()->delete();
         $newEntity = factory(Notification::class)->create([
             'notifiable_type' => User::class,
             'notifiable_id' => $this->user->id
