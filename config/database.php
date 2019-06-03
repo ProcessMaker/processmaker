@@ -58,7 +58,7 @@ return [
      * Enable the use of an external connection to store tables
      * that contains customer's data
      */
-    'enable_external_connection' => env('DATA_DB_PASSWORD', false),
+    'enable_external_connection' => env('ENABLE_EXTERNAL_CONNECTION', false),
     /*
     |--------------------------------------------------------------------------
     | Migration Repository Table
