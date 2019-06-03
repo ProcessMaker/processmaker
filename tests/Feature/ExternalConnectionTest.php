@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Database\Connection;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Connection;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\Comment;
-use Illuminate\Support\Collection;
 
 /**
  * Test edit data
@@ -30,11 +30,11 @@ class ExternalConnectionTest extends TestCase
         $this->assertInstanceOf(Connection::class, $connection);
 
         // Check that the table process_requests exists in the DATA connection
-        $collection = DB::table('process_requests')->get();
+        $collection = $connection->table('process_requests')->get();
         $this->assertInstanceOf(Collection::class, $collection);
 
         // Check that the table comments exists in the DATA connection
-        $collection = DB::table('comments')->get();
+        $collection = $connection->table('comments')->get();
         $this->assertInstanceOf(Collection::class, $collection);
 
         // Check the ProcessRequest model uses the DATA connection
