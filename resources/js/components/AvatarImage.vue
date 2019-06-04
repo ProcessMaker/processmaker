@@ -13,7 +13,7 @@
         </template>
         <template v-else>
           <button
-            class="rounded-circle bg-warning border-0 align-middle text-white text-center text-uppercase text-nowrap"
+            class="avatar-image-button rounded-circle bg-warning border-0 align-middle text-white text-center text-uppercase text-nowrap"
             :style="styleButton"
             :title="value.tooltip"
             :href="value.id"
@@ -127,3 +127,15 @@ export default {
   }
 };
 </script>
+
+<style lang="scss" scoped>
+  .avatar-image-button {
+    outline: 0 !important;
+    
+    &:active,
+    &:focus,
+    &:hover {
+      outline: 0;
+    }
+  }
+</style>

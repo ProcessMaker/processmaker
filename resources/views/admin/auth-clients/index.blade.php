@@ -114,14 +114,14 @@
               $('#createEditAuthClient').modal('hide');
               this.$refs.authClientList.fetch();
               this.loading = false;
-              ProcessMaker.alert(__("The auth client was ") + verb + ".", __("success"))
+              ProcessMaker.alert(this.$t("The auth client was ") + verb + ".", this.$t("success"))
             }).catch(error => {
               this.disabled = false;
               this.errors = error.response.data.errors;
             });
           },
           resetValues() {
-            this.title = __('Create An Auth-Client');
+            this.title = this.$t('Create An Auth-Client');
             this.authClient = {
               id: null,
               name: "",
@@ -135,7 +135,7 @@
             this.disabled = false;
           },
           edit(item) {
-            this.title = __('Edit Auth Client');
+            this.title = this.$t('Edit Auth Client');
             this.authClient = item;
             $('#createEditAuthClient').modal('show');
           }

@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/x-icon" href="https://pbs.twimg.com/profile_images/521685439820742657/8B2oQKmP_400x400.jpeg" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title',__('Welcome')) - {{__('ProcessMaker')}}</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <title>@yield('title',__('Welcome')) - ProcessMaker Spark</title>
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
 @yield('css')
 </head>

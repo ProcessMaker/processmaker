@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Jobs\CancelRequest;
+use ProcessMaker\PmqlHelper;
 
 class ProcessRequestController extends Controller
 {
@@ -39,13 +40,6 @@ class ProcessRequestController extends Controller
         'data'
     ];
     
-    private $statusMap = [
-        'In Progress' => 'ACTIVE',
-        'Completed' => 'COMPLETED',
-        'Error' => 'ERROR',
-        'Canceled' => 'CANCELED',
-    ];
-
     /**
      * Display a listing of the resource.
      *
@@ -133,65 +127,23 @@ class ProcessRequestController extends Controller
             });
         }
 
+
         $pmql = $request->input('pmql', '');
-
-        try {
-            if (!empty($pmql)) {
-                $query->pmql($pmql, function($expression) {
-                    //Handle process/request name
-                    if ($expression->field->field() == 'request') {
-                        return function($query) use($expression) {
-                            $processes = Process::where('name', $expression->value->value())->get();
-                            $query->whereIn('process_id', $processes->pluck('id'));
-                        };
-                    }
-
-                    //Handle status
-                    if ($expression->field->field() == 'status') {
-                        $status = $expression->value->value();
-
-                        return function($query) use($expression) {
-                            $value = $expression->value->value();
-
-                            if (array_key_exists($value, $this->statusMap)) {
-                                $query->where('status', $this->statusMap[$value]);
-                            } else {
-                                $query->where('status', $value);
-                            }
-                        };
-                    }
-
-                    //Handle requester
-                    if ($expression->field->field() == 'requester') {
-                        return function($query) use($expression) {
-                            $requests = ProcessRequest::whereHas('user', function($query) use ($expression) {
-                                $query->where('username', $expression->value->value());
-                            })->get();
-                            $query->whereIn('id', $requests->pluck('id'));
-                        };
-                    }
-
-                    //Handle participants
-                    if ($expression->field->field() == 'participant') {
-                        return function($query) use($expression) {
-                            $requests = ProcessRequest::whereHas('participants', function($query) use ($expression) {
-                                $query->where('username', $expression->value->value());
-                            })->get();
-                            $query->whereIn('id', $requests->pluck('id'));
-                        };
-                    }
-                });
+        if (!empty($pmql)) {
+            try {
+                $helper = new PmqlHelper('request');
+                $query->pmql($pmql, $helper->aliases());
+            } catch (QueryException $e) {
+                return response(['message' => __('Your PMQL search could not be completed.')], 400);
+            } catch (SyntaxError $e) {
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
-
-            $response = $query->orderBy(
-                $request->input('order_by', 'name'),
-                $request->input('order_direction', 'ASC')
-            )->get();
-        } catch (QueryException $e) {
-            return response(['message' => __('Your PMQL search could not be completed.')], 400);
-        } catch (SyntaxError $e) {
-            return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
         }
+        
+        $response = $query->orderBy(
+            $request->input('order_by', 'name'),
+            $request->input('order_direction', 'ASC')
+        )->get();
 
         if (isset($response)) {
             $response = $response->filter(function ($processRequest) {

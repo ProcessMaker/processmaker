@@ -164,7 +164,7 @@ class ProcessController extends Controller
 
         if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
-                ['message' => 'The bpm definition is not valid',
+                ['message' => __('The bpm definition is not valid'),
                     'errors' => ['bpmn' => $schemaErrors]],
                 422);
         }
@@ -225,7 +225,7 @@ class ProcessController extends Controller
         //bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
             return response(
-                ['message' => 'The bpm definition is not valid',
+                ['message' => __('The bpm definition is not valid'),
                     'errors' => ['bpmn' => $schemaErrors]],
                 422);
         }

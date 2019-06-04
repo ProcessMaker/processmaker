@@ -16,7 +16,7 @@ new Vue({
         deleteScript(data) {
             ProcessMaker.apiClient.delete(`scripts/${data.id}`)
                 .then((response) => {
-                    ProcessMaker.alert(__("The script was deleted."), "success");
+                    ProcessMaker.alert(this.$t("The script was deleted."), "success");
                     this.reload();
                 });
         },

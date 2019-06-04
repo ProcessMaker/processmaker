@@ -1,185 +1,97 @@
 <template>
-    <span>
-        <div v-for="event in process.startEvents" class="processes">
-            <div @click="newRequestLink(process, event)" class="process-card">
-                <div class="inner">
-                    <div>
-                        <span class="name" v-html="transformedName"></span>
-                        <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
-                        <i v-show="(spin===process.id + '.' + event.id) && !error" class="fa fa-spinner fa-spin fa-fw"></i>
-                        <a href="javascript:void(0)"
-                          class="text-danger"
-                          v-show="(spin===process.id + '.' + event.id) && error"
-                          :id="'process-tip-' + process.id + '.' + event.id"
-                          ><i class="fas fa-exclamation-circle"></i></a>
-                        <b-tooltip
-                          :target="'process-tip-' + process.id + '.' + event.id" placement="right">
-                          {{error}}
-                        </b-tooltip>
-                    </div>
-                    <div ref="description" class="description" v-html="truncatedDescription"></div>
-                </div>
+  <div>
+    <div>
+      <div class="card" v-for="event in process.startEvents" :key="event.id">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-10">
+              {{transformedName}}
+              <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
+              <a href="#" @click="showRequestDetails">...</a>
             </div>
-        </div>
-
-        <!-- Temporary until modeler validations are in place -->
-        <div v-if="process.startEvents.length == 0" class="processes">
-            <div class="process-card">
-                <div class="inner">
-                    <div>
-                        <span class="name" v-html="transformedName"></span>
-                    </div>
-                    <div ref="description" class="description warn">
-                        {{$t('This process can not be started because it does not have a start event.')}}
-                    </div>
-                </div>
+            <div class="col-2 text-right">
+              <a href="#" @click="newRequestLink(process, event)" class="btn btn-primary btn-sm">
+                <i class="fas fa-caret-square-right"></i> Start
+              </a>
             </div>
+          </div>
+          <div v-if="showdetail">
+            <hr>
+            <p class="card-text text-muted">{{process.description}}</p>
+          </div>
         </div>
-
-    </span>
+      </div>
+    </div>
+    <br>
+  </div>
 </template>
 
 <script>
-import { TooltipPlugin } from 'bootstrap-vue/es/components'
-Vue.use(TooltipPlugin)
-  export default {
-    props: ["name", "description", "filter", "id", "process"],
-    data() {
-      return {
-        disabled: false,
-        spin: 0,
-        error: '',
-        showtip: true,
+import { TooltipPlugin } from "bootstrap-vue/es/components";
+Vue.use(TooltipPlugin);
+export default {
+  props: ["name", "description", "filter", "id", "process"],
+  data() {
+    return {
+      disabled: false,
+      spin: 0,
+      showtip: true,
+      showdetail: false
+    };
+  },
+  methods: {
+    newRequestLink(process, event) {
+      if (this.disabled) {
+        return;
       }
+      this.disabled = true;
+      //Start a process
+      this.spin = process.id + "." + event.id;
+      let startEventId = event.id;
+      window.ProcessMaker.apiClient
+        .post("/process_events/" + this.process.id + "?event=" + startEventId)
+        .then(response => {
+          this.spin = 0;
+          var instance = response.data;
+          window.location = "/requests";
+        });
     },
-    methods: {
-      displayErrors(errors) {
-        const messages = [];
-        Object.keys(errors).forEach((key) => {
-          errors[key].forEach((message) => {
-            messages.push(message);
-          });
-        });
-        return messages.join("\n");
-      },
-      newRequestLink(process, event) {
-        if (this.disabled) {
-          return
-        }
-        this.disabled = true;
-        //Start a process
-        this.spin = process.id + '.' + event.id;
-        let startEventId = event.id;
-        this.error = '';
-        window.ProcessMaker.apiClient.post('/process_events/' + this.process.id + '?event=' + startEventId)
-          .then((response) => {
-            this.spin = 0;
-            var instance = response.data;
-            window.location = '/requests';
-          })
-          .catch(error => {
-            this.disabled = false;
-            let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;
-            this.error = message;
-          });
-      }
-    },
-    computed: {
-      transformedName() {
-        return this.process.name.replace(new RegExp(this.filter, "gi"), match => {
-          return '<span class="filtered">' + match + "</span>";
-        });
-      },
-      truncatedDescription() {
-        if (!this.process.description) {
-          return '<span class="filtered"></span>';
-        }
-        let result = "";
-        let container = this.$refs.description;
-        let wordArray = this.process.description.split(" ");
-        // Number of maximum characters we want for our description
-        let maxLength = 100;
-        let word = null;
-        while ((word = wordArray.shift())) {
-          if (result.length + word.length + 1 <= maxLength) {
-            result = result + " " + word;
-            continue;
-          } else {
-            break;
-          }
-        }
-        return result.replace(new RegExp(this.filter, "gi"), match => {
-          return '<span class="filtered">' + match + "</span>";
-        });
+    showRequestDetails: function(id) {
+      if (this.showdetail == false) {
+        this.showdetail = true;
+      } else {
+        this.showdetail = false;
       }
     }
-  };
+  },
+  computed: {
+    transformedName() {
+      return this.process.name.replace(new RegExp(this.filter, "gi"), match => {
+        return match;
+      });
+    },
+    truncatedDescription() {
+      if (!this.process.description) {
+        return '<span class="text-primary"></span>';
+      }
+      let result = "";
+      let container = this.$refs.description;
+      let wordArray = this.process.description.split(" ");
+      // Number of maximum characters we want for our description
+      let maxLength = 100;
+      let word = null;
+      while ((word = wordArray.shift())) {
+        if (result.length + word.length + 1 <= maxLength) {
+          result = result + " " + word;
+          continue;
+        } else {
+          break;
+        }
+      }
+      return result.replace(new RegExp(this.filter, "gi"), match => {
+        return '<span class="text-primary">' + match + "</span>";
+      });
+    }
+  }
+};
 </script>
-
-<style lang="scss" scoped>
-    .process-card /deep/ .filtered {
-        color: #3397e1;
-    }
-
-    .process-card {
-        cursor: pointer;
-        width: 354px;
-        height: 91px;
-        border-radius: 2px;
-        background-color: #f7f9fa;
-        border: solid 1px #eeeeee;
-        margin-right: 16px;
-        margin-bottom: 16px;
-        border-left: 2px solid #00bf9c;
-
-        .inner {
-            padding: 14px 23px;
-            height: 91px;
-
-            .name {
-                font-size: 14px;
-                font-weight: bold;
-                font-style: normal;
-                font-stretch: normal;
-                line-height: normal;
-                letter-spacing: normal;
-                color: #313131;
-                overflow: hidden;
-                white-space: nowrap;
-                -ms-text-overflow: ellipsis;
-                text-overflow: ellipsis;
-                width: 100%;
-            }
-
-            .description {
-                margin-top: 9px;
-                font-size: 12px;
-                height: 32px;
-                font-weight: normal;
-                font-style: normal;
-                font-stretch: normal;
-                line-height: normal;
-                letter-spacing: normal;
-                color: #788793;
-                overflow: hidden;
-            }
-
-            .warn {
-                font-style: italic
-            }
-        }
-
-        &:hover {
-            .name {
-                color: #00bf9c;
-
-                & /deep/ .filtered {
-                    color: #00bf9c;
-                }
-            }
-
-        }
-    }
-</style>
-
-

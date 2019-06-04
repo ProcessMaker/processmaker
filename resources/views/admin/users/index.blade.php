@@ -72,6 +72,12 @@
                             <div class="invalid-feedback" v-for="lastname in addError.lastname">@{{lastname}}</div>
                         </div>
                         <div class="form-group">
+                            {!!Form::label('title', __('Job Title'))!!}
+                            {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class'
+                            => '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
+                            <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
+                        </div>
+                        <div class="form-group">
                             {!!Form::label('status', __('Status'));!!}
                             {!!Form::select('size',[null => __('Select')]+['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], 'Active',
                             [
@@ -127,6 +133,7 @@
               username: '',
               firstname: '',
               lastname: '',
+              title: '',
               status: '',
               email: '',
               password: '',
@@ -141,6 +148,7 @@
                 this.firstname = '';
                 this.lastname = '';
                 this.status = '';
+                this.title = '',
                 this.email = '';
                 this.password = '';
                 this.confpassword = '';
@@ -178,6 +186,7 @@
                     username: this.username,
                     firstname: this.firstname,
                     lastname: this.lastname,
+                    title: this.title,
                     status: this.status,
                     email: this.email,
                     password: this.password

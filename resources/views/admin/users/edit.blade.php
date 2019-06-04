@@ -193,15 +193,24 @@
                                                 ['type' => 'text', 'name' => 'username', 'label' => __('Username')]
                                             )
                                         </div>
-
                                         <div class="form-group">
                                             {!!Form::label('status', __('Status')) !!}
-                                            {!!Form::select('size', ['ACTIVE' => 'Active', 'INACTIVE' => 'Inactive'],
+                                            {!!Form::select('size', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')],
                                             'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
                                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
                                             <div class="invalid-feedback" v-if="errors.email">@{{errors.status}}</div>
                                         </div>
-
+                                        <div class="form-group">
+                                          {!!Form::label('title', __('Job Title')) !!}
+                                           <b-form-input
+                                              id="input-1"
+                                              class="mb-2"
+                                              v-model="formData.title"
+                                              type="text"
+                                              required
+                                              placeholder="Job Title"
+                                            ></b-form-input>
+                                        </div>
                                         <div class="form-group">
                                             <small class="form-text text-muted">
                                                 {{__('Leave the password blank to keep the current password:')}}
@@ -341,6 +350,8 @@
                             <multiselect v-model="selectedGroup"
                                          placeholder="{{__('Select group or type here to search groups')}}"
                                          :options="groups"
+                                         :select-label="''"
+                                         :deselect-label="''"
                                          :multiple="true"
                                          track-by="name"
                                          :custom-label="customLabel"
@@ -670,14 +681,14 @@
               .then((result) => {
                 this.newToken = result.data;
                 this.loadTokens();
-                ProcessMaker.alert("{{__('Access token generated successfully')}}", "success");
+                ProcessMaker.alert(this.$t('Access token generated successfully'), "success");
               })
           },
           deleteToken(tokenId) {
             ProcessMaker.confirmModal(
-              __("Caution!"),
-              __("Are you sure to delete the token ") + tokenId.substr(0, 7) +
-              __("? Any services using it will no longer have access."),
+              this.$t("Caution!"),
+              this.$t("Are you sure to delete the token ") + tokenId.substr(0, 7) +
+              this.$t("? Any services using it will no longer have access."),
               "",
               () => {
                 ProcessMaker.apiClient({

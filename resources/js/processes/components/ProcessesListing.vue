@@ -227,9 +227,9 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to archive the process '") +
+            this.$t("Are you sure you want to archive the process") +
               data.name +
-              "'?",
+              "?",
             "",
             () => {
               ProcessMaker.apiClient

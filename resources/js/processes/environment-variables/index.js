@@ -17,7 +17,7 @@ new Vue({
         deleteVariable(data) {
             ProcessMaker.apiClient.delete(`environment_variables/${data.id}`)
                 .then((response) => {
-                    ProcessMaker.alert(__("The environment variable was deleted."), "success");
+                    ProcessMaker.alert(this.$t("The environment variable was deleted."), "success");
                     this.reload();
                 });
         },
