@@ -13,7 +13,7 @@
     __('Tasks') => route('tasks.index'),
     __($title) => null,
 ]])
-<div class="container page-content" id="tasks">
+<div class="px-3 page-content" id="tasks">
   <div class="row">
     <div class="col" align="right">
       <b-alert class="align-middle" show variant="danger" v-cloak v-if="inOverdueMessage.length>0"

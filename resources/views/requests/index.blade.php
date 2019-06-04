@@ -13,7 +13,7 @@
     __('Requests') => route('requests.index'),
     function() use ($title) { return [__($title), null]; }
 ]])
-<div class="container page-content mt-2" id="requests-listing">
+<div class="px-3 page-content mt-2" id="requests-listing">
     <div class="row">
         <div class="col-sm-12">
             <template v-if="title">
