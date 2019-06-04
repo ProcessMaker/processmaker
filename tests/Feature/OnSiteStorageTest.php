@@ -33,6 +33,13 @@ class OnSiteStorageTest extends TestCase
         'updated_at'
     ];
 
+    protected function setUp()
+    {
+        parent::setUp();
+        if (!config('database.enable_external_connection')) {
+            $this->markTestSkipped('ENABLE_EXTERNAL_CONNECTION is not enabled');
+        }
+    }
     /**
      * Initialize the controller tests
      *
@@ -78,6 +85,7 @@ class OnSiteStorageTest extends TestCase
         //Get the active tasks of the request and complete the task
         $route = route('api.tasks.index');
         $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
         $tasks = $response->json('data');
 
         //Complete the task
