@@ -34,13 +34,6 @@ class OnSiteStorageTest extends TestCase
         'updated_at'
     ];
 
-    protected function setUp()
-    {
-        if (!config('database.enable_external_connection')) {
-            $this->markTestSkipped('ENABLE_EXTERNAL_CONNECTION is not enabled');
-        }
-        parent::setUp();
-    }
     /**
      * Initialize the controller tests
      *
@@ -73,6 +66,9 @@ class OnSiteStorageTest extends TestCase
      */
     public function testDataIsStoredInExternalConnection()
     {
+        if (!config('database.enable_external_connection')) {
+            $this->markTestSkipped('ENABLE_EXTERNAL_CONNECTION is not enabled');
+        }
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
         $data = ['testField' => 'stored value'];
@@ -113,6 +109,10 @@ class OnSiteStorageTest extends TestCase
      */
     public function testDeleteProcessRequestOnCascade()
     {
+        if (!config('database.enable_external_connection')) {
+            $this->markTestSkipped('ENABLE_EXTERNAL_CONNECTION is not enabled');
+        }
+
         // create a request with tokens
         $request = factory(ProcessRequest::class, 1)->create()->first();
         $requestToken = factory(ProcessRequestToken::class, 1)
