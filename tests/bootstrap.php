@@ -86,14 +86,5 @@ if (env('RUN_MSSQL_TESTS')) {
 
 // THIS IS FOR STANDARD PROCESSMAKER TABLES
 if (env('POPULATE_DATABASE')) {
-    if (config('database.enable_external_connection')) {
-        // Clear the DATA external before start the tests
-        $dataSchema = Schema::connection('data');
-        $dataConnection  = $dataSchema->getConnection();
-        $list = $dataConnection->getDoctrineSchemaManager()->listTableNames();
-        foreach($list as $table) {
-            $dataSchema->drop($table);
-        }
-    }
     Artisan::call('migrate:fresh', []);
 }
