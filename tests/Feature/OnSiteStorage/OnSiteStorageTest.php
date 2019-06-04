@@ -1,10 +1,13 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\OnSiteStorage;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
+use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
@@ -33,10 +36,10 @@ class OnSiteStorageTest extends TestCase
 
     protected function setUp()
     {
-        parent::setUp();
-        if (config('database.enable_external_connection')) {
+        if (!config('database.enable_external_connection')) {
             $this->markTestSkipped('ENABLE_EXTERNAL_CONNECTION is not enabled');
         }
+        parent::setUp();
     }
     /**
      * Initialize the controller tests
@@ -102,5 +105,25 @@ class OnSiteStorageTest extends TestCase
         // Assert that the data was stored in the correct connection
         $storedRequest = DB::connection('data')->table('process_requests')->get()->first();
         $this->assertEquals($data, (array)json_decode($storedRequest->data));
+    }
+
+
+    /**
+     * Tests if restrictions are applied when deleting a request
+     */
+    public function testDeleteProcessRequestOnCascade()
+    {
+        // create a request with tokens
+        $request = factory(ProcessRequest::class, 1)->create()->first();
+        $requestToken = factory(ProcessRequestToken::class, 1)
+                        ->create([
+                                    'process_request_id' => $request->id,
+                                    'process_id' => $request->process_id
+                                ])
+                        ->first();
+
+        // A process can be deleted if it has requests
+        $this->expectException(ReferentialIntegrityException::class);
+        Process::destroy($requestToken->process_id);
     }
 }
