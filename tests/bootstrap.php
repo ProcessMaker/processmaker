@@ -81,6 +81,11 @@ if (env('RUN_MSSQL_TESTS')) {
     DB::connection('mssql')->table('test')->insert([
         'value' => 'testvalue'
     ]);
+
+    if (config('database.enable_external_connection')) {
+        // First create the test external mysql database as well as our test database
+        DB::connection('testexternal')->unprepared('CREATE DATABASE IF NOT EXISTS userexternal');
+    }
 }
 
 
