@@ -10,8 +10,13 @@ abstract class TestCase extends BaseTestCase
 {
     use DatabaseTransactions;
     use CreatesApplication;
-    
+
     public $withPermissions = false;
+
+    protected $connectionsToTransact = [
+        'spark',
+        'data'
+    ];
 
     /**
      * Run additional setUps from traits.
@@ -19,7 +24,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function setUp()
     {
-    	parent::setUp();
+        parent::setUp();
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'setup') === 0 && $imethod !== 'setup') {
@@ -34,7 +39,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function tearDown()
     {
-    	parent::tearDown();
+        parent::tearDown();
         foreach (get_class_methods($this) as $method) {
             $imethod = strtolower($method);
             if (strpos($imethod, 'teardown') === 0 && $imethod !== 'teardown') {
@@ -48,7 +53,7 @@ abstract class TestCase extends BaseTestCase
         $clients = app()->make('Laravel\Passport\ClientRepository');
         try {
             $clients->personalAccessClient();
-        } catch(\RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             Artisan::call('passport:install');
         }
     }
