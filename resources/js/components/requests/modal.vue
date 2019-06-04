@@ -29,8 +29,8 @@
       <div v-if="Object.keys(processes).length && !loading" class="process-list p-2">
         <div v-for="(category, index) in processes">
           <h5>
-            <i class="fas fa-folder"></i>
             {{index}}
+            <span class="badge badge-pill badge-secondary">{{category.length}}</span>
           </h5>
           <process-card
             v-for="(process,index) in category"
