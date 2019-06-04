@@ -152,7 +152,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public static function rules($existing = null)
     {
-        $unique = Rule::unique('process_requests')->ignore($existing);
+        $self = new self();
+        $unique = Rule::unique($self->getConnectionName() . '.process_requests')->ignore($existing);
 
         return [
             'name' => ['required', 'string', 'max:100', $unique],
