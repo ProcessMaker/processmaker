@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Notification;
+use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
 use ProcessMaker\Http\Controllers\Controller;
@@ -38,7 +39,7 @@ class ProcessRequestController extends Controller
     public $doNotSanitize = [
         'data'
     ];
-    
+
     private $statusMap = [
         'In Progress' => 'ACTIVE',
         'Completed' => 'COMPLETED',
@@ -182,7 +183,7 @@ class ProcessRequestController extends Controller
         if (isset($response)) {
             $response = $response->filter(function ($processRequest) {
                 return Auth::user()->can('view', $processRequest);
-            })->values();            
+            })->values();
         } else {
             $response = collect([]);
         }
@@ -345,8 +346,15 @@ class ProcessRequestController extends Controller
      */
     public function destroy(ProcessRequest $request)
     {
-        $request->delete();
-        return response([], 204);
+        try
+        {
+            $request->delete();
+            return response([], 204);
+        } catch (\Exception $e) {
+            abort($e->getCode(), $e->getMessage());
+        } catch (ReferentialIntegrityException $e) {
+            abort($e->getCode(), $e->getMessage());
+        }
     }
 
     /**
