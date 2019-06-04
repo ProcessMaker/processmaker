@@ -3,19 +3,15 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\HasAuthorization;
+use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Query\Traits\PMQL;
 
 class User extends Authenticatable implements HasMedia
 {
