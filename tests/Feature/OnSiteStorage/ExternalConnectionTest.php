@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\OnSiteStorage;
 
 use Illuminate\Database\Connection;
 use Illuminate\Support\Collection;
