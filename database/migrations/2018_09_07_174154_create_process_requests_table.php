@@ -49,6 +49,7 @@ class CreateProcessRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('data')->dropIfExists('process_requests');
+        $model = new ProcessRequest;
+        Schema::connection($model->getConnectionName())->dropIfExists('process_requests');
     }
 }

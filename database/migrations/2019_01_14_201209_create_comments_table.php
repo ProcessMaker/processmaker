@@ -37,6 +37,7 @@ class CreateCommentsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('data')->dropIfExists('comments');
+        $model = new Comment();
+        Schema::connection($model->getConnectionName())->dropIfExists('comments');
     }
 }
