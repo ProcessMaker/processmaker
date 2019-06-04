@@ -417,7 +417,7 @@ h1.page-title {
   top: 0.5em;
   left: 30%;
   right: 30%;
-  z-index: 100;
+  z-index: 2000; // more than modal
 }
 
 .alertBox {

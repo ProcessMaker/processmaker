@@ -60,7 +60,7 @@
                 this.dataLoading = false
             })
             ProcessMaker.EventBus.$on('api-client-error', (error) => {
-                console.log("GOT ERROR!", error)
+                ProcessMaker.alert(error, "danger");
                 this.error = true
                 this.$emit('api-data-no-results', true)
             })
