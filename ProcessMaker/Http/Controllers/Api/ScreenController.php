@@ -73,7 +73,7 @@ class ScreenController extends Controller
                     ->orWhere('config', 'like', $filter);
             });
         }
-        if($request->input('type')) {
+        if ($request->input('type')) {
             $query->where('type', $request->input('type'));
         }
         $response =
@@ -238,7 +238,7 @@ class ScreenController extends Controller
 
         $exclude = ['id', 'created_at', 'updated_at'];
         foreach ($screen->getAttributes() as $attribute => $value) {
-            if (! in_array($attribute, $exclude)) {
+            if (!in_array($attribute, $exclude)) {
                 $newScreen->{$attribute} = $screen->{$attribute};
             }
         }
@@ -368,5 +368,4 @@ class ScreenController extends Controller
         $success = ImportScreen::dispatchNow($request->file('file')->get());
         return ['status' => $success];
     }
-
 }
