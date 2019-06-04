@@ -11,25 +11,27 @@
 
 @import '../../node_modules/npm-font-open-sans/open-sans';
 
-// .search-bar {
-//   @extend form-inline;
-//   @extend justify-content-end;
-// }
+body,
+html {
+  width: 100%;
+  height: 100%;
+  font-family: $font-family-sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  background-color: $body-bg;
+  overflow-x: hidden;
+}
+
 .table-card {
   padding: 0;
 }
 
 .data-table {
   margin-top: 20px;
-  // border:1px solid #b6bfc6;
 
   th {
     border: 0;
   }
-
-  //   .vuetable-body:hover {
-  //   background-color: $grey-bg !important
-  // }
 }
 
 .active {
@@ -37,13 +39,11 @@
 }
 
 .breadcrumb {
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-left: 0;
-  border-right: 0;
+  font-size: 0.875em;
 }
 
-.navbar-light .navbar-nav .show>.nav-link,
-.navbar-light .navbar-nav .active>.nav-link,
+.navbar-light .navbar-nav .show > .nav-link,
+.navbar-light .navbar-nav .active > .nav-link,
 .navbar-light .navbar-nav .nav-link.show,
 .navbar-light .navbar-nav .nav-link.active {
   color: $primary;
@@ -75,22 +75,11 @@
 }
 
 .multiselect.is-invalid .multiselect__tags {
-    border-color: $danger;
+  border-color: $danger;
 }
 
 .multiselect.is-invalid ~ .invalid-feedback {
-    display: block;
-}
-
-body,
-html {
-  width: 100%;
-  height: 100%;
-  font-family: $font-family-sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  background-color: $body-bg;
-  overflow-x: hidden;
+  display: block;
 }
 
 #app-container .main {
@@ -101,8 +90,8 @@ html {
   margin-right: 0;
   margin-left: 0;
 
-  &>[class^='col-'],
-  &>[class*=' col-'] {
+  & > [class^='col-'],
+  & > [class*=' col-'] {
     padding-right: 0;
     padding-left: 0;
   }
@@ -239,7 +228,6 @@ html {
   text-transform: uppercase;
   // font-weight: 400;
 }
-
 
 // This is our top shelf notification panel
 .btn-action {
@@ -421,7 +409,7 @@ h1.page-title {
 }
 
 .alertBox {
-  width: 100%
+  width: 100%;
 }
 
 .avatar-circle-list {
@@ -451,8 +439,8 @@ h1.page-title {
   margin-top: -4px;
 }
 
-.navbar-z-index{
-  z-index:1 !important;
+.navbar-z-index {
+  z-index: 1 !important;
 }
 
 //calendar

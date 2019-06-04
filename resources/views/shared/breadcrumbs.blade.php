@@ -1,6 +1,6 @@
 <div class="sticky-top navbar-z-index">
 <nav aria-label="breadcrumb" >
-    <ol class="breadcrumb bg-light">
+    <ol class="breadcrumb border-top border-bottom">
         <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
         @foreach($routes as $title => $link)
             @php
