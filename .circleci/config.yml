@@ -103,7 +103,7 @@ jobs:
           key: v1-dependencies-{{ checksum "composer.json" }}
 
       # Enable xdebug to support code coverage
-      - run: sudo docker-php-ext-enable xdebug
+      #- run: sudo docker-php-ext-enable xdebug
 
       - setup_remote_docker
 
@@ -123,7 +123,7 @@ jobs:
             docker pull processmaker/executor:lua
             sudo mkdir -m777 /opt/executor
 
-      - run: sudo docker-php-ext-enable xdebug
+      #- run: sudo docker-php-ext-enable xdebug
 
       # Build frontend assets for production
       - run:
@@ -138,7 +138,7 @@ jobs:
       # run tests!
       - run:
           name: "PHPUnit"
-          command: "./vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage"
+          command: "./vendor/bin/phpunit -d memory_limit=-1"
           environment:
             DB_DATABASE: "circle_test"
             DB_PASSWORD: "P4ssW0rd1!"
@@ -155,11 +155,11 @@ jobs:
           name: "Jest"
           command: "npm run test"
 
-      - store_artifacts:
-          path: coverage
+      #- store_artifacts:
+      #    path: coverage
 
-      - store_artifacts:
-          path: tests/js/coverage
+      #- store_artifacts:
+      #    path: tests/js/coverage
 
       # Prepare for packaging for QA environment
 

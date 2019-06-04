@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Models\ProcessRequest;
 
 class CreateProcessRequestsTable extends Migration
 {
@@ -13,7 +14,8 @@ class CreateProcessRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('data')->create('process_requests', function (Blueprint $table) {
+        $model = new ProcessRequest;
+        Schema::connection($model->getConnectionName())->create('process_requests', function (Blueprint $table) {
             //Columns
             $table->increments('id');
             $table->unsignedInteger('process_id');

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use ProcessMaker\Models\Comment;
 
 class CreateCommentsTable extends Migration
 {
@@ -13,7 +14,8 @@ class CreateCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('data')->create('comments', function (Blueprint $table) {
+        $model = new Comment();
+        Schema::connection($model->getConnectionName())->create('comments', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id')->nullable(); // could be a system-generated comment
             $table->morphs('commentable');

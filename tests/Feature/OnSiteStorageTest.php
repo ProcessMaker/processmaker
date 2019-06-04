@@ -3,9 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
@@ -104,28 +102,5 @@ class OnSiteStorageTest extends TestCase
         // Assert that the data was stored in the correct connection
         $storedRequest = DB::connection('data')->table('process_requests')->get()->first();
         $this->assertEquals($data, (array)json_decode($storedRequest->data));
-    }
-
-    /**
-     * Verifies that migrations create the core tables that can be moved to and external database
-     */
-    public function testMigrations()
-    {
-        // Drop the tables created in the migrations
-        Schema::connection('data')->dropIfExists('comments');
-        Schema::connection('data')->dropIfExists('process_requests');
-
-        // Run the migrations that create the tables
-        Artisan::call('migrate:refresh',
-                    array('--path' => 'database/migrations/2019_01_14_201209_create_comments_table.php',
-                            '--force' => true));
-
-        Artisan::call('migrate:refresh',
-            array('--path' => 'database/migrations/2018_09_07_174154_create_process_requests_table.php',
-                '--force' => true));
-
-        // Assert that the migrations created the tables
-        $this->assertEquals(True, Schema::connection('data')->hasTable('comments'));
-        $this->assertEquals(True, Schema::connection('data')->hasTable('process_requests'));
     }
 }

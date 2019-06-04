@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Notification;
+use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
 use ProcessMaker\Http\Controllers\Controller;
@@ -38,7 +39,7 @@ class ProcessRequestController extends Controller
     public $doNotSanitize = [
         'data'
     ];
-    
+
     private $statusMap = [
         'In Progress' => 'ACTIVE',
         'Completed' => 'COMPLETED',
@@ -66,7 +67,6 @@ class ProcessRequestController extends Controller
      *         required=false,
      *         @OA\Schema(type="string", enum={"all", "in_progress", "completed"}),
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -118,19 +118,6 @@ class ProcessRequestController extends Controller
                 $query->getQuery()->wheres = [];
                 $query->get();
                 break;
-        }
-
-        $filterBase = $request->input('filter', '');
-        if (!empty($filterBase)) {
-            $filter = '%' . $filterBase . '%';
-            $query->where(function ($query) use ($filter, $filterBase) {
-                $query->whereHas('participants', function ($query) use ($filter) {
-                    $query->Where('firstname', 'like', $filter);
-                    $query->orWhere('lastname', 'like', $filter);
-                })->orWhere('name', 'like', $filter)
-                    ->orWhere('id', 'like', $filterBase)
-                    ->orWhere('status', 'like', $filter);
-            });
         }
 
         $pmql = $request->input('pmql', '');
@@ -188,7 +175,7 @@ class ProcessRequestController extends Controller
                 $request->input('order_direction', 'ASC')
             )->get();
         } catch (QueryException $e) {
-            return response(['message' => __('Your PMQL search could not be completed.')], 400);
+            return response(['message' => __('Your PMQL search could not be completed.') . $e->getMessage()], 400);
         } catch (SyntaxError $e) {
             return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
         }
@@ -196,7 +183,7 @@ class ProcessRequestController extends Controller
         if (isset($response)) {
             $response = $response->filter(function ($processRequest) {
                 return Auth::user()->can('view', $processRequest);
-            })->values();            
+            })->values();
         } else {
             $response = collect([]);
         }
@@ -359,8 +346,15 @@ class ProcessRequestController extends Controller
      */
     public function destroy(ProcessRequest $request)
     {
-        $request->delete();
-        return response([], 204);
+        try
+        {
+            $request->delete();
+            return response([], 204);
+        } catch (\Exception $e) {
+            abort($e->getCode(), $e->getMessage());
+        } catch (ReferentialIntegrityException $e) {
+            abort($e->getCode(), $e->getMessage());
+        }
     }
 
     /**
