@@ -10,7 +10,7 @@
             @endphp
 
             @if ($loop->last)
-                <li class="breadcrumb-item active font-weight-bold">
+                <li class="breadcrumb-item active">
             @else
                 <li class="breadcrumb-item">
             @endif
