@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Jobs\CancelRequest;
+use ProcessMaker\PmqlHelper;
 
 class ProcessRequestController extends Controller
 {
@@ -38,13 +39,6 @@ class ProcessRequestController extends Controller
      */
     public $doNotSanitize = [
         'data'
-    ];
-
-    private $statusMap = [
-        'In Progress' => 'ACTIVE',
-        'Completed' => 'COMPLETED',
-        'Error' => 'ERROR',
-        'Canceled' => 'CANCELED',
     ];
 
     /**
@@ -190,6 +184,7 @@ class ProcessRequestController extends Controller
 
         return new ApiCollection($response);
     }
+
 
     /**
      * Display the specified resource.
