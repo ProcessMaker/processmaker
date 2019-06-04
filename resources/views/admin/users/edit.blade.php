@@ -39,9 +39,8 @@
                             <div class="row">
                                 <div class="col-8">
                                     <div class="card card-body">
-                                        <h2>{{__('Name')}}</h2>
-                                        <div class="row">
-                                            <div class="form-group col">
+                                        <h5>{{__('Name')}}</h5>                                        
+                                            <div class="form-group">
                                                 {!! Form::label('firstname', __('First Name')) !!}
                                                 {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
                                                 'form-control', 'v-model' => 'formData.firstname',
@@ -50,8 +49,7 @@
                                                 <div class="invalid-feedback" v-if="errors.firstname">
                                                     @{{errors.firstname[0]}}
                                                 </div>
-                                            </div>
-                                            <div class="form-group col">
+
                                                 {!! Form::label('lastname', __('Last Name'))!!}
                                                 {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4,
                                                 'class'=> 'form-control', 'v-model'
@@ -60,11 +58,23 @@
                                                 <div class="invalid-feedback" v-if="errors.lastname">
                                                     @{{errors.lastname[0]}}
                                                 </div>
-                                            </div>
+
+                                                                                        <div class="form-group">
+                                          {!!Form::label('title', __('Job Title')) !!}
+                                           <b-form-input
+                                              id="input-1"
+                                              class="mb-2"
+                                              v-model="formData.title"
+                                              type="text"
+                                              required
+                                              placeholder="Job Title"
+                                            ></b-form-input>
                                         </div>
-                                        <h2 class="mt-2">{{__('Contact Information')}}</h2>
-                                        <div class="row">
-                                            <div class="form-group col">
+                                            
+                                        </div>
+                                        <h5 class="mt-2">{{__('Contact Information')}}</h5>
+                                        
+                                            <div class="form-group">
                                                 {!! Form::label('email', __('Email')) !!}
                                                 {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
                                                 'form-control', 'v-model'
@@ -73,7 +83,7 @@
                                                 <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}
                                                 </div>
                                             </div>
-                                            <div class="form-group col">
+                                            <div class="form-group">
                                                 {!! Form::label('phone', __('Phone')) !!}
                                                 {!! Form::text('phone', null, ['id' => 'phone','class'=> 'form-control',
                                                 'v-model' => 'formData.phone',
@@ -82,8 +92,28 @@
                                                 <div class="invalid-feedback" v-if="errors.phone">@{{errors.phone}}
                                                 </div>
                                             </div>
-                                        </div>
-                                        <h2 class="mt-2">{{__('Address')}}</h2>
+
+                                     <div class="form-group">
+                                                {!! Form::label('fax', __('Fax')) !!}
+                                                {!! Form::text('fax', null, ['id' => 'fax','class'=> 'form-control',
+                                                'v-model' => 'formData.fax',
+                                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.fax}'])
+                                                !!}
+                                                <div class="invalid-feedback" v-if="errors.fax">@{{errors.fax}}
+                                                </div>
+                                            </div>
+                                            
+                                     <div class="form-group">
+                                                {!! Form::label('cell', __('Cell')) !!}
+                                                {!! Form::text('cell', null, ['id' => 'cell','class'=> 'form-control',
+                                                'v-model' => 'formData.cell',
+                                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.cell}'])
+                                                !!}
+                                                <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell}}
+                                                </div>
+                                            </div>                                            
+                                        
+                                        <h5 class="mt-2">{{__('Address')}}</h5>
                                         <div class="row">
                                             <div class="form-group col">
                                                 {!! Form::label('address', __('Address')) !!}
@@ -142,7 +172,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <h2 class="mt-2">{{__('Localization')}}</h2>
+                                        <h5 class="mt-2">{{__('Localization')}}</h5>
                                         <div class="row">
                                             <div class="form-group col">
                                                 {!!Form::label('datetime_format', __('Date format'));!!}
@@ -188,6 +218,7 @@
                                             <avatar-image size="150" class-image="m-1"
                                                           :input-data="options"></avatar-image>
                                         </div>
+                                        <hr>
                                         <div class="form-group">
                                             @include('shared.input',
                                                 ['type' => 'text', 'name' => 'username', 'label' => __('Username')]
@@ -200,17 +231,7 @@
                                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
                                             <div class="invalid-feedback" v-if="errors.email">@{{errors.status}}</div>
                                         </div>
-                                        <div class="form-group">
-                                          {!!Form::label('title', __('Job Title')) !!}
-                                           <b-form-input
-                                              id="input-1"
-                                              class="mb-2"
-                                              v-model="formData.title"
-                                              type="text"
-                                              required
-                                              placeholder="Job Title"
-                                            ></b-form-input>
-                                        </div>
+
                                         <div class="form-group">
                                             <small class="form-text text-muted">
                                                 {{__('Leave the password blank to keep the current password:')}}
