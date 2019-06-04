@@ -34,7 +34,7 @@ class OnSiteStorageTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        if (!config('database.enable_external_connection')) {
+        if (config('database.enable_external_connection')) {
             $this->markTestSkipped('ENABLE_EXTERNAL_CONNECTION is not enabled');
         }
     }
