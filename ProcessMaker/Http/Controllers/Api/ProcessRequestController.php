@@ -66,7 +66,6 @@ class ProcessRequestController extends Controller
      *         required=false,
      *         @OA\Schema(type="string", enum={"all", "in_progress", "completed"}),
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -118,19 +117,6 @@ class ProcessRequestController extends Controller
                 $query->getQuery()->wheres = [];
                 $query->get();
                 break;
-        }
-
-        $filterBase = $request->input('filter', '');
-        if (!empty($filterBase)) {
-            $filter = '%' . $filterBase . '%';
-            $query->where(function ($query) use ($filter, $filterBase) {
-                $query->whereHas('participants', function ($query) use ($filter) {
-                    $query->Where('firstname', 'like', $filter);
-                    $query->orWhere('lastname', 'like', $filter);
-                })->orWhere('name', 'like', $filter)
-                    ->orWhere('id', 'like', $filterBase)
-                    ->orWhere('status', 'like', $filter);
-            });
         }
 
         $pmql = $request->input('pmql', '');
@@ -188,7 +174,7 @@ class ProcessRequestController extends Controller
                 $request->input('order_direction', 'ASC')
             )->get();
         } catch (QueryException $e) {
-            return response(['message' => __('Your PMQL search could not be completed.')], 400);
+            return response(['message' => __('Your PMQL search could not be completed.') . $e->getMessage()], 400);
         } catch (SyntaxError $e) {
             return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
         }
