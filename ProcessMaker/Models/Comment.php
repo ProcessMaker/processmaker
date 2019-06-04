@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\DataConnectionTrait;
 
 /**
  * Represents a business process definition.
@@ -41,8 +42,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 class Comment extends Model
 {
     use SerializeToIso8601;
-
-    protected $connection = 'data';
+    use DataConnectionTrait;
 
     protected $fillable = [
         'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type'

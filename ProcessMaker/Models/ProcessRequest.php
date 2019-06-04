@@ -15,6 +15,7 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Query\Traits\PMQL;
 use Throwable;
+use ProcessMaker\Traits\DataConnectionTrait;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -63,8 +64,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use SerializeToIso8601;
     use HasMediaTrait;
     use PMQL;
-
-    protected $connection = 'data';
+    use DataConnectionTrait;
 
     /**
      * The attributes that aren't mass assignable.
