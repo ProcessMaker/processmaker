@@ -14,7 +14,7 @@
         __('Users') => null,
     ]])
 
-    <div class="container page-content" id="users-listing">
+    <div class="px-3 page-content" id="users-listing">
         <div class="row">
             <div class="col">
                 <div class="input-group">

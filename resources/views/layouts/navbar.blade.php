@@ -59,4 +59,5 @@
         border-right: 1px solid rgb(227, 231, 236);
         height: 30px;
     }
+    #navbar { margin-left:-10px }
 </style>

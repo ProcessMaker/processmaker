@@ -13,7 +13,7 @@
         __('Admin') => route('admin.index'),
         __('Groups') => null,
     ]])
-    <div class="container page-content" id="listGroups">
+    <div class="px-3 page-content" id="listGroups">
         <div class="row">
             <div class="col">
                 <div class="input-group">
