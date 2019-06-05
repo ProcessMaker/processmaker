@@ -146,9 +146,15 @@ class ProcessRequestController extends Controller
         )->get();
 
         if (isset($response)) {
+            //Filter by permission
             $response = $response->filter(function ($processRequest) {
                 return Auth::user()->can('view', $processRequest);
-            })->values();            
+            })->values();
+            
+            //Map each item through its resource
+            $response = $response->map(function ($processRequest) use ($request) {
+                return new ProcessRequestResource($processRequest);
+            });
         } else {
             $response = collect([]);
         }
