@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <div class="container page-content">
+        <div class="px-3 page-content">
             <div class="row">
                 <div class="col" align="right">
                     <button id="create_authclients" class="btn btn-secondary" type="button" data-toggle="modal"

@@ -13,7 +13,7 @@
         __('Processes') => route('processes.index'),
         __('Environment Variables') => null,
     ]])
-    <div class="container page-content" id="process-variables-listing">
+    <div class="px-3 page-content" id="process-variables-listing">
         <div class="row">
             <div class="col">
                 <div class="input-group">

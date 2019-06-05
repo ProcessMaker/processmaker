@@ -13,9 +13,9 @@
         :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
-      <template slot="avatar" slot-scope="props">
-        <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
-      </template>
+        <template slot="avatar" slot-scope="props">
+          <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
+        </template>
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
@@ -58,7 +58,6 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import AvatarImage from "../../../components/AvatarImage";
 Vue.component("avatar-image", AvatarImage);
-
 
 export default {
   mixins: [datatableMixin],
@@ -135,7 +134,7 @@ export default {
         bubbleColor[status] +
         ' small"></i><span class="text-capitalize"> ' +
         this.$t(status) +
-      '</span>'
+        "</span>"
       );
     },
     goToEdit(data) {
@@ -149,7 +148,8 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the user") + ' ' +
+            this.$t("Are you sure you want to delete the user") +
+              " " +
               data.fullname +
               this.$t("?"),
             "",
@@ -157,7 +157,10 @@ export default {
               ProcessMaker.apiClient
                 .delete("users/" + data.id)
                 .then(response => {
-                  ProcessMaker.alert(this.$t("The user was deleted."), "danger");
+                  ProcessMaker.alert(
+                    this.$t("The user was deleted."),
+                    "danger"
+                  );
                   this.$emit("reload");
                 });
             }

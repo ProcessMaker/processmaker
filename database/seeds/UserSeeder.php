@@ -27,17 +27,20 @@ class UserSeeder extends Seeder
             'password' => Hash::make('admin'),
             'firstname' => 'admin',
             'lastname' => 'admin',
-            'timezone' => null,
-            'datetime_format' => null,
+            'timezone' => 'America/Los_Angeles',
+            'datetime_format' => 'm/d/Y H:i',
+            'language' => 'en',
             'status' => 'ACTIVE',
             'is_administrator' => true,
         ]);
 
         // Create client so we can generate tokens
         $clients->createPersonalAccessClient(
-            null, 'PmApi', 'http://localhost'
+            null,
+            'PmApi',
+            'http://localhost'
         );
-        
+
         // Create client OAuth (for 3-legged auth)
         $clients->create(
             $user->id,

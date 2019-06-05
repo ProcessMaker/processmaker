@@ -19,7 +19,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         $title => null,
     ]])
-    <div class="container page-content" id="processIndex">
+    <div class="px-3 page-content" id="processIndex">
         <div class="row">
             <div class="col">
                 <div class="input-group">
