@@ -189,7 +189,7 @@ class Install extends Command
     {
         $this->info(__('ProcessMaker Spark requires a MySQL database.'));
         $this->info(__('Database connection failed. Check your database configuration and try again.'));
-        $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['localhost']);
+        $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['127.0.0.1']);
         $this->env['DB_PORT'] = $this->anticipate(__('Enter your MySQL port (usually 3306)'), [3306]);
         $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['spark']);
         $this->env['DB_USERNAME'] = $this->ask(__('Enter your MySQL username'));
