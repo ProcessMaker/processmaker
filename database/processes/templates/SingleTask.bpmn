@@ -17,11 +17,9 @@
     <sequenceFlow id="_4" sourceRef="StartEventUID" targetRef="UserTaskUID"/>
     <startEvent id="StartEventUID" isInterrupting="true" name="Start Event" parallelMultiple="false">
       <outgoing>_4</outgoing>
-      <outputSet/>
     </startEvent>
     <endEvent id="EndEventUID" name="End Event">
       <incoming>_6</incoming>
-      <inputSet/>
     </endEvent>
     <sequenceFlow id="_6" sourceRef="UserTaskUID" targetRef="EndEventUID"/>
   </process>

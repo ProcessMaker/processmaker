@@ -22,6 +22,7 @@ $factory->define(User::class, function (Faker $faker) {
         'city' => $faker->city,
         'state' => $faker->stateAbbr,
         'postal' => $faker->postcode,
+        'country' => 'US',
 
         'phone' => $faker->phoneNumber,
         'fax' => $faker->phoneNumber,

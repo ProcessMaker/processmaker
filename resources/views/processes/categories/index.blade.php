@@ -13,7 +13,7 @@
         __('Processes') => route('processes.index'),
         __('Categories') => null,
     ]])
-    <div class="container page-content" id="process-categories-listing">
+    <div class="px-3 page-content" id="process-categories-listing">
         <div class="row">
             <div class="col">
                 <div class="input-group">

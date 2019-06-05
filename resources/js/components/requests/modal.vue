@@ -80,6 +80,7 @@ export default {
       filter: "",
       loading: false,
       error: false,
+      loaded: false,
       processes: {
         // Blank
       }
@@ -97,7 +98,7 @@ export default {
       window.location = "/processes";
     },
     showRequestModal() {
-      if (!this.loaded) {
+      if (this.loaded) {
         // Perform initial load of requests from backend
         this.$refs.requestModalAdd.show();
         this.fetch();
