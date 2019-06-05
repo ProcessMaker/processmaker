@@ -141,7 +141,7 @@ class ProcessRequestController extends Controller
         }
         
         $response = $query->orderBy(
-            $request->input('order_by', 'name'),
+            str_ireplace('.', '->', $request->input('order_by', 'name')),
             $request->input('order_direction', 'ASC')
         )->get();
 
