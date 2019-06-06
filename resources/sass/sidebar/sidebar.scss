@@ -9,6 +9,13 @@
   &.expanded {
     width: 250px;
     min-width: 250px;
+    #custom_icon{
+      max-width: 24px;
+      max-height:24px;
+      min-width: 24px; 
+      margin-right: 7px;
+      margin-left: -3px;
+    }
   }
 
   .section {
