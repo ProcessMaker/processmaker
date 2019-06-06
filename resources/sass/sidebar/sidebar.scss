@@ -5,6 +5,12 @@
   min-width: 58px;
   background-color: $primary;
   overflow-y: auto;
+  
+  #custom_icon{
+      max-width: 24px;
+      max-height:22px;
+      min-width: 24px; 
+    }
 
   &.expanded {
     width: 250px;
