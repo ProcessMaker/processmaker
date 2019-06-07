@@ -18,7 +18,12 @@
         @foreach($section->children() as $item)
           <li class="nav-item">
             <a href="{{ $item->url() }}" class="nav-link" title="{{$item->title}}">
-              <i class="fas {{$item->attr('icon')}} nav-icon"></i> <span class="nav-text">{{$item->title}}</span>
+              @if($item->attr('icon'))
+                <i class="fas {{$item->attr('icon')}} nav-icon"></i> <span class="nav-text">{{$item->title}}</span>
+              @endif
+              @if($item->attr('file'))
+                <img src="{{$item->attr('file')}}" class="nav-icon" id="custom_icon"><span class="nav-text">{{$item->title}}</span>
+              @endif
             </a>
           </li>
         @endforeach

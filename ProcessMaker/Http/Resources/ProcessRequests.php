@@ -11,6 +11,9 @@ class ProcessRequests extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
 
+        if (in_array('data', $include)) {
+            $array['data'] = $this->filterMagicVariables($this->data);
+        }
         if (in_array('summary', $include)) {
             $array['summary'] = $this->summary();
         }
@@ -21,5 +24,16 @@ class ProcessRequests extends ApiResource
             $array['user'] = new Users($this->user);
         }
         return $array;
+    }
+    
+    private function filterMagicVariables($data)
+    {
+        foreach ($data as $key => $datum) {
+            if (stripos($key, '_') === 0) {
+                unset($data[$key]);
+            }
+        }
+        
+        return $data;
     }
 }

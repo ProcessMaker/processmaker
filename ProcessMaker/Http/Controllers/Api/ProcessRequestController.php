@@ -141,14 +141,20 @@ class ProcessRequestController extends Controller
         }
         
         $response = $query->orderBy(
-            $request->input('order_by', 'name'),
+            str_ireplace('.', '->', $request->input('order_by', 'name')),
             $request->input('order_direction', 'ASC')
         )->get();
 
         if (isset($response)) {
+            //Filter by permission
             $response = $response->filter(function ($processRequest) {
                 return Auth::user()->can('view', $processRequest);
-            })->values();            
+            })->values();
+            
+            //Map each item through its resource
+            $response = $response->map(function ($processRequest) use ($request) {
+                return new ProcessRequestResource($processRequest);
+            });
         } else {
             $response = collect([]);
         }
