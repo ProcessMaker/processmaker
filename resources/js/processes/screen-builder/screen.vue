@@ -35,7 +35,7 @@
       </b-card-header>
 
       <!-- Card Body -->
-      <b-card-body class="overflow-auto ml-3 mr-3">
+      <b-card-body class="overflow-auto ml-3 mr-3" id="screen-builder-container">
         <!-- Vue-form-builder -->
         <vue-form-builder
           :validationErrors="validationErrors"
