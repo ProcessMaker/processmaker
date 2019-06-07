@@ -113,9 +113,15 @@ export default {
     };
   },
   beforeCreate() {	
+    //switch through all status
     switch (Processmaker.status) {	
+      // if there is no status, meaning its on my requests, We should only show the in progress status
       case "":	
         this.$parent.requester.push(Processmaker.user);	
+        this.$parent.status.push({	
+          name: 'In Progress',	
+          value: 'In Progress'	
+        });	
         break;	
       case "in_progress":	
         this.$parent.status.push({	
