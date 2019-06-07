@@ -82,7 +82,7 @@ export default {
       this.fullName = user.fullname;
       this.information = [
         {
-          src: user.avatar,
+          src: user.avatar ? (user.avatar + '?' + new Date().getTime()) : user.avatar,
           title: "",
           initials:
             user.firstname && user.lastname

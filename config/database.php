@@ -1,6 +1,6 @@
 <?php
 
-$config = [
+return [
     /*
     |--------------------------------------------------------------------------
     | Default Database Connection Name
@@ -44,15 +44,16 @@ $config = [
         ],
         'data' => [
             'driver' => env('DATA_DB_DRIVER'),
-            'host' => env('DATA_DB_HOST'),
+            'host' => env('DATA_DB_HOST', 'localhost'),
             'port' => env('DATA_DB_PORT'),
             'database' => env('DATA_DB_DATABASE'),
             'username' => env('DATA_DB_USERNAME'),
             'password' => env('DATA_DB_PASSWORD'),
             'unix_socket' => env('DATA_DB_SOCKET'),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
+            'charset' => env('DATA_DB_CHARSET'),
+            'collation' => env('DATA_DB_COLLATION'),
+            'schema' => env('DATA_DB_SCHEMA'),
+            'engine' => env('DATA_DB_ENGINE'),
         ]
     ],
     /**
@@ -91,11 +92,3 @@ $config = [
         ],
     ],
 ];
-
-// If ENABLE_EXTERNAL_CONNECTION is false the DATA connection will
-// be the same of SPARK connection
-if (!$config['enable_external_connection']) {
-    //$config['connections']['data'] = $config['connections']['spark'];
-}
-
-return $config;
