@@ -22,8 +22,8 @@ jobs:
       - image: microsoft/mssql-server-linux:2017-GA
         environment:
           # Needed for MS SQL Docker install
-          - ACCEPT_EULA: "Y"
-          - SA_PASSWORD: "P4ssW0rd1!"
+          - ACCEPT_EULA: 'Y'
+          - SA_PASSWORD: 'P4ssW0rd1!'
 
     working_directory: ~/repo
 
@@ -58,7 +58,7 @@ jobs:
 
       # Install MS SQL PDO Extension dependency
       - run:
-          name: "MS SQL Extension Installation"
+          name: 'MS SQL Extension Installation'
           command: |
             sudo curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
             sudo sh  -c 'curl https://packages.microsoft.com/config/debian/8/prod.list > /etc/apt/sources.list.d/mssql-release.list'
@@ -74,7 +74,7 @@ jobs:
 
       # Install old libssl-1.0.0 due to ODBC13 issue. See: https://github.com/Microsoft/msphpsql/issues/484
       - run:
-          name: "ODBC13 libssl workaround"
+          name: 'ODBC13 libssl workaround'
           command: |
             echo "deb http://deb.debian.org/debian jessie main" | sudo tee -a /etc/apt/sources.list
             sudo apt-get update
@@ -83,15 +83,15 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "composer.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+            - v1-dependencies-{{ checksum "composer.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
       - restore_cache:
           keys:
-          - v1-npm-dependencies-{{ checksum "package.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-npm-dependencies-
+            - v1-npm-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-npm-dependencies-
 
       - run: composer install -n --prefer-dist
 
@@ -127,13 +127,13 @@ jobs:
 
       # Build frontend assets for production
       - run:
-          name: "Front-End Asset Build"
-          command: "npm run dev"
+          name: 'Front-End Asset Build'
+          command: 'npm run dev'
 
       #
       - run:
-          name: "Media Storage Link"
-          command: "php artisan storage:link"
+          name: 'Media Storage Link'
+          command: 'php artisan storage:link'
 
       # run tests!
       - run:
@@ -159,8 +159,8 @@ jobs:
             SPARK_SCRIPTS_HOME: "/opt/executor"
             SPARK_SCRIPTS_DOCKER_MODE: "copying"
       - run:
-          name: "Jest"
-          command: "npm run test"
+          name: 'Jest'
+          command: 'npm run test'
 
       #- store_artifacts:
       #    path: coverage
@@ -171,14 +171,14 @@ jobs:
       # Prepare for packaging for QA environment
 
       - run:
-          name: "QA Configuration File Build"
+          name: 'QA Configuration File Build'
           command: |
             echo "APP_KEY=" >> .env
             echo "APP_DEBUG=FALSE" >> .env
             echo "DEBUGBAR_ENABLED=FALSE" >> .env
             echo "APP_NAME=ProcessMaker" >> .env
             echo "APP_ENV=staging" >> .env
-            echo "DB_HOST=${QA_RDS_HOST}" >> .env
+            echo "DB_HOSTNAME=${QA_RDS_HOST}" >> .env
             echo "DB_DATABASE=${QA_DB_NAME}" >> .env
             echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env
             echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
@@ -206,11 +206,11 @@ jobs:
             cp tests/storage/keys/* storage/keys/
 
       - run:
-          name: "QA Package"
-          command: "./vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz"
+          name: 'QA Package'
+          command: './vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz'
 
       - run:
-          name: "QA Deploy"
+          name: 'QA Deploy'
           command: |
             # Delete existing target QA directory, if it exists
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "rm -Rf ~/builds/$BUILD_NAME"
@@ -237,37 +237,37 @@ jobs:
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
 
       - run:
-          name: "SauceLabs Browser Tests: Chrome"
-          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"cd ~/builds/$BUILD_NAME && php artisan dusk\""
+          name: 'SauceLabs Browser Tests: Chrome'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php artisan dusk"'
           environment:
-            DB_DATABASE: "circle_test"
-            RUN_MSSQL_TESTS: "true"
-            MSSQL_HOST: "127.0.0.1"
+            DB_DATABASE: 'circle_test'
+            RUN_MSSQL_TESTS: 'true'
+            MSSQL_HOST: '127.0.0.1'
 
       - run:
-          name: "SauceLabs Browser Tests: Firefox"
-          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          name: 'SauceLabs Browser Tests: Firefox'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
-            SAUCELABS_BROWSER: "firefox"
-            SAUCELABS_PLATFORM: "Windows 10"
-            SAUCELABS_BROWSER_VERSION: "47.0"
+            SAUCELABS_BROWSER: 'firefox'
+            SAUCELABS_PLATFORM: 'Windows 10'
+            SAUCELABS_BROWSER_VERSION: '47.0'
 
       - run:
-          name: "SauceLabs Browser Tests: Edge"
-          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          name: 'SauceLabs Browser Tests: Edge'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
-            SAUCELABS_BROWSER: "MicrosoftEdge"
-            SAUCELABS_PLATFORM: "Windows 10"
-            SAUCELABS_BROWSER_VERSION: "16.16299"
+            SAUCELABS_BROWSER: 'MicrosoftEdge'
+            SAUCELABS_PLATFORM: 'Windows 10'
+            SAUCELABS_BROWSER_VERSION: '16.16299'
 
       - run:
-          name: "SauceLabs Browser Tests: Safari"
-          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk\""
+          name: 'SauceLabs Browser Tests: Safari'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
-            SAUCELABS_BROWSER: "safari"
-            SAUCELABS_PLATFORM: "macOS 10.13"
-            SAUCELABS_BROWSER_VERSION: "11.0"
+            SAUCELABS_BROWSER: 'safari'
+            SAUCELABS_PLATFORM: 'macOS 10.13'
+            SAUCELABS_BROWSER_VERSION: '11.0'
 
       - run:
-          name: "Final QA Artisan DB Migration"
-          command: "ssh -o \"StrictHostKeyChecking no\" -o \"ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p\" qa-sparkbuilds \"php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force\""
+          name: 'Final QA Artisan DB Migration'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"'
