@@ -63,7 +63,6 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["type"],
   data() {
     return {
       orderBy: "id",
@@ -112,6 +111,26 @@ export default {
         }
       ]
     };
+  },
+  beforeCreate() {	
+    switch (Processmaker.status) {	
+      case "":	
+        this.$parent.requester.push(Processmaker.user);	
+        break;	
+      case "in_progress":	
+        this.$parent.status.push({	
+          name: 'In Progress',	
+          value: 'In Progress'	
+        });	
+        break;	
+      case "completed":	
+        this.$parent.status.push({	
+          name: 'Completed',	
+          value: 'Completed'	
+        });	
+        break;	
+    }	
+    this.$parent.buildPmql();
   },
   methods: {
     onAction(action, data, index) {
@@ -176,8 +195,6 @@ export default {
       if (resetPagination) {
         this.page = 1;
       }
-
-      this.additionalParams = ((this.type === '') ? '&type=started_me': '&type=' + this.type);
 
       // Load from our api client
       ProcessMaker.apiClient
