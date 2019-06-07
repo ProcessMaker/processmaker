@@ -4,12 +4,9 @@
 
 <script>
 import { VueFormRenderer } from '@processmaker/spark-screen-builder';
-import { renderer } from "@processmaker/spark-screen-builder";
-import VueFormElements from "@processmaker/vue-form-elements";
+import '@processmaker/spark-screen-builder/dist/vue-form-builder.css';
 import FileUpload from "../../processes/screen-builder/components/form/file-upload";
 import FileDownload from "../../processes/screen-builder/components/file-download";
-
-Vue.use(VueFormElements);
 
 export default {
   components: {
