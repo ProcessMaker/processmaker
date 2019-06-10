@@ -111,18 +111,6 @@ class ProcessRequestController extends Controller
                 $query->get();
                 break;
         }
-//        $filterBase = $request->input('filter', '');
-//        if (!empty($filterBase)) {
-//            $filter = '%' . $filterBase . '%';
-//            $query->where(function ($query) use ($filter, $filterBase) {
-//                $query->whereHas('participants', function ($query) use ($filter) {
-//                    $query->Where('firstname', 'like', $filter);
-//                    $query->orWhere('lastname', 'like', $filter);
-//                })->orWhere('name', 'like', $filter)
-//                    ->orWhere('id', 'like', $filterBase)
-//                    ->orWhere('status', 'like', $filter);
-//            });
-//        }
 
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
