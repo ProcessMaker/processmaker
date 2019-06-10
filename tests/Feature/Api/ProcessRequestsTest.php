@@ -88,6 +88,62 @@ class ProcessRequestsTest extends TestCase
     /**
      * Get a list of Request with parameters
      */
+    public function testListRequestIncludingData()
+    {
+        $requestname = 'mytestrequestnameincludesdata';
+        
+        //Create requests with data
+        factory(ProcessRequest::class)->create([
+            'name' => $requestname,
+            'data' => ['test' => 'value1'],
+        ]);
+
+        //Set direction to ascending
+        $query = "?page=1&include=data&order_by=data.test&order_direction=ASC&filter=$requestname";
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+
+        $response->assertStatus(200);        
+        $response->assertJsonFragment(['data' => ['test' => 'value1']]);            
+    }
+    
+    /**
+     * Get a list of Request with parameters
+     */
+    public function testListRequestOrderByData()
+    {
+        $requestname = 'mytestrequestnameorderbydata';
+        
+        //Create requests with data
+        factory(ProcessRequest::class)->create([
+            'name' => $requestname,
+            'data' => ['test' => 'value1'],
+        ]);
+        
+        factory(ProcessRequest::class)->create([
+            'name' => $requestname,
+            'data' => ['test' => 'value2'],
+        ]);
+
+        //Set direction to ascending
+        $query = "?page=1&include=data&order_by=data.test&order_direction=ASC&filter=$requestname";
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+
+        //Verify that the request with test data of "value1" is first
+        $response->assertStatus(200);
+        $this->assertEquals('value1', $response->json()['data'][0]['data']['test']);
+        
+        //Set direction to descending
+        $query = "?page=1&include=data&order_by=data.test&order_direction=DESC&filter=$requestname";
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+        
+        //Verify that the request with test data of "value2" is first
+        $response->assertStatus(200);
+        $this->assertEquals('value2', $response->json()['data'][0]['data']['test']);        
+    }    
+
+    /**
+     * Get a list of Request with parameters
+     */
     public function testListRequestWithQueryParameter()
     {
         $requestname = 'mytestrequestname';
