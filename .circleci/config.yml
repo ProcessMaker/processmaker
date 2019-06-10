@@ -143,7 +143,6 @@ jobs:
             DB_DATABASE: "circle_test"
             DB_PASSWORD: "P4ssW0rd1!"
             DB_USERNAME: "root"
-            ENABLE_EXTERNAL_CONNECTION: "true"
             DATA_DB_DRIVER: "sqlsrv"
             DATA_DB_HOST: "127.0.0.1"
             DATA_DB_PORT: "1433"

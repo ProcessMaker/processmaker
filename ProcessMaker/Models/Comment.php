@@ -44,6 +44,8 @@ class Comment extends Model
     use SerializeToIso8601;
     use DataConnectionTrait;
 
+    protected $connection = 'data';
+
     protected $fillable = [
         'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type'
     ];

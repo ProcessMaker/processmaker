@@ -66,6 +66,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use PMQL;
     use DataConnectionTrait;
 
+    protected $connection = 'data';
+
     /**
      * The attributes that aren't mass assignable.
      *

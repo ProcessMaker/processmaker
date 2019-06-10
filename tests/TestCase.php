@@ -54,14 +54,12 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * If database.enable_external_connection is enabled then
-     * enable SPARK and DATA to transact. Else only the SPARK
-     * connection transacts
+     * Connections transacts
      *
      * @return array
      */
     protected function connectionsToTransact()
     {
-        return config('database.enable_external_connection') ? ['spark', 'data'] : ['spark'];
+        return ['spark', 'data'];
     }
 }

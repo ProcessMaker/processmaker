@@ -16,10 +16,6 @@ class OnSiteStorageMigrationsTest extends TestCase
      */
     public function testMigrations()
     {
-        if (!config('database.enable_external_connection')) {
-            $this->markTestSkipped('ENABLE_EXTERNAL_CONNECTION is not enabled');
-        }
-
         // Drop the tables created in the migrations
         Schema::connection('data')->dropIfExists('comments');
         Schema::connection('data')->dropIfExists('process_requests');
