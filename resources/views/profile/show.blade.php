@@ -11,7 +11,7 @@
 <div class="container" id="profileForm">
     <div class="row">
         <div class="col-8">
-            <div class="card card-body mt-3">
+            <div class="card card-body">
                 <h4 class="mt-2">{{__('Contact Information')}}</h4>
                 <table class="table">
                     @if($user->email)
