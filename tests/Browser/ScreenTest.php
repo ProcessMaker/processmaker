@@ -67,58 +67,58 @@ class ScreenTest extends DuskTestCase
     /**
      * Screen builder test
      */
-    public function testHideControls()
-    {
-        $this->browse(function (Browser $browser) {
+    // public function testHideControls()
+    // {
+    //     $this->browse(function (Browser $browser) {
 
-            // We create a screen with configuration
-            $json = json_decode(file_get_contents(base_path('tests/Browser/Assets/controlsHide.json')));
-            $screen = factory(Screen::class)->create([
-                'title' => 'Test form hide controls',
-                'config' => $json
-            ]);
+    //         // We create a screen with configuration
+    //         $json = json_decode(file_get_contents(base_path('tests/Browser/Assets/controlsHide.json')));
+    //         $screen = factory(Screen::class)->create([
+    //             'title' => 'Test form hide controls',
+    //             'config' => $json
+    //         ]);
 
-            //display form builder, show or hide controls
-            $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
-                //wait for Editor screens
-                ->waitFor('#screen-container')
-                ->assertSee('Controls')
-                ->assertSee('Inspector')
-                //change to Screen Preview
-                ->click('#app > div.card-header > div > div:nth-child(1) > div > button.btn.btn-outline-secondary')
-                ->waitForText('Data Input')
-                ->assertSee('Data Input')
-                //Check all fields are displayed
-                ->assertSee('Field 1')
-                //by default fields are hidden
-                ->assertDontSee('New Text')
-                ->assertDontSee('New Input')
-                ->assertDontSee('New Select')
-                ->assertDontSee('New Checkbox')
-                ->assertDontSee('New TextArea')
-                ->assertDontSee('New Radio Button Group')
-                ->assertDontSee('New Option')
-                ->assertDontSee('New Date Picker')
-                ->assertDontSee('NEW PAGE NAVIGATION')
-                ->assertDontSee('NEW SUBMIT')
-                // ->assertDontSee('New File Upload')
-                // //->assertDontSee('New File Download')
-                // //change the value to evaluate to "field1 == 'test'" and all fields must be visible
-                // ->type('#renderer-container input[name=field1]', 'test')
-                // ->assertSee('Field 1')
-                // ->assertSee('New Text')
-                // ->assertSee('New Input')
-                // ->assertSee('New Select')
-                // ->assertSee('New Checkbox')
-                // ->assertSee('New TextArea')
-                // ->assertSee('New Radio Button Group')
-                // ->assertSee('New Option')
-                // ->assertSee('New Date Picker')
-                // ->assertSee('NEW PAGE NAVIGATION')
-                // ->assertSee('NEW SUBMIT')
-                ->assertSee('New File Upload');
-        });
-    }
+    //         //display form builder, show or hide controls
+    //         $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
+    //             //wait for Editor screens
+    //             ->waitFor('#screen-container')
+    //             ->assertSee('Controls')
+    //             ->assertSee('Inspector')
+    //             //change to Screen Preview
+    //             ->click('#app > div.card-header > div > div:nth-child(1) > div > button.btn.btn-outline-secondary')
+    //             ->waitForText('Data Input')
+    //             ->assertSee('Data Input')
+    //             //Check all fields are displayed
+    //             ->assertSee('Field 1')
+    //             //by default fields are hidden
+    //             ->assertDontSee('New Text')
+    //             ->assertDontSee('New Input')
+    //             ->assertDontSee('New Select')
+    //             ->assertDontSee('New Checkbox')
+    //             ->assertDontSee('New TextArea')
+    //             ->assertDontSee('New Radio Button Group')
+    //             ->assertDontSee('New Option')
+    //             ->assertDontSee('New Date Picker')
+    //             ->assertDontSee('NEW PAGE NAVIGATION')
+    //             ->assertDontSee('NEW SUBMIT')
+    //             // ->assertDontSee('New File Upload')
+    //             // //->assertDontSee('New File Download')
+    //             // //change the value to evaluate to "field1 == 'test'" and all fields must be visible
+    //             // ->type('#renderer-container input[name=field1]', 'test')
+    //             // ->assertSee('Field 1')
+    //             // ->assertSee('New Text')
+    //             // ->assertSee('New Input')
+    //             // ->assertSee('New Select')
+    //             // ->assertSee('New Checkbox')
+    //             // ->assertSee('New TextArea')
+    //             // ->assertSee('New Radio Button Group')
+    //             // ->assertSee('New Option')
+    //             // ->assertSee('New Date Picker')
+    //             // ->assertSee('NEW PAGE NAVIGATION')
+    //             // ->assertSee('NEW SUBMIT')
+    //             ->assertSee('New File Upload');
+    //     });
+    // }
 
     /**
      * The user has permission to export in Screen builder
