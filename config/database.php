@@ -54,6 +54,7 @@ return [
             'collation' => env('DATA_DB_COLLATION'),
             'schema' => env('DATA_DB_SCHEMA'),
             'engine' => env('DATA_DB_ENGINE'),
+            'date_format' => env('DATA_DB_DATE_FORMAT'),
         ]
     ],
 

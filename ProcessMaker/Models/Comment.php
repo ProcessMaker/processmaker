@@ -4,7 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\SerializeToIso8601;
-use ProcessMaker\Traits\DataConnectionTrait;
+use ProcessMaker\Traits\SqlsrvSupportTrait;
 
 /**
  * Represents a business process definition.
@@ -42,7 +42,7 @@ use ProcessMaker\Traits\DataConnectionTrait;
 class Comment extends Model
 {
     use SerializeToIso8601;
-    use DataConnectionTrait;
+    use SqlsrvSupportTrait;
 
     protected $connection = 'data';
 

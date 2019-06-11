@@ -2,9 +2,8 @@
 
 namespace ProcessMaker\Traits;
 
-trait DataConnectionTrait
+trait SqlsrvSupportTrait
 {
-
     /**
      * Get the format for database stored dates.
      *
@@ -13,6 +12,7 @@ trait DataConnectionTrait
     public function getDateFormat()
     {
         // Set the required date format for SQL Server
-        return config('database.connections.data.driver') === 'sqlsrv' ? 'Y-m-d H:i:s' : parent::getDateFormat();
+        return config('database.connections.data.date_format')
+            ? config('database.connections.data.date_format') : parent::getDateFormat();
     }
 }
