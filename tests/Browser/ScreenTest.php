@@ -100,7 +100,7 @@ class ScreenTest extends DuskTestCase
                 ->assertDontSee('New Option')
                 ->assertDontSee('New Date Picker')
                 ->assertDontSee('NEW PAGE NAVIGATION')
-                ->assertDontSee('NEW SUBMIT')
+                ->assertDontSee('NEW SUBMIT');
                 // ->assertDontSee('New File Upload')
                 // //->assertDontSee('New File Download')
                 // //change the value to evaluate to "field1 == 'test'" and all fields must be visible
@@ -116,7 +116,7 @@ class ScreenTest extends DuskTestCase
                 // ->assertSee('New Date Picker')
                 // ->assertSee('NEW PAGE NAVIGATION')
                 // ->assertSee('NEW SUBMIT')
-                ->assertSee('New File Upload');
+                //->assertSee('New File Upload');
         });
     }
 
