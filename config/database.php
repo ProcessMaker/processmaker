@@ -56,11 +56,7 @@ return [
             'engine' => env('DATA_DB_ENGINE'),
         ]
     ],
-    /**
-     * Enable the use of an external connection to store tables
-     * that contains customer's data
-     */
-    'enable_external_connection' => env('ENABLE_EXTERNAL_CONNECTION', false),
+
     /*
     |--------------------------------------------------------------------------
     | Migration Repository Table

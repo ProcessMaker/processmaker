@@ -17,7 +17,7 @@ class MigrateFresh extends FreshCommand
             return;
         }
 
-        $databases = config('database.enable_external_connection') ? ['data', 'spark'] : [$this->input->getOption('database')];
+        $databases = ['data', 'spark'];
 
         foreach ($databases as $database) {
             if ($this->option('drop-views')) {

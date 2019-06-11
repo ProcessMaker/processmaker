@@ -22,9 +22,6 @@ class ExternalConnectionTest extends TestCase
      */
     public function testVerifyExternalConnection()
     {
-        if (!config('database.enable_external_connection')) {
-            $this->markTestSkipped('ENABLE_EXTERNAL_CONNECTION is not enabled');
-        }
         // Test the DATA connection is valid
         $connection = DB::connection('data');
         $this->assertInstanceOf(Connection::class, $connection);
