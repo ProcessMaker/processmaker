@@ -68,7 +68,7 @@
                                         </b-collapse>
                                     </b-list-group-item>
 
-                                    <b-list-group-item class="script-toggle border-0 mb-0">
+                                    <b-list-group-item class="script-toggle border-0 mb-0" >
                                         <b-row
                                             :class="outputOpen ? null : 'collapsed'"
                                             :aria-expanded="outputOpen ? 'true' : 'false'"
@@ -85,7 +85,7 @@
                                         </b-row>
                                     </b-list-group-item>
                                     <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                                        <b-collapse id="output" class="bg-dark" :visible="outputOpen">
+                                        <b-collapse id="output" class="bg-dark" :visible="outputOpen" visible>
                                             <div class="output text-white">
                                                 <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
                                                 <div v-if="preview.failure">
