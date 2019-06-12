@@ -10,11 +10,16 @@ export default {
             apiNoResults: false,
         }
     },
+    computed: {
+        shouldShowLoader() {
+            return this.apiDataLoading || this.apiNoResults
+        }
+    },
     mounted() {
-        this.$refs.loader.$on('api-data-loading', (val) => {
+        ProcessMaker.EventBus.$on('api-data-loading', (val) => {
             this.apiDataLoading = val
         });
-        this.$refs.loader.$on('api-data-no-results', (val) => {
+        ProcessMaker.EventBus.$on('api-data-no-results', (val) => {
             this.apiNoResults = val
         });
     }
