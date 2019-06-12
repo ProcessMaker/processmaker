@@ -190,9 +190,9 @@
                                             <div class="form-group col">
                                                 {!!Form::label('timezone', __('Time zone'));!!}
                                                 <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
-                                                  <template slot="first">
-                                                    <option :value="null" disabled>@{{appTimezone}}</option>
-                                                  </template>
+{{--                                                  <template slot="first">--}}
+{{--                                                    <option :value="null" disabled>@{{appTimezone}}</option>--}}
+{{--                                                  </template>--}}
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
                                                 </div>
@@ -200,7 +200,15 @@
 
                                             <div class="form-group col">
                                                 {!! Form::label('language', __('Language')) !!}
-                                                <b-form-select v-model="formData.language" :options="langs" class="form-control"></b-form-select>
+
+
+                                                <b-form-select id="language" v-model="formData.language" class="form-control" :options="langs">
+                                                    <template slot="first">
+                                                        <option :value="null" disabled>@{{appLanguage}}</option>
+                                                    </template>
+                                                </b-form-select>
+
+{{--                                                <b-form-select v-model="formData.language" :options="langs" class="form-control"></b-form-select>--}}
                                                 <div class="invalid-feedback" v-if="errors.language">
                                                     @{{errors.language}}
                                                 </div>
@@ -533,6 +541,7 @@
             appTimezone: @json($appTimezone),
             datetimeFormats: @json($datetimeFormats),
             appFormat: @json($appFormat),
+            appLanguage: @json($appLanguage),
             countries: @json($countries),
             image: '',
             errors: {
