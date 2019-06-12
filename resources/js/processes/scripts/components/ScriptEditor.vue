@@ -85,7 +85,7 @@
                                         </b-row>
                                     </b-list-group-item>
                                     <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                                        <b-collapse id="output" class="bg-dark" :visible="outputOpen" visible>
+                                        <b-collapse id="output" class="bg-dark" :visible="outputOpen">
                                             <div class="output text-white">
                                                 <pre v-if="preview.success" class="text-white"><samp>{{ preview.output }}</samp></pre>
                                                 <div v-if="preview.failure">
@@ -135,7 +135,7 @@
                     success: false,
                     failure: false,
                 },
-                outputOpen: false,
+                outputOpen: true,
             };
         },
         watch: {
