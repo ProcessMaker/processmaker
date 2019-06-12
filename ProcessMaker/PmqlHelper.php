@@ -37,7 +37,7 @@ class PmqlHelper {
     {
         return function($query) use ($value) {
             $processes = Process::where('name', $value)->get();
-            $query->whereIn('process_id', $processes->pluck('id'));
+            $query->whereIn('process_id', $processes->pluck('process_id'));
         };
     }
 
