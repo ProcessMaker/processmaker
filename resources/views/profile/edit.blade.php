@@ -9,7 +9,7 @@
         __('Profile') => route('profile.show', $currentUser->id),
         __('Edit') => null,
     ]])
-    <div class="container" id="profileForm">
+    <div class="container" id="profileForm" v-cloak>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
