@@ -140,18 +140,18 @@ export default {
     switch (this.status) {
       case "CLOSED":
         this.$parent.status.push({
-          name: 'Completed',
+          name: this.$t('Completed'),
           value: 'Completed'
         });
         break;
       default:
         this.$parent.status.push({
-          name: 'In Progress',
+          name: this.$t('In Progress'),
           value: 'In Progress'
         });
         break;
     }
-    
+
     this.$parent.buildPmql();
   },
   mounted: function mounted() {
@@ -184,7 +184,7 @@ export default {
       };
       return (
         '<i class="fas fa-circle ' +
-        bubbleColor[status] + 
+        bubbleColor[status] +
         ' small"></i> ' + statusNames[status]
       );
     },
