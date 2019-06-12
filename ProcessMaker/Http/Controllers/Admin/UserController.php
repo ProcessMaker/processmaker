@@ -56,14 +56,21 @@ class UserController extends Controller
                 return $result;
             }
         );
-        $appTimezone = getenv('APP_TIMEZONE');
-        $appFormat = getenv('DATE_FORMAT');
+
         $datetimeFormats = array_reduce(JsonData::datetimeFormats(),
             function ($result, $item) {
                 $result[$item['format']] = $item['title'];
                 return $result;
             }
         );
+
+        // Default values if the users doesn't have locale configuration
+        $appTimezone = getenv('APP_TIMEZONE') !== false ? getenv('APP_TIMEZONE') : 'America/Los_Angeles';
+        $appFormat = getenv('DATE_FORMAT') !== false ? getenv('DATE_FORMAT') : 'm/d/Y H:i';
+        $appLanguage = getenv('APP_LANG') !== false ? getenv('APP_LANG') : 'en';
+        $user->timezone  = $user->timezone ?? $appTimezone;
+        $user->datetime_format  = $user->datetime_format ?? $appFormat;
+        $user->language  = $user->language ?? $appLanguage;
 
         return view('admin.users.edit', compact(
             'user',
@@ -75,6 +82,7 @@ class UserController extends Controller
             'timezones',
             'appFormat',
             'appTimezone',
+            'appLanguage',
             'countries',
             'datetimeFormats',
             'availableLangs'
