@@ -63,7 +63,6 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["type"],
   data() {
     return {
       orderBy: "id",
@@ -112,6 +111,34 @@ export default {
         }
       ]
     };
+  },
+  beforeCreate() {	
+    let statusname = ''
+    let statusvalue = ''
+    
+    switch (Processmaker.status) {	
+      // if there is no status, meaning its on my requests, We should only show the in progress status
+      case "":	
+        statusname = 'In Progress'
+        statusvalue = 'In Progress'        
+        this.$parent.requester.push(Processmaker.user);	         
+        break;	
+      case "in_progress":	
+        statusname = 'In Progress'
+        statusvalue = 'In Progress'    
+        break;	
+      case "completed":	
+        statusname = 'Completed'
+        statusvalue = 'Completed'    
+        break;       
+    }	
+
+    this.$parent.status.push({	
+      name: statusname,	
+      value: statusvalue	
+    });	
+
+    this.$parent.buildPmql();
   },
   methods: {
     onAction(action, data, index) {
@@ -176,8 +203,6 @@ export default {
       if (resetPagination) {
         this.page = 1;
       }
-
-      this.additionalParams = ((this.type === '') ? '&type=started_me': '&type=' + this.type);
 
       // Load from our api client
       ProcessMaker.apiClient
