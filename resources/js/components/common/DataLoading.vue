@@ -41,28 +41,36 @@
                 error: false,
             };
         },
-        props: ['loading', 'desc', 'icon', 'empty', 'emptyDesc', 'emptyIcon'],
+        props: ['loading', 'desc', 'icon', 'empty', 'emptyDesc', 'emptyIcon', 'for'],
         watch: {
             dataLoading() {
-                this.$emit('api-data-loading', this.dataLoading)
+                ProcessMaker.EventBus.$emit('api-data-loading', this.dataLoading)
             },
+            noResults() {
+                ProcessMaker.EventBus.$emit('api-data-no-results', this.noResults)
+            }
         },
 
         mounted() {
             ProcessMaker.EventBus.$on('api-client-loading', (request) => {
-                this.dataLoading = true
+                if (this.for.test(request.url)) {
+                    this.dataLoading = true
+                    this.error = false
+                    this.noResults = false
+                }
             })
             ProcessMaker.EventBus.$on('api-client-done', (response) => {
-                if (response.data && response.data.data && response.data.data.length === 0) {
-                    this.noResults = true
-                    this.$emit('api-data-no-results', true)
+                if (response.config && this.for.test(response.config.url)) {
+                    if (response.data && response.data.data && response.data.data.length === 0) {
+                        this.noResults = true
+                    }
+                    this.dataLoading = false
                 }
-                this.dataLoading = false
             })
             ProcessMaker.EventBus.$on('api-client-error', (error) => {
                 ProcessMaker.alert(error, "danger");
+                this.noResults = false
                 this.error = true
-                this.$emit('api-data-no-results', true)
             })
         },
         methods: {
