@@ -461,7 +461,7 @@ class ProcessRequestsTest extends TestCase
 
         // The list of completed include de CANCELED requests
         $response = $this->apiCall('GET', self::API_TEST_URL . '?type=completed');
-        $this->assertEquals(4, $response->json()['meta']['total']);
+        $this->assertEquals(3, $response->json()['meta']['total']);
 
         // The list of all requests includes everything
         $response = $this->apiCall('GET', self::API_TEST_URL . '?type=all');
