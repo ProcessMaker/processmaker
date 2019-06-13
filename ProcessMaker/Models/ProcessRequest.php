@@ -15,6 +15,7 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Query\Traits\PMQL;
 use Throwable;
+use ProcessMaker\Traits\SqlsrvSupportTrait;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -63,6 +64,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use SerializeToIso8601;
     use HasMediaTrait;
     use PMQL;
+    use SqlsrvSupportTrait;
+
+    protected $connection = 'data';
 
     /**
      * The attributes that aren't mass assignable.
@@ -150,7 +154,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public static function rules($existing = null)
     {
-        $unique = Rule::unique('process_requests')->ignore($existing);
+        $self = new self();
+        $unique = Rule::unique($self->getConnectionName() . '.process_requests')->ignore($existing);
 
         return [
             'name' => ['required', 'string', 'max:100', $unique],

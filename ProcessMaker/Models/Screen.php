@@ -46,6 +46,8 @@ class Screen extends Model
 {
     use SerializeToIso8601;
 
+    protected $connection = 'spark';
+
     protected $casts = [
         'config' => 'array',
         'computed' => 'array'

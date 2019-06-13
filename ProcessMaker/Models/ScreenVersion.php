@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class ScreenVersion extends Model
 {
+    protected $connection = 'spark';
+
     /**
      * Do not automatically set created_at
      */
     const CREATED_AT = null;
-    
+
     /**
      * Attributes that are not mass assignable.
      *
@@ -24,5 +26,5 @@ class ScreenVersion extends Model
     protected $casts = [
         'config' => 'array'
     ];
-    
+
 }
