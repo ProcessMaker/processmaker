@@ -14,15 +14,15 @@
     </ul>
     <ul class="nav flex-column">
       @foreach($sidebar->topMenu()->items as $section)
-        <li class="section">{{$section->title}}</li>
+        <li class="section">{{ __($section->title) }}</li>
         @foreach($section->children() as $item)
           <li class="nav-item">
-            <a href="{{ $item->url() }}" class="nav-link" title="{{$item->title}}">
+            <a href="{{ $item->url() }}" class="nav-link" title="{{ __($item->title) }}">
               @if($item->attr('icon'))
-                <i class="fas {{$item->attr('icon')}} nav-icon"></i> <span class="nav-text">{{$item->title}}</span>
+                <i class="fas {{$item->attr('icon')}} nav-icon"></i> <span class="nav-text">{{ __($item->title) }}</span>
               @endif
               @if($item->attr('file'))
-                <img src="{{$item->attr('file')}}" class="nav-icon" id="custom_icon"><span class="nav-text">{{$item->title}}</span>
+                <img src="{{$item->attr('file')}}" class="nav-icon" id="custom_icon"><span class="nav-text">{{ __($item->title) }}</span>
               @endif
             </a>
           </li>
