@@ -9,7 +9,7 @@
         __('Profile') => route('profile.show', $currentUser->id),
         __('Edit') => null,
     ]])
-    <div class="container" id="profileForm">
+    <div class="container" id="profileForm" v-cloak>
         <div class="row">
             <div class="col-8">
                 <div class="card card-body">
@@ -121,7 +121,7 @@
                             <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}</div>
                         </div>
 
-                        <div class="form-group col">
+                        <div class="form-group col" v-if="langs.length > 1">
                             {!! Form::label('language', __('Language')) !!}
                             <b-form-select v-model="formData.language" :options="langs"></b-form-select>
                             <div class="invalid-feedback" v-if="errors.language">@{{errors.language}}</div>

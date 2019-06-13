@@ -43,8 +43,6 @@ class CreateProcessRequestTokens extends Migration
 
             // Foreign keys
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('process_request_id')->references('id')->on('process_requests')->onDelete('cascade');
-            $table->foreign('subprocess_request_id')->references('id')->on('process_requests')->onDelete('cascade');
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
         });
     }
