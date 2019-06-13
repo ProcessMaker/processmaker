@@ -20,8 +20,10 @@ class ProfileController extends Controller
         $currentUser = \Auth::user();
         $states = JsonData::states();
         $countries = JsonData::countries();
-        $availableLangs = i18nHelper::availableLangs();
-        
+        $availableLangs = ['en'];
+        if (app()->getProvider(\ProcessMaker\Package\PackageTranslations\PackageServiceProvider::class)) {
+            $availableLangs = i18nHelper::availableLangs();
+        }
         $timezones = array_reduce(JsonData::timezones(),
             function ($result, $item) {
                 $result[$item] = $item;
