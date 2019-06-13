@@ -33,6 +33,8 @@ class ScreenCategory extends Model
 {
     use SerializeToIso8601;
 
+    protected $connection = 'spark';
+
     protected $fillable = [
         'name',
         'status'

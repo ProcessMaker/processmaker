@@ -39,6 +39,8 @@ class Notification extends Model
 {
     use SerializeToIso8601;
 
+    protected $connection = 'spark';
+
     public $incrementing = false;
 
     protected $fillable = [
