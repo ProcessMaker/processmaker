@@ -79,10 +79,7 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ProcessRequestToken
-            ::join('process_requests as request', 'request.id', '=', 'process_request_tokens.process_request_id')
-            ->join('users as user', 'user.id', '=', 'process_request_tokens.user_id')
-            ->select('process_request_tokens.*');
+        $query = ProcessRequestToken::with(['processRequest', 'user']);
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
 

@@ -39,7 +39,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class GroupMember extends Model
 {
-
+    protected $connection = 'spark';
 
     protected $fillable = [
         'group_id', 'member_id', 'member_type',

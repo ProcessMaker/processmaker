@@ -309,7 +309,7 @@ class NotificationController extends Controller
         $messageIds = $request->input('message_ids');
         $routes = $request->input('routes');
 
-        DB::table('notifications')
+        Notification::query()
             ->whereIn('id', $messageIds)
             ->orWhereIn('data->url', $routes)
             ->update(['read_at' => Carbon::now()]);
@@ -321,12 +321,12 @@ class NotificationController extends Controller
         $messageIds = $request->input('message_ids');
         $routes = $request->input('routes');
 
-        $updated = DB::table('notifications')
+        $updated = Notification::query()
             ->whereIn('id', $messageIds)
             ->orWhereIn('data->url', $routes)
             ->get();
 
-        DB::table('notifications')
+        Notification::query()
             ->whereIn('id', $messageIds)
             ->orWhereIn('data->url', $routes)
             ->update(['read_at' => null]);
@@ -372,7 +372,7 @@ class NotificationController extends Controller
         $id = $request->input('id');
         $type = $request->input('type');
 
-        DB::table('notifications')
+        Notification::query()
             ->where('notifiable_id', $id)
             ->where('notifiable_type', $type)
             ->update(['read_at' => Carbon::now()]);

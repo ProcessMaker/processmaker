@@ -2,7 +2,7 @@
 
 use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
 
-Route::group(['middleware' => ['auth', 'sanitize']], function () {
+Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], function () {
 
 // Routes related to Authentication (password reset, etc)
 // Auth::routes();
@@ -103,3 +103,7 @@ $this->delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->nam
 $this->get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
+
+
+$this->get('/unavailable', 'UnavailableController@show')->name('error.unavailable');
+
