@@ -1,12 +1,11 @@
 <template>
   <div class="data-table">
-    <data-loading v-if="apiDataLoading || apiNoResults"
+    <data-loading :for="/tasks\?page/" v-show="shouldShowLoader"
       :empty="$t('Congratulations')"
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
       empty-icon="beach"
-      ref="loader"
     />
-    <div v-else class="card card-body table-card">
+    <div v-show="!shouldShowLoader" class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
