@@ -64,6 +64,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'sanitize' => \ProcessMaker\Http\Middleware\SanitizeInput::class,
         'setlocale' => \ProcessMaker\Http\Middleware\SetLocale::class,
-        'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class
+        'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
+        'external.connection' => \ProcessMaker\Http\Middleware\ValidateExternalConnection::class
     ];
 }
