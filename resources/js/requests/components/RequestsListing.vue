@@ -112,32 +112,30 @@ export default {
       ]
     };
   },
-  beforeCreate() {	
-    let statusname = ''
-    let statusvalue = ''
-    
-    switch (Processmaker.status) {	
+  beforeCreate() {
+    let status = null
+
+    switch (Processmaker.status) {
       // if there is no status, meaning its on my requests, We should only show the in progress status
-      case "":	
-        statusname = 'In Progress'
-        statusvalue = 'In Progress'        
-        this.$parent.requester.push(Processmaker.user);	         
-        break;	
-      case "in_progress":	
-        statusname = 'In Progress'
-        statusvalue = 'In Progress'    
-        break;	
-      case "completed":	
-        statusname = 'Completed'
-        statusvalue = 'Completed'    
-        break;       
-    }	
+      case "":
+        status = 'In Progress'
+        this.$parent.requester.push(Processmaker.user);
+        break;
+      case "in_progress":
+        status = 'In Progress'
+        break;
+      case "completed":
+        status = 'Completed'
+        break;
+    }
 
-    this.$parent.status.push({	
-      name: statusname,	
-      value: statusvalue	
-    });	
-
+    if (status) {
+      this.$parent.status.push({
+        name: status,
+        value: status
+      });
+    }
+    
     this.$parent.buildPmql();
   },
   methods: {
