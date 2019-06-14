@@ -122,16 +122,9 @@ class UserController extends Controller
         $request->validate(User::rules());
         $user = new User();
         $fields = $request->json()->all();
+
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
-        }
-
-        if (!isset($fields['timezone'])) {
-            $fields['timezone'] = env('APP_TIMEZONE');
-        }
-
-        if (!isset($fields['datetime_format'])) {
-            $fields['datetime_format'] = env('DATE_FORMAT');
         }
 
         $user->fill($fields);
