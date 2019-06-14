@@ -26,7 +26,7 @@
         <template slot="requestName" slot-scope="props">
           <b-link
             @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
-          >{{props.rowData.process.name}}</b-link>
+          >#{{props.rowData.process_request.id}}  {{props.rowData.process.name}}</b-link>
         </template>
 
         <template slot="assignee" slot-scope="props">
