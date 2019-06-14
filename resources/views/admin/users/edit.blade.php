@@ -190,9 +190,6 @@
                                             <div class="form-group col">
                                                 {!!Form::label('timezone', __('Time zone'));!!}
                                                 <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
-{{--                                                  <template slot="first">--}}
-{{--                                                    <option :value="null" disabled>@{{appTimezone}}</option>--}}
-{{--                                                  </template>--}}
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
                                                 </div>

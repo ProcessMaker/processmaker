@@ -122,14 +122,6 @@ class UserController extends Controller
         $user = new User();
         $fields = $request->json()->all();
 
-        // Default values if the users doesn't have set his locale configuration
-        $appTimezone = getenv('APP_TIMEZONE') !== false ? getenv('APP_TIMEZONE') : 'America/Los_Angeles';
-        $appFormat = getenv('DATE_FORMAT') !== false ? getenv('DATE_FORMAT') : 'm/d/Y H:i';
-        $appLanguage = getenv('APP_LANG') !== false ? getenv('APP_LANG') : 'en';
-        $fields['timezone']  = $fields['timezone'] ?? $appTimezone;
-        $fields['datetime_format']  = $fields['datetime_format'] ?? $appFormat;
-        $fields['language']  = $fields['language'] ?? $appLanguage;
-
         if (isset($fields['password'])) {
             $fields['password'] = Hash::make($fields['password']);
         }
