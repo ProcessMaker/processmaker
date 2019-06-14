@@ -201,9 +201,9 @@ class Install extends Command
     {
         $this->info(__('ProcessMaker Spark requires a MySQL database.'));
         $this->info(__('Database connection failed. Check your database configuration and try again.'));
-        $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['127.0.0.1']);
-        $this->env['DB_PORT'] = $this->anticipate(__('Enter your MySQL port (usually 3306)'), [3306]);
-        $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['spark']);
+        $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['127.0.0.1'], '127.0.0.1');
+        $this->env['DB_PORT'] = $this->anticipate(__('Enter your MySQL port (usually 3306)'), [3306], 3306);
+        $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['spark'], 'spark');
         $this->env['DB_USERNAME'] = $this->ask(__('Enter your MySQL username'));
         $this->env['DB_PASSWORD'] = $this->secret(__('Enter your MySQL password (input hidden)'));
     }
@@ -233,13 +233,13 @@ class Install extends Command
      */
     private function fetchPostgreCredentials()
     {
-        $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1']);
-        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 5432)'), [5432]);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data']);
+        $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1'], '127.0.0.1');
+        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 5432)'), [5432], 5432);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
         $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
         $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
         $this->env['DATA_DB_CHARSET'] = 'utf8';
-        $this->env['DATA_DB_SCHEMA'] = $this->anticipate(__('Enter your DB Schema'), ['public']);
+        $this->env['DATA_DB_SCHEMA'] = $this->anticipate(__('Enter your DB Schema'), ['public'], 'public');
     }
 
     /**
@@ -250,8 +250,8 @@ class Install extends Command
     private function fetchMysqlCredentials()
     {
         $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1']);
-        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 3306)'), [3306]);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data']);
+        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 3306)'), [3306], 3306);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
         $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
         $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
         $this->env['DATA_DB_CHARSET'] = 'utf8mb4';
@@ -267,8 +267,8 @@ class Install extends Command
     private function fetchSqlServerCredentials()
     {
         $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1']);
-        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 1433)'), [1433]);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data']);
+        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 1433)'), [1433], 1433);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
         $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
         $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
     }
@@ -284,9 +284,9 @@ class Install extends Command
         $format = $sqlServerGrammar->getDateFormat();
         $date = DB::connection('data')->select('select getdate() as date')[0]->date;
         if (substr($date, 19, 1) === '.') {
-            substr($format, 11, 1) !== '.' ? $this->env['DATA_DB_DATE_FORMAT'] = 'Y-m-d H:i:s.v' : '';
+            substr($format, 11, 1) !== '.' ? $this->env['DATA_DB_DATE_FORMAT'] = '"Y-m-d H:i:s.v"' : '';
         } else {
-            substr($format, 11, 1) === '.' ? $this->env['DATA_DB_DATE_FORMAT'] = 'Y-m-d H:i:s' : '';
+            substr($format, 11, 1) === '.' ? $this->env['DATA_DB_DATE_FORMAT'] = '"Y-m-d H:i:s"' : '';
         }
     }
 
@@ -311,7 +311,7 @@ class Install extends Command
             DB::reconnect();
             $pdo = DB::connection('spark')->getPdo();
         } catch (Exception $e) {
-            $this->error(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.'));
+            $this->error(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.spark'))));
             return false;
         }
         return true;
