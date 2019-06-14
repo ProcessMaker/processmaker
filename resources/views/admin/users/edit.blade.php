@@ -574,17 +574,19 @@
         },
         watch: {
           selectedPermissions: function () {
-            if (this.selectedPermissions.length !== this.permissions.length) {
-              this.selectAll = false;
-            }
+            this.selectAll = this.areAllPermissionsSelected();
           }
         },
         methods: {
+          areAllPermissionsSelected() {
+            return this.selectedPermissions.length === this.permissions.length;
+          },
           checkCreate(sibling, $event) {
             let self = $event.target.value;
             if (this.selectedPermissions.includes(self)) {
               this.selectedPermissions.push(sibling);
             }
+            Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
           },
           checkEdit(sibling, $event) {
             let self = $event.target.value;
@@ -593,6 +595,7 @@
                 return el !== sibling;
               });
             }
+            Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
           },
           copyTextArea() {
             this.$refs.text.select();
