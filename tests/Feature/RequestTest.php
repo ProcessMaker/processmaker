@@ -10,6 +10,7 @@ use ProcessMaker\Models\PermissionAssignment;
 use ProcessMaker\Models\Permission;
 use \PermissionSeeder;
 use Illuminate\Http\Testing\File;
+use Symfony\Component\DomCrawler\Crawler;
 
 class RequestTest extends TestCase
 {
@@ -127,5 +128,22 @@ class RequestTest extends TestCase
         $response->assertSee('photo2.jpg</a>');
         $response->assertSee('photo3.jpg</a>');
         $response->assertSee('photo1.jpg</a>');
+    }
+
+    public function testCompletedCount()
+    {
+        $completed1 = factory(ProcessRequest::class)->create([
+            'status' => 'COMPLETED',
+        ]);
+        $completed2 = factory(ProcessRequest::class)->create([
+            'status' => 'COMPLETED',
+        ]);
+        $canceled = factory(ProcessRequest::class)->create([
+            'status' => 'CANCELED',
+        ]);
+
+        $response = $this->webCall('GET', '/requests/completed');
+        $crawler = new Crawler($response->getContent());
+        $this->assertContains('2', trim($crawler->filter('.bg-primary h1')->first()->text()));
     }
 }
