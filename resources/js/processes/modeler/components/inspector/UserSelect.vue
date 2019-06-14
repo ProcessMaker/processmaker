@@ -4,8 +4,6 @@
         <multiselect v-model="content"
                      track-by="id"
                      label="fullname"
-                     :select-label="''"
-                     :deselect-label="''"
                      :class="{'border border-danger':error}"
                      :loading="loading"
                      :placeholder="$t('type here to search')"
@@ -16,6 +14,12 @@
                      :internal-search="false"
                      @open="load"
                      @search-change="load">
+            <template slot="noResult" >
+                {{ $t('No elements found. Consider changing the search query.')}}
+            </template>
+            <template slot="noOptions" >
+                {{ $t('No Data Available')}}
+            </template>
         </multiselect>
         <small v-if="error" class="text-danger">{{ error }}</small>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>

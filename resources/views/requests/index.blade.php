@@ -63,86 +63,104 @@
                         <div class="flex-grow-1">
                             <div id="search-dropdowns" v-if="! advanced" class="row">
                                 <div class="col-3">
-                                    <multiselect
-                                    v-model="process"
-                                    @search-change="getProcesses"
-                                    @input="buildPmql"
-                                    :select-label="''"
-                                    :deselect-label="''"
-                                    :loading="isLoading.process"
-                                    open-direction="bottom"
-                                    label="name"
-                                    :options="processOptions"
-                                    :track-by="'id'"
-                                    :multiple="true"
-                                    :placeholder="$t('Process')">
+                                    <multiselect v-model="process"
+                                                 @search-change="getProcesses"
+                                                 @input="buildPmql"
+                                                 :show-labels="false"
+                                                 :loading="isLoading.process"
+                                                 open-direction="bottom"
+                                                 label="name"
+                                                 :options="processOptions"
+                                                 :track-by="'id'"
+                                                 :multiple="true"
+                                                 :placeholder="$t('Process')">
+                                        <template slot="noResult">
+                                            {{ $t('No elements found. Consider changing the search query.')}}
+                                        </template>
+                                        <template slot="noOptions">
+                                            {{ $t('No Data Available')}}
+                                        </template>
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('processes') }}</span>
                                         </template>
                                     </multiselect>
                                 </div>
                                 <div class="col-3">
-                                    <multiselect
-                                    v-model="status"
-                                    :select-label="''"
-                                    :deselect-label="''"
-                                    @input="buildPmql"
-                                    :loading="isLoading.status"
-                                    open-direction="bottom"
-                                    label="name"
-                                    :options="statusOptions"
-                                    track-by="value"
-                                    :multiple="true"
-                                    :placeholder="$t('Status')">
+                                    <multiselect v-model="status"
+                                                 :show-labels="false"
+                                                 @input="buildPmql"
+                                                 :loading="isLoading.status"
+                                                 open-direction="bottom"
+                                                 label="name"
+                                                 :options="statusOptions"
+                                                 track-by="value"
+                                                 :multiple="true"
+                                                 :placeholder="$t('Status')">
+                                        <template slot="noResult">
+                                            {{ $t('No elements found. Consider changing the search query.')}}
+                                        </template>
+                                        <template slot="noOptions">
+                                            {{ $t('No Data Available')}}
+                                        </template>
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('statuses') }}</span>
                                         </template>
                                     </multiselect>
                                 </div>
                                 <div class="col-3">
-                                    <multiselect
-                                    v-model="requester"
-                                    @search-change="getRequesters"
-                                    @input="buildPmql"
-                                    :select-label="''"
-                                    :deselect-label="''"
-                                    :loading="isLoading.requester"
-                                    open-direction="bottom"
-                                    label="fullname"
-                                    :options="requesterOptions"
-                                    :track-by="'id'"
-                                    :multiple="true"
-                                    :placeholder="$t('Requester')">
+                                    <multiselect v-model="requester"
+                                                 @search-change="getRequesters"
+                                                 @input="buildPmql"
+                                                 :show-labels="false"
+                                                 :loading="isLoading.requester"
+                                                 open-direction="bottom"
+                                                 label="fullname"
+                                                 :options="requesterOptions"
+                                                 :track-by="'id'"
+                                                 :multiple="true"
+                                                 :placeholder="$t('Requester')">
+                                        <template slot="noResult">
+                                            {{ $t('No elements found. Consider changing the search query.')}}
+                                        </template>
+                                        <template slot="noOptions">
+                                            {{ $t('No Data Available')}}
+                                        </template>
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
                                         </template>
                                         <template slot="option" slot-scope="props">
-                                            <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
-                                        <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                            <img v-if="props.option.avatar.length > 0" class="option__image"
+                                                 :src="props.option.avatar">
+                                            <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
                                             <span class="ml-1">@{{props.option.fullname}}</span>
                                         </template>
                                     </multiselect>
                                 </div>
                                 <div class="col-3">
-                                    <multiselect
-                                    v-model="participants"
-                                    @search-change="getParticipants"
-                                    @input="buildPmql"
-                                    :select-label="''"
-                                    :deselect-label="''"
-                                    :loading="isLoading.participants"
-                                    open-direction="bottom"
-                                    label="fullname"
-                                    :options="participantsOptions"
-                                    :track-by="'id'"
-                                    :multiple="true"
-                                    :placeholder="$t('Participants')">
+                                    <multiselect v-model="participants"
+                                                 @search-change="getParticipants"
+                                                 @input="buildPmql"
+                                                 :show-labels="false"
+                                                 :loading="isLoading.participants"
+                                                 open-direction="bottom"
+                                                 label="fullname"
+                                                 :options="participantsOptions"
+                                                 :track-by="'id'"
+                                                 :multiple="true"
+                                                 :placeholder="$t('Participants')">
+                                        <template slot="noResult">
+                                            {{ $t('No elements found. Consider changing the search query.')}}
+                                        </template>
+                                        <template slot="noOptions">
+                                            {{ $t('No Data Available')}}
+                                        </template>
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
                                         </template>
                                         <template slot="option" slot-scope="props">
-                                            <img v-if="props.option.avatar.length > 0" class="option__image" :src="props.option.avatar">
-                                        <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
+                                            <img v-if="props.option.avatar.length > 0" class="option__image"
+                                                 :src="props.option.avatar">
+                                            <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
                                             <span class="ml-1">@{{props.option.fullname}}</span>
                                         </template>
                                     </multiselect>

@@ -73,8 +73,6 @@
                                                              placeholder="{{__('Type to search task')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
-                                                             :select-label="''"
-                                                             :deselect-label="''"
                                                              track-by="id"
                                                              :show-labels="false"
                                                              :searchable="true"
@@ -86,13 +84,17 @@
                                                              @search-change="loadUsers($event, true, 'task')"
                                                              @open="loadUsers($event, true, 'task')"
                                                              class="assignable-input">
+                                                    <template slot="noResult" >
+                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                    </template>
+                                                    <template slot="noOptions" >
+                                                        {{ $t('No Data Available')}}
+                                                    </template>
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
-                                                             :select-label="''"
-                                                             :deselect-label="''"
                                                              track-by="id"
                                                              :show-labels="false"
                                                              :searchable="true"
@@ -104,12 +106,16 @@
                                                              @search-change="loadUsers($event, true)"
                                                              @open="loadUsers($event, true)"
                                                              class="assignable-input">
+                                                    <template slot="noResult" >
+                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                    </template>
+                                                    <template slot="noOptions" >
+                                                        {{ $t('No Data Available')}}
+                                                    </template>
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="users"
-                                                             :select-label="''"
-                                                             :deselect-label="''"
                                                              :multiple="false"
                                                              track-by="id"
                                                              :show-labels="false"
@@ -120,12 +126,16 @@
                                                              @search-change="loadUsers($event, false)"
                                                              @open="loadUsers"
                                                              class="assignable-input">
+                                                    <template slot="noResult" >
+                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                    </template>
+                                                    <template slot="noOptions" >
+                                                        {{ $t('No Data Available')}}
+                                                    </template>
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
                                                              placeholder="{{__('Type to search process')}}"
                                                              :options="processes"
-                                                             :select-label="''"
-                                                             :deselect-label="''"
                                                              :multiple="false"
                                                              track-by="id"
                                                              :show-labels="false"
@@ -136,6 +146,12 @@
                                                              @search-change="loadProcess($event)"
                                                              @open="loadProcess"
                                                              class="assignable-input">
+                                                    <template slot="noResult" >
+                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                    </template>
+                                                    <template slot="noOptions" >
+                                                        {{ $t('No Data Available')}}
+                                                    </template>
                                                 </multiselect>
                                             </td>
                                         </tr>
@@ -150,8 +166,6 @@
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="true"
-                                                             :select-label="''"
-                                                             :deselect-label="''"
                                                              track-by="id"
                                                              :show-labels="false"
                                                              :searchable="true"
@@ -162,6 +176,12 @@
                                                              @search-change="loadUsers($event, true)"
                                                              @open="loadUsers($event, true)"
                                                              class="assignable-input">
+                                                    <template slot="noResult" >
+                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                    </template>
+                                                    <template slot="noOptions" >
+                                                        {{ $t('No Data Available')}}
+                                                    </template>
                                                 </multiselect>
                                             </td>
                                         </tr>
@@ -175,8 +195,6 @@
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="true"
-                                                             :select-label="''"
-                                                             :deselect-label="''"
                                                              track-by="id"
                                                              :show-labels="false"
                                                              :searchable="true"
@@ -187,6 +205,12 @@
                                                              @search-change="loadUsers($event, true)"
                                                              @open="loadUsers($event, true)"
                                                              class="assignable-input">
+                                                    <template slot="noResult" >
+                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                    </template>
+                                                    <template slot="noOptions" >
+                                                        {{ $t('No Data Available')}}
+                                                    </template>
                                                 </multiselect>
                                             </td>
                                         </tr>
