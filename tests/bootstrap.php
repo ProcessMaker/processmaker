@@ -38,6 +38,9 @@ if (env('RUN_MSSQL_TESTS')) {
     // First create the test external mysql database as well as our test database
     DB::connection('testexternal')->unprepared('CREATE DATABASE IF NOT EXISTS testexternal');
 
+    // First create the test external mysql database as well as our test database
+    DB::connection('testexternal')->unprepared('CREATE DATABASE IF NOT EXISTS userexternal');
+
     // Now set the database name properly
     config(['database.connections.testexternal.database' => env('DB_TESTEXTERNAL_DB', 'testexternal')]);
     DB::connection('testexternal')->reconnect();

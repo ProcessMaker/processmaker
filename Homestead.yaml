@@ -26,6 +26,7 @@ sites:
     -
         map: spark.local.processmaker.com
         to: /home/vagrant/processmaker/public
+        schedule: true
 databases:
     - spark
     - test

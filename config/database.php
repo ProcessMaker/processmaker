@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -40,8 +41,23 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => 'InnoDB',
+        ],
+        'data' => [
+            'driver' => env('DATA_DB_DRIVER'),
+            'host' => env('DATA_DB_HOST', 'localhost'),
+            'port' => env('DATA_DB_PORT'),
+            'database' => env('DATA_DB_DATABASE'),
+            'username' => env('DATA_DB_USERNAME'),
+            'password' => env('DATA_DB_PASSWORD'),
+            'unix_socket' => env('DATA_DB_SOCKET'),
+            'charset' => env('DATA_DB_CHARSET'),
+            'collation' => env('DATA_DB_COLLATION'),
+            'schema' => env('DATA_DB_SCHEMA'),
+            'engine' => env('DATA_DB_ENGINE'),
+            'date_format' => env('DATA_DB_DATE_FORMAT'),
         ]
     ],
+
     /*
     |--------------------------------------------------------------------------
     | Migration Repository Table

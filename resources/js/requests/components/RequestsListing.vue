@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
-    <data-loading v-if="apiDataLoading || apiNoResults" ref="loader" />
-    <div v-else class="card card-body table-card">
+    <data-loading :for="/requests\?page/" v-show="shouldShowLoader" />
+    <div v-show="!shouldShowLoader" class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -63,7 +63,6 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["type"],
   data() {
     return {
       orderBy: "id",
@@ -112,6 +111,32 @@ export default {
         }
       ]
     };
+  },
+  beforeCreate() {
+    let status = null
+
+    switch (Processmaker.status) {
+      // if there is no status, meaning its on my requests, We should only show the in progress status
+      case "":
+        status = 'In Progress'
+        this.$parent.requester.push(Processmaker.user);
+        break;
+      case "in_progress":
+        status = 'In Progress'
+        break;
+      case "completed":
+        status = 'Completed'
+        break;
+    }
+
+    if (status) {
+      this.$parent.status.push({
+        name: status,
+        value: status
+      });
+    }
+    
+    this.$parent.buildPmql();
   },
   methods: {
     onAction(action, data, index) {
@@ -176,8 +201,6 @@ export default {
       if (resetPagination) {
         this.page = 1;
       }
-
-      this.additionalParams = ((this.type === '') ? '&type=started_me': '&type=' + this.type);
 
       // Load from our api client
       ProcessMaker.apiClient

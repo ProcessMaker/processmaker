@@ -11,6 +11,14 @@ use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
+use ProcessMaker\Observers\ProcessCollaborationObserver;
+use ProcessMaker\Observers\ProcessObserver;
+use ProcessMaker\Observers\ProcessRequestObserver;
+use ProcessMaker\Observers\UserObserver;
 
 /**
  * Provide our ProcessMaker specific services
@@ -26,6 +34,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        User::observe(UserObserver::class);
+        Process::observe(ProcessObserver::class);
+        ProcessRequest::observe(ProcessRequestObserver::class);
+        ProcessCollaboration::observe(ProcessCollaborationObserver::class);
+
         parent::boot();
     }
 

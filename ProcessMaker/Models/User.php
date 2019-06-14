@@ -3,19 +3,15 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\HasAuthorization;
+use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Query\Traits\PMQL;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -26,6 +22,8 @@ class User extends Authenticatable implements HasMedia
     use HasAuthorization;
     use SerializeToIso8601;
     use SoftDeletes;
+
+    protected $connection = 'spark';
 
     //Disk
     public const DISK_PROFILE = 'profile';
@@ -212,7 +210,7 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->morphMany(GroupMember::class, 'member', null, 'member_id');
     }
-    
+
     public function groups()
     {
         return $this->morphToMany('ProcessMaker\Models\Group', 'member', 'group_members');
@@ -255,7 +253,7 @@ class User extends Authenticatable implements HasMedia
      * cause errors from time to time.
      *
      * @return string
-     */    
+     */
     public function setAvatarAttribute($value = null)
     {
         if ($value) {
@@ -285,7 +283,7 @@ class User extends Authenticatable implements HasMedia
      */
     public function activeNotifications()
     {
-        $notifications = DB::table('notifications')
+        $notifications = Notification::query()
             ->where('notifiable_type', User::class)
             ->where('notifiable_id', $this->id)
             ->whereNull('read_at')

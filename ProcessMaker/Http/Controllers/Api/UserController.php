@@ -6,6 +6,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
@@ -93,7 +94,7 @@ class UserController extends Controller
 
         return new ApiCollection($response);
     }
-    
+
      /**
      * Store a newly created resource in storage.
      *
@@ -253,11 +254,16 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
-        return response([], 204);
+        try
+        {
+            $user->delete();
+            return response([], 204);
+        } catch (\Exception $e) {
+            abort($e->getCode(), $e->getMessage());
+        } catch (ReferentialIntegrityException $e) {
+            abort($e->getCode(), $e->getMessage());
+        }
     }
-
-
 
     /**
      * Upload file avatar

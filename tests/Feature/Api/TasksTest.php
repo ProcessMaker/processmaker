@@ -101,7 +101,7 @@ class TasksTest extends TestCase
             'user_id' => $this->user->id,
             'process_request_id' => $request->id
         ]);
-        $route = route('api.' . $this->resource . '.index', ['filter' => $name]);
+        $route = route('api.' . $this->resource . '.index', []);
         $response = $this->apiCall('GET', $route);
 
         $this->assertEquals(
@@ -137,7 +137,7 @@ class TasksTest extends TestCase
         ]);
 
         //Get active tokens
-        $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'filter' => 'ACTIVE']);
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 10, 'status' => 'ACTIVE']);
         $response = $this->apiCall('GET', $route);
         //Verify the status
         $response->assertStatus(200);
