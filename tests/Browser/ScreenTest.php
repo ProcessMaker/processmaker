@@ -80,6 +80,7 @@ class ScreenTest extends DuskTestCase
 
              //display form builder, show or hide controls
              $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
+                 ->maximize()
                  //wait for Editor screens
                  ->waitFor('#screen-container')
                  ->assertSee('Controls')
@@ -103,29 +104,22 @@ class ScreenTest extends DuskTestCase
                  ->assertDontSee('NEW SUBMIT')
                  ->assertDontSee('New File Upload')
                  ->assertDontSee('New File Download')
+                 ->click('#app > div.card-header > div > div:nth-child(1) > div > button.btn.btn-outline-secondary')
                  // //change the value to evaluate to "field1 == 'test'" and all fields must be visible
                  ->type('#screen-container input[name=field1]', 'test')
-//                 ->waitUntil('$("#screen-container input[name=field1]").is(":visible")')
-//                 ->element('#screen-container input[name=field1]')
-//                 ->sendKeys('test')
-//                 ->assertSee('Field 1')
-                 // ->assertSee('New Text')
-                 // ->assertSee('New Input')
-                 // ->assertSee('New Select')
-                 // ->assertSee('New Checkbox')
-                 // ->assertSee('New TextArea')
-                 // ->assertSee('New Radio Button Group')
-                 // ->assertSee('New Option')
-                 // ->assertSee('New Date Picker')
-                 // ->assertSee('NEW PAGE NAVIGATION')
-                 // ->assertSee('NEW SUBMIT')
-//                 ->assertSee('New File Upload');
-             ;
+                 ->assertSee('Field 1')
+                 ->assertSee('New Text')
+                 ->assertSee('New Input')
+                 ->assertSee('New Select')
+                 ->assertSee('New Checkbox')
+                 ->assertSee('New TextArea')
+                 ->assertSee('New Radio Button Group')
+                 ->assertSee('New Option')
+                 ->assertSee('New Date Picker')
+                 ->assertSee('NEW PAGE NAVIGATION')
+                 ->assertSee('NEW SUBMIT')
+                 ->assertSee('New File Upload');
 
-//             $browser->element('#screen-container input[name=field1]')
-//                     ->sendKeys('test');
-//
-//             $browser->assertSee('Field 1');
          });
      }
 
