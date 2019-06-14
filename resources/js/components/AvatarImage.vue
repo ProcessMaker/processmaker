@@ -59,6 +59,10 @@ export default {
   },
   methods: {
     timestamp(src) {
+      if (src.startsWith('data:image')) {
+        // Do not add cache buster to base64 encoded image
+        return src
+      }
       return src + '?' + new Date().getTime();
     },
     default() {
