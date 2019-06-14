@@ -528,10 +528,7 @@
             formData: @json($user),
             langs: @json($availableLangs),
             timezones: @json($timezones),
-            appTimezone: @json($appTimezone),
             datetimeFormats: @json($datetimeFormats),
-            appFormat: @json($appFormat),
-            appLanguage: @json($appLanguage),
             countries: @json($countries),
             image: '',
             errors: {
