@@ -68,7 +68,7 @@
                                         </b-collapse>
                                     </b-list-group-item>
 
-                                    <b-list-group-item class="script-toggle border-0 mb-0">
+                                    <b-list-group-item class="script-toggle border-0 mb-0" >
                                         <b-row
                                             :class="outputOpen ? null : 'collapsed'"
                                             :aria-expanded="outputOpen ? 'true' : 'false'"
@@ -135,7 +135,7 @@
                     success: false,
                     failure: false,
                 },
-                outputOpen: false,
+                outputOpen: true,
             };
         },
         watch: {
