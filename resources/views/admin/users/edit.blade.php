@@ -177,9 +177,6 @@
                                             <div class="form-group col">
                                                 {!!Form::label('datetime_format', __('Date format'));!!}
                                                 <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
-                                                  <template slot="first">
-                                                    <option :value="null" disabled>@{{appFormat}}</option>
-                                                  </template>
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">
                                                     @{{errors.datetime_format}}
@@ -200,12 +197,8 @@
 
 
                                                 <b-form-select id="language" v-model="formData.language" class="form-control" :options="langs">
-                                                    <template slot="first">
-                                                        <option :value="null" disabled>@{{appLanguage}}</option>
-                                                    </template>
                                                 </b-form-select>
 
-{{--                                                <b-form-select v-model="formData.language" :options="langs" class="form-control"></b-form-select>--}}
                                                 <div class="invalid-feedback" v-if="errors.language">
                                                     @{{errors.language}}
                                                 </div>
