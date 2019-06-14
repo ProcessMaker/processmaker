@@ -146,22 +146,6 @@ class User extends Authenticatable implements HasMedia
         'permissions',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Setting defaults values for a new user
-        static::creating(function ($model) {
-            $appTimezone = getenv('APP_TIMEZONE') !== false ? getenv('APP_TIMEZONE') : 'America/Los_Angeles';
-            $appFormat = getenv('DATE_FORMAT') !== false ? getenv('DATE_FORMAT') : 'm/d/Y H:i';
-            $appLanguage = getenv('APP_LANG') !== false ? getenv('APP_LANG') : 'en';
-
-            $model->timezone  = $model->timezone ?? $appTimezone;
-            $model->datetime_format  = $model->datetime_format ?? $appFormat;
-            $model->language  = $model->language ?? $appLanguage;
-        });
-    }
-
     /**
      * Scope to only return active users.
      *

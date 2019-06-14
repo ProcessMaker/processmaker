@@ -77,9 +77,9 @@ class UsersTest extends TestCase
 
     public function testDefaultValuesOfUser()
     {
-        putenv('APP_TIMEZONE=Africa/Niamey');
-        putenv('DATE_FORMAT=d/M/Y');
-        putenv('APP_LANG=es');
+        putenv('APP_TIMEZONE=America/Los_Angeles');
+        putenv('DATE_FORMAT=m/d/Y H:i');
+        putenv('APP_LANG=en');
 
         // Create a user without setting fields that have default
         $faker = Faker::create();
@@ -97,9 +97,9 @@ class UsersTest extends TestCase
 
         // Validate that the created user has the correct default values
         $createdUser = $response->json();
-        $this->assertEquals('Africa/Niamey', $createdUser['timezone']);
-        $this->assertEquals('d/M/Y', $createdUser['datetime_format']);
-        $this->assertEquals('es', $createdUser['language']);
+        $this->assertEquals(getenv('APP_TIMEZONE'), $createdUser['timezone']);
+        $this->assertEquals(getenv('DATE_FORMAT'), $createdUser['datetime_format']);
+        $this->assertEquals(getenv('APP_LANG'), $createdUser['language']);
 
 
         // Create a user setting fields that have default
