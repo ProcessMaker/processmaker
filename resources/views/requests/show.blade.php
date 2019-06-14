@@ -80,7 +80,7 @@
                              role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <template v-if="showScreenSummary">
-                                    <div class="card m-3">
+                                    <div class="card">
                                         <div class="card-body">
                                             <task-screen ref="screen" :screen="screenSummary" :data="dataSummary"/>
                                         </div>

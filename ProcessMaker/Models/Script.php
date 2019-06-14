@@ -43,12 +43,14 @@ class Script extends Model
 {
     use SerializeToIso8601;
 
+    protected $connection = 'spark';
+
     protected $guarded = [
         'id',
         'created_at',
         'updated_at',
     ];
-    
+
     protected $casts = [
         'timeout' => 'integer',
     ];
@@ -97,7 +99,7 @@ class Script extends Model
      * Get a configuration array of all supported script formats.
      *
      * @return array
-     */    
+     */
     public static function scriptFormats()
     {
         return config('script-runners');
@@ -113,7 +115,7 @@ class Script extends Model
     public static function scriptFormat($format)
     {
         $formats = static::scriptFormats();
-        
+
         if (array_key_exists($format, $formats)) {
             return $formats[$format];
         } else {
@@ -125,16 +127,16 @@ class Script extends Model
      * Get a basic array of supported script formats.
      *
      * @return array
-     */    
+     */
     public static function scriptFormatValues()
     {
         $values = [];
         $formats = static::scriptFormats();
-        
+
         foreach ($formats as $key => $format) {
             $values[] = $key;
         }
-        
+
         return $values;
     }
 
@@ -142,19 +144,19 @@ class Script extends Model
      * Get a key/value pair array of supported script formats.
      *
      * @return array
-     */    
+     */
     public static function scriptFormatList()
     {
         $list = [];
         $formats = static::scriptFormats();
-        
+
         foreach ($formats as $key => $format) {
             $list[$key] = $format['name'];
         }
-        
+
         return $list;
     }
-    
+
     /**
      * Get the language from a script format (MIME type) string.
      *
@@ -165,13 +167,13 @@ class Script extends Model
     public static function scriptFormat2Language($mimeType)
     {
         $formats = static::scriptFormats();
-        
+
         foreach ($formats as $key => $format) {
             if ($mimeType == $format['mime_type']) {
                 return $key;
             }
         }
-        
+
         return null;
     }
 
@@ -179,7 +181,7 @@ class Script extends Model
      * Get the language name for this script.
      *
      * @return string
-     */    
+     */
     public function getLanguageNameAttribute()
     {
         if ($format = static::scriptFormat($this->language)) {
@@ -196,7 +198,7 @@ class Script extends Model
     {
         return $this->hasMany(ScriptVersion::class);
     }
-    
+
     /**
      * Get the associated run_as_user
      */

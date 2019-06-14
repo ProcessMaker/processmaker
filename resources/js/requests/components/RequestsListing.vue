@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
-    <data-loading v-if="apiDataLoading || apiNoResults" ref="loader" />
-    <div v-else class="card card-body table-card">
+    <data-loading :for="/requests\?page/" v-show="shouldShowLoader" />
+    <div v-show="!shouldShowLoader" class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
