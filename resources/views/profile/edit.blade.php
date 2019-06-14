@@ -59,7 +59,7 @@
                             => 'formData.city', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.city}']) !!}
                             <div class="invalid-feedback" v-if="errors.city">@{{errors.city}}</div>
                         </div>
-                        <div class="form-group col">
+                        <div class="form-group col" v-show="formData.country === 'US'">
                             {!! Form::label('state', __('State or Region')) !!}
                             {!! Form::select('state',
                                     $states,
