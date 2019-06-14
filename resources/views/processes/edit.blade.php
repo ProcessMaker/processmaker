@@ -85,7 +85,7 @@
                                              group-label="label">
                                     <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                                     <template slot="noOptions">
-                                        {{ $t('No Data Available')}}
+                                        {{ __('No Data Available') }}
                                     </template>
                                 </multiselect>
                             </div>
@@ -113,7 +113,7 @@
                                              group-label="label">
                                     <span slot="noResult">{{__('Oops! No elements found. Consider changing the search query.')}}</span>
                                     <template slot="noOptions">
-                                        {{ $t('No Data Available')}}
+                                        {{ __('No Data Available') }}
                                     </template>
                                 </multiselect>
                             </div>

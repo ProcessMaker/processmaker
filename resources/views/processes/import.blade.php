@@ -85,10 +85,10 @@
                                                              @open="loadUsers($event, true, 'task')"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
-                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                        {{ __('No elements found. Consider changing the search query.') }}
                                                     </template>
                                                     <template slot="noOptions" >
-                                                        {{ $t('No Data Available')}}
+                                                        {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
@@ -107,10 +107,10 @@
                                                              @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
-                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                        {{ __('No elements found. Consider changing the search query.') }}
                                                     </template>
                                                     <template slot="noOptions" >
-                                                        {{ $t('No Data Available')}}
+                                                        {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
@@ -127,10 +127,10 @@
                                                              @open="loadUsers"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
-                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                        {{ __('No elements found. Consider changing the search query.') }}
                                                     </template>
                                                     <template slot="noOptions" >
-                                                        {{ $t('No Data Available')}}
+                                                        {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
                                                 <multiselect v-model="item.value"
@@ -147,10 +147,10 @@
                                                              @open="loadProcess"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
-                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                        {{ __('No elements found. Consider changing the search query.') }}
                                                     </template>
                                                     <template slot="noOptions" >
-                                                        {{ $t('No Data Available')}}
+                                                        {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
                                             </td>
@@ -177,10 +177,10 @@
                                                              @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
-                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                        {{ __('No elements found. Consider changing the search query.') }}
                                                     </template>
                                                     <template slot="noOptions" >
-                                                        {{ $t('No Data Available')}}
+                                                        {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
                                             </td>
@@ -206,10 +206,10 @@
                                                              @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
-                                                        {{ $t('No elements found. Consider changing the search query.')}}
+                                                        {{ __('No elements found. Consider changing the search query.') }}
                                                     </template>
                                                     <template slot="noOptions" >
-                                                        {{ $t('No Data Available')}}
+                                                        {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
                                             </td>

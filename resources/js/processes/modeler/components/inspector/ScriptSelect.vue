@@ -15,10 +15,10 @@
                      @open="load"
                      @search-change="load">
             <template slot="noResult" >
-                {{ $t('No elements found. Consider changing the search query.')}}
+                {{ __('No elements found. Consider changing the search query.') }}
             </template>
             <template slot="noOptions" >
-                {{ $t('No Data Available')}}
+                {{ __('No Data Available') }}
             </template>
         </multiselect>
         <small v-if="error" class="text-danger">{{ error }}</small>

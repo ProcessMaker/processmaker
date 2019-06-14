@@ -140,10 +140,10 @@
                                                      @search-change="loadUsers"
                                                      label="fullname">
                                              <template slot="noResult">
-                                                {{ $t('No elements found. Consider changing the search query.')}}
+                                                {{ __('No elements found. Consider changing the search query.') }}
                                             </template>
                                             <template slot="noOptions">
-                                                {{ $t('No Data Available')}}
+                                                {{ __('No Data Available') }}
                                             </template>
                                             <template slot="tag" slot-scope="props">
                                                 <span class="multiselect__tag  d-flex align-items-center"

@@ -87,11 +87,11 @@
                                          :searchable="true"
                                          :class="{'is-invalid': addError.run_as_user_id}">
                                 <template slot="noResult" >
-                                    {{ $t('No elements found. Consider changing the search query.')}}
+                                    {{ __('No elements found. Consider changing the search query.') }}
                                 </template>
 
                                 <template slot="noOptions" >
-                                    {{ $t('No Data Available')}}
+                                    {{ __('No Data Available') }}
                                 </template>
                             </multiselect>
                             <small class="form-text text-muted" v-if="! addError.run_as_user_id">{{__('Select a user to set the API access of the Script')}}</small>

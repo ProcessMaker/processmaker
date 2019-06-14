@@ -36,11 +36,11 @@
                                      :searchable="true"
                                      :class="{'is-invalid': errors.run_as_user_id}">
                             <template slot="noResult" >
-                                {{ $t('No elements found. Consider changing the search query.')}}
+                                {{ __('No elements found. Consider changing the search query.') }}
                             </template>
 
                             <template slot="noOptions" >
-                                {{ $t('No Data Available')}}
+                                {{ __('No Data Available') }}
                             </template>
                         </multiselect>
                         <div class="invalid-feedback" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>

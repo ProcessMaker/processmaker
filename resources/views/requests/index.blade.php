@@ -75,10 +75,10 @@
                                                  :multiple="true"
                                                  :placeholder="$t('Process')">
                                         <template slot="noResult">
-                                            {{ $t('No elements found. Consider changing the search query.')}}
+                                            {{ __('No elements found. Consider changing the search query.') }}
                                         </template>
                                         <template slot="noOptions">
-                                            {{ $t('No Data Available')}}
+                                            {{ __('No Data Available') }}
                                         </template>
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('processes') }}</span>
@@ -97,10 +97,10 @@
                                                  :multiple="true"
                                                  :placeholder="$t('Status')">
                                         <template slot="noResult">
-                                            {{ $t('No elements found. Consider changing the search query.')}}
+                                            {{ __('No elements found. Consider changing the search query.') }}
                                         </template>
                                         <template slot="noOptions">
-                                            {{ $t('No Data Available')}}
+                                            {{ __('No Data Available') }}
                                         </template>
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('statuses') }}</span>
@@ -120,10 +120,10 @@
                                                  :multiple="true"
                                                  :placeholder="$t('Requester')">
                                         <template slot="noResult">
-                                            {{ $t('No elements found. Consider changing the search query.')}}
+                                            {{ __('No elements found. Consider changing the search query.') }}
                                         </template>
                                         <template slot="noOptions">
-                                            {{ $t('No Data Available')}}
+                                            {{ __('No Data Available') }}
                                         </template>
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
@@ -149,10 +149,10 @@
                                                  :multiple="true"
                                                  :placeholder="$t('Participants')">
                                         <template slot="noResult">
-                                            {{ $t('No elements found. Consider changing the search query.')}}
+                                            {{ __('No elements found. Consider changing the search query.') }}
                                         </template>
                                         <template slot="noOptions">
-                                            {{ $t('No Data Available')}}
+                                            {{ __('No Data Available') }}
                                         </template>
                                         <template slot="selection" slot-scope="{ values, search, isOpen }">
                                             <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>

@@ -43,10 +43,10 @@
                              :helper="helper"
                              @search-change="load($event, 'assignment')">
                     <template slot="noResult" >
-                        {{ $t('No elements found. Consider changing the search query.')}}
+                        {{ __('No elements found. Consider changing the search query.') }}
                     </template>
                     <template slot="noOptions" >
-                        {{ $t('No Data Available')}}
+                        {{ __('No Data Available') }}
                     </template>
                 </multiselect>
                 <small v-if="error" class="text-danger">{{ error }}</small>
@@ -110,10 +110,10 @@
                                          :helper="helper"
                                          @search-change="load($event, 'expression')">
                                 <template slot="noResult" >
-                                    {{ $t('No elements found. Consider changing the search query.')}}
+                                    {{ __('No elements found. Consider changing the search query.') }}
                                 </template>
                                 <template slot="noOptions" >
-                                    {{ $t('No Data Available')}}
+                                    {{ __('No Data Available') }}
                                 </template>
                             </multiselect>
                             <small v-if="error" class="text-danger">{{ error }}</small>
