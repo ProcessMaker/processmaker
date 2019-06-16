@@ -59,6 +59,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
             $tokenInfo = [
                 'id' => $token->getKey(),
                 'status' => $token->status,
+                'index' => $token->element_index,
                 'element_ref' => $token->element_id,
             ];
             $token->setProperties($tokenInfo);
