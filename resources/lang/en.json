@@ -595,6 +595,7 @@
     "Problems": "Problems",
     "Identifier": "Identifier",
     "The Name of the Process": "The Name of the Process",
+    "The id field should be unique across all elements in the diagram": "The id field should be unique across all elements in the diagram",
     "The id field should be unique across all elements in the diagram, ex. id_1." : "The id field should be unique across all elements in the diagram, ex. id_1.",
     "The Name of the Sequence Flow": "The Name of the Sequence Flow",
     "Expression": "Expression",
@@ -816,5 +817,14 @@
     "Job Title": "Job Title",
     "No elements found. Consider changing the search query.": "No elements found. Consider changing the search query.",
     "Json Options": "Json Options",
-    "Please click On to select a date.": "Please click On to select a date."
+    "Please click On to select a date.": "Please click On to select a date.",
+    "72 hours": "72 hours",
+    "New Manual Task": "New Manual Task",
+    "New Call Activity": "New Call Activity",
+    "New Exclusive Gateway": "New Exclusive Gateway",
+    "New Inclusive Gateway": "New Inclusive Gateway",
+    "New Parallel Gateway": "New Parallel Gateway",
+    "New Pool": "New Pool",
+    "New Event-Based Gateway": "New Event-Based Gateway",
+    "minute": "minute"
 }

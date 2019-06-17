@@ -4,7 +4,7 @@
             <label>{{ $t('Due In') }}</label>
             <input class="form-control"
                    type="number"
-                   placeholder="72 hours"
+                   :placeholder="$t('72 hours')"
                    :value="dueInGetter"
                    @input="dueInSetter"
                    min="0"

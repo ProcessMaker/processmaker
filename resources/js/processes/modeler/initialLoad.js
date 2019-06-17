@@ -90,7 +90,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 // Set default properties for task
 task.definition = function definition(moddle) {
     return moddle.create('bpmn:Task', {
-        name: 'New Task',
+        name: window.ProcessMaker.events.$t('New Task'),
         assignment: 'requester',
     });
 };
