@@ -161,6 +161,22 @@ class TaskController extends Controller
                             $query->where('process_request_tokens.status', $value);
                         };
                     }
+                    
+                    if (stripos($expression->field->field(), 'data.') === 0) {
+                        $field = $expression->field->field();
+                        $operator = $expression->operator;
+                        $value = $expression->value->value();
+                        if (is_string($value)) {
+                            $value = '"' . $value . '"';
+                        }
+                        
+                        $pmql = "$field $operator $value";
+                        
+                        return function($query) use ($pmql) {
+                            $requests = ProcessRequest::pmql($pmql)->get();
+                            $query->whereIn('process_request_id', $requests->pluck('id'));
+                        };
+                    }
                 });
             }
 
