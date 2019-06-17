@@ -159,6 +159,11 @@
 
 import Validator from "validatorjs";
 
+  // To include another language in the Validator with variable processmaker
+  if (window.ProcessMaker && window.ProcessMaker.user && window.ProcessMaker.user.lang) {
+    Validator.useLang(window.ProcessMaker.user.lang);
+  }
+
   Validator.register('attr-value', value => {
     return value.match(/^[a-zA-Z0-9-_]+$/);
   }, 'Must be letters, numbers, underscores or dashes');
