@@ -813,5 +813,9 @@
     "Type to search task": "Type to search task",
     "The following items should be configured to ensure your process is functional.": "The following items should be configured to ensure your process is functional.",
     "The bpm definition is not valid": "The bpm definition is not valid",
-    "Job Title": "Job Title"
+    "Job Title": "Job Title",
+    "Pause start timer events": "Pause start timer events",
+    "Import Screen": "Import Screen",
+    "You are about to import a Screen.": "You are about to import a Screen.",
+    "Add Users": "Add Users"
 }
