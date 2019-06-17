@@ -177,9 +177,6 @@
                                             <div class="form-group col">
                                                 {!!Form::label('datetime_format', __('Date format'));!!}
                                                 <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
-                                                  <template slot="first">
-                                                    <option :value="null" disabled>@{{appFormat}}</option>
-                                                  </template>
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">
                                                     @{{errors.datetime_format}}
@@ -190,9 +187,6 @@
                                             <div class="form-group col">
                                                 {!!Form::label('timezone', __('Time zone'));!!}
                                                 <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
-                                                  <template slot="first">
-                                                    <option :value="null" disabled>@{{appTimezone}}</option>
-                                                  </template>
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
                                                 </div>
@@ -200,7 +194,11 @@
 
                                             <div class="form-group col">
                                                 {!! Form::label('language', __('Language')) !!}
-                                                <b-form-select v-model="formData.language" :options="langs" class="form-control"></b-form-select>
+
+
+                                                <b-form-select id="language" v-model="formData.language" class="form-control" :options="langs">
+                                                </b-form-select>
+
                                                 <div class="invalid-feedback" v-if="errors.language">
                                                     @{{errors.language}}
                                                 </div>
@@ -536,9 +534,7 @@
             formData: @json($user),
             langs: @json($availableLangs),
             timezones: @json($timezones),
-            appTimezone: @json($appTimezone),
             datetimeFormats: @json($datetimeFormats),
-            appFormat: @json($appFormat),
             countries: @json($countries),
             image: '',
             errors: {
@@ -584,17 +580,19 @@
         },
         watch: {
           selectedPermissions: function () {
-            if (this.selectedPermissions.length !== this.permissions.length) {
-              this.selectAll = false;
-            }
+            this.selectAll = this.areAllPermissionsSelected();
           }
         },
         methods: {
+          areAllPermissionsSelected() {
+            return this.selectedPermissions.length === this.permissions.length;
+          },
           checkCreate(sibling, $event) {
             let self = $event.target.value;
             if (this.selectedPermissions.includes(self)) {
               this.selectedPermissions.push(sibling);
             }
+            Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
           },
           checkEdit(sibling, $event) {
             let self = $event.target.value;
@@ -603,6 +601,7 @@
                 return el !== sibling;
               });
             }
+            Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
           },
           copyTextArea() {
             this.$refs.text.select();
