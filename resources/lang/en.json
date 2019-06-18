@@ -842,5 +842,7 @@
     "Event has multiple event definitions": "Event has multiple event definitions",
     "Process is missing start event": "Process is missing start event",
     "Sub process is missing start event": "Sub process is missing start event",
-    "Start event must be blank": "Start event must be blank"
+    "Start event must be blank": "Start event must be blank",
+    "user": "user",
+    "group": "group"
 }
