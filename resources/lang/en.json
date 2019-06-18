@@ -826,5 +826,21 @@
     "New Parallel Gateway": "New Parallel Gateway",
     "New Pool": "New Pool",
     "New Event-Based Gateway": "New Event-Based Gateway",
-    "minute": "minute"
+    "minute": "minute",
+    "Sequence flow is missing condition": "Sequence flow is missing condition",
+    "Process is missing end event": "Process is missing end event",
+    "Sub process is missing end event": "Sub process is missing end event",
+    "Start event is missing event definition": "Start event is missing event definition",
+    "Incoming flows do not join": "Incoming flows do not join",
+    "Element has disallowed type": "Element has disallowed type",
+    "Element is missing label/name": "Element is missing label/name",
+    "Element is not connected": "Element is not connected",
+    "Gateway forks and joins": "Gateway forks and joins",
+    "Flow splits implicitly": "Flow splits implicitly",
+    "Process has multiple blank start events": "Process has multiple blank start events",
+    "Sub process has multiple blank start events": "Sub process has multiple blank start events",
+    "Event has multiple event definitions": "Event has multiple event definitions",
+    "Process is missing start event": "Process is missing start event",
+    "Sub process is missing start event": "Sub process is missing start event",
+    "Start event must be blank": "Start event must be blank"
 }
