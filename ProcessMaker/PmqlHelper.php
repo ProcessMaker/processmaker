@@ -26,11 +26,13 @@ class PmqlHelper {
     {
         return function($expression) {
             $field = $expression->field->field();
-            $method_name = $this->type . ucfirst($field);
+            if (is_string($field)) {
+                $method_name = $this->type . ucfirst($field);
 
-            if (method_exists($this, $method_name)) {
-                $value = $expression->value->value();
-                return $this->$method_name($value);
+                if (method_exists($this, $method_name)) {
+                    $value = $expression->value->value();
+                    return $this->$method_name($value);
+                }                
             }
         };
     }
