@@ -30,7 +30,7 @@ class BuildSdk {
             $this->runCmd("docker container stop $existing || echo 'Container already stopped'");
             $this->runCmd("docker container rm $existing");
         }
-        
+
         if ($existing === "" || $this->rebuild) {
             $this->runCmd('docker pull ' . $this->image);
             $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
@@ -38,7 +38,7 @@ class BuildSdk {
         } else {
             $this->runCmd("docker start generator || echo 'Generator already started'");
         }
-        
+
         $this->runCmd('docker start generator || echo "Container already running"');
 
         $this->waitForBoot();
@@ -83,7 +83,7 @@ class BuildSdk {
         if (!is_dir($this->outputPath)) {
             throw new Exception("{$this->outputPath} is not a valid directory");
         }
-        
+
         if (!is_writable($this->outputPath)) {
             throw new Exception("Folder is not writeable: " . $this->outputPath);
         }
@@ -121,7 +121,7 @@ class BuildSdk {
                     throw $e;
                 }
             }
-            if ($i > 20) { 
+            if ($i > 20) {
                 throw new Exception("Took too long to start up.");
             }
             sleep(2);
@@ -173,7 +173,7 @@ class BuildSdk {
             str_replace('"API-DOCS-JSON"', $this->apiJsonRaw(), $this->requestBody())
         );
     }
-    
+
     private function requestBody()
     {
         # get all available options with curl http://127.0.0.1:8080/api/gen/clients/php
@@ -183,7 +183,7 @@ class BuildSdk {
                 "gitRepoId" => "processmaker-sdk-" . $this->lang,
                 "packageName" => "pmsdk",
                 "invokerPackage" => "ProcessMaker\\Client",
-                "appDescription" => "SDK Client for the ProcessMaker Processmaker App",
+                "appDescription" => "SDK Client for the ProcessMaker App",
                 "infoUrl" => "https://github.com/ProcessMaker/processmaker",
                 "infoEmail" => "info@processmaker.com",
 

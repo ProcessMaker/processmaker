@@ -28,7 +28,7 @@ class DataSchema extends Command
      */
     public function handle()
     {
-        $this->info(__('The Processmaker Processmaker data tables will be installed.'));
+        $this->info(__('The ProcessMaker data tables will be installed.'));
 
         if ($this->confirm(__('Are you ready to begin?'))) {
 
@@ -52,7 +52,7 @@ class DataSchema extends Command
                 $this->info(__('Migrated:') . '  '. $fileName);
             }
 
-            $this->info(__('ProcessMaker Processmaker data tables installed successfully.'));
+            $this->info(__('ProcessMaker data tables installed successfully.'));
         }
 
         return true;
