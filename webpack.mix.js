@@ -87,6 +87,6 @@ mix.webpackConfig({
     .copy('resources/js/components/FilterBar.vue', 'public/js')
     .copy('resources/js/timeout.js', 'public/js')
     // Copy files necessary for images for the designer/modeler to it's own img directory
-    .copy('node_modules/@processmaker/processmaker-modeler/dist/img', 'public/js/processes/modeler/img')
+    .copy('node_modules/@processmaker/spark-modeler/dist/img', 'public/js/processes/modeler/img')
 
     .version()
