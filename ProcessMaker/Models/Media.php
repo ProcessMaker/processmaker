@@ -48,7 +48,7 @@ use Spatie\MediaLibrary\Models\Media as Model;
  */
 class Media extends Model
 {
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     /**
      * The attributes that are mass assignable.

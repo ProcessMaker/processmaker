@@ -39,7 +39,7 @@ class Notification extends Model
 {
     use SerializeToIso8601;
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     public $incrementing = false;
 

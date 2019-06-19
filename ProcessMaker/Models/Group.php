@@ -40,7 +40,7 @@ class Group extends Model
     use PMQL;
     use SerializeToIso8601;
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     protected $fillable = [
         'name',

@@ -79,16 +79,16 @@ window.ProcessMaker.navbar = new Vue({
         },
         loadLocalAlerts () {
             try {
-                return window.localStorage.sparkAlerts &&
-                    window.localStorage.sparkAlerts.substr(0, 1) === "["
-                    ? JSON.parse(window.localStorage.sparkAlerts) : [];
+                return window.localStorage.processmakerAlerts &&
+                    window.localStorage.processmakerAlerts.substr(0, 1) === "["
+                    ? JSON.parse(window.localStorage.processmakerAlerts) : [];
             } catch (e) {
                 return [];
             }
         },
         saveLocalAlerts (array) {
             const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
-            window.localStorage.sparkAlerts = JSON.stringify(nextScreenAlerts);
+            window.localStorage.processmakerAlerts = JSON.stringify(nextScreenAlerts);
         },
     },
     mounted() {

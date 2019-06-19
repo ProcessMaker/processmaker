@@ -2,7 +2,7 @@
     "repositories": {
         "0": {
             "type": "path",
-            "url": "/home/vagrant/spark-plugins/*",
+            "url": "/home/vagrant/processmaker-plugins/*",
             "options": {
                 "symlink": true
             }

@@ -13,7 +13,7 @@ window.Popper = require("popper.js").default;
 /**
  * Give node plugins access to our custom screen builder components
  */
-window.SparkComponents = require("../js/processes/screen-builder/components")
+window.ProcessmakerComponents = require("../js/processes/screen-builder/components")
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support

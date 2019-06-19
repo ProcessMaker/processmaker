@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 class ScreenType extends Model
 {
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     public $timestamps = false;
 

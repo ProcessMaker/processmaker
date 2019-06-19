@@ -141,11 +141,11 @@ class BuildSdk {
         $zip = new ZipArchive;
         $res = $zip->open($file);
         $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $this->runCmd('rm -rf /tmp/spark-sdk-tmp');
-        $zip->extractTo("/tmp/spark-sdk-tmp");
+        $this->runCmd('rm -rf /tmp/processmaker-sdk-tmp');
+        $zip->extractTo("/tmp/processmaker-sdk-tmp");
         $zip->close();
         unlink($file);
-        return "/tmp/spark-sdk-tmp/{$this->lang}-client";
+        return "/tmp/processmaker-sdk-tmp/{$this->lang}-client";
     }
 
     private function existingContainer()
@@ -180,11 +180,11 @@ class BuildSdk {
         return json_encode([
             "options" => [
                 "gitUserId" => "ProcessMaker",
-                "gitRepoId" => "spark-sdk-" . $this->lang,
+                "gitRepoId" => "processmaker-sdk-" . $this->lang,
                 "packageName" => "pmsdk",
                 "invokerPackage" => "ProcessMaker\\Client",
-                "appDescription" => "SDK Client for the ProcessMaker Spark App",
-                "infoUrl" => "https://github.com/ProcessMaker/spark",
+                "appDescription" => "SDK Client for the ProcessMaker Processmaker App",
+                "infoUrl" => "https://github.com/ProcessMaker/processmaker",
                 "infoEmail" => "info@processmaker.com",
 
             ],

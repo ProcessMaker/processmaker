@@ -43,7 +43,7 @@ class Script extends Model
 {
     use SerializeToIso8601;
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     protected $guarded = [
         'id',

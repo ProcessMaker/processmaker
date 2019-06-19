@@ -29,7 +29,7 @@
 <script>
 
   import Vue from "vue";
-  import {VueFormRenderer} from "@processmaker/spark-screen-builder";
+  import {VueFormRenderer} from "@processmaker/processmaker-screen-builder";
   import VueFormElements from "@processmaker/vue-form-elements";
   import moment from "moment";
 

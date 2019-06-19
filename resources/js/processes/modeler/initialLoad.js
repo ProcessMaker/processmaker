@@ -21,7 +21,7 @@ import {
     callActivity,
     eventBasedGateway,
     intermediateMessageCatchEvent
-} from '@processmaker/spark-modeler';
+} from '@processmaker/processmaker-modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';

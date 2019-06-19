@@ -23,7 +23,7 @@ class User extends Authenticatable implements HasMedia
     use SerializeToIso8601;
     use SoftDeletes;
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     //Disk
     public const DISK_PROFILE = 'profile';

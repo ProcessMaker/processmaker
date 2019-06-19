@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProcessVersion extends Model
 {
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     /**
      * Do not automatically set created_at

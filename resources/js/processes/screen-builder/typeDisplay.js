@@ -1,4 +1,4 @@
-import {renderer, FormBuilderControls} from "@processmaker/spark-screen-builder";
+import {renderer, FormBuilderControls} from "@processmaker/processmaker-screen-builder";
 import FileDownload from "./components/file-download.vue";
 
 const {

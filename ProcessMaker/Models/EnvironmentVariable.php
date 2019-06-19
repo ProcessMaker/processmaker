@@ -22,7 +22,7 @@ use Illuminate\Validation\Rule;
  */
 class EnvironmentVariable extends Model
 {
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     protected $fillable = [
         'name',
