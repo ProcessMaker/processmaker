@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { Modeler, Statusbar, ValidationStatus } from "@processmaker/modeler";
+import { Modeler, Statusbar, ValidationStatus } from "@processmaker/processmaker-modeler";
 
 export default {
   name: 'ModelerApp',
