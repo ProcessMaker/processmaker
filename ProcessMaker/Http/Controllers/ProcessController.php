@@ -68,11 +68,11 @@ class ProcessController extends Controller
             ->get()
             ->pluck('title', 'id')
             ->toArray();
-        
+
         $list = $this->listUsersAndGroups();
-        
+
         $process->append('notifications', 'task_notifications');
-        
+
         $canStart = $this->listCan('Start', $process);
         $canCancel = $this->listCan('Cancel', $process);
         $canEditData = $this->listCan('EditData', $process);
@@ -88,47 +88,47 @@ class ProcessController extends Controller
      * @param $process
      *
      * @return array Users|Groups
-     */        
+     */
     private function listCan($method, Process $process)
     {
         $users = $process->{"usersCan$method"}()->select('id', 'firstname', 'lastname')->get();
         $groups = $process->{"groupsCan$method"}()->select('id', 'name as fullname')->get();
 
         $merge = collect([]);
-        
+
         $users->map(function ($item) use ($merge) {
             $item->type = 'user';
             $merge->push($item);
         });
-        
+
         $groups->map(function ($item) use ($merge) {
             $item->type = 'group';
             $merge->push($item);
         });
-        
+
         return $merge;
     }
-    
+
     /**
      * List active users and groups
      *
      * @return array Users|Groups
-     */    
+     */
     private function listUsersAndGroups()
     {
         $users = User::active()->select('id', 'firstname', 'lastname')->get();
         $groups = Group::active()->select('id', 'name as fullname')->get();
-        
+
         $users->map(function ($item) {
             $item->type = 'user';
             return $item;
         });
-        
+
         $groups->map(function ($item) {
             $item->type = 'group';
             return $item;
         });
-        
+
         return [
             [
                 'label' => 'Users',
@@ -136,7 +136,7 @@ class ProcessController extends Controller
             ],
             [
                 'label' => 'Groups',
-                'items' => $groups,            
+                'items' => $groups,
             ],
         ];
     }
@@ -172,12 +172,12 @@ class ProcessController extends Controller
     {
         return view('processes.import');
     }
-    
+
     public function download(Process $process, $key)
     {
-        $fileName = snake_case($process->name) . '.processmaker';
+        $fileName = snake_case($process->name) . '.json';
         $fileContents = Cache::get($key);
-        
+
         if (! $fileContents) {
             return abort(404);
         } else {
