@@ -21,7 +21,7 @@ import {
     callActivity,
     eventBasedGateway,
     intermediateMessageCatchEvent
-} from '@processmaker/processmaker-modeler';
+} from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -101,13 +101,13 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
     registerNode(startTimerEvent, definition => {
         const eventDefinitions = definition.get('eventDefinitions');
         if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-        return 'processmaker-modeler-start-timer-event';
+        return 'modeler-start-timer-event';
         }
     });
     registerNode(intermediateTimerEvent, definition => {
         const eventDefinitions = definition.get('eventDefinitions');
         if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-        return 'processmaker-modeler-intermediate-catch-timer-event';
+        return 'modeler-intermediate-catch-timer-event';
         }
     });
 
