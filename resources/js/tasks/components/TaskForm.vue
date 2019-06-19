@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import { VueFormRenderer } from '@processmaker/processmaker-screen-builder';
-import '@processmaker/processmaker-screen-builder/dist/vue-form-builder.css';
+import { VueFormRenderer } from '@processmaker/spark-screen-builder';
+import '@processmaker/spark-screen-builder/dist/vue-form-builder.css';
 import FileUpload from "../../processes/screen-builder/components/form/file-upload";
 import FileDownload from "../../processes/screen-builder/components/file-download";
 
