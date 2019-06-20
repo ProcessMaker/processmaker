@@ -52,7 +52,7 @@ window.ProcessMaker.navbar = new Vue({
         NavbarProfile
     },
     watch: {
-        alerts (array) {
+        alerts(array) {
             this.saveLocalAlerts(array);
         },
     },
@@ -72,12 +72,12 @@ window.ProcessMaker.navbar = new Vue({
         };
     },
     methods: {
-        alertDismissed (alert) {
+        alertDismissed(alert) {
             const index = this.alerts.indexOf(alert);
             index > -1 ? this.alerts.splice(index, 1) : null;
             this.saveLocalAlerts(this.alerts);
         },
-        loadLocalAlerts () {
+        loadLocalAlerts() {
             try {
                 return window.localStorage.sparkAlerts &&
                     window.localStorage.sparkAlerts.substr(0, 1) === "["
@@ -86,7 +86,7 @@ window.ProcessMaker.navbar = new Vue({
                 return [];
             }
         },
-        saveLocalAlerts (array) {
+        saveLocalAlerts(array) {
             const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
             window.localStorage.sparkAlerts = JSON.stringify(nextScreenAlerts);
         },
@@ -178,18 +178,9 @@ new Vue({
         return {
             expanded: false
         };
+    },
+    created() {
+        this.expanded === false
     }
 });
 
-// Use this method to trigger the sidebar menu to open and closed
-$("#menu-toggle").click((e) => {
-    e.preventDefault();
-
-    if (document.getElementById("sidebar-inner").classList.contains("closed")) {
-        document.getElementById("sidebar").classList.remove("closed");
-        document.getElementById("sidebar-inner").classList.remove("closed");
-    } else {
-        document.getElementById("sidebar").classList.add("closed");
-        document.getElementById("sidebar-inner").classList.add("closed");
-    }
-});
