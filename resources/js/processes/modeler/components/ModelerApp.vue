@@ -7,7 +7,7 @@
         </b-card-text>
 
         <div class="ml-auto">
-          <b-btn variant="secondary" size="sm" @click="saveBpmn">
+          <b-btn data-test="save-process" variant="secondary" size="sm" @click="saveBpmn">
             <i class="fas fa-save mr-1"/>
             {{ $t('Save') }}
           </b-btn>
