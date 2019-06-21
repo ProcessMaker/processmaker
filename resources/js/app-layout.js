@@ -7,6 +7,7 @@ import {
     Navbar
 } from "bootstrap-vue/es/components";
 import sessionModal from "./components/Session";
+import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
@@ -31,6 +32,7 @@ window.moment = moment;
 /********/
 
 Vue.component('multiselect', Multiselect);
+Vue.component('Sidebaricon', Sidebaricon);
 
 //Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
@@ -53,8 +55,8 @@ window.ProcessMaker.navbar = new Vue({
     },
     watch: {
         alerts(array) {
-            this.saveLocalAlerts(array);
-        },
+        this.saveLocalAlerts(array);
+    },
     },
     data() {
         return {
@@ -75,33 +77,33 @@ window.ProcessMaker.navbar = new Vue({
         alertDismissed(alert) {
             const index = this.alerts.indexOf(alert);
             index > -1 ? this.alerts.splice(index, 1) : null;
-            this.saveLocalAlerts(this.alerts);
+this.saveLocalAlerts(this.alerts);
         },
-        loadLocalAlerts() {
-            try {
-                return window.localStorage.sparkAlerts &&
-                    window.localStorage.sparkAlerts.substr(0, 1) === "["
-                    ? JSON.parse(window.localStorage.sparkAlerts) : [];
-            } catch (e) {
-                return [];
-            }
-        },
-        saveLocalAlerts(array) {
-            const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
-            window.localStorage.sparkAlerts = JSON.stringify(nextScreenAlerts);
-        },
-    },
-    mounted() {
-        Vue.nextTick() // This is needed to override the default alert method.
-            .then(() => {
-                if (document.querySelector("meta[name='alert']")) {
-                    ProcessMaker.alert(
-                        document.querySelector("meta[name='alertMessage']").getAttribute("content"),
-                        document.querySelector("meta[name='alertVariant']").getAttribute("content")
-                    );
-                }
-            });
+loadLocalAlerts() {
+    try {
+        return window.localStorage.sparkAlerts &&
+            window.localStorage.sparkAlerts.substr(0, 1) === "["
+            ? JSON.parse(window.localStorage.sparkAlerts) : [];
+    } catch (e) {
+        return [];
     }
+},
+    saveLocalAlerts(array) {
+        const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
+        window.localStorage.sparkAlerts = JSON.stringify(nextScreenAlerts);
+    },
+    },
+        mounted() {
+            Vue.nextTick() // This is needed to override the default alert method.
+                .then(() => {
+                    if (document.querySelector("meta[name='alert']")) {
+                        ProcessMaker.alert(
+                            document.querySelector("meta[name='alertMessage']").getAttribute("content"),
+                            document.querySelector("meta[name='alertVariant']").getAttribute("content")
+                        );
+                    }
+                });
+        }
 });
 
 // Set our own specific alert function at the ProcessMaker global object that could
@@ -174,6 +176,9 @@ window.addEventListener('unhandledrejection', function (event) {
 
 new Vue({
     el: "#sidebar",
+    components: {
+        Sidebaricon
+    },
     data() {
         return {
             expanded: false

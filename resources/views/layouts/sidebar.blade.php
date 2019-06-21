@@ -16,16 +16,7 @@
       @foreach($sidebar->topMenu()->items as $section)
         <li class="section" v-if="expanded === true" v-cloak>{{$section->title}}</li>
         @foreach($section->children() as $item)
-          <li class="nav-item">
-            <a href="{{ $item->url() }}" class="nav-link" title="{{$item->title}}">
-              @if($item->attr('icon'))
-                <i class="fas {{$item->attr('icon')}} nav-icon"></i> <span class="nav-text" v-if="expanded === true" v-cloak>{{$item->title}}</span>
-              @endif
-              @if($item->attr('file'))
-                <img src="{{$item->attr('file')}}" class="nav-icon" id="custom_icon"><span class="nav-text" v-if="expanded === true" v-cloak>{{$item->title}}</span>
-              @endif
-            </a>
-          </li>
+          <sidebaricon :item='@json($item)'></sidebaricon>
         @endforeach
       @endforeach
     </ul>
