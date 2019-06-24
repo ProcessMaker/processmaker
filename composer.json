@@ -16,23 +16,7 @@
     },
     {
       "type": "vcs",
-      "url": "https://github.com/ProcessMaker/connector-send-email.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/ProcessMaker/packages.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/ProcessMaker/package-collections.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/ProcessMaker/package-translations.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/ProcessMaker/package-vocabularies.git"
+      "url": "https://github.com/ProcessMaker/spark-connector-send-email.git"
     }
   ],
   "require": {
@@ -56,10 +40,6 @@
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "dev-master",
     "processmaker/pmql": "dev-master",
-    "processmaker/packages": "*",
-    "processmaker/package-collections": "*",
-    "processmaker/package-translations": "*",
-    "processmaker/package-vocabularies": "*",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",
