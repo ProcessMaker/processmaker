@@ -293,7 +293,7 @@ class ScriptsTest extends TestCase
     }
 
     /**
-     * Duplicate Script
+     * Copy Script
      */
     public function testDuplicateScript()
     {
