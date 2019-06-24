@@ -36,7 +36,7 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
 * Execute `php artisan bpm:install` in `/home/vagrant/processmaker` to start the ProcessMaker Installation
   * Specify `localhost` as your local database server
   * Specify `3306` as your local database port
-  * Specify `workflow` as your local database name
+  * Specify `processmaker` as your local database name
   * Specify `homestead` as your local database username
   * Specify `secret` as your local database password
   * Specify `https://processmaker.local.processmaker.com` as your application url
