@@ -23,7 +23,7 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{__('You are about to import a Screen.')}}</h5>
-                        <input type="file" ref="file" class="d-none" @change="handleFile" accept=".processmaker">
+                        <input type="file" ref="file" class="d-none" @change="handleFile" accept=".json">
                         <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                             <i class="fas fa-upload"></i>
                             {{__('Browse')}}

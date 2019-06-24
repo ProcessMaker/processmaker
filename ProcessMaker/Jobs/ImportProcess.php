@@ -68,7 +68,7 @@ class ImportProcess implements ShouldQueue
      * @var array
      */
     protected $status = [];
-    
+
     /**
      * In order to handle backwards compatibility with previous packages, an
      * array with a previous package name as the key, and the updated
@@ -564,7 +564,7 @@ class ImportProcess implements ShouldQueue
 
     /**
      * Handle the edge case of packages that have been renamed but are still
-     * referenced in old .processmaker files.
+     * referenced in old files.
      *
      * @param string $package
      *
@@ -575,7 +575,7 @@ class ImportProcess implements ShouldQueue
         if (array_key_exists($package, $this->backwardCompatiblePackageMap)) {
             return $this->isRegisteredPackage($this->backwardCompatiblePackageMap[$package]);
         }
-        
+
         return false;
     }
 
