@@ -213,7 +213,7 @@ jobs:
 
       - run:
           name: 'QA Package'
-          command: './vendor/bin/phing package -Dpackage_name=spark-qa-${BUILD_NAME}.tar.gz'
+          command: './vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz'
 
       - run:
           name: 'QA Deploy'
@@ -223,9 +223,9 @@ jobs:
             # Create new target QA directory
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "mkdir ~/builds/$BUILD_NAME"
             # Copy over packaged qa deployment
-            scp -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./spark-qa-$BUILD_NAME.tar.gz qa-processmakerbuilds:~/builds/$BUILD_NAME/
+            scp -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-processmakerbuilds:~/builds/$BUILD_NAME/
             # Extract to qa deployment dir
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "tar zxf ~/builds/$BUILD_NAME/spark-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
             # Restart nginx and php-fpm to clear cache
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service php-fpm restart"
