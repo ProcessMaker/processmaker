@@ -1,20 +1,14 @@
 <?php
+
 namespace ProcessMaker\Console\Commands;
 
-use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
 use Exception;
-
+use Illuminate\Console\Command;
+use Illuminate\Database\Query\Grammars\SqlServerGrammar;
+use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Encryption\Encrypter;
-
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Console\Helper\TableCell;
-
-use ProcessMaker\Model\User;
 
 /**
  * Install command handles installing a fresh copy of ProcessMaker.
@@ -75,7 +69,6 @@ class Install extends Command
             'LOGIN_LOGO_PATH' => '"img/processmaker_login.png"'
         ];
 
-
         // Configure the filesystem to be local
         config(['filesystems.disks.install' => [
             'driver' => 'local',
@@ -88,8 +81,8 @@ class Install extends Command
         // if exists, bail out with an error
         // If file does not exist, begin to generate it
         if (Storage::disk('install')->exists('.env')) {
-            $this->error(__("A .env file already exists. Stop the installation procedure, delete the existing .env file, and then restart the installation."));
-            $this->error(__("Remove the .env file to perform a new installation."));
+            $this->error(__('A .env file already exists. Stop the installation procedure, delete the existing .env file, and then restart the installation.'));
+            $this->error(__('Remove the .env file to perform a new installation.'));
             return 255;
         }
         $this->info(__("This application installs a new version of ProcessMaker."));
@@ -99,11 +92,30 @@ class Install extends Command
         do {
             $this->fetchDatabaseCredentials();
         } while (!$this->testDatabaseConnection());
+        // Configure the DATA connection
+        $this->info(__('ProcessMaker requires a DATA database.'));
+        $dataConnection = $this->choice(__('Would you like setup different credentials or use the same ProcessMaker 
+        connection?'), ['different', 'same']);
+        if ($dataConnection === 'same') {
+            $this->env['DATA_DB_DRIVER'] = 'mysql';
+            $this->env['DATA_DB_HOST'] = $this->env['DB_HOSTNAME'];
+            $this->env['DATA_DB_PORT'] = $this->env['DB_PORT'];
+            $this->env['DATA_DB_DATABASE'] = $this->env['DB_DATABASE'];
+            $this->env['DATA_DB_USERNAME'] = $this->env['DB_USERNAME'];
+            $this->env['DATA_DB_PASSWORD'] = $this->env['DB_PASSWORD'];
+            $this->env['DATA_DB_CHARSET'] = 'utf8mb4';
+            $this->env['DATA_DB_COLLATION'] = 'utf8mb4_unicode_ci';
+            $this->env['DATA_DB_ENGINE'] = 'InnoDB';
+        }
+        do {
+            $dataConnection !== 'different' ?: $this->fetchDataConnectionCredentials();
+        } while (!$this->testDataConnection());
+        $this->env['DATA_DB_DRIVER'] === 'sqlsrv' ? $this->checkDateFormatSqlServer() : null;
         // Ask for URL and validate
         $invalid = false;
         do {
             if ($invalid) {
-                $this->error(__("The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes."));
+                $this->error(__('The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes.'));
             }
             $this->env['APP_URL'] = $this->ask(__('What is the URL of this ProcessMaker installation? (Ex: https://processmaker.example.com, with no trailing slash)'));
         } while ($invalid = (!filter_var(
@@ -127,14 +139,13 @@ class Install extends Command
 
         // The database should already exist and is tested by the fetchDatabaseCredentials call
         // Set the database default connection to install
-        config(['database.default' => 'install']);
-        \DB::reconnect();
+        DB::reconnect();
 
         // Now generate the .env file
         $contents = '';
         // Build out the file contents for our .env file
         foreach ($this->env as $key => $value) {
-            $contents .= $key . "=" . $value . "\n";
+            $contents .= $key . '=' . $value . "\n";
         }
         // Now store it
         Storage::disk('install')->put('.env', $contents);
@@ -159,13 +170,12 @@ class Install extends Command
         return true;
     }
 
-
     /**
      * The following checks for required extensions needed by ProcessMaker
      */
     private function checkDependencies()
     {
-        $this->info(__("Dependencies Check"));
+        $this->info(__('Dependencies Check'));
         $table = new Table($this->output);
         $table->setRows([
             [__('CType Extension'), phpversion('ctype')],
@@ -179,27 +189,118 @@ class Install extends Command
             [__('Tokenizer Extension'), phpversion('tokenizer')],
             [__('XML Extension'), phpversion('xml')],
             [__('ZIP Extension'), phpversion('zip')],
-
         ]);
         $table->render();
         return true;
     }
 
+    /**
+     * Setup PROCESSMAKER connection
+     *
+     * @return void
+     */
     private function fetchDatabaseCredentials()
     {
         $this->info(__('ProcessMaker requires a MySQL database.'));
         $this->info(__('Database connection failed. Check your database configuration and try again.'));
-        $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['127.0.0.1']);
-        $this->env['DB_PORT'] = $this->anticipate(__('Enter your MySQL port (usually 3306)'), [3306]);
-        $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['processmaker']);
+        $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['127.0.0.1'], '127.0.0.1');
+        $this->env['DB_PORT'] = $this->anticipate(__('Enter your MySQL port (usually 3306)'), [3306], 3306);
+        $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['processmaker'], 'processmaker');
         $this->env['DB_USERNAME'] = $this->ask(__('Enter your MySQL username'));
         $this->env['DB_PASSWORD'] = $this->secret(__('Enter your MySQL password (input hidden)'));
     }
 
+    /**
+     * Setup DATA connection
+     *
+     * @return void
+     */
+    private function fetchDataConnectionCredentials()
+    {
+        $this->info(__('Configure the DATA connection.'));
+        $this->env['DATA_DB_DRIVER'] = $this->choice(__('Enter the DB driver'), ['mysql', 'pgsql', 'sqlsrv']);
+        if ($this->env['DATA_DB_DRIVER'] === 'mysql') {
+            $this->fetchMysqlCredentials();
+        } elseif ($this->env['DATA_DB_DRIVER'] === 'pgsql') {
+            $this->fetchPostgreCredentials();
+        } elseif ($this->env['DATA_DB_DRIVER'] === 'sqlsrv') {
+            $this->fetchSqlServerCredentials();
+        }
+    }
+
+    /**
+     * Configure POSTGRE DATA connection
+     *
+     * @return void
+     */
+    private function fetchPostgreCredentials()
+    {
+        $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1'], '127.0.0.1');
+        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 5432)'), [5432], 5432);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
+        $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
+        $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
+        $this->env['DATA_DB_CHARSET'] = 'utf8';
+        $this->env['DATA_DB_SCHEMA'] = $this->anticipate(__('Enter your DB Schema'), ['public'], 'public');
+    }
+
+    /**
+     * Setup MYSQL DATA connection
+     *
+     * @return void
+     */
+    private function fetchMysqlCredentials()
+    {
+        $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1']);
+        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 3306)'), [3306], 3306);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
+        $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
+        $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
+        $this->env['DATA_DB_CHARSET'] = 'utf8mb4';
+        $this->env['DATA_DB_COLLATION'] = 'utf8mb4_unicode_ci';
+        $this->env['DATA_DB_ENGINE'] = 'InnoDB';
+    }
+
+    /**
+     * Setup SQLSRV DATA connection
+     *
+     * @return void
+     */
+    private function fetchSqlServerCredentials()
+    {
+        $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1']);
+        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 1433)'), [1433], 1433);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
+        $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
+        $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
+    }
+
+    /**
+     * Check SQLSRV date format
+     *
+     * @return void
+     */
+    private function checkDateFormatSqlServer()
+    {
+        $sqlServerGrammar = new SqlServerGrammar;
+        $format = $sqlServerGrammar->getDateFormat();
+        $date = DB::connection('data')->select('select getdate() as date')[0]->date;
+        if (substr($date, 19, 1) === '.') {
+            substr($format, 11, 1) !== '.' ? $this->env['DATA_DB_DATE_FORMAT'] = '"Y-m-d H:i:s.v"' : '';
+        } else {
+            substr($format, 11, 1) === '.' ? $this->env['DATA_DB_DATE_FORMAT'] = '"Y-m-d H:i:s"' : '';
+        }
+    }
+
+    /**
+     * Test PROCESSMAKER connection
+     *
+     * @return void
+     */
     private function testDatabaseConnection()
     {
         // Setup Laravel Database Configuration
-        config(['database.connections.install' => [
+        config(['database.connections.processmaker' => [
             'driver' => 'mysql',
             'host' => $this->env['DB_HOSTNAME'],
             'port' => $this->env['DB_PORT'],
@@ -209,9 +310,41 @@ class Install extends Command
         ]]);
         // Attempt to connect
         try {
-            $pdo = DB::connection('install')->getPdo();
+            DB::reconnect();
+            $pdo = DB::connection('processmaker')->getPdo();
         } catch (Exception $e) {
-            $this->error(__("Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again."));
+            $this->error(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.processmaker'))));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Test DATA connection
+     *
+     * @return void
+     */
+    private function testDataConnection()
+    {
+        // Setup Laravel Database Configuration
+        config(['database.connections.data' => [
+            'driver' => $this->env['DATA_DB_DRIVER'],
+            'host' => $this->env['DATA_DB_HOST'],
+            'port' => $this->env['DATA_DB_PORT'],
+            'database' => $this->env['DATA_DB_DATABASE'],
+            'username' => $this->env['DATA_DB_USERNAME'],
+            'password' => $this->env['DATA_DB_PASSWORD'],
+            'charset' => isset($this->env['DATA_DB_CHARSET']) ? $this->env['DATA_DB_CHARSET'] : '',
+            'collation' => isset($this->env['DATA_DB_COLLATION']) ? $this->env['DATA_DB_COLLATION'] : '',
+            'schema' => isset($this->env['DATA_DB_SCHEMA']) ? $this->env['DATA_DB_SCHEMA'] : '',
+            'engine' => isset($this->env['DATA_DB_ENGINE']) ? $this->env['DATA_DB_ENGINE'] : '',
+        ]]);
+        // Attempt to connect
+        try {
+            DB::connection('data')->reconnect();
+            $pdo = DB::connection('data')->getPdo();
+        } catch (Exception $e) {
+            $this->error(__('Failed to connect to DATA connection. Ensure the database exists. Check your credentials and try again. ' . json_encode(config('database.connections.data'))));
             return false;
         }
         return true;
