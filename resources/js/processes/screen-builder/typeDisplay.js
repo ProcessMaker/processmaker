@@ -7,7 +7,7 @@ const {
     FormRecordList
 } = renderer;
 
-const TableControl = FormBuilderControls.find(control => control.editorComponent === FormMultiColumn)
+const TableControl = FormBuilderControls.find(control => control.editorComponent === FormMultiColumn);
 
 let initialControls = [{
     builderComponent: FormText,
@@ -18,11 +18,11 @@ let initialControls = [{
         label: "Text",
         component: "FormText",
         "editor-component": "FormText",
-        "fa-icon": "fas fa-align-justify",
         config: {
             label: "New Text",
             fontSize: "1em",
-            fontWeight: "normal"
+            fontWeight: "normal",
+            icon: "fas fa-align-justify"
         },
         inspector: [{
             type: "FormInput",
@@ -88,9 +88,9 @@ let initialControls = [{
         label: "File Download",
         component: "FileDownload",
         "editor-component": "FormText",
-        "fa-icon": "fas fa-file-download",
         config: {
-            label: "Download File"
+            label: "Download File",
+            icon: "fas fa-file-download"
         },
         inspector: [{
             type: "FormInput",
@@ -121,12 +121,12 @@ TableControl,
         label: "Record List",
         component: "FormRecordList",
         "editor-component": "FormText",
-        "fa-icon": "fas fa-th-list",
         config: {
             name: "",
             label: "New Record List",
             editable: false,
             fields: [],
+            icon: "fas fa-th-list",
             form: ""
         },
         inspector: [{
