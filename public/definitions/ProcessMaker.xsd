@@ -101,7 +101,7 @@
     <xsd:complexType name="tPmMessageEventDefinition">
         <xsd:complexContent>
             <xsd:extension base="bpmn:tMessageEventDefinition">
-                <xsd:attribute name="dataName" type="xsd:string" use="optional"/>
+                <xsd:attribute name="variableName" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

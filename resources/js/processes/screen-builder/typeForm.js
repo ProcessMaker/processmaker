@@ -21,9 +21,9 @@ initialControls.push({
         label: "File Upload",
         component: "FileUpload",
         "editor-component": "FileUpload",
-        "fa-icon": "fas fa-file-upload",
         config: {
-            label: "New File Upload"
+            label: "New File Upload",
+            icon: "fas fa-file-upload"
         },
         inspector: [{
             type: "FormInput",
@@ -53,9 +53,9 @@ initialControls.push({
         label: "File Download",
         component: "FileDownload",
         "editor-component": "FormText",
-        "fa-icon": "fas fa-file-download",
         config: {
-            label: "New File Download"
+            label: "New File Download",
+            icon: "fas fa-file-download"
         },
         inspector: [{
             type: "FormInput",
@@ -100,8 +100,8 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
 
         for (let j = 0; j < item.control.inspector.length; j++) {
             let config = item.control.inspector[j].config;
-            if (config.label === 'Field Name') {
-                config.validation = 'regex:/^(?:[A-Z_a-z])(?:[0-9A-Z_a-z])*$/|required';
+            if (config.label === "Field Name") {
+                config.validation = "regex:/^(?:[A-Z_a-z])(?:[0-9A-Z_a-z])*$/|required";
             }
         }
     }
