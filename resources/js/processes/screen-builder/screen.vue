@@ -145,16 +145,16 @@
 </template>
 
 <script>
-  import {VueFormBuilder, VueFormRenderer} from "@processmaker/spark-screen-builder";
-  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties";
-  import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css";
-  import "@processmaker/spark-screen-builder/dist/vue-form-builder.css";
+  import {VueFormBuilder, VueFormRenderer} from "@processmaker/screen-builder";
+  import ComputedProperties from "@processmaker/screen-builder/src/components/computed-properties";
+  import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
+  import "@processmaker/screen-builder/dist/vue-form-builder.css";
   import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
   import MonacoEditor from "vue-monaco";
 
   // Bring in our initial set of controls
-  import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
+  import globalProperties from "@processmaker/screen-builder/src/global-properties";
   import _ from "lodash";
 
 import Validator from "validatorjs";
