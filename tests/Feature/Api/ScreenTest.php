@@ -273,7 +273,7 @@ class ScreenTest extends TestCase
     }
 
     /**
-     * Duplicate Screen 
+     * Copy Screen 
      */
     public function testDuplicateScreen()
     {

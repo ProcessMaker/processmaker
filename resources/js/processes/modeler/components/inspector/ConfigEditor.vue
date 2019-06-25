@@ -15,7 +15,7 @@
                     language="json" class="editor"></monaco-editor>
             </div>
             <div slot="modal-footer">
-                <b-button @click="closePopup" class="btn btn-outline-secondary btn-sm text-uppercase">
+                <b-button @click="closePopup" class="btn btn-secondary">
                     {{ $t('CLOSE') }}
                 </b-button>
             </div>
@@ -91,6 +91,6 @@
         height: 12em;
     }
     .editor-container .editor{
-        height: 48em;
+        height: 60vh;
     }
 </style>
