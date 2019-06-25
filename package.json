@@ -60,7 +60,6 @@
     "chart.js": "^2.7.2",
     "country-json": "^1.0.7",
     "eslint": "^4.19.1",
-    "fs": "0.0.1-security",
     "i18next": "^15.0.8",
     "i18next-chained-backend": "^1.0.1",
     "i18next-localstorage-backend": "^2.1.2",
