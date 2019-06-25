@@ -16,7 +16,7 @@
       @foreach($sidebar->topMenu()->items as $section)
         <li class="section" v-if="expanded === true" v-cloak>{{$section->title}}</li>
         @foreach($section->children() as $item)
-          <sidebaricon :item='@json($item)'></sidebaricon>
+          <sidebaricon :item='@json($item)' url="{{ $item->url() }}"></sidebaricon>
         @endforeach
       @endforeach
     </ul>
