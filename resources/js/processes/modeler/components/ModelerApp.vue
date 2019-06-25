@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { Modeler, Statusbar, ValidationStatus } from "@processmaker/spark-modeler";
+import { Modeler, Statusbar, ValidationStatus } from "@processmaker/modeler";
 
 export default {
   name: 'ModelerApp',
