@@ -135,22 +135,21 @@ export default {
   beforeCreate() {
     let params = (new URL(document.location)).searchParams;
     this.status = params.get('status');
+    let status = '';
 
     switch (this.status) {
       case "CLOSED":
-        this.$parent.status.push({
-          name: 'Completed',
-          value: 'Completed'
-        });
+        status = 'Completed';
         break;
       default:
-        this.$parent.status.push({
-          name: 'In Progress',
-          value: 'In Progress'
-        });
+        status = 'In Progress';
         break;
     }
-    
+    this.$parent.status.push({
+      name: this.$t(status),
+      value: status
+    });
+
     this.$parent.buildPmql();
   },
   mounted: function mounted() {
@@ -183,7 +182,7 @@ export default {
       };
       return (
         '<i class="fas fa-circle ' +
-        bubbleColor[status] + 
+        bubbleColor[status] +
         ' small"></i> ' + statusNames[status]
       );
     },

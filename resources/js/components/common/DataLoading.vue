@@ -93,7 +93,7 @@
                 return this.emptyIcon ? this.emptyIcon : 'none'
             },
             errorTitleText() {
-                return this.$t('Sorry! API Failed To Load')
+                return this.$t('Sorry! API failed to load')
             },
             errorDescText() {
                 return this.$t('Something went wrong. Try refreshing the application')
@@ -101,7 +101,7 @@
         },
     }
 </script>
-    
+
 <style lang="scss" scoped>
     .jumbotron {
         background-color: transparent;
@@ -117,7 +117,7 @@
         }
 
         svg {
-            fill: #b7bfc5; 
+            fill: #b7bfc5;
         }
     }
 </style>

@@ -79,15 +79,20 @@
 
                         <div class="form-group">
                             <label class="typo__label">{{__('Run script as')}}</label>
-                            <multiselect 
-                                v-model="selectedUser" 
-                                label="fullname" 
-                                :options="users" 
-                                :select-label="''"
-                                :deselect-label="''" 
-                                :placeholder="$t('Select')"
-                                :searchable="true" 
-                                :class="{'is-invalid': addError.run_as_user_id}">
+                            <multiselect v-model="selectedUser"
+                                         label="fullname"
+                                         :options="users"
+                                         :show-labels="false"
+                                         :placeholder="$t('Select')"
+                                         :searchable="true"
+                                         :class="{'is-invalid': addError.run_as_user_id}">
+                                <template slot="noResult" >
+                                    {{ __('No elements found. Consider changing the search query.') }}
+                                </template>
+
+                                <template slot="noOptions" >
+                                    {{ __('No Data Available') }}
+                                </template>
                             </multiselect>
                             <small class="form-text text-muted" v-if="! addError.run_as_user_id">{{__('Select a user to set the API access of the Script')}}</small>
                             <div class="invalid-feedback" v-for="run_as_user_id in addError.run_as_user_id">@{{run_as_user_id}}</div>
