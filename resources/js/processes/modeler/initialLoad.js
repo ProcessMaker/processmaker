@@ -101,13 +101,13 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
     registerNode(startTimerEvent, definition => {
         const eventDefinitions = definition.get('eventDefinitions');
         if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-        return 'modeler-start-timer-event';
+        return startTimerEvent.id;
         }
     });
     registerNode(intermediateTimerEvent, definition => {
         const eventDefinitions = definition.get('eventDefinitions');
         if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-        return 'modeler-intermediate-catch-timer-event';
+        return intermediateTimerEvent.id;
         }
     });
 
