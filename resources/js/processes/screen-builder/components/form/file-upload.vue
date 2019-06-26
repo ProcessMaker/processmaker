@@ -1,19 +1,29 @@
 <template>
   <div>
     <label v-uni-for="name">{{ label }}</label>
-    <uploader :options="options" ref="uploader" @complete="complete" @upload-start="start" @file-removed="removed">
+
+    <uploader
+      :options="options"
+      ref="uploader"
+      @complete="complete"
+      @upload-start="start"
+      @file-removed="removed"
+      @file-success="fileUploaded"
+    >
       <uploader-unsupport></uploader-unsupport>
+
       <uploader-drop id="uploaderMain" class="form-control-file">
-        <p>{{$t('Drop files here to upload or')}}</p>
-        <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{$t('select files')}}</uploader-btn>
+        <p>{{$t('Drop a file here to upload or')}}</p>
+        <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{$t('select file')}}</uploader-btn>
       </uploader-drop>
+
       <uploader-list></uploader-list>
     </uploader>
+
     <div class="invalid-feedback" v-if="error">{{error}}</div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
-
 
 <script>
 import { createUniqIdsMixin } from "vue-uniq-ids";
@@ -28,37 +38,21 @@ export default {
   props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint"],
   mounted() {
     // we need to be able to remove the classes from the npm package
-    let element = document.querySelectorAll(
-      "[id='submitFile'],[id='uploaderMain']"
-    );
-    element.forEach(e => {
-      e.classList.remove("uploader-btn", "uploader-drop");
-    });
-
-    //emit message when upload happens
-    const uploaderInstance = this.$refs.uploader.uploader;
-    uploaderInstance.on("fileSuccess", (rootFile, file, message, chunk) => {
-      message = JSON.parse(message).fileUploadId;
-      this.$emit("input", message);
-    });
+    document
+      .querySelectorAll("[id='submitFile'],[id='uploaderMain']")
+      .forEach(element => {
+        element.classList.remove("uploader-btn", "uploader-drop");
+      });
   },
   computed: {
     classList() {
-      let classList = {
-        "is-invalid":
-          (this.validator && this.validator.errorCount) || this.error
-      };
-      if (this.controlClass) {
-        classList[this.controlClass] = true;
+      return {
+        "is-invalid": (this.validator && this.validator.errorCount) || this.error,
+        [this.controlClass]: !!this.controlClass,
       }
-      return classList;
     },
     inProgress() {
-      let inProgress = false;
-      this.$refs.uploader.fileList.forEach((file) => {
-        inProgress = inProgress || (file._prevProgress<1);
-      });
-      return inProgress;
+      return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
     },
   },
   data() {
@@ -68,7 +62,6 @@ export default {
         errorCount: 0,
         errors: [],
       },
-      requestID: null,
       options: {
         target: this.getTargetUrl,
         // We cannot increase this until laravel chunk uploader handles this gracefully
@@ -81,16 +74,16 @@ export default {
         // Setup our headers to deal with API calls
         headers: {
           "X-Requested-With": "XMLHttpRequest",
-          "X-CSRF-TOKEN":
-            window.ProcessMaker.apiClient.defaults.headers.common[
-              "X-CSRF-TOKEN"
-            ]
+          "X-CSRF-TOKEN": window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"]
         },
         singleFile: true
       },
     };
   },
   methods: {
+    fileUploaded(rootFile, file) {
+      this.$emit("input", file.name);
+    },
     removed() {
       if (!this.inProgress) {
         this.complete();
@@ -99,31 +92,26 @@ export default {
     complete() {
       // Unblock submit
       this.validator.errorCount = 0;
-      window.onbeforeunload = function(e) {};
+      window.onbeforeunload = function() {};
     },
     start() {
       // Block submit until files are loaded
       this.validator.errorCount = 1;
-      window.onbeforeunload = function(e) {
+      window.onbeforeunload = function() {
         return true;
       };
-    },
-    updateValue(e) {
-      this.content = e.target.value;
-      this.$emit("input", this.content);
     },
     getTargetUrl() {
       if (this.endpoint) {
         return this.endpoint;
       }
-      this.requestID = document.head.querySelector(
-        'meta[name="request-id"]'
-      ).content;
-      return "/api/1.0/requests/" + this.requestID + "/files";
+
+      const requestIDNode = document.head.querySelector('meta[name="request-id"]');
+
+      return requestIDNode
+        ? `/api/1.0/requests/${requestIDNode.content}/files`
+        : null;
     }
   }
 };
 </script>
-
-<style lang="scss" scoped>
-</style>

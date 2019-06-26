@@ -7,7 +7,7 @@
         </b-card-text>
 
         <div class="ml-auto">
-          <b-btn variant="secondary" size="sm" @click="saveBpmn">
+          <b-btn data-test="save-process" variant="secondary" size="sm" @click="saveBpmn">
             <i class="fas fa-save mr-1"/>
             {{ $t('Save') }}
           </b-btn>
@@ -82,6 +82,7 @@ export default {
             this.process.updated_at = response.data.updated_at;
             // Now show alert
             ProcessMaker.alert(this.$t('The process was saved.'), 'success');
+            window.ProcessMaker.EventBus.$emit('save-changes');
           })
           .catch((err) => {
             const message = err.response.data.message;
@@ -96,7 +97,10 @@ export default {
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
 
-    window.ProcessMaker.EventBus.$on('modeler-change', this.refreshSession);
+    window.ProcessMaker.EventBus.$on('modeler-change', () => {
+      this.refreshSession();
+      window.ProcessMaker.EventBus.$emit('new-changes');
+    });
   },
 };
 </script>
