@@ -662,7 +662,7 @@ class ImportProcess implements ShouldQueue
      */
     protected function decodeFile()
     {
-        if (substr($this->fileContents, 0, 1) === '{' && substr($this->fileContents, -1, 1) === '{') {
+        if (substr($this->fileContents, 0, 1) === '{' && !!json_decode($this->fileContents)) {
             $this->file = json_decode($this->fileContents);
         } else {
             $this->file = base64_decode($this->fileContents);

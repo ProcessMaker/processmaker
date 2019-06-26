@@ -32,7 +32,7 @@
                                 </b-card>
                             </div>
 
-                            <input type="file" ref="file" class="d-none" @change="handleFile" accept=".spark">
+                            <input type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json">
                             <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                                 <i class="fas fa-upload"></i>
                                 {{__('Browse')}}
@@ -459,7 +459,7 @@
               })
               .catch(error => {
                 this.submitted = false;
-                ProcessMaker.alert(this.$t('Unable to import the process.'), 'danger');
+                ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
               });
           }
         }
