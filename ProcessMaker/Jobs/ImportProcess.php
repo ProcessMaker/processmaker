@@ -3,7 +3,6 @@
 namespace ProcessMaker\Jobs;
 
 use Auth;
-use Cache;
 use DB;
 use DOMXPath;
 use Carbon\Carbon;
@@ -317,16 +316,16 @@ class ImportProcess implements ShouldQueue
         }
     }
 
-     /**
-     * Pass an old screen ID and a new screen ID, then replace any references
-     * within the BPMN to the old ID with the new ID.
-     *
-     * @param string|integer $oldId
-     * @param string|integer $newId
-     * @param Process $process
-     *
-     * @return void
-     */
+    /**
+    * Pass an old screen ID and a new screen ID, then replace any references
+    * within the BPMN to the old ID with the new ID.
+    *
+    * @param string|integer $oldId
+    * @param string|integer $newId
+    * @param Process $process
+    *
+    * @return void
+    */
     private function updateScreenRefs($oldId, $newId, $process)
     {
         $humanTasks = ['task', 'userTask', 'endEvent'];
@@ -597,7 +596,7 @@ class ImportProcess implements ShouldQueue
                     if (!in_array($implementation[0], $packages, true)) {
                         $packages[] = $implementation[0];
                         $exists = $this->isRegisteredPackage($implementation[0]);
-                        if (! $exists) {
+                        if (!$exists) {
                             $exists = $this->isBackwardCompatiblePackage($implementation[0]);
                         }
                         $response = $exists === false ? false : $response;
@@ -614,7 +613,6 @@ class ImportProcess implements ShouldQueue
         } catch (\Exception $e) {
             return false;
         }
-
     }
 
     /**
@@ -664,8 +662,12 @@ class ImportProcess implements ShouldQueue
      */
     protected function decodeFile()
     {
-        $this->file = base64_decode($this->fileContents);
-        $this->file = json_decode($this->file);
+        if (substr($this->fileContents, 0, 1) === '{' && !!json_decode($this->fileContents)) {
+            $this->file = json_decode($this->fileContents);
+        } else {
+            $this->file = base64_decode($this->fileContents);
+            $this->file = json_decode($this->file);
+        }
     }
 
     /**
