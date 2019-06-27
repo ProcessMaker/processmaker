@@ -1,11 +1,11 @@
 import {renderer, FormBuilderControls} from "@processmaker/spark-screen-builder";
 import FileDownload from "./components/file-download.vue";
+import {FormHtmlEditor} from "@processmaker/vue-form-elements";
 
 const {
     FormMultiColumn,
     FormText,
-    FormRecordList,
-    FormHtmlEditor
+    FormRecordList
 } = renderer;
 
 const TableControl = FormBuilderControls.find(control => control.editorComponent === FormMultiColumn);
