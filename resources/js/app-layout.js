@@ -24,6 +24,7 @@ if (window.ProcessMaker && window.ProcessMaker.user) {
 }
 if (document.documentElement.lang) {
     moment.locale(document.documentElement.lang);
+    window.ProcessMaker.user.lang = document.documentElement.lang;
 }
 Vue.prototype.moment = moment;
 //initializing global instance of a moment object

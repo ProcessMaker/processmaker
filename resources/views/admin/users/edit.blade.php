@@ -39,7 +39,7 @@
                             <div class="row">
                                 <div class="col-8">
                                     <div class="card card-body">
-                                        <h5>{{__('Name')}}</h5>                                        
+                                        <h5>{{__('Name')}}</h5>
                                             <div class="form-group">
                                                 {!! Form::label('firstname', __('First Name')) !!}
                                                 {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
@@ -70,10 +70,10 @@
                                               placeholder="Job Title"
                                             ></b-form-input>
                                         </div>
-                                            
+
                                         </div>
                                         <h5 class="mt-2">{{__('Contact Information')}}</h5>
-                                        
+
                                             <div class="form-group">
                                                 {!! Form::label('email', __('Email')) !!}
                                                 {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
@@ -102,7 +102,7 @@
                                                 <div class="invalid-feedback" v-if="errors.fax">@{{errors.fax}}
                                                 </div>
                                             </div>
-                                            
+
                                      <div class="form-group">
                                                 {!! Form::label('cell', __('Cell')) !!}
                                                 {!! Form::text('cell', null, ['id' => 'cell','class'=> 'form-control',
@@ -111,8 +111,8 @@
                                                 !!}
                                                 <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell}}
                                                 </div>
-                                            </div>                                            
-                                        
+                                            </div>
+
                                         <h5 class="mt-2">{{__('Address')}}</h5>
                                         <div class="row">
                                             <div class="form-group col">
@@ -369,8 +369,6 @@
                             <multiselect v-model="selectedGroup"
                                          placeholder="{{__('Select group or type here to search groups')}}"
                                          :options="groups"
-                                         :select-label="''"
-                                         :deselect-label="''"
                                          :multiple="true"
                                          track-by="name"
                                          :custom-label="customLabel"
@@ -379,6 +377,14 @@
                                          :internal-search="false"
                                          @search-change="loadGroups"
                                          label="name">
+
+                                <template slot="noResult" >
+                                    {{ __('No elements found. Consider changing the search query.') }}
+                                </template>
+
+                                <template slot="noOptions" >
+                                    {{ __('No Data Available') }}
+                                </template>
 
                                 <template slot="tag" slot-scope="props">
                                     <span class="multiselect__tag  d-flex align-items-center"
