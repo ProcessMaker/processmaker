@@ -1,5 +1,6 @@
 import {renderer, FormBuilderControls} from "@processmaker/spark-screen-builder";
 import FileDownload from "./components/file-download.vue";
+import {FormHtmlEditor} from "@processmaker/vue-form-elements";
 
 const {
     FormMultiColumn,
@@ -8,6 +9,7 @@ const {
 } = renderer;
 
 const TableControl = FormBuilderControls.find(control => control.editorComponent === FormMultiColumn);
+const RichTextControl = FormBuilderControls.find(control => control.editorComponent === FormHtmlEditor);
 
 let initialControls = [{
     builderComponent: FormText,
@@ -168,8 +170,8 @@ TableControl,
 
     }
 
-}
-
+},
+RichTextControl
 ];
 
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
