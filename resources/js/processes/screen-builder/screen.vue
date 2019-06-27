@@ -35,7 +35,7 @@
       </b-card-header>
 
       <!-- Card Body -->
-      <b-card-body class="overflow-auto ml-3 mr-3" id="screen-builder-container">
+      <b-card-body class="overflow-auto m-0 p-0" id="screen-builder-container">
         <!-- Vue-form-builder -->
         <vue-form-builder
           :validationErrors="validationErrors"
@@ -47,8 +47,8 @@
         />
 
         <!-- Preview -->
-        <b-row class="h-100" id="preview" v-show="displayPreview">
-          <b-col class="overflow-auto h-100 border rounded mr-4">
+        <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
+          <b-col class="overflow-auto h-100">
             <vue-form-renderer ref="renderer"
               v-model="previewData"
               class="p-3 overflow-auto"
@@ -61,11 +61,7 @@
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
-            <b-card no-body class="p-0 h-100">
-              <b-card-header class="stick-top">
-                {{ $t('Inspector') }}
-              </b-card-header>
-
+            <b-card no-body class="p-0 h-100 rounded-0 border-top-0 border-right-0 border-bottom-0">
               <b-card-body class="p-0 overflow-auto">
                 <b-button variant="outline"
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
