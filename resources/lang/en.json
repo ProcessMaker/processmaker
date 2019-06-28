@@ -844,5 +844,17 @@
     "Sub process is missing start event": "Sub process is missing start event",
     "Start event must be blank": "Start event must be blank",
     "user": "user",
-    "group": "group"
+    "group": "group",
+    "Key Name": "Key Name",
+    "A variable key name is a symbolic name to reference information.": "A variable key name is a symbolic name to reference information.",
+    "Data Type": "Data Type",
+    "The data type specifies what kind of data is stored in the variable.": "The data type specifies what kind of data is stored in the variable.",
+    "Integer": "Integer",
+    "Decimal": "Decimal",
+    "Datetime": "Datetime",
+    "Date": "Date",
+    "Currency": "Currency",
+    "Boolean": "Boolean",
+    "Validation rules ensure the integrity and validity of the data.": "Validation rules ensure the integrity and validity of the data.",
+    "Control is read only": "Control is read only"
 }
