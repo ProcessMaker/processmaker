@@ -20,7 +20,7 @@
         $title => null,
     ]])
     <div class="px-3 page-content" id="processIndex">
-        <div class="row">
+        <div class="row mt-3">
             <div class="col">
                 <div class="input-group">
                     <div class="input-group-prepend">
