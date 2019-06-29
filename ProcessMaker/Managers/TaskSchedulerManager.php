@@ -183,7 +183,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 $config = json_decode($task->configuration);
 
                 $lastExecution = new \DateTime($task->last_execution, new DateTimeZone('UTC'));
-                $nextDate = $this->nextDate($lastExecution, $config)->setTimezone(new DateTimeZone('UTC')) ;
+
+                if ($lastExecution === null) {
+                    continue;
+                }
+
+                $nextDate = $this->nextDate($lastExecution, $config)->setTimezone(new DateTimeZone('UTC'));
 
                 // if no execution date exists we go to the next task
                 if (empty($nextDate)) {
@@ -366,20 +371,20 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
         $result['endDate'] = (count($parts) === 4)
             ? (new \DateTime($parts[3]))
-                ->setTimezone(new DateTimeZone('UTC'))
-                ->format('Y-m-d\TH:i:s') . 'Z'
+            ->setTimezone(new DateTimeZone('UTC'))
+            ->format('Y-m-d\TH:i:s') . 'Z'
             : (new \DateTime())
-                ->add(new \DateInterval('P10Y'))
-                ->setTimezone(new DateTimeZone('UTC'))
-                ->format('Y-m-d\TH:i:s') . 'Z';
+            ->add(new \DateInterval('P10Y'))
+            ->setTimezone(new DateTimeZone('UTC'))
+            ->format('Y-m-d\TH:i:s') . 'Z';
 
         //if it is a specific date
         if (count($parts) === 1) {
             $result['repetitions'] = '1';
             $result['interval'] = null;
             $result['firstDate'] = (new \DateTime($parts[0]))
-                    ->setTimezone(new DateTimeZone('UTC'))
-                    ->format('Y-m-d\TH:i:s') . 'Z';
+                ->setTimezone(new DateTimeZone('UTC'))
+                ->format('Y-m-d\TH:i:s') . 'Z';
             $result['period'] = null;
             $result['recurrences'] = 2;
             return $result;
@@ -429,10 +434,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      *
      * @return $this
      */
-    public function scheduleDate($datetime, TimerEventDefinitionInterface $eventDefinition,
-                                 FlowElementInterface $element, TokenInterface $token = null)
-    {
-    }
+    public function scheduleDate(
+        $datetime,
+        TimerEventDefinitionInterface $eventDefinition,
+        FlowElementInterface $element,
+        TokenInterface $token = null
+    ) { }
 
     /**
      * Schedule a job for a specific cycle for the given BPMN element, event definition
@@ -443,10 +450,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @param EntityInterface $element
      * @param TokenInterface $token
      */
-    public function scheduleCycle($cycle, TimerEventDefinitionInterface $eventDefinition, FlowElementInterface $element,
-                                  TokenInterface $token = null)
-    {
-    }
+    public function scheduleCycle(
+        $cycle,
+        TimerEventDefinitionInterface $eventDefinition,
+        FlowElementInterface $element,
+        TokenInterface $token = null
+    ) { }
 
     /**
      * Schedule a job execution after a time duration for the given BPMN element,
@@ -457,10 +466,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @param EntityInterface $element
      * @param TokenInterface $token
      */
-    public function scheduleDuration($duration, TimerEventDefinitionInterface $eventDefinition,
-                                     FlowElementInterface $element, TokenInterface $token = null)
-    {
-    }
+    public function scheduleDuration(
+        $duration,
+        TimerEventDefinitionInterface $eventDefinition,
+        FlowElementInterface $element,
+        TokenInterface $token = null
+    ) { }
 
     /**
      * Register an event listener with the dispatcher.
@@ -471,8 +482,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function listen($events, $listener)
-    {
-    }
+    { }
 
     /**
      * Determine if a given event has listeners.
@@ -482,8 +492,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return bool
      */
     public function hasListeners($eventName)
-    {
-    }
+    { }
 
     /**
      * Register an event subscriber with the dispatcher.
@@ -493,8 +502,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function subscribe($subscriber)
-    {
-    }
+    { }
 
     /**
      * Dispatch an event until the first non-null response is returned.
@@ -505,8 +513,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return array|null
      */
     public function until($event, $payload = [])
-    {
-    }
+    { }
 
     /**
      * Dispatch an event and call the listeners.
@@ -518,8 +525,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return array|null
      */
     public function dispatch($event, $payload = [], $halt = false)
-    {
-    }
+    { }
 
     /**
      * Register an event and payload to be fired later.
@@ -530,8 +536,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function push($event, $payload = [])
-    {
-    }
+    { }
 
     /**
      * Flush a set of pushed events.
@@ -541,8 +546,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function flush($event)
-    {
-    }
+    { }
 
     /**
      * Remove a set of listeners from the dispatcher.
@@ -552,8 +556,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function forget($event)
-    {
-    }
+    { }
 
     /**
      * Forget all of the queued listeners.
@@ -561,6 +564,5 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function forgetPushed()
-    {
-    }
+    { }
 }
