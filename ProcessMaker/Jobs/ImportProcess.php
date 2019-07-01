@@ -76,7 +76,7 @@ class ImportProcess implements ShouldQueue
      * @var array
      */
     private $backwardCompatiblePackageMap = [
-        'processmaker-communication-email-send' => 'spark-connector-send-email',
+        'processmaker-communication-email-send' => 'processmaker-connector-send-email',
     ];
 
     /**
@@ -563,7 +563,7 @@ class ImportProcess implements ShouldQueue
 
     /**
      * Handle the edge case of packages that have been renamed but are still
-     * referenced in old .spark files.
+     * referenced in old files.
      *
      * @param string $package
      *

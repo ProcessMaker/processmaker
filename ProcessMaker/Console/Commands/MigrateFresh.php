@@ -17,7 +17,7 @@ class MigrateFresh extends FreshCommand
             return;
         }
 
-        $databases = ['data', 'spark'];
+        $databases = ['data', 'processmaker'];
 
         foreach ($databases as $database) {
             if ($this->option('drop-views')) {

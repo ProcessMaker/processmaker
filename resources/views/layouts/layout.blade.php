@@ -31,7 +31,7 @@
       <meta name="alertMessage" content="{{$message}}">
     @endif
 
-    <title>@yield('title',__('Welcome')) - ProcessMaker Spark</title>
+    <title>@yield('title',__('Welcome')) - ProcessMaker</title>
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">

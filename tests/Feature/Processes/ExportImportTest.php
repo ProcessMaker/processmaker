@@ -40,7 +40,7 @@ class ExportImportTest extends TestCase
         
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
-        $fileName = 'test_process_import_refs.spark';
+        $fileName = 'test_process_import_refs.processmaker';
         
         // Load file to import
         $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
@@ -165,7 +165,7 @@ class ExportImportTest extends TestCase
         // Test to ensure we can download the exported file
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.spark');
+        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.processmaker');
 
         // Get our file contents (we have to do it this way because of
         // Symfony's weird response API)
@@ -176,7 +176,7 @@ class ExportImportTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'leave_absence_request.spark', null, null, null, true);
+        $file = new UploadedFile($fileName, 'leave_absence_request.processmaker', null, null, null, true);
 
         // Test to ensure our standard user cannot import a process
         $this->user = $standardUser;
@@ -204,7 +204,7 @@ class ExportImportTest extends TestCase
     public function test_assignmets_after_import()
     {
         // Load file to import
-        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.spark', 'test_process_import.spark', null, null, null, true);
+        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.processmaker', 'test_process_import.processmaker', null, null, null, true);
 
         //Import process
         $response = $this->apiCall('POST', '/processes/import', [

@@ -46,7 +46,7 @@ class Screen extends Model
 {
     use SerializeToIso8601;
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     protected $casts = [
         'config' => 'array',

@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-  {{__('About ProcessMaker Spark')}}
+  {{__('About ProcessMaker')}}
 @endsection
 
 @section('sidebar')
@@ -10,7 +10,7 @@
 
 @section('content')
   @include('shared.breadcrumbs', ['routes' => [
-      __('About ProcessMaker Spark') => null,
+      __('About ProcessMaker') => null,
   ]])
  <div class="container">
     <div class="row">
@@ -18,7 +18,7 @@
         <div class="card card-body">
         <img class="about-logo" src="/img/md-blk-logo.png">
         <hr>
-        <div>{{__('ProcessMaker Spark')}}</div>
+        <div>{{__('ProcessMaker')}}</div>
         <hr>
         <a href="https://docs.google.com/forms/d/e/1FAIpQLScnYje8uTACYwp3VxdRoA26OFkbfFs6kuXofqY-QXXsG-h9xA/viewform" target="_blank">{{__('Report an issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
