@@ -61,7 +61,7 @@ class ExportImportScreenTest extends TestCase
         // Test to ensure we can download the exported file
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=approve.spark');
+        $response->assertHeader('content-disposition', 'attachment; filename=approve.processmaker');
 
         // Get our file contents (we have to do it this way because of
         // Symfony's weird response API)
@@ -72,7 +72,7 @@ class ExportImportScreenTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'approve.spark', null, null, null, true);
+        $file = new UploadedFile($fileName, 'approve.processmaker', null, null, null, true);
 
         // Test to ensure our standard user cannot import a screen
         $this->user = $standardUser;
@@ -94,7 +94,7 @@ class ExportImportScreenTest extends TestCase
         $this->assertDatabaseHas('screens', ['title' => 'Validate']);
         $this->assertDatabaseHas('screens', ['title' => 'Approve 2']);
 
-        //Test with type file spark
+        //Test with type file processmaker
         // Get the process we'll be testing on
         $process = Process::where('name', 'Leave Absence Request')->first();
 
@@ -104,10 +104,10 @@ class ExportImportScreenTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure(['url']);
 
-        // Download a type file: spark.
+        // Download a type file: processmaker.
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.spark');
+        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.processmaker');
 
         // Get our file contents (we have to do it this way because of
         // Symfony's weird response API)
@@ -118,7 +118,7 @@ class ExportImportScreenTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'leave_absence_request.spark', null, null, null, true);
+        $file = new UploadedFile($fileName, 'leave_absence_request.processmaker', null, null, null, true);
 
         // Test to ensure our admin user can import a other file
         $this->user = $adminUser;

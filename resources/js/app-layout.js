@@ -25,6 +25,7 @@ if (window.ProcessMaker && window.ProcessMaker.user) {
 }
 if (document.documentElement.lang) {
     moment.locale(document.documentElement.lang);
+    window.ProcessMaker.user.lang = document.documentElement.lang;
 }
 Vue.prototype.moment = moment;
 //initializing global instance of a moment object
@@ -55,8 +56,8 @@ window.ProcessMaker.navbar = new Vue({
     },
     watch: {
         alerts(array) {
-        this.saveLocalAlerts(array);
-    },
+          this.saveLocalAlerts(array);
+        },
     },
     data() {
         return {
@@ -77,33 +78,33 @@ window.ProcessMaker.navbar = new Vue({
         alertDismissed(alert) {
             const index = this.alerts.indexOf(alert);
             index > -1 ? this.alerts.splice(index, 1) : null;
-this.saveLocalAlerts(this.alerts);
+            this.saveLocalAlerts(this.alerts);
         },
-loadLocalAlerts() {
-    try {
-        return window.localStorage.sparkAlerts &&
-            window.localStorage.sparkAlerts.substr(0, 1) === "["
-            ? JSON.parse(window.localStorage.sparkAlerts) : [];
-    } catch (e) {
-        return [];
+        loadLocalAlerts () {
+            try {
+                return window.localStorage.processmakerAlerts &&
+                    window.localStorage.processmakerAlerts.substr(0, 1) === "["
+                    ? JSON.parse(window.localStorage.processmakerAlerts) : [];
+            } catch (e) {
+                return [];
+            }
+        },
+        saveLocalAlerts (array) {
+            const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
+            window.localStorage.processmakerAlerts = JSON.stringify(nextScreenAlerts);
+        },
+    },
+    mounted() {
+        Vue.nextTick() // This is needed to override the default alert method.
+            .then(() => {
+                if (document.querySelector("meta[name='alert']")) {
+                    ProcessMaker.alert(
+                        document.querySelector("meta[name='alertMessage']").getAttribute("content"),
+                        document.querySelector("meta[name='alertVariant']").getAttribute("content")
+                    );
+                }
+            });
     }
-},
-    saveLocalAlerts(array) {
-        const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
-        window.localStorage.sparkAlerts = JSON.stringify(nextScreenAlerts);
-    },
-    },
-        mounted() {
-            Vue.nextTick() // This is needed to override the default alert method.
-                .then(() => {
-                    if (document.querySelector("meta[name='alert']")) {
-                        ProcessMaker.alert(
-                            document.querySelector("meta[name='alertMessage']").getAttribute("content"),
-                            document.querySelector("meta[name='alertVariant']").getAttribute("content")
-                        );
-                    }
-                });
-        }
 });
 
 // Set our own specific alert function at the ProcessMaker global object that could

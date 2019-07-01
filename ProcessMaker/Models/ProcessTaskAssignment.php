@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProcessTaskAssignment extends Model
 {
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     protected $fillable = [
         'process_id',

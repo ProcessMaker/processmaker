@@ -60,6 +60,6 @@ abstract class TestCase extends BaseTestCase
      */
     protected function connectionsToTransact()
     {
-        return ['spark', 'data'];
+        return ['processmaker', 'data'];
     }
 }

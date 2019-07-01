@@ -222,7 +222,6 @@ class ExportProcess implements ShouldQueue
     protected function encodeFile()
     {
         $this->fileContents = json_encode($this->package);
-        $this->fileContents = base64_encode($this->fileContents);
     }
 
     /**

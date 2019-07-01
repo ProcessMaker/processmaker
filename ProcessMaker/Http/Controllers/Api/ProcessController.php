@@ -166,7 +166,8 @@ class ProcessController extends Controller
             return response(
                 ['message' => __('The bpm definition is not valid'),
                     'errors' => ['bpmn' => $schemaErrors]],
-                422);
+                422
+            );
         }
 
         $process = new Process();
@@ -227,7 +228,8 @@ class ProcessController extends Controller
             return response(
                 ['message' => __('The bpm definition is not valid'),
                     'errors' => ['bpmn' => $schemaErrors]],
-                422);
+                422
+            );
         }
 
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
@@ -239,7 +241,8 @@ class ProcessController extends Controller
             return response(
                 ['message' => $e->getMessage(),
                     'errors' => ['bpmn' => $e->getMessage()]],
-                422);
+                422
+            );
         }
 
         unset(
@@ -316,13 +319,10 @@ class ProcessController extends Controller
 
         //For each notifiable type...
         foreach ($process->requestNotifiableTypes as $notifiable) {
-
             //And for each notification type...
             foreach ($process->requestNotificationTypes as $notification) {
-
                 //If this input has been set
                 if (isset($input[$notifiable][$notification])) {
-
                     //Determine if this notification is wanted
                     $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
 
@@ -380,16 +380,12 @@ class ProcessController extends Controller
 
         //For each node...
         foreach ($inputs as $nodeId => $input) {
-
             //For each notifiable type...
             foreach ($process->taskNotifiableTypes as $notifiable) {
-
                 //And for each notification type...
                 foreach ($process->taskNotificationTypes as $notification) {
-
                     //If this input has been set
                     if (isset($input[$notifiable][$notification])) {
-
                         //Determine if this notification is wanted
                         $notificationWanted = filter_var($input[$notifiable][$notification], FILTER_VALIDATE_BOOLEAN);
 
@@ -470,8 +466,8 @@ class ProcessController extends Controller
 
         foreach ($processes as $key => $process) {
             //filter he start events that can be used manually (no timer start events);
-            # TODO: startEvents is not a real property on Process.
-            # Move below to $process->getManualStartEvents();
+            // TODO: startEvents is not a real property on Process.
+            // Move below to $process->getManualStartEvents();
             $process->startEvents = $process->events->filter(function ($event) {
                 $eventIsTimerStart = collect($event['eventDefinitions'])
                         ->filter(function ($eventDefinition) {
@@ -652,7 +648,14 @@ class ProcessController extends Controller
      */
     public function import(Process $process, Request $request)
     {
-        $import = ImportProcess::dispatchNow($request->file('file')->get());
+        $content = $request->file('file')->get();
+        if (!$this->validateImportedFile($content)) {
+            return response(
+                ['message' => __('Invalid Format')],
+                422
+            );
+        }
+        $import = ImportProcess::dispatchNow($content);
         return response([
             'status' => $import->status,
             'assignable' => $import->assignable,
@@ -719,7 +722,7 @@ class ProcessController extends Controller
                             if (is_int($value)) {
                                 $element->setAttribute('pm:assignment', 'user');
                                 $element->setAttribute('pm:assignedUsers', $value);
-                            } else if (strpos($value, '-') !== false) {
+                            } elseif (strpos($value, '-') !== false) {
                                 $value = explode('-', $value);
                                 $value = $value[1];
                                 $element->setAttribute('pm:assignment', 'group');
@@ -826,7 +829,6 @@ class ProcessController extends Controller
         return new ProcessRequests($processRequest);
     }
 
-
     /**
      * Get the where array to filter the resources.
      *
@@ -880,7 +882,6 @@ class ProcessController extends Controller
         return $include ? explode(',', $include) : [];
     }
 
-
     /**
      * Get the size of the page.
      * per_page=# (integer, the page requested) (Default: 10)
@@ -893,4 +894,21 @@ class ProcessController extends Controller
         return $request->input('per_page', 10);
     }
 
+    /**
+     * Verify if the file is valid to be imported
+     *
+     * @param string $content
+     *
+     * @return bool
+     */
+    private function validateImportedFile($content)
+    {
+        $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
+        $isDecoded = $decoded && is_object($decoded);
+        $hasType = $isDecoded && isset($decoded->type) && is_string($decoded->type);
+        $validType = $hasType && $decoded->type === 'process_package';
+        $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
+        $validVersion = $hasVersion && method_exists(ImportProcess::class, "parseFileV{$decoded->version}");
+        return $isDecoded && $validType && $validVersion;
+    }
 }

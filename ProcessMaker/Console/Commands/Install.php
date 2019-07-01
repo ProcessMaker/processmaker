@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Helper\Table;
 
 /**
- * Install command handles installing a fresh copy of ProcessMaker Spark.
+ * Install command handles installing a fresh copy of ProcessMaker.
  * If a .env file is found in the base_path(), then we will refuse to install.
  * Note: This is destructive to your database if you point to an existing database with tables.
  */
@@ -22,14 +22,14 @@ class Install extends Command
      *
      * @var string
      */
-    protected $signature = 'spark:install';
+    protected $signature = 'processmaker:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Install and configure ProcessMaker Spark';
+    protected $description = 'Install and configure ProcessMaker';
 
     /**
      * The values for our .env to populate
@@ -44,7 +44,7 @@ class Install extends Command
     private $key;
 
     /**
-     * Installs a fresh copy of ProcessMaker Spark
+     * Installs a fresh copy of ProcessMaker
      *
      * @return mixed If the command succeeds, true
      */
@@ -57,7 +57,7 @@ class Install extends Command
         // Our initial .env values
         $this->env = [
             'APP_DEBUG' => 'FALSE',
-            'APP_NAME' => '"ProcessMaker Spark"',
+            'APP_NAME' => '"ProcessMaker"',
             'APP_ENV' => 'production',
             'APP_KEY' => $this->key,
             'BROADCAST_DRIVER' => 'redis',
@@ -75,7 +75,7 @@ class Install extends Command
             'root' => base_path()
         ]]);
 
-        $this->info('<fg=cyan;bold>' . __('ProcessMaker Spark Installer') . '</>');
+        $this->info("<fg=cyan;bold>" . __("ProcessMaker Installer") . "</>");
 
         // Determine if .env file exists or not
         // if exists, bail out with an error
@@ -85,16 +85,17 @@ class Install extends Command
             $this->error(__('Remove the .env file to perform a new installation.'));
             return 255;
         }
-        $this->info(__('This application installs a new version of ProcessMaker Spark.'));
-        $this->info(__('You must have your database credentials available in order to continue.'));
-        $this->confirm(__('Are you ready to begin?'));
+        $this->info(__("This application installs a new version of ProcessMaker."));
+        $this->info(__("You must have your database credentials available in order to continue."));
+        $this->confirm(__("Are you ready to begin?"));
         $this->checkDependencies();
         do {
             $this->fetchDatabaseCredentials();
         } while (!$this->testDatabaseConnection());
         // Configure the DATA connection
-        $this->info(__('ProcessMaker Spark requires a DATA database.'));
-        $dataConnection = $this->choice(__('Would you like setup different credentials or use the same Spark connection?'), ['different', 'same']);
+        $this->info(__('ProcessMaker requires a DATA database.'));
+        $dataConnection = $this->choice(__('Would you like setup different credentials or use the same ProcessMaker 
+        connection?'), ['different', 'same']);
         if ($dataConnection === 'same') {
             $this->env['DATA_DB_DRIVER'] = 'mysql';
             $this->env['DATA_DB_HOST'] = $this->env['DB_HOSTNAME'];
@@ -116,7 +117,7 @@ class Install extends Command
             if ($invalid) {
                 $this->error(__('The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes.'));
             }
-            $this->env['APP_URL'] = $this->ask(__('What is the URL of this ProcessMaker Spark installation? (Ex: https://spark.example.com, with no trailing slash)'));
+            $this->env['APP_URL'] = $this->ask(__('What is the URL of this ProcessMaker installation? (Ex: https://processmaker.example.com, with no trailing slash)'));
         } while ($invalid = (!filter_var(
             $this->env['APP_URL'],
             FILTER_VALIDATE_URL
@@ -133,7 +134,8 @@ class Install extends Command
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);
 
-        $this->info(__('Installing ProcessMaker Spark database, OAuth SSL keys and configuration file.'));
+
+        $this->info(__("Installing ProcessMaker database, OAuth SSL keys and configuration file."));
 
         // The database should already exist and is tested by the fetchDatabaseCredentials call
         // Set the database default connection to install
@@ -153,7 +155,7 @@ class Install extends Command
             '--seed' => true,
         ]);
 
-        $this->info(__('ProcessMaker Spark database installed successfully.'));
+        $this->info(__("ProcessMaker database installed successfully."));
 
         // Generate passport secure keys and personal token oauth client
         $this->call('passport:install', [
@@ -163,13 +165,13 @@ class Install extends Command
         //Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
 
-        $this->info(__('ProcessMaker Spark installation is complete. Please visit the URL in your browser to continue.'));
-        $this->info(__('Installer completed. Consult ProcessMaker Spark documentation on how to configure email, jobs and notifications.'));
+        $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
+        $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
         return true;
     }
 
     /**
-     * The following checks for required extensions needed by ProcessMaker Spark
+     * The following checks for required extensions needed by ProcessMaker
      */
     private function checkDependencies()
     {
@@ -193,17 +195,17 @@ class Install extends Command
     }
 
     /**
-     * Setup SPARK connection
+     * Setup PROCESSMAKER connection
      *
      * @return void
      */
     private function fetchDatabaseCredentials()
     {
-        $this->info(__('ProcessMaker Spark requires a MySQL database.'));
+        $this->info(__('ProcessMaker requires a MySQL database.'));
         $this->info(__('Database connection failed. Check your database configuration and try again.'));
         $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['127.0.0.1'], '127.0.0.1');
         $this->env['DB_PORT'] = $this->anticipate(__('Enter your MySQL port (usually 3306)'), [3306], 3306);
-        $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['spark'], 'spark');
+        $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['processmaker'], 'processmaker');
         $this->env['DB_USERNAME'] = $this->ask(__('Enter your MySQL username'));
         $this->env['DB_PASSWORD'] = $this->secret(__('Enter your MySQL password (input hidden)'));
     }
@@ -291,14 +293,14 @@ class Install extends Command
     }
 
     /**
-     * Test SPARK connection
+     * Test PROCESSMAKER connection
      *
      * @return void
      */
     private function testDatabaseConnection()
     {
         // Setup Laravel Database Configuration
-        config(['database.connections.spark' => [
+        config(['database.connections.processmaker' => [
             'driver' => 'mysql',
             'host' => $this->env['DB_HOSTNAME'],
             'port' => $this->env['DB_PORT'],
@@ -309,9 +311,9 @@ class Install extends Command
         // Attempt to connect
         try {
             DB::reconnect();
-            $pdo = DB::connection('spark')->getPdo();
+            $pdo = DB::connection('processmaker')->getPdo();
         } catch (Exception $e) {
-            $this->error(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.spark'))));
+            $this->error(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.processmaker'))));
             return false;
         }
         return true;

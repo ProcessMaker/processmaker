@@ -40,29 +40,29 @@ class ScreenTest extends DuskTestCase
         });
     }
 
-//    /**
-//     * Test display List of screens
-//     */
-//    public function testCreateNewScreen()
-//    {
-//        $this->browse(function (Browser $browser) {
-//
-//            //create new screen
-//            $browser->visit('/processes/screens')
-//                ->waitFor('#screenIndex')
-//                ->click('button[data-target=\\#createScreen]')
-//                ->waitFor('#createScreen')
-//                //Fill form data
-//                ->type('title', 'New Screen Test')
-//                ->select('type', 'FORM')
-//                ->type('description', 'Screen created for test')
-//                ->click('#createScreen .modal-footer .btn.btn-secondary')
-//                //save successfully and redirect
-//                ->waitFor('#screen-container')
-//                ->assertSee('Controls')
-//                ->assertSee('Inspector');
-//        });
-//    }
+    /**
+     * Test display List of screens
+     */
+    public function testCreateNewScreen()
+    {
+        $this->browse(function (Browser $browser) {
+
+            //create new screen
+            $browser->visit('/processes/screens')
+                ->waitFor('#screenIndex')
+                ->click('button[data-target=\\#createScreen]')
+                ->waitFor('#createScreen')
+                //Fill form data
+                ->type('title', 'New Screen Test')
+                ->select('type', 'FORM')
+                ->type('description', 'Screen created for test')
+                ->click('#createScreen .modal-footer .btn.btn-secondary')
+                //save successfully and redirect
+                ->waitFor('#screen-container')
+                ->assertSee('Controls')
+                ->assertSee('Inspector');
+        });
+    }
 
     /**
      * Screen builder test
@@ -104,9 +104,7 @@ class ScreenTest extends DuskTestCase
                  ->assertDontSee('NEW SUBMIT')
                  ->assertDontSee('New File Upload')
                  ->assertDontSee('New File Download')
-                 ->click('#app > div.card-header > div > div:nth-child(1) > div > button.btn.btn-outline-secondary')
-                 // //change the value to evaluate to "field1 == 'test'" and all fields must be visible
-                 ->type('#screen-container input[name=field1]', 'test')
+                 ->type('#field1 div input', 'test')
                  ->assertSee('Field 1')
                  ->assertSee('New Text')
                  ->assertSee('New Input')
@@ -123,72 +121,72 @@ class ScreenTest extends DuskTestCase
          });
      }
 
-//    /**
-//     * The user has permission to export in Screen builder
-//     * @throws \Throwable
-//     */
-//    public function testPermissionExportScreenBuilder()
-//    {
-//        $this->browse(function (Browser $browser) {
-//
-//            // We create a screen with configuration
-//            $json = json_decode(file_get_contents(base_path('tests/Browser/Assets/controlsHide.json')));
-//            $screen = factory(Screen::class)->create([
-//                'title' => 'Test form hide controls',
-//                'config' => $json
-//            ]);
-//
-//            //display form builder, show or hide controls
-//            $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
-//                //wait for Editor screens
-//                ->waitFor('#screen-container')
-//                ->assertSee('Controls')
-//                ->assertSee('Inspector')
-//                //display link for export
-//                ->waitFor('.fa-file-export');
-//        });
-//    }
-//
-//    /**
-//     * The user does not have permission to export screen.
-//     * @throws \Throwable
-//     */
-//    public function testWithoutPermissionExportScreenBuilder()
-//    {
-//        $this->browse(function (Browser $browser) {
-//
-//            $browser->visit('/logout');
-//
-//            $user = factory(User::class)->create([
-//                'username' => 'standard',
-//                'password' => Hash::make('admin'),
-//                'status' => 'ACTIVE',
-//                'is_administrator' => false
-//            ]);
-//
-//            $user->giveDirectPermission('edit-screens');
-//
-//            //Login
-//            $browser->visit(new Login())
-//                ->type('@username', 'standard')
-//                ->type('@password', 'admin')
-//                ->press('@login');
-//
-//            // We create a screen with configuration
-//            $json = json_decode(file_get_contents(base_path('tests/Browser/Assets/controlsHide.json')));
-//            $screen = factory(Screen::class)->create([
-//                'title' => 'Test form hide controls',
-//                'config' => $json
-//            ]);
-//
-//            //display form builder, show or hide controls
-//            $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
-//                //wait for Editor screens
-//                ->waitFor('#screen-container')
-//                ->assertSee('Controls')
-//                ->assertSee('Inspector')
-//                //display link for export
-//                ->assertMissing('.fa-file-export');
-//        });
-//    }
+    /**
+     * The user has permission to export in Screen builder
+     * @throws \Throwable
+     */
+    public function testPermissionExportScreenBuilder()
+    {
+        $this->browse(function (Browser $browser) {
+
+            // We create a screen with configuration
+            $json = json_decode(file_get_contents(base_path('tests/Browser/Assets/controlsHide.json')));
+            $screen = factory(Screen::class)->create([
+                'title' => 'Test form hide controls',
+                'config' => $json
+            ]);
+
+            //display form builder, show or hide controls
+            $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
+                //wait for Editor screens
+                ->waitFor('#screen-container')
+                ->assertSee('Controls')
+                ->assertSee('Inspector')
+                //display link for export
+                ->waitFor('.fa-file-export');
+        });
+    }
+
+    /**
+     * The user does not have permission to export screen.
+     * @throws \Throwable
+     */
+    public function testWithoutPermissionExportScreenBuilder()
+    {
+        $this->browse(function (Browser $browser) {
+
+            $browser->visit('/logout');
+
+            $user = factory(User::class)->create([
+                'username' => 'standard',
+                'password' => Hash::make('admin'),
+                'status' => 'ACTIVE',
+                'is_administrator' => false
+            ]);
+
+            $user->giveDirectPermission('edit-screens');
+
+            //Login
+            $browser->visit(new Login())
+                ->type('@username', 'standard')
+                ->type('@password', 'admin')
+                ->press('@login');
+
+            // We create a screen with configuration
+            $json = json_decode(file_get_contents(base_path('tests/Browser/Assets/controlsHide.json')));
+            $screen = factory(Screen::class)->create([
+                'title' => 'Test form hide controls',
+                'config' => $json
+            ]);
+
+            //display form builder, show or hide controls
+            $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
+                //wait for Editor screens
+                ->waitFor('#screen-container')
+                ->assertSee('Controls')
+                ->assertSee('Inspector')
+                //display link for export
+                ->assertMissing('.fa-file-export');
+        });
+    }
 }

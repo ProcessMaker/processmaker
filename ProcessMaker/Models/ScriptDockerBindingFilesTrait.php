@@ -62,7 +62,7 @@ trait ScriptDockerBindingFilesTrait
             $cmd .= "timeout -s 9 $timeout ";
         }
 
-        $cmd .= config('app.spark_scripts_docker') . sprintf(
+        $cmd .= config('app.processmaker_scripts_docker') . sprintf(
             ' run %s %s %s %s 2>&1',
             $parameters,
             $bindings,
@@ -116,7 +116,7 @@ trait ScriptDockerBindingFilesTrait
      */
     private function bindInput($guestFile, $content)
     {
-        $hostFile = tempnam(config('app.spark_scripts_home'), 'put');
+        $hostFile = tempnam(config('app.processmaker_scripts_home'), 'put');
         $this->temporalFiles[] = $hostFile;
         file_put_contents($hostFile, $content);
         return $this->bindFile($hostFile, $guestFile);
@@ -131,7 +131,7 @@ trait ScriptDockerBindingFilesTrait
      */
     private function bindOutput($guestFile, $name)
     {
-        $hostFile = tempnam(config('app.spark_scripts_home'), 'get');
+        $hostFile = tempnam(config('app.processmaker_scripts_home'), 'get');
         $this->temporalFiles[] = $hostFile;
         $this->outputFiles[$name] = $hostFile;
         return $this->bindFile($hostFile, $guestFile);

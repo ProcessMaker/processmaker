@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Permission extends Model
 {
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     protected $fillable = [
         'title',
