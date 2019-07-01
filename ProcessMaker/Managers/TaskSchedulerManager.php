@@ -188,7 +188,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                     continue;
                 }
 
-                $nextDate = $this->nextDate($lastExecution, $config)->setTimezone(new DateTimeZone('UTC'));
+                $nextDate = $this->nextDate($lastExecution, $config);
+                $nextDate = !empty($nextDate) ? $nextDate->setTimezone(new DateTimeZone('UTC')) : null;
 
                 // if no execution date exists we go to the next task
                 if (empty($nextDate)) {
