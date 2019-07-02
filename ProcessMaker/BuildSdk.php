@@ -53,6 +53,7 @@ class BuildSdk {
 
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
+        $this->commentErroneousCode($folder);
         $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
         $this->log("DONE. Api is at {$this->outputDir()}");
     }
@@ -225,6 +226,13 @@ class BuildSdk {
     {
         if ($this->debug) {
             echo "$message\n";
+        }
+    }
+
+    private function commentErroneousCode($folder)
+    {
+        if ($this->lang === 'lua') {
+            $this->runCmd("find {$folder} -name '*.lua' -exec sed -i -E 's/(req\.readers:upsert.*)/-- \\1/g' {} \;");
         }
     }
 }
