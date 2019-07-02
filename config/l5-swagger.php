@@ -115,7 +115,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'security' => [
-        'pm_api_bearer' => [ // personal access token
+        'pm_api_auth_code' => [
             'type' => 'oauth2',
             'flows' => [
                 'authorizationCode' => [

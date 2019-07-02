@@ -71,6 +71,10 @@
  *             in="query",
  *             @OA\Schema(type="string", default=""),
  *         ),
+ *         @OA\Schema(
+ *           schema="DateTime",
+ *           @OA\Property(property="date", type="string"),
+ *         ),
  *     ),
  *     security={{"pm_api_bearer": {}}, {"pm_api_auth_code": {}}},
  * )

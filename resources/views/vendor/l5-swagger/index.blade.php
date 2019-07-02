@@ -27,7 +27,20 @@
       background: #fafafa;
     }
 
-    .auth-container:first-child .wrapper {
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* .auth-container:first-child .wrapper {
       display: none;
     }
     
@@ -41,7 +54,24 @@
     
     .auth-container:first-child h6::after {
       content: " - You can close this dialog and use the 'Try it out' features"
-    }
+    } */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   </style>
 </head>
@@ -116,13 +146,13 @@ window.onload = function() {
   })
 
   @php ($client = \Laravel\Passport\Client::where('name', 'Swagger UI Auth')->firstOrFail())
-  ui.initOAuth({
-    appName: "Swagger UI Auth",
-    clientId: {{ $client->id }},
-    clientSecret: '{{ $client->secret }}',
-    scopeSeparator: " ",
-    additionalQueryStringParams: { client_id: {{ $client->id }} }
-  })
+  // ui.initOAuth({
+  //   appName: "Swagger UI Auth",
+  //   clientId: {{ $client->id }},
+  //   clientSecret: '{{ $client->secret }}',
+  //   scopeSeparator: " ",
+  //   additionalQueryStringParams: { client_id: {{ $client->id }} }
+  // })
 
   window.ui = ui
 }

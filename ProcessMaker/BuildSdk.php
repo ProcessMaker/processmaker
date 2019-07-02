@@ -9,7 +9,7 @@ class BuildSdk {
     private $debug = false;
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = null;
-    private $supportedLangs = ['php', 'lua', 'typescript-node'];
+    private $supportedLangs = ['php', 'lua', 'javascript'];
     private $outputPath = null;
     private $jsonPath = null;
 
@@ -72,6 +72,12 @@ class BuildSdk {
         }
         $this->waitForBoot();
         return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients/{$this->lang}");
+    }
+    
+    public function getAvailableLanguages()
+    {
+        $this->waitForBoot();
+        return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients");
     }
 
     private function runChecks()
@@ -177,19 +183,25 @@ class BuildSdk {
     private function requestBody()
     {
         # get all available options with curl http://127.0.0.1:8080/api/gen/clients/php
-        return json_encode([
-            "options" => [
-                "gitUserId" => "ProcessMaker",
-                "gitRepoId" => "processmaker-sdk-" . $this->lang,
-                "packageName" => "pmsdk",
-                "invokerPackage" => "ProcessMaker\\Client",
-                "appDescription" => "SDK Client for the ProcessMaker App",
-                "infoUrl" => "https://github.com/ProcessMaker/processmaker",
-                "infoEmail" => "info@processmaker.com",
+        $options = [
+            "gitUserId" => "processmaker",
+            "gitRepoId" => "sdk-" . $this->lang,
+            "packageName" => "pmsdk",
+            "appDescription" => "SDK Client for the ProcessMaker App",
+            "infoUrl" => "https://github.com/ProcessMaker/processmaker",
+            "infoEmail" => "info@processmaker.com",
+        ];
 
-            ],
-            "spec" => "API-DOCS-JSON",
-        ]);
+        if (isset($this->config()['options'])) {
+            $options = array_merge($options, $this->config()['options']);
+        }
+
+        return json_encode(['options' => $options, 'spec' => 'API-DOCS-JSON']);
+    }
+
+    private function config()
+    {
+        return config('script-runners.' . $this->lang);
     }
 
     private function apiJsonRaw()

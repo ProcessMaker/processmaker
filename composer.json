@@ -17,6 +17,14 @@
     {
       "type": "vcs",
       "url": "https://github.com/ProcessMaker/spark-connector-send-email.git"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/packages.git"
+    },
+    {
+      "type": "path",
+      "url": "../packages/ProcessMaker/package-webentry"
     }
   ],
   "require": {
@@ -37,8 +45,11 @@
     "phing/phing": "^2.16",
     "pion/laravel-chunk-upload": "dev-bugfix",
     "predis/predis": "^1.1",
+    "processmaker/connector-send-email": "dev-master",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "dev-master",
+    "processmaker/package-webentry": "^0.0.1",
+    "processmaker/packages": "dev-master",
     "processmaker/pmql": "dev-master",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
@@ -64,7 +75,9 @@
       "database/factories"
     ],
     "psr-4": {
-      "ProcessMaker\\": ["ProcessMaker/"]
+      "ProcessMaker\\": [
+        "ProcessMaker/"
+      ]
     }
   },
   "autoload-dev": {
