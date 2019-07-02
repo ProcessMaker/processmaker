@@ -2,6 +2,8 @@ import {renderer, FormBuilderControls} from "@processmaker/screen-builder";
 import FileDownload from "./components/file-download.vue";
 import {FormHtmlEditor} from "@processmaker/vue-form-elements";
 
+Vue.component("FileDownload", FileDownload);
+
 const {
     FormMultiColumn,
     FormText,
