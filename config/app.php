@@ -61,7 +61,7 @@ return [
                 env('APP_URL', 'http://localhost'))),
 
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
-    'api_ssl_verify' => env('API_SSL_VERIFY', true),
+    'api_ssl_verify' => env('API_SSL_VERIFY', "true"),
 
     'providers' => [
         Illuminate\Auth\AuthServiceProvider::class,
