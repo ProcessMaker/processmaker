@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "30a93d5155a66a12c44e6724d7e25bde",
+    "content-hash": "5705648053c09c9c76ed49a8593ec117",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -1134,33 +1134,37 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.5.2",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "9f83dded91781a01c63574e387eaa769be769115"
+                "reference": "239400de7a173fe9901b9ac7c06497751f00727a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/9f83dded91781a01c63574e387eaa769be769115",
-                "reference": "9f83dded91781a01c63574e387eaa769be769115",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/239400de7a173fe9901b9ac7c06497751f00727a",
+                "reference": "239400de7a173fe9901b9ac7c06497751f00727a",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
                 "psr/http-message": "~1.0",
-                "ralouphie/getallheaders": "^2.0.5"
+                "ralouphie/getallheaders": "^2.0.5 || ^3.0.0"
             },
             "provide": {
                 "psr/http-message-implementation": "1.0"
             },
             "require-dev": {
+                "ext-zlib": "*",
                 "phpunit/phpunit": "~4.8.36 || ^5.7.27 || ^6.5.8"
+            },
+            "suggest": {
+                "zendframework/zend-httphandlerrunner": "Emit PSR-7 responses"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.5-dev"
+                    "dev-master": "1.6-dev"
                 }
             },
             "autoload": {
@@ -1197,20 +1201,20 @@
                 "uri",
                 "url"
             ],
-            "time": "2018-12-04T20:46:45+00:00"
+            "time": "2019-07-01T23:21:34+00:00"
         },
         {
             "name": "igaster/laravel-theme",
-            "version": "v2.0.11",
+            "version": "v2.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/igaster/laravel-theme.git",
-                "reference": "0b8be5dba752bbd9e8f1de31efb4a300aa19790e"
+                "reference": "f75d323e1310c8506eff0f67814861cf9ced6567"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/igaster/laravel-theme/zipball/0b8be5dba752bbd9e8f1de31efb4a300aa19790e",
-                "reference": "0b8be5dba752bbd9e8f1de31efb4a300aa19790e",
+                "url": "https://api.github.com/repos/igaster/laravel-theme/zipball/f75d323e1310c8506eff0f67814861cf9ced6567",
+                "reference": "f75d323e1310c8506eff0f67814861cf9ced6567",
                 "shasum": ""
             },
             "require": {
@@ -1256,7 +1260,7 @@
                 "themes",
                 "views"
             ],
-            "time": "2019-02-27T22:56:34+00:00"
+            "time": "2019-07-03T05:25:33+00:00"
         },
         {
             "name": "intervention/image",
@@ -1795,16 +1799,16 @@
         },
         {
             "name": "laravel/passport",
-            "version": "v7.3.0",
+            "version": "v7.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/passport.git",
-                "reference": "758e143052f0a353df8dff9349f84601579e457d"
+                "reference": "89c81aa8ced151f8e67f47972e1dab71d60e90b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/passport/zipball/758e143052f0a353df8dff9349f84601579e457d",
-                "reference": "758e143052f0a353df8dff9349f84601579e457d",
+                "url": "https://api.github.com/repos/laravel/passport/zipball/89c81aa8ced151f8e67f47972e1dab71d60e90b4",
+                "reference": "89c81aa8ced151f8e67f47972e1dab71d60e90b4",
                 "shasum": ""
             },
             "require": {
@@ -1861,7 +1865,7 @@
                 "oauth",
                 "passport"
             ],
-            "time": "2019-05-28T16:06:20+00:00"
+            "time": "2019-07-02T15:36:59+00:00"
         },
         {
             "name": "laravel/slack-notification-channel",
@@ -2625,52 +2629,6 @@
             "time": "2018-11-05T09:00:11+00:00"
         },
         {
-            "name": "mustache/mustache",
-            "version": "v2.12.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bobthecow/mustache.php.git",
-                "reference": "fe8fe72e9d580591854de404cc59a1b83ca4d19e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/fe8fe72e9d580591854de404cc59a1b83ca4d19e",
-                "reference": "fe8fe72e9d580591854de404cc59a1b83ca4d19e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.2.4"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "~1.11",
-                "phpunit/phpunit": "~3.7|~4.0|~5.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Mustache": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Justin Hileman",
-                    "email": "justin@justinhileman.info",
-                    "homepage": "http://justinhileman.com"
-                }
-            ],
-            "description": "A Mustache implementation in PHP.",
-            "homepage": "https://github.com/bobthecow/mustache.php",
-            "keywords": [
-                "mustache",
-                "templating"
-            ],
-            "time": "2017-07-11T12:54:05+00:00"
-        },
-        {
             "name": "nesbot/carbon",
             "version": "1.39.0",
             "source": {
@@ -3412,50 +3370,6 @@
             "time": "2016-06-16T16:22:20+00:00"
         },
         {
-            "name": "processmaker/connector-send-email",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/connector-send-email.git",
-                "reference": "4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/connector-send-email/zipball/4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba",
-                "reference": "4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba",
-                "shasum": ""
-            },
-            "require": {
-                "mustache/mustache": "^2.12.0",
-                "spatie/server-side-rendering": "^0.2.5"
-            },
-            "require-dev": {
-                "processmaker/processmaker": "4.0.*"
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Packages\\Connectors\\Email\\PluginServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Packages\\Connectors\\Email\\": "src/"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": []
-            },
-            "description": "ProcessMaker BPM Connectors that provide Email service",
-            "support": {
-                "source": "https://github.com/ProcessMaker/connector-send-email/tree/master",
-                "issues": "https://github.com/ProcessMaker/connector-send-email/issues"
-            },
-            "time": "2019-06-25T20:21:27+00:00"
-        },
-        {
             "name": "processmaker/laravel-i18next",
             "version": "dev-master",
             "source": {
@@ -3535,79 +3449,6 @@
             ],
             "description": "BPMN compliant engine",
             "time": "2019-06-15T22:01:11+00:00"
-        },
-        {
-            "name": "processmaker/package-webentry",
-            "version": "0.0.1",
-            "dist": {
-                "type": "path",
-                "url": "../packages/ProcessMaker/package-webentry",
-                "reference": "fd5f996974dbe24111354caa1c65cb16a2af3b02"
-            },
-            "require-dev": {
-                "processmaker/packages": "dev-master",
-                "processmaker/processmaker": "dev-develop as 4.0.0"
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Package\\WebEntry\\WebEntryServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Package\\WebEntry\\": "src"
-                }
-            },
-            "authors": [
-                {
-                    "name": "Dante Loayza",
-                    "email": "dante.loayza@processmaker.com"
-                }
-            ],
-            "description": "Provide to end users the ability to complete tasks from outside the core system"
-        },
-        {
-            "name": "processmaker/packages",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:ProcessMaker/packages.git",
-                "reference": "d234f56f33f12d8a4c71c42647467067487c46cc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/packages/zipball/d234f56f33f12d8a4c71c42647467067487c46cc",
-                "reference": "d234f56f33f12d8a4c71c42647467067487c46cc",
-                "shasum": ""
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Package\\Packages\\PackageServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Package\\Packages\\": "src"
-                }
-            },
-            "authors": [
-                {
-                    "name": "DevOps",
-                    "email": "devops@processmaker.com"
-                }
-            ],
-            "description": "Package to manage packages",
-            "support": {
-                "source": "https://github.com/ProcessMaker/packages/tree/master",
-                "issues": "https://github.com/ProcessMaker/packages/issues"
-            },
-            "time": "2019-06-25T21:24:10+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -4444,54 +4285,6 @@
             "time": "2016-12-14T15:37:00+00:00"
         },
         {
-            "name": "spatie/server-side-rendering",
-            "version": "0.2.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/spatie/server-side-rendering.git",
-                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/spatie/server-side-rendering/zipball/fb646f07be18e83324d7e32773c19ccf06a78530",
-                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.0",
-                "symfony/process": "^3.0|^4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Spatie\\Ssr\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian De Deyne",
-                    "email": "sebastian@spatie.be",
-                    "homepage": "https://spatie.be",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Server side rendering JavaScript in your PHP application",
-            "homepage": "https://github.com/spatie/server-side-rendering",
-            "keywords": [
-                "SSR",
-                "server-side-rendering",
-                "spatie"
-            ],
-            "time": "2018-08-10T08:07:00+00:00"
-        },
-        {
             "name": "spatie/temporary-directory",
             "version": "1.1.4",
             "source": {
@@ -4539,16 +4332,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v3.22.3",
+            "version": "v3.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "57402ecdd8945758a594c8b4b2088b6749852f4b"
+                "reference": "97b9c3e06834f7d1b896267dc852d59f7df1b58e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/57402ecdd8945758a594c8b4b2088b6749852f4b",
-                "reference": "57402ecdd8945758a594c8b4b2088b6749852f4b",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/97b9c3e06834f7d1b896267dc852d59f7df1b58e",
+                "reference": "97b9c3e06834f7d1b896267dc852d59f7df1b58e",
                 "shasum": ""
             },
             "type": "library",
@@ -4592,7 +4385,7 @@
                 "swagger",
                 "ui"
             ],
-            "time": "2019-06-08T18:14:11+00:00"
+            "time": "2019-06-29T19:43:30+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -8621,10 +8414,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
-        "processmaker/connector-send-email": 20,
         "processmaker/laravel-i18next": 20,
         "processmaker/nayra": 20,
-        "processmaker/packages": 20,
         "processmaker/pmql": 20
     },
     "prefer-stable": true,
