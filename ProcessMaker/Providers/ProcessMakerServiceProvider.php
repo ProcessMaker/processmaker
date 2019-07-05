@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Blade;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\PackageManager;
@@ -86,7 +87,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             }
         });
 
-
         //Enable
         Horizon::auth(function ($request) {
             return !empty(Auth::user());
@@ -94,5 +94,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // we are using custom passport migrations
         Passport::ignoreMigrations();
+
+        // Laravy Menu
+        Blade::directive('lavaryMenuJson', function ($menu) {
+            return "<?php echo lavaryMenuJson({$menu}); ?>";
+        });
     }
 }
