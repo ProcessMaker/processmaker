@@ -1,11 +1,14 @@
 <template>
     <div class="filter-bar justify-content-between" id="Sidebaricon">
       <li class="nav-item">
-        <a :href="item.url" class="nav-link" :title="item.title" v-show="item.attributes.icon" @click="toggle">
-          <i class="fas nav-icon" :class="item.attributes.icon" ></i> <span class="nav-text" v-if="expanded()" v-cloak>{{item.title}}<span v-if="count !== null" class="nav-badge float-right">{{ count }}</span></span>
-        </a>
-        <a :href="item.url" class="nav-link" :title="item.title" v-show="item.attributes.file" @click="toggle">
-          <img :src="item.attributes.file" class="nav-icon" id="custom_icon"><span class="nav-text" v-if="expanded()" v-cloak>{{item.title}}<span v-if="count !== null" class="nav-badge float-right">{{ count }}</span></span>
+        <a :href="item.url" class="nav-link" :title="item.title" @click="toggle">
+          <i v-if="item.attributes.icon" class="fas nav-icon" :class="item.attributes.icon" ></i>
+          <img v-if="item.attributes.file" :src="item.attributes.file" class="nav-icon" id="custom_icon">
+          <span class="nav-text" v-if="expanded()" v-cloak>
+            {{item.title}}
+            <i v-if="item.children" class="float-right fas" :class="{'fa-caret-right': !isOpen, 'fa-caret-down': isOpen}"></i>
+            <span v-if="count !== null" class="nav-badge float-right">{{ count }}</span>
+          </span>
         </a>
         <ul v-if="item.children" class="nav nav-list flex-column" v-show="isOpen">
             <li v-for="item in item.children" :key="item.id" class="nav-item nav-pl">
