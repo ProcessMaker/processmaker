@@ -1,6 +1,13 @@
 <?php
 use function GuzzleHttp\json_encode;
 
+/**
+ * Convert the Laravy menu into associative array
+ *
+ * @param \Lavary\Menu\Item $menu
+ *
+ * @return array
+ */
 function lavaryMenuArray($menu)
 {
     $children = [];
@@ -15,10 +22,16 @@ function lavaryMenuArray($menu)
         'attributes' => $menu->attributes,
         'url' => $menu->url(),
         'children' => $children,
-        'isOpen' => false,
     ];
 }
 
+/**
+ * Convert the Laravy menu into json string
+ *
+ * @param \Lavary\Menu\Item $menu
+ *
+ * @return string
+ */
 function lavaryMenuJson($menu)
 {
     return json_encode(lavaryMenuArray($menu));
