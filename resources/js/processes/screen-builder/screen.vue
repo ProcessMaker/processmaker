@@ -126,7 +126,7 @@
                       @click="focusInspector(validation)">
               <i class="fas fa-times-circle text-danger d-block mr-3"></i>
               <span class="ml-2 text-dark font-weight-bold text-left">
-                {{ validation.item.component }}
+                {{ validation.item && validation.item.component }}
                 <span class="d-block font-weight-normal">{{ validation.message }}</span>
               </span>
             </b-button>
@@ -154,6 +154,7 @@
   import _ from "lodash";
 
 import Validator from "validatorjs";
+import formTypes from "./formTypes";
 
   // To include another language in the Validator with variable processmaker
   if (window.ProcessMaker && window.ProcessMaker.user && window.ProcessMaker.user.lang) {
@@ -174,6 +175,7 @@ import Validator from "validatorjs";
       }];
 
       return {
+        type: formTypes.form,
         mode: "editor",
         // Computed properties
         computed: [],
@@ -246,6 +248,11 @@ import Validator from "validatorjs";
       },
       validationErrors() {
         const validationErrors = [];
+
+        if (this.type === formTypes.form && !this.containsSubmitButton()) {
+          validationErrors.push({ message: 'Form requires a submit button' });
+        }
+
         this.config.forEach(page => {
           page.items.forEach(item => {
             let data = item.config ? item.config : {};
@@ -270,6 +277,7 @@ import Validator from "validatorjs";
             }
           });
         });
+
         return this.toggleValidation ? validationErrors : [] ;
       },
     },
@@ -283,10 +291,20 @@ import Validator from "validatorjs";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
+      containsSubmitButton() {
+        return this.config.some(config => config.items.some(this.isSubmitButton));
+      },
+      isSubmitButton(item) {
+        return item.label === 'Submit';
+      },
       beforeExportScreen() {
         this.saveScreen(true);
       },
       focusInspector(validate) {
+        if (!validate.item || !validate.page) {
+          return;
+        }
+
         this.$refs.builder.focusInspector(validate);
       },
       openComputedProperties() {
