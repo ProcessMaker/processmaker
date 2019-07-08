@@ -7,6 +7,7 @@ import {
     Navbar
 } from "bootstrap-vue/es/components";
 import sessionModal from "./components/Session";
+import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
@@ -32,6 +33,7 @@ window.moment = moment;
 /********/
 
 Vue.component('multiselect', Multiselect);
+Vue.component('Sidebaricon', Sidebaricon);
 
 //Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
@@ -53,8 +55,8 @@ window.ProcessMaker.navbar = new Vue({
         NavbarProfile
     },
     watch: {
-        alerts (array) {
-            this.saveLocalAlerts(array);
+        alerts(array) {
+          this.saveLocalAlerts(array);
         },
     },
     data() {
@@ -73,7 +75,7 @@ window.ProcessMaker.navbar = new Vue({
         };
     },
     methods: {
-        alertDismissed (alert) {
+        alertDismissed(alert) {
             const index = this.alerts.indexOf(alert);
             index > -1 ? this.alerts.splice(index, 1) : null;
             this.saveLocalAlerts(this.alerts);
@@ -175,22 +177,16 @@ window.addEventListener('unhandledrejection', function (event) {
 
 new Vue({
     el: "#sidebar",
+    components: {
+        Sidebaricon
+    },
     data() {
         return {
             expanded: false
         };
+    },
+    created() {
+        this.expanded === false
     }
 });
 
-// Use this method to trigger the sidebar menu to open and closed
-$("#menu-toggle").click((e) => {
-    e.preventDefault();
-
-    if (document.getElementById("sidebar-inner").classList.contains("closed")) {
-        document.getElementById("sidebar").classList.remove("closed");
-        document.getElementById("sidebar-inner").classList.remove("closed");
-    } else {
-        document.getElementById("sidebar").classList.add("closed");
-        document.getElementById("sidebar-inner").classList.add("closed");
-    }
-});

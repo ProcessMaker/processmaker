@@ -60,6 +60,9 @@ return [
     'docker_host_url' => env('DOCKER_HOST_URL', preg_replace('/(\w+):\/\/([^:\/]+)(\:\d+)?/', '$1://172.17.0.1$3',
                 env('APP_URL', 'http://localhost'))),
 
+    // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
+    'api_ssl_verify' => env('API_SSL_VERIFY', "true"),
+
     'providers' => [
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,

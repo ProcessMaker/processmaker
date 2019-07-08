@@ -55,6 +55,7 @@ abstract class Base
             $token = new GenerateAccessToken($user);
             $environmentVariables[] = 'API_TOKEN=' . $token->getToken();
             $environmentVariables[] = 'API_HOST=' . config('app.url') . '/api/1.0';
+            $environmentVariables[] = 'API_SSL_VERIFY=' . config('app.api_ssl_verify');
         }
 
         if ($environmentVariables) {
@@ -73,7 +74,6 @@ abstract class Base
                 'response' => '/opt/executor/output.json'
             ]
         ]);
-        
         // Execute docker
         $executeMethod = config('app.processmaker_scripts_docker_mode') === 'binding'
             ? 'executeBinding' : 'executeCopying';

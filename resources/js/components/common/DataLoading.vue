@@ -53,14 +53,14 @@
 
         mounted() {
             ProcessMaker.EventBus.$on('api-client-loading', (request) => {
-                if (this.for.test(request.url)) {
+                if (this.for && this.for.test(request.url)) {
                     this.dataLoading = true
                     this.error = false
                     this.noResults = false
                 }
             })
             ProcessMaker.EventBus.$on('api-client-done', (response) => {
-                if (response.config && this.for.test(response.config.url)) {
+                if (response.config && this.for && this.for.test(response.config.url)) {
                     if (response.data && response.data.data && response.data.data.length === 0) {
                         this.noResults = true
                     }

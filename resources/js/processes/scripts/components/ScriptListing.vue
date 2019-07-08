@@ -73,7 +73,7 @@
         ref="pagination"
       ></pagination>
     </div>
-    <b-modal ref="myModalRef" :title="$t('Duplicate Script')" centered>
+    <b-modal ref="myModalRef" :title="$t('Copy Script')" centered>
       <form>
         <div class="form-group">
           <label for="title">{{ $t('Name') }}</label>

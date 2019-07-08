@@ -52,7 +52,7 @@ class CatchEvent extends BpmnAction
     /**
      * Updata data for a message event
      *
-     * If data name is set, then the event payload will be set to that data name.
+     * If variableName is set, then the event payload will be set to that variable name.
      * If the data name exists, then the data is merged.
      *
      * @param DataStoreInterface $dataStore
@@ -60,10 +60,10 @@ class CatchEvent extends BpmnAction
      */
     private function messageEventUpdateData(MessageEventDefinitionInterface $eventDefinition, DataStoreInterface $dataStore)
     {
-        $dataName = $eventDefinition->getProperty('dataName');
-        $dataName = $dataName === 'undefined' ? '' : $dataName;
-        if ($dataName) {
-            $dataStore->putData($dataName, $this->data);
+        $variableName = $eventDefinition->getProperty('variableName');
+        $variableName = $variableName === 'undefined' ? '' : $variableName;
+        if ($variableName) {
+            $dataStore->putData($variableName, $this->data);
         } else {
             foreach ($this->data as $key => $value) {
                 $dataStore->putData($key, $value);

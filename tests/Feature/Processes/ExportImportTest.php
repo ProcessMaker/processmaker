@@ -314,4 +314,96 @@ class ExportImportTest extends TestCase
         }
 
     }
+
+    /**
+     * Test import of invalid text file.
+     *
+     * @return void
+     */
+    public function testProcessImportInvalidTextFile()
+    {
+        // Set path and name of file to import
+        $filePath = 'tests/storage/process/';
+        $fileName = 'test_process_import_invalid_text_file.spark';
+        
+        // Load file to import
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+
+        // Import process
+        $response = $this->apiCall('POST', '/processes/import', [
+            'file' => $file,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure(['message']);
+    }
+
+    /**
+     * Test import of invalid json file.
+     *
+     * @return void
+     */
+    public function testProcessImportInvalidJsonFile()
+    {
+        // Set path and name of file to import
+        $filePath = 'tests/storage/process/';
+        $fileName = 'test_process_import_invalid_json_file.spark';
+        
+        // Load file to import
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+
+        // Import process
+        $response = $this->apiCall('POST', '/processes/import', [
+            'file' => $file,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure(['message']);
+    }
+
+    /**
+     * Test import of invalid base64 file.
+     *
+     * @return void
+     */
+    public function testProcessImportInvalidBase64File()
+    {
+        // Set path and name of file to import
+        $filePath = 'tests/storage/process/';
+        $fileName = 'test_process_import_invalid_base64_file.spark';
+        
+        // Load file to import
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+
+        // Import process
+        $response = $this->apiCall('POST', '/processes/import', [
+            'file' => $file,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure(['message']);
+    }
+
+    /**
+     * Test import of invalid json file.
+     *
+     * @return void
+     */
+    public function testProcessImportInvalidBinaryFile()
+    {
+        // Set path and name of file to import
+        $filePath = 'tests/storage/process/';
+        $fileName = 'test_process_import_invalid_bin_file.spark';
+        
+        // Load file to import
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+
+        // Import process
+        $response = $this->apiCall('POST', '/processes/import', [
+            'file' => $file,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure(['message']);
+    }
 }
