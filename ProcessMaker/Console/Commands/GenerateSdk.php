@@ -14,7 +14,7 @@ class GenerateSdk extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:sdk {language} {output=storage/api} {--list-options}';
+    protected $signature = 'processmaker:sdk {language=none} {output=storage/api} {--list-options}';
 
     /**
      * The console command description.
@@ -43,6 +43,11 @@ class GenerateSdk extends Command
         try {
             $jsonPath = base_path('storage/api-docs/api-docs.json');
             $builder = new BuildSdk($jsonPath, $this->argument('output'), true);
+            if ($this->argument('language') === 'none') {
+                $this->info("No language specified. Choose one of these:");
+                $this->info($builder->getAvailableLanguages());
+                return;
+            }
             $builder->setLang($this->argument('language'));
             if ($this->options()['list-options']) {
                 $this->info($builder->getOptions());
