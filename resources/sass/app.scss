@@ -472,3 +472,11 @@ h1.page-title {
   font-size: 20px !important;
   color: $secondary !important;
 }
+
+#sidebar .nav-pl {
+  padding-left: 1em;
+}
+
+#sidebar .closed .nav-pl {
+  padding-left: 0em;
+}
