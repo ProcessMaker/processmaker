@@ -11,18 +11,6 @@
   "prefer-stable": true,
   "repositories": [
     {
-      "type": "path",
-      "url": "../package-collections"
-    },
-    {
-      "type": "path",
-      "url": "../package-savedsearch"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/ProcessMaker/packages.git"
-    },
-    {
       "type": "vcs",
       "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
     },
@@ -51,8 +39,6 @@
     "predis/predis": "^1.1",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "dev-master",
-    "processmaker/package-collections": "^1.0",
-    "processmaker/package-savedsearch": "^0.0.1",
     "processmaker/pmql": "dev-master",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
