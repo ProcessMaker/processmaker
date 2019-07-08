@@ -97,7 +97,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // Laravy Menu
         Blade::directive('lavaryMenuJson', function ($menu) {
-            return "<?php echo lavaryMenuJson({$menu}); ?>";
+            return "<?php echo htmlentities(lavaryMenuJson({$menu}), ENT_QUOTES); ?>";
         });
     }
 }
