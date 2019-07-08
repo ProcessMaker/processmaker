@@ -59,6 +59,9 @@
     "symfony/dom-crawler": "^4.3"
   },
   "autoload": {
+    "files": [
+      "ProcessMaker/Helper/helper.php"
+    ],
     "classmap": [
       "database/seeds",
       "database/factories"
