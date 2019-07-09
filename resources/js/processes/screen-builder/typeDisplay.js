@@ -9,9 +9,6 @@ const {
     FormText,
     FormRecordList
 } = renderer;
-
-const TableControl = FormBuilderControls.find(control => control.editorComponent === FormMultiColumn);
-const RichTextControl = FormBuilderControls.find(control => control.editorComponent === FormHtmlEditor);
 const bgcolorProperty = {
     type: "ColorSelect",
     field: "bgcolor",
@@ -95,6 +92,9 @@ const colorProperty = {
         ]
     }
 };
+
+const TableControl = FormBuilderControls.find(control => control.editorComponent === FormMultiColumn);
+const RichTextControl = FormBuilderControls.find(control => control.editorComponent === FormHtmlEditor);
 
 let initialControls = [{
     builderComponent: FormText,
@@ -300,7 +300,8 @@ TableControl,
                 label: "Record Form",
                 helper: "The form to use for adding/editing records"
             }
-        }
+        },
+        bgcolorProperty
 
         ]
 
