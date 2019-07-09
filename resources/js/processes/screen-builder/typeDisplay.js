@@ -245,7 +245,9 @@ let initialControls = [{
                 label: "Download Name",
                 helper: "The name of the Download"
             }
-        }
+        },
+        bgcolorProperty,
+        colorProperty
         ]
     }
 },
@@ -301,7 +303,8 @@ TableControl,
                 helper: "The form to use for adding/editing records"
             }
         },
-        bgcolorProperty
+        bgcolorProperty,
+        colorProperty
 
         ]
 
