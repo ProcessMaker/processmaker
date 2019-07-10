@@ -35,8 +35,9 @@ class BuildSdk {
 
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
-        $this->commentErroneousCode($folder);
-        $this->addMissingDependency($folder);
+        $this->commentErroneousCode($folder); // lua
+        $this->addMissingDependency($folder); // java
+        $this->removeDateTime($folder); // csharp
         $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
         $this->log("DONE. Api is at {$this->outputDir()}");
     }
@@ -261,5 +262,13 @@ class BuildSdk {
         ');
         $deps->appendChild($dep);
         file_put_contents($file, $dom->saveXml());
+    }
+    
+    private function removeDateTime($folder)
+    {
+        if ($this->lang === 'csharp') {
+            // $this->runCmd("find {$folder} -name '*.cs' -exec sed -i -E 's/DateTime\?/DateTime/g' {} \;");
+            unlink("{$folder}/src/ProcessMakerSDK/Model/DateTime.cs");
+        }
     }
 }
