@@ -27,7 +27,7 @@ class TaskController extends Controller
     public $doNotSanitize = [
         //
     ];
-    
+
     private $statusMap = [
         'In Progress' => 'ACTIVE',
         'Completed' => 'CLOSED',
@@ -39,7 +39,7 @@ class TaskController extends Controller
      * @param Request $request
      *
      * @return Response
-     * 
+     *
      * @OA\Get(
      *     path="/tasks",
      *     summary="Returns all tasks that the user has access to",
@@ -79,7 +79,11 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ProcessRequestToken::with(['processRequest', 'user']);
+        $query = ProcessRequestToken::with(['processRequest', 'user'])
+                ->leftJoin('process_requests', 'process_requests.id', '=', 'process_request_tokens.process_request_id')
+                ;
+        $query->select('process_request_tokens.*');
+
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
 
@@ -102,22 +106,27 @@ class TaskController extends Controller
                 $query->where(is_string($key) ? $key : $column, 'like', $filter);
             }
         }
-        
-        
+
+
         //list only display elements type task
         $query->where('element_type', '=', 'task');
-        $query->orderBy(
-            $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
-        );
+
+        // order by one or more columns
+        $orderColumns = preg_split('/,/', $request->input('order_by', 'updated_at'));
+        foreach($orderColumns as $column) {
+            $query->orderBy(
+                $column, $request->input('order_direction', 'asc')
+            );
+        }
 
         $inOverdueQuery = ProcessRequestToken::where('user_id', Auth::user()->id)
             ->where('status', 'ACTIVE')
             ->where('due_at', '<', Carbon::now());
 
-        $inOverdue = $inOverdueQuery->count();   
+        $inOverdue = $inOverdueQuery->count();
 
-        $pmql = $request->input('pmql', '');    
-        
+        $pmql = $request->input('pmql', '');
+
         $statusFilter = $request->input('statusfilter', '');
         if ($statusFilter) {
             $statusFilter = explode(',', $statusFilter);
@@ -133,7 +142,7 @@ class TaskController extends Controller
         try {
             if (!empty($pmql)) {
                 $query->pmql($pmql, function($expression) {
-                    
+
                     //Handle request name
                     if ($expression->field->field() == 'request') {
                         return function($query) use($expression) {
@@ -157,17 +166,17 @@ class TaskController extends Controller
                             if (array_key_exists($value, $this->statusMap)) {
                                 $value = $this->statusMap[$value];
                             }
-                            
+
                             $query->where('process_request_tokens.status', $value);
                         };
                     }
-                    
+
                     if (is_object($expression->field->field())) {
                         return function($query) use ($expression) {
                             $field = $expression->field->toEloquent();
                             $operator = $expression->operator;
                             $value = $expression->value->value();
-                            
+
                             $requests = ProcessRequest::where($field, $operator, $value)->get();
                             $query->whereIn('process_request_id', $requests->pluck('id'));
                         };
@@ -179,20 +188,20 @@ class TaskController extends Controller
                             if (is_string($value)) {
                                 $value = '"' . $value . '"';
                             }
-                            
+
                             $pmql = "$field $operator $value";
-                            
+
                             return function($query) use ($pmql) {
                                 $requests = ProcessRequest::pmql($pmql)->get();
                                 $query->whereIn('process_request_id', $requests->pluck('id'));
                             };
-                        }    
-                    }                    
+                        }
+                    }
                 });
             }
 
             $response = $query->get();
-            
+
         } catch (QueryException $e) {
             return response(['message' => __('Your PMQL search could not be completed.')], 400);
         } catch (SyntaxError $e) {
@@ -228,7 +237,7 @@ class TaskController extends Controller
      *
      * @return Resource
      * @throws \Throwable
-     * 
+     *
      * @OA\Put(
      *     path="/tasks/{task_id}",
      *     summary="Update a task",
@@ -274,7 +283,7 @@ class TaskController extends Controller
             // Reassign user
             $task->user_id = $request->input('user_id');
             $task->save();
-            
+
             // Send a notification to the user
             $notification = new TaskReassignmentNotification($task);
             $task->user->notify($notification);
