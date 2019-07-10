@@ -1,6 +1,6 @@
 <template>
   <div class="h-100">
-    <b-card no-body class="h-100 bg-white" id="app">
+    <b-card no-body class="h-100 bg-white border-top-0" id="app">
       <!-- Card Header -->
       <b-card-header>
         <b-row>
@@ -35,9 +35,10 @@
       </b-card-header>
 
       <!-- Card Body -->
-      <b-card-body class="overflow-auto m-0 p-0" id="screen-builder-container">
+      <b-card-body class="overflow-auto p-0" id="screen-builder-container">
         <!-- Vue-form-builder -->
         <vue-form-builder
+          class="m-0"
           :validationErrors="validationErrors"
           :initialConfig="screen.config"
           :title="screen.title"
@@ -115,7 +116,7 @@
           </button>
         </div>
 
-        <div v-if="showValidationErrors" class="validation-panel position-absolute shadow border overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
+        <div v-if="showValidationErrors" class="validation-panel position-absolute border-top border-left overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
             <div v-if="!previewInputValid" class="p-3 font-weight-bold text-dark text-capitalize">
               <i class="fas fa-times-circle text-danger mr-3"></i>
               {{$t('Invalid JSON Data Object')}}
@@ -380,6 +381,12 @@ import formTypes from "./formTypes";
 </script>
 
 <style lang="scss">
+    $validation-panel-bottom: 3.5rem;
+    $validation-panel-right: 0;
+    $validation-panel-height: 10rem;
+    $validation-panel-width: 23rem;
+    $primary-white: #f7f7f7;
+
     html,
     body {
         height: 100%;
@@ -393,11 +400,11 @@ import formTypes from "./formTypes";
     }
 
     .validation-panel {
-      background: #f7f7f7;
-      height: 10rem;
-      width: 21.35rem;
-      bottom: 4rem;
-      right: 0;
+      background: $primary-white;
+      height: $validation-panel-height;
+      width: $validation-panel-width;
+      bottom: $validation-panel-bottom;
+      right: $validation-panel-right;
     }
 
     .preview-inspector {
