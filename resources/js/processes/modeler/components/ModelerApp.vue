@@ -84,6 +84,10 @@ export default {
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
 
+    window.ProcessMaker.EventBus.$on('modeler-save', () => {
+      this.saveBpmn();
+    });
+
     window.ProcessMaker.EventBus.$on('modeler-change', () => {
       this.refreshSession();
       window.ProcessMaker.EventBus.$emit('new-changes');
