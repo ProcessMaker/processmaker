@@ -10,13 +10,10 @@
 
 
 @section('breadcrumbs')
-    @include('shared.breadcrumbs', [
-      'routes' => [
+    @include('shared.breadcrumbs', ['routes' => [
         __('Processes') => route('processes.index'),
         __('Edit') . " " . $process->name => null,
-      ],
-      'saveButtonEvent' => 'modeler-saveBpmn'
-    ])
+    ]])
 @endsection
 
 @section('content')
