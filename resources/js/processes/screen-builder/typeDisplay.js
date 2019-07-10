@@ -1,6 +1,7 @@
 import {renderer, FormBuilderControls} from "@processmaker/screen-builder";
 import FileDownload from "./components/file-download.vue";
 import {FormHtmlEditor} from "@processmaker/vue-form-elements";
+import formTypes from "./formTypes";
 
 Vue.component("FileDownload", FileDownload);
 
@@ -316,6 +317,8 @@ RichTextControl
 
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
     for (let i = 0; i < initialControls.length; i++) {
+        manager.type = formTypes.display;
+
         manager.addControl(
             initialControls[i].control,
             initialControls[i].rendererComponent,
