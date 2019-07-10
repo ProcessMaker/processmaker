@@ -8,7 +8,7 @@ use function GuzzleHttp\json_decode;
 class BuildSdk {
     private $rebuild = false;
     private $debug = false;
-    private $image = "openapitools/openapi-generator-online:v4.0.2";
+    private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = null;
     private $outputPath = null;
     private $jsonPath = null;
