@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Artisan;
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
 
+// Clear cache so we don't overwrite our local development database
+Artisan::call('config:clear', []);
+
 //Ensure storage directory is linked
 Artisan::call('storage:link', []);
 

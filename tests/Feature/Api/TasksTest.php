@@ -277,7 +277,11 @@ class TasksTest extends TestCase
     {
         // $this->user = factory(User::class)->create(); // normal user
         $screen = factory(Screen::class)->create([
-            'config' => file_get_contents(base_path('tests/Fixtures/rich_text_screen.json'))
+            'config' => json_decode(
+                file_get_contents(
+                    base_path('tests/Fixtures/rich_text_screen.json')
+                )
+            )
         ]);
         
         $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
@@ -295,13 +299,16 @@ class TasksTest extends TestCase
         $token = $request->tokens()->where('status', 'ACTIVE')->firstOrFail();
 
         $params = ['status' => 'COMPLETED', 'data' => [
-            'input1' => '<p>foo</p>', 'richtext1' => '<p>bar</p>'
+            'input1' => '<p>foo</p>',
+            'richtext1' => '<p>bar</p>',
+            'richtext2' => '<p>another</p>'
         ]];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
             ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), [
                 'input1' => 'foo',
                 'richtext1' => '<p>bar</p>', // do not sanitize rich text
+                'richtext2' => '<p>another</p>'
             ]);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);

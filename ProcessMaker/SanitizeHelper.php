@@ -104,7 +104,7 @@ class SanitizeHelper {
         if (!$screen) {
             return $except;
         }
-        $config = json_decode($screen->config, true);
+        $config = $screen->config;
         foreach ($config as $page) {
             if (isset($page['items']) && is_array($page['items'])) {
                 $except = array_merge($except, self::getRichTextElements($page['items']));
@@ -118,9 +118,15 @@ class SanitizeHelper {
         $elements = [];
         foreach ($items as $item) {
             if (isset($item['items']) && is_array($item['items'])) {
-                $elements = array_merge($elements, self::getRichTextElements($item['items']));
+                // Inside a table
+                foreach ($item['items'] as $cell) {
+                    if (is_array($cell)) {
+                        $elements = array_merge($elements, self::getRichTextElements($cell));
+                    }
+                }
             } else {
                 if (
+                    isset($item['component']) &&
                     $item['component'] === 'FormTextArea' &&
                     isset($item['config']['richtext']) &&
                     $item['config']['richtext'] === true
