@@ -2,25 +2,40 @@
 
 namespace Tests\Browser;
 
-use Tests\Browser\Pages\Login;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class LoginTest extends DuskTestCase
 {
+
+    use DatabaseMigrations;
+
+    public $url = '/login';
+
     /**
-     * Test login
+     * Assert that the browser is on the page.
      *
-     * @throws \Throwable
+     * @param  Browser  $browser
+     * @return void
      */
+    public function testPageLoad()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit($this->url)
+                ->assertSee('Username')
+                ->assertSee('Password');
+        });
+    }
+
     public function testLogin()
     {
         $this->browse(function (Browser $browser) {
 
-            $browser->visit(new Login())
-                ->type('@username', 'admin')
-                ->type('@password', 'admin')
-                ->press('@login')
+            $browser->visit($this->url)
+                ->type('username', 'admin')
+                ->type('password', 'admin')
+                ->press('login')
                 ->assertPathIs('/requests');
         });
     }
