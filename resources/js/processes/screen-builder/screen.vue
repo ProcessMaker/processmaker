@@ -250,11 +250,13 @@ import formTypes from "./formTypes";
       validationErrors() {
         const validationErrors = [];
 
-        if (this.type === formTypes.form && !this.containsSubmitButton()) {
-          validationErrors.push({ message: 'Form requires a submit button' });
-        }
-
         this.config.forEach(page => {
+          const containsSubmitButton = page.items.some(this.isSubmitButton);
+
+          if (this.type === formTypes.form && !containsSubmitButton) {
+            validationErrors.push({ message: 'Form requires a submit button' });
+          }
+
           page.items.forEach(item => {
             let data = item.config ? item.config : {};
             let rules = {};
@@ -292,9 +294,6 @@ import formTypes from "./formTypes";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
-      containsSubmitButton() {
-        return this.config.some(config => config.items.some(this.isSubmitButton));
-      },
       isSubmitButton(item) {
         return item.label === 'Submit';
       },
