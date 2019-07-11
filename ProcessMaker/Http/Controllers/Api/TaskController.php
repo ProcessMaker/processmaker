@@ -15,6 +15,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
+use ProcessMaker\SanitizeHelper;
 
 class TaskController extends Controller
 {
@@ -25,7 +26,7 @@ class TaskController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        //
+        'data' // this will be sanitized on a field-by-field basis
     ];
     
     private $statusMap = [
@@ -261,7 +262,7 @@ class TaskController extends Controller
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));
             }
-            $data = $request->json('data');
+            $data = SanitizeHelper::sanitizeData($request->json('data'), $task);
             //Call the manager to trigger the start event
             $process = $task->process;
             $instance = $task->processRequest;
