@@ -19,6 +19,7 @@ use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 
 class ProcessController extends Controller
 {
@@ -181,7 +182,21 @@ class ProcessController extends Controller
         } else {
             $process->bpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
         }
-        $process->saveOrFail();
+        try {
+            $process->saveOrFail();
+        } catch (ElementNotFoundException $error) {
+            return response(
+                ['message' => __('The bpm definition is not valid'),
+                    'errors' => [
+                        'bpmn' => [
+                            __('The bpm definition is not valid'),
+                            __('Element ":element_id" not found', ['element_id' => $error->elementId])
+                        ]
+                    ]
+                ],
+                422
+            );
+        }
         return new Resource($process->refresh());
     }
 
