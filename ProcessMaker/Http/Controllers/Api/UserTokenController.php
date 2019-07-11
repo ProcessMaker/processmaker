@@ -49,38 +49,7 @@ class UserTokenController extends Controller
 
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     *
-     *     @OA\Get(
-     *     path="/users",
-     *     summary="Returns all tokens for the specified user",
-     *     operationId="getUserTokens",
-     *     tags={"Tokens"},
-     *     @OA\Parameter(ref="#/components/parameters/order_by"),
-     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     @OA\Parameter(ref="#/components/parameters/include"),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="list of user tokens",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/users"),
-     *             ),
-     *             @OA\Property(
-     *                 property="meta",
-     *                 type="object",
-     *                 ref="#/components/schemas/metadata",
-     *             ),
-     *         ),
-     *     ),
-     * )
+     * Display listing of access tokens for the specified user
      */
     public function index(Request $request, User $user)
     {
