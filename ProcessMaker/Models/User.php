@@ -305,4 +305,13 @@ class User extends Authenticatable implements HasMedia
         }
         return false;
     }
+
+    /**
+     * Get a user model by username for Passport authentication.
+     *
+     * @return User
+     */
+    public function findForPassport($username) {
+        return $this->where('username', $username)->first();
+    }
 }
