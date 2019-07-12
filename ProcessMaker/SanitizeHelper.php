@@ -73,9 +73,8 @@ class SanitizeHelper {
      *
      * @return string
      */
-    public static function sanitizeData($data, ProcessRequestToken $task)
+    public static function sanitizeData($data, $screen)
     {
-        $screen = $task->getScreen();
         $except = self::getExceptions($screen);
         return self::sanitizeWithExceptions($data, $except);
     }
@@ -88,10 +87,6 @@ class SanitizeHelper {
             } else {
                 // Only allow skipping on top-level data for now
                 $strip_tags = $level !== 0 || !in_array($key, $except);
-                
-                // echo "------------------------ $value --------- $strip_tags --------\n";
-                // if ($key === 'richtext1') {
-                // }
                 $data[$key] = self::sanitize($value, $strip_tags);
             }
         }
