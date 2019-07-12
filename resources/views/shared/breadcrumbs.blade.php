@@ -1,6 +1,6 @@
 <div class="sticky-top navbar-z-index">
-<nav aria-label="breadcrumb" class="border-top border-bottom d-flex bg-light mt-auto mb-auto">
-    <ol class="breadcrumb m-0">
+<nav aria-label="breadcrumb" >
+    <ol class="breadcrumb border-top border-bottom">
         <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
         @foreach($routes as $title => $link)
             @php
@@ -27,12 +27,12 @@
         @endforeach
     </ol>
 
-    @if (isset($saveButtonEvent))
+    @if (isset($showModelerSaveButton) && $showModelerSaveButton == true)
     <button
         type="button"
-        class="btn btn-secondary btn-sm ml-auto mt-auto mb-auto mr-4"
+        class="btn btn-secondary btn-sm position-absolute modeler-save-button"
         data-test="save-process"
-        onclick="window.ProcessMaker.EventBus.$emit('{{ $saveButtonEvent }}')"
+        onclick="window.ProcessMaker && window.ProcessMaker.EventBus.$emit('modeler-save')"
     >
         <i class="fas fa-save mr-1"></i>
         {{__('Save')}}
