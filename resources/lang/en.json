@@ -846,5 +846,8 @@
     "user": "user",
     "group": "group",
     "Password Grant Client ID": "Password Grant Client ID",
-    "Password Grant Secret": "Password Grant Secret"
+    "Password Grant Secret": "Password Grant Secret",
+    "Modeler": "Modeler",
+    "No Data Found": "No Data Found",
+    "Sorry, this request doesn't contain any information." : "Sorry, this request doesn't contain any information."
 }

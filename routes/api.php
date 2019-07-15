@@ -13,6 +13,12 @@ Route::group(
     Route::post('users', 'UserController@store')->name('users.store')->middleware('can:create-users');
     Route::put('users/{user}', 'UserController@update')->name('users.update'); //Permissions handled in the controller
     Route::delete('users/{user}', 'UserController@destroy')->name('users.destroy')->middleware('can:delete-users');
+    // User personal access tokens
+    Route::get('users/{user}/tokens', 'UserTokenController@index')->name('users.tokens.index'); //Permissions handled in the controller
+    Route::get('users/{user}/tokens/{tokenId}', 'UserTokenController@show')->name('users.tokens.show'); //Permissions handled in the controller
+    Route::post('users/{user}/tokens', 'UserTokenController@store')->name('users.tokens.store'); // Permissions handled in the controller
+    Route::delete('users/{user}/tokens/{tokenId}', 'UserTokenController@destroy')->name('users.tokens.destroy'); // Permissions handled in the controller
+
 
     // Groups
     Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
