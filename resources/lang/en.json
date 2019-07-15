@@ -844,5 +844,7 @@
     "Sub process is missing start event": "Sub process is missing start event",
     "Start event must be blank": "Start event must be blank",
     "user": "user",
-    "group": "group"
+    "group": "group",
+    "Password Grant Client ID": "Password Grant Client ID",
+    "Password Grant Secret": "Password Grant Secret"
 }

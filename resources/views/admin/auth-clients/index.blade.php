@@ -14,7 +14,6 @@
         __('Auth Clients') => null,
     ]])
     <div id="authClients">
-
         <div class="modal" role="dialog" ref="createEditAuthClient" id="createEditAuthClient">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -53,6 +52,13 @@
 
         <div class="px-3 page-content">
             <div class="row">
+                <div class="col" align="left">
+                  @if ($password_grant_client)
+                    {{ __('Password Grant Client ID') }}: <strong>{{ $password_grant_client->id }}</strong>
+                    <br />
+                    {{ __('Password Grant Secret') }}: <strong>{{ $password_grant_client->secret }}</strong>
+                  @endif
+                </div>
                 <div class="col" align="right">
                     <button id="create_authclients" class="btn btn-secondary" type="button" data-toggle="modal"
                             data-target="#createEditAuthClient">

@@ -13,6 +13,7 @@ class AuthClientController extends Controller
      */
     public function index()
     {
-        return view('admin.auth-clients.index');
+        $password_grant_client = \Laravel\Passport\Client::where('password_client', 1)->first();
+        return view('admin.auth-clients.index', compact('password_grant_client'));
     }
 }
