@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Artisan;
 app()->make(Kernel::class)->bootstrap();
 
 // Clear cache so we don't overwrite our local development database
-Artisan::call('config:clear', []);
+Artisan::call('config:clear', ['--env' => 'testing']);
 
 //Ensure storage directory is linked
 Artisan::call('storage:link', []);
