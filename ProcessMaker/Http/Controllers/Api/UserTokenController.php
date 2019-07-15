@@ -57,7 +57,7 @@ class UserTokenController extends Controller
             throw new AuthorizationException(__('Not authorized to update this user.'));
         }
 
-        $tokens = $this->tokenRepository->forUser($request->user()->getKey());
+        $tokens = $this->tokenRepository->forUser($user->id);
 
         $results =  $tokens->load('client')->filter(function ($token) {
             return $token->client->personal_access_client && ! $token->revoked;

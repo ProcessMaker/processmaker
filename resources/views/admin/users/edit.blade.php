@@ -682,7 +682,7 @@
           loadTokens() {
             ProcessMaker.apiClient({
               method: 'GET',
-              url: '/users/' + this.currentUserId + '/tokens',
+              url: '/users/' + {{ $user->id }} + '/tokens',
             })
               .then((result) => {
                 this.apiTokens = result.data.data
@@ -691,7 +691,7 @@
           generateToken() {
             ProcessMaker.apiClient({
               method: 'POST',
-              url: '/users/' + this.currentUserId + '/tokens',
+              url: '/users/' + {{ $user->id }} + '/tokens',
               data: {
                 name: 'API Token',
                 scopes: []
