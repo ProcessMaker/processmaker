@@ -101,11 +101,11 @@ Route::group(
     Route::post('requests/{request}/events/{event}', 'ProcessRequestController@activateIntermediateEvent')->name('requests.update,request');
 
     // Request Files
-    Route::get('requests/{request}/files', 'ProcessRequestFileController@index')->name('requests.files.index')->middleware('can:view,request');
-    Route::get('requests/{request}/files/{file}', 'ProcessRequestFileController@show')->name('requests.files.show')->middleware('can:view,request');
-    Route::post('requests/{request}/files', 'ProcessRequestFileController@store')->name('requests.files.store')->middleware('can:update,request');
-    Route::put('requests/{request}/files/{file}', 'ProcessRequestFileController@update')->name('requests.files.update')->middleware('can:update,request');
-    Route::delete('requests/{request}/files/{file}', 'ProcessRequestFileController@destroy')->name('requests.filesrequests.files.destroy')->middleware('can:update,request');
+    Route::get('requests/{request}/files', 'ProcessRequestFileController@index')->name('requests.files.index')->middleware('can:participate,request');
+    Route::get('requests/{request}/files/{file}', 'ProcessRequestFileController@show')->name('requests.files.show')->middleware('can:participate,request');
+    Route::post('requests/{request}/files', 'ProcessRequestFileController@store')->name('requests.files.store')->middleware('can:participate,request');
+    Route::put('requests/{request}/files/{file}', 'ProcessRequestFileController@update')->name('requests.files.update')->middleware('can:participate,request');
+    Route::delete('requests/{request}/files/{file}', 'ProcessRequestFileController@destroy')->name('requests.filesrequests.files.destroy')->middleware('can:participate,request');
 
     // Files
     Route::get('files', 'FileController@index')->name('files.index')->middleware('can:view-files');
