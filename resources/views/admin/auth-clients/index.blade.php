@@ -31,12 +31,27 @@
                             <small class="form-text text-muted">{{ __('Name must be distinct') }}</small>
                             <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
                         </div>
+
+                        <b-form-checkbox-group v-model="authClient.types">
+
                         <div class="form-group">
+                          <b-form-checkbox value="authorization_code_grant">{{__('Enable Authorization Code Grant')}}</b-form-checkbox>
+                          <br />
+                          <template v-if="authClient['types'].includes('authorization_code_grant')">
                             {!!Form::label('redirect', __('Redirect URL'))!!}
                             {!!Form::text('redirect', null, ['class'=> 'form-control', 'v-model'=> 'authClient.redirect',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.redirect}','rows'=>3])!!}
                             <div class="invalid-feedback" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
+                          </template>
                         </div>
+                        <div class="form-group">
+                          <b-form-checkbox value="password_client">{{__('Enable Password Grant')}}</b-form-checkbox>
+                        </div>
+                        <div class="form-group">
+                          <b-form-checkbox value="personal_access_client">{{__('Enable Personal Access Tokens')}}</b-form-checkbox>
+                        </div>
+
+                        </b-form-checkbox-group>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
@@ -52,13 +67,6 @@
 
         <div class="px-3 page-content">
             <div class="row">
-                <div class="col" align="left">
-                  @if ($password_grant_client)
-                    {{ __('Password Grant Client ID') }}: <strong>{{ $password_grant_client->id }}</strong>
-                    <br />
-                    {{ __('Password Grant Secret') }}: <strong>{{ $password_grant_client->secret }}</strong>
-                  @endif
-                </div>
                 <div class="col" align="right">
                     <button id="create_authclients" class="btn btn-secondary" type="button" data-toggle="modal"
                             data-target="#createEditAuthClient">
@@ -80,10 +88,16 @@
       new Vue({
         el: '#authClients',
         data: {
-          authClient: null,
+          authClient: {
+            id: null,
+            name: "",
+            types: [],
+            redirect: "",
+            secret: "",
+          },
           errors: null,
           disabled: false,
-          title:''
+          title:'',
         },
         beforeMount() {
           this.resetValues();
@@ -131,8 +145,9 @@
             this.authClient = {
               id: null,
               name: "",
+              types: [],
               redirect: "",
-              secret: ""
+              secret: "",
             };
             this.errors = {
               name: null,
