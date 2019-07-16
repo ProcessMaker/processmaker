@@ -9,7 +9,7 @@ class BuildSdk {
     private $debug = false;
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = null;
-    private $supportedLangs = ['php', 'lua', 'typescript-node'];
+    private $supportedLangs = ['php', 'lua', 'javascript'];
     private $outputPath = null;
     private $jsonPath = null;
 
@@ -30,7 +30,7 @@ class BuildSdk {
             $this->runCmd("docker container stop $existing || echo 'Container already stopped'");
             $this->runCmd("docker container rm $existing");
         }
-        
+
         if ($existing === "" || $this->rebuild) {
             $this->runCmd('docker pull ' . $this->image);
             $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
@@ -38,7 +38,7 @@ class BuildSdk {
         } else {
             $this->runCmd("docker start generator || echo 'Generator already started'");
         }
-        
+
         $this->runCmd('docker start generator || echo "Container already running"');
 
         $this->waitForBoot();
@@ -53,6 +53,7 @@ class BuildSdk {
 
         $zip = $this->getZip($link);
         $folder = $this->unzip($zip);
+        $this->commentErroneousCode($folder);
         $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
         $this->log("DONE. Api is at {$this->outputDir()}");
     }
@@ -73,6 +74,12 @@ class BuildSdk {
         $this->waitForBoot();
         return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients/{$this->lang}");
     }
+    
+    public function getAvailableLanguages()
+    {
+        $this->waitForBoot();
+        return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients");
+    }
 
     private function runChecks()
     {
@@ -83,7 +90,7 @@ class BuildSdk {
         if (!is_dir($this->outputPath)) {
             throw new Exception("{$this->outputPath} is not a valid directory");
         }
-        
+
         if (!is_writable($this->outputPath)) {
             throw new Exception("Folder is not writeable: " . $this->outputPath);
         }
@@ -121,7 +128,7 @@ class BuildSdk {
                     throw $e;
                 }
             }
-            if ($i > 20) { 
+            if ($i > 20) {
                 throw new Exception("Took too long to start up.");
             }
             sleep(2);
@@ -141,11 +148,11 @@ class BuildSdk {
         $zip = new ZipArchive;
         $res = $zip->open($file);
         $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $this->runCmd('rm -rf /tmp/spark-sdk-tmp');
-        $zip->extractTo("/tmp/spark-sdk-tmp");
+        $this->runCmd('rm -rf /tmp/processmaker-sdk-tmp');
+        $zip->extractTo("/tmp/processmaker-sdk-tmp");
         $zip->close();
         unlink($file);
-        return "/tmp/spark-sdk-tmp/{$this->lang}-client";
+        return "/tmp/processmaker-sdk-tmp/{$this->lang}-client";
     }
 
     private function existingContainer()
@@ -173,23 +180,29 @@ class BuildSdk {
             str_replace('"API-DOCS-JSON"', $this->apiJsonRaw(), $this->requestBody())
         );
     }
-    
+
     private function requestBody()
     {
         # get all available options with curl http://127.0.0.1:8080/api/gen/clients/php
-        return json_encode([
-            "options" => [
-                "gitUserId" => "ProcessMaker",
-                "gitRepoId" => "spark-sdk-" . $this->lang,
-                "packageName" => "pmsdk",
-                "invokerPackage" => "ProcessMaker\\Client",
-                "appDescription" => "SDK Client for the ProcessMaker Spark App",
-                "infoUrl" => "https://github.com/ProcessMaker/spark",
-                "infoEmail" => "info@processmaker.com",
+        $options = [
+            "gitUserId" => "processmaker",
+            "gitRepoId" => "sdk-" . $this->lang,
+            "packageName" => "pmsdk",
+            "appDescription" => "SDK Client for the ProcessMaker App",
+            "infoUrl" => "https://github.com/ProcessMaker/processmaker",
+            "infoEmail" => "info@processmaker.com",
+        ];
 
-            ],
-            "spec" => "API-DOCS-JSON",
-        ]);
+        if (isset($this->config()['options'])) {
+            $options = array_merge($options, $this->config()['options']);
+        }
+
+        return json_encode(['options' => $options, 'spec' => 'API-DOCS-JSON']);
+    }
+
+    private function config()
+    {
+        return config('script-runners.' . $this->lang);
     }
 
     private function apiJsonRaw()
@@ -213,6 +226,13 @@ class BuildSdk {
     {
         if ($this->debug) {
             echo "$message\n";
+        }
+    }
+
+    private function commentErroneousCode($folder)
+    {
+        if ($this->lang === 'lua') {
+            $this->runCmd("find {$folder} -name '*.lua' -exec sed -i -E 's/(req\.readers:upsert.*)/-- \\1/g' {} \;");
         }
     }
 }

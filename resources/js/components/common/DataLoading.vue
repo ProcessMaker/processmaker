@@ -53,14 +53,14 @@
 
         mounted() {
             ProcessMaker.EventBus.$on('api-client-loading', (request) => {
-                if (this.for.test(request.url)) {
+                if (this.for && this.for.test(request.url)) {
                     this.dataLoading = true
                     this.error = false
                     this.noResults = false
                 }
             })
             ProcessMaker.EventBus.$on('api-client-done', (response) => {
-                if (response.config && this.for.test(response.config.url)) {
+                if (response.config && this.for && this.for.test(response.config.url)) {
                     if (response.data && response.data.data && response.data.data.length === 0) {
                         this.noResults = true
                     }
@@ -93,7 +93,7 @@
                 return this.emptyIcon ? this.emptyIcon : 'none'
             },
             errorTitleText() {
-                return this.$t('Sorry! API Failed To Load')
+                return this.$t('Sorry! API failed to load')
             },
             errorDescText() {
                 return this.$t('Something went wrong. Try refreshing the application')
@@ -101,7 +101,7 @@
         },
     }
 </script>
-    
+
 <style lang="scss" scoped>
     .jumbotron {
         background-color: transparent;
@@ -117,7 +117,7 @@
         }
 
         svg {
-            fill: #b7bfc5; 
+            fill: #b7bfc5;
         }
     }
 </style>

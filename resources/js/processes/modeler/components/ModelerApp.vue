@@ -1,20 +1,7 @@
 <template>
   <b-container id="modeler-app" class="h-100 container p-0">
-    <b-card no-body class="h-100">
-      <b-card-header class="d-flex align-items-center header">
-        <b-card-text class="m-0 font-weight-bolder">
-          {{ process.name }}
-        </b-card-text>
-
-        <div class="ml-auto">
-          <b-btn variant="secondary" size="sm" @click="saveBpmn">
-            <i class="fas fa-save mr-1"/>
-            {{ $t('Save') }}
-          </b-btn>
-        </div>
-      </b-card-header>
-
-      <b-card-body class="overflow-hidden position-relative">
+    <b-card no-body class="h-100 border-top-0">
+      <b-card-body class="overflow-hidden position-relative p-0">
         <modeler ref="modeler" @validate="validationErrors = $event" />
       </b-card-body>
 
@@ -28,7 +15,7 @@
 </template>
 
 <script>
-import { Modeler, Statusbar, ValidationStatus } from "@processmaker/spark-modeler";
+import { Modeler, Statusbar, ValidationStatus } from "@processmaker/modeler";
 
 export default {
   name: 'ModelerApp',
@@ -96,6 +83,10 @@ export default {
   },
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
+
+    window.ProcessMaker.EventBus.$on('modeler-save', () => {
+      this.saveBpmn();
+    });
 
     window.ProcessMaker.EventBus.$on('modeler-change', () => {
       this.refreshSession();

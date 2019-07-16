@@ -1,6 +1,6 @@
 <template>
   <div class="h-100">
-    <b-card no-body class="h-100 bg-white" id="app">
+    <b-card no-body class="h-100 bg-white border-top-0" id="app">
       <!-- Card Header -->
       <b-card-header>
         <b-row>
@@ -35,9 +35,10 @@
       </b-card-header>
 
       <!-- Card Body -->
-      <b-card-body class="overflow-auto ml-3 mr-3" id="screen-builder-container">
+      <b-card-body class="overflow-auto p-0" id="screen-builder-container">
         <!-- Vue-form-builder -->
         <vue-form-builder
+          class="m-0"
           :validationErrors="validationErrors"
           :initialConfig="screen.config"
           :title="screen.title"
@@ -47,8 +48,8 @@
         />
 
         <!-- Preview -->
-        <b-row class="h-100" id="preview" v-show="displayPreview">
-          <b-col class="overflow-auto h-100 border rounded mr-4">
+        <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
+          <b-col class="overflow-auto h-100">
             <vue-form-renderer ref="renderer"
               v-model="previewData"
               class="p-3 overflow-auto"
@@ -61,11 +62,7 @@
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
-            <b-card no-body class="p-0 h-100">
-              <b-card-header class="stick-top">
-                {{ $t('Inspector') }}
-              </b-card-header>
-
+            <b-card no-body class="p-0 h-100 rounded-0 border-top-0 border-right-0 border-bottom-0">
               <b-card-body class="p-0 overflow-auto">
                 <b-button variant="outline"
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
@@ -119,7 +116,7 @@
           </button>
         </div>
 
-        <div v-if="showValidationErrors" class="validation-panel position-absolute shadow border overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
+        <div v-if="showValidationErrors" class="validation-panel position-absolute border-top border-left overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
             <div v-if="!previewInputValid" class="p-3 font-weight-bold text-dark text-capitalize">
               <i class="fas fa-times-circle text-danger mr-3"></i>
               {{$t('Invalid JSON Data Object')}}
@@ -130,7 +127,7 @@
                       @click="focusInspector(validation)">
               <i class="fas fa-times-circle text-danger d-block mr-3"></i>
               <span class="ml-2 text-dark font-weight-bold text-left">
-                {{ validation.item.component }}
+                {{ validation.item && validation.item.component }}
                 <span class="d-block font-weight-normal">{{ validation.message }}</span>
               </span>
             </b-button>
@@ -145,19 +142,25 @@
 </template>
 
 <script>
-  import {VueFormBuilder, VueFormRenderer} from "@processmaker/spark-screen-builder";
-  import ComputedProperties from "@processmaker/spark-screen-builder/src/components/computed-properties";
-  import CustomCSS from "@processmaker/spark-screen-builder/src/components/custom-css";
-  import "@processmaker/spark-screen-builder/dist/vue-form-builder.css";
+  import {VueFormBuilder, VueFormRenderer} from "@processmaker/screen-builder";
+  import ComputedProperties from "@processmaker/screen-builder/src/components/computed-properties";
+  import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
+  import "@processmaker/screen-builder/dist/vue-form-builder.css";
   import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
   import MonacoEditor from "vue-monaco";
 
   // Bring in our initial set of controls
-  import globalProperties from "@processmaker/spark-screen-builder/src/global-properties";
+  import globalProperties from "@processmaker/screen-builder/src/global-properties";
   import _ from "lodash";
 
 import Validator from "validatorjs";
+import formTypes from "./formTypes";
+
+  // To include another language in the Validator with variable processmaker
+  if (window.ProcessMaker && window.ProcessMaker.user && window.ProcessMaker.user.lang) {
+    Validator.useLang(window.ProcessMaker.user.lang);
+  }
 
   Validator.register('attr-value', value => {
     return value.match(/^[a-zA-Z0-9-_]+$/);
@@ -173,6 +176,7 @@ import Validator from "validatorjs";
       }];
 
       return {
+        type: formTypes.form,
         mode: "editor",
         // Computed properties
         computed: [],
@@ -245,6 +249,11 @@ import Validator from "validatorjs";
       },
       validationErrors() {
         const validationErrors = [];
+
+        if (this.type === formTypes.form && !this.containsSubmitButton()) {
+          validationErrors.push({ message: 'Form requires a submit button' });
+        }
+
         this.config.forEach(page => {
           page.items.forEach(item => {
             let data = item.config ? item.config : {};
@@ -269,6 +278,7 @@ import Validator from "validatorjs";
             }
           });
         });
+
         return this.toggleValidation ? validationErrors : [] ;
       },
     },
@@ -282,10 +292,20 @@ import Validator from "validatorjs";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
+      containsSubmitButton() {
+        return this.config.some(config => config.items.some(this.isSubmitButton));
+      },
+      isSubmitButton(item) {
+        return item.label === 'Submit';
+      },
       beforeExportScreen() {
         this.saveScreen(true);
       },
       focusInspector(validate) {
+        if (!validate.item || !validate.page) {
+          return;
+        }
+
         this.$refs.builder.focusInspector(validate);
       },
       openComputedProperties() {
@@ -361,6 +381,12 @@ import Validator from "validatorjs";
 </script>
 
 <style lang="scss">
+    $validation-panel-bottom: 3.5rem;
+    $validation-panel-right: 0;
+    $validation-panel-height: 10rem;
+    $validation-panel-width: 23rem;
+    $primary-white: #f7f7f7;
+
     html,
     body {
         height: 100%;
@@ -374,11 +400,11 @@ import Validator from "validatorjs";
     }
 
     .validation-panel {
-      background: #f7f7f7;
-      height: 10rem;
-      width: 21.35rem;
-      bottom: 4rem;
-      right: 0;
+      background: $primary-white;
+      height: $validation-panel-height;
+      width: $validation-panel-width;
+      bottom: $validation-panel-bottom;
+      right: $validation-panel-right;
     }
 
     .preview-inspector {

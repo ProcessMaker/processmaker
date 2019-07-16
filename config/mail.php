@@ -10,7 +10,7 @@ return [
     | your application here. By default, Laravel is setup for SMTP mail.
     |
     | Supported: "smtp", "sendmail", "mailgun", "mandrill", "ses",
-    |            "sparkpost", "log", "array"
+    |            "processmakerpost", "log", "array"
     |
     */
     'driver' => env('MAIL_DRIVER', 'log'),

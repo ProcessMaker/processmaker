@@ -39,7 +39,7 @@
                             <div class="row">
                                 <div class="col-8">
                                     <div class="card card-body">
-                                        <h5>{{__('Name')}}</h5>                                        
+                                        <h5>{{__('Name')}}</h5>
                                             <div class="form-group">
                                                 {!! Form::label('firstname', __('First Name')) !!}
                                                 {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
@@ -70,10 +70,10 @@
                                               placeholder="Job Title"
                                             ></b-form-input>
                                         </div>
-                                            
+
                                         </div>
                                         <h5 class="mt-2">{{__('Contact Information')}}</h5>
-                                        
+
                                             <div class="form-group">
                                                 {!! Form::label('email', __('Email')) !!}
                                                 {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
@@ -102,7 +102,7 @@
                                                 <div class="invalid-feedback" v-if="errors.fax">@{{errors.fax}}
                                                 </div>
                                             </div>
-                                            
+
                                      <div class="form-group">
                                                 {!! Form::label('cell', __('Cell')) !!}
                                                 {!! Form::text('cell', null, ['id' => 'cell','class'=> 'form-control',
@@ -111,8 +111,8 @@
                                                 !!}
                                                 <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell}}
                                                 </div>
-                                            </div>                                            
-                                        
+                                            </div>
+
                                         <h5 class="mt-2">{{__('Address')}}</h5>
                                         <div class="row">
                                             <div class="form-group col">
@@ -302,10 +302,6 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
-                            <div v-if="!isCurrentUser">
-                                {{__('Only the logged in user can create API tokens')}}
-                            </div>
-                            <div v-if="isCurrentUser">
                                 <table class="table">
                                     <thead>
                                     <tr>
@@ -346,7 +342,6 @@
                                 <button class="btn btn-secondary float-right" @click="generateToken">
                                     {{__('Generate New Token')}}
                                 </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -369,8 +364,6 @@
                             <multiselect v-model="selectedGroup"
                                          placeholder="{{__('Select group or type here to search groups')}}"
                                          :options="groups"
-                                         :select-label="''"
-                                         :deselect-label="''"
                                          :multiple="true"
                                          track-by="name"
                                          :custom-label="customLabel"
@@ -379,6 +372,14 @@
                                          :internal-search="false"
                                          @search-change="loadGroups"
                                          label="name">
+
+                                <template slot="noResult" >
+                                    {{ __('No elements found. Consider changing the search query.') }}
+                                </template>
+
+                                <template slot="noOptions" >
+                                    {{ __('No Data Available') }}
+                                </template>
 
                                 <template slot="tag" slot-scope="props">
                                     <span class="multiselect__tag  d-flex align-items-center"
@@ -681,25 +682,24 @@
           loadTokens() {
             ProcessMaker.apiClient({
               method: 'GET',
-              url: '/oauth/personal-access-tokens',
-              baseURL: '/'
+              url: '/users/' + this.currentUserId + '/tokens',
             })
               .then((result) => {
-                this.apiTokens = result.data
+                this.apiTokens = result.data.data
               })
           },
           generateToken() {
             ProcessMaker.apiClient({
               method: 'POST',
-              url: '/oauth/personal-access-tokens',
-              baseURL: '/',
+              url: '/users/' + this.currentUserId + '/tokens',
               data: {
                 name: 'API Token',
                 scopes: []
               }
             })
               .then((result) => {
-                this.newToken = result.data;
+                this.newToken = result.data.token;
+                this.newToken.accessToken = result.data.accessToken;
                 this.loadTokens();
                 ProcessMaker.alert(this.$t('Access token generated successfully'), "success");
               })
@@ -713,8 +713,7 @@
               () => {
                 ProcessMaker.apiClient({
                   method: 'DELETE',
-                  url: '/oauth/personal-access-tokens/' + tokenId,
-                  baseURL: '/',
+                  url: '/users/' + this.currentUserId + '/tokens/' + tokenId,
                 })
                   .then((result) => {
                     this.loadTokens();

@@ -61,7 +61,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     use TokenTrait;
     use SerializeToIso8601;
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     /**
      * Attributes that are not mass assignable.

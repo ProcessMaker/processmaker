@@ -26,5 +26,17 @@
             </li>
         @endforeach
     </ol>
+
+    @if (isset($showModelerSaveButton) && $showModelerSaveButton == true)
+    <button
+        type="button"
+        class="btn btn-secondary btn-sm position-absolute modeler-save-button"
+        data-test="save-process"
+        onclick="window.ProcessMaker && window.ProcessMaker.EventBus.$emit('modeler-save')"
+    >
+        <i class="fas fa-save mr-1"></i>
+        {{__('Save')}}
+    </button>
+    @endif
 </nav>
 </div>

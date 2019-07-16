@@ -29,7 +29,7 @@ class TimeoutsTest extends TestCase
      */
     private function skipWithoutDocker()
     {
-        if (!file_exists(config('app.spark_scripts_home')) || !file_exists(config('app.spark_scripts_docker'))) {
+        if (!file_exists(config('app.processmaker_scripts_home')) || !file_exists(config('app.processmaker_scripts_docker'))) {
             return $this->markTestSkipped('This test requires docker');
         }
     }

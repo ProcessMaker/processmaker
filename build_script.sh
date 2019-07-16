@@ -15,14 +15,14 @@ fi
 # Check if the field is empty
 if [ -z "$1" ]; then
                 read -r -p "What's the name for the file?? -> " cn_pm
-                cn_pm=${cn_pm:-spark-build}
+                cn_pm=${cn_pm:-processmaker-build}
                 param1=$cn_pm ;
         else
                 param1=$1 ;
 
 fi
 
-# Deploy PM Spark
+# Deploy PM Processmaker
 composer install --no-dev ;
 npm install ;
 export NODE_OPTIONS="--max-old-space-size=4096" ;

@@ -31,9 +31,6 @@
       display: none;
     }
     
-    .auth-container:nth-child(2) {
-      display: none;
-    }
 
     .auth-container:first-child h6 {
       font-size: 18px;

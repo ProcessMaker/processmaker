@@ -132,8 +132,6 @@
                                         <multiselect v-model="selectedUser"
                                                      placeholder="{{__('Select the user to reassign to the task')}}"
                                                      :options="usersList"
-                                                     :select-label="''"
-                                                     :deselect-label="''"
                                                      :multiple="false"
                                                      track-by="fullname"
                                                      :show-labels="false"
@@ -141,7 +139,12 @@
                                                      :internal-search="false"
                                                      @search-change="loadUsers"
                                                      label="fullname">
-
+                                             <template slot="noResult">
+                                                {{ __('No elements found. Consider changing the search query.') }}
+                                            </template>
+                                            <template slot="noOptions">
+                                                {{ __('No Data Available') }}
+                                            </template>
                                             <template slot="tag" slot-scope="props">
                                                 <span class="multiselect__tag  d-flex align-items-center"
                                                       style="width:max-content;">

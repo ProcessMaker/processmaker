@@ -4,7 +4,7 @@
             <label>{{ $t('Due In') }}</label>
             <input class="form-control"
                    type="number"
-                   placeholder="72 hours"
+                   :placeholder="$t('72 hours')"
                    :value="dueInGetter"
                    @input="dueInSetter"
                    min="0"
@@ -33,9 +33,8 @@
                 <multiselect v-model="content"
                              track-by="id"
                              label="name"
-                             :select-label="''"
-                             :deselect-label="''"
                              :placeholder="$t('type here to search')"
+                             :class="{'border border-danger':error}"
                              :options="options"
                              :multiple="false"
                              :show-labels="false"
@@ -43,7 +42,15 @@
                              :internal-search="false"
                              :helper="helper"
                              @search-change="load($event, 'assignment')">
+                    <template slot="noResult" >
+                        {{ $t('No elements found. Consider changing the search query.') }}
+                    </template>
+                    <template slot="noOptions" >
+                        {{ $t('No Data Available') }}
+                    </template>
                 </multiselect>
+                <small v-if="error" class="text-danger">{{ error }}</small>
+                <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
             </div>
         </div>
 
@@ -93,9 +100,8 @@
                             <multiselect v-model="contentExpression"
                                          track-by="id"
                                          label="name"
-                                         :select-label="''"
-                                         :deselect-label="''"
                                          :placeholder="$t('type here to search')"
+                                         :class="{'border border-danger':error}"
                                          :options="optionsExpression"
                                          :multiple="false"
                                          :show-labels="false"
@@ -103,7 +109,15 @@
                                          :internal-search="false"
                                          :helper="helper"
                                          @search-change="load($event, 'expression')">
+                                <template slot="noResult" >
+                                    {{ $t('No elements found. Consider changing the search query.') }}
+                                </template>
+                                <template slot="noOptions" >
+                                    {{ $t('No Data Available') }}
+                                </template>
                             </multiselect>
+                            <small v-if="error" class="text-danger">{{ error }}</small>
+                            <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
                         </div>
                     </div>
 
@@ -168,6 +182,7 @@
         loadingAssign: false,
         contentExpression: null,
         specialAssignmentsData: [],
+        error: '',
       };
     },
     computed: {

@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProcessCollaboration extends Model
 {
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     /**
      * The attributes that aren't mass assignable.
