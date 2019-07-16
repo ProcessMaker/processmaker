@@ -15,7 +15,24 @@ class OAuthTest extends TestCase
     public function withUserSetup()
     {
         $response = $this->actingAs($this->user, 'api')
-                         ->json('POST', '/oauth/clients', ['name' => 'test', 'redirect' => 'http://test.com']);
+                         ->json('POST', '/oauth/clients', []);
+
+        $this->assertEquals('The name field is required.', $response->json()['errors']['name'][0]);
+        $this->assertEquals('The types field is required.', $response->json()['errors']['types'][0]);
+        
+        $response = $this->actingAs($this->user, 'api')
+                         ->json('POST', '/oauth/clients', [ 'name' => 'foo', 'types' => []]);
+
+        $this->assertEquals('The types must have at least 1 items.', $response->json()['errors']['types'][0]);
+        
+        $response = $this->actingAs($this->user, 'api')
+                         ->json('POST', '/oauth/clients', [ 'name' => 'foo', 'types' => ['authorization_code_grant']]);
+
+        $this->assertEquals('The redirect field is required.', $response->json()['errors']['redirect'][0]);
+        
+        $response = $this->actingAs($this->user, 'api')
+                         ->json('POST', '/oauth/clients', ['name' => 'test', 'redirect' => 'http://test.com', 'types' => ['authorization_code_grant']]);
+        
         $response->assertStatus(201);
         $this->json = $response->json();
     }
@@ -44,11 +61,17 @@ class OAuthTest extends TestCase
      */
     public function testEdit()
     {
+        $this->assertFalse($this->json['password_client']);
+        $this->assertFalse($this->json['personal_access_client']);
         $response = $this->actingAs($this->user, 'api')
                     ->json(
                         'PUT',
                         '/oauth/clients/' . $this->json['id'],
-                        ['name' => 'test123', 'redirect' => 'http://test.com/foo']
+                        [
+                            'name' => 'test123',
+                            'redirect' => 'http://test.com/foo',
+                            'types' => ['authorization_code_grant', 'password_client', 'personal_access_client']
+                        ]
                     );
         $response->assertStatus(200);
 
@@ -60,7 +83,8 @@ class OAuthTest extends TestCase
         $this->assertEquals('test123', $json[0]['name']);
         $this->assertEquals('http://test.com/foo', $json[0]['redirect']);
         $this->assertFalse($json[0]['revoked']);
-
+        $this->assertTrue($json[0]['password_client']);
+        $this->assertTrue($json[0]['personal_access_client']);
     }
 
     /**
@@ -71,7 +95,11 @@ class OAuthTest extends TestCase
     public function testDelete()
     {
         $this->actingAs($this->user, 'api')
-             ->json('POST', '/oauth/clients', ['name' => 'other', 'redirect' => 'http://other.net']);
+             ->json('POST', '/oauth/clients', [
+                 'name' => 'other',
+                 'redirect' => 'http://other.net',
+                 'types' => ['authorization_code_grant']
+            ]);
         
         $response = $this->actingAs($this->user, 'api')
                          ->json('GET', '/oauth/clients');
