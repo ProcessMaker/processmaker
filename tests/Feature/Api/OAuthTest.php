@@ -48,7 +48,7 @@ class OAuthTest extends TestCase
                          ->json('GET', '/oauth/clients');
 
         $response->assertStatus(200);
-        $json = $response->json();
+        $json = $response->json()['data'];
         $this->assertEquals('test', $json[0]['name']);
         $this->assertEquals('http://test.com', $json[0]['redirect']);
         $this->assertFalse($json[0]['revoked']);
@@ -61,8 +61,8 @@ class OAuthTest extends TestCase
      */
     public function testEdit()
     {
-        $this->assertFalse($this->json['password_client']);
-        $this->assertFalse($this->json['personal_access_client']);
+        $this->assertNotContains('password_client', $this->json['types']);
+        $this->assertNotContains('personal_access_client', $this->json['types']);
         $response = $this->actingAs($this->user, 'api')
                     ->json(
                         'PUT',
@@ -78,13 +78,13 @@ class OAuthTest extends TestCase
         $response = $this->actingAs($this->user, 'api')
                          ->json('GET', '/oauth/clients');
 
-        $json = $response->json();
+        $json = $response->json()['data'];
         $this->assertEquals($this->json['id'], $json[0]['id']);
         $this->assertEquals('test123', $json[0]['name']);
         $this->assertEquals('http://test.com/foo', $json[0]['redirect']);
         $this->assertFalse($json[0]['revoked']);
-        $this->assertTrue($json[0]['password_client']);
-        $this->assertTrue($json[0]['personal_access_client']);
+        $this->assertContains('password_client', $json[0]['types']);
+        $this->assertContains('personal_access_client', $json[0]['types']);
     }
 
     /**
@@ -104,7 +104,7 @@ class OAuthTest extends TestCase
         $response = $this->actingAs($this->user, 'api')
                          ->json('GET', '/oauth/clients');
 
-        $this->assertCount(2, $response->json());
+        $this->assertCount(2, $response->json()['data']);
 
         $response = $this->actingAs($this->user, 'api')
                     ->json(
@@ -116,7 +116,7 @@ class OAuthTest extends TestCase
         $response= $this->actingAs($this->user, 'api')
                         ->json('GET', '/oauth/clients');
 
-        $json = $response->json();
+        $json = $response->json()['data'];
         $this->assertCount(1, $json);
         $this->assertEquals('other', $json[0]['name']);
         $this->assertEquals('http://other.net', $json[0]['redirect']);

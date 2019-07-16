@@ -4,9 +4,35 @@ namespace ProcessMaker\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Laravel\Passport\Http\Controllers\ClientController as PassportClientController;
+use ProcessMaker\Http\Resources\AuthClient as AuthClientResource;
 
 class ClientController extends PassportClientController
 {
+     /**
+     * List auth clients
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function index(Request $request)
+    {
+        $clients = \Laravel\Passport\Client::where('revoked', false)->get();
+        return AuthClientResource::collection($clients);
+    }
+     
+    /**
+     * Get an individual auth client 
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string $clientId
+     * @return array
+     */
+    public function show(Request $request, $clientId)
+    {
+        // $client = $this->clients->find($clientId);
+        $client = parent::show($request, $clientId);
+        return new AuthClientResource($client);
+    }
 
     /**
      * Store a new client.
@@ -22,9 +48,11 @@ class ClientController extends PassportClientController
         $password = in_array('password_client', $request->types);
         $redirect = in_array('authorization_code_grant', $request->types) ? $request->redirect : '';
 
-        return $this->clients->create(
+        $client = $this->clients->create(
             $request->user()->getKey(), $request->name, $redirect, $personalAccess, $password
         )->makeVisible('secret');
+
+        return new AuthClientResource($client);
     }
 
     /**
@@ -37,9 +65,9 @@ class ClientController extends PassportClientController
     public function update(Request $request, $clientId)
     {
         
-        $client = $this->clients->findForUser($clientId, $request->user()->getKey());
+        $client = $this->clients->find($clientId);
 
-        if (! $client) {
+        if (!$client) {
             return new Response('', 404);
         }
         
@@ -56,7 +84,26 @@ class ClientController extends PassportClientController
             'password_client' => $password,
         ])->save();
 
-        return $client;
+        return new AuthClientResource($client);
+    }
+
+    /**
+     * Delete the given client.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $clientId
+     * @return null
+     */
+    public function destroy(Request $request, $clientId)
+    {
+        $client = $this->clients->find($clientId);
+
+        if (!$client) {
+            return new Response('', 404);
+        }
+        
+        $this->clients->delete($client);
+        return response('', 204);
     }
     
     private function validate($request)
