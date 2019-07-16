@@ -844,5 +844,8 @@
     "Sub process is missing start event": "Sub process is missing start event",
     "Start event must be blank": "Start event must be blank",
     "user": "user",
-    "group": "group"
+    "group": "group",
+    "Modeler": "Modeler",
+    "No Data Found": "No Data Found",
+    "Sorry, this request doesn't contain any information." : "Sorry, this request doesn't contain any information."
 }

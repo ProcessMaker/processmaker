@@ -299,8 +299,7 @@ class ProcessRequestController extends Controller
      */
     public function destroy(ProcessRequest $request)
     {
-        try
-        {
+        try {
             $request->delete();
             return response([], 204);
         } catch (\Exception $e) {
@@ -328,7 +327,7 @@ class ProcessRequestController extends Controller
         // Get token and data
         $token = $request->tokens()->where('element_id', $event)->where('status', 'ACTIVE')->first();
         if (!$token) {
-            return abort(400, __('Not found'));
+            return abort(404, __('Token not found in catch event :element_id', ['element_id' => $event]));
         }
 
         // Check IPs whitelist
