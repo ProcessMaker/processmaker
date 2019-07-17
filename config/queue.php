@@ -65,7 +65,7 @@ return [
     |
     */
     'failed' => [
-        'database' => env('DB_CONNECTION', 'spark'),
+        'database' => env('DB_CONNECTION', 'processmaker'),
         'table' => 'failed_jobs',
     ],
 ];

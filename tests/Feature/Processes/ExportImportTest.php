@@ -19,9 +19,9 @@ class ExportImportTest extends TestCase
     use RequestHelper;
 
     public $withPermissions = true;
-    
+
     private $definitions, $process, $screen01, $screen02, $script01, $script02;
-    
+
     /**
      * Test to ensure screens and scripts are referenced
      * by the proper nodes upon process import.
@@ -37,11 +37,11 @@ class ExportImportTest extends TestCase
         // Assert that they now exist
         $this->assertDatabaseHas('screens', ['title' => 'Existing Screen']);
         $this->assertDatabaseHas('scripts', ['title' => 'Existing Script']);
-        
+
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
-        $fileName = 'test_process_import_refs.spark';
-        
+        $fileName = 'test_process_import_refs.json';
+
         // Load file to import
         $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
@@ -49,17 +49,17 @@ class ExportImportTest extends TestCase
         $response = $this->apiCall('POST', '/processes/import', [
             'file' => $file,
         ]);
-        
+
         // Retrieve the newly imported elements
         $this->process = Process::where('name', 'Test Process 01')->first();
         $this->screen01 = Screen::where('title', 'Screen 01')->first();
         $this->screen02 = Screen::where('title', 'Screen 02')->first();
         $this->script01 = Script::where('title', 'Script 01')->first();
         $this->script02 = Script::where('title', 'Script 02')->first();
-        
+
         // Get BPMN
         $this->definitions = $this->process->getDefinitions();
-        
+
         // Check screen refs & script refs
         $this->checkScreenRefs();
         $this->checkScriptRefs();
@@ -77,14 +77,14 @@ class ExportImportTest extends TestCase
             'Human Task 1' => $this->screen01->id,
             'Human Task 2' => $this->screen02->id,
         ];
-        
+
         // For each of the human tasks...
         $tasks = $this->definitions->getElementsByTagName('task');
         foreach ($tasks as $task) {
             // Obtain the name and screen ref
             $name = $task->getAttribute('name');
             $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-            
+
             // Assert that the screen ref matches the expected screen ref
             if (array_key_exists($name, $map)) {
                 $this->assertEquals($map[$name], $screenRef);
@@ -165,7 +165,7 @@ class ExportImportTest extends TestCase
         // Test to ensure we can download the exported file
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.spark');
+        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.json');
 
         // Get our file contents (we have to do it this way because of
         // Symfony's weird response API)
@@ -176,7 +176,7 @@ class ExportImportTest extends TestCase
         // Save the file contents and convert them to an UploadedFile
         $fileName = tempnam(sys_get_temp_dir(), 'exported');
         file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'leave_absence_request.spark', null, null, null, true);
+        $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, null, true);
 
         // Test to ensure our standard user cannot import a process
         $this->user = $standardUser;
@@ -204,7 +204,7 @@ class ExportImportTest extends TestCase
     public function test_assignmets_after_import()
     {
         // Load file to import
-        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.spark', 'test_process_import.spark', null, null, null, true);
+        $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.json', 'test_process_import.json', null, null, null, true);
 
         //Import process
         $response = $this->apiCall('POST', '/processes/import', [
@@ -312,7 +312,6 @@ class ExportImportTest extends TestCase
                 $this->assertEquals($assign['value']['id'], $script->run_as_user_id);
             }
         }
-
     }
 
     /**
@@ -324,8 +323,8 @@ class ExportImportTest extends TestCase
     {
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
-        $fileName = 'test_process_import_invalid_text_file.spark';
-        
+        $fileName = 'test_process_import_invalid_text_file.json';
+
         // Load file to import
         $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
@@ -347,8 +346,8 @@ class ExportImportTest extends TestCase
     {
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
-        $fileName = 'test_process_import_invalid_json_file.spark';
-        
+        $fileName = 'test_process_import_invalid_json_file.json';
+
         // Load file to import
         $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
@@ -370,8 +369,8 @@ class ExportImportTest extends TestCase
     {
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
-        $fileName = 'test_process_import_invalid_base64_file.spark';
-        
+        $fileName = 'test_process_import_invalid_base64_file.json';
+
         // Load file to import
         $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 
@@ -393,8 +392,8 @@ class ExportImportTest extends TestCase
     {
         // Set path and name of file to import
         $filePath = 'tests/storage/process/';
-        $fileName = 'test_process_import_invalid_bin_file.spark';
-        
+        $fileName = 'test_process_import_invalid_bin_file.json';
+
         // Load file to import
         $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
 

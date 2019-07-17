@@ -1,12 +1,12 @@
-<div id="sidebar-inner" class="closed">
-  <ul class="nav flex-column" @click="expanded = !expanded" id="menu-toggle">
+<div id="sidebar-inner" :class="{ closed: !expanded, open: expanded }">
+  <ul class="nav flex-column" @click="expanded = !expanded">
     <div>
-      <li class="logo">
+      <li v-if="expanded === true" v-cloak class="logo">
         <a href="#" >
             <img src={{asset(env('MAIN_LOGO_PATH', '/img/processmaker_logo.png'))}}>
         </a>
       </li>
-      <li class="logo-closed" id="menu-toggle">
+      <li v-else v-cloak class="logo-closed">
         <a href="#">
             <img src={{asset(env('ICON_PATH_PATH', '/img/processmaker_icon.png'))}}>
         </a>
@@ -14,18 +14,9 @@
     </ul>
     <ul class="nav flex-column">
       @foreach($sidebar->topMenu()->items as $section)
-        <li class="section">{{ __($section->title) }}</li>
+        <li class="section" v-if="expanded === true" v-cloak>{{$section->title}}</li>
         @foreach($section->children() as $item)
-          <li class="nav-item">
-            <a href="{{ $item->url() }}" class="nav-link" title="{{ __($item->title) }}">
-              @if($item->attr('icon'))
-                <i class="fas {{$item->attr('icon')}} nav-icon"></i> <span class="nav-text">{{ __($item->title) }}</span>
-              @endif
-              @if($item->attr('file'))
-                <img src="{{$item->attr('file')}}" class="nav-icon" id="custom_icon"><span class="nav-text">{{ __($item->title) }}</span>
-              @endif
-            </a>
-          </li>
+          <sidebaricon :item='@lavaryMenuJson($item)'></sidebaricon>
         @endforeach
       @endforeach
     </ul>

@@ -12,14 +12,14 @@ class DataSchema extends Command
      *
      * @var string
      */
-    protected $signature = 'spark:install-data-database-schema';
+    protected $signature = 'processmaker:install-data-database-schema';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Install and configure Data Spark';
+    protected $description = 'Install and configure Data Processmaker';
 
     /**
      * Execute the console command.
@@ -28,7 +28,7 @@ class DataSchema extends Command
      */
     public function handle()
     {
-        $this->info(__('The Processmaker Spark data tables will be installed.'));
+        $this->info(__('The ProcessMaker data tables will be installed.'));
 
         if ($this->confirm(__('Are you ready to begin?'))) {
 
@@ -52,7 +52,7 @@ class DataSchema extends Command
                 $this->info(__('Migrated:') . '  '. $fileName);
             }
 
-            $this->info(__('ProcessMaker Spark data tables installed successfully.'));
+            $this->info(__('ProcessMaker data tables installed successfully.'));
         }
 
         return true;

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProcessNotificationSetting extends Model
 {
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     public $primaryKey = null;
 

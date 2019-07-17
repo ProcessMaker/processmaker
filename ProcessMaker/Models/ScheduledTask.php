@@ -13,7 +13,7 @@ class ScheduledTask extends Model
 {
     use SerializeToIso8601;
 
-    protected $connection = 'spark';
+    protected $connection = 'processmaker';
 
     protected $fillable = [
         'process_id', 'process_request_id', 'configuration'

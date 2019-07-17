@@ -28,7 +28,7 @@
                                 <b-card header-class="d-flex bg-light align-items-center card-size-header border-0"
                                         class="d-flex flex-row card-border border-0 mb-1" style="width: 40em;">
                                     <i slot="header" class='fas fa-exclamation-circle fa-4x'></i>
-                                    {{__('ProcessMaker Spark does not import Environment Variables or Enterprise Packages. You must manually configure these features.')}}
+                                    {{__('ProcessMaker does not import Environment Variables or Enterprise Packages. You must manually configure these features.')}}
                                 </b-card>
                             </div>
 

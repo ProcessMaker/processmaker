@@ -11,7 +11,7 @@ return [
     | you may use many connections at once using the Database library.
     |
     */
-    'default' => env('DB_CONNECTION', 'spark'),
+    'default' => env('DB_CONNECTION', 'processmaker'),
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -28,11 +28,11 @@ return [
     |
     */
     'connections' => [
-        'spark' => [
+        'processmaker' => [
             'driver' => 'mysql',
             'host' => env('DB_HOSTNAME', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'spark'),
+            'database' => env('DB_DATABASE', 'processmaker'),
             'username' => env('DB_USERNAME', 'homestead'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
@@ -43,7 +43,7 @@ return [
             'engine' => 'InnoDB',
         ],
         'data' => [
-            'driver' => env('DATA_DB_DRIVER'),
+            'driver' => env('DATA_DB_DRIVER', 'mysql'),
             'host' => env('DATA_DB_HOST', 'localhost'),
             'port' => env('DATA_DB_PORT'),
             'database' => env('DATA_DB_DATABASE'),

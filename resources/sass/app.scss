@@ -49,6 +49,17 @@ html {
   color: $primary;
 }
 
+.nav-badge {
+  background: fade-out(darken($primary, 20%), .5);
+  border: 1px solid fade-out($light, .5);
+  border-radius: 3px;
+  font-size: 0.85em;
+  font-weight: bold;
+  margin-top: -1px;
+  padding: 2px 5px;
+  text-shadow: 1px 1px fade-out(darken($primary, 20%), .5);
+}
+
 .actions .popout {
   white-space: nowrap;
   float: right;
@@ -460,4 +471,12 @@ h1.page-title {
 .vdatetime-popup__actions__button {
   font-size: 20px !important;
   color: $secondary !important;
+}
+
+#sidebar .nav-pl {
+  padding-left: 1em;
+}
+
+#sidebar .closed .nav-pl {
+  padding-left: 0em;
 }

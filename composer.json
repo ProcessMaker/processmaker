@@ -1,5 +1,5 @@
 {
-  "name": "processmaker/spark",
+  "name": "processmaker/processmaker",
   "version": "4.0.0",
   "description": "BPM PHP Software",
   "keywords": [
@@ -21,7 +21,7 @@
   ],
   "require": {
     "php": ">=7.2.0",
-    "TYPO3/class-alias-loader": "^1.0",
+    "typo3/class-alias-loader": "^1.0",
     "darkaonline/l5-swagger": "5.7.*",
     "doctrine/dbal": "^2.5",
     "fideloper/proxy": "^4.0",
@@ -59,12 +59,17 @@
     "symfony/dom-crawler": "^4.3"
   },
   "autoload": {
+    "files": [
+      "ProcessMaker/Helper/helper.php"
+    ],
     "classmap": [
       "database/seeds",
       "database/factories"
     ],
     "psr-4": {
-      "ProcessMaker\\": ["ProcessMaker/"]
+      "ProcessMaker\\": [
+        "ProcessMaker/"
+      ]
     }
   },
   "autoload-dev": {
