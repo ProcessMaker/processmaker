@@ -13,7 +13,8 @@
     @include('shared.breadcrumbs', [
     'routes' => [
         __('Processes') => route('processes.index'),
-        __('Edit') . " " . $process->name => null,
+        __('Modeler') => null,
+        $process->name => null,
       ],
       'showModelerSaveButton' => true
     ])
