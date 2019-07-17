@@ -1,4 +1,5 @@
 <?php
+
 namespace ProcessMaker\Http\Middleware;
 
 use Closure;
@@ -27,7 +28,7 @@ class GenerateMenus
             });
             if (\Auth::check() && \Auth::user()->canAny('view-processes|view-categories|view-scripts|view-screens|view-environment_variables')) {
                 $menu->group(['prefix' => 'processes'], function ($request_items) {
-                    $request_items->add(__('Processes'), ['route' => 'processes.index'])->active('processes/*');
+                    $request_items->add(__('Designer'), ['route' => 'processes.index'])->active('processes/*');
                 });
             }
             if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients')) {
