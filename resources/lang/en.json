@@ -851,5 +851,6 @@
     "Pause start timer events": "Pause start timer events",
     "Import Screen": "Import Screen",
     "You are about to import a Screen.": "You are about to import a Screen.",
-    "Add Users": "Add Users"
+    "Add Users": "Add Users",
+    "Event-Based Gateway": "Event-Based Gateway"
 }
