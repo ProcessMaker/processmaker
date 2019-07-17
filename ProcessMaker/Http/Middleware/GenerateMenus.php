@@ -105,7 +105,7 @@ class GenerateMenus
         });
 
         Menu::make('sidebar_processes', function ($menu) {
-            $submenu = $menu->add(__('Processes'));
+            $submenu = $menu->add(__('Designer'));
             if (\Auth::check() && \Auth::user()->can('view-processes')) {
                 $submenu->add(__('Processes'), [
                     'route' => 'processes.index',
