@@ -596,7 +596,7 @@
     "Identifier": "Identifier",
     "The Name of the Process": "The Name of the Process",
     "The id field should be unique across all elements in the diagram": "The id field should be unique across all elements in the diagram",
-    "The id field should be unique across all elements in the diagram, ex. id_1." : "The id field should be unique across all elements in the diagram, ex. id_1.",
+    "The id field should be unique across all elements in the diagram, ex. id_1.": "The id field should be unique across all elements in the diagram, ex. id_1.",
     "The Name of the Sequence Flow": "The Name of the Sequence Flow",
     "Expression": "Expression",
     "Enter the expression that describes the workflow condition": "Enter the expression that describes the workflow condition",
@@ -847,5 +847,10 @@
     "group": "group",
     "Modeler": "Modeler",
     "No Data Found": "No Data Found",
-    "Sorry, this request doesn't contain any information." : "Sorry, this request doesn't contain any information."
+    "Sorry, this request doesn't contain any information.": "Sorry, this request doesn't contain any information.",
+    "Pause start timer events": "Pause start timer events",
+    "Import Screen": "Import Screen",
+    "You are about to import a Screen.": "You are about to import a Screen.",
+    "Add Users": "Add Users",
+    "Event-Based Gateway": "Event-Based Gateway"
 }
