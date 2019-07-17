@@ -4,7 +4,7 @@
       <a :href="value.id" style="margin: 0 2px;">
         <template v-if="value.src" class="align-center">
           <img
-            :src="value.src"
+            :src="timestamp(value.src)"
             :width="sizeImage"
             :height="sizeImage"
             class="image"
@@ -58,6 +58,13 @@ export default {
     }
   },
   methods: {
+    timestamp(src) {
+      if (src.startsWith('data:image')) {
+        // Do not add cache buster to base64 encoded image
+        return src
+      }
+      return src + '?' + new Date().getTime();
+    },
     default() {
       this.displayTitle = this.hideName === undefined ? false : this.hideName;
       this.formatRounded(this.rounded);

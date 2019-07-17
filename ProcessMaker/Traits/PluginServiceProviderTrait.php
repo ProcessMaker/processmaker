@@ -26,7 +26,6 @@ trait PluginServiceProviderTrait
         if (!$this->isUpdated()) {
             $this->updateVersion();
             $key = str_replace('\\', '_', static::class);
-            \Illuminate\Support\Facades\Log::info(static::class . ' updated');
             Cache::forever($key, static::version);
         }
         if (defined("static::name")) {

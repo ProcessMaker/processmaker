@@ -1,4 +1,5 @@
 <?php
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -10,7 +11,7 @@ return [
     | you may use many connections at once using the Database library.
     |
     */
-    'default' => env('DB_CONNECTION', 'spark'),
+    'default' => env('DB_CONNECTION', 'processmaker'),
     /*
     |--------------------------------------------------------------------------
     | Database Connections
@@ -27,11 +28,11 @@ return [
     |
     */
     'connections' => [
-        'spark' => [
+        'processmaker' => [
             'driver' => 'mysql',
             'host' => env('DB_HOSTNAME', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'spark'),
+            'database' => env('DB_DATABASE', 'processmaker'),
             'username' => env('DB_USERNAME', 'homestead'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
@@ -40,8 +41,23 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => 'InnoDB',
+        ],
+        'data' => [
+            'driver' => env('DATA_DB_DRIVER'),
+            'host' => env('DATA_DB_HOST', 'localhost'),
+            'port' => env('DATA_DB_PORT'),
+            'database' => env('DATA_DB_DATABASE'),
+            'username' => env('DATA_DB_USERNAME'),
+            'password' => env('DATA_DB_PASSWORD'),
+            'unix_socket' => env('DATA_DB_SOCKET'),
+            'charset' => env('DATA_DB_CHARSET'),
+            'collation' => env('DATA_DB_COLLATION'),
+            'schema' => env('DATA_DB_SCHEMA'),
+            'engine' => env('DATA_DB_ENGINE'),
+            'date_format' => env('DATA_DB_DATE_FORMAT'),
         ]
     ],
+
     /*
     |--------------------------------------------------------------------------
     | Migration Repository Table

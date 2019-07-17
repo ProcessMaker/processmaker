@@ -52,13 +52,16 @@ return [
     'web_client_application_id' => env('PM_CLIENT_ID', 'x-pm-local-client'),
 
     // The processmaker BPM scripts configuration
-    'spark_scripts_home' => env('SPARK_SCRIPTS_HOME', '/home/vagrant'),
-    'spark_scripts_docker' => env('SPARK_SCRIPTS_DOCKER', '/usr/bin/docker'),
-    'spark_scripts_docker_mode' => env('SPARK_SCRIPTS_DOCKER_MODE', 'binding'),
+    'processmaker_scripts_home' => env('PROCESSMAKER_SCRIPTS_HOME', '/home/vagrant'),
+    'processmaker_scripts_docker' => env('PROCESSMAKER_SCRIPTS_DOCKER', '/usr/bin/docker'),
+    'processmaker_scripts_docker_mode' => env('PROCESSMAKER_SCRIPTS_DOCKER_MODE', 'binding'),
 
     // The url of our host from inside the docker
     'docker_host_url' => env('DOCKER_HOST_URL', preg_replace('/(\w+):\/\/([^:\/]+)(\:\d+)?/', '$1://172.17.0.1$3',
                 env('APP_URL', 'http://localhost'))),
+
+    // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
+    'api_ssl_verify' => env('API_SSL_VERIFY', "true"),
 
     'providers' => [
         Illuminate\Auth\AuthServiceProvider::class,

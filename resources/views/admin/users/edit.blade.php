@@ -39,7 +39,7 @@
                             <div class="row">
                                 <div class="col-8">
                                     <div class="card card-body">
-                                        <h5>{{__('Name')}}</h5>                                        
+                                        <h5>{{__('Name')}}</h5>
                                             <div class="form-group">
                                                 {!! Form::label('firstname', __('First Name')) !!}
                                                 {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
@@ -70,10 +70,10 @@
                                               placeholder="Job Title"
                                             ></b-form-input>
                                         </div>
-                                            
+
                                         </div>
                                         <h5 class="mt-2">{{__('Contact Information')}}</h5>
-                                        
+
                                             <div class="form-group">
                                                 {!! Form::label('email', __('Email')) !!}
                                                 {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
@@ -102,7 +102,7 @@
                                                 <div class="invalid-feedback" v-if="errors.fax">@{{errors.fax}}
                                                 </div>
                                             </div>
-                                            
+
                                      <div class="form-group">
                                                 {!! Form::label('cell', __('Cell')) !!}
                                                 {!! Form::text('cell', null, ['id' => 'cell','class'=> 'form-control',
@@ -111,8 +111,8 @@
                                                 !!}
                                                 <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell}}
                                                 </div>
-                                            </div>                                            
-                                        
+                                            </div>
+
                                         <h5 class="mt-2">{{__('Address')}}</h5>
                                         <div class="row">
                                             <div class="form-group col">
@@ -177,9 +177,6 @@
                                             <div class="form-group col">
                                                 {!!Form::label('datetime_format', __('Date format'));!!}
                                                 <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
-                                                  <template slot="first">
-                                                    <option :value="null" disabled>@{{appFormat}}</option>
-                                                  </template>
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">
                                                     @{{errors.datetime_format}}
@@ -190,9 +187,6 @@
                                             <div class="form-group col">
                                                 {!!Form::label('timezone', __('Time zone'));!!}
                                                 <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
-                                                  <template slot="first">
-                                                    <option :value="null" disabled>@{{appTimezone}}</option>
-                                                  </template>
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
                                                 </div>
@@ -200,7 +194,11 @@
 
                                             <div class="form-group col">
                                                 {!! Form::label('language', __('Language')) !!}
-                                                <b-form-select v-model="formData.language" :options="langs" class="form-control"></b-form-select>
+
+
+                                                <b-form-select id="language" v-model="formData.language" class="form-control" :options="langs">
+                                                </b-form-select>
+
                                                 <div class="invalid-feedback" v-if="errors.language">
                                                     @{{errors.language}}
                                                 </div>
@@ -304,10 +302,6 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
-                            <div v-if="!isCurrentUser">
-                                {{__('Only the logged in user can create API tokens')}}
-                            </div>
-                            <div v-if="isCurrentUser">
                                 <table class="table">
                                     <thead>
                                     <tr>
@@ -348,7 +342,6 @@
                                 <button class="btn btn-secondary float-right" @click="generateToken">
                                     {{__('Generate New Token')}}
                                 </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -371,8 +364,6 @@
                             <multiselect v-model="selectedGroup"
                                          placeholder="{{__('Select group or type here to search groups')}}"
                                          :options="groups"
-                                         :select-label="''"
-                                         :deselect-label="''"
                                          :multiple="true"
                                          track-by="name"
                                          :custom-label="customLabel"
@@ -381,6 +372,14 @@
                                          :internal-search="false"
                                          @search-change="loadGroups"
                                          label="name">
+
+                                <template slot="noResult" >
+                                    {{ __('No elements found. Consider changing the search query.') }}
+                                </template>
+
+                                <template slot="noOptions" >
+                                    {{ __('No Data Available') }}
+                                </template>
 
                                 <template slot="tag" slot-scope="props">
                                     <span class="multiselect__tag  d-flex align-items-center"
@@ -530,9 +529,7 @@
             formData: @json($user),
             langs: @json($availableLangs),
             timezones: @json($timezones),
-            appTimezone: @json($appTimezone),
             datetimeFormats: @json($datetimeFormats),
-            appFormat: @json($appFormat),
             countries: @json($countries),
             image: '',
             errors: {
@@ -578,17 +575,19 @@
         },
         watch: {
           selectedPermissions: function () {
-            if (this.selectedPermissions.length !== this.permissions.length) {
-              this.selectAll = false;
-            }
+            this.selectAll = this.areAllPermissionsSelected();
           }
         },
         methods: {
+          areAllPermissionsSelected() {
+            return this.selectedPermissions.length === this.permissions.length;
+          },
           checkCreate(sibling, $event) {
             let self = $event.target.value;
             if (this.selectedPermissions.includes(self)) {
               this.selectedPermissions.push(sibling);
             }
+            Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
           },
           checkEdit(sibling, $event) {
             let self = $event.target.value;
@@ -597,6 +596,7 @@
                 return el !== sibling;
               });
             }
+            Vue.set(this, 'selectedPermissions', this.selectedPermissions.filter((v, i, arr) => arr.indexOf(v) === i));
           },
           copyTextArea() {
             this.$refs.text.select();
@@ -682,25 +682,24 @@
           loadTokens() {
             ProcessMaker.apiClient({
               method: 'GET',
-              url: '/oauth/personal-access-tokens',
-              baseURL: '/'
+              url: '/users/' + {{ $user->id }} + '/tokens',
             })
               .then((result) => {
-                this.apiTokens = result.data
+                this.apiTokens = result.data.data
               })
           },
           generateToken() {
             ProcessMaker.apiClient({
               method: 'POST',
-              url: '/oauth/personal-access-tokens',
-              baseURL: '/',
+              url: '/users/' + {{ $user->id }} + '/tokens',
               data: {
                 name: 'API Token',
                 scopes: []
               }
             })
               .then((result) => {
-                this.newToken = result.data;
+                this.newToken = result.data.token;
+                this.newToken.accessToken = result.data.accessToken;
                 this.loadTokens();
                 ProcessMaker.alert(this.$t('Access token generated successfully'), "success");
               })
@@ -714,8 +713,7 @@
               () => {
                 ProcessMaker.apiClient({
                   method: 'DELETE',
-                  url: '/oauth/personal-access-tokens/' + tokenId,
-                  baseURL: '/',
+                  url: '/users/' + this.currentUserId + '/tokens/' + tokenId,
                 })
                   .then((result) => {
                     this.loadTokens();

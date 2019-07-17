@@ -79,10 +79,7 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ProcessRequestToken
-            ::join('process_requests as request', 'request.id', '=', 'process_request_tokens.process_request_id')
-            ->join('users as user', 'user.id', '=', 'process_request_tokens.user_id')
-            ->select('process_request_tokens.*');
+        $query = ProcessRequestToken::with(['processRequest', 'user']);
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
 
@@ -164,6 +161,33 @@ class TaskController extends Controller
                             $query->where('process_request_tokens.status', $value);
                         };
                     }
+                    
+                    if (is_object($expression->field->field())) {
+                        return function($query) use ($expression) {
+                            $field = $expression->field->toEloquent();
+                            $operator = $expression->operator;
+                            $value = $expression->value->value();
+                            
+                            $requests = ProcessRequest::where($field, $operator, $value)->get();
+                            $query->whereIn('process_request_id', $requests->pluck('id'));
+                        };
+                    } else {
+                        if (stripos($expression->field->field(), 'data.') === 0) {
+                            $field = $expression->field->field();
+                            $operator = $expression->operator;
+                            $value = $expression->value->value();
+                            if (is_string($value)) {
+                                $value = '"' . $value . '"';
+                            }
+                            
+                            $pmql = "$field $operator $value";
+                            
+                            return function($query) use ($pmql) {
+                                $requests = ProcessRequest::pmql($pmql)->get();
+                                $query->whereIn('process_request_id', $requests->pluck('id'));
+                            };
+                        }    
+                    }                    
                 });
             }
 

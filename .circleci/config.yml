@@ -13,7 +13,7 @@ jobs:
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/mysql:5.7
+      - image: circleci/mysql:5.7-ram
         environment:
           - MYSQL_ROOT_PASSWORD: P4ssW0rd1!
           - MYSQL_DATABASE: circle_test
@@ -33,7 +33,8 @@ jobs:
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
             echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
-            echo 'export QA_DB_NAME=$(echo "spark$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
+            echo 'export QA_DB_NAME=$(echo "processmaker$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
+            echo 'export QA_DATA_DB_NAME=$(echo "processmaker_data$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
@@ -41,7 +42,7 @@ jobs:
           command: |
             mkdir ~/.ssh
             echo $BUILDBOT_HOST_IDENTIFIER >> ~/.ssh/known_hosts
-            echo $QA_SPARKBUILDS_HOST_IDENTIFIER	>> ~/.ssh/known_hosts
+            echo $QA_PROCESSMAKERBUILDS_HOST_IDENTIFIER	>> ~/.ssh/known_hosts
             chmod 0600 ~/.ssh/known_hosts
 
       - checkout
@@ -103,7 +104,7 @@ jobs:
           key: v1-dependencies-{{ checksum "composer.json" }}
 
       # Enable xdebug to support code coverage
-      - run: sudo docker-php-ext-enable xdebug
+      #- run: sudo docker-php-ext-enable xdebug
 
       - setup_remote_docker
 
@@ -111,10 +112,10 @@ jobs:
           name: setup SDKs
           command: |
             php artisan l5:generate
-            mkdir -p /tmp/spark-sdk-php
-            php artisan spark:sdk php /tmp/spark-sdk-php
-            mkdir -p /tmp/spark-sdk-lua
-            php artisan spark:sdk lua /tmp/spark-sdk-lua
+            mkdir -p /tmp/processmaker-sdk-php
+            php artisan processmaker:sdk php /tmp/processmaker-sdk-php
+            mkdir -p /tmp/processmaker-sdk-lua
+            php artisan processmaker:sdk lua /tmp/processmaker-sdk-lua
 
       - run:
           name: Configure scripts executor
@@ -123,7 +124,7 @@ jobs:
             docker pull processmaker/executor:lua
             sudo mkdir -m777 /opt/executor
 
-      - run: sudo docker-php-ext-enable xdebug
+      #- run: sudo docker-php-ext-enable xdebug
 
       # Build frontend assets for production
       - run:
@@ -137,29 +138,35 @@ jobs:
 
       # run tests!
       - run:
-          name: 'PHPUnit'
-          command: './vendor/bin/phpunit -d memory_limit=-1 --coverage-html coverage'
+          name: "PHPUnit"
+          command: "./vendor/bin/phpunit -d memory_limit=-1"
           environment:
-            DB_DATABASE: 'circle_test'
-            DB_PASSWORD: 'P4ssW0rd1!'
-            DB_USERNAME: 'root'
-            RUN_MSSQL_TESTS: 'true'
-            MSSQL_HOST: '127.0.0.1'
-            MSSQL_PORT: '1433'
-            MSSQL_DATABASE: 'test'
-            MSSQL_USERNAME: 'sa'
-            MSSQL_PASSWORD: 'P4ssW0rd1!'
-            SPARK_SCRIPTS_HOME: '/opt/executor'
-            SPARK_SCRIPTS_DOCKER_MODE: 'copying'
+            DB_DATABASE: "circle_test"
+            DB_PASSWORD: "P4ssW0rd1!"
+            DB_USERNAME: "root"
+            DATA_DB_DRIVER: "sqlsrv"
+            DATA_DB_HOST: "127.0.0.1"
+            DATA_DB_PORT: "1433"
+            DATA_DB_DATABASE: "userexternal"
+            DATA_DB_USERNAME: "sa"
+            DATA_DB_PASSWORD: "P4ssW0rd1!"
+            RUN_MSSQL_TESTS: "true"
+            MSSQL_HOST: "127.0.0.1"
+            MSSQL_PORT: "1433"
+            MSSQL_DATABASE: "test"
+            MSSQL_USERNAME: "sa"
+            MSSQL_PASSWORD: "P4ssW0rd1!"
+            PROCESSMAKER_SCRIPTS_HOME: "/opt/executor"
+            PROCESSMAKER_SCRIPTS_DOCKER_MODE: "copying"
       - run:
           name: 'Jest'
           command: 'npm run test'
 
-      - store_artifacts:
-          path: coverage
+      #- store_artifacts:
+      #    path: coverage
 
-      - store_artifacts:
-          path: tests/js/coverage
+      #- store_artifacts:
+      #    path: tests/js/coverage
 
       # Prepare for packaging for QA environment
 
@@ -175,6 +182,12 @@ jobs:
             echo "DB_DATABASE=${QA_DB_NAME}" >> .env
             echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env
             echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
+            echo "DATA_DB_DRIVER=mysql" >> .env
+            echo "DATA_DB_HOST=${QA_RDS_HOST}" >> .env
+            echo "DATA_DB_DATABASE=${QA_DATA_DB_NAME}" >> .env
+            echo "DATA_DB_PORT=3306" >> .env
+            echo "DATA_DB_USERNAME=${QA_RDS_USERNAME}" >> .env
+            echo "DATA_DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
             echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
             echo "PROXIES=*" >> .env
             echo "PROXIES_AWS=true" >> .env
@@ -187,7 +200,7 @@ jobs:
             echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
             echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
             echo "REDIS_PORT=%%REDISPORT%%" >> .env
-            echo "SPARK_SCRIPTS_HOME=/home/circleci/tmp" >> .env
+            echo "PROCESSMAKER_SCRIPTS_HOME=/home/circleci/tmp" >> .env
             echo "HOME=/home/circleci" >> .env
             echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
             echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env
@@ -206,32 +219,33 @@ jobs:
           name: 'QA Deploy'
           command: |
             # Delete existing target QA directory, if it exists
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "rm -Rf ~/builds/$BUILD_NAME"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "rm -Rf ~/builds/$BUILD_NAME"
             # Create new target QA directory
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "mkdir ~/builds/$BUILD_NAME"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "mkdir ~/builds/$BUILD_NAME"
             # Copy over packaged qa deployment
-            scp -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-sparkbuilds:~/builds/$BUILD_NAME/
+            scp -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-processmakerbuilds:~/builds/$BUILD_NAME/
             # Extract to qa deployment dir
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
             # Restart nginx and php-fpm to clear cache
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "sudo service nginx restart"
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "sudo service php-fpm restart"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service php-fpm restart"
             # Create MYSQL Database
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DB_NAME}\""
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "mysql -h ${QA_RDS_HOST} -u ${QA_RDS_USERNAME} -p${QA_RDS_PASSWORD} -e \"CREATE DATABASE IF NOT EXISTS ${QA_DATA_DB_NAME}\""
             # Run php artisan migrate:fresh --seed to have a clean installed database in RDS
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"
             # Setup Media Link
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "php ~/builds/$BUILD_NAME/artisan storage:link"
-            echo "Deployed to https://${BUILD_NAME}.spark.qa.processmaker.net/"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "rm -Rf ~/builds/$BUILD_NAME/public/storage"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "php ~/builds/$BUILD_NAME/artisan storage:link"
+            echo "Deployed to https://${BUILD_NAME}.processmaker.qa.processmaker.net/"
             # Run containerDeploy.sh script to spin up redis docker container, laravel-echo-server, and horizon.
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
 
       - run:
           name: 'SauceLabs Browser Tests: Chrome'
-          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php artisan dusk"'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan dusk"'
           environment:
             DB_DATABASE: 'circle_test'
             RUN_MSSQL_TESTS: 'true'
@@ -239,7 +253,7 @@ jobs:
 
       - run:
           name: 'SauceLabs Browser Tests: Firefox'
-          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
             SAUCELABS_BROWSER: 'firefox'
             SAUCELABS_PLATFORM: 'Windows 10'
@@ -247,7 +261,7 @@ jobs:
 
       - run:
           name: 'SauceLabs Browser Tests: Edge'
-          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
             SAUCELABS_BROWSER: 'MicrosoftEdge'
             SAUCELABS_PLATFORM: 'Windows 10'
@@ -255,7 +269,7 @@ jobs:
 
       - run:
           name: 'SauceLabs Browser Tests: Safari'
-          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
             SAUCELABS_BROWSER: 'safari'
             SAUCELABS_PLATFORM: 'macOS 10.13'
@@ -263,4 +277,4 @@ jobs:
 
       - run:
           name: 'Final QA Artisan DB Migration'
-          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-sparkbuilds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"'
+          command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"'

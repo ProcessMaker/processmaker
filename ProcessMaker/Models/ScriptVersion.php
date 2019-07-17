@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ScriptVersion extends Model
 {
+    protected $connection = 'processmaker';
+
     /**
      * Do not automatically set created_at
      */

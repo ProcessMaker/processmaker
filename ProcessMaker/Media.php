@@ -19,12 +19,7 @@ class Media extends BaseMedia
      */
     public function updateFile(UploadedFile $newFile, \ProcessMaker\Models\Media $file)
     {
-        $originalFilePath = $file->id . '/' . $file->file_name;
         $newFileName = $this->sanitizeFileName($newFile->getClientOriginalName());
-        $newFilePath = $file->id . '/' . $newFileName;
-
-        Storage::disk('public')->delete($originalFilePath);
-        Storage::disk('public')->put($newFilePath, $newFile);
 
         $file->file_name = $newFileName;
         $file->name = pathinfo($newFileName, PATHINFO_FILENAME);

@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Providers;
 
+use Blade;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\PackageManager;
@@ -11,6 +12,14 @@ use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\User;
+use ProcessMaker\Observers\ProcessCollaborationObserver;
+use ProcessMaker\Observers\ProcessObserver;
+use ProcessMaker\Observers\ProcessRequestObserver;
+use ProcessMaker\Observers\UserObserver;
 
 /**
  * Provide our ProcessMaker specific services
@@ -26,6 +35,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        User::observe(UserObserver::class);
+        Process::observe(ProcessObserver::class);
+        ProcessRequest::observe(ProcessRequestObserver::class);
+        ProcessCollaboration::observe(ProcessCollaborationObserver::class);
+
         parent::boot();
     }
 
@@ -73,7 +87,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
             }
         });
 
-
         //Enable
         Horizon::auth(function ($request) {
             return !empty(Auth::user());
@@ -81,5 +94,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // we are using custom passport migrations
         Passport::ignoreMigrations();
+
+        // Laravy Menu
+        Blade::directive('lavaryMenuJson', function ($menu) {
+            return "<?php echo htmlentities(lavaryMenuJson({$menu}), ENT_QUOTES); ?>";
+        });
     }
 }

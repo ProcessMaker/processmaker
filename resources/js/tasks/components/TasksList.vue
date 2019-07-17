@@ -1,12 +1,11 @@
 <template>
   <div class="data-table">
-    <data-loading v-if="apiDataLoading || apiNoResults"
+    <data-loading :for="/tasks\?page/" v-show="shouldShowLoader"
       :empty="$t('Congratulations')"
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
       empty-icon="beach"
-      ref="loader"
     />
-    <div v-else class="card card-body table-card">
+    <div v-show="!shouldShowLoader" class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -27,7 +26,7 @@
         <template slot="requestName" slot-scope="props">
           <b-link
             @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
-          >{{props.rowData.process.name}}</b-link>
+          >#{{props.rowData.process_request.id}}  {{props.rowData.process.name}}</b-link>
         </template>
 
         <template slot="assignee" slot-scope="props">
@@ -136,22 +135,21 @@ export default {
   beforeCreate() {
     let params = (new URL(document.location)).searchParams;
     this.status = params.get('status');
+    let status = '';
 
     switch (this.status) {
       case "CLOSED":
-        this.$parent.status.push({
-          name: 'Completed',
-          value: 'Completed'
-        });
+        status = 'Completed';
         break;
       default:
-        this.$parent.status.push({
-          name: 'In Progress',
-          value: 'In Progress'
-        });
+        status = 'In Progress';
         break;
     }
-    
+    this.$parent.status.push({
+      name: this.$t(status),
+      value: status
+    });
+
     this.$parent.buildPmql();
   },
   mounted: function mounted() {
@@ -184,7 +182,7 @@ export default {
       };
       return (
         '<i class="fas fa-circle ' +
-        bubbleColor[status] + 
+        bubbleColor[status] +
         ' small"></i> ' + statusNames[status]
       );
     },

@@ -21,7 +21,7 @@ import {
     callActivity,
     eventBasedGateway,
     intermediateMessageCatchEvent
-} from '@processmaker/spark-modeler';
+} from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -90,7 +90,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 // Set default properties for task
 task.definition = function definition(moddle) {
     return moddle.create('bpmn:Task', {
-        name: 'New Task',
+        name: window.ProcessMaker.events.$t('New Task'),
         assignment: 'requester',
     });
 };
@@ -101,13 +101,13 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
     registerNode(startTimerEvent, definition => {
         const eventDefinitions = definition.get('eventDefinitions');
         if (definition.$type === 'bpmn:StartEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-        return 'processmaker-modeler-start-timer-event';
+        return startTimerEvent.id;
         }
     });
     registerNode(intermediateTimerEvent, definition => {
         const eventDefinitions = definition.get('eventDefinitions');
         if (definition.$type === 'bpmn:IntermediateCatchEvent' && eventDefinitions && eventDefinitions.length && eventDefinitions[0].$type === 'bpmn:TimerEventDefinition') {
-        return 'processmaker-modeler-intermediate-catch-timer-event';
+        return intermediateTimerEvent.id;
         }
     });
 
@@ -190,6 +190,14 @@ ProcessMaker.EventBus.$on('modeler-init', ({ registerNode, registerBpmnExtension
             helper: 'Summary screen that will be displayed when process finish with this End event.',
             name: 'screenRef',
             params: { type: 'DISPLAY' }
+        }
+    });
+    registerInspectorExtension(manualTask, {
+        component: "TaskAssignment",
+        config: {
+            label: "Task Assignment",
+            helper: "",
+            name: "taskAssignment"
         }
     });
     registerInspectorExtension(manualTask, {

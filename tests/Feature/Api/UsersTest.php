@@ -77,8 +77,9 @@ class UsersTest extends TestCase
 
     public function testDefaultValuesOfUser()
     {
-        putenv('APP_TIMEZONE=Africa/Niamey');
-        putenv('DATE_FORMAT=d/M/Y');
+        putenv('APP_TIMEZONE=America/Los_Angeles');
+        putenv('DATE_FORMAT=m/d/Y H:i');
+        putenv('APP_LANG=en');
 
         // Create a user without setting fields that have default
         $faker = Faker::create();
@@ -96,8 +97,9 @@ class UsersTest extends TestCase
 
         // Validate that the created user has the correct default values
         $createdUser = $response->json();
-        $this->assertNotNull($createdUser['timezone'], env('APP_TIMEZONE'));
-        $this->assertNotNull($createdUser['datetime_format'], env('DATE_FORMAT'));
+        $this->assertEquals(getenv('APP_TIMEZONE'), $createdUser['timezone']);
+        $this->assertEquals(getenv('DATE_FORMAT'), $createdUser['datetime_format']);
+        $this->assertEquals(getenv('APP_LANG'), $createdUser['language']);
 
 
         // Create a user setting fields that have default
@@ -226,7 +228,32 @@ class UsersTest extends TestCase
         $this->assertEquals(1, $response->json()['meta']['total']);
         $this->assertEquals('firstname', $response->json()['meta']['sort_by']);
         $this->assertEquals('DESC', $response->json()['meta']['sort_order']);
+    }
 
+    /**
+     * Tests filtering a user based off of email address
+     */
+    public function testFetchUserByEmailAddressFilter()
+    {
+        factory(User::class)->create([
+            'email' => 'test@example.com'
+        ]);
+
+        $query = '?filter=' . urlencode('test@example.com');
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+
+        //Validate the header status code
+        $response->assertStatus(200);
+
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        // Verify return data
+        $this->assertEquals(1, $response->json()['meta']['total']);
+        $this->assertEquals('test@example.com', $response->json()['data'][0]['email']);
     }
 
     /**

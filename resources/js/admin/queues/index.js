@@ -20,7 +20,8 @@ Vue.prototype.$http = axios.create({
 
 // Add a request interceptor
 Vue.prototype.$http.interceptors.request.use((config) => {
-    config.url = config.url.replace("/api/1.0/horizon", "/admin/queues");
+    config.baseURL = '';
+    config.url = config.url.replace("/horizon/api", "/admin/queues/api");
     // Do something before request is sent
     return config;
 }, error =>

@@ -29,7 +29,7 @@
       <template>
         <a
           data-v-2eb90a9e
-          href="https://processmaker.gitbook.io/processmaker-4-community/-LPblkrcFWowWJ6HZdhC/"
+          href="https://processmaker.gitbook.io/processmaker/-Lhqv3ZMbDJxqTpMtVKV/"
           class="dropdown-item item"
           target="_blank"
         >
@@ -82,7 +82,7 @@ export default {
       this.fullName = user.fullname;
       this.information = [
         {
-          src: user.avatar,
+          src: user.avatar ? (user.avatar + '?' + new Date().getTime()) : user.avatar,
           title: "",
           initials:
             user.firstname && user.lastname

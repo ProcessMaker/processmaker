@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\Models\Media as Model;
 
 /**
  * Represents media files stored in the database
@@ -48,6 +48,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Media extends Model
 {
+    protected $connection = 'processmaker';
 
     /**
      * The attributes that are mass assignable.

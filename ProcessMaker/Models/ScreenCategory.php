@@ -33,6 +33,8 @@ class ScreenCategory extends Model
 {
     use SerializeToIso8601;
 
+    protected $connection = 'processmaker';
+
     protected $fillable = [
         'name',
         'status'

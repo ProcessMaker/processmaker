@@ -36,6 +36,8 @@ class ProcessPermission extends Model
 {
     use SerializeToIso8601;
 
+    protected $connection = 'processmaker';
+
     protected $fillable = [
         'process_id',
         'permission_id',

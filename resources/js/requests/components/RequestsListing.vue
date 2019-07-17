@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
-    <data-loading v-if="apiDataLoading || apiNoResults" ref="loader" />
-    <div v-else class="card card-body table-card">
+    <data-loading :for="/requests\?page/" v-show="shouldShowLoader" />
+    <div v-show="!shouldShowLoader" class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -112,31 +112,28 @@ export default {
       ]
     };
   },
-  beforeCreate() {	
-    let statusname = ''
-    let statusvalue = ''
-    
-    switch (Processmaker.status) {	
-      // if there is no status, meaning its on my requests, We should only show the in progress status
-      case "":	
-        statusname = 'In Progress'
-        statusvalue = 'In Progress'        
-        this.$parent.requester.push(Processmaker.user);	         
-        break;	
-      case "in_progress":	
-        statusname = 'In Progress'
-        statusvalue = 'In Progress'    
-        break;	
-      case "completed":	
-        statusname = 'Completed'
-        statusvalue = 'Completed'    
-        break;       
-    }	
+  beforeCreate() {
+    let status = null;
 
-    this.$parent.status.push({	
-      name: statusname,	
-      value: statusvalue	
-    });	
+    switch (Processmaker.status) {
+      // if there is no status, meaning its on my requests, We should only show the in progress status
+      case "":
+        status = 'In Progress';
+        this.$parent.requester.push(Processmaker.user);
+        break;
+      case "in_progress":
+        status = 'In Progress';
+        break;
+      case "completed":
+        status = 'Completed';
+        break;
+    }
+    if (status) {
+      this.$parent.status.push({
+        name: this.$t(status),
+        value: status
+      });
+    }
 
     this.$parent.buildPmql();
   },

@@ -89,6 +89,8 @@ class Process extends Model implements HasMedia
     use ProcessStartEventAssignmentsTrait;
     use PMQL;
 
+    protected $connection = 'processmaker';
+
     /**
      * The attributes that aren't mass assignable.
      *

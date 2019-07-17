@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Permission extends Model
 {
+    protected $connection = 'processmaker';
 
     protected $fillable = [
         'title',
         'name',
         'group',
     ];
-    
+
     public function getResourceTitleAttribute()
     {
         $match = preg_match("/(.+)-(.+)/", $this->name, $matches);
@@ -29,7 +30,7 @@ class Permission extends Model
             return $matches[2];
         }
     }
-    
+
     public function getActionAttribute()
     {
         $match = preg_match("/(.+)-(.+)/", $this->name, $matches);
@@ -42,7 +43,7 @@ class Permission extends Model
     {
         //Grab all of our permissions
         $all = self::all();
-        
+
         $grouped = $all->groupBy('resource_title')->sort();
         return $grouped;
     }
@@ -51,21 +52,21 @@ class Permission extends Model
     {
         //Grab all of our permissions
         $all = self::all();
-        
+
         $grouped = $all->groupBy('resource_name');
         return $grouped;
     }
-    
+
     static public function for($resource)
     {
         return self::byResource($resource)->pluck('name');
     }
-    
+
     static public function byResource($resource)
     {
         //Grab all of our permissions
         $all = self::all();
-        
+
         //Filter them by the name of the resource
         $filtered = $all->filter(function ($value, $key) use($resource) {
             $match = preg_match("/(.+)-{$resource}/", $value->name);
@@ -75,7 +76,7 @@ class Permission extends Model
                 return false;
             }
         });
-        
+
         return $filtered;
     }
 
@@ -83,7 +84,7 @@ class Permission extends Model
     {
         try {
             if (is_array($name)) {
-                return self::whereIn('name', $name)->get();                
+                return self::whereIn('name', $name)->get();
             } else {
                 return self::where('name', $name)->firstOrFail();
             }
@@ -91,12 +92,12 @@ class Permission extends Model
             throw new ModelNotFoundException($name . " permission does not exist");
         }
     }
-    
+
     public function users()
     {
         return $this->morphedByMany('ProcessMaker\Models\User', 'assignable');
     }
-    
+
     public function groups()
     {
         return $this->morphedByMany('ProcessMaker\Models\Group', 'assignable');

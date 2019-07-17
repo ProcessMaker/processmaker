@@ -4,6 +4,8 @@ namespace ProcessMaker;
 
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 
 class PmqlHelper {
     private $type;
@@ -24,11 +26,13 @@ class PmqlHelper {
     {
         return function($expression) {
             $field = $expression->field->field();
-            $method_name = $this->type . ucfirst($field);
+            if (is_string($field)) {
+                $method_name = $this->type . ucfirst($field);
 
-            if (method_exists($this, $method_name)) {
-                $value = $expression->value->value();
-                return $this->$method_name($value);
+                if (method_exists($this, $method_name)) {
+                    $value = $expression->value->value();
+                    return $this->$method_name($value);
+                }                
             }
         };
     }
@@ -37,7 +41,7 @@ class PmqlHelper {
     {
         return function($query) use ($value) {
             $processes = Process::where('name', $value)->get();
-            $query->whereIn('process_id', $processes->pluck('process_id'));
+            $query->whereIn('process_id', $processes->pluck('id'));
         };
     }
 
@@ -54,21 +58,21 @@ class PmqlHelper {
 
     private function requestRequester($value)
     {
-        return function($query) use ($value) {
-            $requests = ProcessRequest::whereHas('user', function($query) use ($value) {
-                $query->where('username', $value);
-            })->get();
+        $user = User::where('username', $value)->get()->first();
+        $requests = ProcessRequest::where('user_id', $user->id)->get();
+
+        return function($query) use ($requests) {
             $query->whereIn('id', $requests->pluck('id'));
         };
     }
     
     private function requestParticipant($value)
     {
-        return function($query) use ($value) {
-            $requests = ProcessRequest::whereHas('participants', function($query) use ($value) {
-                $query->where('username', $value);
-            })->get();
-            $query->whereIn('id', $requests->pluck('id'));
+        $user = User::where('username', $value)->get()->first();
+        $tokens = ProcessRequestToken::where('user_id', $user->id)->get();
+
+        return function($query) use ($tokens) {
+            $query->whereIn('id', $tokens->pluck('process_request_id'));
         };
     }
 }

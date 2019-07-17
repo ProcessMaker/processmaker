@@ -26,7 +26,6 @@ class CreateScheduledTasksTable extends Migration
             $table->index('process_request_id');
 
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
-            $table->foreign('process_request_id')->references('id')->on('process_requests')->onDelete('cascade');
         });
     }
 
