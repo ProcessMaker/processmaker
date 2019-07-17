@@ -667,4 +667,8 @@
     .fa-trash {
         cursor: pointer;
     }
+
+    .form-group {
+      padding: 0px;
+    }
 </style>

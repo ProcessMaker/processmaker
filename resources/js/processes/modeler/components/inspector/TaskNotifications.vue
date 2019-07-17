@@ -230,4 +230,8 @@
       margin-bottom: 0;
       padding-top: 3px;
     }
+
+    .form-group {
+      padding: 0px;
+    }
 </style>
