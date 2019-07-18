@@ -173,7 +173,7 @@ class ScreenTest extends DuskTestCase
             ]);
 
             //display form builder, show or hide controls
-            $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
+            $browser->visit('/designer/screen-builder/' . $screen->id . '/edit')
                 //wait for Editor screens
                 ->waitFor('#screen-container')
                 //display link for export
