@@ -111,7 +111,7 @@
             });
           },
           onClose() {
-            window.location.href = '/processes/scripts';
+            window.location.href = '/designer/scripts';
           },
           onUpdate() {
             this.resetErrors();

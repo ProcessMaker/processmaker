@@ -122,7 +122,7 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The environment variable was created.')}}', 'success');
-                    window.location = '/processes/environment-variables';
+                    window.location = '/designer/environment-variables';
                   })
                   .catch(error => {
                     this.disabled = false;

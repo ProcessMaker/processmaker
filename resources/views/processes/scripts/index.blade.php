@@ -174,7 +174,7 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The script was created.')}}', 'success');
-                    window.location = "/processes/scripts/" + response.data.id + "/builder";
+                    window.location = "/designer/scripts/" + response.data.id + "/builder";
                   })
                   .catch(error => {
                     this.disabled = false;

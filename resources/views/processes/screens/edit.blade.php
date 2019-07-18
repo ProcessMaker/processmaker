@@ -69,7 +69,7 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/processes/screens';
+                    window.location.href = '/designer/screens';
                 },
                 onUpdate() {
                     this.resetErrors();

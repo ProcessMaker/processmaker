@@ -79,7 +79,7 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/processes/environment-variables';
+                    window.location.href = '/designer/environment-variables';
                 },
                 onUpdate() {
                     this.resetErrors();

@@ -48,7 +48,7 @@ class ScreenTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
 
             //create new screen
-            $browser->visit('/processes/screens')
+            $browser->visit('/designer/screens')
                 ->waitFor('#screenIndex')
                 ->click('button[data-target=\\#createScreen]')
                 ->waitFor('#createScreen')
@@ -77,7 +77,7 @@ class ScreenTest extends DuskTestCase
             ]);
 
             //display form builder, show or hide controls
-            $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
+            $browser->visit('/designer/screen-builder/' . $screen->id . '/edit')
                 ->maximize()
                 //wait for Editor screens
                 ->waitFor('#screen-container')
@@ -132,7 +132,7 @@ class ScreenTest extends DuskTestCase
             ]);
 
             //display form builder, show or hide controls
-            $browser->visit('/processes/screen-builder/' . $screen->id . '/edit')
+            $browser->visit('/designer/screen-builder/' . $screen->id . '/edit')
                 //wait for Editor screens
                 ->waitFor('#screen-container')
                 //display link for export

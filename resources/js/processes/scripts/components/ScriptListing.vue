@@ -83,7 +83,7 @@
             id="title"
             v-model="dupScript.title"
             v-bind:class="{ 'is-invalid': errors.title }"
-          >
+          />
           <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
@@ -169,7 +169,7 @@ export default {
 
   methods: {
     goToEdit(data) {
-      window.location = "/processes/scripts/" + data + "/edit";
+      window.location = "/designer/scripts/" + data + "/edit";
     },
     showModal() {
       this.$refs.myModalRef.show();
@@ -181,7 +181,7 @@ export default {
       ProcessMaker.apiClient
         .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
         .then(response => {
-          ProcessMaker.alert(this.$t('The script was duplicated.'), "success");
+          ProcessMaker.alert(this.$t("The script was duplicated."), "success");
           this.hideModal();
           this.fetch();
         })
@@ -194,7 +194,7 @@ export default {
     onAction(action, data, index) {
       switch (action) {
         case "edit-script":
-          window.location.href = "/processes/scripts/" + data.id + "/builder";
+          window.location.href = "/designer/scripts/" + data.id + "/builder";
           break;
         case "edit-item":
           this.goToEdit(data.id);
@@ -211,7 +211,9 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t('Are you sure you want to delete {{item}}?', {item: data.title}),
+            this.$t("Are you sure you want to delete {{item}}?", {
+              item: data.title
+            }),
             "",
             () => {
               this.$emit("delete", data);

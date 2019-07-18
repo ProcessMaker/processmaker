@@ -145,7 +145,7 @@
                 ProcessMaker.apiClient.post('screens', this.formData)
                   .then(response => {
                     ProcessMaker.alert('{{__('The screen was created.')}}', 'success');
-                    window.location = '/processes/screen-builder/' + response.data.id + '/edit';
+                    window.location = '/designer/screen-builder/' + response.data.id + '/edit';
                   })
                   .catch(error => {
                     this.disabled = false;
