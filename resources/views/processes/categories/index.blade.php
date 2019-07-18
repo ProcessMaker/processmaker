@@ -107,7 +107,7 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The category was created.')}}', 'success');
-                    window.location = '/processes/categories/' + response.data.id + '/edit';
+                    window.location = '/designer/categories/' + response.data.id + '/edit';
                   })
                   .catch(error => {
                     this.disabled = false;

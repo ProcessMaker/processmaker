@@ -67,7 +67,7 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/processes/categories';
+                    window.location.href = '/designer/categories';
                 },
                 onUpdate() {
                     this.resetErrors();
