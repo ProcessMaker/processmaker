@@ -59,12 +59,19 @@
                             </small>
                             <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                         </div>
+                        <div class="form-group">
+                            {!! Form::label('status', __('Status')) !!}
+                            {!! Form::select('status', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')], null, ['id' => 'status',
+                            'class' => 'form-control', 'v-model' => 'status', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.status}']) !!}
+                            <div class="invalid-feedback" v-for="status in errors.status">@{{status}}</div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary"
-                                data-dismiss="modal" @click="onClose">{{__('Cancel')}}</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                            {{ __('Cancel') }}
+                        </button>
                         <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
-                            {{__('Save')}}
+                            {{ __('Save') }}
                         </button>
                     </div>
                 </div>
@@ -105,8 +112,8 @@
                   status: this.status
                 })
                   .then(response => {
-                    ProcessMaker.alert('{{__('The category was created.')}}', 'success');
-                    window.location = '/processes/categories/' + response.data.id + '/edit';
+                    ProcessMaker.alert('{{__('The category was created.')}}', 'success', 5, true);
+                    window.location = '/processes/categories';
                   })
                   .catch(error => {
                     this.disabled = false;
