@@ -375,16 +375,6 @@ export default {
     beforeExportScreen() {
       this.saveScreen(true);
     },
-    methods: {
-      containsSubmitButton() {
-        return this.config.some(config => config.items.some(this.isSubmitButton));
-      },
-      isSubmitButton(item) {
-        return item.component === 'FormButton' && item.config.event === 'submit';
-      },
-      beforeExportScreen() {
-        this.saveScreen(true);
-      },
       focusInspector(validate) {
         if (!validate.item || !validate.page) {
           return;
