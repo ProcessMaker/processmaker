@@ -19,6 +19,31 @@ abstract class DuskTestCase extends BaseTestCase
     use DatabaseMigrations;
 
     /**
+     * Create a fresh database instance before each test class is initialized. This is different
+     * than the default DatabaseMigrations as it is only run when the class is setup. The trait
+     * provided by Laravel will run on EACH test function, slowing things down significantly.
+     *
+     * If you need to reset the DB between function runs just include the trait in that specific
+     * test. In most cases you probably wont need to do this, or can modify the test slightly to
+     * avoid the need to do so.
+     */
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
+
+        // dd(__DIR__ . '/../bootstrap/app.php');
+
+        $app = require __DIR__ . '/../bootstrap/app.php';
+
+        /** @var \Pterodactyl\Console\Kernel $kernel */
+        $kernel = $app->make(\ProcessMaker\Console\Kernel::class);
+
+        $kernel->bootstrap();
+        $kernel->call('migrate:fresh');
+        $kernel->call('db:seed');
+    }
+
+    /**
      * Register the base URL with Dusk.
      *
      * @return void
@@ -26,8 +51,6 @@ abstract class DuskTestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->artisan('db:seed');
     }
 
     /**
