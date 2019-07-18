@@ -296,7 +296,11 @@ class TaskController extends Controller
 
     private function handleOrderByRequestName($request, $tasksList)
     {
-        $orderColumns = collect(explode(',', $request->input('order_by', 'updated_at')));
+        // Get the list of columns to order by - trimmed if spaces were added
+        $orderColumns = collect(explode(',', $request->input('order_by', 'updated_at')))
+            ->map(function($value, $key) {
+                return trim($value);
+            });
         $requestColumns = $orderColumns->filter(function($value, $key) {
             return str_contains($value, 'process_requests.');
         })->sort();
@@ -309,7 +313,7 @@ class TaskController extends Controller
         $requestQuery = DB::connection('data')->table('process_requests');
 
         foreach($requestColumns as $column) {
-            $columnName = explode('.', $column)[1];
+            $columnName = trim(explode('.', $column)[1]);
             $requestQuery->orderBy($columnName, $request->input('order_direction', 'asc'));
         }
 
