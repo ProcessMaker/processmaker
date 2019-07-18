@@ -77,12 +77,13 @@ window.ProcessMaker.navbar = new Vue({
     methods: {
         alertDismissed(alert) {
             const index = this.alerts.indexOf(alert);
-            index > -1 ? this.alerts.splice(index, 1) : null;
-            //remove old alerts
-            this.alerts = this.alerts.filter(item => {
+            let copy = _.cloneDeep(this.alerts)
+            index > -1 ? copy.splice(index, 1) : null;
+            // remove old alerts
+            copy = copy.filter(item => {
                 return ((Date.now() - item.timestamp) / 1000) < item.alertShow;
             });
-            this.saveLocalAlerts(this.alerts);
+            this.saveLocalAlerts(copy);
         },
         loadLocalAlerts () {
             try {
