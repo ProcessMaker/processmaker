@@ -8,6 +8,7 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Screen;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -28,7 +29,7 @@ class RequestController extends Controller
         if ($type === 'all') {
             $this->authorize('view-all_requests');
         }
-        
+
         //load counters
         $query = ProcessRequest::query();
         if (!Auth::user()->is_administrator && !Auth::user()->can('view-all_requests')) {
@@ -47,7 +48,7 @@ class RequestController extends Controller
         if(array_key_exists($type,$types)){
           $title = $types[$type];
         }
-        
+
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
         return view('requests.index', compact(
@@ -92,12 +93,13 @@ class RequestController extends Controller
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
-        
+
         if ($request->status === 'CANCELED' && $request->process->cancel_screen_id) {
             $request->summary_screen = $request->process->cancelScreen;
         } else {
             $request->summary_screen = $request->getSummaryScreen();
         }
+        $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
 
         $canCancel = Auth::user()->can('cancel', $request->process);
         $canViewComments = Auth::user()->hasPermissionsFor('comments')->count() > 0;

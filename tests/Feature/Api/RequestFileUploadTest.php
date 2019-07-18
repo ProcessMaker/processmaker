@@ -10,7 +10,7 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TaskAssignmentPreviousOwnerTest extends TestCase
+class RequestFileUploadTest extends TestCase
 {
     use RequestHelper;
 

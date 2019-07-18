@@ -65,7 +65,7 @@ class ProcessController extends Controller
             ->toArray();
 
         $screenCancel = Screen::find($process->cancel_screen_id);
-        $screenRequestDetail = Screen::find($process->cancel_screen_id);
+        $screenRequestDetail = Screen::find($process->request_detail_screen_id);
 
         $list = $this->listUsersAndGroups();
 
