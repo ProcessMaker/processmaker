@@ -10,7 +10,7 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
-class TaskAssignmentPreviousOwnerTest extends TestCase
+class RequestFileUploadTest extends TestCase
 {
     use RequestHelper;
 
@@ -56,9 +56,9 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
         $uploadTask = $request->tokens()->where('status', 'ACTIVE')->first();
         $route = route('api.requests.files.store', [$request->id, 'event' => 'node_1']);
         $response = $this->actingAs($uploadTask->user, 'api')
-                         ->json('POST', $route, [
-                             'file' => File::image('photo.jpg')
-                         ]);
+            ->json('POST', $route, [
+                'file' => File::image('photo.jpg')
+            ]);
         // Check the user has access to upload a file
         $response->assertStatus(200);
         // Check the file was uploaded
@@ -98,9 +98,9 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
         // Upload file with a user that does not participate in the request
         $route = route('api.requests.files.store', [$request->id, 'event' => 'node_1']);
         $response = $this->actingAs($doesNotParticipateUser, 'api')
-                         ->json('POST', $route, [
-                             'file' => File::image('photo.jpg')
-                         ]);
+            ->json('POST', $route, [
+                'file' => File::image('photo.jpg')
+            ]);
         // Check the user does not have access to upload a file
         $response->assertStatus(403);
         // Check the file was not uploaded
@@ -130,7 +130,7 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
                         'status' => 'ACTIVE',
                     ]);
                     $users[$userId] =
-                    $task->setAttribute('assignedUsers', $users[$userId]->id);
+                        $task->setAttribute('assignedUsers', $users[$userId]->id);
                 }
             }
         }
