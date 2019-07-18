@@ -305,4 +305,16 @@ class User extends Authenticatable implements HasMedia
         }
         return false;
     }
+
+    /**
+     * Find the user instance for the given username.
+     * This ensures we are utilizing our username field for grants for oauth.
+     *
+     * @param  string  $username
+     * @return \App\User
+     */
+    public function findForPassport($username)
+    {
+        return $this->where('username', $username)->first();
+    }
 }

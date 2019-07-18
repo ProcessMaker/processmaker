@@ -87,20 +87,38 @@
                                     </div>
                                 </template>
                                 <template v-else>
-                                    <table class="vuetable table table-hover mt-3 border">
-                                        <thead>
-                                        <tr>
-                                            <th scope="col">{{ __('Key') }}</th>
-                                            <th scope="col">{{ __('Value') }}</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr v-for="item in summary">
-                                            <td>@{{item.key}}</td>
-                                            <td>@{{item.value}}</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
+                                    <template v-if="summary.length > 0">
+                                        <table class="vuetable table table-hover mt-3 border">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">{{ __('Key') }}</th>
+                                                <th scope="col">{{ __('Value') }}</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr v-for="item in summary">
+                                                <td>@{{item.key}}</td>
+                                                <td>@{{item.value}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </template>
+                                    <template v-else>
+                                        <div class="card mt-3">
+                                            <div class="card-header">
+                                                <h5>
+                                                    {{ __('No Data Found') }}
+                                                </h5>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <p class="card-text">
+                                                    {{ __("Sorry, this request doesn't contain any information.") }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </template>
+
                                 </template>
                             </template>
                             <template v-else>

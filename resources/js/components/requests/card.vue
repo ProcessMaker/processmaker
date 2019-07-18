@@ -53,7 +53,7 @@ export default {
         .then(response => {
           this.spin = 0;
           var instance = response.data;
-          window.location = "/requests";
+          window.location = "/requests/" + instance.id;
         });
     },
     showRequestDetails: function(id) {

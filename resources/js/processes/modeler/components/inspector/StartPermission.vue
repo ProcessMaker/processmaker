@@ -201,4 +201,8 @@
 
 <style lang="scss" scoped>
     @import "~vue-multiselect/dist/vue-multiselect.min.css";
+
+    .form-group {
+      padding: 0px;
+    }
 </style>
