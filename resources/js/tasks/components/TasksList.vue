@@ -112,7 +112,7 @@ export default {
           title: () => this.$t("Request"),
           name: "__slot:requestName",
           field: "request",
-          sortField: "request.name"
+          sortField: "process_requests.id,process_requests.name"
         },
         {
           title: () => this.$t("Assignee"),
