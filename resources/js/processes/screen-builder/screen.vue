@@ -296,7 +296,7 @@ import formTypes from "./formTypes";
         return this.config.some(config => config.items.some(this.isSubmitButton));
       },
       isSubmitButton(item) {
-        return item.label === 'Submit';
+        return item.component === 'FormButton' && item.config.event === 'submit';
       },
       beforeExportScreen() {
         this.saveScreen(true);

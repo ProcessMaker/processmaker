@@ -92,4 +92,20 @@ class ProcessRequestPolicy
         
         return $user->can('editData', $request->process);
     }
+
+    /**
+     * User has access if participates in the request.
+     *
+     * @param  \ProcessMaker\Models\User  $user
+     * @param  \ProcessMaker\Models\ProcessRequest  $processRequest
+     *
+     * @return mixed
+     */
+    public function participate(User $user, ProcessRequest $processRequest)
+    {
+        if ($processRequest->user_id == $user->id) {
+            return true;
+        }
+        return $processRequest->hasUserParticipated($user);
+    }
 }

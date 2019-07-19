@@ -263,10 +263,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             return;
         }
 
-        $catch = $request->tokens()->where('element_id', $config->element_id)->first();
-
+        $catches = $request->tokens()
+            ->where('element_id', $config->element_id)
+            ->where('status', 'ACTIVE')->get();
         $executed = false;
-        if ($catch && $catch->status == 'ACTIVE') {
+        foreach($catches as $catch) {
             WorkflowManager::completeCatchEvent($process, $request, $catch, []);
             $executed = true;
         }

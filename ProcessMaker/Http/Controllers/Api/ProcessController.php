@@ -451,18 +451,25 @@ class ProcessController extends Controller
     public function startProcesses(Request $request)
     {
         $where = $this->getRequestFilterBy($request, ['processes.name', 'processes.description', 'category.name']);
-        $orderBy = $this->getRequestSortBy($request, 'name');
+        $orderColumns = explode(',', $request->input('order_by', 'name'));
+        $orderDirections = explode(',', $request->input('order_direction', 'asc'));
         $include = $this->getRequestInclude($request);
 
-        $processes = Process::with($include)->with('events')
+        $query = Process::with($include)->with('events')
             ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
             ->where('category.status', 'ACTIVE')
-            ->where($where)
-            ->orderBy(...$orderBy)
-            ->get();
+            ->where($where);
+
+        // Add the order by columns
+        foreach($orderColumns as $key=>$orderColumn) {
+            $orderDirection = array_key_exists($key, $orderDirections) ? $orderDirections[$key] : 'asc';
+            $query->orderBy($orderColumn, $orderDirection);
+        }
+
+        $processes = $query->get();
 
         foreach ($processes as $key => $process) {
             //filter he start events that can be used manually (no timer start events);

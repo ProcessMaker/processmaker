@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\Task as Resource;
@@ -28,7 +29,7 @@ class TaskController extends Controller
     public $doNotSanitize = [
         'data' // this will be sanitized on a field-by-field basis
     ];
-    
+
     private $statusMap = [
         'In Progress' => 'ACTIVE',
         'Completed' => 'CLOSED',
@@ -40,7 +41,7 @@ class TaskController extends Controller
      * @param Request $request
      *
      * @return Response
-     * 
+     *
      * @OA\Get(
      *     path="/tasks",
      *     summary="Returns all tasks that the user has access to",
@@ -81,6 +82,10 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $query = ProcessRequestToken::with(['processRequest', 'user']);
+//                ->leftJoin('process_requests', 'process_requests.id', '=', 'process_request_tokens.process_request_id');
+
+        $query->select('process_request_tokens.*');
+
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
         $query->with($include);
 
@@ -103,22 +108,27 @@ class TaskController extends Controller
                 $query->where(is_string($key) ? $key : $column, 'like', $filter);
             }
         }
-        
-        
+
+
         //list only display elements type task
         $query->where('element_type', '=', 'task');
-        $query->orderBy(
-            $request->input('order_by', 'updated_at'), $request->input('order_direction', 'asc')
-        );
+
+        // order by one or more columns
+        $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
+        foreach($orderColumns as $column) {
+            if (!str_contains($column, '.')) {
+                $query->orderBy( $column, $request->input('order_direction', 'asc'));
+            }
+        }
 
         $inOverdueQuery = ProcessRequestToken::where('user_id', Auth::user()->id)
             ->where('status', 'ACTIVE')
             ->where('due_at', '<', Carbon::now());
 
-        $inOverdue = $inOverdueQuery->count();   
+        $inOverdue = $inOverdueQuery->count();
 
-        $pmql = $request->input('pmql', '');    
-        
+        $pmql = $request->input('pmql', '');
+
         $statusFilter = $request->input('statusfilter', '');
         if ($statusFilter) {
             $statusFilter = explode(',', $statusFilter);
@@ -134,7 +144,7 @@ class TaskController extends Controller
         try {
             if (!empty($pmql)) {
                 $query->pmql($pmql, function($expression) {
-                    
+
                     //Handle request name
                     if ($expression->field->field() == 'request') {
                         return function($query) use($expression) {
@@ -158,17 +168,17 @@ class TaskController extends Controller
                             if (array_key_exists($value, $this->statusMap)) {
                                 $value = $this->statusMap[$value];
                             }
-                            
+
                             $query->where('process_request_tokens.status', $value);
                         };
                     }
-                    
+
                     if (is_object($expression->field->field())) {
                         return function($query) use ($expression) {
                             $field = $expression->field->toEloquent();
                             $operator = $expression->operator;
                             $value = $expression->value->value();
-                            
+
                             $requests = ProcessRequest::where($field, $operator, $value)->get();
                             $query->whereIn('process_request_id', $requests->pluck('id'));
                         };
@@ -180,20 +190,20 @@ class TaskController extends Controller
                             if (is_string($value)) {
                                 $value = '"' . $value . '"';
                             }
-                            
+
                             $pmql = "$field $operator $value";
-                            
+
                             return function($query) use ($pmql) {
                                 $requests = ProcessRequest::pmql($pmql)->get();
                                 $query->whereIn('process_request_id', $requests->pluck('id'));
                             };
-                        }    
-                    }                    
+                        }
+                    }
                 });
             }
 
-            $response = $query->get();
-            
+            $response = $this->handleOrderByRequestName($request, $query->get());
+
         } catch (QueryException $e) {
             return response(['message' => __('Your PMQL search could not be completed.')], 400);
         } catch (SyntaxError $e) {
@@ -229,7 +239,7 @@ class TaskController extends Controller
      *
      * @return Resource
      * @throws \Throwable
-     * 
+     *
      * @OA\Put(
      *     path="/tasks/{task_id}",
      *     summary="Update a task",
@@ -275,7 +285,7 @@ class TaskController extends Controller
             // Reassign user
             $task->user_id = $request->input('user_id');
             $task->save();
-            
+
             // Send a notification to the user
             $notification = new TaskReassignmentNotification($task);
             $task->user->notify($notification);
@@ -283,5 +293,42 @@ class TaskController extends Controller
         } else {
             return abort(422);
         }
+    }
+
+    private function handleOrderByRequestName($request, $tasksList)
+    {
+        // Get the list of columns to order by - trimmed if spaces were added
+        $orderColumns = collect(explode(',', $request->input('order_by', 'updated_at')))
+            ->map(function($value, $key) {
+                return trim($value);
+            });
+        $requestColumns = $orderColumns->filter(function($value, $key) {
+            return str_contains($value, 'process_requests.');
+        })->sort();
+
+        // if there ins't an order by request name, tasks are already ordered
+        if ($requestColumns->count() == 0) {
+            return $tasksList;
+        }
+
+        $requestQuery = DB::connection('data')->table('process_requests');
+
+        foreach($requestColumns as $column) {
+            $columnName = trim(explode('.', $column)[1]);
+            $requestQuery->orderBy($columnName, $request->input('order_direction', 'asc'));
+        }
+
+        $orderedRequests = $requestQuery->get();
+        $orderedTasks = collect([]);
+
+        foreach($orderedRequests as $item) {
+            $element= $tasksList->first(function ($value, $key) use($item) {
+                return $value->process_request_id == $item->id;
+            });
+
+            $orderedTasks->push($element);
+        }
+
+        return $orderedTasks;
     }
 }
