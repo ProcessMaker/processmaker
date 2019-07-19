@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -29,23 +30,14 @@ class FileController extends Controller
      * @return ApiCollection
      *
      * @OA\Get(
-     *     path="/requests/{request_id}/files",
-     *     summary="Returns the list of files associated to a request",
+     *     path="/files",
+     *     summary="Returns the list of files",
      *     operationId="getFiles",
      *     tags={"Files"},
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     @OA\Parameter(
-     *         description="ID of the request",
-     *         in="path",
-     *         name="request_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
      *
      *     @OA\Response(
      *         response=200,
@@ -95,7 +87,7 @@ class FileController extends Controller
      * @return \Illuminate\Http\Response
      *
      * @OA\Post(
-     *     path="/requests/{request_id}/files",
+     *     path="/files",
      *     summary="Save a new media file",
      *     operationId="createFile",
      *     tags={"Files"},
@@ -113,15 +105,6 @@ class FileController extends Controller
      *         description="Name of the class of the model",
      *         required=false,
      *         @OA\Schema(type="string"),
-     *     ),
-     *      @OA\Parameter(
-     *         description="ID of the request",
-     *         in="path",
-     *         name="request_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
      *     ),
      *     @OA\RequestBody(
      *       required=true,
@@ -189,15 +172,16 @@ class FileController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Get a single media file.
      *
      * @param Media $file
-     * @return \Illuminate\Http\Response
+     *
+     * @return ResponseFactory|Response
      *
      * @OA\Get(
-     *     path="/requests/{request_id}/files/{file_id}",
-     *     summary="Get a file uploaded to a request",
-     *     operationId="getFilesById",
+     *     path="/files/{file_id}",
+     *     summary="Get the metadata of a file",
+     *     operationId="getFileById",
      *     tags={"Files"},
      *     @OA\Parameter(
      *         description="ID of the file to return",
@@ -208,10 +192,33 @@ class FileController extends Controller
      *           type="string",
      *         )
      *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the file",
+     *         @OA\JsonContent(ref="#/components/schemas/groups")
+     *     ),
+     * )
+     */
+    public function show(Media $file)
+    {
+        return new ApiResource($file);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Media $file
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/files/{file_id}/contents",
+     *     summary="Get the contents of a file",
+     *     operationId="getFileContentsById",
+     *     tags={"Files"},
      *     @OA\Parameter(
-     *         description="ID of the request",
+     *         description="ID of the file to return",
      *         in="path",
-     *         name="request_id",
+     *         name="file_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -219,12 +226,13 @@ class FileController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the group",
-     *         @OA\JsonContent(ref="#/components/schemas/groups")
+     *         description="Successfully found the file",
+     *         @OA\MediaType(
+     *             mediaType="application/octet-stream")
      *     ),
      * )
      */
-    public function show(Media $file)
+    public function download(Media $file)
     {
         $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
                 $file->id . '/' .
@@ -241,7 +249,7 @@ class FileController extends Controller
      * @return \Illuminate\Http\Response
      *
      * @OA\Put(
-     *     path="/requests/{request_id}/files/{file_id}",
+     *     path="/files/{file_id}",
      *     summary="Update a media file",
      *     operationId="updateFile",
      *     tags={"Files"},
@@ -300,7 +308,7 @@ class FileController extends Controller
      * @internal param int $id
      *
      * @OA\Delete(
-     *     path="/requests/{request_id}",
+     *     path="/files/{file_id}",
      *     summary="Delete a media file",
      *     operationId="deleteFile",
      *     tags={"Files"},
