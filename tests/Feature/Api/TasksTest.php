@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -61,7 +62,7 @@ class TasksTest extends TestCase
         //Verify the structure
         $response->assertJsonStructure(['data' => ['*' => $this->structure]]);
     }
-    
+
     /**
      * You only see tasks that belong to you if you are not admin
      */
@@ -173,6 +174,38 @@ class TasksTest extends TestCase
         //Verify the first row
         $firstRow = $response->json('data')[0];
         $this->assertArraySubset(['completed_at' => null], $firstRow);
+    }
+
+    public function testSortByRequestName()
+    {
+        //$request = factory(ProcessRequest::class)->create();
+
+        factory(ProcessRequestToken::class, 5)->create([
+            'user_id' => $this->user->id,
+            'completed_at' => Carbon::now()
+        ]);
+
+        $tasks = ProcessRequestToken::all()->pluck('process_request_id')->sort();
+
+        // Order by process_request_id
+        $route = route('api.' . $this->resource . '.index',[
+                'order_by' => 'process_request_id',
+                'order_direction' =>'asc'
+        ]);
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
+        $firstRow = $response->json('data')[0];
+        $this->assertEquals($tasks->first(), $firstRow['process_request_id']);
+
+        // Order by the request name (id + name)
+        $route = route('api.' . $this->resource . '.index',[
+            'order_by' => 'process_requests.id,process_requests.name',
+            'order_direction' =>'desc'
+        ]);
+        $response = $this->apiCall('GET', $route);
+        $response->assertStatus(200);
+        $firstRow = $response->json('data')[0];
+        $this->assertEquals($tasks->last(), $firstRow['process_request_id']);
     }
 
     /**

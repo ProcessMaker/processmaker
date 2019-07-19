@@ -61,8 +61,8 @@
   <div class="d-flex flex-grow-1 flex-column" style="overflow: hidden;">
     @include('layouts.navbar')
     @yield('breadcrumbs')
-    <div class="flex-grow-1 d-flex flex-column h-50" id="mainbody">
-      <div class="main flex-grow-1">
+    <div class="flex-grow-1 d-flex flex-column h-100" id="mainbody">
+      <div class="main flex-grow-1 h-100">
         @yield('content')
       </div>
     </div>
