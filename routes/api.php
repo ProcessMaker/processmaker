@@ -13,6 +13,12 @@ Route::group(
     Route::post('users', 'UserController@store')->name('users.store')->middleware('can:create-users');
     Route::put('users/{user}', 'UserController@update')->name('users.update'); //Permissions handled in the controller
     Route::delete('users/{user}', 'UserController@destroy')->name('users.destroy')->middleware('can:delete-users');
+    // User personal access tokens
+    Route::get('users/{user}/tokens', 'UserTokenController@index')->name('users.tokens.index'); //Permissions handled in the controller
+    Route::get('users/{user}/tokens/{tokenId}', 'UserTokenController@show')->name('users.tokens.show'); //Permissions handled in the controller
+    Route::post('users/{user}/tokens', 'UserTokenController@store')->name('users.tokens.store'); // Permissions handled in the controller
+    Route::delete('users/{user}/tokens/{tokenId}', 'UserTokenController@destroy')->name('users.tokens.destroy'); // Permissions handled in the controller
+
 
     // Groups
     Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
@@ -101,11 +107,11 @@ Route::group(
     Route::post('requests/{request}/events/{event}', 'ProcessRequestController@activateIntermediateEvent')->name('requests.update,request');
 
     // Request Files
-    Route::get('requests/{request}/files', 'ProcessRequestFileController@index')->name('requests.files.index')->middleware('can:view,request');
-    Route::get('requests/{request}/files/{file}', 'ProcessRequestFileController@show')->name('requests.files.show')->middleware('can:view,request');
-    Route::post('requests/{request}/files', 'ProcessRequestFileController@store')->name('requests.files.store')->middleware('can:update,request');
-    Route::put('requests/{request}/files/{file}', 'ProcessRequestFileController@update')->name('requests.files.update')->middleware('can:update,request');
-    Route::delete('requests/{request}/files/{file}', 'ProcessRequestFileController@destroy')->name('requests.filesrequests.files.destroy')->middleware('can:update,request');
+    Route::get('requests/{request}/files', 'ProcessRequestFileController@index')->name('requests.files.index')->middleware('can:participate,request');
+    Route::get('requests/{request}/files/{file}', 'ProcessRequestFileController@show')->name('requests.files.show')->middleware('can:participate,request');
+    Route::post('requests/{request}/files', 'ProcessRequestFileController@store')->name('requests.files.store')->middleware('can:participate,request');
+    Route::put('requests/{request}/files/{file}', 'ProcessRequestFileController@update')->name('requests.files.update')->middleware('can:participate,request');
+    Route::delete('requests/{request}/files/{file}', 'ProcessRequestFileController@destroy')->name('requests.filesrequests.files.destroy')->middleware('can:participate,request');
 
     // Files
     Route::get('files', 'FileController@index')->name('files.index')->middleware('can:view-files');

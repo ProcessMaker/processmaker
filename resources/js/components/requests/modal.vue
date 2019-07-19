@@ -126,10 +126,8 @@
             this.perPage +
             "&filter=" +
             this.filter +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection +
+            "&order_by=category.name,name" +
+            "&order_direction=asc,asc" +
             "&include=events,category"
           )
           .then(response => {

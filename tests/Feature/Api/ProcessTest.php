@@ -9,6 +9,7 @@ use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -154,6 +155,33 @@ class ProcessTest extends TestCase
             ]
         );
     }
+
+    /**
+     * Verifies if the list of processes that can be started is correct
+     */
+    public function testStartRequestList()
+    {
+        ProcessRequest::query()->delete();
+
+        // Create 3 categories
+        $cat1 = factory(ProcessCategory::class)->create(['name' => 'Z cat']);
+        $cat2 = factory(ProcessCategory::class)->create(['name' => 'A cat']);
+        $cat3 = factory(ProcessCategory::class)->create(['name' => 'M cat']);
+
+        // Create 2 processes for every category
+        factory(Process::class, 2)->create(['process_category_id' => $cat1->id]);
+        factory(Process::class, 2)->create(['process_category_id' => $cat2->id, 'name' => 'ZProcess']);
+        factory(Process::class, 2)->create(['process_category_id' => $cat2->id, 'name' => 'BProcess']);
+        factory(Process::class, 2)->create(['process_category_id' => $cat3->id]);
+
+        $response = $this->apiCall('GET', route('api.processes.start', ['order_by' => 'category.name,name']));
+        $this->assertStatus(200, $response);
+
+        // The returned list should be ordered category and then by process name, alphabetically
+        $this->assertEquals($cat2->id, $response->getData()->data[0]->process_category_id);
+        $this->assertEquals('BProcess', $response->getData()->data[0]->name);
+    }
+
 
     public function testProcessEventsTrigger()
     {
