@@ -144,12 +144,28 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-        // We get the model instance with the data that the user sent
-        $modelClass = 'ProcessMaker\\Models\\' . ucwords($request->query('model', null));
+        // Get the ID of the model this should be attached to
         $modelId = $request->query('model_id', null);
 
+        // Set the model class to false initially
+        $modelClass = false;
+
+        // The model class can be a name or a full path
+        $classOptions = [
+            $request->query('model', null),
+            'ProcessMaker\\Models\\' . ucwords($request->query('model', null)),
+        ];        
+        
+        // Check for the model class until we find a match
+        foreach ($classOptions as $class) {
+            if (class_exists($class)) {
+                $modelClass = $class;
+                break;
+            }
+        }
+
         // If no model info was sent in the request
-        if ($modelClass === null || $modelId === null || !class_exists($modelClass)) {
+        if (! $modelClass || ! $modelId) {
             throw new NotFoundHttpException();
         }
 
@@ -159,8 +175,10 @@ class FileController extends Controller
         if ($model === null) {
             throw new NotFoundHttpException();
         }
+        
+        $mediaCollection = $request->input('collection', 'local');
 
-        $addedMedia = $model->addMediaFromRequest('file')->toMediaCollection('local');
+        $addedMedia = $model->addMediaFromRequest('file')->toMediaCollection($mediaCollection);
 
         return response([
             'id' => $addedMedia->id,
