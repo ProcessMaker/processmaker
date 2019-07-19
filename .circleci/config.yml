@@ -124,8 +124,9 @@ jobs:
       - run:
           name: Configure scripts executor
           command: |
-            docker pull processmaker/executor:php
-            docker pull processmaker/executor:lua
+            docker pull processmaker4/executor-php:latest
+            docker pull processmaker4/executor-lua:latest
+            docker pull processmaker4/executor-node:latest
             sudo mkdir -m777 /opt/executor
 
       #- run: sudo docker-php-ext-enable xdebug
@@ -143,7 +144,7 @@ jobs:
       # run tests!
       - run:
           name: "PHPUnit"
-          command: "./vendor/bin/phpunit -d memory_limit=-1"
+          command: "./vendor/bin/phpunit -v -d memory_limit=-1"
           environment:
             DB_DATABASE: "circle_test"
             DB_PASSWORD: "P4ssW0rd1!"
@@ -151,7 +152,7 @@ jobs:
             DATA_DB_DRIVER: "sqlsrv"
             DATA_DB_HOST: "127.0.0.1"
             DATA_DB_PORT: "1433"
-            DATA_DB_DATABASE: "userexternal"
+            DATA_DB_DATABASE: "test"
             DATA_DB_USERNAME: "sa"
             DATA_DB_PASSWORD: "P4ssW0rd1!"
             RUN_MSSQL_TESTS: "true"

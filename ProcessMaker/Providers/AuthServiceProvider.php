@@ -50,7 +50,14 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-        Passport::routes();
+        Passport::routes(function ($router) {
+            $router->forAuthorization();
+            $router->forAccessTokens();
+            $router->forTransientTokens();
+            $router->forClients();
+            // Do NOT add routes for managing personal access tokens
+            // As this is handled by our OWN api endpoints
+        });
 
         Gate::before(function ($user) {
             if ($user->is_administrator) {

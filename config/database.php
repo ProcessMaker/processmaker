@@ -43,7 +43,7 @@ return [
             'engine' => 'InnoDB',
         ],
         'data' => [
-            'driver' => env('DATA_DB_DRIVER'),
+            'driver' => env('DATA_DB_DRIVER', 'mysql'),
             'host' => env('DATA_DB_HOST', 'localhost'),
             'port' => env('DATA_DB_PORT'),
             'database' => env('DATA_DB_DATABASE'),

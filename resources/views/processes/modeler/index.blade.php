@@ -11,11 +11,12 @@
 
 @section('breadcrumbs')
     @include('shared.breadcrumbs', [
-      'routes' => [
+    'routes' => [
         __('Processes') => route('processes.index'),
-        __('Edit') . " " . $process->name => null,
+        __('Modeler') => null,
+        $process->name => null,
       ],
-      'saveButtonEvent' => 'modeler-saveBpmn'
+      'showModelerSaveButton' => true
     ])
 @endsection
 
@@ -43,6 +44,15 @@ ol.breadcrumb {
   border-bottom: 0;
 }
 
+[aria-label="breadcrumb"] {
+  position: relative;
+}
+
+.modeler-save-button {
+  right: 1rem;
+  transform: translateY(-50%);
+  top: 50%;
+}
 </style>
 @endsection
 

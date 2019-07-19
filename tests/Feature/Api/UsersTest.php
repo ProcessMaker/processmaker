@@ -228,7 +228,32 @@ class UsersTest extends TestCase
         $this->assertEquals(1, $response->json()['meta']['total']);
         $this->assertEquals('firstname', $response->json()['meta']['sort_by']);
         $this->assertEquals('DESC', $response->json()['meta']['sort_order']);
+    }
 
+    /**
+     * Tests filtering a user based off of email address
+     */
+    public function testFetchUserByEmailAddressFilter()
+    {
+        factory(User::class)->create([
+            'email' => 'test@example.com'
+        ]);
+
+        $query = '?filter=' . urlencode('test@example.com');
+        $response = $this->apiCall('GET', self::API_TEST_URL . $query);
+
+        //Validate the header status code
+        $response->assertStatus(200);
+
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        // Verify return data
+        $this->assertEquals(1, $response->json()['meta']['total']);
+        $this->assertEquals('test@example.com', $response->json()['data'][0]['email']);
     }
 
     /**

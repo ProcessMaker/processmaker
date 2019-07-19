@@ -1,7 +1,7 @@
 <template>
   <b-container id="modeler-app" class="h-100 container p-0">
     <b-card no-body class="h-100 border-top-0">
-      <b-card-body class="overflow-hidden position-relative p-0">
+      <b-card-body class="overflow-hidden position-relative p-0 vh-100">
         <modeler ref="modeler" @validate="validationErrors = $event" />
       </b-card-body>
 
@@ -84,7 +84,7 @@ export default {
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
 
-    window.ProcessMaker.EventBus.$on('modeler-saveBpmn', () => {
+    window.ProcessMaker.EventBus.$on('modeler-save', () => {
       this.saveBpmn();
     });
 
@@ -95,4 +95,3 @@ export default {
   },
 };
 </script>
-

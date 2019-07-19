@@ -18,9 +18,15 @@ abstract class DuskTestCase extends BaseTestCase
     use CreatesApplication;
     use DatabaseMigrations;
 
-    public function setUp()
+    /**
+     * Register the base URL with Dusk.
+     *
+     * @return void
+     */
+    protected function setUp(): void
     {
         parent::setUp();
+
         $this->artisan('db:seed');
     }
 
@@ -32,8 +38,8 @@ abstract class DuskTestCase extends BaseTestCase
      */
     public static function prepare()
     {
-        if(!env('CLOUD_BROWSER_TESTING', false)) {
-          static::startChromeDriver();
+        if (!env('CLOUD_BROWSER_TESTING', false)) {
+            static::startChromeDriver();
         }
     }
 
@@ -44,7 +50,7 @@ abstract class DuskTestCase extends BaseTestCase
      */
     protected function driver()
     {
-        if(!env('SAUCELABS_BROWSER_TESTING', false)) {
+        if (!env('SAUCELABS_BROWSER_TESTING', false)) {
             $options = (new ChromeOptions)->addArguments([
                 '--disable-gpu',
                 '--headless',
@@ -64,7 +70,7 @@ abstract class DuskTestCase extends BaseTestCase
                 [
                     "platform" => env('SAUCELABS_PLATFORM', "Windows 7"),
                     "browserName" => env('SAUCELABS_BROWSER', "chrome"),
-                    "version"=> env('SAUCELABS_BROWSER_VERSION', "67")
+                    "version" => env('SAUCELABS_BROWSER_VERSION', "67")
                 ]
             );
         }
