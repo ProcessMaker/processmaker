@@ -27,7 +27,6 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *
  * @OA\Schema(
  *   schema="screensEditable",
- *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="type", type="string"),
@@ -37,6 +36,21 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @OA\Schema(
  *   schema="screens",
  *   allOf={@OA\Schema(ref="#/components/schemas/screensEditable")},
+ *   @OA\Property(property="id", type="string", format="id"),
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * ),
+ * @OA\Schema(
+ *   schema="addNewScreensEditable",
+ *   @OA\Property(property="title", type="string"),
+ *   @OA\Property(property="type", type="string"),
+ *   @OA\Property(property="description", type="string"),
+ *   @OA\Property(property="config", type="string"),
+ * ),
+ * @OA\Schema(
+ *   schema="addNewScreens",
+ *   allOf={@OA\Schema(ref="#/components/schemas/addNewScreensEditable")},
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )

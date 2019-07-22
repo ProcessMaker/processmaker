@@ -131,12 +131,12 @@ class ScreenController extends Controller
      *     tags={"Screens"},
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/addNewScreensEditable")
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *         @OA\JsonContent(ref="#/components/schemas/addNewScreens")
      *     ),
      * )
      */
