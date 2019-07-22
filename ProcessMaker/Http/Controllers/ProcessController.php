@@ -171,6 +171,14 @@ class ProcessController extends Controller
         return view('processes.import');
     }
 
+    /**
+     * Download the JSON definition of the process
+     *
+     * @param Process $process
+     * @param string $key
+     *
+     * @return stream
+     */
     public function download(Process $process, $key)
     {
         $fileName = snake_case($process->name) . '.json';
@@ -181,7 +189,9 @@ class ProcessController extends Controller
         } else {
             return response()->streamDownload(function () use ($fileContents) {
                 echo $fileContents;
-            }, $fileName);
+            }, $fileName, [
+                'Content-type' => 'application/json',
+            ]);
         }
     }
 
