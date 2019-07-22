@@ -195,7 +195,7 @@ class ScreenCategoryController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *
      *      * @OA\Delete(
-     *     path="/screen_categories/screen_category_id",
+     *     path="/screen_categories/{screen_category_id}",
      *     summary="Delete a screen category",
      *     operationId="deleteScreenCategory",
      *     tags={"Screen Categories"},
@@ -210,8 +210,7 @@ class ScreenCategoryController extends Controller
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/ScreenCategory")
+     *         description="success"
      *     ),
      * )
      */
