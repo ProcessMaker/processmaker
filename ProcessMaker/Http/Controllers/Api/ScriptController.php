@@ -90,7 +90,7 @@ class ScriptController extends Controller
     /**
      * Previews executing a script, with sample data/config data
      *
-     *     @OA\Get(
+     *     @OA\Post(
      *     path="/scripts/{script_id}/preview",
      *     summary="Test script code without saving it",
      *     operationId="getScriptsPreview",
@@ -142,7 +142,7 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
-     *     path="/scripts/scriptsId",
+     *     path="/scripts/{script_id}",
      *     summary="Get single script by ID",
      *     operationId="getScriptsById",
      *     tags={"Scripts"},
@@ -210,7 +210,7 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/scripts/scriptsId",
+     *     path="/scripts/{script_id}",
      *     summary="Update a script",
      *     operationId="updateScript",
      *     tags={"Scripts"},
@@ -228,9 +228,8 @@ class ScriptController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/scriptsEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/scripts")
      *     ),
      * )
      */

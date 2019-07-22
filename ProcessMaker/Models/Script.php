@@ -24,7 +24,6 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
- *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
@@ -36,6 +35,7 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
  * @OA\Schema(
  *   schema="scripts",
  *   allOf={@OA\Schema(ref="#/components/schemas/scriptsEditable")},
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
