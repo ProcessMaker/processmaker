@@ -38,7 +38,6 @@ class User extends Authenticatable implements HasMedia
      * @OA\Schema(
      *   schema="usersEditable",
      *   @OA\Property(property="email", type="string", format="email"),
-     *   @OA\Property(property="password", type="string"),
      *   @OA\Property(property="firstname", type="string"),
      *   @OA\Property(property="lastname", type="string"),
      *   @OA\Property(property="username", type="string"),
@@ -55,8 +54,16 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="datetime_format", type="string"),
      *   @OA\Property(property="language", type="string"),
      *   @OA\Property(property="is_administrator", type="boolean"),
+     *   @OA\Property(property="expires_at", type="string"),
      *   @OA\Property(property="loggedin_at", type="string"),
+     *   @OA\Property(property="remember_token", type="string"),
      *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+     *   @OA\Property(property="group_id", type="string"),
+     *   @OA\Property(property="member_type", type="string"),
+     *   @OA\Property(property="member_id", type="string"),
+     *   @OA\Property(property="fullname", type="string"),
+     *   @OA\Property(property="avatar", type="string"),
+     *   @OA\Property(property="media", type="[]"),
      * ),
      * @OA\Schema(
      *   schema="users",
@@ -67,6 +74,7 @@ class User extends Authenticatable implements HasMedia
      *          @OA\Property(property="id", type="string", format="id"),
      *          @OA\Property(property="created_at", type="string", format="date-time"),
      *          @OA\Property(property="updated_at", type="string", format="date-time"),
+     *          @OA\Property(property="deleted_at", type="string", format="date-time"),
      *      )
      *   },
      * )
