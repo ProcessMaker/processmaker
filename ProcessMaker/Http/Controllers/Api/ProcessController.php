@@ -632,9 +632,9 @@ class ProcessController extends Controller
      *     operationId="importProcess",
      *     tags={"Processes"},
      *     @OA\Response(
-     *         response=201,
+     *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessImport")
      *     ),
      *     @OA\RequestBody(
      *         required=true,

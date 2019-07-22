@@ -81,6 +81,23 @@ use ProcessMaker\Query\Traits\PMQL;
  *         )),
  *     },
  * )
+ * 
+ * @OA\Schema(
+ *     schema="ProcessImport",
+ *     allOf={
+ *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),   
+ *      @OA\Schema(
+ *         @OA\Property(
+ *             property="status",
+ *             type="object"
+ *         ),
+ *         @OA\Property(
+ *             property="assignable",
+ *             type="[]"
+ *         ),
+ *      ),
+ *     },
+ * )
  */
 class Process extends Model implements HasMedia
 {
