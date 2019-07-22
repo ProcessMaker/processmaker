@@ -305,7 +305,7 @@ class GroupMemberController extends Controller
      *
      * @OA\Get(
      *     path="/user_members_available",
-     *     summary="Returns all users available for a given member",
+     *     summary="Returns all users available for a given group",
      *     operationId="getUserMembersAvailable",
      *     tags={"Group Members"},
      *     @OA\Parameter(
@@ -317,7 +317,13 @@ class GroupMemberController extends Controller
      *           type="string",
      *         )
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(
+     *         parameter="filter",
+     *         name="filter",
+     *         in="query",
+     *         description="Filter results by string. Searches Name. Can be a substring.",
+     *         @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
