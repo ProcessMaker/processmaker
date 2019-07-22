@@ -1,7 +1,8 @@
 const {
     mix
 } = require('laravel-mix');
-const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
+const MonocoEditorPlugin = require('monaco-editor-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 /*
  |--------------------------------------------------------------------------
@@ -16,7 +17,14 @@ const MonocoEditorPlugin = require('monaco-editor-webpack-plugin')
 
 mix.webpackConfig({
     plugins: [
-        new MonocoEditorPlugin()
+        new MonocoEditorPlugin(),
+        new CopyPlugin([
+          {
+            from: 'node_modules/npm-font-open-sans',
+            to: 'public/css/precompiled/npm-font-open-sans',
+            toType: 'dir'
+          }
+        ])
     ],
     resolve: {
         modules: [
@@ -77,6 +85,9 @@ mix.webpackConfig({
 
     .extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap'])
     .copy('resources/img/*', 'public/img')
+    .copy('node_modules/@fortawesome/fontawesome-free/scss/*', 'public/css/precompiled/fontawesome')
+    .copy('node_modules/vue-multiselect/dist/vue-multiselect.min.css', 'public/css/precompiled')
+    .copy('node_modules/bootstrap/scss/*', 'public/css/precompiled/bootstrap')
     .sass('resources/sass/sidebar/sidebar.scss', 'public/css')
     .sass('resources/sass/app.scss', 'public/css')
     .sass('resources/sass/admin/queues.scss', 'public/css/admin')
