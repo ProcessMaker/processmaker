@@ -586,7 +586,7 @@ class ProcessController extends Controller
      *
      * @return Response
      *
-     * @OA\Get(
+     * @OA\Post(
      *     path="/processes/{processId}/export",
      *     summary="Export a single process by ID",
      *     operationId="exportProcess",
