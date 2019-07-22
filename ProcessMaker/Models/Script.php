@@ -29,7 +29,9 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="code", type="string"),
- *   @OA\Property(property="teimout", type="integer"),
+ *   @OA\Property(property="timeout", type="integer"),
+ *   @OA\Property(property="run_as_user_id", type="integer"),
+ *   @OA\Property(property="key", type="string"),
  * ),
  * @OA\Schema(
  *   schema="scripts",
