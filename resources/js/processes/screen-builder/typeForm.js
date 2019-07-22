@@ -77,6 +77,12 @@ initialControls.push({
     }
 });
 
+// The submit button has by default the 'submit' value
+let submitButton = initialControls.find(x => x.control.label === "Submit");
+if (submitButton) {
+    submitButton.control.config.fieldValue = "submit";
+}
+
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
     for (let i = 0; i < initialControls.length; i++) {
         // Load of additional properties for inspector
