@@ -158,7 +158,7 @@ class ScreenController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/screens/screensId",
+     *     path="/screens/{screens_id}",
      *     summary="Update a screen",
      *     operationId="updateScreen",
      *     tags={"Screens"},
@@ -176,9 +176,8 @@ class ScreenController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */

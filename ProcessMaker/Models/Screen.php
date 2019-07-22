@@ -27,7 +27,6 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *
  * @OA\Schema(
  *   schema="screensEditable",
- *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="type", type="string"),
  *   @OA\Property(property="description", type="string"),
