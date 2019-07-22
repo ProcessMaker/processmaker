@@ -58,7 +58,9 @@
               :config="config"
               :computed="computed"
               :custom-css="customCSS"
-              v-on:css-errors="cssErrors = $event"/>
+              v-on:css-errors="cssErrors = $event"
+              :mock-magic-variables="mockMagicVariables"
+            />
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
@@ -149,6 +151,7 @@
   import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
   import MonacoEditor from "vue-monaco";
+  import mockMagicVariables from './mockMagicVariables';
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -194,6 +197,7 @@ import formTypes from "./formTypes";
           lineNumbers: 'off',
           minimap: false,
         },
+        mockMagicVariables,
       };
     },
     components: {
