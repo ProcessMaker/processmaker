@@ -114,6 +114,10 @@ jobs:
             php artisan l5:generate
             mkdir -p /tmp/processmaker-sdk-php
             php artisan processmaker:sdk php /tmp/processmaker-sdk-php
+
+            mkdir -p /tmp/processmaker-sdk-node
+            php artisan processmaker:sdk javascript /tmp/processmaker-sdk-node
+
             mkdir -p /tmp/processmaker-sdk-lua
             php artisan processmaker:sdk lua /tmp/processmaker-sdk-lua
 
