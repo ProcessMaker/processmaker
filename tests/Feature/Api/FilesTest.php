@@ -93,7 +93,7 @@ class FilesTest extends TestCase
       $model = factory(User::class)->create();
       $addedMedia = $model->addMedia($fileUpload)->toMediaCollection('local');
 
-      $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $addedMedia->id);
+      $response = $this->apiCall('GET', self::API_TEST_URL . '/' . $addedMedia->id . '/contents');
 
       // Validate the header status code
       $response->assertStatus(200);

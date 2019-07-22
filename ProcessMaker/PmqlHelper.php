@@ -9,12 +9,17 @@ use ProcessMaker\Models\User;
 
 class PmqlHelper {
     private $type;
-    
+
     private $statusMap = [
         'In Progress' => 'ACTIVE',
         'Completed' => 'COMPLETED',
         'Error' => 'ERROR',
         'Canceled' => 'CANCELED',
+    ];
+
+    private $taskStatusMap = [
+        'In Progress' => 'ACTIVE',
+        'Completed' => 'CLOSED',
     ];
 
     public function __construct($type)
@@ -32,7 +37,7 @@ class PmqlHelper {
                 if (method_exists($this, $method_name)) {
                     $value = $expression->value->value();
                     return $this->$method_name($value);
-                }                
+                }
             }
         };
     }
@@ -65,7 +70,7 @@ class PmqlHelper {
             $query->whereIn('id', $requests->pluck('id'));
         };
     }
-    
+
     private function requestParticipant($value)
     {
         $user = User::where('username', $value)->get()->first();
@@ -73,6 +78,32 @@ class PmqlHelper {
 
         return function($query) use ($tokens) {
             $query->whereIn('id', $tokens->pluck('process_request_id'));
+        };
+    }
+
+    private function taskStatus($value)
+    {
+        return function($query) use ($value) {
+            if (array_key_exists($value, $this->taskStatusMap)) {
+                $query->where('status', $this->taskStatusMap[$value]);
+            } else {
+                $query->where('status', $value);
+            }
+        };
+    }
+
+    private function taskTask($value)
+    {
+        return function($query) use($value) {
+            $query->where('element_name', $value);
+        };
+    }
+
+    private function taskRequest($value)
+    {
+        return function($query) use ($value) {
+            $processes = Process::where('name', $value);
+            $query->whereIn('process_id', $processes->pluck('id'));
         };
     }
 }
