@@ -685,10 +685,18 @@ class ProcessController extends Controller
      *     summary="Update assignments after import",
      *     operationId="assignmentProcess",
      *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
      *     @OA\Response(
-     *         response=201,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
