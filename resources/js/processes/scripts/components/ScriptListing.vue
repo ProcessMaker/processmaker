@@ -90,12 +90,6 @@
           <label for="description">{{ $t('Description') }}</label>
           <textarea class="form-control" id="description" rows="3" v-model="dupScript.description"></textarea>
         </div>
-        <div class="form-group">
-          <label for="type">{{ $t('Language') }}</label>
-          <select class="form-control" id="type" disabled>
-            <option>{{dupScript.language}}</option>
-          </select>
-        </div>
       </form>
       <div slot="modal-footer" class="w-100" align="right">
         <button type="button" class="btn btn-outline-secondary" @click="hideModal">{{$t('Cancel')}}</button>
