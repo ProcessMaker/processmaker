@@ -27,14 +27,19 @@ class ScreenCategoryController extends Controller
      *
      * @OA\Get(
      *     path="/screen_categories",
-     *     summary="Returns all screens categories that the user has access to",
+     *     summary="Returns all screens categories that the user has access to", 
      *     operationId="getScreenCategories",
      *     tags={"Screen Categories"},
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(
+     *             parameter="filter",
+     *             name="filter",
+     *             in="query",
+     *             description="Filter results by string. Searches Name, Description, and Status. All fields must match exactly.",
+     *             @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
      *         response=200,
