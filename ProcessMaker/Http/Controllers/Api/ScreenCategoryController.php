@@ -90,7 +90,7 @@ class ScreenCategoryController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      *     * @OA\Get(
-     *     path="/screen_categories/screen_category_id",
+     *     path="/screen_categories/{screen_category_id}",
      *     summary="Get single screen category by ID",
      *     operationId="getScreenCategoryById",
      *     tags={"Screen Categories"},
