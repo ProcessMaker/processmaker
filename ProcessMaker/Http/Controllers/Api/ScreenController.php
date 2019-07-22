@@ -91,7 +91,7 @@ class ScreenController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     *     @OA\Get(
+     * @OA\Get(
      *     path="/screens/{screens_id}",
      *     summary="Get single screens by ID",
      *     operationId="getScreensById",
@@ -124,19 +124,19 @@ class ScreenController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     *     @OA\Post(
+     *  @OA\Post(
      *     path="/screens",
      *     summary="Save a new screens",
      *     operationId="createScreens",
      *     tags={"Screens"},
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/addNewScreensEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/addNewScreens")
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */
