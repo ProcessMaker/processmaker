@@ -204,9 +204,8 @@ class ProcessRequestController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/processRequestEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
      * )
      */
