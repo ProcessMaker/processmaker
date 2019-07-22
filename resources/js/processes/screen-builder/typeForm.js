@@ -77,6 +77,12 @@ initialControls.push({
     }
 });
 
+// The submit button has by default the 'submit' value
+let submitButton = initialControls.find(x => x.control.label === "Submit");
+if (submitButton) {
+    submitButton.control.config.fieldValue = "submit";
+}
+
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
     for (let i = 0; i < initialControls.length; i++) {
         // Load of additional properties for inspector
@@ -100,7 +106,7 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
 
         for (let j = 0; j < item.control.inspector.length; j++) {
             let config = item.control.inspector[j].config;
-            if (config.label === "Field Name") {
+            if (config.label === "Key Name") {
                 config.validation = "regex:/^(?:[A-Z_a-z])(?:[0-9A-Z_a-z])*$/|required";
             }
         }
