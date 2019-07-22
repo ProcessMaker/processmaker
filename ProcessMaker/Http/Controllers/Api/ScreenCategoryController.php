@@ -155,7 +155,7 @@ class ScreenCategoryController extends Controller
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      *      * @OA\Put(
-     *     path="/screen_categories/screen_category_id",
+     *     path="/screen_categories/{screen_category_id}",
      *     summary="Update a screen Category",
      *     operationId="updateScreenCategory",
      *     tags={"Screen Categories"},
