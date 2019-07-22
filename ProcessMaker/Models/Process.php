@@ -42,6 +42,9 @@ use ProcessMaker\Query\Traits\PMQL;
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="pause_timer_start", type="integer"),
+ *   @OA\Property(property="cancel_screen_id", type="integer"),
+ *   @OA\Property(property="has_timer_start_events", type="boolean"),
  * ),
  * @OA\Schema(
  *   schema="Process",
