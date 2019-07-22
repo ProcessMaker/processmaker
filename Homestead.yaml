@@ -13,12 +13,9 @@ folders:
         to: /home/vagrant/processmaker
 # Uncomment and modify the following if you want to
 # link a local directory for package development
-    -
-        map: '../packages'
-        to: /home/vagrant/packages
-    -
-        map: '../sitetest'
-        to: /home/vagrant/sitetest
+#    -
+#        map: '../processmaker-plugins'
+#        to: /home/vagrant/processmaker-plugins
 #
 # Uncomment and modify the following if you want to
 # link a local directory for nayra (workflow engine) development
@@ -30,14 +27,8 @@ sites:
         map: processmaker.local.processmaker.com
         to: /home/vagrant/processmaker/public
         schedule: true
-    -
-        map: sitetest.local.processmaker.com
-        to: /home/vagrant/sitetest/public
-        schedule: true
 databases:
     - processmaker
     - test
-    - sitetest
-    - sitetest_test
 name: processmaker
 hostname: processmaker
