@@ -53,7 +53,23 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
- * )
+ * ),
+ * * @OA\Schema(
+ *   schema="getScreenEditable",
+ *   @OA\Property(property="title", type="string"),
+ *   @OA\Property(property="type", type="string"),
+ *   @OA\Property(property="description", type="string"),
+ *   @OA\Property(property="config", type="string"),
+ *   @OA\Property(property="computed", type="string"),
+ *   @OA\Property(property="custom_css", type="string"),
+ * ),
+ * @OA\Schema(
+ *   schema="getScreen",
+ *   allOf={@OA\Schema(ref="#/components/schemas/getScreenEditable")},
+ *   @OA\Property(property="id", type="string", format="id"),
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * ),
  *
  */
 class Screen extends Model

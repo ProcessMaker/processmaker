@@ -92,7 +92,7 @@ class ScreenController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
-     *     path="/screens/screensId",
+     *     path="/screens/{screens_id}",
      *     summary="Get single screens by ID",
      *     operationId="getScreensById",
      *     tags={"Screens"},
@@ -107,8 +107,8 @@ class ScreenController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the screens",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *         description="Successfully found the screen",
+     *         @OA\JsonContent(ref="#/components/schemas/getScreen")
      *     ),
      * )
      */
