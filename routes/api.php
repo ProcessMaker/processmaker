@@ -116,6 +116,7 @@ Route::group(
     // Files
     Route::get('files', 'FileController@index')->name('files.index')->middleware('can:view-files');
     Route::get('files/{file}', 'FileController@show')->name('files.show')->middleware('can:view-files');
+    Route::get('files/{file}/contents', 'FileController@download')->name('files.download')->middleware('can:view-files');
     Route::post('files', 'FileController@store')->name('files.store')->middleware('can:create-files');
     Route::put('files/{file}', 'FileController@update')->name('files.update')->middleware('can:edit-files');
     Route::delete('files/{file}', 'FileController@destroy')->name('files.destroy')->middleware('can:delete-files');
