@@ -15,6 +15,9 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
         Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit')->middleware('can:edit-users,user');
 
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth_clients');
+
+        Route::get('css', 'CssOverrideController@edit')->name('css.edit');
+
     });
 
     Route::get('admin', 'AdminController@index')->name('admin.index');
