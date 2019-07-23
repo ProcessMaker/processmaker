@@ -330,9 +330,9 @@ class FileController extends Controller
      *     operationId="deleteFile",
      *     tags={"Files"},
      *     @OA\Parameter(
-     *         description="ID of the request",
+     *         description="ID of the file",
      *         in="path",
-     *         name="request_id",
+     *         name="file_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
