@@ -814,10 +814,6 @@ class ProcessController extends Controller
      *           type="string",
      *         )
      *     ),
-     *     @OA\RequestBody(
-     *       required=false,
-     *       @OA\JsonContent()
-     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
