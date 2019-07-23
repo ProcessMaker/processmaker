@@ -107,7 +107,8 @@
                                     <button @click="browse" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                         {{__('Upload file')}}
                                     </button>
-                                    <input type="file" class="custom-file-input" ref="customFile" @change="onFileChange" accept=".bpmn">
+                                    <input type="file" class="custom-file-input" :class="{'is-invalid': addError.bpmn && addError.bpmn.length}" ref="customFile" @change="onFileChange" accept=".bpmn" style="height: 1em;">
+                                    <div class="invalid-feedback" v-for="error in addError.bpmn">@{{error}}</div>
                                 </div>
                             </div>
                         </div>
