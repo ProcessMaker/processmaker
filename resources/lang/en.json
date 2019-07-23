@@ -831,6 +831,8 @@
     "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
     "Your profile was saved.": "Your profile was saved.",
     "Are you sure you want to delete {{item}}?": "Are you sure you want to delete {{item}}?",
+    "Password Grant Client ID": "Password Grant Client ID",
+    "Password Grant Secret": "Password Grant Secret",
     "Processes": "Processes",
     "Request Detail Screen": "Request Detail Screen",
     "Configuration": "Configuration",

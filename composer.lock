@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a2b039b88fd37fd1d35b5ba949a10b66",
+    "content-hash": "6e3f9893f4843d8abbb8951999f7b53d",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -3426,12 +3426,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "032632e9f8f79b39cb1a6b0c154806040f1198c0"
+                "reference": "9d5ae0def3ceef30989c78f9be671972c0b23657"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/032632e9f8f79b39cb1a6b0c154806040f1198c0",
-                "reference": "032632e9f8f79b39cb1a6b0c154806040f1198c0",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/9d5ae0def3ceef30989c78f9be671972c0b23657",
+                "reference": "9d5ae0def3ceef30989c78f9be671972c0b23657",
                 "shasum": ""
             },
             "require-dev": {
@@ -3448,7 +3448,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2019-07-12T14:14:28+00:00"
+            "time": "2019-07-10T22:56:34+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -4153,16 +4153,16 @@
         },
         {
             "name": "spatie/laravel-medialibrary",
-            "version": "7.6.3",
+            "version": "7.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-medialibrary.git",
-                "reference": "8d85c4e9046f60d94f7df66c6c3163eb019f4f8d"
+                "reference": "ba5437eb92c537530538d68cb29181233d257fa0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/8d85c4e9046f60d94f7df66c6c3163eb019f4f8d",
-                "reference": "8d85c4e9046f60d94f7df66c6c3163eb019f4f8d",
+                "url": "https://api.github.com/repos/spatie/laravel-medialibrary/zipball/ba5437eb92c537530538d68cb29181233d257fa0",
+                "reference": "ba5437eb92c537530538d68cb29181233d257fa0",
                 "shasum": ""
             },
             "require": {
@@ -4232,7 +4232,7 @@
                 "media",
                 "spatie"
             ],
-            "time": "2019-07-12T11:25:27+00:00"
+            "time": "2019-07-04T11:01:02+00:00"
         },
         {
             "name": "spatie/pdf-to-image",

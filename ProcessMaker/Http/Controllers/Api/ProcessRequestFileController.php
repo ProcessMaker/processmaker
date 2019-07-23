@@ -38,9 +38,52 @@ class ProcessRequestFileController extends Controller
     ];
 
     use HasMediaTrait;
-    /*
-    * return list of Process Request files
-    */
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param Request $request
+     *
+     * @return ApiCollection
+     *
+     * @OA\Get(
+     *     path="/requests/{request_id}/files",
+     *     summary="Returns the list of files associated with a request",
+     *     operationId="getRequestFiles",
+     *     tags={"Request Files"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
+     *     @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="list of files",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/media"),
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
     public function index(Request $laravel_request, ProcessRequest $request)
      {
 		//Retrieve media from ProcessRequest
@@ -62,18 +105,53 @@ class ProcessRequestFileController extends Controller
 	        return new ResourceCollection($filtered);
 		}
      }
-
-     /**
-      * Chunk uploading behavior
-      * @param FileReceiver $receiver The Chunk FileReceiver
-      * @return JsonResponse
-      */
-
+     
+    /**
+     * Display the specified resource.
+     *
+     * @param Media $file
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Get(
+     *     path="/requests/{request_id}/files/{file_id}",
+     *     summary="Get a file uploaded to a request",
+     *     operationId="getRequestFilesById",
+     *     tags={"Request Files"},
+     *     @OA\Parameter(
+     *         description="ID of the file to return",
+     *         in="path",
+     *         name="file_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the group",
+     *         @OA\JsonContent(ref="#/components/schemas/groups")
+     *     ),
+     * )
+     */
     public function show(Request $laravel_request, ProcessRequest $request, $file_id)
     {
         return $request->getMedia()->where('id', $file_id)->first();
     }
 
+    /**
+     * Chunk uploading behavior
+     * @param FileReceiver $receiver The Chunk FileReceiver
+     * @return JsonResponse
+     */
     private function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
     {
             // Perform a chunk upload
@@ -112,8 +190,59 @@ class ProcessRequestFileController extends Controller
     }
 
     /**
-     * save media file to db
-    */
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Post(
+     *     path="/requests/{request_id}/files",
+     *     summary="Save a new media file to a request",
+     *     operationId="createRequestFile",
+     *     tags={"Request Files"},
+     *
+     *      @OA\Parameter(
+     *         name="media_id",
+     *         in="query",
+     *         description="ID of the model to which the file will be associated",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *     ),
+     *      @OA\Parameter(
+     *         name="media",
+     *         in="query",
+     *         description="Name of the class of the model",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),
+     *      @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(
+     *              @OA\Property(property="file", type="string", format="byte"),
+     *      )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="id", type="string"),
+     *              @OA\Property(property="model_id", type="string"),
+     *              @OA\Property(property="file_name", type="string"),
+     *              @OA\Property(property="mime_type", type="string")
+     *             ),
+     *         )
+     *     ),
+     * )
+     */
     public function store(Request $laravel_request, FileReceiver $receiver, ProcessRequest $request)
     {
         //delete it and upload the new one 
@@ -127,7 +256,55 @@ class ProcessRequestFileController extends Controller
     }
 
     /**
-     * update existing file
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param Media $file
+     *
+     * @return \Illuminate\Http\Response
+     *
+     * @OA\Put(
+     *     path="/requests/{request_id}/files/{file_id}",
+     *     summary="Update a request's media file",
+     *     operationId="updateRequestFile",
+     *     tags={"Request Files"},
+     *
+     *     @OA\Parameter(
+     *         description="ID of the file to update",
+     *         in="path",
+     *         name="file_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(
+     *              @OA\Property(property="file", type="string", format="byte"),
+     *      )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(
+     *              @OA\Property(property="id", type="string"),
+     *              @OA\Property(property="model_id", type="string"),
+     *              @OA\Property(property="file_name", type="string"),
+     *              @OA\Property(property="mime_type", type="string")
+     *             ),
+     *         )
+     *     ),
+     * )
      */
     public function update(Request $laravel_request, ProcessRequest $request)
     {
@@ -138,7 +315,32 @@ class ProcessRequestFileController extends Controller
     }
 
     /**
-     * delete an existing file 
+     * Remove the specified resource from storage.
+     *
+     * @param Media $file
+     * @return \Illuminate\Http\Response
+     *
+     * @internal param int $id
+     *
+     * @OA\Delete(
+     *     path="/requests/{request_id}",
+     *     summary="Delete all media associated with a request",
+     *     operationId="deleteRequestFile",
+     *     tags={"Request Files"},
+     *     @OA\Parameter(
+     *         description="ID of the request",
+     *         in="path",
+     *         name="request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success"
+     *     ),
+     * )
      */
     public function destroy(Request $laravel_request, ProcessRequest $request)
     {
