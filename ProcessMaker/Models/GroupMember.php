@@ -17,12 +17,10 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @OA\Schema(
  *     schema="groupMembersEditable",
- *     @OA\Property(property="id", type="string", format="id"),
  *     @OA\Property(property="group_id", type="string", format="id"),
  *     @OA\Property(property="member_id", type="string", format="id"),
  *     @OA\Property(property="member_type", type="string"),
  *     @OA\Property(property="description", type="string"),
- *     @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
  * ),
  * @OA\Schema(
  *     schema="groupMembers",
@@ -30,11 +28,54 @@ use Illuminate\Database\Eloquent\Model;
  *      @OA\Schema(ref="#/components/schemas/groupMembersEditable"),
  *      @OA\Schema(
  *          type = "object",
+ *          @OA\Property(property="id", type="string", format="id"),
  *          @OA\Property(property="created_at", type="string", format="date-time"),
  *          @OA\Property(property="updated_at", type="string", format="date-time"),
  *          )
  *      },
- * )
+ * ),
+ *  @OA\Schema(
+ *     schema="createGroupMembers",
+ *     allOf={
+ *      @OA\Schema(ref="#/components/schemas/groupMembersEditable"),
+ *      @OA\Schema(
+ *          type = "object",
+ *          @OA\Property(property="id", type="string", format="id"),
+ *          @OA\Property(property="group", type="object"),
+ *          @OA\Property(property="member", type="object"),
+ *          @OA\Property(property="created_at", type="string", format="date-time"),
+ *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *          )
+ *      },
+ * ),
+ * @OA\Schema(
+ *     schema="getGroupMembersById",
+ *     allOf={
+ *      @OA\Schema(
+ *          type = "object",
+ *          @OA\Property(property="group_id", type="string", format="id"),
+ *          @OA\Property(property="member_id", type="string", format="id"),
+ *          @OA\Property(property="member_type", type="string"),
+ *          @OA\Property(property="id", type="string", format="id"),
+ *          @OA\Property(property="created_at", type="string", format="date-time"),
+ *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *          )
+ *      },
+ * ),
+ * @OA\Schema(
+ *     schema="availableGroupMembers",
+ *     allOf={
+ *      @OA\Schema(
+ *          type = "object",
+ *          @OA\Property(property="id", type="string", format="id"),
+ *          @OA\Property(property="description", type="string"),
+ *          @OA\Property(property="name", type="string"),
+ *          @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *          @OA\Property(property="created_at", type="string", format="date-time"),
+ *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *          )
+ *      },
+ * ),
  *
  */
 class GroupMember extends Model

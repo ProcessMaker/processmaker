@@ -103,7 +103,7 @@ class GroupMemberController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
+     *         @OA\JsonContent(ref="#/components/schemas/createGroupMembers")
      *     ),
      * )
      */
@@ -156,7 +156,7 @@ class GroupMemberController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the group members",
-     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
+     *         @OA\JsonContent(ref="#/components/schemas/getGroupMembersById")
      *     ),
      * )
      */
@@ -191,7 +191,6 @@ class GroupMemberController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
      *     ),
      * )
      */
@@ -250,7 +249,7 @@ class GroupMemberController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/groupMembers"),
+     *                 @OA\Items(ref="#/components/schemas/availableGroupMembers"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
@@ -336,7 +335,7 @@ class GroupMemberController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/groupMembers"),
+     *                 @OA\Items(ref="#/components/schemas/users"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
