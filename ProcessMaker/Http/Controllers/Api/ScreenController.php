@@ -189,10 +189,8 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $screen->saveOrFail();
 
-        unset(
-            $original_attributes['id'],
-            $original_attributes['updated_at']
-        );
+        unset($original_attributes['id'],
+        $original_attributes['updated_at']);
         $screen->versions()->create($original_attributes);
 
         return response([], 204);
@@ -321,9 +319,9 @@ class ScreenController extends Controller
         $fileKey = ExportScreen::dispatchNow($screen);
 
         if ($fileKey) {
-            return ['url' => url("/processes/screens/{$screen->id}/download/{$fileKey}")];
+            return ['url' => url("/designer/screens/{$screen->id}/download/{$fileKey}")];
         } else {
-            return response(['error' => __('Unable to Export Screen')], 500) ;
+            return response(['error' => __('Unable to Export Screen')], 500);
         }
     }
 

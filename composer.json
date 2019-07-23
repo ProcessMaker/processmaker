@@ -35,7 +35,7 @@
     "laravelcollective/html": "^5.4.0",
     "lavary/laravel-menu": "^1.7",
     "phing/phing": "^2.16",
-    "pion/laravel-chunk-upload": "dev-bugfix",
+    "pion/laravel-chunk-upload": "dev-master",
     "predis/predis": "^1.1",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "dev-master",

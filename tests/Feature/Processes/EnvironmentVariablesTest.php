@@ -18,14 +18,14 @@ class EnvironmentVariablesTest extends TestCase
     public function testIndexRoute()
     {
 
-      // get the URL
-      $response = $this->webCall('GET', '/processes/environment-variables');
-      // check the correct view is called
-      $response->assertViewIs('processes.environment-variables.index');
+        // get the URL
+        $response = $this->webCall('GET', '/designer/environment-variables');
+        // check the correct view is called
+        $response->assertViewIs('processes.environment-variables.index');
 
-      $response->assertStatus(200);
+        $response->assertStatus(200);
 
-      $response->assertSee('Environment Variables');
+        $response->assertSee('Environment Variables');
     }
 
     /**
@@ -36,7 +36,7 @@ class EnvironmentVariablesTest extends TestCase
     public function testEditRoute()
     {
         // get the URL
-        $response = $this->webCall('GET', '/processes/environment-variables/' .
+        $response = $this->webCall('GET', '/designer/environment-variables/' .
             factory(EnvironmentVariable::class)->create()->id . '/edit');
 
         $response->assertStatus(200);
