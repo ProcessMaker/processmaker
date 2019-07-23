@@ -317,7 +317,7 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Delete(
-     *     path="/scripts/scriptsId",
+     *     path="/scripts/{script_id}",
      *     summary="Delete a script",
      *     operationId="deleteScript",
      *     tags={"Scripts"},
