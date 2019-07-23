@@ -1,3 +1,5 @@
+@import 'colors';
+
 // Changing the body background and text
 $body-bg: #f7f9fb;
 
@@ -22,13 +24,13 @@ $font-size-h5: $font-size-base !default;
 $font-size-h6: ceil($font-size-base * 0.75) !default; // ~12px
 
 // Changing the theme colors
-$primary: #3397e1;
-$secondary: #788793;
-$success: #00bf9c;
-$info: #17a2b8;
-$warning: #fbbe02;
-$danger: #ed4757;
-$light: #ffffff;
+//$primary: #3397e1;
+//$secondary: #788793;
+//$success: #00bf9c;
+//$info: #17a2b8;
+//$warning: #fbbe02;
+//$danger: #ed4757;
+//$light: #ffffff;
 $hover: rgba(255, 255, 255, .3);
 
 $grey-bg: #e9edf1;
