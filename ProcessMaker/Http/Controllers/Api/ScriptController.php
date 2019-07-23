@@ -333,7 +333,6 @@ class ScriptController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/scripts")
      *     ),
      * )
      */
