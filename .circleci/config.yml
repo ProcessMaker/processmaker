@@ -196,10 +196,7 @@ jobs:
             echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
             echo "PROXIES=*" >> .env
             echo "PROXIES_AWS=true" >> .env
-            # Put in configuration for SauceLabs Cloud based Browser Testing
-            echo "SAUCELABS_BROWSER_TESTING=true" >> .env
-            echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env
-            echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
+
             # Put in configuration file for Broadcaster
             echo "BROADCAST_DRIVER=redis" >> .env
             echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
@@ -225,7 +222,21 @@ jobs:
             echo "DATA_DB_PORT=3306" >> .env.dusk.staging
             echo "DATA_DB_USERNAME=${QA_RDS_USERNAME}" >> .env.dusk.staging
             echo "DATA_DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env.dusk.staging
-            echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env.dusk.staging        
+            echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env.dusk.staging 
+            # Put in configuration for SauceLabs Cloud based Browser Testing
+            echo "SAUCELABS_BROWSER_TESTING=true" >> .env.dusk.staging
+            echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env.dusk.staging
+            echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env.dusk.staging
+            # Put in configuration file for Broadcaster
+            echo "BROADCAST_DRIVER=redis" >> .env.dusk.staging
+            echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env.dusk.staging
+            echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env.dusk.staging
+            echo "REDIS_PORT=%%REDISPORT%%" >> .env.dusk.staging
+            echo "PROCESSMAKER_SCRIPTS_HOME=/home/circleci/tmp" >> .env.dusk.staging
+            echo "HOME=/home/circleci" >> .env.dusk.staging
+            echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env.dusk.staging
+            echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env.dusk.staging
+            echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env.dusk.staging           
 
             # Generate unique app key
             php artisan key:generate --force
