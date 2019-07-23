@@ -326,7 +326,6 @@ class ProcessRequestFileController extends Controller
     {
         $request->getMedia()[0]->delete();
         $newFile = $laravel_request->file;
-        die($laravel_request);
         $request->addMedia($newFile)->toMediaCollection();
         return new JsonResponse(['message' => 'file successfully updated'], 200);
     }
