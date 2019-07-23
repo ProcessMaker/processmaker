@@ -93,14 +93,14 @@ class FileController extends Controller
      *     tags={"Files"},
      *
      *      @OA\Parameter(
-     *         name="media_id",
+     *         name="model_id",
      *         in="query",
      *         description="ID of the model to which the file will be associated",
      *         required=false,
      *         @OA\Schema(type="integer"),
      *     ),
      *      @OA\Parameter(
-     *         name="media",
+     *         name="model",
      *         in="query",
      *         description="Name of the class of the model",
      *         required=false,
@@ -108,9 +108,17 @@ class FileController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(
-     *              @OA\Property(property="file", type="string", format="byte"),
-     *      )
+     *       @OA\MediaType(
+     *              mediaType="multipart/form-data",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="file",
+     *                      description="save a new media file",
+     *                      type="file",
+     *                      @OA\Items(type="string", format="binary")
+     *                   ),
+     *               ),
+     *           ),
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -149,6 +157,7 @@ class FileController extends Controller
 
         // If no model info was sent in the request
         if (! $modelClass || ! $modelId) {
+            die('hello');
             throw new NotFoundHttpException();
         }
 
