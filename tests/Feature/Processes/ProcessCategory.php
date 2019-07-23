@@ -19,13 +19,12 @@ class ProcessCategoryTest extends TestCase
     {
 
         // get the URL
-        $response = $this->webCall('GET', '/processes/categories');
+        $response = $this->webCall('GET', '/designer/categories');
         // check the correct view is called
         $response->assertViewIs('processes.categories.index');
 
         $response->assertStatus(200);
         $response->assertSee('Process Categories');
-
     }
 
     /**
@@ -36,7 +35,7 @@ class ProcessCategoryTest extends TestCase
     public function testEditRoute()
     {
         // get the URL
-        $response = $this->webCall('GET', '/processes/categories/' .
+        $response = $this->webCall('GET', '/designer/categories/' .
             factory(ProcessCategory::class)->create()->id . '/edit');
 
         $response->assertStatus(200);

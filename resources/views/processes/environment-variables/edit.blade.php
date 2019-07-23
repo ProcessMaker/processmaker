@@ -10,8 +10,8 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
-        __('Environment Variables') => route('environment-variables.index'),
+        __('Designer') => route('processes.index'),
+        __('Environment Variable') => route('environment-variables.index'),
         __('Edit') . " " . $environmentVariable->name => null,
     ]])
     <div class="container" id="editEnvironmentVariable">
@@ -79,7 +79,7 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/processes/environment-variables';
+                    window.location.href = '/designer/environment-variables';
                 },
                 onUpdate() {
                     this.resetErrors();

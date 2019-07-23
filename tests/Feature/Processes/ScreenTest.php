@@ -17,13 +17,12 @@ class ScreenTest extends TestCase
      */
     public function testIndexRoute()
     {
-      // get the URL
-      $response = $this->webCall('GET', '/processes/screens');
-      // check the correct view is called
-      $response->assertViewIs('processes.screens.index');
+        // get the URL
+        $response = $this->webCall('GET', '/designer/screens');
+        // check the correct view is called
+        $response->assertViewIs('processes.screens.index');
 
-      $response->assertStatus(200);
-
+        $response->assertStatus(200);
     }
 
     /**
@@ -34,7 +33,7 @@ class ScreenTest extends TestCase
     public function testEditRoute()
     {
         // get the URL
-        $response = $this->webCall('GET', '/processes/screens/' .
+        $response = $this->webCall('GET', '/designer/screens/' .
             factory(Screen::class)->create()->id . '/edit');
 
         $response->assertStatus(200);

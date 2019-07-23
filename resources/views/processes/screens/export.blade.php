@@ -10,9 +10,9 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Screens') => route('screens.index'),
-        __('Export') => null,
+        __('Export'.' '.$screen->title) => null,
     ]])
     <div class="container" id="exportScreen">
         <div class="row">
@@ -23,6 +23,7 @@
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">{{__('You are about to export a Screen.')}}</h5>
+                        <h6>"{{$screen->title}}"</h6>
                         <p class="card-text">{{__('All the configurations of the screen will be exported.')}}</p>
                     </div>
                     <div class="card-footer bg-light" align="right">

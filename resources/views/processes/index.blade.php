@@ -17,6 +17,8 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
+        __('Designer') => route('processes.index'),
+        __('Processes') => route('processes.index'),
         $title => null,
     ]])
     <div class="px-3 page-content" id="processIndex">
@@ -115,7 +117,7 @@
                     @else
                         <div class="modal-body">
                             <div>{{__('Categories are required to create a process')}}</div>
-                            <a href="{{ url('processes/categories') }}" class="btn btn-primary container mt-2">
+                            <a href="{{ url('designer/categories') }}" class="btn btn-primary container mt-2">
                                 {{__('Add Category')}}
                             </a>
                         </div>

@@ -10,9 +10,9 @@
 
 @section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Screens') => route('screens.index'),
-        __('Edit') . " " . $screen->title => null,
+        $screen->title => null,
     ]])
 @endsection
 
