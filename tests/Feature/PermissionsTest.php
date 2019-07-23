@@ -94,7 +94,7 @@ class PermissionsTest extends TestCase
             'is_administrator' => false,
         ]);
         // Set the URL & permission to test.
-        $url = '/processes/environment-variables';
+        $url = '/designer/environment-variables';
         $permission = 'view-environment_variables';
 
         // Our user has no permission for this, so this should return 403.
