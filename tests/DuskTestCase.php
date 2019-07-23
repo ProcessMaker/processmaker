@@ -34,15 +34,28 @@ abstract class DuskTestCase extends BaseTestCase
             '--headless',
             '--no-sandbox',
             '--ignore-ssl-errors',
+            '--window-size=1200,720',
             '--whitelisted-ips=""'
         ]);
 
-        return RemoteWebDriver::create(
-            'http://localhost:9515',
-            DesiredCapabilities::chrome()->setCapability(
-                ChromeOptions::CAPABILITY,
-                $options
-            )
-        );
+        if (!env('SAUCELABS_BROWSER_TESTING', false)) {
+            return RemoteWebDriver::create(
+                'http://localhost:9515',
+                DesiredCapabilities::chrome()
+                    ->setCapability(ChromeOptions::CAPABILITY, $options)
+                    ->setCapability('acceptInsecureCerts', true)
+            );
+        } else {
+            // We currently support SauceLabs based cloud testing
+            return RemoteWebDriver::create(
+                "https://" . env('SAUCELABS_USERNAME') . ":" . env('SAUCELABS_ACCESS_KEY') . "@ondemand.saucelabs.com:443/wd/hub",
+                [
+                    "platform" => env('SAUCELABS_PLATFORM', "Windows 7"),
+                    "browserName" => env('SAUCELABS_BROWSER', "chrome"),
+                    "version" => env('SAUCELABS_BROWSER_VERSION', "74")
+                ]
+            );
+        }
+    }
     }
 }
