@@ -261,14 +261,14 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/scripts/scriptsId/duplicate",
+     *     path="/scripts/{scripts_id}/duplicate",
      *     summary="duplicate a script",
      *     operationId="duplicateScreen",
      *     tags={"scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
-     *         name="screens_id",
+     *         name="scripts_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -276,10 +276,10 @@ class ScriptController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/scriptsEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=201,
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/scripts")
      *     ),
