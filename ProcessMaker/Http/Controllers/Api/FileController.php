@@ -204,7 +204,7 @@ class FileController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the file",
-     *         @OA\JsonContent(ref="#/components/schemas/groups")
+     *         @OA\JsonContent(ref="#/components/schemas/media")
      *     ),
      * )
      */
