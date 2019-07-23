@@ -109,16 +109,16 @@ class FileController extends Controller
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\MediaType(
-     *              mediaType="multipart/form-data",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="file",
-     *                      description="save a new media file",
-     *                      type="file",
-     *                      @OA\Items(type="string", format="binary")
-     *                   ),
-     *               ),
-     *           ),
+     *          mediaType="multipart/form-data",
+     *          @OA\Schema(
+     *             @OA\Property(
+     *                property="file",
+     *                description="save a new media file",
+     *                type="file",
+     *                @OA\Items(type="string", format="binary")
+     *              ),
+     *            ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -283,9 +283,17 @@ class FileController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(
-     *              @OA\Property(property="file", type="string", format="byte"),
-     *      )
+     *       @OA\MediaType(
+     *          mediaType="multipart/form-data",
+     *          @OA\Schema(
+     *             @OA\Property(
+     *                property="file",
+     *                description="save a new media file",
+     *                type="file",
+     *                @OA\Items(type="string", format="binary")
+     *              ),
+     *            ),
+     *        ),
      *     ),
      *     @OA\Response(
      *         response=200,
