@@ -189,9 +189,8 @@ class GroupController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/groupsEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/groups")
      *     ),
      * )
      */
@@ -228,7 +227,6 @@ class GroupController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/groups")
      *     ),
      * )
      */
