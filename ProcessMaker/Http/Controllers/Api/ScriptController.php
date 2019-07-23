@@ -119,7 +119,7 @@ class ScriptController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success if the script was queued",
-     *         @OA\JsonContent()
+     *         @OA\JsonContent(ref="#/components/schemas/scriptsPreview")
      *         ),
      *     ),
      * )

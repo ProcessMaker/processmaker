@@ -38,6 +38,11 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * ),
+ * 
+ * @OA\Schema(
+ *   schema="scriptsPreview",
+ *   @OA\Property(property="status", type="string"),
  * )
  *
  */
