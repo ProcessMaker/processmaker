@@ -134,8 +134,6 @@
           config: {
             immediate: true,
             handler() {
-              console.log('config...');
-              console.log(this.config);
               if (!this.config || !this.config.config) {
                 return;
               }
@@ -179,18 +177,13 @@
             formData.append('fileIcon', this.fileIcon.file);
             formData.append('variables', JSON.stringify(this.customData));
 
-            if (this.config && this.config.id) {
-              this.onUpdate(formData);
-            } else {
-              this.onCreate(formData);
-            }
+            this.onCreate(formData);
           },
           onCreate(data) {
             ProcessMaker.apiClient.post('css_settings', data)
               .then(response => {
-                console.log(response);
                 ProcessMaker.alert('{{__('The Settings css was saved.')}}', 'success', 5, true);
-                //this.onClose();
+                this.onClose();
               })
               .catch(error => {
                 if (error.response.status && error.response.status === 422) {
@@ -201,12 +194,10 @@
           onUpdate(data) {
             ProcessMaker.apiClient.put('css_settings', data)
               .then(response => {
-                console.log(response);
                 ProcessMaker.alert('{{__('The Settings css was update.')}}', 'success', 5, true);
-                //this.onClose();
+                this.onClose();
               })
               .catch(error => {
-                console.log(error);
                 if (error.response.status && error.response.status === 422) {
                   this.errors = error.response.data.errors;
                 }

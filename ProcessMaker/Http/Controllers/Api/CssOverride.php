@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -40,9 +41,13 @@ class CssOverride extends Controller
     public function store(Request $request)
     {
         $request->request->add(['config' => $this->formatConfig($request)]);
-        $request->validate(Setting::rules());
 
-        $setting = new Setting();
+        $setting = Setting::byKey('css-override');
+
+        if (!$setting) {
+            $setting = new Setting();
+        }
+        $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
         $setting->saveOrFail();
 
@@ -96,7 +101,6 @@ class CssOverride extends Controller
     {
         $setting = Setting::byKey('css-override');
         $request->request->add(['config' => $this->formatConfig($request)]);
-        $request->request->add(['key' => 'css-override']);
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
         $setting->saveOrFail();
@@ -125,7 +129,7 @@ class CssOverride extends Controller
         $contents = "// Changing the theme colors\n";
         // Build out the file contents
         foreach ($data as $key => $value) {
-            $contents .= $value['id'] . ': ' . $value['value'] . "; \n";
+            $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
         //now store it.
         File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
