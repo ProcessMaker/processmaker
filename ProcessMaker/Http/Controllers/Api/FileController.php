@@ -256,56 +256,6 @@ class FileController extends Controller
      *
      * @return \Illuminate\Http\Response
      *
-     * @OA\Put(
-     *     path="/files/{file_id}",
-     *     summary="Update a media file",
-     *     operationId="updateFile",
-     *     tags={"Files"},
-     *
-     *     @OA\Parameter(
-     *         description="ID of the file to update",
-     *         in="path",
-     *         name="file_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *      @OA\Parameter(
-     *         description="ID of the request",
-     *         in="path",
-     *         name="request_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\MediaType(
-     *          mediaType="multipart/form-data",
-     *          @OA\Schema(
-     *             @OA\Property(
-     *                property="file",
-     *                description="save a new media file",
-     *                type="file",
-     *                @OA\Items(type="string", format="binary")
-     *              ),
-     *            ),
-     *        ),
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="success",
-     *         @OA\JsonContent(
-     *              @OA\Property(property="id", type="string"),
-     *              @OA\Property(property="model_id", type="string"),
-     *              @OA\Property(property="file_name", type="string"),
-     *              @OA\Property(property="mime_type", type="string")
-     *             ),
-     *         )
-     *     ),
-     * )
      */
     public function update(Request $request, Media $file)
     {
