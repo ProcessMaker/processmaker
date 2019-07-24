@@ -157,7 +157,6 @@ class FileController extends Controller
 
         // If no model info was sent in the request
         if (! $modelClass || ! $modelId) {
-            die('hello');
             throw new NotFoundHttpException();
         }
 
