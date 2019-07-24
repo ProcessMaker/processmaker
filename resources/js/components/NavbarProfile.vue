@@ -29,7 +29,7 @@
       <template>
         <a
           data-v-2eb90a9e
-          href="https://processmaker.gitbook.io/processmaker/-Lhqv3ZMbDJxqTpMtVKV/"
+          href="https://processmaker.gitbook.io/processmaker/"
           class="dropdown-item item"
           target="_blank"
         >
