@@ -78,7 +78,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *             property="startEvents",
  *             type="array",
  *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
- *         )),
+ *         ),
  *         @OA\Property(
  *             property="events",
  *             type="array",
