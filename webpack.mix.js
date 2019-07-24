@@ -21,18 +21,18 @@ mix.webpackConfig({
         new CopyPlugin(
         [
           {
-            from: '/home/dante/desa/processmaker/node_modules/npm-font-open-sans/',
-            to: '/home/dante/desa/processmaker/public/css/precompiled/npm-font-open-sans/',
+            from: 'node_modules/npm-font-open-sans/',
+            to: 'precompiled/npm-font-open-sans/',
             toType: 'dir'
           },
           {
-            from: '/home/dante/desa/processmaker/node_modules/bootstrap/scss/',
-            to: '/home/dante/desa/processmaker/public/css/precompiled/bootstrap/',
+            from: 'node_modules/bootstrap/scss/',
+            to: 'precompiled/bootstrap/',
             toType: 'dir'
           },
           {
-            from: '/home/dante/desa/processmaker/node_modules/@fortawesome/fontawesome-free/',
-            to: '/home/dante/desa/processmaker/public/css/precompiled/fontawesome-free/',
+            from: 'node_modules/@fortawesome/fontawesome-free/',
+            to: 'precompiled/fontawesome-free/',
             toType: 'dir'
           }
         ],

@@ -20,22 +20,28 @@
                     <div class="form-group">
                         {!! Form::label('fileLogo', __('Custom Logo (150x40 pixels)')) !!}
                         <div class="input-group">
-                            <input type="text" name="fileLogo" class="form-control" v-model="formData.selectedFileLogo" placeholder="{{__('Choose logo image')}}">
+                            <input type="text" name="fileLogo" class="form-control" v-model="fileLogo.selectedFile"
+                                   placeholder="{{__('Choose logo image')}}">
                             <button @click="browseLogo" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                 {{__('Upload file')}}
                             </button>
-                            <input type="file" class="custom-file-input" :class="{'is-invalid': errors.logo}" ref="customFileLogo" @change.prevent="onFileChangeLogo" accept="image/x-png,image/gif,image/jpeg" style="height: 1em;" >
+                            <input type="file" class="custom-file-input" :class="{'is-invalid': errors.logo}"
+                                   ref="customFileLogo" @change.prevent="onFileChangeLogo"
+                                   accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
                             <div class="invalid-feedback" v-for="error in errors.logo">@{{error}}</div>
                         </div>
                     </div>
                     <div class="form-group">
                         {!! Form::label('fileIcon', __('Custom Icon (40x40 pixels)')) !!}
                         <div class="input-group">
-                            <input type="text" name="fileIcon" class="form-control" v-model="formData.selectedFileIcon" placeholder="{{__('Choose icon image')}}">
+                            <input type="text" name="fileIcon" class="form-control" v-model="fileIcon.selectedFile"
+                                   placeholder="{{__('Choose icon image')}}">
                             <button @click="browseIcon" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                 {{__('Upload file')}}
                             </button>
-                            <input type="file" class="custom-file-input" :class="{'is-invalid': errors.icon}" ref="customFileIcon" @change.prevent="onFileChangeIcon" accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
+                            <input type="file" class="custom-file-input" :class="{'is-invalid': errors.icon}"
+                                   ref="customFileIcon" @change.prevent="onFileChangeIcon"
+                                   accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
                             <div class="invalid-feedback" v-for="error in errors.icon">@{{error}}</div>
                         </div>
                     </div>
@@ -53,7 +59,7 @@
                     <br>
                     <div class="text-right">
                         {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onSubmit']) !!}
                     </div>
                 </div>
             </div>
@@ -69,72 +75,138 @@
         el: '#editCss',
         data() {
           return {
-            formData: {
-              selectedFileLogo: '',
-              selectedFileIcon: '',
+            config: @json($config),
+            key: 'css-override',
+            fileLogo: {
+              file: null,
+              selectedFile: null,
             },
-            customData: [
+            fileIcon: {
+              file: null,
+              selectedFile: null,
+            },
+            colors: null,
+            optionsData: [
               {
-                id:'primary',
+                id: '$primary',
                 value: '#3397e1',
                 title: __('Primary')
               },
               {
-                id: 'secondary',
+                id: '$secondary',
                 value: '#788793',
                 title: __('Secondary')
               },
               {
-                id: 'success',
+                id: '$success',
                 value: '#00bf9c',
                 title: __('Success')
               },
               {
-                id: 'info',
+                id: '$info',
                 value: '#17a2b8',
                 title: __('Info')
               },
               {
-                id: 'warning',
+                id: '$warning',
                 value: '#fbbe02',
                 title: __('Warning')
               },
               {
-                id: 'danger',
+                id: '$danger',
                 value: '#ed4757',
                 title: __('Danger')
               },
               {
-                id: 'light',
+                id: '$light',
                 value: '#ffffff',
                 title: __('Light')
               }
             ],
             errors: {
               'logo': null,
-              'icon': null
+              'icon': null,
+              'colors': null,
             }
           }
+        },
+        watch: {
+          config: {
+            immediate: true,
+            handler() {
+              console.log('config...');
+              console.log(this.config);
+              if (!this.config || !this.config.config) {
+                return;
+              }
+              if (this.config.config.logo != "null") {
+                this.fileLogo.selectedFile = this.config.config.logo;
+              }
+              if (this.config.config.icon != "null") {
+                this.fileIcon.selectedFile = this.config.config.icon;
+              }
+            }
+          },
+        },
+        computed: {
+            customData() {
+              let data = this.optionsData;
+              if (this.config && this.config.config.variables) {
+                data = JSON.parse(this.config.config.variables);
+              }
+              return data;
+            }
         },
         methods: {
           resetErrors() {
             this.errors = Object.assign({}, {
-              name: null,
-              description: null,
-              status: null
+              logo: null,
+              icon: null,
+              colors: null
             });
           },
           onClose() {
-            window.location.href = '/processes/categories';
+            window.location.href = '/admin/css';
           },
-          onUpdate() {
+          onSubmit() {
             this.resetErrors();
-            ProcessMaker.apiClient.put('process_categories/' + this.formData.id, this.formData)
+
+            let formData = new FormData();
+            formData.append('key', this.key);
+            formData.append('fileLogoName', this.fileLogo.selectedFile);
+            formData.append('fileIconName', this.fileIcon.selectedFile);
+            formData.append('fileLogo', this.fileLogo.file);
+            formData.append('fileIcon', this.fileIcon.file);
+            formData.append('variables', JSON.stringify(this.customData));
+
+            if (this.config && this.config.id) {
+              this.onUpdate(formData);
+            } else {
+              this.onCreate(formData);
+            }
+          },
+          onCreate(data) {
+            ProcessMaker.apiClient.post('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{__('The category was saved.')}}', 'success');
-                this.onClose();
+                console.log(response);
+                ProcessMaker.alert('{{__('The Settings css was saved.')}}', 'success', 5, true);
+                //this.onClose();
               })
               .catch(error => {
+                if (error.response.status && error.response.status === 422) {
+                  this.errors = error.response.data.errors;
+                }
+              });
+          },
+          onUpdate(data) {
+            ProcessMaker.apiClient.put('css_settings', data)
+              .then(response => {
+                console.log(response);
+                ProcessMaker.alert('{{__('The Settings css was update.')}}', 'success', 5, true);
+                //this.onClose();
+              })
+              .catch(error => {
+                console.log(error);
                 if (error.response.status && error.response.status === 422) {
                   this.errors = error.response.data.errors;
                 }
@@ -150,8 +222,8 @@
               return;
             }
 
-            this.formData.selectedFileLogo = files[0].name;
-            this.formData.fileLogo = this.$refs.customFileLogo.files[0];
+            this.fileLogo.selectedFile = files[0].name;
+            this.fileLogo.file = this.$refs.customFileLogo.files[0];
           },
           browseIcon() {
             this.$refs.customFileIcon.click();
@@ -163,8 +235,8 @@
               return;
             }
 
-            this.formData.selectedFileIcon = files[0].name;
-            this.formData.fileIcon = this.$refs.customFileIcon.files[0];
+            this.fileIcon.selectedFile = files[0].name;
+            this.fileIcon.file = this.$refs.customFileIcon.files[0];
           },
         }
       });

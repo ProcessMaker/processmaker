@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\SerializeToIso8601;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 /**
  * Class Settings
@@ -32,11 +34,18 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * )
  *
  */
-class Setting extends Model
+class Setting extends Model implements HasMedia
 {
     use SerializeToIso8601;
+    use HasMediaTrait;
 
     protected $connection = 'processmaker';
+
+    //Disk
+    public const DISK_CSS = 'settings';
+    //collection media library
+    public const COLLECTION_CSS_LOGO = 'logo';
+    public const COLLECTION_CSS_ICON = 'icon';
 
     protected $casts = [
         'config' => 'array',
@@ -54,6 +63,16 @@ class Setting extends Model
     ];
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'key',
+        'config'
+    ];
+
+    /**
      * Validation rules
      *
      * @param $existing
@@ -66,8 +85,19 @@ class Setting extends Model
 
         return [
             'key' => ['required', $unique],
-            'json' => 'required',
+            'config' => 'required',
         ];
     }
 
+    /**
+     * Get setting by key
+     *
+     * @param $key
+     *
+     * @return null|Setting
+     */
+    public static function byKey($key)
+    {
+        return self::where('key', $key)->first();
+    }
 }

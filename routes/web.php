@@ -16,7 +16,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth_clients');
 
-        Route::get('css', 'CssOverrideController@edit')->name('css.edit');
+        Route::get('css', 'CssOverrideController@edit')->name('css.edit');//->middleware('can:view-css_override')
 
     });
 
