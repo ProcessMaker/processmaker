@@ -117,7 +117,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
      *     ),
      * )
      */
@@ -214,7 +214,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
      *     ),
      * )
      */
@@ -567,7 +567,6 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
