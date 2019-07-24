@@ -40,7 +40,20 @@ class CallActivity implements CallActivityInterface
                 $startEvent = $startId ? $callable->getEngine()->getStorage()->getElementInstanceById($startId) : null;
                 $dataStore = $callable->getRepository()->createDataStore();
                 // The entire data model is sent to the target
-                $dataStore->setData($token->getInstance()->getDataStore()->getData());
+                $data = $token->getInstance()->getDataStore()->getData();
+
+                // Add info about parent
+                $data['_parent'] = [
+                    'process_id' => $token->getInstance()->process_id,
+                    'node_id' => $token->node_id,
+                ];
+
+                $configString = $this->getProperty('config');
+                if ($configString) {
+                    $data['_parent']['config'] = json_decode($this->getProperty('config'), true);
+                }
+
+                $dataStore->setData($data);
                 $instance = $callable->call($dataStore, $startEvent);
                 $this->linkProcesses($token, $instance);
                 $this->syncronizeInstances($token->getInstance(), $instance);
