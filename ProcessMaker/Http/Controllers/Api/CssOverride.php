@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Setting;
@@ -14,8 +16,6 @@ class CssOverride extends Controller
      * Create a new Settings css-override
      *
      * @param Request $request
-     *
-     * @throws \Throwable
      *
      * @return ApiResource
      *
@@ -34,6 +34,8 @@ class CssOverride extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/settings")
      *     ),
      * )
+     * @throws \Throwable
+     *
      */
     public function store(Request $request)
     {
@@ -48,10 +50,10 @@ class CssOverride extends Controller
             $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
         }
         if ($request->has('fileIcon') && $request->input('fileIcon')) {
-            $this->uploadFile($setting->refresh(), $request ,'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
+            $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
         }
 
-
+        $this->writeColors(json_decode($request->input('variables', '[]'), true));
 
         return new ApiResource($setting);
     }
@@ -60,8 +62,6 @@ class CssOverride extends Controller
      * Update a Setting Css override.
      *
      * @param Request $request
-     *
-     * @throws \Throwable
      *
      * @return ApiResource
      *
@@ -89,25 +89,46 @@ class CssOverride extends Controller
      *         @OA\JsonContent(ref="#/components/schemas/settings")
      *     ),
      * )
+     * @throws \Throwable
+     *
      */
     public function update(Request $request)
     {
-        dd($request->all());
         $setting = Setting::byKey('css-override');
         $request->request->add(['config' => $this->formatConfig($request)]);
         $request->request->add(['key' => 'css-override']);
         $request->validate(Setting::rules($setting));
-
-        if ($request->has('fileLogo')) {
-            $this->uploadFile($setting, $request->input('fileLogo'), Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
-        }
-
         $setting->fill($request->input());
         $setting->saveOrFail();
 
+        if ($request->has('fileLogo') && $request->input('fileLogo')) {
+            $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
+        }
+        if ($request->has('fileIcon') && $request->input('fileIcon')) {
+            $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
+        }
 
+        $this->writeColors(json_decode($request->input('variables', '[]'), true));
 
         return response([], 204);
+    }
+
+
+    /**
+     * Write variables in file
+     *
+     * @param $data
+     */
+    private function writeColors($data)
+    {
+        // Now generate the _colors.scss file
+        $contents = "// Changing the theme colors\n";
+        // Build out the file contents
+        foreach ($data as $key => $value) {
+            $contents .= $value['id'] . ': ' . $value['value'] . "; \n";
+        }
+        //now store it.
+        File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
     }
 
     /**
@@ -129,11 +150,11 @@ class CssOverride extends Controller
     private function uploadFile(Setting $setting, Request $request, $filename, $collectionName, $diskName)
     {
         $data = $request->all();
-        if (preg_match('/^data:image\/(\w+);base64,/', $data[$filename] , $type)) {
+        if (preg_match('/^data:image\/(\w+);base64,/', $data[$filename], $type)) {
             $data = substr($data[$filename], strpos($data[$filename], ',') + 1);
             $type = strtolower($type[1]); // jpg, png, gif
 
-            if (!in_array($type, [ 'jpg', 'jpeg', 'gif', 'png' , 'svg'])) {
+            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'svg'])) {
                 throw new \Exception('invalid image type');
             }
 
@@ -153,7 +174,5 @@ class CssOverride extends Controller
         }
 
     }
-
-
 
 }
