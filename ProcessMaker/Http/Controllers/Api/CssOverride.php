@@ -51,10 +51,10 @@ class CssOverride extends Controller
         $setting->fill($request->input());
         $setting->saveOrFail();
 
-        if ($request->has('fileLogo') && $request->input('fileLogo')) {
+        if ($request->has('fileLogo')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
         }
-        if ($request->has('fileIcon') && $request->input('fileIcon')) {
+        if ($request->has('fileIcon')) {
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
         }
 
