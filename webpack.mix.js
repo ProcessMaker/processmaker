@@ -21,20 +21,25 @@ mix.webpackConfig({
         new CopyPlugin(
         [
           {
-            from: '/home/dante/desa/processmaker/node_modules/npm-font-open-sans/',
-            to: '/home/dante/desa/processmaker/public/css/precompiled/npm-font-open-sans/',
+            from: 'node_modules/npm-font-open-sans/',
+            to: 'css/precompiled/npm-font-open-sans/',
             toType: 'dir'
           },
           {
-            from: '/home/dante/desa/processmaker/node_modules/bootstrap/scss/',
-            to: '/home/dante/desa/processmaker/public/css/precompiled/bootstrap/',
+            from: 'node_modules/bootstrap/scss/',
+            to: 'css/precompiled/bootstrap/',
             toType: 'dir'
           },
           {
-            from: '/home/dante/desa/processmaker/node_modules/@fortawesome/fontawesome-free/',
-            to: '/home/dante/desa/processmaker/public/css/precompiled/fontawesome-free/',
+            from: 'node_modules/@fortawesome/fontawesome-free/',
+            to: 'css/precompiled/fontawesome-free/',
             toType: 'dir'
-          }
+          },
+          {
+            from: 'node_modules/@fortawesome/fontawesome-free/',
+            to: 'css/precompiled/fontawesome-free/',
+            toType: 'dir'
+          },
         ],
           {logLevel: 'debug'}
         )
@@ -102,8 +107,8 @@ mix.webpackConfig({
     .copy('node_modules/vue-multiselect/dist/vue-multiselect.min.css', 'public/css/precompiled')
     .sass('resources/sass/sidebar/sidebar.scss', 'public/css')
     .sass('resources/sass/app.scss', 'public/css')
-    .sass('resources/sass/bootstrap_app.scss', 'public/css')
     .sass('resources/sass/admin/queues.scss', 'public/css/admin')
+
     .copy('node_modules/snapsvg/dist/snap.svg.js', 'public/js')
     .copy('resources/js/components/CustomActions.vue', 'public/js')
     .copy('resources/js/components/DetailRow.vue', 'public/js')

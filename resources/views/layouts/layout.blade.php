@@ -34,7 +34,6 @@
     <title>@yield('title',__('Welcome')) - ProcessMaker</title>
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/bootstrap_app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
