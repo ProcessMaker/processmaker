@@ -56,8 +56,8 @@ use ProcessMaker\Query\Traits\PMQL;
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
  *       )
- *   }
- * )
+ *   } 
+ * ),
  * @OA\Schema(
  *     schema="ProcessStartEvents",
  *     @OA\Schema(
@@ -68,7 +68,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *         @OA\Property(property="id", type="string"),
  *         @OA\Property(property="name", type="string"),
  *     )
- * )
+ * ),
  * @OA\Schema(
  *     schema="ProcessWithStartEvents",
  *     allOf={
@@ -80,7 +80,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
  *         )),
  *     },
- * )
+ * ),
  * 
  * @OA\Schema(
  *     schema="ProcessImport",
@@ -97,6 +97,17 @@ use ProcessMaker\Query\Traits\PMQL;
  *         ),
  *      ),
  *     },
+ * ),
+ * 
+ * @OA\Schema(
+ *   schema="CreateNewProcess",
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/ProcessEditable"),
+ *       @OA\Schema(ref="#/components/schemas/Process"),
+ *       @OA\Schema(
+ *           @OA\Property(property="notifications", type="{}"),
+ *       )
+ *   } 
  * )
  */
 class Process extends Model implements HasMedia
