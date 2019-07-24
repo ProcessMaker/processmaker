@@ -10,6 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
+        __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
         __('Export') => null,
     ]])

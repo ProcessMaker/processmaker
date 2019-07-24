@@ -4,7 +4,7 @@ namespace Tests\Browser\Pages;
 
 use Laravel\Dusk\Browser;
 
-class Login extends Page
+class LoginPage extends Page
 {
     /**
      * Get the URL for the page.
@@ -35,10 +35,10 @@ class Login extends Page
     public function elements()
     {
         return [
-            '@username' => 'input[name=username]',
-            '@password' => 'input[name=password]',
-            '@remember' => 'input[type=checkbox][name=remember]',
-            '@login' => 'button[type=submit]',
+            '@element' => '#selector',
+            '@username' => 'username',
+            '@password' => 'password',
+            '@login' => 'login',
         ];
     }
 }

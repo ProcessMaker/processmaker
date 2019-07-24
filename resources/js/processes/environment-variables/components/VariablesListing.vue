@@ -102,12 +102,14 @@ export default {
       switch (action) {
         case "edit-item":
           window.location =
-            "/processes/environment-variables/" + data.id + "/edit";
+            "/designer/environment-variables/" + data.id + "/edit";
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the environment variable ") +
+            this.$t(
+              "Are you sure you want to delete the environment variable "
+            ) +
               data.name +
               this.$t("?"),
             "",
