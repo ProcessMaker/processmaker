@@ -168,6 +168,7 @@ class CssOverride extends Controller
             'logo' => $request->input('fileLogoName', ''),
             'icon' => $request->input('fileIconName', ''),
             'variables' => $request->input('variables', ''),
+            'font' => $request->input('font', ''),
         ];
     }
 

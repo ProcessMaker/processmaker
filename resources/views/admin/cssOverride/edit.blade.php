@@ -49,7 +49,7 @@
                         {!! Form::label('colors', __('Custom Colors')) !!}
                         <small class="d-block">{{ __('Click on the color value to use the color picker.') }}</small>
                         <ul class="list-group w-100">
-                            <li class="list-group-item" v-for="item in customData">
+                            <li class="list-group-item" v-for="item in customColors">
                                 <div class="input-group">
                                     <color-picker :color="item.value" v-model="item.value"></color-picker>
                                     <div class="input-group-append">
@@ -58,6 +58,25 @@
                                 </div>
                             </li>
                         </ul>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('fileIcon', __('Default Font')) !!}
+                        <multiselect v-model="selectedFont"
+                                     placeholder="{{__('Type to search')}}"
+                                     :options="fontsDefault"
+                                     :multiple="false"
+                                     track-by="id"
+                                     :show-labels="false"
+                                     :searchable="true"
+                                     label="title"
+                                     >
+                            <template slot="noResult" >
+                                {{ __('No elements found. Consider changing the search query.') }}
+                            </template>
+                            <template slot="noOptions" >
+                                {{ __('No Data Available') }}
+                            </template>
+                        </multiselect>
                     </div>
                     <br>
                     <div class="text-right">
@@ -89,7 +108,8 @@
               selectedFile: null,
             },
             colors: null,
-            optionsData: [
+            selectedFont: null,
+            colorDefault: [
               {
                 id: '$primary',
                 value: '#3397e1',
@@ -126,6 +146,12 @@
                 title: __('Light')
               }
             ],
+            fontsDefault: [
+              {
+                'id': 'Arial',
+                'title': 'Arial'
+              }
+            ],
             errors: {
               'logo': null,
               'icon': null,
@@ -146,17 +172,20 @@
               if (this.config.config.icon != "null") {
                 this.fileIcon.selectedFile = this.config.config.icon;
               }
+              if (this.config.config.font != "null") {
+                this.selectedFont = JSON.parse(this.config.config.font);
+              }
             }
           },
         },
         computed: {
-          customData() {
-            let data = this.optionsData;
+          customColors() {
+            let data = this.colorDefault;
             if (this.config && this.config.config.variables) {
               data = JSON.parse(this.config.config.variables);
             }
             return data;
-          }
+          },
         },
         methods: {
           resetErrors() {
@@ -178,7 +207,8 @@
             formData.append('fileIconName', this.fileIcon.selectedFile);
             formData.append('fileLogo', this.fileLogo.file);
             formData.append('fileIcon', this.fileIcon.file);
-            formData.append('variables', JSON.stringify(this.customData));
+            formData.append('variables', JSON.stringify(this.customColors));
+            formData.append('font', JSON.stringify(this.selectedFont));
 
             this.onCreate(formData);
           },
