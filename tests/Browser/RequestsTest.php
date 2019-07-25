@@ -29,50 +29,50 @@ class RequestsTest extends DuskTestCase
     }
 
 
-    // public function test_request_route_protected()
-    // {
-    //     $this->browse(function (Browser $browser) {
-    //         $browser->visit('/requests')
-    //             ->assertPathIs('/login');
-    //     });
-    // }
+    public function test_request_route_protected()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/requests')
+                ->assertPathIs('/login');
+        });
+    }
 
-    // public function test_request_route_loads()
-    // {
-    //     $user = $this->user;
+    public function test_request_route_loads()
+    {
+        $user = $this->user;
 
-    //     $this->browse(function ($first) use ($user) {
-    //         $first->loginAs($user)
-    //             ->visit(new RequestsPage)
-    //             ->assertRouteIs('requests.index')
-    //             ->assertSee('My Requests');
-    //     });
-    // }
+        $this->browse(function ($first) use ($user) {
+            $first->loginAs($user)
+                ->visit(new RequestsPage)
+                ->assertRouteIs('requests.index')
+                ->assertSee('My Requests');
+        });
+    }
 
-    // public function test_pmql_initial_load()
-    // {
+    public function test_pmql_initial_load()
+    {
 
-    //     $user = $this->user;
+        $user = $this->user;
 
-    //     $this->browse(function ($first) use ($user) {
-    //         $first->loginAs($user)
-    //             ->visit(new RequestsPage)
-    //             ->assertVueContains('pmql', '(status = "In Progress") AND (requester = "testuser")', '#requests-listing');
-    //     });
-    // }
+        $this->browse(function ($first) use ($user) {
+            $first->loginAs($user)
+                ->visit(new RequestsPage)
+                ->assertVueContains('pmql', '(status = "In Progress") AND (requester = "testuser")', '#requests-listing');
+        });
+    }
 
-    // public function test_vuetable_initial_load()
-    // {
-    //     // Initial load of the site would have no requests started
-    //     $user = $this->user;
+    public function test_vuetable_initial_load()
+    {
+        // Initial load of the site would have no requests started
+        $user = $this->user;
 
-    //     $this->browse(function ($first) use ($user) {
-    //         $first->loginAs($user)
-    //             ->visit(new RequestsPage)
-    //             ->waitUntilMissing('.vuetable')
-    //             ->assertVue('data', '', '@container');
-    //     });
-    // }
+        $this->browse(function ($first) use ($user) {
+            $first->loginAs($user)
+                ->visit(new RequestsPage)
+                ->waitUntilMissing('.vuetable')
+                ->assertVue('data', '', '@container');
+        });
+    }
 
     public function test_start_request()
     {
