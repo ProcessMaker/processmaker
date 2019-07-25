@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Process Category')}}
+    {{__('Change Styles')}}
 @endsection
 
 @section('sidebar')
