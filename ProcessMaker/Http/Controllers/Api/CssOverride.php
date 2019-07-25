@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -133,6 +134,32 @@ class CssOverride extends Controller
         }
         //now store it.
         File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
+
+        $workingDir = app()->resourcePath('sass');
+//        $this->runCmd('docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass '
+//                        . app()->resourcePath('sass')
+//                        . '/app.scss public/css/salida.css');
+
+        $this->runCmd("cd $workingDir && docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass "
+                        . app()->resourcePath('sass')
+                        . "/app.scss public/css/salida.css");
+
+//        $this->runCmd('cat '
+//            . app()->resourcePath('sass')
+//            . '/app.scss');
+    }
+
+    private function runCmd($cmd)
+    {
+        Log::info('Start css rebuild: ' . $cmd);
+        exec($cmd . " 2>&1", $output, $returnVal);
+        $output = implode("\n", $output);
+        if ($returnVal) {
+            Log::info("Cmd returned: $returnVal " . $output);
+            throw new Exception("Cmd returned: $returnVal " . $output);
+        }
+        Log::info("Returned" . $output);
+        return $output;
     }
 
     /**
