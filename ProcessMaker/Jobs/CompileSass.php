@@ -46,6 +46,10 @@ class CompileSass implements ShouldQueue
         $this->runCmd("docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass "
             . $this->properties['origin'] . ' ' . $this->properties['target']);
             //. "resources/sass/sidebar/sidebar.scss public/css/sidebar.css");
+
+        if (str_contains($this->properties['tag'], 'app')) {
+            $this->fixPathsInGeneratedAppCss();
+        }
     }
 
     /**
@@ -64,5 +68,19 @@ class CompileSass implements ShouldQueue
         }
         Log::info('Returned' . $output);
         return $output;
+    }
+
+    private function fixPathsInGeneratedAppCss ()
+    {
+        chdir(app()->basePath());
+        $file = file_get_contents("public/css/app.css") ;
+        $file = str_replace('url("./fonts/','url("/fonts/vendor/npm-font-open-sans/', $file );
+        $file = str_replace('public/css/precompiled/vue-multiselect.min.css','css/precompiled/vue-multiselect.min.css', $file );
+        $file = str_replace('url("../webfonts/','url("/fonts/', $file );
+        $file = str_replace('url("../fonts/','url("/fonts/', $file );
+        $file = str_replace('url("fonts/','url("/fonts/', $file );
+        $re = '/(content:\s)\\\\\"(\\\\[0-9abcdef]+)\\\\\"/m';
+        $file = preg_replace($re,'$1"$2"', $file );
+        file_put_contents('public/css/app.css', $file);
     }
 }

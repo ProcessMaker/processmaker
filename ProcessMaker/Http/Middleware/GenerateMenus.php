@@ -63,7 +63,7 @@ class GenerateMenus
                 ]);
             }
             if (\Auth::check() && \Auth::user()->is_administrator) {
-                $submenu->add(__('Change Colors'), [
+                $submenu->add(__('Change Styles'), [
                     'route' => 'css.edit',
                     'icon' => 'fa-palette',
                 ]);
