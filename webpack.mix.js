@@ -1,8 +1,7 @@
 const {
   mix
 } = require('laravel-mix');
-const MonocoEditorPlugin = require('monaco-editor-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 
 /*
  |--------------------------------------------------------------------------
@@ -17,32 +16,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 
 mix.webpackConfig({
   plugins: [
-    new MonocoEditorPlugin(),
-    new CopyPlugin(
-      [
-        {
-          from: 'node_modules/npm-font-open-sans/',
-          to: 'css/precompiled/npm-font-open-sans/',
-          toType: 'dir'
-        },
-        {
-          from: 'node_modules/bootstrap/scss/',
-          to: 'css/precompiled/bootstrap/',
-          toType: 'dir'
-        },
-        {
-          from: 'node_modules/@fortawesome/fontawesome-free/',
-          to: 'css/precompiled/fontawesome-free/',
-          toType: 'dir'
-        },
-        {
-          from: 'node_modules/@fortawesome/fontawesome-free/',
-          to: 'css/precompiled/fontawesome-free/',
-          toType: 'dir'
-        },
-      ],
-      {logLevel: 'debug'}
-    )
+    new MonacoEditorPlugin()
   ],
   resolve: {
     modules: [
@@ -62,7 +36,21 @@ mix.webpackConfig({
     ],
   },
   node: {fs: 'empty'}
-}).js('resources/js/app-layout.js', 'public/js')
+});
+
+mix.extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap'])
+  .copy('resources/img/*', 'public/img')
+  .copy('node_modules/snapsvg/dist/snap.svg.js', 'public/js')
+  .copy('resources/js/components/CustomActions.vue', 'public/js')
+  .copy('resources/js/components/DetailRow.vue', 'public/js')
+  .copy('resources/fonts/Open_Sans/', 'public/fonts')
+  .copy('resources/js/components/FilterBar.vue', 'public/js')
+  .copy('resources/js/timeout.js', 'public/js')
+  // Copy files necessary for images for the designer/modeler to it's own img directory
+  .copy('node_modules/@processmaker/modeler/dist/img', 'public/js/processes/modeler/img');
+
+
+mix.js('resources/js/app-layout.js', 'public/js')
   .js('resources/js/processes/modeler/index.js', 'public/js/processes/modeler')
   .js('resources/js/processes/modeler/initialLoad.js', 'public/js/processes/modeler')
   .js('resources/js/admin/users/index.js', 'public/js/admin/users')
@@ -96,26 +84,14 @@ mix.webpackConfig({
   .js('resources/js/notifications/index.js', 'public/js/notifications/index.js')
 
 
-
-
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
-  .js('resources/js/app.js', 'public/js')
+  .js('resources/js/app.js', 'public/js');
 
-  .extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap'])
-  .copy('resources/img/*', 'public/img')
-  .copy('node_modules/vue-multiselect/dist/vue-multiselect.min.css', 'public/css/precompiled')
-  .sass('resources/sass/sidebar/sidebar.scss', 'public/css')
+
+
+
+mix.sass('resources/sass/sidebar/sidebar.scss', 'public/css')
   .sass('resources/sass/app.scss', 'public/css')
   .sass('resources/sass/admin/queues.scss', 'public/css/admin')
-
-  .copy('node_modules/snapsvg/dist/snap.svg.js', 'public/js')
-  .copy('resources/js/components/CustomActions.vue', 'public/js')
-  .copy('resources/js/components/DetailRow.vue', 'public/js')
-  .copy('resources/fonts/Open_Sans/', 'public/fonts')
-  .copy('resources/js/components/FilterBar.vue', 'public/js')
-  .copy('resources/js/timeout.js', 'public/js')
-  // Copy files necessary for images for the designer/modeler to it's own img directory
-  .copy('node_modules/@processmaker/modeler/dist/img', 'public/js/processes/modeler/img')
-
   .version();

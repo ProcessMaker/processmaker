@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "postinstall": "mkdir -p public/css/precompiled && cp -rf node_modules/npm-font-open-sans public/css/precompiled/npm-font-open-sans && cp -rf node_modules/bootstrap/scss public/css/precompiled/bootstrap && cp -rf node_modules/@fortawesome/fontawesome-free public/css/precompiled/fontawesome-free && cp -f node_modules/vue-multiselect/dist/vue-multiselect.min.css public/css/precompiled",
     "dev": "npm run development",
     "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
@@ -58,7 +59,6 @@
     "bootstrap-vue": "^2.0.0-rc.22",
     "bpmn-moddle": "^5.1.5",
     "chart.js": "^2.7.2",
-    "copy-webpack-plugin": "4.0.0",
     "country-json": "^1.0.7",
     "eslint": "^4.19.1",
     "i18next": "^15.0.8",
