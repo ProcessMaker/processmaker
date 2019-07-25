@@ -140,18 +140,9 @@ class CssOverride extends Controller
         //now store it.
         File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
 
-        $workingDir = app()->resourcePath('sass');
-//        $this->runCmd('docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass '
-//                        . app()->resourcePath('sass')
-//                        . '/app.scss public/css/salida.css');
-
-        $this->runCmd("cd $workingDir && docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass "
-                        . app()->resourcePath('sass')
-                        . "/app.scss public/css/salida.css");
-
-//        $this->runCmd('cat '
-//            . app()->resourcePath('sass')
-//            . '/app.scss');
+        chdir(app()->basePath());
+        $this->runCmd("docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass "
+                        . "resources/sass/app.scss public/css/app.css");
     }
 
     private function runCmd($cmd)
