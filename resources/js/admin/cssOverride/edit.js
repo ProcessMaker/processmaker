@@ -1,5 +1,4 @@
 import Vue from "vue";
-import Verte from 'verte';
-import 'verte/dist/verte.css';
+import ColorPicker from "./components/ColorPicker";
 
-Vue.component('color-picker', Verte);
+Vue.component('color-picker', ColorPicker);

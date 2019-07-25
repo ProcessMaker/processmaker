@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Process Category')}}
+    {{ __('Change Styles') }}
 @endsection
 
 @section('sidebar')
@@ -50,9 +50,12 @@
                         <small class="d-block">{{ __('Click on the color value to use the color picker.') }}</small>
                         <ul class="list-group w-100">
                             <li class="list-group-item" v-for="item in customData">
-                                <color-picker class="d-inline" v-model="item.value" picker="square" model="hex">
-                                </color-picker>
-                                <span class="badge d-inline" style=""> @{{item.value}} </span> @{{ item.title }}
+                                <div class="input-group">
+                                    <color-picker :color="item.value" v-model="item.value"></color-picker>
+                                    <div class="input-group-append">
+                                        <span class="pl-2">@{{ item.title }}</span>
+                                    </div>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -147,13 +150,13 @@
           },
         },
         computed: {
-            customData() {
-              let data = this.optionsData;
-              if (this.config && this.config.config.variables) {
-                data = JSON.parse(this.config.config.variables);
-              }
-              return data;
+          customData() {
+            let data = this.optionsData;
+            if (this.config && this.config.config.variables) {
+              data = JSON.parse(this.config.config.variables);
             }
+            return data;
+          }
         },
         methods: {
           resetErrors() {
