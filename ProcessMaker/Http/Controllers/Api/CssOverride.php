@@ -5,11 +5,9 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Models\Setting;
 
 class CssOverride extends Controller
@@ -123,7 +121,6 @@ class CssOverride extends Controller
         return response([], 204);
     }
 
-
     /**
      * Write variables in file
      *
@@ -140,22 +137,22 @@ class CssOverride extends Controller
         //now store it.
         File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
 
-        chdir(app()->basePath());
-        $this->runCmd("docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass "
-                        . "resources/sass/app.scss public/css/app.css");
-    }
-
-    private function runCmd($cmd)
-    {
-        Log::info('Start css rebuild: ' . $cmd);
-        exec($cmd . " 2>&1", $output, $returnVal);
-        $output = implode("\n", $output);
-        if ($returnVal) {
-            Log::info("Cmd returned: $returnVal " . $output);
-            throw new Exception("Cmd returned: $returnVal " . $output);
-        }
-        Log::info("Returned" . $output);
-        return $output;
+        //compiled
+        $this->dispatch(new CompileSass([
+            'tag' => 'sidebar',
+            'origin' => 'resources/sass/sidebar/sidebar.scss',
+            'target' => 'public/css/sidebar.css'
+        ]));
+        $this->dispatch(new CompileSass([
+            'tag' => 'app',
+            'origin' => 'resources/sass/app.scss',
+            'target' => 'public/css/app.css'
+        ]));
+        $this->dispatch(new CompileSass([
+            'tag' => 'queues',
+            'origin' => 'resources/sass/admin/queues.scss',
+            'target' => 'public/css/admin/queues.css'
+        ]));
     }
 
     /**
@@ -174,6 +171,16 @@ class CssOverride extends Controller
         ];
     }
 
+    /**
+     * Upload file
+     *
+     * @param Setting $setting
+     * @param Request $request
+     * @param $filename
+     * @param $collectionName
+     * @param $diskName
+     * @throws \Exception
+     */
     private function uploadFile(Setting $setting, Request $request, $filename, $collectionName, $diskName)
     {
         $data = $request->all();
