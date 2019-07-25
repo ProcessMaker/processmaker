@@ -45,12 +45,13 @@ class CallActivity implements CallActivityInterface
                 // Add info about parent
                 $data['_parent'] = [
                     'process_id' => $token->getInstance()->process_id,
-                    'node_id' => $token->node_id,
+                    'request_id' => $token->getInstance()->id,
+                    'node_id' => $token->element_id,
                 ];
 
                 $configString = $this->getProperty('config');
                 if ($configString) {
-                    $data['_parent']['config'] = json_decode($this->getProperty('config'), true);
+                    $data['_parent']['config'] = json_decode($configString, true);
                 }
 
                 $dataStore->setData($data);
