@@ -148,8 +148,6 @@ Route::group(
 
     //Css override
     Route::post('css_settings', 'CssOverride@store')->name('css.store');//->middleware('can:create-css');
-    //Route::put('css_settings', 'CssOverride@update')->name('css.update');//->middleware('can:create-css');
-
 
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');

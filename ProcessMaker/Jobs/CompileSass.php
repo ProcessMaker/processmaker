@@ -45,7 +45,6 @@ class CompileSass implements ShouldQueue
         chdir(app()->basePath());
         $this->runCmd("docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass "
             . $this->properties['origin'] . ' ' . $this->properties['target']);
-            //. "resources/sass/sidebar/sidebar.scss public/css/sidebar.css");
 
         if (str_contains($this->properties['tag'], 'app')) {
             $this->fixPathsInGeneratedAppCss();
