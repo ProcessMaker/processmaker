@@ -27,7 +27,8 @@ class LoginTest extends DuskTestCase
 
         $user = factory(User::class)->create([
             'username' => 'testuser',
-            'password' => Hash::make('secret')
+            'password' => Hash::make('secret'),
+            'status' => 'ACTIVE'
         ]);
 
         $this->browse(function (Browser $browser) use ($user) {
