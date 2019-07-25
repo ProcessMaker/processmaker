@@ -60,16 +60,33 @@
                         </ul>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('fileIcon', __('Default Font')) !!}
-                        <multiselect v-model="selectedFont"
+                        {!! Form::label('fileIcon', __('Sans Serif Font')) !!}
+                        <multiselect v-model="selectedSansSerifFont"
                                      placeholder="{{__('Type to search')}}"
                                      :options="fontsDefault"
                                      :multiple="false"
-                                     track-by="id"
                                      :show-labels="false"
                                      :searchable="true"
+                                     track-by="id"
                                      label="title"
                                      >
+                            <template slot="noResult" >
+                                {{ __('No elements found. Consider changing the search query.') }}
+                            </template>
+                            <template slot="noOptions" >
+                                {{ __('No Data Available') }}
+                            </template>
+                        </multiselect>
+                        {!! Form::label('fileIcon', __('Serif Font')) !!}
+                        <multiselect v-model="selectedSerifFont"
+                                     placeholder="{{__('Type to search')}}"
+                                     :options="fontsDefault"
+                                     :multiple="false"
+                                     :show-labels="false"
+                                     :searchable="true"
+                                     track-by="id"
+                                     label="title"
+                        >
                             <template slot="noResult" >
                                 {{ __('No elements found. Consider changing the search query.') }}
                             </template>
@@ -108,7 +125,14 @@
               selectedFile: null,
             },
             colors: null,
-            selectedFont: null,
+            selectedSansSerifFont: {
+              'id':"'Open Sans' !default",
+              'title': 'Default Font'
+            },
+            selectedSerifFont: {
+              'id': "Georgia, 'Times New Roman', Times, serif !default",
+              'title': 'Default Font'
+            },
             colorDefault: [
               {
                 id: '$primary',
@@ -148,9 +172,70 @@
             ],
             fontsDefault: [
               {
-                'id': 'Arial',
-                'title': 'Arial'
-              }
+                'id':"'Open Sans' !default",
+                'title': 'Default Sans Serif'
+              },
+              {
+                'id': "Georgia, 'Times New Roman', Times, serif !default",
+                'title': 'Default Serif'
+              },
+              {
+                "id": "Menlo, Monaco, Consolas, 'Courier New', monospace",
+                "title": "Mono Type"
+              },
+              {
+                "id": "Arial",
+                "title": "Arial"
+              },
+              {
+                "id": "Helvetica",
+                "title": "Helvetica"
+              },
+              {
+                "id": "'Times New Roman'",
+                "title": "Times New Roman"
+              },
+              {
+                "id": "'Courier New'",
+                "title": "Courier New"
+              },
+              {
+                "id": "Verdana",
+                "title": "Verdana"
+              },
+              {
+                "id": "Georgia",
+                "title": "Georgia"
+              },
+              {
+                "id": "Palatino",
+                "title": "Palatino"
+              },
+              {
+                "id": "Garamond",
+                "title": "Garamond"
+              },
+              {
+                "id": "Bookman",
+                "title": "Bookman"
+              },
+              {
+                "id": "'Comic Sans MS'",
+                "title": "Comic Sans MS"
+              },
+              {
+                "id": "'Trebuchet MS'",
+                "title": "Trebuchet MS"
+              },
+              {
+                "id": "'Arial Black'",
+                "title": "Arial Black"
+              },
+              {
+                "id": "Impact",
+                "title": "Impact"
+              },
+
             ],
             errors: {
               'logo': null,
@@ -172,8 +257,12 @@
               if (this.config.config.icon != "null") {
                 this.fileIcon.selectedFile = this.config.config.icon;
               }
-              if (this.config.config.font != "null") {
-                this.selectedFont = JSON.parse(this.config.config.font);
+              console.log('lalaal');
+              if (this.config.config.sansSerifFont != "null") {
+                this.selectedSansSerifFont = this.config.config.sansSerifFont;
+              }
+              if (this.config.config.serifFont != "null") {
+                this.selectedSerifFont = this.config.config.serifFont;
               }
             }
           },
@@ -185,7 +274,7 @@
               data = JSON.parse(this.config.config.variables);
             }
             return data;
-          },
+          }
         },
         methods: {
           resetErrors() {
@@ -208,14 +297,15 @@
             formData.append('fileLogo', this.fileLogo.file);
             formData.append('fileIcon', this.fileIcon.file);
             formData.append('variables', JSON.stringify(this.customColors));
-            formData.append('font', JSON.stringify(this.selectedFont));
+            formData.append('sansSerifFont', JSON.stringify(this.selectedSansSerifFont));
+            formData.append('serifFont', JSON.stringify(this.selectedSerifFont));
 
             this.onCreate(formData);
           },
           onCreate(data) {
             ProcessMaker.apiClient.post('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{__('The Settings css was saved.')}}', 'success', 5, true);
+                ProcessMaker.alert('{{__('The styles were saved.')}}', 'success', 5, true);
                 this.onClose();
               })
               .catch(error => {
@@ -227,7 +317,7 @@
           onUpdate(data) {
             ProcessMaker.apiClient.put('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{__('The Settings css was update.')}}', 'success', 5, true);
+                ProcessMaker.alert('{{__('The styles were updated.')}}', 'success', 5, true);
                 this.onClose();
               })
               .catch(error => {

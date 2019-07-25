@@ -61,6 +61,9 @@ class CssOverride extends Controller
         }
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
+        $this->writeFonts($request->input("sansSerifFont", "'Open Sans' !default"),
+            $request->input("serifFont", "Georgia, 'Times New Roman', Times, serif !default"));
+        $this->compileSass(json_decode($request->input('variables', '[]'), true));
 
         return new ApiResource($setting);
     }
@@ -117,6 +120,9 @@ class CssOverride extends Controller
         }
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
+        $this->writeFonts($request->input("sansSerifFont", "'Open Sans' !default"),
+                            $request->input("serifFont", "Georgia, 'Times New Roman', Times, serif !default"));
+        $this->compileSass(json_decode($request->input('variables', '[]'), true));
 
         return response([], 204);
     }
@@ -124,20 +130,31 @@ class CssOverride extends Controller
     /**
      * Write variables in file
      *
-     * @param $data
+     * @param $request
      */
     private function writeColors($data)
     {
         // Now generate the _colors.scss file
-        $contents = "// Changing the theme colors\n";
-        // Build out the file contents
+        $contents = "// Changed theme colors\n";
         foreach ($data as $key => $value) {
             $contents .= $value['id'] . ': ' . $value['value'] . ";\n";
         }
-        //now store it.
         File::put(app()->resourcePath('sass') . '/_colors.scss', $contents);
 
-        //compiled
+    }
+
+    private function writeFonts($sansSerif, $serif)
+    {
+        // Generate the _fonts.scss file
+        $contents = "// Changed theme fonts\n";
+        $contents .= '$font-family-sans-serif: ' . $sansSerif . ";\n";
+        $contents .= '$font-family-serif: ' . $serif . ";\n";
+        File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
+    }
+
+    private function compileSass()
+    {
+        // Compile the Sass files
         $this->dispatch(new CompileSass([
             'tag' => 'sidebar',
             'origin' => 'resources/sass/sidebar/sidebar.scss',
@@ -168,7 +185,8 @@ class CssOverride extends Controller
             'logo' => $request->input('fileLogoName', ''),
             'icon' => $request->input('fileIconName', ''),
             'variables' => $request->input('variables', ''),
-            'font' => $request->input('font', ''),
+            'sansSerifFont' => $request->input('sansSerifFont', ''),
+            'serifFont' => $request->input('serifFont', ''),
         ];
     }
 
