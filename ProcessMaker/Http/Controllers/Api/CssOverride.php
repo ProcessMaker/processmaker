@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -54,9 +55,11 @@ class CssOverride extends Controller
 
         if ($request->has('fileLogo')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
+            Cache::forget('css-logo');
         }
         if ($request->has('fileIcon')) {
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
+            Cache::forget('css-icon');
         }
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
@@ -108,9 +111,11 @@ class CssOverride extends Controller
 
         if ($request->has('fileLogo') && $request->input('fileLogo')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
+            Cache::forget('css-logo');
         }
         if ($request->has('fileIcon') && $request->input('fileIcon')) {
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
+            Cache::forget('css-icon');
         }
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));

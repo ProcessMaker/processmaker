@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -99,5 +100,47 @@ class Setting extends Model implements HasMedia
     public static function byKey($key)
     {
         return self::where('key', $key)->first();
+    }
+
+    public static function getLogo()
+    {
+        if (Cache::has('css-logo')) {
+            return Cache::get('css-logo');
+        }
+        //default logo
+        $url = asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'));
+        //custom logo
+        $setting = self::byKey('css-override');
+        if ($setting) {
+            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_LOGO);
+
+            foreach ($mediaFile as $media) {
+                $url = $media->getFullUrl();
+            }
+        }
+        Cache::put('css-logo', $url, now()->addMinutes(10));
+
+        return $url;
+    }
+
+    public static function getIcon()
+    {
+        if (Cache::has('css-icon')) {
+            return Cache::get('css-icon');
+        }
+        //default icon
+        $url = asset(env('ICON_PATH_PATH', '/img/processmaker_icon.png'));
+        //custom icon
+        $setting = self::byKey('css-override');
+        if ($setting) {
+            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_ICON);
+
+            foreach ($mediaFile as $media) {
+                $url = $media->getFullUrl();
+            }
+        }
+        Cache::put('css-icon', $url, now()->addMinutes(10));
+
+        return $url;
     }
 }
