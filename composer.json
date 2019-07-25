@@ -13,15 +13,10 @@
     {
       "type": "vcs",
       "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/ProcessMaker/spark-connector-send-email.git"
     }
   ],
   "require": {
     "php": ">=7.2.0",
-    "typo3/class-alias-loader": "^1.0",
     "darkaonline/l5-swagger": "5.7.*",
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
@@ -45,6 +40,7 @@
     "spatie/laravel-medialibrary": "^7.0.0",
     "symfony/expression-language": "^4.1",
     "symfony/psr-http-message-bridge": "1.*",
+    "typo3/class-alias-loader": "^1.0",
     "watson/validating": "^3.1",
     "zendframework/zend-diactoros": "1.*"
   },
