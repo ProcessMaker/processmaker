@@ -70,8 +70,7 @@ class SassCompiledNotification extends Notification
             'name' => 'Sass compile completed',
             'dateTime' => Carbon::today()->toIso8601String(),
             'uid' => 1,
-            'request_id' => 1,
-            'url' => 'http://test.com'
+            'request_id' => 1
         ];
     }
 
