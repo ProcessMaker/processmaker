@@ -863,6 +863,7 @@
     "Group": "Group",
     "Form": "Form",
     "Display": "Display",
-    "The styles were saved.": "The styles were saved.",
-    "The styles were updated.": "The styles were updated."
+    "The styles were saved. Please wait while the styles are regenerated...": "The styles were saved. Please wait while the styles are regenerated...",
+    "The styles were updated.": "The styles were updated.",
+    "The styles were recompiled.": "The styles were recompiled."
 }

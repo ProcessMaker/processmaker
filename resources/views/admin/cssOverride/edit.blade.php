@@ -275,6 +275,17 @@
             return data;
           }
         },
+        mounted() {
+          let userID = document.head.querySelector('meta[name="user-id"]');
+          window.Echo.private(
+              `ProcessMaker.Models.User.${userID.content}`
+          ).notification(response => {
+            if (response.type == "ProcessMaker\\Notifications\\SassCompiledNotification") {
+              ProcessMaker.alert('{{ __('The styles were recompiled.') }}', 'success');
+              this.onClose();
+            }
+          });
+        },
         methods: {
           resetErrors() {
             this.errors = Object.assign({}, {
@@ -304,8 +315,8 @@
           onCreate(data) {
             ProcessMaker.apiClient.post('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{ __('The styles were saved.') }}');
-                this.onClose();
+                ProcessMaker.alert('{{ __('The styles were saved. Please wait while the styles are regenerated...')
+                }}', 'success');
               })
               .catch(error => {
                 if (error.response.status && error.response.status === 422) {
@@ -316,8 +327,7 @@
           onUpdate(data) {
             ProcessMaker.apiClient.put('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{ __('The styles were updated.') }}');
-                this.onClose();
+                ProcessMaker.alert('{{ __('The styles were updated.') }}', 'danger');
               })
               .catch(error => {
                 if (error.response.status && error.response.status === 422) {

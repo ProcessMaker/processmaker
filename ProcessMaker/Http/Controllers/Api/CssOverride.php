@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
@@ -160,17 +161,20 @@ class CssOverride extends Controller
         $this->dispatch(new CompileSass([
             'tag' => 'sidebar',
             'origin' => 'resources/sass/sidebar/sidebar.scss',
-            'target' => 'public/css/sidebar.css'
+            'target' => 'public/css/sidebar.css',
+            'user' => Auth::user()->getKey()
         ]));
         $this->dispatch(new CompileSass([
             'tag' => 'app',
             'origin' => 'resources/sass/app.scss',
-            'target' => 'public/css/app.css'
+            'target' => 'public/css/app.css',
+            'user' => Auth::user()->getKey()
         ]));
         $this->dispatch(new CompileSass([
             'tag' => 'queues',
             'origin' => 'resources/sass/admin/queues.scss',
-            'target' => 'public/css/admin/queues.css'
+            'target' => 'public/css/admin/queues.css',
+            'user' => Auth::user()->getKey()
         ]));
     }
 

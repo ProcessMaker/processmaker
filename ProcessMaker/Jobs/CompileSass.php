@@ -53,8 +53,9 @@ class CompileSass implements ShouldQueue
             $this->fixPathsInGeneratedAppCss();
         }
 
-        if (str_contains($this->properties['tag'], 'queues')) {
-            Notification::send(collect([User::find(1)]), new SassCompiledNotification());
+        $user = User::find($this->properties['user']);
+        if (str_contains($this->properties['tag'], 'queues') && $user) {
+            Notification::send(collect([$user]), new SassCompiledNotification());
         }
     }
 
