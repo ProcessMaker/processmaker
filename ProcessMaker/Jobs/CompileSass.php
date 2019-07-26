@@ -86,6 +86,7 @@ class CompileSass implements ShouldQueue
         $file = str_replace('url("../webfonts/','url("/fonts/', $file );
         $file = str_replace('url("../fonts/','url("/fonts/', $file );
         $file = str_replace('url("fonts/','url("/fonts/', $file );
+        $file = str_replace('content: /; }','content: "/"; }', $file );
         $re = '/(content:\s)\\\\\"(\\\\[0-9abcdef]+)\\\\\"/m';
         $file = preg_replace($re,'$1"$2"', $file );
         file_put_contents('public/css/app.css', $file);
