@@ -172,11 +172,11 @@
             ],
             fontsDefault: [
               {
-                'id':"'Open Sans' !default",
+                'id':"'Open Sans'",
                 'title': 'Default Sans Serif'
               },
               {
-                'id': "Georgia, 'Times New Roman', Times, serif !default",
+                'id': "Georgia, 'Times New Roman', Times, serif",
                 'title': 'Default Serif'
               },
               {
@@ -257,12 +257,11 @@
               if (this.config.config.icon != "null") {
                 this.fileIcon.selectedFile = this.config.config.icon;
               }
-              console.log('lalaal');
               if (this.config.config.sansSerifFont != "null") {
-                this.selectedSansSerifFont = this.config.config.sansSerifFont;
+                this.selectedSansSerifFont = JSON.parse(this.config.config.sansSerifFont);
               }
               if (this.config.config.serifFont != "null") {
-                this.selectedSerifFont = this.config.config.serifFont;
+                this.selectedSerifFont = JSON.parse(this.config.config.serifFont);
               }
             }
           },
@@ -305,7 +304,7 @@
           onCreate(data) {
             ProcessMaker.apiClient.post('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{__('The styles were saved.')}}', 'success', 5, true);
+                ProcessMaker.alert('{{ __('The styles were saved.') }}');
                 this.onClose();
               })
               .catch(error => {
@@ -317,7 +316,7 @@
           onUpdate(data) {
             ProcessMaker.apiClient.put('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{__('The styles were updated.')}}', 'success', 5, true);
+                ProcessMaker.alert('{{ __('The styles were updated.') }}');
                 this.onClose();
               })
               .catch(error => {
