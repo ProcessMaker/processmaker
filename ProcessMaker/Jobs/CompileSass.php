@@ -8,6 +8,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\SassCompiledNotification;
 
 class CompileSass implements ShouldQueue
 {
@@ -48,6 +51,10 @@ class CompileSass implements ShouldQueue
 
         if (str_contains($this->properties['tag'], 'app')) {
             $this->fixPathsInGeneratedAppCss();
+        }
+
+        if (str_contains($this->properties['tag'], 'queues')) {
+            Notification::send(collect([User::find(1)]), new SassCompiledNotification());
         }
     }
 
