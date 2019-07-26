@@ -155,7 +155,7 @@
             colors: null,
             selectedSansSerifFont: {
               'id': "'Open Sans'",
-              'title': 'Default Font'
+              'title': 'Default Sans Serif Font'
             },
             selectedSerifFont: {
               'id': "Georgia, 'Times New Roman', Times, serif",
@@ -216,32 +216,8 @@
                 "title": "Arial"
               },
               {
-                "id": "Helvetica",
-                "title": "Helvetica"
-              },
-              {
-                "id": "'Times New Roman'",
-                "title": "Times New Roman"
-              },
-              {
-                "id": "'Courier New'",
-                "title": "Courier New"
-              },
-              {
-                "id": "Verdana",
-                "title": "Verdana"
-              },
-              {
-                "id": "Georgia",
-                "title": "Georgia"
-              },
-              {
-                "id": "Palatino",
-                "title": "Palatino"
-              },
-              {
-                "id": "Garamond",
-                "title": "Garamond"
+                "id": "'Arial Black'",
+                "title": "Arial Black"
               },
               {
                 "id": "Bookman",
@@ -252,18 +228,41 @@
                 "title": "Comic Sans MS"
               },
               {
-                "id": "'Trebuchet MS'",
-                "title": "Trebuchet MS"
+                "id": "'Courier New'",
+                "title": "Courier New"
               },
               {
-                "id": "'Arial Black'",
-                "title": "Arial Black"
+                "id": "Garamond",
+                "title": "Garamond"
+              },
+              {
+                "id": "Georgia",
+                "title": "Georgia"
+              },
+              {
+                "id": "Helvetica",
+                "title": "Helvetica"
               },
               {
                 "id": "Impact",
                 "title": "Impact"
               },
-
+              {
+                "id": "'Times New Roman'",
+                "title": "Times New Roman"
+              },
+              {
+                "id": "Verdana",
+                "title": "Verdana"
+              },
+              {
+                "id": "Palatino",
+                "title": "Palatino"
+              },
+              {
+                "id": "'Trebuchet MS'",
+                "title": "Trebuchet MS"
+              },
             ],
             errors: {
               'logo': null,
