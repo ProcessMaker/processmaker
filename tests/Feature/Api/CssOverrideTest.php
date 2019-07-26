@@ -26,8 +26,6 @@ class CssOverrideTest extends TestCase
      */
     public function testCssOverride()
     {
-        $this->withoutExceptionHandling();
-
         chdir(app()->basePath());
 
         // backup of original colors
