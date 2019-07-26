@@ -343,7 +343,6 @@
           onCreate(data) {
             ProcessMaker.apiClient.post('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{ __('The styles were saved. Please wait while the styles are regenerated...') }}', 'success');
                 this.$refs.modalLoading.show();
               })
               .catch(error => {
@@ -355,7 +354,6 @@
           onUpdate(data) {
             ProcessMaker.apiClient.put('css_settings', data)
               .then(response => {
-                ProcessMaker.alert('{{ __('The styles were updated.') }}', 'danger');
                 this.$refs.modalLoading.show();
               })
               .catch(error => {

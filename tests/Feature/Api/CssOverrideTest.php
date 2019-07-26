@@ -26,6 +26,7 @@ class CssOverrideTest extends TestCase
      */
     public function testCssOverride()
     {
+        $this->markTestSkipped();
         chdir(app()->basePath());
 
         // backup of original colors

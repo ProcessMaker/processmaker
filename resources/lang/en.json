@@ -863,8 +863,6 @@
     "Group": "Group",
     "Form": "Form",
     "Display": "Display",
-    "The styles were saved. Please wait while the styles are regenerated...": "The styles were saved. Please wait while the styles are regenerated...",
-    "The styles were updated.": "The styles were updated.",
     "The styles were recompiled.": "The styles were recompiled.",
     "Regenerating CSS Files": "Regenerating CSS Files",
     "Please wait while the files are generated. The screen will be updated when finished.": "Please wait while the files are generated. The screen will be updated when finished."
