@@ -11,7 +11,7 @@
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
-        __('CSS override') => null,
+        __('Change Styles') => null,
     ]])
     <div class="container" id="editCss" v-cloak>
         <div class="row" role="document">
@@ -69,11 +69,11 @@
                                      :searchable="true"
                                      track-by="id"
                                      label="title"
-                                     >
-                            <template slot="noResult" >
+                        >
+                            <template slot="noResult">
                                 {{ __('No elements found. Consider changing the search query.') }}
                             </template>
-                            <template slot="noOptions" >
+                            <template slot="noOptions">
                                 {{ __('No Data Available') }}
                             </template>
                         </multiselect>
@@ -87,10 +87,10 @@
                                      track-by="id"
                                      label="title"
                         >
-                            <template slot="noResult" >
+                            <template slot="noResult">
                                 {{ __('No elements found. Consider changing the search query.') }}
                             </template>
-                            <template slot="noOptions" >
+                            <template slot="noOptions">
                                 {{ __('No Data Available') }}
                             </template>
                         </multiselect>
@@ -126,11 +126,11 @@
             },
             colors: null,
             selectedSansSerifFont: {
-              'id':"'Open Sans' !default",
+              'id': "'Open Sans'",
               'title': 'Default Font'
             },
             selectedSerifFont: {
-              'id': "Georgia, 'Times New Roman', Times, serif !default",
+              'id': "Georgia, 'Times New Roman', Times, serif",
               'title': 'Default Font'
             },
             colorDefault: [
@@ -172,7 +172,7 @@
             ],
             fontsDefault: [
               {
-                'id':"'Open Sans'",
+                'id': "'Open Sans'",
                 'title': 'Default Sans Serif'
               },
               {
