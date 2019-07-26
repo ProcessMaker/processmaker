@@ -158,6 +158,9 @@ class TokenRepository implements TokenRepositoryInterface
     {
         $this->removeUserFromData($token->getInstance());
         $this->removeRequestFromData($token->getInstance());
+        if ($this->getActivityType($activity) === 'callActivity') {
+            $this->removeParentFromData($token->getInstance());
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
@@ -362,6 +365,16 @@ class TokenRepository implements TokenRepositoryInterface
     private function removeRequestFromData(Instance $instance)
     {
         $instance->getDataStore()->removeData('_request');
+    }
+    
+    /**
+     * Remove _parent magic variable from the request data.
+     *
+     * @param Instance $instance
+     */
+    private function removeParentFromData(Instance $instance)
+    {
+        $instance->getDataStore()->removeData('_parent');
     }
 
 
