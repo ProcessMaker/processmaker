@@ -36,7 +36,7 @@ class CssOverrideTest extends TestCase
         $this->originalQueueCss = file_get_contents("public/css/admin/queues.css");
 
         $response = $this->actingAs($this->user, 'api')
-            ->call('POST', '/api/1.0/css_settings', $this->cssValues($this->testColor));
+            ->call('POST', '/api/1.0/customize-ui', $this->cssValues($this->testColor));
 
         // Validate that the operation was successful
         $response->assertStatus(201);
@@ -54,7 +54,7 @@ class CssOverrideTest extends TestCase
      */
     public function testEmptyParameters()
     {
-        $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/css_settings', []);
+        $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', []);
 
         //Validate that the error does a redirection
         $response->assertStatus(302);
@@ -65,7 +65,7 @@ class CssOverrideTest extends TestCase
      */
     public function testWrongKeys()
     {
-        $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/css_settings', ['wrongkey' => 'key']);
+        $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', ['wrongkey' => 'key']);
 
         //Validate that the error does a redirection
         $response->assertStatus(302);

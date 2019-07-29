@@ -18,7 +18,7 @@ class CssOverrideTest extends TestCase
     public function a_user_can_view_css_override()
     {
         // get the URL
-        $response = $this->webcall('GET', route('css.edit'));
+        $response = $this->webcall('GET', route('customize-ui.edit'));
 
         $response->assertStatus(200);
         // check the correct view is called
