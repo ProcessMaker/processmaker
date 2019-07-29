@@ -28,7 +28,7 @@
                             <input type="file" class="custom-file-input" :class="{'is-invalid': errors.logo}"
                                    ref="customFileLogo" @change.prevent="onFileChangeLogo"
                                    accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
-                            <div class="invalid-feedback" v-for="error in errors.logo">@{{error}}</div>
+                            <div class="invalid-feedback" v-for="error in errors.fileLogo">@{{error}}</div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -42,7 +42,7 @@
                             <input type="file" class="custom-file-input" :class="{'is-invalid': errors.icon}"
                                    ref="customFileIcon" @change.prevent="onFileChangeIcon"
                                    accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
-                            <div class="invalid-feedback" v-for="error in errors.icon">@{{error}}</div>
+                            <div class="invalid-feedback d-block" v-for="error in errors.fileIcon">@{{error}}</div>
                         </div>
                     </div>
                     <div class="form-group">
