@@ -108,7 +108,7 @@ class Setting extends Model implements HasMedia
             return Cache::get('css-logo');
         }
         //default logo
-        $url = asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'));
+        $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker_logo.png'));
         //custom logo
         $setting = self::byKey('css-override');
         if ($setting) {
