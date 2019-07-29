@@ -12,7 +12,7 @@ use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Models\Setting;
 
-class CssOverride extends Controller
+class CssOverrideController extends Controller
 {
 
     /**

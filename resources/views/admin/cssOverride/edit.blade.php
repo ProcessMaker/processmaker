@@ -144,7 +144,7 @@
             colors: null,
             selectedSansSerifFont: {
               'id': "'Open Sans'",
-              'title': 'Default Sans Serif Font'
+              'title': 'Default Font'
             },
             colorDefault: [
               {
@@ -186,7 +186,7 @@
             fontsDefault: [
               {
                 'id': "'Open Sans'",
-                'title': 'Default Sans Serif'
+                'title': 'Default Font'
               },
               {
                 "id": "Menlo, Monaco, Consolas, 'Courier New', monospace",
@@ -300,7 +300,7 @@
             });
           },
           onClose() {
-            window.location.href = '/admin/css';
+            window.location.href = '/admin/customize-ui';
           },
           onSubmit() {
             this.resetErrors();
@@ -317,7 +317,7 @@
             this.onCreate(formData);
           },
           onCreate(data) {
-            ProcessMaker.apiClient.post('css_settings', data)
+            ProcessMaker.apiClient.post('customize-ui', data)
               .then(response => {
                 this.$refs.modalLoading.show();
               })
@@ -328,7 +328,7 @@
               });
           },
           onUpdate(data) {
-            ProcessMaker.apiClient.put('css_settings', data)
+            ProcessMaker.apiClient.put('customize-ui', data)
               .then(response => {
                 this.$refs.modalLoading.show();
               })

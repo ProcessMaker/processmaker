@@ -64,7 +64,7 @@ class GenerateMenus
             }
             if (\Auth::check() && \Auth::user()->is_administrator) {
                 $submenu->add(__('Customize UI'), [
-                    'route' => 'css.edit',
+                    'route' => 'customize-ui.edit',
                     'icon' => 'fa-palette',
                 ]);
             }
