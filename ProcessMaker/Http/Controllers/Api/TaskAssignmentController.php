@@ -20,37 +20,6 @@ class TaskAssignmentController extends Controller
         //
     ];
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @param Request $request
-     *
-     * @return Response
-     * 
-     *  @OA\Get(
-     *     path="/task_assignments",
-     *     summary="Returns the list of task assignments",
-     *     operationId="getTaskAssignments",
-     *     tags={"Task Assignments"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="list of tasks",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/taskAssignments"),
-     *             ),
-     *             @OA\Property(
-     *                 property="meta",
-     *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
-     *             ),
-     *         ),
-     *     ),
-     * )
-     */
     public function index(Request $request)
     {
         $query = ProcessTaskAssignment::select();
