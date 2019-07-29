@@ -7,8 +7,11 @@ $body-bg: #f7f9fb;
 
 // Fonts
 
+// The sans serif can be customized  by the user and are stored in the _fonts.css,
+// the commented line is the original value:
 //$font-family-sans-serif: 'Open Sans' !default;
-//$font-family-serif: Georgia, 'Times New Roman', Times, serif !default;
+
+$font-family-serif: Georgia, 'Times New Roman', Times, serif !default;
 
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 $font-family-monospace: Menlo, Monaco, Consolas, 'Courier New', monospace !default;
@@ -25,7 +28,8 @@ $font-size-h4: ceil($font-size-base * 1.4) !default; // ~18px
 $font-size-h5: $font-size-base !default;
 $font-size-h6: ceil($font-size-base * 0.75) !default; // ~12px
 
-// Changing the theme colors
+// The main colors can be customized by the user and are stored in _colors.css,
+// the commented lines have the original bootstrap values:
 //$primary: #3397e1;
 //$secondary: #788793;
 //$success: #00bf9c;
@@ -33,6 +37,7 @@ $font-size-h6: ceil($font-size-base * 0.75) !default; // ~12px
 //$warning: #fbbe02;
 //$danger: #ed4757;
 //$light: #ffffff;
+
 $hover: rgba(255, 255, 255, .3);
 
 $grey-bg: #e9edf1;
