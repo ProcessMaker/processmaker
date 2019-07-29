@@ -144,6 +144,12 @@ class CssOverride extends Controller
 
     }
 
+    /**
+     * Write variables font in file
+     *
+     * @param $sansSerif
+     * @param $serif
+     */
     private function writeFonts($sansSerif, $serif)
     {
         $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
@@ -155,6 +161,9 @@ class CssOverride extends Controller
         File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
     }
 
+    /**
+     * run jobs compile
+     */
     private function compileSass()
     {
         // Compile the Sass files
