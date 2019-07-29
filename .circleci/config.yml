@@ -250,7 +250,20 @@ jobs:
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
             cp tests/storage/keys/* storage/keys/
+      - run:
+          name: Start Chrome Driver
+          command: ./vendor/laravel/dusk/bin/chromedriver-linux
+          background: true
 
+      - run:
+          name: Run Laravel Server
+          command: php artisan serve
+          background: true
+
+      - run:
+          name: Run Laravel Dusk Tests
+          command: php artisan dusk
+          
       - run:
           name: 'QA Package'
           command: './vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz'
@@ -258,8 +271,8 @@ jobs:
       - run:
           name: 'QA Deploy'
           command: |
-            # Delete existing target QA directory, if it existsqa-processmakerbuilds
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p"  "rm -Rf ~/builds/$BUILD_NAME"
+            # Delete existing target QA directory, if it exists
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "rm -Rf ~/builds/$BUILD_NAME"
             # Create new target QA directory
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "mkdir ~/builds/$BUILD_NAME"
             # Copy over packaged qa deployment
