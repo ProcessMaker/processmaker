@@ -230,7 +230,7 @@ class CssOverride extends Controller
             $data = substr($data[$filename], strpos($data[$filename], ',') + 1);
             $type = strtolower($type[1]); // jpg, png, gif
 
-            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'svg'])) {
+            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'tiff'])) {
                 throw new \Exception('invalid image type');
             }
 
@@ -245,6 +245,9 @@ class CssOverride extends Controller
             $setting->addMedia("/tmp/img.{$type}")
                 ->toMediaCollection($collectionName, $diskName);
         } else if (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
+            $this->validate($request, [
+                $filename => 'mimes:jpg,jpeg,png,gif,bmp,tiff',
+            ]);
             $setting->addMedia($request->file($filename))
                 ->toMediaCollection($collectionName, $diskName);
         }
