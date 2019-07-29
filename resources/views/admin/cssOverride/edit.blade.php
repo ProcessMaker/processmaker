@@ -77,23 +77,6 @@
                                 {{ __('No Data Available') }}
                             </template>
                         </multiselect>
-                        {!! Form::label('fileIcon', __('Serif Font')) !!}
-                        <multiselect v-model="selectedSerifFont"
-                                     placeholder="{{__('Type to search')}}"
-                                     :options="fontsDefault"
-                                     :multiple="false"
-                                     :show-labels="false"
-                                     :searchable="true"
-                                     track-by="id"
-                                     label="title"
-                        >
-                            <template slot="noResult">
-                                {{ __('No elements found. Consider changing the search query.') }}
-                            </template>
-                            <template slot="noOptions">
-                                {{ __('No Data Available') }}
-                            </template>
-                        </multiselect>
                     </div>
                     <br>
                     <div class="text-right">
@@ -157,10 +140,6 @@
               'id': "'Open Sans'",
               'title': 'Default Sans Serif Font'
             },
-            selectedSerifFont: {
-              'id': "Georgia, 'Times New Roman', Times, serif",
-              'title': 'Default Font'
-            },
             colorDefault: [
               {
                 id: '$primary',
@@ -202,10 +181,6 @@
               {
                 'id': "'Open Sans'",
                 'title': 'Default Sans Serif'
-              },
-              {
-                'id': "Georgia, 'Times New Roman', Times, serif",
-                'title': 'Default Serif'
               },
               {
                 "id": "Menlo, Monaco, Consolas, 'Courier New', monospace",
@@ -287,9 +262,6 @@
               if (this.config.config.sansSerifFont != "null") {
                 this.selectedSansSerifFont = JSON.parse(this.config.config.sansSerifFont);
               }
-              if (this.config.config.serifFont != "null") {
-                this.selectedSerifFont = JSON.parse(this.config.config.serifFont);
-              }
             }
           },
         },
@@ -335,7 +307,6 @@
             formData.append('fileIcon', this.fileIcon.file);
             formData.append('variables', JSON.stringify(this.customColors));
             formData.append('sansSerifFont', JSON.stringify(this.selectedSansSerifFont));
-            formData.append('serifFont', JSON.stringify(this.selectedSerifFont));
 
             this.onCreate(formData);
           },

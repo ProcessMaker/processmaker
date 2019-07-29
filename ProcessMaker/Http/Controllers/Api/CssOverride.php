@@ -62,8 +62,7 @@ class CssOverride extends Controller
         }
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
-        $this->writeFonts(json_decode($request->input("sansSerifFont", '')),
-            json_decode($request->input("serifFont", '')));
+        $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
         $this->compileSass(json_decode($request->input('variables', '[]'), true));
 
         return new ApiResource($setting);
@@ -121,8 +120,7 @@ class CssOverride extends Controller
         }
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
-        $this->writeFonts(json_decode($request->input("sansSerifFont", '')),
-            json_decode($request->input("serifFont", '')));
+        $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
         $this->compileSass(json_decode($request->input('variables', '[]'), true));
 
         return response([], 204);
@@ -150,14 +148,12 @@ class CssOverride extends Controller
      * @param $sansSerif
      * @param $serif
      */
-    private function writeFonts($sansSerif, $serif)
+    private function writeFonts($sansSerif)
     {
         $sansSerif = $sansSerif ? $sansSerif : $this->sansSerifFontDefault();
-        $serif = $serif ? $serif : $this->serifFontDefault();
         // Generate the _fonts.scss file
         $contents = "// Changed theme fonts\n";
         $contents .= '$font-family-sans-serif: ' . $sansSerif->id . " !default;\n";
-        $contents .= '$font-family-serif: ' . $serif->id . " !default;\n";
         File::put(app()->resourcePath('sass') . '/_fonts.scss', $contents);
     }
 
@@ -201,7 +197,6 @@ class CssOverride extends Controller
             'icon' => $request->input('fileIconName', ''),
             'variables' => $request->input('variables', ''),
             'sansSerifFont' => $request->input('sansSerifFont', $this->sansSerifFontDefault()),
-            'serifFont' => $request->input('serifFont', $this->serifFontDefault()),
         ];
     }
 
@@ -215,19 +210,6 @@ class CssOverride extends Controller
         $data = new \stdClass();
         $data->id = "'Open Sans'";
         $data->title = "'Open Sans'";
-        return $data;
-    }
-
-    /**
-     * Default Serif Font
-     *
-     * @return \stdClass
-     */
-    private function serifFontDefault()
-    {
-        $data = new \stdClass();
-        $data->id =  "Georgia, 'Times New Roman', Times, serif";
-        $data->title =  "Georgia, 'Times New Roman', Times, serif";
         return $data;
     }
 
