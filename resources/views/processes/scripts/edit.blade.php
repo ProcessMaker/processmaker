@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Scripts') => route('scripts.index'),
         __('Configure') . " " . $script->title => null,
     ]])
@@ -111,7 +111,7 @@
             });
           },
           onClose() {
-            window.location.href = '/processes/scripts';
+            window.location.href = '/designer/scripts';
           },
           onUpdate() {
             this.resetErrors();

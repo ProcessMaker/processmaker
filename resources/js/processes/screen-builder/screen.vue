@@ -343,7 +343,7 @@ import formTypes from "./formTypes";
           })
       }, 60000),
       onClose() {
-        window.location.href = "/processes/screens";
+        window.location.href = "/designer/screens";
       },
       beforeExportScreen() {
         this.saveScreen(true);

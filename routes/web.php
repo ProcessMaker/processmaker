@@ -4,8 +4,8 @@ use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
 
 Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], function () {
 
-// Routes related to Authentication (password reset, etc)
-// Auth::routes();
+    // Routes related to Authentication (password reset, etc)
+    // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
         Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
         // Route::get('groups/{group}', 'GroupController@show')->name('groups.show')->middleware('can:show-groups,group');
@@ -19,7 +19,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 
     Route::get('admin', 'AdminController@index')->name('admin.index');
 
-    Route::namespace('Process')->prefix('processes')->group(function () {
+    Route::namespace('Process')->prefix('designer')->group(function () {
         Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index')->middleware('can:view-environment_variables');
         Route::get('environment-variables/{environment_variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit')->middleware('can:edit-environment_variables,environment_variable ');
 
@@ -76,7 +76,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('notifications', 'NotificationController@index')->name('notifications.index');
 
     // Allows for a logged in user to see navigation on a 404 page
-    Route::fallback(function(){
+    Route::fallback(function () {
         return response()->view('errors.404', [], 404);
     })->name('fallback');
 });
@@ -108,4 +108,3 @@ $this->get('password/success', function () {
 
 
 $this->get('/unavailable', 'UnavailableController@show')->name('error.unavailable');
-
