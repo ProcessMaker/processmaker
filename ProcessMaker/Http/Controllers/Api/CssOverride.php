@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
@@ -41,6 +42,10 @@ class CssOverride extends Controller
      */
     public function store(Request $request)
     {
+        if (!Auth::user()->is_administrator) {
+            throw new AuthorizationException(__('Not authorized to complete this request.'));
+        }
+
         $request->request->add(['config' => $this->formatConfig($request)]);
 
         $setting = Setting::byKey('css-override');
@@ -104,6 +109,10 @@ class CssOverride extends Controller
      */
     public function update(Request $request)
     {
+        if (!Auth::user()->is_administrator) {
+            throw new AuthorizationException(__('Not authorized to complete this request.'));
+        }
+
         $setting = Setting::byKey('css-override');
         $request->request->add(['config' => $this->formatConfig($request)]);
         $request->validate(Setting::rules($setting));
