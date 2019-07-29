@@ -76,6 +76,12 @@
                             <template slot="noOptions">
                                 {{ __('No Data Available') }}
                             </template>
+                            <template slot="singleLabel" slot-scope="props">
+                                <span :style="font(props.option.id)">@{{ props.option.title }}</span>
+                            </template>
+                            <template slot="option" slot-scope="props">
+                                <span :style="font(props.option.id)">@{{ props.option.title }}</span>
+                            </template>
                         </multiselect>
                     </div>
                     <br>
@@ -331,6 +337,9 @@
                   this.errors = error.response.data.errors;
                 }
               });
+          },
+          font(value) {
+            return 'font-family:' + value;
           },
           browseLogo() {
             this.$refs.customFileLogo.click();
