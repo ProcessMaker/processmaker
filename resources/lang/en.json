@@ -842,8 +842,8 @@
     "Edit": "Edit",
     "User": "User",
     "Customize UI": "Customize UI",
-    "Custom Logo (150x40 pixels)": "Custom Logo (150x40 pixels)",
-    "Custom Icon (40x40 pixels)": "Custom Icon (40x40 pixels)",
+    "Custom Logo": "Custom Logo",
+    "Custom Icon": "Custom Icon",
     "Choose logo image": "Choose logo image",
     "Choose icon image": "Choose icon image",
     "Custom Colors": "Custom Colors",
@@ -865,5 +865,6 @@
     "Display": "Display",
     "The styles were recompiled.": "The styles were recompiled.",
     "Regenerating CSS Files": "Regenerating CSS Files",
-    "Please wait while the files are generated. The screen will be updated when finished.": "Please wait while the files are generated. The screen will be updated when finished."
+    "Please wait while the files are generated. The screen will be updated when finished.": "Please wait while the files are generated. The screen will be updated when finished.",
+    "We recommended a transparent PNG at :size pixels.": "We recommended a transparent PNG at :size pixels."
 }
