@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{ __('Change Styles') }}
+    {{ __('Customize UI') }}
 @endsection
 
 @section('sidebar')
@@ -11,7 +11,7 @@
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
-        __('Change Styles') => null,
+        __('Customize UI') => null,
     ]])
     <div class="container" id="editCss" v-cloak>
         <div class="row" role="document">
