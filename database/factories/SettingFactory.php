@@ -7,5 +7,6 @@ use Faker\Generator as Faker;
 $factory->define(ProcessMaker\Models\Setting::class, function (Faker $faker) {
     return [
         'key' => $faker->sentence(1),
+        'config' => json_encode([])
     ];
 });
