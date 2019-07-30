@@ -62,7 +62,7 @@
                         </ul>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('fileIcon', __('Sans Serif Font')) !!}
+                        {!! Form::label('fileIcon', __('Font')) !!}
                         <multiselect v-model="selectedSansSerifFont"
                                      placeholder="{{__('Type to search')}}"
                                      :options="fontsDefault"
