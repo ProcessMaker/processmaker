@@ -74,7 +74,7 @@ class ExportProcess implements ShouldQueue
      */
     private function removeAssignedEntities()
     {
-        $humanTasks = ['startEvent', 'task', 'userTask'];
+        $humanTasks = ['startEvent', 'task', 'userTask', 'manualTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
