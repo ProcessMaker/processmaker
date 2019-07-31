@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d6831e7e98b868dec63920cca7b48091",
+    "content-hash": "f97c11a51769060bbe38721b6d98bd6b",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2629,52 +2629,6 @@
             "time": "2018-11-05T09:00:11+00:00"
         },
         {
-            "name": "mustache/mustache",
-            "version": "v2.12.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/bobthecow/mustache.php.git",
-                "reference": "fe8fe72e9d580591854de404cc59a1b83ca4d19e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/fe8fe72e9d580591854de404cc59a1b83ca4d19e",
-                "reference": "fe8fe72e9d580591854de404cc59a1b83ca4d19e",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.2.4"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "~1.11",
-                "phpunit/phpunit": "~3.7|~4.0|~5.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Mustache": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Justin Hileman",
-                    "email": "justin@justinhileman.info",
-                    "homepage": "http://justinhileman.com"
-                }
-            ],
-            "description": "A Mustache implementation in PHP.",
-            "homepage": "https://github.com/bobthecow/mustache.php",
-            "keywords": [
-                "mustache",
-                "templating"
-            ],
-            "time": "2017-07-11T12:54:05+00:00"
-        },
-        {
             "name": "nesbot/carbon",
             "version": "1.39.0",
             "source": {
@@ -3244,28 +3198,28 @@
             "authors": [
                 {
                     "name": "Jim Wigginton",
-                    "email": "terrafrost@php.net",
-                    "role": "Lead Developer"
+                    "role": "Lead Developer",
+                    "email": "terrafrost@php.net"
                 },
                 {
                     "name": "Patrick Monnerat",
-                    "email": "pm@datasphere.ch",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "pm@datasphere.ch"
                 },
                 {
                     "name": "Andreas Fischer",
-                    "email": "bantu@phpbb.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "bantu@phpbb.com"
                 },
                 {
                     "name": "Hans-Jürgen Petrich",
-                    "email": "petrich@tronic-media.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "petrich@tronic-media.com"
                 },
                 {
                     "name": "Graham Campbell",
-                    "email": "graham@alt-three.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "graham@alt-three.com"
                 }
             ],
             "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
@@ -3416,50 +3370,6 @@
             "time": "2016-06-16T16:22:20+00:00"
         },
         {
-            "name": "processmaker/connector-send-email",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/connector-send-email.git",
-                "reference": "4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/connector-send-email/zipball/4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba",
-                "reference": "4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba",
-                "shasum": ""
-            },
-            "require": {
-                "mustache/mustache": "^2.12.0",
-                "spatie/server-side-rendering": "^0.2.5"
-            },
-            "require-dev": {
-                "processmaker/processmaker": "4.0.*"
-            },
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Packages\\Connectors\\Email\\PluginServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Packages\\Connectors\\Email\\": "src/"
-                }
-            },
-            "scripts": {
-                "post-autoload-dump": []
-            },
-            "description": "ProcessMaker BPM Connectors that provide Email service",
-            "support": {
-                "source": "https://github.com/ProcessMaker/connector-send-email/tree/master",
-                "issues": "https://github.com/ProcessMaker/connector-send-email/issues"
-            },
-            "time": "2019-06-25T20:21:27+00:00"
-        },
-        {
             "name": "processmaker/laravel-i18next",
             "version": "dev-master",
             "source": {
@@ -3516,12 +3426,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "9d5ae0def3ceef30989c78f9be671972c0b23657"
+                "reference": "758c298fddac02ccc88898185da3abdc45d2b62a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/9d5ae0def3ceef30989c78f9be671972c0b23657",
-                "reference": "9d5ae0def3ceef30989c78f9be671972c0b23657",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/758c298fddac02ccc88898185da3abdc45d2b62a",
+                "reference": "758c298fddac02ccc88898185da3abdc45d2b62a",
                 "shasum": ""
             },
             "require-dev": {
@@ -3538,7 +3448,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2019-07-10T22:56:34+00:00"
+            "time": "2019-07-31T19:44:30+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -4373,54 +4283,6 @@
                 "spatie"
             ],
             "time": "2016-12-14T15:37:00+00:00"
-        },
-        {
-            "name": "spatie/server-side-rendering",
-            "version": "0.2.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/spatie/server-side-rendering.git",
-                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/spatie/server-side-rendering/zipball/fb646f07be18e83324d7e32773c19ccf06a78530",
-                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.0",
-                "symfony/process": "^3.0|^4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Spatie\\Ssr\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian De Deyne",
-                    "email": "sebastian@spatie.be",
-                    "homepage": "https://spatie.be",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Server side rendering JavaScript in your PHP application",
-            "homepage": "https://github.com/spatie/server-side-rendering",
-            "keywords": [
-                "SSR",
-                "server-side-rendering",
-                "spatie"
-            ],
-            "time": "2018-08-10T08:07:00+00:00"
         },
         {
             "name": "spatie/temporary-directory",
@@ -7014,6 +6876,52 @@
             "time": "2019-02-13T09:37:52+00:00"
         },
         {
+            "name": "mustache/mustache",
+            "version": "v2.12.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bobthecow/mustache.php.git",
+                "reference": "fe8fe72e9d580591854de404cc59a1b83ca4d19e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bobthecow/mustache.php/zipball/fe8fe72e9d580591854de404cc59a1b83ca4d19e",
+                "reference": "fe8fe72e9d580591854de404cc59a1b83ca4d19e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~1.11",
+                "phpunit/phpunit": "~3.7|~4.0|~5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Mustache": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Justin Hileman",
+                    "email": "justin@justinhileman.info",
+                    "homepage": "http://justinhileman.com"
+                }
+            ],
+            "description": "A Mustache implementation in PHP.",
+            "homepage": "https://github.com/bobthecow/mustache.php",
+            "keywords": [
+                "mustache",
+                "templating"
+            ],
+            "time": "2017-07-11T12:54:05+00:00"
+        },
+        {
             "name": "myclabs/deep-copy",
             "version": "1.9.1",
             "source": {
@@ -7765,8 +7673,8 @@
             "authors": [
                 {
                     "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de",
-                    "role": "lead"
+                    "role": "lead",
+                    "email": "sebastian@phpunit.de"
                 }
             ],
             "description": "The PHP Unit Testing framework.",
@@ -7777,6 +7685,50 @@
                 "xunit"
             ],
             "time": "2019-07-15T06:24:08+00:00"
+        },
+        {
+            "name": "processmaker/connector-send-email",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/connector-send-email.git",
+                "reference": "4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/connector-send-email/zipball/4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba",
+                "reference": "4c04f9cdeace7cfa175ae0df6fa14ca00d94d4ba",
+                "shasum": ""
+            },
+            "require": {
+                "mustache/mustache": "^2.12.0",
+                "spatie/server-side-rendering": "^0.2.5"
+            },
+            "require-dev": {
+                "processmaker/processmaker": "4.0.*"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Packages\\Connectors\\Email\\PluginServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Packages\\Connectors\\Email\\": "src/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": []
+            },
+            "description": "ProcessMaker BPM Connectors that provide Email service",
+            "support": {
+                "source": "https://github.com/ProcessMaker/connector-send-email/tree/master",
+                "issues": "https://github.com/ProcessMaker/connector-send-email/issues"
+            },
+            "time": "2019-06-25T20:21:27+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -8345,6 +8297,54 @@
             "time": "2016-10-03T07:35:21+00:00"
         },
         {
+            "name": "spatie/server-side-rendering",
+            "version": "0.2.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/server-side-rendering.git",
+                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/server-side-rendering/zipball/fb646f07be18e83324d7e32773c19ccf06a78530",
+                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0",
+                "symfony/process": "^3.0|^4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Ssr\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian De Deyne",
+                    "email": "sebastian@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Server side rendering JavaScript in your PHP application",
+            "homepage": "https://github.com/spatie/server-side-rendering",
+            "keywords": [
+                "SSR",
+                "server-side-rendering",
+                "spatie"
+            ],
+            "time": "2018-08-10T08:07:00+00:00"
+        },
+        {
             "name": "squizlabs/php_codesniffer",
             "version": "3.4.2",
             "source": {
@@ -8552,7 +8552,6 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
-        "processmaker/connector-send-email": 20,
         "processmaker/laravel-i18next": 20,
         "processmaker/nayra": 20,
         "processmaker/pmql": 20
