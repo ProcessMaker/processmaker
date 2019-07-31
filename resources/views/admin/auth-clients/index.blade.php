@@ -14,7 +14,6 @@
         __('Auth Clients') => null,
     ]])
     <div id="authClients">
-
         <div class="modal" role="dialog" ref="createEditAuthClient" id="createEditAuthClient">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -32,12 +31,27 @@
                             <small class="form-text text-muted">{{ __('Name must be distinct') }}</small>
                             <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
                         </div>
-                        <div class="form-group">
-                            {!!Form::label('redirect', __('Redirect URL'))!!}
-                            {!!Form::text('redirect', null, ['class'=> 'form-control', 'v-model'=> 'authClient.redirect',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.redirect}','rows'=>3])!!}
-                            <div class="invalid-feedback" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
-                        </div>
+
+
+                        <b-form-checkbox-group v-model="authClient.types">
+                          <div class="form-group">
+                            <div class="invalid-feedback d-block" v-if="errors.types">@{{ errors.types[0] }}</div>
+                            <b-form-checkbox value="authorization_code_grant">{{__('Enable Authorization Code Grant')}}</b-form-checkbox>
+                            <br />
+                            <template v-if="authClient['types'].includes('authorization_code_grant')">
+                              {!!Form::label('redirect', __('Redirect URL'))!!}
+                              {!!Form::text('redirect', null, ['class'=> 'form-control', 'v-model'=> 'authClient.redirect',
+                              'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.redirect}','rows'=>3])!!}
+                              <div class="invalid-feedback" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
+                            </template>
+                          </div>
+                          <div class="form-group">
+                            <b-form-checkbox value="password_client">{{__('Enable Password Grant')}}</b-form-checkbox>
+                          </div>
+                          <div class="form-group">
+                            <b-form-checkbox value="personal_access_client">{{__('Enable Personal Access Tokens')}}</b-form-checkbox>
+                          </div>
+                        </b-form-checkbox-group>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
@@ -74,10 +88,16 @@
       new Vue({
         el: '#authClients',
         data: {
-          authClient: null,
+          authClient: {
+            id: null,
+            name: "",
+            types: [],
+            redirect: "",
+            secret: "",
+          },
           errors: null,
           disabled: false,
-          title:''
+          title:'',
         },
         beforeMount() {
           this.resetValues();
@@ -118,6 +138,7 @@
             }).catch(error => {
               this.disabled = false;
               this.errors = error.response.data.errors;
+              console.log("ERRORS set to ", this.errors)
             });
           },
           resetValues() {
@@ -125,12 +146,14 @@
             this.authClient = {
               id: null,
               name: "",
+              types: [],
               redirect: "",
-              secret: ""
+              secret: "",
             };
             this.errors = {
               name: null,
-              redirect: null
+              redirect: null,
+              types: null
             };
             this.disabled = false;
           },

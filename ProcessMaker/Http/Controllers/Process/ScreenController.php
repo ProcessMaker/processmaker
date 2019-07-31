@@ -63,6 +63,14 @@ class ScreenController extends Controller
     }
 
 
+    /**
+     * Download the JSON definition of the screen
+     *
+     * @param Screen $screen
+     * @param string $key
+     *
+     * @return stream
+     */
     public function download(Screen $screen, $key)
     {
         $fileName = snake_case($screen->title) . '.json';
@@ -73,7 +81,9 @@ class ScreenController extends Controller
         } else {
             return response()->streamDownload(function () use ($fileContents) {
                 echo $fileContents;
-            }, $fileName);
+            }, $fileName, [
+                'Content-type' => 'application/json',
+            ]);
         }
     }
 }

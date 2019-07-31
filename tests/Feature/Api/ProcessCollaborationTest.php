@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
@@ -111,9 +112,8 @@ class ProcessCollaborationTest extends TestCase
         $route = route('api.tasks.index');
         $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
+
         $this->assertEquals('CLOSED', $tasks[0]['status']);
-        $this->assertEquals('CLOSED', $tasks[1]['status']);
-        $this->assertEquals('CLOSED', $tasks[2]['status']);
     }
 
     /**
@@ -126,8 +126,8 @@ class ProcessCollaborationTest extends TestCase
      */
     private function findTaskByName(array $tasks, $name)
     {
-        foreach($tasks as $index => $task) {
-            if ($task['element_name']===$name) {
+        foreach ($tasks as $index => $task) {
+            if ($task['element_name'] === $name) {
                 break;
             }
         }

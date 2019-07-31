@@ -1,5 +1,4 @@
 {
-    
     " overdue ": " overdue ",
     " pending": " pending",
     ":user has completed the task :task_name": ":user has completed the task :task_name",
@@ -185,7 +184,7 @@
     "Data Type": "Data Type",
     "Data": "Data",
     "Database connection failed. Check your database configuration and try again.": "Database connection failed. Check your database configuration and try again.",
-    "Date format": "Date format",
+    "Date Format": "Date Format",
     "Date Picker": "Date Picker",
     "Date": "Date",
     "Date/Time": "Date/Time",
@@ -487,7 +486,7 @@
     "Please visit the Processes page": "Please visit the Processes page",
     "Please wait while your content is loaded": "Please wait while your content is loaded",
     "Pool": "Pool",
-    "Postal code": "Postal code",
+    "Postal Code": "Postal Code",
     "Preview Screen was Submitted": "Preview Screen was Submitted",
     "Preview": "Preview",
     "Previous Task Assignee": "Previous Task Assignee",
@@ -741,7 +740,7 @@
     "This screen will be populated once the Request is completed.": "This screen will be populated once the Request is completed.",
     "Time expression": "Time expression",
     "Time when the task will due (hours)": "Time when the task will due (hours)",
-    "Time zone": "Time zone",
+    "Time Zone": "Time Zone",
     "Time": "Time",
     "Timeout": "Timeout",
     "Timing Control": "Timing Control",
@@ -769,8 +768,8 @@
     "Upload Name": "Upload Name",
     "Upload XML": "Upload XML",
     "Use this in your custom css rules": "Use this in your custom css rules",
-    "User assignments and sensitive environment variables will not be exported.": "User assignments and sensitive environment variables will not be exported.",
-    "User assignments and sensitive environment variables will not be imported.": "User assignments and sensitive environment variables will not be imported.",
+    "User assignments and sensitive Environment Variables will not be exported.": "User assignments and sensitive Environment Variables will not be exported.",
+    "User assignments and sensitive Environment Variables will not be imported.": "User assignments and sensitive Environment Variables will not be imported.",
     "User has no tokens.": "User has no tokens.",
     "User Permissions Updated Successfully": "User Permissions Updated Successfully",
     "User Updated Successfully ": "User Updated Successfully ",
@@ -831,5 +830,13 @@
     "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax.",
     "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
     "Your profile was saved.": "Your profile was saved.",
-  	"Are you sure you want to delete {{item}}?": "Are you sure you want to delete {{item}}?"
+    "Are you sure you want to delete {{item}}?": "Are you sure you want to delete {{item}}?",
+    "Password Grant Client ID": "Password Grant Client ID",
+    "Password Grant Secret": "Password Grant Secret",
+    "Processes": "Processes",
+    "Request Detail Screen": "Request Detail Screen",
+    "Configuration": "Configuration",
+    "Name": "Name",
+    "Whitelist": "Whitelist",
+    "Event-Based Gateway": "Event-Based Gateway"
 }

@@ -2,26 +2,42 @@
 
 namespace Tests\Browser;
 
-use Tests\Browser\Pages\Login;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\Browser\Pages\LoginPage;
+use ProcessMaker\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class LoginTest extends DuskTestCase
 {
-    /**
-     * Test login
-     *
-     * @throws \Throwable
-     */
-    public function testLogin()
+
+    use DatabaseMigrations;
+
+    public function test_login_page_loads()
     {
         $this->browse(function (Browser $browser) {
+            $browser->visit(new LoginPage)
+                ->assertRouteIs('login');
+        });
+    }
 
-            $browser->visit(new Login())
-                ->type('@username', 'admin')
-                ->type('@password', 'admin')
+    public function test_login_page_works()
+    {
+
+        $user = factory(User::class)->create([
+            'username' => 'testuser',
+            'password' => Hash::make('secret'),
+            'status' => 'ACTIVE'
+        ]);
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->visit(new LoginPage)
+                ->type('@username', $user->username)
+                ->type('@password', 'secret')
                 ->press('@login')
-                ->assertPathIs('/requests');
+                ->assertRouteIs('requests.index')
+                ->logout();
         });
     }
 }

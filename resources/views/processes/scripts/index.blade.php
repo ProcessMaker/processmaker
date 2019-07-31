@@ -9,7 +9,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Scripts') => null,
     ]])
     <div class="px-3 page-content" id="scriptIndex">
@@ -174,7 +174,7 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The script was created.')}}', 'success');
-                    window.location = "/processes/scripts/" + response.data.id + "/builder";
+                    window.location = "/designer/scripts/" + response.data.id + "/builder";
                   })
                   .catch(error => {
                     this.disabled = false;

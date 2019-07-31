@@ -36,6 +36,9 @@ export default {
   components: uploader,
   mixins: [uniqIdsMixin],
   props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint"],
+  beforeMount() {
+    this.getFileType();
+  },
   mounted() {
     // we need to be able to remove the classes from the npm package
     document
@@ -58,6 +61,7 @@ export default {
   data() {
     return {
       content: "",
+      fileType: null,
       validator: {
         errorCount: 0,
         errors: [],
@@ -81,8 +85,27 @@ export default {
     };
   },
   methods: {
-    fileUploaded(rootFile, file) {
-      this.$emit("input", file.name);
+    getFileType() {
+      if (document.head.querySelector('meta[name="request-id"]')) {
+        this.fileType = 'request';
+      }
+      
+      if (document.head.querySelector('meta[name="collection-id"]')) {
+        this.fileType = 'collection';
+      }
+    },
+    fileUploaded(rootFile, file, message) {
+      if (this.fileType == 'request') {
+        this.$emit("input", file.name);
+      }
+      
+      if (this.fileType == 'collection') {
+        message = JSON.parse(message);
+        this.$emit("input", {
+          id: message.id,
+          name: message.file_name
+        });
+      }
     },
     removed() {
       if (!this.inProgress) {
@@ -105,12 +128,28 @@ export default {
       if (this.endpoint) {
         return this.endpoint;
       }
+      
+      if (this.fileType == 'request') {
+        const requestIDNode = document.head.querySelector('meta[name="request-id"]');
 
-      const requestIDNode = document.head.querySelector('meta[name="request-id"]');
+        return requestIDNode
+          ? `/api/1.0/requests/${requestIDNode.content}/files`
+          : null;  
+      }
+      
+      if (this.fileType == 'collection') {
+        const collectionIdNode = document.head.querySelector('meta[name="collection-id"]');
 
-      return requestIDNode
-        ? `/api/1.0/requests/${requestIDNode.content}/files`
-        : null;
+        return collectionIdNode
+          ? '/api/1.0/files' +
+            '?model=' +
+            'ProcessMaker\\Plugins\\Collections\\Models\\Collection' +
+            '&model_id=' +
+            collectionIdNode.content +
+            '&collection=' +
+            'collection'
+          : null;  
+      }
     }
   }
 };

@@ -122,20 +122,29 @@
                                 </template>
                             </template>
                             <template v-else>
-                                <div class="card mt-3">
-                                    <div class="card-header">
-                                        <h5>
-                                            {{ __('Request In Progress') }}
-                                        </h5>
+                                <template v-if="showScreenRequestDetail">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <task-screen ref="screenRequestDetail" :screen="screenRequestDetail" :data="dataSummary"/>
+                                        </div>
                                     </div>
+                                </template>
+                                <template v-else>
+                                    <div class="card mt-3">
+                                        <div class="card-header">
+                                            <h5>
+                                                {{ __('Request In Progress') }}
+                                            </h5>
+                                        </div>
 
-                                    <div class="card-body">
-                                        <p class="card-text">
-                                            {{__('This Request is currently in progress.')}}
-                                            {{__('This screen will be populated once the Request is completed.')}}
-                                        </p>
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                {{__('This Request is currently in progress.')}}
+                                                {{__('This screen will be populated once the Request is completed.')}}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                </template>
                             </template>
                         </div>
                         @if ($request->status === 'COMPLETED')
@@ -366,6 +375,18 @@
               options[option.key] = option.value
             });
             return options;
+          },
+          /**
+           * If the screen request detail is configured.
+           **/
+          showScreenRequestDetail() {
+            return !!this.request.request_detail_screen;
+          },
+          /**
+           * Get Screen request detail
+           * */
+          screenRequestDetail() {
+            return this.request.request_detail_screen ? this.request.request_detail_screen.config : null;
           },
           classStatusCard() {
             let header = {

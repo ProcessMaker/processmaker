@@ -64,6 +64,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $bpmnRepository = new BpmnDocument();
             $bpmnRepository->setEngine($engine);
             $bpmnRepository->setFactory($repository);
+            $bpmnRepository->setSkipElementsNotImplemented(true);
             $mapping = $bpmnRepository->getBpmnElementsMapping();
             $engine->setStorage($bpmnRepository);
             $engine->setProcess($params['process']);

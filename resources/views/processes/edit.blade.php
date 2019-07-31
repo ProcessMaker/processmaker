@@ -10,10 +10,11 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
+        __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
-        __('Configure') . " " . $process->name => null,
+        $process->name => null,
     ]])
-    <div class="container" id="editProcess">
+    <div class="container" id="editProcess" v-cloak>
         <div class="row">
             <div class="col-12">
 
@@ -89,15 +90,22 @@
                                     </template>
                                 </multiselect>
                             </div>
-                            <div class="form-group p-0">
+                            <div class="form-group">
                                 {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
-                                {!! Form::select('screens', $screens, null,
-                                    ['id' => 'screens',
-                                        'class' => 'form-control',
-                                        'v-model' => 'formData.cancel_screen_id',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.screens}'
-                                    ])
-                                !!}
+                                <multiselect v-model="screenCancel"
+                                             :options="screens"
+                                             :multiple="false"
+                                             :show-labels="false"
+                                             placeholder="{{ __('Type to search') }}"
+                                             @search-change="loadScreens($event)"
+                                             @open="loadScreens"
+                                             track-by="id"
+                                             label="title">
+                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+                                    <template slot="noOptions">
+                                        {{ __('No Data Available') }}
+                                    </template>
+                                </multiselect>
                                 <div class="invalid-feedback" v-if="errors.screens">@{{errors.screens[0]}}</div>
                             </div>
                             <div class="form-group p-0">
@@ -116,6 +124,24 @@
                                         {{ __('No Data Available') }}
                                     </template>
                                 </multiselect>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
+                                <multiselect v-model="screenRequestDetail"
+                                             :options="screens"
+                                             :multiple="false"
+                                             :show-labels="false"
+                                             placeholder="{{ __('Type to search') }}"
+                                             @search-change="loadScreens($event)"
+                                             @open="loadScreens"
+                                             track-by="id"
+                                             label="title">
+                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+                                    <template slot="noOptions">
+                                        {{ __('No Data Available') }}
+                                    </template>
+                                </multiselect>
+                                <div class="invalid-feedback" v-if="errors.request_detail_screen_id">@{{errors.request_detail_screen_id[0]}}</div>
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
@@ -240,14 +266,23 @@
               status: null,
               screen: null
             },
-            screens: @json($screens),
+            screens: [],
             canCancel: @json($canCancel),
             canEditData: @json($canEditData),
+            screenRequestDetail: @json($screenRequestDetail),
+            screenCancel: @json($screenCancel),
             activeUsersAndGroups: @json($list),
             pause_timer_start_events: false
           }
         },
         methods: {
+          loadScreens(filter) {
+            ProcessMaker.apiClient
+              .get("screens?order_direction=asc&status=active&type=DISPLAY" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+              .then(response => {
+                this.screens = response.data.data;
+              });
+          },
           resetErrors() {
             this.errors = Object.assign({}, {
               name: null,
@@ -277,15 +312,19 @@
             });
             return response;
           },
+          formatValueScreen(item) {
+            return (item && item.id) ? item.id : null
+          },
           onUpdate() {
             this.resetErrors();
             let that = this;
             this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
             this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
-            this.formData.cancel_screen_id = this.formData.cancel_screen_id
+            this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
+            this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
             ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
               .then(response => {
-                ProcessMaker.alert('{{__('The process was saved.')}}', 'success');
+                ProcessMaker.alert('{{__('The process was saved.')}}', 'success', 5, true);
                 that.onClose();
               })
               .catch(error => {
