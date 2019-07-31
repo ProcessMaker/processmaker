@@ -18,6 +18,11 @@ class AddProcessKey extends Migration
             $table->string('package_key', '100')->after('is_valid')->index()->nullable();
         });
 
+        Schema::table('process_versions', function (Blueprint $table) {
+            $table->boolean('is_valid')->after('status')->default(true);
+            $table->string('package_key', '100')->after('is_valid')->index()->nullable();
+        });
+
         Schema::table('process_categories', function (Blueprint $table) {
             $table->boolean('is_system')->after('status')->default(false);
         });
