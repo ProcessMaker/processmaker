@@ -7,6 +7,7 @@ use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
+use ProcessMaker\Models\ScheduledTask;
 
 class BoundaryEventsTest extends TestCase
 {
@@ -64,10 +65,16 @@ class BoundaryEventsTest extends TestCase
         $this->assertCount(1, $activeTokens);
         $this->assertEquals('Task 1', $activeTokens[0]->element_name);
 
+        // One timer should be scheduled
+        $this->assertEquals(1, ScheduledTask::count());
+
         // Trigger timer event
         $now->modify('+1 minute');
         TaskSchedulerManager::fakeToday($now);
         $this->runScheduledTasks();
+
+        // There should be no scheduled tasks
+        $this->assertEquals(0, ScheduledTask::count());
 
         // Get active tokens
         $activeTokens = $instance->tokens()->where('status', 'ACTIVE')->get();

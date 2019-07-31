@@ -411,4 +411,14 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         return $this->belongsTo(ProcessRequest::class, 'parent_request_id');
     }
+
+    /**
+     * Scheduled task of the request.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scheduledTasks()
+    {
+        return $this->hasMany(ScheduledTask::class, 'process_request_id');
+    }
 }

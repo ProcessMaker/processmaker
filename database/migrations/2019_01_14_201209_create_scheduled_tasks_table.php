@@ -17,6 +17,7 @@ class CreateScheduledTasksTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('process_id')->nullable(); // could be a system-generated comment
             $table->unsignedInteger('process_request_id')->nullable(); // could be a system-generated comment
+            $table->unsignedInteger('process_request_token_id')->nullable(); // could be a system-generated comment
             $table->string('type', 255);
             $table->dateTime('last_execution')->nullable();
             $table->text('configuration');
@@ -24,8 +25,10 @@ class CreateScheduledTasksTable extends Migration
 
             $table->index('process_id');
             $table->index('process_request_id');
+            $table->index('process_request_token_id');
 
             $table->foreign('process_id')->references('id')->on('processes')->onDelete('cascade');
+            $table->foreign('process_request_token_id')->references('id')->on('process_request_tokens')->onDelete('cascade');
         });
     }
 

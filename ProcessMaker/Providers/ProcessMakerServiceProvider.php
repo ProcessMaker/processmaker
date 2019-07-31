@@ -20,6 +20,8 @@ use ProcessMaker\Observers\ProcessCollaborationObserver;
 use ProcessMaker\Observers\ProcessObserver;
 use ProcessMaker\Observers\ProcessRequestObserver;
 use ProcessMaker\Observers\UserObserver;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Observers\ProcessRequestTokenObserver;
 
 /**
  * Provide our ProcessMaker specific services
@@ -38,6 +40,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Process::observe(ProcessObserver::class);
         ProcessRequest::observe(ProcessRequestObserver::class);
+        ProcessRequestToken::observe(ProcessRequestTokenObserver::class);
         ProcessCollaboration::observe(ProcessCollaborationObserver::class);
 
         parent::boot();
