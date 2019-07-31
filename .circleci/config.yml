@@ -233,8 +233,7 @@ jobs:
       #       cp tests/storage/keys/* storage/keys/
       - run: echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env.dusk.staging 
       - run: cat .env.dusk.staging
-      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "ls ~/builds/$BUILD_NAME"
-      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "ls ~/builds/"
+      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "mv ~/builds/$BUILD_NAME ~/builds/improvement-kr-7853"
       # - run:
       #     name: 'QA Package'
       #     command: './vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz'
