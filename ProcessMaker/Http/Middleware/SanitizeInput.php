@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Middleware;
 use Illuminate\Foundation\Http\Middleware\TransformsRequest;
 use ProcessMaker\Http\Controllers\Api\ScreenController;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\SanitizeHelper;
 use Route;
 
 class SanitizeInput extends TransformsRequest
@@ -16,24 +17,6 @@ class SanitizeInput extends TransformsRequest
      */
     public $except = [
         //
-    ];
-
-    /**
-     * The tags that should be sanitized.
-     *
-     * @var array
-     */
-    public $backlist = [
-        '<form>',
-        '<input>',
-        '<textarea>',
-        '<button>',
-        '<select>',
-        '<option>',
-        '<optgroup>',
-        '<fieldset>',
-        '<label>',
-        '<output>',
     ];
 
     /**
@@ -69,39 +52,15 @@ class SanitizeInput extends TransformsRequest
      * @param  mixed  $value
      * @return mixed
      */
-    protected function transform($key, $value)
+    protected function cleanValue($key, $value)
     {
-        // If this is a string and is not in the exceptions
-        // array, return it after sanitization.
-        if (is_string($value) && !in_array($key, $this->except, true)) {
-            // Remove most injectable code
-            $value = strip_tags($value);
-
-            // Return the sanitized string
-            return $value;
-        } elseif (is_string($value)) {
-            // Remove tags in backlist
-            foreach ($this->backlist as $tag) {
-                $regexp = $this->convertTagToRegExp($tag);
-                $value = preg_replace($regexp, '', $value);
-            }
+        if ($this->except === ['*']) {
+            // Do not sanitize any values (should be handled elsewhere in the controller)
             return $value;
         }
-
-        // Return the original value.
-        return $value;
-    }
-
-    /**
-     * Convert a <tag> into a regexp.
-     *
-     * @param string $tag
-     *
-     * @return string
-     */
-    private function convertTagToRegExp($tag)
-    {
-        return '/' . str_replace(['\<', '\>'], ['<[\s\/]*', '[^>]*>'], preg_quote($tag)) . '/i';
+        // If this is a string and is not in the exceptions
+        // array, return it after sanitization.
+        return SanitizeHelper::sanitize($value, !in_array($key, $this->except, true));
     }
 
     /**
