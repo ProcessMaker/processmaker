@@ -14,7 +14,7 @@ class AddGroupFieldToPermissionsTable extends Migration
     public function up()
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $table->string('group')->after('name');
+            $table->string('group')->after('name')->nullable(true);
         });
     }
 

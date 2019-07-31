@@ -94,7 +94,7 @@ export default {
       ProcessMaker.apiClient
         .get("/oauth/clients", { baseURL: "/" })
         .then(response => {
-          this.data = response.data;
+          this.data = response.data.data;
           this.loading = false;
         });
     },

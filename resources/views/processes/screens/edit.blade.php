@@ -10,9 +10,9 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Screens') => route('screens.index'),
-        __('Configure') . " " . $screen->title => null,
+        $screen->title => null,
     ]])
     <div class="container" id="editGroup">
         <div class="row">
@@ -69,7 +69,7 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/processes/screens';
+                    window.location.href = '/designer/screens';
                 },
                 onUpdate() {
                     this.resetErrors();

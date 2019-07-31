@@ -168,6 +168,12 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     window.ProcessMaker.EventBus.$emit("api-client-error", error);
     if (error.response && error.response.status && error.response.status === 401) {
         window.location = "/login";
+    } else if (!error.config.url.match('/debug')) {
+        window.ProcessMaker.apiClient.post('/debug', {
+            message: error.message,
+            code: error.code,
+            config: error.config
+        })
     }
     return Promise.reject(error);
 });

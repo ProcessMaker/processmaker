@@ -4,10 +4,11 @@ namespace Tests\Feature\Api;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\WithFaker;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Process;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -296,10 +297,51 @@ class TasksTest extends TestCase
             'user_id' => $this->user->id,
             'status' => 'ACTIVE',
         ]);
-        $params = ['status' => 'COMPLETED', 'data' => ['foo' => 'bar']];
+        $params = ['status' => 'COMPLETED', 'data' => ['foo' => '<p>bar</p>']];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), $params['data']);
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar']);
+        $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
+        $this->assertStatus(200, $response);
+    }
+    
+    public function testUpdateTaskRichText()
+    {
+        // $this->user = factory(User::class)->create(); // normal user
+        $screen = factory(Screen::class)->create([
+            'config' => json_decode(
+                file_get_contents(
+                    base_path('tests/Fixtures/rich_text_screen.json')
+                )
+            )
+        ]);
+        
+        $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
+        $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id .'"', $bpmn);
+        $process = factory(Process::class)->create([
+            'bpmn' => $bpmn,
+            'user_id' => $this->user->id,
+        ]);
+
+        $route = route('api.process_events.trigger', $process);
+
+        $response = $this->apiCall('POST', $route . '?event=node_1');
+        $this->assertStatus(201, $response);
+        $request = ProcessRequest::find($response->json()['id']);
+        $token = $request->tokens()->where('status', 'ACTIVE')->firstOrFail();
+
+        $params = ['status' => 'COMPLETED', 'data' => [
+            'input1' => '<p>foo</p>',
+            'richtext1' => '<p>bar</p>',
+            'richtext2' => '<p>another</p>'
+        ]];
+        WorkflowManager::shouldReceive('completeTask')
+            ->once()
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), [
+                'input1' => 'foo',
+                'richtext1' => '<p>bar</p>', // do not sanitize rich text
+                'richtext2' => '<p>another</p>'
+            ]);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }

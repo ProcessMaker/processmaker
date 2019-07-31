@@ -188,10 +188,10 @@
         switch (actionType) {
           case "edit-screen":
             window.location.href =
-              "/processes/screen-builder/" + data.id + "/edit";
+              "/designer/screen-builder/" + data.id + "/edit";
             break;
           case "edit-item":
-            window.location.href = "/processes/screens/" + data.id + "/edit";
+            window.location.href = "/designer/screens/" + data.id + "/edit";
             break;
           case "duplicate-item":
             this.dupScreen.title = data.title + " Copy";
@@ -201,7 +201,7 @@
             this.showModal();
             break;
           case "export-item":
-            window.location.href = "/processes/screens/" + data.id + "/export";
+            window.location.href = "/designer/screens/" + data.id + "/export";
             break;
           case "remove-item":
             let that = this;

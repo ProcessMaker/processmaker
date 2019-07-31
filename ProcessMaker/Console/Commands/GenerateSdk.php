@@ -44,8 +44,10 @@ class GenerateSdk extends Command
             $jsonPath = base_path('storage/api-docs/api-docs.json');
             $builder = new BuildSdk($jsonPath, $this->argument('output'), true);
             if ($this->argument('language') === 'none') {
-                $this->info("No language specified. Choose one of these:");
-                $this->info($builder->getAvailableLanguages());
+                $this->info(
+                    "No language specified. Choose one of these: \n" . 
+                    join(", ", $builder->getAvailableLanguages())
+                );
                 return;
             }
             $builder->setLang($this->argument('language'));
