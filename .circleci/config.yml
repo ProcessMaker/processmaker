@@ -45,8 +45,7 @@ jobs:
             echo $QA_PROCESSMAKERBUILDS_HOST_IDENTIFIER	>> ~/.ssh/known_hosts
             chmod 0600 ~/.ssh/known_hosts
       - checkout
-      
-      - run: echo "$CIRCLE_BRANCH"
+
       # # Install PHP dependencies
       # - run: sudo apt-get update && sudo apt install -y libpng-dev libzip-dev default-libmysqlclient-dev curl apt-transport-https
       # - run: sudo docker-php-ext-install gd zip pdo_mysql mysqli
@@ -274,7 +273,8 @@ jobs:
       #       DB_DATABASE: 'circle_test'
       #       RUN_MSSQL_TESTS: 'true'
       #       MSSQL_HOST: '127.0.0.1'
-      -run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "ls ~/builds/"
+      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "ls ~/builds/"
+      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cat ~/builds/$BUILD_NAME/.env.dusk.staging "
       # - run:
       #     name: 'SauceLabs Browser Tests: Firefox'
       #     command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
