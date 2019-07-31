@@ -45,6 +45,7 @@ jobs:
             echo $QA_PROCESSMAKERBUILDS_HOST_IDENTIFIER	>> ~/.ssh/known_hosts
             chmod 0600 ~/.ssh/known_hosts
       - checkout
+      
       - run: echo "$CIRCLE_BRANCH"
       # # Install PHP dependencies
       # - run: sudo apt-get update && sudo apt install -y libpng-dev libzip-dev default-libmysqlclient-dev curl apt-transport-https
