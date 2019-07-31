@@ -9,6 +9,7 @@ use ProcessMaker\Models\ScheduledTask;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\Feature\Shared\ProcessTestingTrait;
 
 /**
  * Test the process execution with requests
@@ -21,6 +22,7 @@ class IntermediateTimerEventTest extends TestCase
     use ResourceAssertionsTrait;
     use WithFaker;
     use RequestHelper;
+    use ProcessTestingTrait;
 
     /**
      * @var Process $process
@@ -66,6 +68,11 @@ class IntermediateTimerEventTest extends TestCase
         $definitions = $process->getDefinitions();
         $startEvent = $definitions->getEvent('_2');
         $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
+
+        // Complete first task to active the intermediate timer events.
+        $token = $request->tokens()->where('element_id', '_3')->first();
+        $this->completeTask($token);
+
         // at this point the save method should have created 4 rows in the
         // scheduled tasks table
         $tasks = ScheduledTask::all();
