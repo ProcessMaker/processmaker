@@ -307,7 +307,6 @@ jobs:
 #            SAUCELABS_BROWSER: 'safari'
 #            SAUCELABS_PLATFORM: 'macOS 10.13'
 #            SAUCELABS_BROWSER_VERSION: '11.0'
-
       - run:
           name: 'Final QA Artisan DB Migration'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"'
