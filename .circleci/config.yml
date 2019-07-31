@@ -167,70 +167,71 @@ jobs:
 
       # # Prepare for packaging for QA environment
 
-      - run:
-          name: 'QA Configuration File Build'
-          command: |
-            echo "APP_KEY=" >> .env
-            echo "APP_DEBUG=FALSE" >> .env
-            echo "DEBUGBAR_ENABLED=FALSE" >> .env
-            echo "APP_NAME=ProcessMaker" >> .env
-            echo "APP_ENV=staging" >> .env
-            echo "DB_HOSTNAME=${QA_RDS_HOST}" >> .env
-            echo "DB_DATABASE=${QA_DB_NAME}" >> .env
-            echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env
-            echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
-            echo "DATA_DB_DRIVER=mysql" >> .env
-            echo "DATA_DB_HOST=${QA_RDS_HOST}" >> .env
-            echo "DATA_DB_DATABASE=${QA_DATA_DB_NAME}" >> .env
-            echo "DATA_DB_PORT=3306" >> .env
-            echo "DATA_DB_USERNAME=${QA_RDS_USERNAME}" >> .env
-            echo "DATA_DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
-            echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
-            echo "PROXIES=*" >> .env
-            echo "PROXIES_AWS=true" >> .env
-            # Put in configuration file for Broadcaster
-            echo "BROADCAST_DRIVER=redis" >> .env
-            echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
-            echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
-            echo "REDIS_PORT=%%REDISPORT%%" >> .env
-            echo "PROCESSMAKER_SCRIPTS_HOME=/home/circleci/tmp" >> .env
-            echo "HOME=/home/circleci" >> .env
-            echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
-            echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env
-            echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env
-            echo "APP_KEY=" >> .env.dusk.staging
-            echo "APP_DEBUG=FALSE" >> .env.dusk.staging
-            echo "APP_NAME=ProcessMaker" >> .env.dusk.staging
-            echo "APP_ENV=staging" >> .env.dusk.staging
-            echo "DB_HOSTNAME=${QA_RDS_HOST}" >> .env.dusk.staging
-            echo "DB_DATABASE=${QA_DB_NAME}" >> .env.dusk.staging
-            echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env.dusk.staging
-            echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env.dusk.staging
-            echo "DATA_DB_DRIVER=mysql" >> .env.dusk.staging
-            echo "DATA_DB_HOST=${QA_RDS_HOST}" >> .env.dusk.staging
-            echo "DATA_DB_DATABASE=${QA_DATA_DB_NAME}" >> .env.dusk.staging
-            echo "DATA_DB_PORT=3306" >> .env.dusk.staging
-            echo "DATA_DB_USERNAME=${QA_RDS_USERNAME}" >> .env.dusk.staging
-            echo "DATA_DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env.dusk.staging
-            echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env.dusk.staging 
-            # Put in configuration for SauceLabs Cloud based Browser Testing
-            echo "SAUCELABS_BROWSER_TESTING=true" >> .env.dusk.staging
-            echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env.dusk.staging
-            echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env.dusk.staging
-            # Put in configuration file for Broadcaster
-            echo "BROADCAST_DRIVER=redis" >> .env.dusk.staging
-            echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env.dusk.staging
-            echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env.dusk.staging
-            echo "REDIS_PORT=%%REDISPORT%%" >> .env.dusk.staging
-            echo "PROCESSMAKER_SCRIPTS_HOME=/home/circleci/tmp" >> .env.dusk.staging
-            echo "HOME=/home/circleci" >> .env.dusk.staging
-            echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env.dusk.staging
-            echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env.dusk.staging
-            echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env.dusk.staging           
-            # Generate unique app key
-            php artisan key:generate --force
-            # Copy over our test oauth keys. Regular install will create new ones
-            cp tests/storage/keys/* storage/keys/
+      # - run:
+      #     name: 'QA Configuration File Build'
+      #     command: |
+      #       echo "APP_KEY=" >> .env
+      #       echo "APP_DEBUG=FALSE" >> .env
+      #       echo "DEBUGBAR_ENABLED=FALSE" >> .env
+      #       echo "APP_NAME=ProcessMaker" >> .env
+      #       echo "APP_ENV=staging" >> .env
+      #       echo "DB_HOSTNAME=${QA_RDS_HOST}" >> .env
+      #       echo "DB_DATABASE=${QA_DB_NAME}" >> .env
+      #       echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env
+      #       echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
+      #       echo "DATA_DB_DRIVER=mysql" >> .env
+      #       echo "DATA_DB_HOST=${QA_RDS_HOST}" >> .env
+      #       echo "DATA_DB_DATABASE=${QA_DATA_DB_NAME}" >> .env
+      #       echo "DATA_DB_PORT=3306" >> .env
+      #       echo "DATA_DB_USERNAME=${QA_RDS_USERNAME}" >> .env
+      #       echo "DATA_DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env
+      #       echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
+      #       echo "PROXIES=*" >> .env
+      #       echo "PROXIES_AWS=true" >> .env
+      #       # Put in configuration file for Broadcaster
+      #       echo "BROADCAST_DRIVER=redis" >> .env
+      #       echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
+      #       echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env
+      #       echo "REDIS_PORT=%%REDISPORT%%" >> .env
+      #       echo "PROCESSMAKER_SCRIPTS_HOME=/home/circleci/tmp" >> .env
+      #       echo "HOME=/home/circleci" >> .env
+      #       echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
+      #       echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env
+      #       echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env
+      #       echo "APP_KEY=" >> .env.dusk.staging
+      #       echo "APP_DEBUG=FALSE" >> .env.dusk.staging
+      #       echo "APP_NAME=ProcessMaker" >> .env.dusk.staging
+      #       echo "APP_ENV=staging" >> .env.dusk.staging
+      #       echo "DB_HOSTNAME=${QA_RDS_HOST}" >> .env.dusk.staging
+      #       echo "DB_DATABASE=${QA_DB_NAME}" >> .env.dusk.staging
+      #       echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env.dusk.staging
+      #       echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env.dusk.staging
+      #       echo "DATA_DB_DRIVER=mysql" >> .env.dusk.staging
+      #       echo "DATA_DB_HOST=${QA_RDS_HOST}" >> .env.dusk.staging
+      #       echo "DATA_DB_DATABASE=${QA_DATA_DB_NAME}" >> .env.dusk.staging
+      #       echo "DATA_DB_PORT=3306" >> .env.dusk.staging
+      #       echo "DATA_DB_USERNAME=${QA_RDS_USERNAME}" >> .env.dusk.staging
+      #       echo "DATA_DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env.dusk.staging
+      #       echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env.dusk.staging 
+      #       # Put in configuration for SauceLabs Cloud based Browser Testing
+      #       echo "SAUCELABS_BROWSER_TESTING=true" >> .env.dusk.staging
+      #       echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env.dusk.staging
+      #       echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env.dusk.staging
+      #       # Put in configuration file for Broadcaster
+      #       echo "BROADCAST_DRIVER=redis" >> .env.dusk.staging
+      #       echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env.dusk.staging
+      #       echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env.dusk.staging
+      #       echo "REDIS_PORT=%%REDISPORT%%" >> .env.dusk.staging
+      #       echo "PROCESSMAKER_SCRIPTS_HOME=/home/circleci/tmp" >> .env.dusk.staging
+      #       echo "HOME=/home/circleci" >> .env.dusk.staging
+      #       echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env.dusk.staging
+      #       echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env.dusk.staging
+      #       echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env.dusk.staging           
+      #       # Generate unique app key
+      #       php artisan key:generate --force
+      #       # Copy over our test oauth keys. Regular install will create new ones
+      #       cp tests/storage/keys/* storage/keys/
+      - run: echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env.dusk.staging 
       - run: cat .env.dusk.staging
       # - run:
       #     name: 'QA Package'
