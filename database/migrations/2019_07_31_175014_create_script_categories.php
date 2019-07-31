@@ -24,6 +24,11 @@ class CreateScriptCategories extends Migration
             $table->unsignedInteger('script_category_id')->nullable();
             $table->foreign('script_category_id')->references('id')->on('script_categories')->onDelete('cascade');
         });
+
+        Schema::table('script_versions', function (Blueprint $table) {
+            $table->unsignedInteger('script_category_id')->nullable();
+            $table->foreign('script_category_id')->references('id')->on('script_categories')->onDelete('cascade');
+        });
     }
 
     /**
