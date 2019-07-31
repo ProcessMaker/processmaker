@@ -274,6 +274,7 @@ jobs:
           name: 'SauceLabs Browser Tests: Firefox'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
+            APP_URL: 'https://develop.bpm4.qa.processmaker.net'
             SAUCELABS_BROWSER: 'firefox'
             SAUCELABS_PLATFORM: 'Windows 10'
             SAUCELABS_BROWSER_VERSION: '47.0'
@@ -282,6 +283,7 @@ jobs:
           name: 'SauceLabs Browser Tests: Edge'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
+            APP_URL: 'https://develop.bpm4.qa.processmaker.net'
             SAUCELABS_BROWSER: 'MicrosoftEdge'
             SAUCELABS_PLATFORM: 'Windows 10'
             SAUCELABS_BROWSER_VERSION: '16.16299'
@@ -290,6 +292,7 @@ jobs:
           name: 'SauceLabs Browser Tests: Safari'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
           environment:
+            APP_URL: 'https://develop.bpm4.qa.processmaker.net'
             SAUCELABS_BROWSER: 'safari'
             SAUCELABS_PLATFORM: 'macOS 10.13'
             SAUCELABS_BROWSER_VERSION: '11.0'
