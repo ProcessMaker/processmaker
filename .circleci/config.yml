@@ -273,8 +273,7 @@ jobs:
       #       DB_DATABASE: 'circle_test'
       #       RUN_MSSQL_TESTS: 'true'
       #       MSSQL_HOST: '127.0.0.1'
-      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "ls ~/builds/"
-      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cat ~/builds/$BUILD_NAME/.env.dusk.staging "
+      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "rm -rf ~/builds/improvement-KR-7853"
       # - run:
       #     name: 'SauceLabs Browser Tests: Firefox'
       #     command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php ~/builds/$BUILD_NAME/artisan dusk"'
