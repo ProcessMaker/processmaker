@@ -2,15 +2,19 @@
 
 namespace ProcessMaker\Managers;
 
+use DateTime;
 use DateTimeZone;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Jobs\StartEvent;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
+use ProcessMaker\Nayra\Bpmn\Models\BoundaryEvent;
+use ProcessMaker\Nayra\Bpmn\Models\IntermediateCatchEvent;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -18,9 +22,12 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\JobManagerInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
+use Exception;
 
 class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 {
+    private static $today = null;
+
     /**
      *
      * Register in the database any Timer Start Event of a process
@@ -178,7 +185,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
             $tasks = ScheduledTask::all();
 
-            $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
+            $today = $this->today();
             foreach ($tasks as $task) {
                 $config = json_decode($task->configuration);
 
@@ -210,6 +217,15 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                                 $task->save();
                             }
                             break;
+                        case 'BOUNDARY_TIMER_EVENT':
+                            $executed = $this->executeBoundaryTimerEvent($task, $config);
+                            $task->last_execution = $today->format('Y-m-d H:i:s');
+                            if ($executed) {
+                                $task->save();
+                            }
+                            break;
+                        default:
+                            throw new Exception('Unknown timer event: ' . $task->type);
                     }
                 })->when(function () use ($nextDate, $today) {
                     return $nextDate->setTimezone(new DateTimeZone('UTC')) < $today->setTimezone(new DateTimeZone('UTC'));
@@ -269,6 +285,38 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $executed = false;
         foreach($catches as $catch) {
             WorkflowManager::completeCatchEvent($process, $request, $catch, []);
+            $executed = true;
+        }
+
+        return $executed;
+    }
+
+    public function executeBoundaryTimerEvent($task, $config)
+    {
+        //Get the event BPMN element
+        $id = $task->process_id;
+        if (!$id) {
+            return;
+        }
+
+        $process = Process::find($id);
+        $request = ProcessRequest::find($task->process_request_id);
+
+
+        $definitions = $process->getDefinitions();
+        $catch = $definitions->getBoundaryEvent($config->element_id);
+        if (!$catch) {
+            return;
+        }
+
+        $activity = $catch->getAttachedTo();
+        $tokens = $request->tokens()
+            ->where('element_id', $activity->getId())
+            ->where('status', 'ACTIVE')->get();
+
+        $executed = false;
+        foreach($tokens as $token) {
+            WorkflowManager::triggerBoundaryEvent($process, $request, $token, $catch, []);
             $executed = true;
         }
 
@@ -425,6 +473,69 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         return $result;
     }
 
+    public function today()
+    {
+        return self::$today ?: (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
+    }
+
+    public static function fakeToday($today)
+    {
+        self::$today = $today instanceof DateTime ? clone $today : (new DateTime($today))->setTimezone(new DateTimeZone('UTC'));
+        return clone self::$today;
+    }
+
+    private function scheduleTask($eventDefinition, $element, $token)
+    {
+        $timeDate = $eventDefinition->getTimeDate();
+        $timeCycle = $eventDefinition->getTimeCycle();
+        $timeDuration = $eventDefinition->getTimeDuration();
+
+        $timeEventType = '';
+        $period = null;
+        $intervals = [];
+
+        if ($timeDate && empty($timeEventType)) {
+            $timeEventType = 'TimeDate';
+            $period = $eventDefinition->getTimeDate()->getBody();
+            $intervals = explode('|', $period);
+        }
+
+        if ($timeCycle && empty($timeEventType)) {
+            $timeEventType = 'TimeCycle';
+            $period = $eventDefinition->getTimeCycle()->getBody();
+            $intervals = explode('|', $period);
+        }
+
+        if ($timeDuration && empty($timeEventType)) {
+            $timeEventType = 'TimeDuration';
+            $period = $eventDefinition->getTimeDuration()->getBody();
+            $intervals = explode('|', $period);
+        }
+
+        $init = ($period[0] === 'R' || $timeDate || $timeDuration) ? 0 : 1;
+        for ($i = $init; $i < count($intervals); $i++) {
+            $parts = $this->getIntervalParts($intervals[$i]);
+            $configuration = [
+                'type' => $timeEventType,
+                'interval' => $this->buildInterval($parts, $timeEventType),
+                'element_id' => $element->getId()
+            ];
+
+            $types = [
+                IntermediateCatchEvent::class => 'INTERMEDIATE_TIMER_EVENT',
+                StartEvent::class => 'TIMER_START_EVENT',
+                BoundaryEvent::class => 'BOUNDARY_TIMER_EVENT',
+            ];
+            $scheduledTask = new ScheduledTask();
+            $scheduledTask->process_id = $token->processRequest->process->id;
+            $scheduledTask->process_request_id = $token->processRequest->id;
+            $scheduledTask->configuration = json_encode($configuration);
+            $scheduledTask->type = $types[get_class($element)];
+            $scheduledTask->last_execution = $this->today();
+            $scheduledTask->save();
+        }
+    }
+
     /**
      * Schedule a job for a specific date and time for the given BPMN element,
      * event definition and an optional Token object
@@ -441,7 +552,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         TimerEventDefinitionInterface $eventDefinition,
         FlowElementInterface $element,
         TokenInterface $token = null
-    ) { }
+    ) {
+        error_log('scheduleDate');
+    }
 
     /**
      * Schedule a job for a specific cycle for the given BPMN element, event definition
@@ -457,7 +570,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         TimerEventDefinitionInterface $eventDefinition,
         FlowElementInterface $element,
         TokenInterface $token = null
-    ) { }
+    ) {
+        $this->scheduleTask($eventDefinition, $element, $token);
+    }
 
     /**
      * Schedule a job execution after a time duration for the given BPMN element,
@@ -473,7 +588,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         TimerEventDefinitionInterface $eventDefinition,
         FlowElementInterface $element,
         TokenInterface $token = null
-    ) { }
+    ) {
+        error_log('scheduleDuration');
+    }
 
     /**
      * Register an event listener with the dispatcher.
