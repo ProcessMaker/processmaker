@@ -274,7 +274,8 @@ jobs:
       #       sudo ls /tmp/vr
       #       sudo cat /tmp/vr/*
       #       ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "wget https://${BUILD_NAME}${QA_HOST_SUFFIX} " 
-      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "ls -la ~/builds/ "
+      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "mv ~/builds/$BUILD_NAME ~/builds/improvement2-kr-7853"
+      - run: ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "ls -la ~/builds/"
       - run:
           name: 'SauceLabs Browser Tests: Chrome'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan dusk"'
