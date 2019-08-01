@@ -115,11 +115,11 @@ Route::group(
 
     // Files
     Route::get('files', 'FileController@index')->name('files.index')->middleware('can:view-files');
-    Route::get('files/{file}', 'FileController@show')->name('files.show')->middleware('can:view-files');
-    Route::get('files/{file}/contents', 'FileController@download')->name('files.download')->middleware('can:view-files');
-    Route::post('files', 'FileController@store')->name('files.store')->middleware('can:create-files');
-    Route::put('files/{file}', 'FileController@update')->name('files.update')->middleware('can:edit-files');
-    Route::delete('files/{file}', 'FileController@destroy')->name('files.destroy')->middleware('can:delete-files');
+    Route::get('files/{file}', 'FileController@show')->name('files.show')->middleware('can:view,file');
+    Route::get('files/{file}/contents', 'FileController@download')->name('files.download')->middleware('can:view,file');
+    Route::post('files', 'FileController@store')->name('files.store')->middleware('can:create,ProcessMaker\Models\Media');
+    Route::put('files/{file}', 'FileController@update')->name('files.update')->middleware('can:update,file');
+    Route::delete('files/{file}', 'FileController@destroy')->name('files.destroy')->middleware('can:delete,file');
 
     // Notifications
     Route::get('notifications', 'NotificationController@index')->name('notifications.index');  //Already filtered in controller
