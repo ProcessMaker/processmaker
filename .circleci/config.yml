@@ -264,8 +264,17 @@ jobs:
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
-            # cat .env.dusk.
+      - run:
+          name: 'Verify page Login'
+          command: |
+            apt-get install -y wget
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cat ~/builds/$BUILD_NAME/.env.dusk.staging "
+            mkdir /tmp/vr
+            cd /tmp/vr
+            wget https://${BUILD_NAME}${QA_HOST_SUFFIX}
+            ls /tmp/vr
+            cat /tmp/vr/login
+
       - run:
           name: 'SauceLabs Browser Tests: Chrome'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan dusk"'
