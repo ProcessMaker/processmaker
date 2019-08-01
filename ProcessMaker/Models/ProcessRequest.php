@@ -39,7 +39,10 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
  *   @OA\Property(property="user_id", type="string", format="id"),
  *   @OA\Property(property="callable_id", type="string", format="id"),
  *   @OA\Property(property="data", type="string", format="json"),
- *   @OA\Property(property="status", type="string", enum={"DRAFT", "ACTIVE", "COMPLETED"}),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED"}), 
+ *   @OA\Property(property="name", type="string"), 
+ *   @OA\Property(property="process_id", type="integer"), 
+ *   @OA\Property(property="process", type="object"), 
  * ),
  * @OA\Schema(
  *   schema="processRequest",

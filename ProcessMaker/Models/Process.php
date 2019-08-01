@@ -43,6 +43,9 @@ use ProcessMaker\Query\Traits\PMQL;
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="pause_timer_start", type="integer"),
+ *   @OA\Property(property="cancel_screen_id", type="integer"),
+ *   @OA\Property(property="has_timer_start_events", type="boolean"),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -54,8 +57,8 @@ use ProcessMaker\Query\Traits\PMQL;
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
  *       )
- *   }
- * )
+ *   } 
+ * ),
  * @OA\Schema(
  *     schema="ProcessStartEvents",
  *     @OA\Schema(
@@ -66,7 +69,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *         @OA\Property(property="id", type="string"),
  *         @OA\Property(property="name", type="string"),
  *     )
- * )
+ * ),
  * @OA\Schema(
  *     schema="ProcessWithStartEvents",
  *     allOf={
@@ -76,8 +79,35 @@ use ProcessMaker\Query\Traits\PMQL;
  *             property="startEvents",
  *             type="array",
  *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
- *         )),
- *     },
+ *         ),
+ *         @OA\Property(
+ *             property="events",
+ *             type="array",
+ *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
+ *         ))
+ *     }
+ * ),
+ * 
+ * @OA\Schema(
+ *     schema="ProcessImport",
+ *     allOf={
+ *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),   
+ *      @OA\Schema(
+ *         @OA\Property( property="status", type="object"),
+ *         @OA\Property( property="assignable", type="array[]")
+ *      )
+ *    }
+ * ),
+ * 
+ * @OA\Schema(
+ *   schema="CreateNewProcess",
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/ProcessEditable"),
+ *       @OA\Schema(ref="#/components/schemas/Process"),
+ *       @OA\Schema(
+ *           @OA\Property(property="notifications", type="array[]"),
+ *       )
+ *   } 
  * )
  */
 class Process extends Model implements HasMedia

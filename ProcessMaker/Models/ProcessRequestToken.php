@@ -37,6 +37,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *   @OA\Property(property="due_at", type="date-time"),
  *   @OA\Property(property="initiated_at", type="string", format="date-time"),
  *   @OA\Property(property="riskchanges_at", type="string", format="date-time"),
+ *   @OA\Property(property="subprocess_start_event_id", type="string"),
  * ),
  * @OA\Schema(
  *   schema="processRequestToken",
@@ -48,9 +49,13 @@ use ProcessMaker\Query\Traits\PMQL;
  *          @OA\Property(property="process_request_id", type="string", format="id"),
  *          @OA\Property(property="element_id", type="string", format="id"),
  *          @OA\Property(property="element_type", type="string", format="id"),
+ *          @OA\Property(property="element_index", type="string"),
+ *          @OA\Property(property="element_name", type="string"),
  *          @OA\Property(property="created_at", type="string", format="date-time"),
  *          @OA\Property(property="updated_at", type="string", format="date-time"),
  *          @OA\Property(property="initiated_at", type="string", format="date-time"),
+ *          @OA\Property(property="advanceStatus", type="string"),
+ *          @OA\Property(property="due_notified", type="integer"),
  *       )
  *   }
  * )

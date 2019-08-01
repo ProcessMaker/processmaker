@@ -44,10 +44,10 @@ class PermissionController extends Controller
      *              type="integer",
      *              description="Id of the group whose permissions are configured"),
      *          @OA\Property(
-     *              property="permissions_names",
+     *              property="permission_names",
      *              type="array",
      *              collectionFormat="multi",
-     *              @OA\Items (type="integer"))
+     *              @OA\Items (type="string"))
      *       )
      *     ),
      *

@@ -225,6 +225,27 @@ class TaskController extends Controller
      * @param ProcessRequestToken $task
      *
      * @return Resource
+     * 
+     * @OA\Get(
+     *     path="/tasks/{task_id}",
+     *     summary="Get a single task by ID",
+     *     operationId="getTasksById",
+     *     tags={"Tasks"},
+     *     @OA\Parameter(
+     *         description="task id",
+     *         in="path",
+     *         name="task_id",
+     *         required=false,
+     *         @OA\Schema(
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/processRequestToken")
+     *     ),
+     * )
      */
     public function show(ProcessRequestToken $task)
     {

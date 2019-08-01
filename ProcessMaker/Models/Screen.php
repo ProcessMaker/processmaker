@@ -27,18 +27,25 @@ use ProcessMaker\Traits\SerializeToIso8601;
  *
  * @OA\Schema(
  *   schema="screensEditable",
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="type", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="config", type="string"),
+ *   @OA\Property(property="computed", type="string"),
+ *   @OA\Property(property="custom_css", type="string"),
+ *   @OA\Property(property="screen_category_id", type="string"),
  * ),
  * @OA\Schema(
  *   schema="screens",
  *   allOf={@OA\Schema(ref="#/components/schemas/screensEditable")},
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * )
+ * 
+ * * @OA\Schema(
+ *   schema="screenExported",
+ *   @OA\Property(property="url", type="string"),
  * )
  *
  */

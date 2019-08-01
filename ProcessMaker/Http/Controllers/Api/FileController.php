@@ -93,14 +93,14 @@ class FileController extends Controller
      *     tags={"Files"},
      *
      *      @OA\Parameter(
-     *         name="media_id",
+     *         name="model_id",
      *         in="query",
      *         description="ID of the model to which the file will be associated",
      *         required=false,
      *         @OA\Schema(type="integer"),
      *     ),
      *      @OA\Parameter(
-     *         name="media",
+     *         name="model",
      *         in="query",
      *         description="Name of the class of the model",
      *         required=false,
@@ -108,9 +108,17 @@ class FileController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(
-     *              @OA\Property(property="file", type="string", format="byte"),
-     *      )
+     *       @OA\MediaType(
+     *          mediaType="multipart/form-data",
+     *          @OA\Schema(
+     *             @OA\Property(
+     *                property="file",
+     *                description="save a new media file",
+     *                type="file",
+     *                @OA\Items(type="string", format="binary")
+     *              ),
+     *            ),
+     *         ),
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -195,7 +203,7 @@ class FileController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the file",
-     *         @OA\JsonContent(ref="#/components/schemas/groups")
+     *         @OA\JsonContent(ref="#/components/schemas/media")
      *     ),
      * )
      */
@@ -248,48 +256,6 @@ class FileController extends Controller
      *
      * @return \Illuminate\Http\Response
      *
-     * @OA\Put(
-     *     path="/files/{file_id}",
-     *     summary="Update a media file",
-     *     operationId="updateFile",
-     *     tags={"Files"},
-     *
-     *     @OA\Parameter(
-     *         description="ID of the file to update",
-     *         in="path",
-     *         name="file_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *      @OA\Parameter(
-     *         description="ID of the request",
-     *         in="path",
-     *         name="request_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(
-     *              @OA\Property(property="file", type="string", format="byte"),
-     *      )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="success",
-     *         @OA\JsonContent(
-     *              @OA\Property(property="id", type="string"),
-     *              @OA\Property(property="model_id", type="string"),
-     *              @OA\Property(property="file_name", type="string"),
-     *              @OA\Property(property="mime_type", type="string")
-     *             ),
-     *         )
-     *     ),
-     * )
      */
     public function update(Request $request, Media $file)
     {
@@ -313,9 +279,9 @@ class FileController extends Controller
      *     operationId="deleteFile",
      *     tags={"Files"},
      *     @OA\Parameter(
-     *         description="ID of the request",
+     *         description="ID of the file",
      *         in="path",
-     *         name="request_id",
+     *         name="file_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",

@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @OA\Schema(
  *   schema="taskAssignmentsEditable",
- *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="process_id", type="string", format="id"),
  *   @OA\Property(property="process_task_id", type="string", format="id"),
  *   @OA\Property(property="assignment_id", type="string", format="id"),
@@ -25,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @OA\Schema(
  *   schema="taskAssignments",
  *   allOf={@OA\Schema(ref="#/components/schemas/taskAssignmentsEditable")},
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )

@@ -204,9 +204,8 @@ class ProcessRequestController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/processRequestEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
      * )
      */
@@ -315,6 +314,35 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      * @param string $event
      * @return void
+     * 
+     * @OA\Post(
+     *     path="/requests/{process_request_id}/events/{event_id}",
+     *     summary="Update a process request event",
+     *     operationId="updateProcessRequestEvent",
+     *     tags={"Process Requests"},
+     *     @OA\Parameter(
+     *         description="ID of process request to return",
+     *         in="path",
+     *         name="process_request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="ID of process event to return",
+     *         in="path",
+     *         name="event_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *     ),
+     * )
      */
     public function activateIntermediateEvent(ProcessRequest $request, $event)
     {
