@@ -261,7 +261,7 @@ class ImportProcess implements ShouldQueue
     private function parseAssignableTasks()
     {
         //tasks that should always be assigned
-        $humanTasks = ['task', 'userTask'];
+        $humanTasks = ['task', 'userTask', 'manualTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
@@ -302,7 +302,7 @@ class ImportProcess implements ShouldQueue
      */
     private function removeAssignedEntities()
     {
-        $humanTasks = ['task', 'userTask'];
+        $humanTasks = ['task', 'userTask', 'manualTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
@@ -328,7 +328,7 @@ class ImportProcess implements ShouldQueue
     */
     private function updateScreenRefs($oldId, $newId, $process)
     {
-        $humanTasks = ['task', 'userTask', 'endEvent'];
+        $humanTasks = ['task', 'userTask', 'endEvent', 'manualTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
@@ -353,7 +353,7 @@ class ImportProcess implements ShouldQueue
      */
     private function completeScreenRefs()
     {
-        $humanTasks = ['task', 'userTask', 'endEvent'];
+        $humanTasks = ['task', 'userTask', 'endEvent', 'manualTask'];
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
