@@ -27,7 +27,7 @@
               </button>
             </div>
 
-            <button v-if="permission.includes('export-screens')" type="button" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
+            <button v-if="permission.includes('export-screens')" type="button" :title="$t('Export Screen')" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
             <button @click="saveScreen(false)" type="button" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
           </b-col>
 
