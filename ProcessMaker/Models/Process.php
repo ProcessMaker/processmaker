@@ -83,8 +83,8 @@ use ProcessMaker\Query\Traits\PMQL;
  *             property="events",
  *             type="array",
  *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
- *         )),
- *     },
+ *         ))
+ *     }
  * ),
  * 
  * @OA\Schema(
@@ -92,15 +92,10 @@ use ProcessMaker\Query\Traits\PMQL;
  *     allOf={
  *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),   
  *      @OA\Schema(
- *         @OA\Property(
- *             property="status",
- *             type="object"
- *         ),
- *         @OA\Property(
- *             property="assignable",
- *             type="[]"
- *         )),
- *     },
+ *         @OA\Property( property="status", type="object"),
+ *         @OA\Property( property="assignable", type="array[]")
+ *      )
+ *    }
  * ),
  * 
  * @OA\Schema(
