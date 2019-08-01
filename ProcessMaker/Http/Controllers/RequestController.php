@@ -8,6 +8,7 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -107,11 +108,13 @@ class RequestController extends Controller
 
         $files = $request->getMedia();
 
+        $screenRequested = $request->getScreensRequested();
+
         $manager = new ScreenBuilderManager();
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
         return view('requests.show', compact(
-            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager'
+            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager', 'screenRequested'
         ));
     }
 

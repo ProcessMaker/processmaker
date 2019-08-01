@@ -193,7 +193,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="forms" role="tabpanel" aria-labelledby="forms-tab">
-                            <request-screens :information= "dataSummary" ref="forms">
+                            <request-screens :information="dataSummary" :screens="screenRequested" ref="forms">
                             </request-screens>
                         </div>
                     </div>
@@ -327,6 +327,7 @@
             showJSONEditor: false,
             data: @json($request->data),
             requestId: @json($request->getKey()),
+            screenRequested: @json($screenRequested),
             request: @json($request),
             files: @json($files),
             refreshTasks: 0,

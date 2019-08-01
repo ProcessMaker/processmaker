@@ -65,7 +65,7 @@
 
   export default {
     mixins: [datatableMixin],
-    props: ["permission", "information"],
+    props: ["information", "permission", "screens"],
     data() {
       return {
         orderBy: "title",
@@ -108,39 +108,14 @@
         console.log('cellClicked: ', field.title);
         this.$refs.screens.toggleDetailRow(data.id)
       },
-      transform(data) {
-        /*for (let record of data.data) {
-          record['data'] = this.information;
-        }*/
-        data.data.forEach( item => {
+      fetch() {
+        this.screens.forEach(item => {
           item.data = this.information;
           return item;
         });
-        return data;
-      },
-      fetch() {
-        this.loading = true;
-        // Load from our api client
-        ProcessMaker.apiClient
-          .get(
-            "screens" +
-            "?page=" +
-            this.page +
-            "&per_page=" +
-            this.perPage +
-            "&order_by=" +
-            this.orderBy +
-            "&order_direction=" +
-            this.orderDirection
-          )
-          .then(response => {
-            this.data = this.transform(response.data);
-            this.loading = false;
-          });
+        this.data = this.screens;
       }
     },
-
-    computed: {}
   };
 </script>
 
