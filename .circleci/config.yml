@@ -32,8 +32,8 @@ jobs:
           name: Set Build Name Environment Variable
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
-            #echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. - | tr "[:upper:]" "[:lower:]")' >> $BASH_ENV
-            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
+            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. - | tr "[:upper:]" "[:lower:]")' >> $BASH_ENV
+            #echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
             echo 'export QA_DB_NAME=$(echo "processmaker$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             echo 'export QA_DATA_DB_NAME=$(echo "processmaker_data$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
@@ -263,7 +263,10 @@ jobs:
             # Run containerDeploy.sh script to spin up redis docker container, laravel-echo-server, and horizon.
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"         
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
+            # Restart nginx and php-fpm to clear cache
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service php-fpm restart"         
 
       - run:
           name: 'SauceLabs Browser Tests: Chrome'
