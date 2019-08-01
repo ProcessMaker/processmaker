@@ -270,9 +270,9 @@ jobs:
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cat ~/builds/$BUILD_NAME/.env.dusk.staging "
             sudo mkdir /tmp/vr
             cd /tmp/vr
-            wget https://${BUILD_NAME}${QA_HOST_SUFFIX}
-            ls /tmp/vr
-            cat /tmp/vr/login
+            sudo wget https://${BUILD_NAME}${QA_HOST_SUFFIX}
+            sudo ls /tmp/vr
+            sudo cat /tmp/vr/login
 
       - run:
           name: 'SauceLabs Browser Tests: Chrome'
