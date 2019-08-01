@@ -29,7 +29,7 @@ initialControls.push({
             type: "FormInput",
             field: "label",
             config: {
-                label: "Text Label",
+                label: "Label",
                 helper: "The text to display"
             }
         },
@@ -37,7 +37,7 @@ initialControls.push({
             type: "FormInput",
             field: "name",
             config: {
-                label: "Upload Name",
+                label: "Name",
                 helper: "The name of the upload"
             }
         }
@@ -61,7 +61,7 @@ initialControls.push({
             type: "FormInput",
             field: "label",
             config: {
-                label: "Text Label",
+                label: "Label",
                 helper: "The text to display"
             }
         },
@@ -69,7 +69,7 @@ initialControls.push({
             type: "FormInput",
             field: "name",
             config: {
-                label: "Download Name",
+                label: "Name",
                 helper: "The name of the Download"
             }
         }

@@ -1,15 +1,18 @@
 // Variables
 @import 'variables';
-// @import '../sass/_variables.scss';
-@import '~bootstrap/scss/bootstrap';
-// Font Awesome
-@import '~@fortawesome/fontawesome-free/scss/brands';
-@import '~@fortawesome/fontawesome-free/scss/regular';
-@import '~@fortawesome/fontawesome-free/scss/solid';
-@import '~@fortawesome/fontawesome-free/scss/fontawesome';
-@import '~vue-multiselect/dist/vue-multiselect.min.css';
 
-@import '../../node_modules/npm-font-open-sans/open-sans';
+// Font
+@import 'fonts';
+
+@import '../../public/css/precompiled/bootstrap/bootstrap.scss';
+
+//// Font Awesome
+@import '../../public/css/precompiled/fontawesome-free/scss/brands.scss';
+@import '../../public/css/precompiled/fontawesome-free/scss/regular.scss';
+@import '../../public/css/precompiled/fontawesome-free/scss/solid.scss';
+@import '../../public/css/precompiled/fontawesome-free/scss/fontawesome.scss';
+@import '../../public/css/precompiled/vue-multiselect.min.css';
+@import '../../public/css/precompiled/npm-font-open-sans/open-sans.scss';
 
 body,
 html {

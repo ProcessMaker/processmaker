@@ -78,6 +78,12 @@ return [
             'url' => env('APP_URL').'/storage/profile',
             'visibility' => 'public',
         ],
+        'settings' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/setting'),
+            'url' => env('APP_URL').'/storage/setting',
+            'visibility' => 'public',
+        ],
     ]
 
 

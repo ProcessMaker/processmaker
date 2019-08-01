@@ -733,7 +733,7 @@ class ProcessController extends Controller
 
             //Update assignments in start Events, task, user Tasks
             $definitions = $process->getDefinitions();
-            $tags = ['startEvent', 'task', 'userTask'];
+            $tags = ['startEvent', 'task', 'userTask', 'manualTask'];
             foreach ($tags as $tag) {
                 $elements = $definitions->getElementsByTagName($tag);
                 foreach ($elements as $element) {
