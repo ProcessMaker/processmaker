@@ -44,7 +44,7 @@ return [
         ],
         'data' => [
             'driver' => env('DATA_DB_DRIVER', 'mysql'),
-            'host' => env('DATA_DB_HOST', '127.0.0.1'),
+            'host' => env('DATA_DB_HOST', 'localhost'),
             'port' => env('DATA_DB_PORT'),
             'database' => env('DATA_DB_DATABASE'),
             'username' => env('DATA_DB_USERNAME'),
@@ -55,21 +55,7 @@ return [
             'schema' => env('DATA_DB_SCHEMA'),
             'engine' => env('DATA_DB_ENGINE'),
             'date_format' => env('DATA_DB_DATE_FORMAT'),
-        ],
-        'mysql' => [
-            'driver' => env('DB_DRIVER', 'mysql'),
-            'host' => env('DB_HOSTNAME', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'processmaker'),
-            'username' => env('DB_USERNAME', 'homestead'),
-            'password' => env('DB_PASSWORD', ''),
-            'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'strict' => true,
-            'engine' => 'InnoDB',
-        ],
+        ]
     ],
 
     /*
