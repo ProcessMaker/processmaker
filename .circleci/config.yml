@@ -120,6 +120,7 @@ jobs:
             docker pull processmaker4/executor-php:latest
             docker pull processmaker4/executor-lua:latest
             docker pull processmaker4/executor-node:latest
+            docker pull jbergknoff/sass:latest
             sudo mkdir -m777 /opt/executor
       #- run: sudo docker-php-ext-enable xdebug
 
