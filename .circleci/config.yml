@@ -265,7 +265,7 @@ jobs:
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
                     
       - run:
-          name: 'For dusk test'
+          name: 'Preparing the dusk test with SauceLabs'
           command: |
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo cp -rp ~/builds/$BUILD_NAME ~/builds/dusk-$BUILD_NAME "
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
@@ -303,7 +303,7 @@ jobs:
             SAUCELABS_BROWSER_VERSION: '11.0'
     
       - run:
-          name: 'Remove dusk Test'
+          name: 'Remove the files created'
           command: |
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo rm -rf ~/builds/dusk-$BUILD_NAME "
 
