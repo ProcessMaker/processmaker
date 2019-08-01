@@ -272,7 +272,7 @@ jobs:
             cd /tmp/vr
             sudo wget https://${BUILD_NAME}${QA_HOST_SUFFIX}
             sudo ls /tmp/vr
-            sudo cat /tmp/vr/login
+            sudo cat /tmp/vr/*
 
       - run:
           name: 'SauceLabs Browser Tests: Chrome'
