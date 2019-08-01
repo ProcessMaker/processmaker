@@ -46,7 +46,7 @@
       disableForm(json) {
         if (json instanceof Array) {
           for (let item of json) {
-            if (item.component === 'FormButton' && item.config.event === 'submit') {
+            if (item.component === 'FormButton') {
               json.splice(json.indexOf(item), 1);
             } else {
               this.disableForm(item);

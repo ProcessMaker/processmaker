@@ -64,7 +64,7 @@
                                        aria-controls="files" aria-selected="false">{{__('Files')}}</a>
                                 </li>
                             @endif
-                                <li class="nav-item">
+                                <li class="nav-item" v-show="canViewPrint">
                                     <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms"
                                        role="tab" aria-controls="forms" aria-selected="false">
                                         {{__('Forms')}}
@@ -192,7 +192,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="forms" role="tabpanel" aria-labelledby="forms-tab">
+                        <div class="tab-pane fade" id="forms" role="tabpanel" aria-labelledby="forms-tab" v-show="canViewPrint">
                             <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested" ref="forms">
                             </request-screens>
                         </div>
@@ -332,6 +332,7 @@
             files: @json($files),
             refreshTasks: 0,
             canCancel: @json($canCancel),
+            canViewPrint : @json($canPrintScreens),
             status: 'ACTIVE',
             userRequested: [],
             errorLogs: @json(['data'=>$request->errors]),

@@ -13,7 +13,7 @@
         __('Requests') => route('requests.index'),
         $request->name . ' #'. $request->getKey() => route('requests.show', [$request->getKey()]),
     ]])
-    <div id="request" class="container">
+    <div id="request" class="container d-print-block">
         <div class="row">
             <div class="col-sm-12">
                 <screen-detail :row-data="config" v-bind:can-print="true">
