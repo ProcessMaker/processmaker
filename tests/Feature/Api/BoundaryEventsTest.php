@@ -46,6 +46,7 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a timer boundary event
+     * @group timer_events
      */
     public function testCycleTimerBoundaryEvent()
     {
@@ -133,6 +134,7 @@ class BoundaryEventsTest extends TestCase
     /**
      * Tests a process with a cycle timer boundary event attached to a CallActivity
      *
+     * @group timer_events
      */
     public function testCycleTimerBoundaryEventCallActivity()
     {
@@ -200,6 +202,8 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a cycle timer boundary non interrupting event attached to a task
+     *
+     * @group timer_events
      */
     public function testCycleTimerBoundaryEventNonInterrupting()
     {
@@ -281,6 +285,8 @@ class BoundaryEventsTest extends TestCase
 
     /**
      * Tests a process with a cycle timer boundary non interrupting event attached to a CallActivity
+     *
+     * @group timer_events
      */
     public function testCycleTimerBoundaryEventCallActivityNonInterrupting()
     {
@@ -344,5 +350,50 @@ class BoundaryEventsTest extends TestCase
         $this->assertCount(2, $activeTokens);
         $this->assertEquals('Call Activity', $activeTokens[0]->element_name);
         $this->assertEquals('Task 2', $activeTokens[1]->element_name);
+    }
+
+    /**
+     * Tests a process with concurrent non interrupting boundary events attached to a CallActivity
+     *
+     * @group timer_events
+     */
+    public function testConcurrentBoundaryEventCallActivityNonInterrupting()
+    {
+        // Mock current date for TaskSchedulerManager
+        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+
+        // Create a process
+        $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Concurrent_BoundaryEvent_CallActivity_NonInterrupting.bpmn'));
+
+        // Start a process instance
+        $instance = $this->startProcess($process, '_4');
+
+        // Get active tokens
+        $activeTokens = $instance->tokens()->where('status', 'ACTIVE')->get();
+
+        // "Task 1" must be active
+        $this->assertCount(1, $activeTokens);
+        $this->assertEquals('Call Activity', $activeTokens[0]->element_name);
+
+        // Trigger timer event
+        $now->modify('+4 minute');
+        TaskSchedulerManager::fakeToday($now);
+        $this->runScheduledTasks();
+
+        // Get active tokens
+        $activeTokens = $instance->tokens()->where('status', 'ACTIVE')->get();
+
+        // "Call Activity", "Task 2", "Task 3", "Task 4" must be active
+        $this->assertCount(4, $activeTokens);
+        $this->assertEquals('Call Activity', $activeTokens[0]->element_name);
+        $this->assertEquals('Task 3', $activeTokens[1]->element_name);
+        $this->assertEquals('Task 4', $activeTokens[2]->element_name);
+        $this->assertEquals('Task 2', $activeTokens[3]->element_name);
+
+        // "Task 5" must be active in the sub process
+        $subInstance = ProcessRequest::orderBy('id', 'desc')->first();
+        $activeTokensSub = $subInstance->tokens()->where('status', 'ACTIVE')->get();
+        $this->assertCount(1, $activeTokensSub);
+        $this->assertEquals('Task 5', $activeTokensSub[0]->element_name);
     }
 }

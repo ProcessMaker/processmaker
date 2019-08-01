@@ -18,6 +18,7 @@ use Tests\Feature\Shared\RequestHelper;
  * Test the process execution with requests
  *
  * @group process_tests
+ * @group timer_events
  */
 class TimerStartEventTest extends TestCase
 {
@@ -90,6 +91,7 @@ class TimerStartEventTest extends TestCase
 
         $cases = [
             [
+                'lastExecution' => '2019-02-18T00:00:00Z',
                 'currentDate' => '2019-02-19T00:00:00Z',
                 'interval' => 'R/2019-02-15T00:00:00Z/P1D/2019-02-20T00:00:00Z',
                 'type' => 'TimeCycle',
@@ -97,6 +99,7 @@ class TimerStartEventTest extends TestCase
                 'title' => '1 day recurrence, currentDate < endDate'
             ],
             [
+                'lastExecution' => '2019-02-20T00:00:00Z',
                 'currentDate' => '2019-02-21T00:00:00Z',
                 'interval' => 'R/2019-02-15T00:00:00Z/P1D/2019-02-20T00:00:00Z',
                 'type' => 'TimeCycle',
@@ -104,6 +107,7 @@ class TimerStartEventTest extends TestCase
                 'title' => '1 day recurrence, currentDate > endDate'
             ],
             [
+                'lastExecution' => '2019-02-15T01:00:00Z',
                 'currentDate' => '2019-02-15T10:00:00Z',
                 'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
                 'type' => 'TimeCycle',
@@ -111,6 +115,7 @@ class TimerStartEventTest extends TestCase
                 'title' => '1 day recurrence currentDate > startDate'
             ],
             [
+                'lastExecution' => '2019-02-19T01:00:00Z',
                 'currentDate' => '2019-02-20T10:00:00Z',
                 'interval' => 'R4/2019-02-15T01:00:00Z/P1D',
                 'type' => 'TimeCycle',
@@ -118,6 +123,7 @@ class TimerStartEventTest extends TestCase
                 'title' => '1 day recurrence currentDate has passed the number of recurrences '
             ],
             [
+                'lastExecution' => null,
                 'currentDate' => '2019-02-11T00:00:00Z',
                 'interval' => 'R4/2019-02-15T00:00:00Z/P1M',
                 'type' => 'TimeCycle',
@@ -125,6 +131,7 @@ class TimerStartEventTest extends TestCase
                 'title' => '1 day recurrence currentDate < startDate '
             ],
             [
+                'lastExecution' => '2019-04-15T00:00:00Z',
                 'currentDate' => '2019-05-11T00:00:00Z',
                 'interval' => 'R/2019-02-15T00:00:00Z/P1M',
                 'type' => 'TimeCycle',
@@ -132,6 +139,7 @@ class TimerStartEventTest extends TestCase
                 'title' => '1 month recurrence currentDate < startDate '
             ],
             [
+                'lastExecution' => null,
                 'currentDate' => '2019-02-14T02:01:00Z',
                 'interval' => 'R/2019-02-14T11:02:00Z/PT1M',
                 'type' => 'TimeCycle',
@@ -139,6 +147,7 @@ class TimerStartEventTest extends TestCase
                 'title' => '1 month recurrence currentDate < startDate by hours'
             ],
             [
+                'lastExecution' => '2019-02-15T01:00:00Z',
                 'currentDate' => '2019-02-20T10:00:00Z',
                 'interval' => '2019-02-15T01:00:00Z',
                 'type' => 'TimeDate',
@@ -146,6 +155,7 @@ class TimerStartEventTest extends TestCase
                 'title' => 'Specific date off'
             ],
             [
+                'lastExecution' => null,
                 'currentDate' => '2019-02-15T00:59:00Z',
                 'interval' => '2019-02-15T01:00:00Z',
                 'type' => 'TimeDate',
@@ -153,6 +163,7 @@ class TimerStartEventTest extends TestCase
                 'title' => 'Specific date on time'
             ],
             [
+                'lastExecution' => null,
                 'currentDate' => '2019-02-15T01:01:00Z',
                 'interval' => 'P1D',
                 'type' => 'TimeDuration',
@@ -165,11 +176,12 @@ class TimerStartEventTest extends TestCase
             $currentDate = new \DateTime($case['currentDate']);
             $nayraInterval = $case['interval'];
             $expectedNextDate = $case['expectedNextDate'] === null ? null : new \DateTime($case['expectedNextDate']);
+            $lastExecution = isset($case['lastExecution']) ? new \DateTime($case['lastExecution']) : null;
             $nextDate = $manager->nextDate($currentDate, (object) [
                 'type' => $case['type'],
                 'interval' => $nayraInterval,
                 'element_id' => 'test'
-            ]);
+            ], $lastExecution);
             $this->assertEquals($expectedNextDate, $nextDate, 'Assertion failed in "'. $case['title']. '""');
         }
     }
