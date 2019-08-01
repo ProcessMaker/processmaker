@@ -39,8 +39,6 @@ trait ProcessTestingTrait
         $process->bpmn = $definitions->saveXml();
         // When save the process creates the assignments
         $process->save();
-        //debug
-        $this->renderBpmn();
         return $process;
     }
 
@@ -144,60 +142,5 @@ trait ProcessTestingTrait
         $events->each(function (Event $event) {
             $event->isDue(app()) && $event->filtersPass(app()) ? $event->run(app()) : null;
         });
-    }
-
-    private function getActiveTokens($instance)
-    {
-        $tokens = $instance ? $instance->tokens()->where('status', 'ACTIVE')->get()->toArray() : [];
-        return $tokens;
-    }
-
-    /**
-     * Log the execution events
-     */
-    public function setupTrace()
-    {
-        app('events')->listen('*', function ($e) {
-            if (preg_replace('/\W/', '', $e) == $e) {
-                $this->renderDebug();
-            }
-        });
-    }
-
-    private $svgs = [];
-
-    public function renderDebug()
-    {
-        $tokens = ProcessRequestToken::where('status', 'ACTIVE')->get();
-        file_put_contents(
-            base_path('tests/debug.html'),
-            view('debug', ['tokens'=>$tokens, 'svgs'=> $this->svgs])->render()
-        );
-    }
-    private function renderBpmn()
-    {
-        $cwd = getcwd();
-        $this->svgs = [];
-        chdir('/Users/davidcallizaya/Netbeans/bpmn2svg');
-        foreach(Process::all() as $process) {
-            $md5 = md5($process->bpmn);
-            $bpmn = '/Users/davidcallizaya/Netbeans/bpmn2svg/' . $md5 . '.bpmn';
-            $svgF = '/Users/davidcallizaya/Netbeans/bpmn2svg/' . $md5 . '.svg';
-            if (file_exists($svgF)) {
-                $svg = file_get_contents($svgF);
-            } else {
-                file_put_contents($bpmn, $process->bpmn);
-                exec('npm run draw ' . escapeshellarg($bpmn), $svg);
-                array_shift($svg);
-                array_shift($svg);
-                array_shift($svg);
-                array_shift($svg);
-                $svg = implode('', $svg);
-                file_put_contents($svgF, $svg);
-            }
-            $this->svgs[] = $svg;
-        }
-        chdir($cwd);
-        $this->renderDebug();
     }
 }
