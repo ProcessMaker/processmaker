@@ -81,7 +81,7 @@ class CompileSass implements ShouldQueue
     {
         chdir(app()->basePath());
         $file = file_get_contents("public/css/app.css");
-        $file = str_replace('url("./fonts/','url("/fonts/vendor/npm-font-open-sans/', $file );
+        $file = preg_replace('/\.\/fonts(\/[A-Za-z]+\/)OpenSans\-/m', '/fonts/OpenSans-', $file);
         $file = str_replace('public/css/precompiled/vue-multiselect.min.css','css/precompiled/vue-multiselect.min.css', $file );
         $file = str_replace('url("../webfonts/','url("/fonts/', $file );
         $file = str_replace('url("../fonts/','url("/fonts/', $file );
