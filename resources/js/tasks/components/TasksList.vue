@@ -1,6 +1,8 @@
 <template>
   <div class="data-table">
-    <data-loading :for="/tasks\?page/" v-show="shouldShowLoader"
+    <data-loading
+      :for="/tasks\?page/"
+      v-show="shouldShowLoader"
       :empty="$t('Congratulations')"
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
       empty-icon="beach"
@@ -17,6 +19,9 @@
         data-path="data"
         pagination-path="meta"
       >
+        <template slot="ids" slot-scope="props">
+          <b-link @click="onAction('edit', props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
+        </template>
         <template slot="name" slot-scope="props">
           <b-link
             @click="onAction('edit', props.rowData, props.rowIndex)"
@@ -26,7 +31,7 @@
         <template slot="requestName" slot-scope="props">
           <b-link
             @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
-          >#{{props.rowData.process_request.id}}  {{props.rowData.process.name}}</b-link>
+          >#{{props.rowData.process_request.id}} {{props.rowData.process.name}}</b-link>
         </template>
 
         <template slot="assignee" slot-scope="props">
@@ -34,7 +39,9 @@
         </template>
 
         <template slot="dueDate" slot-scope="props">
-          <span :class="props.rowData.status === 'CLOSED' ? 'text-dark' : classDueDate(props.rowData.due_at)">{{formatDate(props.rowData.due_at)}}</span>
+          <span
+            :class="props.rowData.status === 'CLOSED' ? 'text-dark' : classDueDate(props.rowData.due_at)"
+          >{{formatDate(props.rowData.due_at)}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
@@ -85,17 +92,23 @@ export default {
   props: ["filter"],
   data() {
     return {
-      orderBy: "due_at",
+      orderBy: "ID",
+      order_direction: "DESC",
       status: "",
-
       sortOrder: [
         {
-          field: "due_at",
-          sortField: "due_at",
-          direction: "asc"
+          field: "ID",
+          sortField: "ID",
+          direction: "DESC"
         }
       ],
       fields: [
+        {
+          name: "__slot:ids",
+          title: "#",
+          field: "id",
+          sortField: "id"
+        },
         {
           title: () => this.$t("Task"),
           name: "__slot:name",
@@ -120,7 +133,10 @@ export default {
           field: "user"
         },
         {
-          title: this.status === 'CLOSED' ? () => this.$t("Completed") : () => this.$t("Due"),
+          title:
+            this.status === "CLOSED"
+              ? () => this.$t("Completed")
+              : () => this.$t("Due"),
           name: "__slot:dueDate",
           field: "request",
           sortField: "due_at"
@@ -133,16 +149,16 @@ export default {
     };
   },
   beforeCreate() {
-    let params = (new URL(document.location)).searchParams;
-    this.status = params.get('status');
-    let status = '';
+    let params = new URL(document.location).searchParams;
+    this.status = params.get("status");
+    let status = "";
 
     switch (this.status) {
       case "CLOSED":
-        status = 'Completed';
+        status = "Completed";
         break;
       default:
-        status = 'In Progress';
+        status = "In Progress";
         break;
     }
     this.$parent.status.push({
@@ -173,24 +189,29 @@ export default {
     },
     formatStatus(status) {
       let statusNames = {
-        "ACTIVE" : this.$t('In Progress'),
-        "CLOSED" : this.$t('Completed')
-      }
+        ACTIVE: this.$t("In Progress"),
+        CLOSED: this.$t("Completed")
+      };
       let bubbleColor = {
-        "ACTIVE": "text-success",
-        "CLOSED": "text-primary",
+        ACTIVE: "text-success",
+        CLOSED: "text-primary"
       };
       return (
         '<i class="fas fa-circle ' +
         bubbleColor[status] +
-        ' small"></i> ' + statusNames[status]
+        ' small"></i> ' +
+        statusNames[status]
       );
     },
     classDueDate(value) {
       let dueDate = moment(value);
       let now = moment();
       let diff = dueDate.diff(now, "hours");
-      return diff < 0 ? "text-danger" : (diff <= 1 ? "text-warning" : "text-dark");
+      return diff < 0
+        ? "text-danger"
+        : diff <= 1
+        ? "text-warning"
+        : "text-dark";
     },
     getTaskStatus() {
       let path = new URL(location.href);
