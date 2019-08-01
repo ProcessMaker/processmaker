@@ -193,7 +193,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="forms" role="tabpanel" aria-labelledby="forms-tab">
-                            <request-screens :information="dataSummary" :screens="screenRequested" ref="forms">
+                            <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested" ref="forms">
                             </request-screens>
                         </div>
                     </div>

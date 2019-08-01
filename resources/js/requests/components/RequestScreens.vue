@@ -12,7 +12,7 @@
         :data="data"
         data-path="data"
         detail-row-component="screen-detail"
-        @vuetable:cell-clicked="onCellClicked"
+        @vuetable:cell-clicked="previewScreen"
         ref="screens"
         pagination-path="meta">
 
@@ -21,21 +21,15 @@
             <div class="popout">
               <b-btn
                 variant="link"
-                @click="onCellClicked(props.rowData, props.rowData)"
+                @click="previewScreen(props.rowData)"
                 v-b-tooltip.hover
-                :title="$t('Detail')">
-                <i class="fas fa-search-plus fa-lg fa-fw"></i>
+                :title="$t('Details')">
+                <i v-if="!props.rowData.view" class="fas fa-search-plus fa-lg fa-fw"></i>
+                <i v-else class="fas fa-search-minus fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
-                @click="pdf(props.rowData, props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('PDF')">
-                <i class="fas fa-file-pdf fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="print(props.rowData, props.rowData)"
+                @click="preview(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Print')">
                 <i class="fas fa-print fa-lg fa-fw"></i>
@@ -65,13 +59,12 @@
 
   export default {
     mixins: [datatableMixin],
-    props: ["information", "permission", "screens"],
+    props: ["id", "information", "permission", "screens"],
     data() {
       return {
         orderBy: "title",
         dupScreen: {
           title: "",
-          type: "",
           description: ""
         },
         errors: [],
@@ -88,12 +81,10 @@
             title: this.$t("Name"),
             name: "title",
             field: "title",
-            sortField: "title"
           },
           {
             title: this.$t("Description"),
             name: "description",
-            sortField: "description"
           },
           {
             name: "__slot:actions",
@@ -104,12 +95,16 @@
     },
 
     methods: {
-      onCellClicked(data, field, event) {
-        console.log('cellClicked: ', field.title);
+      preview(data) {
+        window.open('/requests/' + this.id + '/screen/' + data.id);
+      },
+      previewScreen(data) {
+        data.view = !data.view;
         this.$refs.screens.toggleDetailRow(data.id)
       },
       fetch() {
         this.screens.forEach(item => {
+          item.view = false;
           item.data = this.information;
           return item;
         });

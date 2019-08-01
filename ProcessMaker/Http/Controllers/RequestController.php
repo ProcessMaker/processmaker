@@ -118,6 +118,13 @@ class RequestController extends Controller
         ));
     }
 
+    public function screenPreview(ProcessRequest $request, Screen $screen)
+    {
+
+
+        return view('requests.preview', compact('request', 'screen'));
+    }
+
     public function downloadFiles(ProcessRequest $requestID, Media $fileID)
     {
         $requestID->getMedia();

@@ -258,6 +258,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $tokens = $this->tokens()
             ->whereNotIn('element_type', ['startEvent', 'end_event'])
+            ->where('status', 'CLOSED')
             ->get();
         $screens = [];
         foreach ($tokens as $token) {
