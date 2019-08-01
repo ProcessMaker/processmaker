@@ -267,11 +267,11 @@ jobs:
       #       # Restart nginx and php-fpm to clear cache
       #       ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
       #       ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service php-fpm restart"         
-      # - run:
-      #     name: 'restart services'
-      #     command: |
-      #       ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
-      #       ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service php-fpm restart"
+      - run:
+          name: 'restart services'
+          command: |
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service php-fpm restart"
       - run:
           name: 'SauceLabs Browser Tests: Chrome'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan dusk"'
