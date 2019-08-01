@@ -143,9 +143,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                     continue;
                 }
 
-                //dump('task: '. $task->type . ' [' . $task->last_execution, 'nextDate', $nextDate, 'today', $today);
                 if ($nextDate <= $today) {
-                    //$schedule->call(function () use ($task, $config, $today, $taskType) {
                     switch ($task->type) {
                         case 'TIMER_START_EVENT':
                             $this->executeTimerStartEvent($task, $config);
@@ -169,11 +167,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                         default:
                             throw new Exception('Unknown timer event: ' . $task->type);
                     }
-                    //})->when(function () use ($nextDate, $today, $task) {
-                  //  dump('task: '. $task->type, 'nextDate', $nextDate, 'today', $today);
-                  //  $nextDate <= $today ? dump('^^^^^^^'): null;
-                  //  return $nextDate <= $today;
-                //});
                 }
             }
         } catch (PDOException $e) {
