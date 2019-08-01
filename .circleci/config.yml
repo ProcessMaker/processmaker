@@ -32,8 +32,7 @@ jobs:
           name: Set Build Name Environment Variable
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
-            CIRCLE_BRANCH=$(echo "$CIRCLE_BRANCH" | tr '[:upper:]' '[:lower:]')
-            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
+            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. - | tr "[:upper:]" "[:lower:]")' >> $BASH_ENV
             echo 'export QA_DB_NAME=$(echo "processmaker$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             echo 'export QA_DATA_DB_NAME=$(echo "processmaker_data$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
@@ -267,9 +266,9 @@ jobs:
       - run:
           name: 'Verify page Login'
           command: |
-            apt-get install -y wget
+            sudo apt-get install -y wget
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cat ~/builds/$BUILD_NAME/.env.dusk.staging "
-            mkdir /tmp/vr
+            sudo mkdir /tmp/vr
             cd /tmp/vr
             wget https://${BUILD_NAME}${QA_HOST_SUFFIX}
             ls /tmp/vr
