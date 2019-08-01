@@ -99,8 +99,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *         @OA\Property(
  *             property="assignable",
  *             type="[]"
- *         ),
- *      ),
+ *         )),
  *     },
  * ),
  * 
