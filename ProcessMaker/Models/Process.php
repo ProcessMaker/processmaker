@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -463,7 +464,7 @@ class Process extends Model implements HasMedia
                 $user = $this->getNextUserAssignment($activity->getId());
                 break;
             case 'requester':
-                $user = $token->getInstance()->user_id;
+                $user = $this->getRequester($token);
                 break;
             case 'previous_task_assignee':
                 $rule = new PreviousTaskAssignee();
@@ -569,7 +570,7 @@ class Process extends Model implements HasMedia
                             $user = $item->assignee;
                             break;
                         case 'requester':
-                            $user = $token->getInstance()->user_id;
+                            $user = $this->getRequester($token);
                             break;
                         case 'manual':
                         case 'self_service':
@@ -746,5 +747,22 @@ class Process extends Model implements HasMedia
             }
         }
         return $hasTimerStartEvent;
+    }
+
+    /**
+     * Get the requester of the current token
+     *
+     * @param string $processTaskUuid
+     *
+     * @return Integer $user_id
+     * @throws TaskDoesNotHaveRequesterException
+     */
+    private function getRequester($token)
+    {
+        $user_id = $token->getInstance()->user_id;
+        if (!$user_id) {
+            throw new TaskDoesNotHaveRequesterException();
+        }
+        return $user_id;
     }
 }

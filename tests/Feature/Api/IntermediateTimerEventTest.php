@@ -58,6 +58,7 @@ class IntermediateTimerEventTest extends TestCase
 
     public function testRegisterIntermediateTimerEvents()
     {
+        $this->be($this->user);
         ScheduledTask::get()->each->delete();
 
         $data = [];
@@ -75,6 +76,7 @@ class IntermediateTimerEventTest extends TestCase
 
     public function testScheduleIntermediateTimerEvent()
     {
+        $this->be($this->user);
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
         $process = factory(Process::class)->create($data);
