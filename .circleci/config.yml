@@ -32,7 +32,8 @@ jobs:
           name: Set Build Name Environment Variable
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
-            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. - | tr "[:upper:]" "[:lower:]")' >> $BASH_ENV
+            #echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. - | tr "[:upper:]" "[:lower:]")' >> $BASH_ENV
+            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
             echo 'export QA_DB_NAME=$(echo "processmaker$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             echo 'export QA_DATA_DB_NAME=$(echo "processmaker_data$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
@@ -247,7 +248,6 @@ jobs:
             scp -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" ./processmaker-qa-$BUILD_NAME.tar.gz qa-processmakerbuilds:~/builds/$BUILD_NAME/
             # Extract to qa deployment dir
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "tar zxf ~/builds/$BUILD_NAME/processmaker-qa-$BUILD_NAME.tar.gz -C ~/builds/$BUILD_NAME/"
-            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo chmod 777 ~/builds/$BUILD_NAME"
             # Restart nginx and php-fpm to clear cache
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service php-fpm restart"
