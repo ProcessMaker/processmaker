@@ -93,7 +93,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),   
  *      @OA\Schema(
  *         @OA\Property( property="status", type="object"),
- *         @OA\Property( property="assignable", type="array[]")
+ *         @OA\Property( property="assignable", type="[]")
  *      )
  *    }
  * ),
