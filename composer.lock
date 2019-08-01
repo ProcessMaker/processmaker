@@ -3426,12 +3426,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "758c298fddac02ccc88898185da3abdc45d2b62a"
+                "reference": "0b8776f373df559d8ba5ca1ed2359ab94b828e33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/758c298fddac02ccc88898185da3abdc45d2b62a",
-                "reference": "758c298fddac02ccc88898185da3abdc45d2b62a",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/0b8776f373df559d8ba5ca1ed2359ab94b828e33",
+                "reference": "0b8776f373df559d8ba5ca1ed2359ab94b828e33",
                 "shasum": ""
             },
             "require-dev": {
@@ -3448,7 +3448,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2019-07-31T19:44:30+00:00"
+            "time": "2019-08-01T19:46:35+00:00"
         },
         {
             "name": "processmaker/pmql",
