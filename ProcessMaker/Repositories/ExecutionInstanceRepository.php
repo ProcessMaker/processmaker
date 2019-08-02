@@ -50,6 +50,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $process = $storage->getProcess($callableId);
         $dataStore = $storage->getFactory()->createDataStore();
         $dataStore->setData($instance->data);
+        $instance->setId($instanceId);
         $instance->setProcess($process);
         $instance->setDataStore($dataStore);
         $process->getTransitions($storage->getFactory());

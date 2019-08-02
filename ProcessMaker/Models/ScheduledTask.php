@@ -16,7 +16,7 @@ class ScheduledTask extends Model
     protected $connection = 'processmaker';
 
     protected $fillable = [
-        'process_id', 'process_request_id', 'configuration'
+        'process_id', 'process_request_id', 'process_request_token_id', 'configuration'
     ];
 
     public static function rules()

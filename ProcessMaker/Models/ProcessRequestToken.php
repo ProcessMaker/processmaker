@@ -289,4 +289,14 @@ class ProcessRequestToken extends Model implements TokenInterface
             throw new AuthorizationException("Not authorized to view this task");
         }
     }
+
+    /**
+     * Scheduled task for this token
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scheduledTasks()
+    {
+        return $this->hasMany(ScheduledTask::class, 'process_request_token_id');
+    }
 }
