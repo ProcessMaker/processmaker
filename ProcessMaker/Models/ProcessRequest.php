@@ -38,7 +38,10 @@ use Throwable;
  *   @OA\Property(property="user_id", type="string", format="id"),
  *   @OA\Property(property="callable_id", type="string", format="id"),
  *   @OA\Property(property="data", type="string", format="json"),
- *   @OA\Property(property="status", type="string", enum={"DRAFT", "ACTIVE", "COMPLETED"}),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED"}), 
+ *   @OA\Property(property="name", type="string"), 
+ *   @OA\Property(property="process_id", type="integer"), 
+ *   @OA\Property(property="process", type="object"), 
  * ),
  * @OA\Schema(
  *   schema="processRequest",
@@ -237,6 +240,31 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         return $screen;
     }
+
+    /**
+     * Get screen requested
+     *
+     * @return array of screens
+     */
+    public function getScreensRequested()
+    {
+        $tokens = $this->tokens()
+            ->whereNotIn('element_type', ['startEvent', 'end_event'])
+            ->where('status', 'CLOSED')
+            ->get();
+        $screens = [];
+        foreach ($tokens as $token) {
+            $definition = $token->getDefinition();
+            if (array_key_exists('screenRef', $definition)) {
+                $screen = Screen::find($definition['screenRef']);
+                $screen->element_name = $token->element_name;
+                $screen->element_type = $token->element_type;
+                $screens[] = $screen;
+            }
+        }
+        return $screens;
+    }
+
 
     /**
      * Get tokens of the request.

@@ -118,7 +118,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
      *     ),
      * )
      */
@@ -147,7 +147,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
      *     ),
      * )
      */
@@ -229,7 +229,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
      *     ),
      * )
      */
@@ -582,7 +582,6 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
@@ -601,7 +600,7 @@ class ProcessController extends Controller
      *
      * @return Response
      *
-     * @OA\Get(
+     * @OA\Post(
      *     path="/processes/{processId}/export",
      *     summary="Export a single process by ID",
      *     operationId="exportProcess",
@@ -647,9 +646,9 @@ class ProcessController extends Controller
      *     operationId="importProcess",
      *     tags={"Processes"},
      *     @OA\Response(
-     *         response=201,
+     *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessImport")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -700,10 +699,18 @@ class ProcessController extends Controller
      *     summary="Update assignments after import",
      *     operationId="assignmentProcess",
      *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
      *     @OA\Response(
-     *         response=201,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -820,10 +827,6 @@ class ProcessController extends Controller
      *         @OA\Schema(
      *           type="string",
      *         )
-     *     ),
-     *     @OA\RequestBody(
-     *       required=false,
-     *       @OA\JsonContent()
      *     ),
      *     @OA\Response(
      *         response=200,

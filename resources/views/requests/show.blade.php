@@ -64,6 +64,12 @@
                                        aria-controls="files" aria-selected="false">{{__('Files')}}</a>
                                 </li>
                             @endif
+                                <li class="nav-item" v-show="canViewPrint">
+                                    <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms"
+                                       role="tab" aria-controls="forms" aria-selected="false">
+                                        {{__('Forms')}}
+                                    </a>
+                                </li>
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
@@ -80,7 +86,7 @@
                              role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <template v-if="showScreenSummary">
-                                    <div class="card">
+                                    <div class="card mt-3">
                                         <div class="card-body">
                                             <task-screen ref="screen" :screen="screenSummary" :data="dataSummary"/>
                                         </div>
@@ -88,20 +94,22 @@
                                 </template>
                                 <template v-else>
                                     <template v-if="summary.length > 0">
-                                        <table class="vuetable table table-hover mt-3 border">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col">{{ __('Key') }}</th>
-                                                <th scope="col">{{ __('Value') }}</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr v-for="item in summary">
-                                                <td>@{{item.key}}</td>
-                                                <td>@{{item.value}}</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
+                                        <div class="card mt-3">
+                                            <table class="vuetable table table-hover">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">{{ __('Key') }}</th>
+                                                    <th scope="col">{{ __('Value') }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="item in summary">
+                                                    <td>@{{item.key}}</td>
+                                                    <td>@{{item.value}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </template>
                                     <template v-else>
                                         <div class="card mt-3">
@@ -123,7 +131,7 @@
                             </template>
                             <template v-else>
                                 <template v-if="showScreenRequestDetail">
-                                    <div class="card">
+                                    <div class="card mt-3">
                                         <div class="card-body">
                                             <task-screen ref="screenRequestDetail" :screen="screenRequestDetail" :data="dataSummary"/>
                                         </div>
@@ -159,7 +167,7 @@
                             </request-detail>
                         </div>
                         <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                            <div class="mt-3">
+                            <div class="card mt-3">
                                 <div>
                                     <table class="vuetable table table-hover">
                                         <thead>
@@ -183,6 +191,10 @@
                                     </table>
                                 </div>
                             </div>
+                        </div>
+                        <div class="tab-pane fade" id="forms" role="tabpanel" aria-labelledby="forms-tab" v-show="canViewPrint">
+                            <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested" ref="forms">
+                            </request-screens>
                         </div>
                     </div>
                 </div>
@@ -315,10 +327,12 @@
             showJSONEditor: false,
             data: @json($request->data),
             requestId: @json($request->getKey()),
+            screenRequested: @json($screenRequested),
             request: @json($request),
             files: @json($files),
             refreshTasks: 0,
             canCancel: @json($canCancel),
+            canViewPrint : @json($canPrintScreens),
             status: 'ACTIVE',
             userRequested: [],
             errorLogs: @json(['data'=>$request->errors]),

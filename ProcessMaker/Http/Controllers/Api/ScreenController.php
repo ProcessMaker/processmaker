@@ -69,6 +69,7 @@ class ScreenController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
+                    ->orWhere('category', 'like', $filter)
                     ->orWhere('type', 'like', $filter)
                     ->orWhere('config', 'like', $filter);
             });
@@ -91,8 +92,8 @@ class ScreenController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     *     @OA\Get(
-     *     path="/screens/screensId",
+     * @OA\Get(
+     *     path="/screens/{screens_id}",
      *     summary="Get single screens by ID",
      *     operationId="getScreensById",
      *     tags={"Screens"},
@@ -107,7 +108,7 @@ class ScreenController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the screens",
+     *         description="Successfully found the screen",
      *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
@@ -124,7 +125,7 @@ class ScreenController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     *     @OA\Post(
+     *  @OA\Post(
      *     path="/screens",
      *     summary="Save a new screens",
      *     operationId="createScreens",
@@ -158,7 +159,7 @@ class ScreenController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/screens/screensId",
+     *     path="/screens/{screens_id}",
      *     summary="Update a screen",
      *     operationId="updateScreen",
      *     tags={"Screens"},
@@ -176,9 +177,8 @@ class ScreenController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *         response=204,
+     *         description="success"
      *     ),
      * )
      */
@@ -205,7 +205,7 @@ class ScreenController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/screens/screensId/duplicate",
+     *     path="/screens/{screens_id}/duplicate",
      *     summary="duplicate a screen",
      *     operationId="duplicateScript",
      *     tags={"Screens"},
@@ -223,7 +223,7 @@ class ScreenController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=201,
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
@@ -260,7 +260,7 @@ class ScreenController extends Controller
      *
      * @return ResponseFactory|Response
      *     @OA\Delete(
-     *     path="/screens/screensId",
+     *     path="/screens/{screens_id}",
      *     summary="Delete a screen",
      *     operationId="deleteScreen",
      *     tags={"Screens"},
@@ -276,7 +276,6 @@ class ScreenController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */
@@ -293,8 +292,8 @@ class ScreenController extends Controller
      *
      * @return Response
      *
-     * @OA\Get(
-     *     path="/screens/screensId/export",
+     * @OA\Post(
+     *     path="/screens/{screensId}/export",
      *     summary="Export a single screen by ID",
      *     operationId="exportScreen",
      *     tags={"Screens"},
@@ -309,8 +308,8 @@ class ScreenController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the screen",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *         description="Successfully exported the screen",
+     *         @OA\JsonContent(ref="#/components/schemas/screenExported")
      *     ),
      * )
      */

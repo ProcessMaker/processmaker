@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -42,6 +43,9 @@ use ProcessMaker\Query\Traits\PMQL;
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="pause_timer_start", type="integer"),
+ *   @OA\Property(property="cancel_screen_id", type="integer"),
+ *   @OA\Property(property="has_timer_start_events", type="boolean"),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -53,8 +57,8 @@ use ProcessMaker\Query\Traits\PMQL;
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
  *       )
- *   }
- * )
+ *   } 
+ * ),
  * @OA\Schema(
  *     schema="ProcessStartEvents",
  *     @OA\Schema(
@@ -65,7 +69,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *         @OA\Property(property="id", type="string"),
  *         @OA\Property(property="name", type="string"),
  *     )
- * )
+ * ),
  * @OA\Schema(
  *     schema="ProcessWithStartEvents",
  *     allOf={
@@ -75,8 +79,35 @@ use ProcessMaker\Query\Traits\PMQL;
  *             property="startEvents",
  *             type="array",
  *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
- *         )),
- *     },
+ *         ),
+ *         @OA\Property(
+ *             property="events",
+ *             type="array",
+ *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
+ *         ))
+ *     }
+ * ),
+ * 
+ * @OA\Schema(
+ *     schema="ProcessImport",
+ *     allOf={
+ *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),   
+ *      @OA\Schema(
+ *         @OA\Property( property="status", type="object"),
+ *         @OA\Property( property="assignable", type="array[]")
+ *      )
+ *    }
+ * ),
+ * 
+ * @OA\Schema(
+ *   schema="CreateNewProcess",
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/ProcessEditable"),
+ *       @OA\Schema(ref="#/components/schemas/Process"),
+ *       @OA\Schema(
+ *           @OA\Property(property="notifications", type="array[]"),
+ *       )
+ *   } 
  * )
  */
 class Process extends Model implements HasMedia
@@ -463,7 +494,7 @@ class Process extends Model implements HasMedia
                 $user = $this->getNextUserAssignment($activity->getId());
                 break;
             case 'requester':
-                $user = $token->getInstance()->user_id;
+                $user = $this->getRequester($token);
                 break;
             case 'previous_task_assignee':
                 $rule = new PreviousTaskAssignee();
@@ -569,7 +600,7 @@ class Process extends Model implements HasMedia
                             $user = $item->assignee;
                             break;
                         case 'requester':
-                            $user = $token->getInstance()->user_id;
+                            $user = $this->getRequester($token);
                             break;
                         case 'manual':
                         case 'self_service':
@@ -746,5 +777,22 @@ class Process extends Model implements HasMedia
             }
         }
         return $hasTimerStartEvent;
+    }
+
+    /**
+     * Get the requester of the current token
+     *
+     * @param string $processTaskUuid
+     *
+     * @return Integer $user_id
+     * @throws TaskDoesNotHaveRequesterException
+     */
+    private function getRequester($token)
+    {
+        $user_id = $token->getInstance()->user_id;
+        if (!$user_id) {
+            throw new TaskDoesNotHaveRequesterException();
+        }
+        return $user_id;
     }
 }

@@ -23,6 +23,7 @@ class ScriptsUserTaskTest extends TestCase
         $process = factory(Process::class)->create($data);
 
         $user = factory(User::class)->create();
+        $this->be($user);
 
         factory(Script::class)->create([
             'id' => 10,

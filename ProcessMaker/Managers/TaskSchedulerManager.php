@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Managers;
 
+use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
 use DateTime;
@@ -142,7 +143,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 if (empty($nextDate)) {
                     continue;
                 }
-
                 if ($nextDate <= $today) {
                     switch ($task->type) {
                         case 'TIMER_START_EVENT':
@@ -404,7 +404,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function today()
     {
-        return self::$today ?: (new DateTime())->setTimezone(new DateTimeZone('UTC'));
+        return self::$today ?: (Carbon::now())->setTimezone(new DateTimeZone('UTC'));
     }
 
     /**
@@ -416,6 +416,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public static function fakeToday($today)
     {
+        if ($today === null) {
+            return self::$today = $today;
+        }
         self::$today = $today instanceof DateTime ? clone $today : (new DateTime($today))->setTimezone(new DateTimeZone('UTC'));
         return clone self::$today;
     }

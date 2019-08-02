@@ -44,6 +44,10 @@ use Spatie\MediaLibrary\Models\Media as Model;
  *   allOf={@OA\Schema(ref="#/components/schemas/mediaEditable")},
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * ),
+ * @OA\Schema(
+ *   schema="mediaExported",
+ *   @OA\Property(property="url", type="string"),
  * )
  */
 class Media extends Model

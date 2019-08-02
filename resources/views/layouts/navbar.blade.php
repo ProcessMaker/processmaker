@@ -1,4 +1,4 @@
-<b-navbar id="navbar" v-cloak  toggleable="md" type="light" variant="light" >
+<b-navbar id="navbar" v-cloak  toggleable="md" type="light" variant="light" class="d-print-none">
     <div class="d-flex d-block d-sm-none">
         <b-navbar-brand href="#"><img class="img-fluid" src={{asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'))}}></b-navbar-brand></td>
         <b-navbar-toggle target="nav_collapse"></b-navbar-toggle></td>
@@ -52,7 +52,7 @@
                 <navbar-profile :info="{{$user}}"  :items="{{$items}}"></navbar-profile>
             </li>
         </b-navbar-nav>
-    </b-collapse>   
+    </b-collapse>
 </b-navbar>
 <style lang="scss" scoped>
     .seperator {

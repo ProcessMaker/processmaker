@@ -8,6 +8,7 @@ use DateTime;
 use Exception;
 use ProcessMaker\Nayra\Bpmn\BaseTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
+use Mustache_Engine;
 
 /**
  * FormalExpression to handel time events
@@ -87,10 +88,25 @@ class TimerExpression implements FormalExpressionInterface
     public function __invoke($data)
     {
         $expression = $this->getProperty(FormalExpressionInterface::BPMN_PROPERTY_BODY);
+        $expression = $this->mustacheTimerExpression($expression, $data);
         return $this->getDateExpression($expression)
             ?: $this->getCycleExpression($expression)
             ?: $this->getDurationExpression($expression)
             ?: $this->getMultipleCycleExpression($expression);
+    }
+
+    /**
+     * Parse mustache syntax in timer expressions
+     *
+     * @param string $expression
+     * @param array $data
+     *
+     * @return mixed
+     */
+    private function mustacheTimerExpression($expression, $data)
+    {
+        $mustache = new Mustache_Engine();
+        return $mustache->render($expression, $data);
     }
 
     /**

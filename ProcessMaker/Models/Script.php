@@ -24,18 +24,25 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
- *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="code", type="string"),
- *   @OA\Property(property="teimout", type="integer"),
+ *   @OA\Property(property="timeout", type="integer"),
+ *   @OA\Property(property="run_as_user_id", type="integer"),
+ *   @OA\Property(property="key", type="string"),
  * ),
  * @OA\Schema(
  *   schema="scripts",
  *   allOf={@OA\Schema(ref="#/components/schemas/scriptsEditable")},
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * ),
+ * 
+ * @OA\Schema(
+ *   schema="scriptsPreview",
+ *   @OA\Property(property="status", type="string"),
  * )
  *
  */

@@ -201,6 +201,7 @@
     "Delete Files": "Delete Files",
     "Delete Groups": "Delete Groups",
     "Delete Notifications": "Delete Notifications",
+    "Delete Page": "Delete Page",
     "Delete Record": "Delete Record",
     "Delete Screens": "Delete Screens",
     "Delete Scripts": "Delete Scripts",
@@ -235,6 +236,7 @@
     "Edit Group": "Edit Group",
     "Edit Groups": "Edit Groups",
     "Edit Notifications": "Edit Notifications",
+    "Edit Page": "Edit Page",
     "Edit Page Title": "Edit Page Title",
     "Edit Process Category": "Edit Process Category",
     "Edit Process": "Edit Process",
@@ -560,6 +562,7 @@
     "Sample Input": "Sample Input",
     "Save Property": "Save Property",
     "Save": "Save",
+    "Save Screen": "Save Screen",
     "Screen For Input": "Screen For Input",
     "Screen Validation": "Screen Validation",
     "Screen": "Screen",
@@ -865,5 +868,6 @@
     "The styles were recompiled.": "The styles were recompiled.",
     "Regenerating CSS Files": "Regenerating CSS Files",
     "Please wait while the files are generated. The screen will be updated when finished.": "Please wait while the files are generated. The screen will be updated when finished.",
-    "We recommended a transparent PNG at :size pixels.": "We recommended a transparent PNG at :size pixels."
+    "We recommended a transparent PNG at :size pixels.": "We recommended a transparent PNG at :size pixels.",
+    "Print": "Print"
 }

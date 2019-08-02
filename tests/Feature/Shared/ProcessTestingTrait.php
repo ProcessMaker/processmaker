@@ -143,4 +143,13 @@ trait ProcessTestingTrait
             $event->isDue(app()) && $event->filtersPass(app()) ? $event->run(app()) : null;
         });
     }
+
+    /**
+     * Restore the fake date for TaskSchedulerManager
+     *
+     */
+    protected function teardownProcessTestingTrait()
+    {
+        TaskSchedulerManager::fakeToday(null);
+    }
 }
