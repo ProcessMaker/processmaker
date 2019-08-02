@@ -105,6 +105,7 @@ class IntermediateTimerEventTest extends TestCase
 
     public function testScheduleIntermediateTimerEventWithMustacheSyntax()
     {
+        $this->be($this->user);
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEventMustache.bpmn');
         $process = factory(Process::class)->create($data);
