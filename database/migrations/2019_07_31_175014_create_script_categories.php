@@ -38,6 +38,9 @@ class CreateScriptCategories extends Migration
      */
     public function down()
     {
+        Schema::table('script_versions', function (Blueprint $table) {
+            $table->dropForeign(['script_category_id']);
+        });
         Schema::table('scripts', function (Blueprint $table) {
             $table->dropForeign(['script_category_id']);
         });
