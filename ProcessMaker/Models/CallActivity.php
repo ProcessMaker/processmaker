@@ -8,8 +8,6 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ErrorEventDefinitionInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
@@ -60,7 +58,21 @@ class CallActivity implements CallActivityInterface
         $startEvent = $startId ? $callable->getEngine()->getStorage()->getElementInstanceById($startId) : null;
         $dataStore = $callable->getRepository()->createDataStore();
         // The entire data model is sent to the target
-        $dataStore->setData($token->getInstance()->getDataStore()->getData());
+        $data = $token->getInstance()->getDataStore()->getData();
+
+        // Add info about parent
+        $data['_parent'] = [
+            'process_id' => $token->getInstance()->process_id,
+            'request_id' => $token->getInstance()->id,
+            'node_id' => $token->element_id,
+        ];
+
+        $configString = $this->getProperty('config');
+        if ($configString) {
+            $data['_parent']['config'] = json_decode($configString, true);
+        }
+
+        $dataStore->setData($data);
         $instance = $callable->call($dataStore, $startEvent);
         return $instance;
     }

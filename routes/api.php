@@ -145,7 +145,10 @@ Route::group(
     Route::post('comments', 'CommentController@store')->name('comments.store')->middleware('can:create-comments');
     Route::put('comments/{comment}', 'CommentController@update')->name('comments.update')->middleware('can:edit-comments');
     Route::delete('comments/{comment}', 'CommentController@destroy')->name('comments.destroy')->middleware('can:delete-comments');
-    
+
+    //UI customization
+    Route::post('customize-ui', 'CssOverrideController@store')->name('customize-ui.store');
+
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
 
