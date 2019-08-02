@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             PermissionSeeder::class,
+            ProcessSystemCategorySeeder::class,
             GroupSeeder::class,
             ScreenTypeSeeder::class
         ]);

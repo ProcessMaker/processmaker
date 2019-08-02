@@ -110,6 +110,7 @@ export default {
       dupScript: {
         title: "",
         type: "",
+        category: "",
         description: ""
       },
       errors: [],
@@ -134,6 +135,11 @@ export default {
           title: () => this.$t("Description"),
           name: "description",
           sortField: "description"
+        },
+        {
+          title: () => this.$t("Category"),
+          name: "category",
+          sortField: "category"
         },
         {
           title: () => this.$t("Language"),
@@ -198,6 +204,7 @@ export default {
           this.dupScript.language = data.language;
           this.dupScript.code = data.code;
           this.dupScript.description = data.description;
+          this.dupScript.category = data.category;
           this.dupScript.id = data.id;
           this.dupScript.run_as_user_id = data.run_as_user_id;
           this.showModal();

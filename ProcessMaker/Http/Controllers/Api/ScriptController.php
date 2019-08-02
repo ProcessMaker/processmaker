@@ -73,6 +73,7 @@ class ScriptController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->Where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
+                    ->orWhere('category', 'like', $filter)
                     ->orWhere('language', 'like', $filter);
             });
         }
@@ -243,10 +244,8 @@ class ScriptController extends Controller
 
         $script->saveOrFail();
 
-        unset(
-            $original_attributes['id'],
-            $original_attributes['updated_at']
-        );
+        unset($original_attributes['id'],
+        $original_attributes['updated_at']);
         $script->versions()->create($original_attributes);
 
         return response($request, 204);
