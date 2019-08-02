@@ -163,15 +163,19 @@ class ProcessTest extends TestCase
     {
         ProcessRequest::query()->delete();
 
-        // Create 3 categories
-        $cat1 = factory(ProcessCategory::class)->create(['name' => 'Z cat']);
-        $cat2 = factory(ProcessCategory::class)->create(['name' => 'A cat']);
-        $cat3 = factory(ProcessCategory::class)->create(['name' => 'M cat']);
+        //get process with start event
+        $file = Process::getProcessTemplatesPath() . '/SingleTask.bpmn';
+        $bpmn = file_get_contents($file);
 
-        // Create 2 processes for every category
+        // Create 3 categories
+        $cat1 = factory(ProcessCategory::class)->create(['name' => 'Z cat', 'status' => 'ACTIVE']);
+        $cat2 = factory(ProcessCategory::class)->create(['name' => 'A cat', 'status' => 'ACTIVE']);
+        $cat3 = factory(ProcessCategory::class)->create(['name' => 'M cat', 'status' => 'ACTIVE']);
+
+        // Create processes for every category
         factory(Process::class, 2)->create(['process_category_id' => $cat1->id]);
-        factory(Process::class, 2)->create(['process_category_id' => $cat2->id, 'name' => 'ZProcess']);
-        factory(Process::class, 2)->create(['process_category_id' => $cat2->id, 'name' => 'BProcess']);
+        factory(Process::class)->create(['process_category_id' => $cat2->id, 'name' => 'ZProcess', 'status' => 'ACTIVE', 'bpmn' => $bpmn]);
+        factory(Process::class)->create(['process_category_id' => $cat2->id, 'name' => 'BProcess', 'status' => 'ACTIVE', 'bpmn' => $bpmn]);
         factory(Process::class, 2)->create(['process_category_id' => $cat3->id]);
 
         $response = $this->apiCall('GET', route('api.processes.start', ['order_by' => 'category.name,name']));
