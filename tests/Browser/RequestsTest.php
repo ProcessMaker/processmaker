@@ -18,11 +18,19 @@ class RequestsTest extends DuskTestCase
 
     private function setuser()
     {
-        return factory(User::class)->create([
-            'username' => 'testuser',
-            'password' => Hash::make('secret'),
-            'status' => 'ACTIVE'
-        ]);
+
+        $user = User::where('username', 'testuser')->first();
+
+        if (!$user) {
+
+            $user = factory(User::class)->create([
+                'username' => 'testuser',
+                'password' => Hash::make('secret'),
+                'status' => 'ACTIVE'
+            ]);
+        }
+
+        return $user;
     }
 
     public function test_request_route_protected()
@@ -53,7 +61,7 @@ class RequestsTest extends DuskTestCase
         $this->browse(function ($first) use ($user) {
             $first->loginAs($user)
                 ->visit(new RequestsPage)
-                ->assertVueContains('pmql', '(status = "In Progress") AND (requester = "testuser")', '#requests-listing');
+                ->assertVue('pmql', '(status = "In Progress") AND (requester = "' . $user->username . '")', '#requests-listing');
         });
     }
 
@@ -72,19 +80,6 @@ class RequestsTest extends DuskTestCase
 
     public function test_start_request()
     {
-        // Add admin user for seeder
-        // factory(User::class)->create([
-        //     'username' => 'admin',
-        //     'password' => Hash::make('admin'),
-        //     'language' => 'en',
-        //     'status' => 'ACTIVE',
-        //     'is_administrator' => true,
-        // ]);
-        // Add a request to the database
-        // $this->seed(\ProcessSeeder::class);
-
-
-        // Run the test request
         $user = $this->setuser();
 
         $this->browse(function ($first) use ($user) {

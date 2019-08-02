@@ -30,7 +30,5 @@ class AddScreenCategory extends Migration
      * @return void
      */
     public function down()
-    {
-        //
-    }
+    { }
 }

@@ -34,7 +34,5 @@ class AddProcessKey extends Migration
      * @return void
      */
     public function down()
-    {
-        //
-    }
+    { }
 }
