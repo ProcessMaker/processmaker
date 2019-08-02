@@ -30,7 +30,5 @@ class AddScriptCategory extends Migration
      * @return void
      */
     public function down()
-    {
-        //
-    }
+    { }
 }

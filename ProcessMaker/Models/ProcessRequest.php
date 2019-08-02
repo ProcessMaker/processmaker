@@ -2,20 +2,19 @@
 
 namespace ProcessMaker\Models;
 
-use Log;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Managers\TaskSchedulerManager;
+use Log;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Query\Traits\PMQL;
 use Throwable;
-use ProcessMaker\Traits\SqlsrvSupportTrait;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -136,16 +135,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         parent::__construct($argument);
         $this->bootElement([]);
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::created(function ($model) {
-            $manager = new TaskSchedulerManager();
-            $manager->registerIntermediateTimerEvents($model);
-        });
     }
 
     /**
@@ -449,5 +438,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function parentRequest()
     {
         return $this->belongsTo(ProcessRequest::class, 'parent_request_id');
+    }
+
+    /**
+     * Scheduled task of the request.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scheduledTasks()
+    {
+        return $this->hasMany(ScheduledTask::class, 'process_request_id');
     }
 }

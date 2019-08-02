@@ -8,11 +8,10 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ErrorEventDefinitionInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
 
 /**
  * Call Activity model
@@ -23,6 +22,8 @@ class CallActivity implements CallActivityInterface
 {
     use ActivitySubProcessTrait {
         addToken as addTokenBase;
+        completeSubprocess as completeSubprocessBase;
+        catchSubprocessError as catchSubprocessErrorBase;
     }
 
     /**
@@ -34,28 +35,7 @@ class CallActivity implements CallActivityInterface
         $this->attachEvent(
             ActivityInterface::EVENT_ACTIVITY_ACTIVATED,
             function ($self, TokenInterface $token, FlowInterface $sequenceFlow) {
-                $callable = $this->getCalledElement();
-                // Capability to specify the target start event on the sequence flow to the call activity.
-                $startId = $sequenceFlow->getProperty('startEvent');
-                $startEvent = $startId ? $callable->getEngine()->getStorage()->getElementInstanceById($startId) : null;
-                $dataStore = $callable->getRepository()->createDataStore();
-                // The entire data model is sent to the target
-                $data = $token->getInstance()->getDataStore()->getData();
-
-                // Add info about parent
-                $data['_parent'] = [
-                    'process_id' => $token->getInstance()->process_id,
-                    'request_id' => $token->getInstance()->id,
-                    'node_id' => $token->element_id,
-                ];
-
-                $configString = $this->getProperty('config');
-                if ($configString) {
-                    $data['_parent']['config'] = json_decode($configString, true);
-                }
-
-                $dataStore->setData($data);
-                $instance = $callable->call($dataStore, $startEvent);
+                $instance = $this->callSubprocess($token, $sequenceFlow);
                 $this->linkProcesses($token, $instance);
                 $this->syncronizeInstances($token->getInstance(), $instance);
                 $this->getRepository()
@@ -66,40 +46,73 @@ class CallActivity implements CallActivityInterface
     }
 
     /**
-     * Links parent and sub process in a CallActivity
+     * Call the subprocess
+     *
+     * @return ExecutionInstanceInterface
+     */
+    protected function callSubprocess(TokenInterface $token, FlowInterface $sequenceFlow)
+    {
+        $callable = $this->getCalledElement();
+        // Capability to specify the target start event on the sequence flow to the call activity.
+        $startId = $sequenceFlow->getProperty('startEvent');
+        $startEvent = $startId ? $callable->getEngine()->getStorage()->getElementInstanceById($startId) : null;
+        $dataStore = $callable->getRepository()->createDataStore();
+        // The entire data model is sent to the target
+        $data = $token->getInstance()->getDataStore()->getData();
+
+        // Add info about parent
+        $data['_parent'] = [
+            'process_id' => $token->getInstance()->process_id,
+            'request_id' => $token->getInstance()->id,
+            'node_id' => $token->element_id,
+        ];
+
+        $configString = $this->getProperty('config');
+        if ($configString) {
+            $data['_parent']['config'] = json_decode($configString, true);
+        }
+
+        $dataStore->setData($data);
+        $instance = $callable->call($dataStore, $startEvent);
+        return $instance;
+    }
+
+    /**
+     * Complete the subprocess
      *
      * @param TokenInterface $token
+     * @param ExecutionInstanceInterface $closedInstance
      * @param ExecutionInstanceInterface $instance
      *
-     * @return void
+     * @return CallActivity
      */
-    private function linkProcesses(TokenInterface $token, ExecutionInstanceInterface $instance)
+    protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
     {
-        $this->getCalledElement()->attachEvent(
-            ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED,
-            function ($self, $closedInstance) use ($token, $instance) {
-                if ($closedInstance->id === $instance->id) {
-                    if ($token->getStatus() !== ActivityInterface::TOKEN_STATE_FAILING) {
-                        $token->setStatus(ActivityInterface::TOKEN_STATE_COMPLETED);
-                        // Copy data from subprocess to main process
-                        $dataStore = $token->getInstance()->getDataStore();
-                        $data = $closedInstance->getDataStore()->getData();
-                        foreach ($data as $key => $value) {
-                            $dataStore->putData($key, $value);
-                        }
-                        $this->syncronizeInstances($instance, $token->getInstance());
-                    }
-                }
-            }
-        );
-        $this->getCalledElement()->attachEvent(
-            ErrorEventDefinitionInterface::EVENT_THROW_EVENT_DEFINITION,
-            function ($element, $innerToken, $errorEvent) use ($token, $instance) {
-                if ($innerToken->getInstance() === $instance) {
-                    $token->setStatus(ActivityInterface::TOKEN_STATE_FAILING);
-                }
-            }
-        );
+        $this->completeSubprocessBase($token);
+        // Copy data from subprocess to main process
+        $dataStore = $token->getInstance()->getDataStore();
+        $data = $closedInstance->getDataStore()->getData();
+        foreach ($data as $key => $value) {
+            $dataStore->putData($key, $value);
+        }
+        $this->syncronizeInstances($instance, $token->getInstance());
+        return $this;
+    }
+
+    /**
+     * Catch a subprocess error
+     *
+     * @param TokenInterface $token
+     * @param ErrorInterface|null $error
+     * @param ExecutionInstanceInterface $instance
+     *
+     * @return CallActivity
+     */
+    protected function catchSubprocessError(TokenInterface $token, ErrorInterface $error = null, ExecutionInstanceInterface $instance)
+    {
+        $this->catchSubprocessErrorBase($token, $error);
+        $this->syncronizeInstances($instance, $token->getInstance());
+        return $this;
     }
 
     /**
@@ -160,7 +173,7 @@ class CallActivity implements CallActivityInterface
     public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
     {
         if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && !empty($token->subprocess_request_id)) {
-            $subprocess = ProcessRequest::find($token->subprocess_request_id);
+            $subprocess = $this->getProcess()->getEngine()->loadExecutionInstance($token->subprocess_request_id);
             $this->linkProcesses($token, $subprocess);
         }
         return $this->addTokenBase($instance, $token);

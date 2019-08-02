@@ -50,9 +50,9 @@ abstract class DuskTestCase extends BaseTestCase
             return RemoteWebDriver::create(
                 "https://" . env('SAUCELABS_USERNAME') . ":" . env('SAUCELABS_ACCESS_KEY') . "@ondemand.saucelabs.com:443/wd/hub",
                 [
-                    "platform" => env('SAUCELABS_PLATFORM', "Windows 7"),
+                    "platform" => env('SAUCELABS_PLATFORM', "Windows 10"),
                     "browserName" => env('SAUCELABS_BROWSER', "chrome"),
-                    "version" => env('SAUCELABS_BROWSER_VERSION', "74")
+                    "version" => env('SAUCELABS_BROWSER_VERSION', "73")
                 ]
             );
         }
