@@ -54,7 +54,7 @@
 
 <body>
 <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
-  <div id="sidebar" :class="{expanded: expanded}">
+  <div id="sidebar" class="d-print-none" :class="{expanded: expanded}">
       @yield('sidebar')
   </div>
 

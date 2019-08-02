@@ -253,6 +253,31 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
+     * Get screen requested
+     *
+     * @return array of screens
+     */
+    public function getScreensRequested()
+    {
+        $tokens = $this->tokens()
+            ->whereNotIn('element_type', ['startEvent', 'end_event'])
+            ->where('status', 'CLOSED')
+            ->get();
+        $screens = [];
+        foreach ($tokens as $token) {
+            $definition = $token->getDefinition();
+            if (array_key_exists('screenRef', $definition)) {
+                $screen = Screen::find($definition['screenRef']);
+                $screen->element_name = $token->element_name;
+                $screen->element_type = $token->element_type;
+                $screens[] = $screen;
+            }
+        }
+        return $screens;
+    }
+
+
+    /**
      * Get tokens of the request.
      *
      */
