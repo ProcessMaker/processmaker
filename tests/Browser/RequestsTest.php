@@ -16,18 +16,14 @@ class RequestsTest extends DuskTestCase
 
     use DatabaseMigrations;
 
-    public $user;
-
-    protected function setUp()
+    private function setuser()
     {
-        parent::setUp();
-        $this->user = factory(User::class)->create([
+        return factory(User::class)->create([
             'username' => 'testuser',
             'password' => Hash::make('secret'),
             'status' => 'ACTIVE'
         ]);
     }
-
 
     public function test_request_route_protected()
     {
@@ -39,7 +35,7 @@ class RequestsTest extends DuskTestCase
 
     public function test_request_route_loads()
     {
-        $user = $this->user;
+        $user = $this->setuser();
 
         $this->browse(function ($first) use ($user) {
             $first->loginAs($user)
@@ -52,7 +48,7 @@ class RequestsTest extends DuskTestCase
     public function test_pmql_initial_load()
     {
 
-        $user = $this->user;
+        $user = $this->setuser();
 
         $this->browse(function ($first) use ($user) {
             $first->loginAs($user)
@@ -64,7 +60,7 @@ class RequestsTest extends DuskTestCase
     public function test_vuetable_initial_load()
     {
         // Initial load of the site would have no requests started
-        $user = $this->user;
+        $user = $this->setuser();
 
         $this->browse(function ($first) use ($user) {
             $first->loginAs($user)
@@ -89,7 +85,7 @@ class RequestsTest extends DuskTestCase
 
 
         // Run the test request
-        $user = $this->user;
+        $user = $this->setuser();
 
         $this->browse(function ($first) use ($user) {
             $first->loginAs($user)
