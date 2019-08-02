@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Providers;
 
+use ProcessMaker\Models\Media;
+use ProcessMaker\Policies\MediaPolicy;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\User;
 use ProcessMaker\Policies\NotificationPolicy;
@@ -35,6 +37,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
+        Media::class => MediaPolicy::class,
         Notification::class => NotificationPolicy::class,
         Process::class => ProcessPolicy::class,
         ProcessRequest::class => ProcessRequestPolicy::class,
