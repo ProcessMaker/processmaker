@@ -21,7 +21,6 @@ use Ramsey\Uuid\Uuid;
  *
  *   @OA\Schema(
  *   schema="notificationsEditable",
- *   @OA\Property(property="id", type="string"),
  *   @OA\Property(property="type", type="string"),
  *   @OA\Property(property="notifiable_type", type="string"),
  *   @OA\Property(property="notifiable_id", type="integer"),
@@ -30,6 +29,8 @@ use Ramsey\Uuid\Uuid;
  * @OA\Schema(
  *   schema="notifications",
  *   allOf={@OA\Schema(ref="#/components/schemas/notificationsEditable")},
+ *   @OA\Property(property="id", type="string"),
+ *   @OA\Property(property="read_at", type="string", format="date-time"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )

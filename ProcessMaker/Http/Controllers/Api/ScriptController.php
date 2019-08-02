@@ -73,6 +73,7 @@ class ScriptController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->Where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
+                    ->orWhere('category', 'like', $filter)
                     ->orWhere('language', 'like', $filter);
             });
         }
@@ -90,7 +91,7 @@ class ScriptController extends Controller
     /**
      * Previews executing a script, with sample data/config data
      *
-     *     @OA\Get(
+     *     @OA\Post(
      *     path="/scripts/{script_id}/preview",
      *     summary="Test script code without saving it",
      *     operationId="getScriptsPreview",
@@ -119,7 +120,7 @@ class ScriptController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success if the script was queued",
-     *         @OA\JsonContent()
+     *         @OA\JsonContent(ref="#/components/schemas/scriptsPreview")
      *         ),
      *     ),
      * )
@@ -142,7 +143,7 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Get(
-     *     path="/scripts/scriptsId",
+     *     path="/scripts/{script_id}",
      *     summary="Get single script by ID",
      *     operationId="getScriptsById",
      *     tags={"Scripts"},
@@ -210,7 +211,7 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/scripts/scriptsId",
+     *     path="/scripts/{script_id}",
      *     summary="Update a script",
      *     operationId="updateScript",
      *     tags={"Scripts"},
@@ -228,9 +229,8 @@ class ScriptController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/scriptsEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/scripts")
      *     ),
      * )
      */
@@ -244,10 +244,8 @@ class ScriptController extends Controller
 
         $script->saveOrFail();
 
-        unset(
-            $original_attributes['id'],
-            $original_attributes['updated_at']
-        );
+        unset($original_attributes['id'],
+        $original_attributes['updated_at']);
         $script->versions()->create($original_attributes);
 
         return response($request, 204);
@@ -262,14 +260,14 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/scripts/scriptsId/duplicate",
+     *     path="/scripts/{scripts_id}/duplicate",
      *     summary="duplicate a script",
      *     operationId="duplicateScreen",
      *     tags={"scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
-     *         name="screens_id",
+     *         name="scripts_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -277,10 +275,10 @@ class ScriptController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/scriptsEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=201,
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/scripts")
      *     ),
@@ -318,7 +316,7 @@ class ScriptController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Delete(
-     *     path="/scripts/scriptsId",
+     *     path="/scripts/{script_id}",
      *     summary="Delete a script",
      *     operationId="deleteScript",
      *     tags={"Scripts"},
@@ -334,7 +332,6 @@ class ScriptController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/scripts")
      *     ),
      * )
      */

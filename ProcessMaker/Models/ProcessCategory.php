@@ -42,7 +42,8 @@ class ProcessCategory extends Model
 
     protected $fillable = [
         'name',
-        'status'
+        'status',
+        'is_system'
     ];
 
     public static function rules($existing = null)

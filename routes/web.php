@@ -69,6 +69,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('request/{requestID}/files/{fileID}', 'RequestController@downloadFiles');
     Route::get('requests', 'RequestController@index')->name('requests.index');
     Route::get('requests/{request}', 'RequestController@show')->name('requests.show');
+    Route::get('requests/{request}/screen/{screen}', 'RequestController@screenPreview')->name('requests.screen-preview');
 
     Route::get('tasks/search', 'TaskController@search')->name('tasks.search');
     Route::get('tasks', 'TaskController@index')->name('tasks.index');

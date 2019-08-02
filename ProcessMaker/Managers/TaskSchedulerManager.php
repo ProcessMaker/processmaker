@@ -23,6 +23,14 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 {
     /**
      *
+     * Hold a copy of the current request data object if one is available.
+     * 
+     * @var Array 
+     */
+    private $currentRequestData = null;
+
+    /**
+     *
      * Register in the database any Timer Start Event of a process
      *
      * @param \ProcessMaker\Models\Process $process
@@ -178,7 +186,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
             $tasks = ScheduledTask::all();
 
-            $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
+            $today = \Carbon\Carbon::now()->setTimezone(new DateTimeZone('UTC'));
             foreach ($tasks as $task) {
                 $config = json_decode($task->configuration);
 
@@ -187,6 +195,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 if ($lastExecution === null) {
                     continue;
                 }
+
+                // Set the data object so we can parse mustache syntax in timer events
+                $this->currentRequestData = $task->processRequest->data;
 
                 $nextDate = $this->nextDate($lastExecution, $config);
                 $nextDate = !empty($nextDate) ? $nextDate->setTimezone(new DateTimeZone('UTC')) : null;
@@ -361,6 +372,17 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         $result = [];
         $parts = explode('/', $nayraInterval);
+        
+        if (count($parts) === 1 && preg_match("/^\{\{.+\}\}$/", $nayraInterval)) {
+            if ($this->currentRequestData) {
+                // If it's mustache syntax with a data object, parse it
+                $m = new \Mustache_Engine;
+                $nayraInterval = $m->render($nayraInterval, $this->currentRequestData);
+            } else {
+                // If it's mustache syntax without a data object, just return it as is
+                return ['interval' => $nayraInterval];
+            }
+        }
 
         if (count($parts) === 1 && $nayraInterval[0] === 'P') {
             $result['repetitions'] = '1';

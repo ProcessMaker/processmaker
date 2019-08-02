@@ -9,6 +9,8 @@ use ProcessMaker\Models\ScheduledTask;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use Carbon\Carbon;
+use ProcessMaker\Models\ProcessRequest;
 
 /**
  * Test the process execution with requests
@@ -58,6 +60,7 @@ class IntermediateTimerEventTest extends TestCase
 
     public function testRegisterIntermediateTimerEvents()
     {
+        $this->be($this->user);
         ScheduledTask::get()->each->delete();
 
         $data = [];
@@ -75,6 +78,7 @@ class IntermediateTimerEventTest extends TestCase
 
     public function testScheduleIntermediateTimerEvent()
     {
+        $this->be($this->user);
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
         $process = factory(Process::class)->create($data);
@@ -97,5 +101,40 @@ class IntermediateTimerEventTest extends TestCase
 
         // If no exception has been thrown, this assertion will be executed
         $this->assertTrue(true);
+    }
+
+    public function testScheduleIntermediateTimerEventWithMustacheSyntax()
+    {
+        $this->be($this->user);
+        $data = [];
+        $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEventMustache.bpmn');
+        $process = factory(Process::class)->create($data);
+        $definitions = $process->getDefinitions();
+        $startEvent = $definitions->getEvent('_2');
+        $request = WorkflowManager::triggerStartEvent($process, $startEvent, ['interval' => 'PT8M']);
+        $task1 = $request->tokens()->where('element_id', '_3')->first();
+        WorkflowManager::completeTask($process, $request, $task1, []); // moves to timer event I guess
+
+        // Time travel 5 minutes into the future
+        Carbon::setTestNow(Carbon::now()->addMinute(5));
+
+        // Re-schedule events for artisan call
+        $schedule = app()->make(\Illuminate\Console\Scheduling\Schedule::class);
+        $scheduleManager = new TaskSchedulerManager();
+        $scheduleManager->scheduleTasks($schedule);
+        \Artisan::call('schedule:run');
+
+        $iteToken = $request->tokens()->where('element_id', '_5')->firstOrFail();
+        $this->assertEquals('ACTIVE', $iteToken->status); // Not enough time has passed
+        
+        // Time travel 5 more minutes into the future
+        Carbon::setTestNow(Carbon::now()->addMinute(5));
+
+        // Re-schedule events for artisan call
+        $scheduleManager->scheduleTasks($schedule);
+        \Artisan::call('schedule:run');
+
+        $iteToken->refresh();
+        $this->assertEquals('CLOSED', $iteToken->status);
     }
 }

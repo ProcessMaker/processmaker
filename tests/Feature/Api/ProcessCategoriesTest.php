@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
@@ -26,6 +27,7 @@ class ProcessCategoriesTest extends TestCase
         'id',
         'name',
         'status',
+        'is_system',
         'created_at',
         'updated_at'
     ];
@@ -120,8 +122,8 @@ class ProcessCategoriesTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = ProcessCategory::where('status','ACTIVE')->count();
-        $initialInactiveCount = ProcessCategory::where('status','INACTIVE')->count();
+        $initialActiveCount = ProcessCategory::where('status', 'ACTIVE')->count();
+        $initialInactiveCount = ProcessCategory::where('status', 'INACTIVE')->count();
 
         // Create some processes
         $processActive = [
@@ -145,7 +147,7 @@ class ProcessCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialActiveCount + $processActive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -162,7 +164,7 @@ class ProcessCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialInactiveCount + $processInactive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -177,8 +179,8 @@ class ProcessCategoriesTest extends TestCase
     public function testFilteringStatus()
     {
         $perPage = 10;
-        $initialActiveCount = ProcessCategory::where('status','ACTIVE')->count();
-        $initialInactiveCount = ProcessCategory::where('status','INACTIVE')->count();
+        $initialActiveCount = ProcessCategory::where('status', 'ACTIVE')->count();
+        $initialInactiveCount = ProcessCategory::where('status', 'INACTIVE')->count();
 
         // Create some processes
         $processActive = [
@@ -202,7 +204,7 @@ class ProcessCategoriesTest extends TestCase
         $data = $response->json('data');
         $meta = $response->json('meta');
         // Verify the meta values
-        $this->assertArraySubset( [
+        $this->assertArraySubset([
             'total' => $initialActiveCount + $processActive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
@@ -361,7 +363,6 @@ class ProcessCategoriesTest extends TestCase
         $response->assertStatus(422);
         //validate structure
         $response->assertJsonStructure(['errors' => ['name']]);
-
     }
 
     /*
@@ -428,5 +429,4 @@ class ProcessCategoriesTest extends TestCase
         $response->assertJsonStructure($this->errorStructure);
         $response->assertJsonStructure(['errors' => ['processes']]);
     }
-
 }

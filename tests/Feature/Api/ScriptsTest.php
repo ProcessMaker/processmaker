@@ -22,6 +22,8 @@ class ScriptsTest extends TestCase
         'title',
         'language',
         'code',
+        'category',
+        'script_category_id',
         'description'
     ];
 
@@ -57,7 +59,9 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
             'language' => 'php',
             'code' => '123',
+            'category' => 'Category',
             'description' => 'Description',
+            'script_category_id' => null,
             'run_as_user_id' => $user->id
         ]);
         //validating the answer is correct.
@@ -79,6 +83,7 @@ class ScriptsTest extends TestCase
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
+            'category' => 'Category',
             'language' => 'php',
             'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
@@ -99,6 +104,7 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
             'key' => 'some-key',
             'code' => '123',
+            'category' => 'Category',
             'language' => 'php',
         ]);
         $response->assertStatus(422);
@@ -228,6 +234,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'title' => '',
             'language' => 'php',
+            'category' => $faker->word(),
             'code' => $faker->sentence(3),
         ]);
 
@@ -250,14 +257,17 @@ class ScriptsTest extends TestCase
             'created_at' => $yesterday,
         ]);
         $original_attributes = $script->getAttributes();
+
         $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $script->title,
             'language' => 'lua',
             'description' => 'jdbsdfkj',
+            'category' => 'Category',
             'code' => $faker->sentence(3),
             'run_as_user_id' => $user->id
         ]);
+
         //Validate the answer is correct
         $response->assertStatus(204);
 
@@ -268,7 +278,7 @@ class ScriptsTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->language, $original_attributes['language']);
         $this->assertEquals($version->code, $original_attributes['code']);
-        $this->assertEquals((string)$version->created_at, (string)$yesterday);
+        $this->assertEquals((string) $version->created_at, (string) $yesterday);
         $this->assertLessThan(3, $version->updated_at->diffInSeconds($script->updated_at));
     }
 
@@ -307,6 +317,7 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => 'TITLE',
             'language' => 'php',
+            'category' => 'Category',
             'description' => $faker->sentence(5),
             'run_as_user_id' => $user->id
         ]);
@@ -333,7 +344,7 @@ class ScriptsTest extends TestCase
         $url = route('api.script.preview', $this->getScript('php')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => '<?php return ["response"=>1];']);
         $response->assertStatus(200);
-        
+
         // Assertion: The script output is sent to usr through broadcast channel
         Notification::assertSentTo(
             [$this->user],
@@ -397,16 +408,17 @@ class ScriptsTest extends TestCase
         $faker = Faker::create();
         $code = '{"foo":"bar"}';
         $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
-                'code' => $code
-            ])->id;
+            'code' => $code
+        ])->id;
         $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => "TITLE",
             'language' => 'php',
+            'category' => 'Category',
             'description' => $faker->sentence(5),
         ]);
         $response->assertStatus(422);
     }
-    
+
     /**
      * A helper method to generate a script object from the factory
      *

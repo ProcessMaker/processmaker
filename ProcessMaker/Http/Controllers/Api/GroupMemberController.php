@@ -103,7 +103,7 @@ class GroupMemberController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
+     *         @OA\JsonContent(ref="#/components/schemas/createGroupMembers")
      *     ),
      * )
      */
@@ -156,7 +156,7 @@ class GroupMemberController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the group members",
-     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
+     *         @OA\JsonContent(ref="#/components/schemas/getGroupMembersById")
      *     ),
      * )
      */
@@ -191,7 +191,6 @@ class GroupMemberController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/groupMembers")
      *     ),
      * )
      */
@@ -230,6 +229,13 @@ class GroupMemberController extends Controller
      *           type="string",
      *         )
      *     ),
+     *     @OA\Parameter(
+     *         parameter="filter",
+     *         name="filter",
+     *         in="query",
+     *         description="Filter results by string. Searches Name and Status. Status must match exactly. Others can be a substring.",
+     *         @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -243,7 +249,7 @@ class GroupMemberController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/groupMembers"),
+     *                 @OA\Items(ref="#/components/schemas/availableGroupMembers"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
@@ -298,7 +304,7 @@ class GroupMemberController extends Controller
      *
      * @OA\Get(
      *     path="/user_members_available",
-     *     summary="Returns all users available for a given member",
+     *     summary="Returns all users available for a given group",
      *     operationId="getUserMembersAvailable",
      *     tags={"Group Members"},
      *     @OA\Parameter(
@@ -310,7 +316,13 @@ class GroupMemberController extends Controller
      *           type="string",
      *         )
      *     ),
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *     @OA\Parameter(
+     *         parameter="filter",
+     *         name="filter",
+     *         in="query",
+     *         description="Filter results by string. Searches Name. Can be a substring.",
+     *         @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -323,7 +335,7 @@ class GroupMemberController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/groupMembers"),
+     *                 @OA\Items(ref="#/components/schemas/users"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
