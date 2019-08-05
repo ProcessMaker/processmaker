@@ -118,6 +118,6 @@ class RequestController extends Controller
     public function downloadFiles(ProcessRequest $requestID, Media $fileID)
     {
         $requestID->getMedia();
-        return response()->download($fileID->getPath(), $fileID->name);
+        return response()->download($fileID->getPath(), $fileID->file_name);
     }
 }
