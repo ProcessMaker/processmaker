@@ -96,4 +96,12 @@ class Screen extends Model
     {
         return $this->hasMany(ScreenVersion::class);
     }
+
+    /**
+     * Get the associated category
+     */
+    public function category()
+    {
+        return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
+    }
 }
