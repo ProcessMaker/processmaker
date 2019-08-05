@@ -6,6 +6,6 @@
             {{__('Save')}}
         </button>
     </div>
-    <monaco-editor :options="monacoLargeOptions" v-model="jsonData"
-        language="json" style="height: 12em;border:1px solid gray;"></monaco-editor>
+    <monaco-editor ref="monaco" :options="monacoLargeOptions" v-model="jsonData"
+        language="json" style="border:1px solid gray;"></monaco-editor>
 </div>
