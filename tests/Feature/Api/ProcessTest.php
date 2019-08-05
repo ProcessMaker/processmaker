@@ -226,7 +226,7 @@ class ProcessTest extends TestCase
 
         $initialData = [
             'Field1' => 'Value of Field 1',
-            'Field2' => 'Value of Field 2'
+            'Field2' => 'htt://www.files.com'
         ];
 
         $response = $this->apiCall('POST', $route . '?event=StartEventUID', $initialData);
@@ -235,9 +235,15 @@ class ProcessTest extends TestCase
         // Verify that the initial data was stored
         $response = $this->apiCall('GET',
             route('api.requests.show', ['request'=>$response->getData()->process_id ]) . '?include=data');
+
+        // Assert structure
         $response->assertJsonStructure([
             'data' => ['Field1', 'Field2']
         ]);
+
+        // Assert that stored values are correct
+        $this->assertEquals($initialData['Field1'], $response->getData()->data->Field1);
+        $this->assertEquals($initialData['Field2'], $response->getData()->data->Field2);
     }
 
     /**
