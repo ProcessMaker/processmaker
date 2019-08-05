@@ -28,6 +28,7 @@
     "laravel/tinker": "^1.0",
     "laravelcollective/html": "^5.4.0",
     "lavary/laravel-menu": "^1.7",
+    "mustache/mustache": "^2.12",
     "phing/phing": "^2.16",
     "pion/laravel-chunk-upload": "dev-master",
     "predis/predis": "^1.1",
