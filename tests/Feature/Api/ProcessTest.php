@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -217,6 +218,7 @@ class ProcessTest extends TestCase
      */
     public function testCreateRequest()
     {
+        $this->withoutExceptionHandling();
         // Load the process to be used in the test
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
@@ -233,17 +235,17 @@ class ProcessTest extends TestCase
         $this->assertStatus(201, $response);
 
         // Verify that the initial data was stored
-        $response = $this->apiCall('GET',
-            route('api.requests.show', ['request'=>$response->getData()->process_id ]) . '?include=data');
+        $requestRoute =route('api.requests.show', ['request'=>$response->getData()->id]) . '?include=data';
+        $requestResponse = $this->apiCall('GET',$requestRoute );
 
         // Assert structure
-        $response->assertJsonStructure([
+        $requestResponse->assertJsonStructure([
             'data' => ['Field1', 'Field2']
         ]);
 
         // Assert that stored values are correct
-        $this->assertEquals($initialData['Field1'], $response->getData()->data->Field1);
-        $this->assertEquals($initialData['Field2'], $response->getData()->data->Field2);
+        $this->assertEquals($initialData['Field1'], $requestResponse->getData()->data->Field1);
+        $this->assertEquals($initialData['Field2'], $requestResponse->getData()->data->Field2);
     }
 
     /**
