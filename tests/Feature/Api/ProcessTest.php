@@ -211,6 +211,35 @@ class ProcessTest extends TestCase
         $this->assertStatus(201, $response);
     }
 
+
+    /**
+     * Verifies that a new request can be created
+     */
+    public function testCreateRequest()
+    {
+        // Load the process to be used in the test
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
+        ]);
+
+        $route = route('api.process_events.trigger', $process);
+
+        $initialData = [
+            'Field1' => 'Value of Field 1',
+            'Field2' => 'Value of Field 2'
+        ];
+
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID', $initialData);
+        $this->assertStatus(201, $response);
+
+        // Verify that the initial data was stored
+        $response = $this->apiCall('GET',
+            route('api.requests.show', ['request'=>$response->getData()->process_id ]) . '?include=data');
+        $response->assertJsonStructure([
+            'data' => ['Field1', 'Field2']
+        ]);
+    }
+
     /**
      * Test to verify that the list dates are in the correct format (yyyy-mm-dd H:i+GMT)
      */
