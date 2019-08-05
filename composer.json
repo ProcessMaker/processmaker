@@ -44,7 +44,6 @@
     "zendframework/zend-diactoros": "1.*"
   },
   "require-dev": {
-    "barryvdh/laravel-debugbar": "^3.2",
     "filp/whoops": "^2.0",
     "laravel/dusk": "^5.4",
     "laravel/homestead": "^7.18",
