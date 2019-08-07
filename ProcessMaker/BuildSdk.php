@@ -214,7 +214,7 @@ class BuildSdk {
 
     private function apiJsonRaw()
     {
-        return file_get_contents($this->jsonPath);
+        return json_encode(json_decode(file_get_contents($this->jsonPath)));
     }
 
     private function runCmd($cmd)
