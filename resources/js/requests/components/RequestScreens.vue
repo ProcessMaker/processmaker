@@ -78,7 +78,7 @@
 
         fields: [
           {
-            title: this.$t("Name"),
+            title: this.$t("Screen"),
             name: "title",
             field: "title",
           },
