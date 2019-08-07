@@ -13,7 +13,7 @@ trait RequestHelper
     protected $debug = true;
     private $_debug_response;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -61,7 +61,7 @@ trait RequestHelper
         return $this->webCall('GET', $url, $params);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
         if (!$this->debug) { return; }
