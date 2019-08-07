@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Models\User;
 use ProcessMaker\Notifications\SassCompiledNotification;
+use Illuminate\Support\Str;
 
 class CompileSass implements ShouldQueue
 {
@@ -49,12 +50,12 @@ class CompileSass implements ShouldQueue
         $this->runCmd("docker run --rm -v $(pwd):$(pwd) -w $(pwd) jbergknoff/sass "
             . $this->properties['origin'] . ' ' . $this->properties['target']);
 
-        if (str_contains($this->properties['tag'], 'app')) {
+        if (Str::contains($this->properties['tag'], 'app')) {
             $this->fixPathsInGeneratedAppCss();
         }
 
         $user = User::find($this->properties['user']);
-        if (str_contains($this->properties['tag'], 'queues') && $user) {
+        if (Str::contains($this->properties['tag'], 'queues') && $user) {
             Notification::send(collect([$user]), new SassCompiledNotification());
         }
     }
