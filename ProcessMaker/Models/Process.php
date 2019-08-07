@@ -399,10 +399,12 @@ class Process extends Model implements HasMedia
      *
      * @return \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
-    public function getDefinitions($forceParse = false)
+    public function getDefinitions($forceParse = false, $engine = null)
     {
         if ($forceParse || empty($this->bpmnDefinitions)) {
-            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
+            $options = ['process' => $this];
+            !$engine ?: $options['engine'] = $engine;
+            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
                 //Load the collaborations if exists
