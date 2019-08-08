@@ -47,7 +47,8 @@ mix.extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', '
   .copy('resources/js/components/FilterBar.vue', 'public/js')
   .copy('resources/js/timeout.js', 'public/js')
   // Copy files necessary for images for the designer/modeler to it's own img directory
-  .copy('node_modules/@processmaker/modeler/dist/img', 'public/js/processes/modeler/img');
+  .copy('node_modules/@processmaker/modeler/dist/img', 'public/js/processes/modeler/img')
+  .copy('node_modules/@processmaker/vue-form-elements/dist', 'public/js')
 
 
 mix.js('resources/js/app-layout.js', 'public/js')
