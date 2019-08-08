@@ -6,6 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\ProcessRequest;
@@ -88,10 +89,10 @@ class ProcessRequestFileController extends Controller
      {
 		//Retrieve media from ProcessRequest
 		$media = $request->getMedia();
-		
+
 		//Retrieve input variable 'name'
 		$name = $laravel_request->get('name');
-		
+
 		//If no name, retern entire collection; otherwise, filter collection
 		if (! $name) {
 			return new ResourceCollection($media);
@@ -101,11 +102,11 @@ class ProcessRequestFileController extends Controller
 					return true;
 				}
 			});
-			
+
 	        return new ResourceCollection($filtered);
 		}
      }
-     
+
     /**
      * Display the specified resource.
      *
@@ -142,9 +143,13 @@ class ProcessRequestFileController extends Controller
      *     ),
      * )
      */
-    public function show(Request $laravel_request, ProcessRequest $request, $file_id)
+    public function show(Request $laravel_request, ProcessRequest $request, Media $file)
     {
-        return $request->getMedia()->where('id', $file_id)->first();
+//        return $request->getMedia()->where('id', $file_id)->first();
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix() .
+            $file->id . '/' .
+            $file->file_name;
+        return response()->download($path);
     }
 
     /**
@@ -166,7 +171,7 @@ class ProcessRequestFileController extends Controller
 
             // check if the upload has finished (in chunk mode it will send smaller files)
             if ($save->isFinished()) {
-                
+
                 foreach($request->getMedia() as $mediaItem) {
                     if($mediaItem->getCustomProperty('data_name') == $data_name) {
                         $mediaItem->delete();
@@ -253,7 +258,7 @@ class ProcessRequestFileController extends Controller
      */
     public function store(Request $laravel_request, FileReceiver $receiver, ProcessRequest $request)
     {
-        //delete it and upload the new one 
+        //delete it and upload the new one
         if($laravel_request->input('chunk')) {
             // Perform a chunk upload
             return $this->chunk($receiver, $request, $laravel_request);

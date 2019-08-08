@@ -4,6 +4,8 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use Tests\Feature\Shared\RequestHelper;
@@ -91,7 +93,7 @@ class ProcessRequestsTest extends TestCase
     public function testListRequestIncludingData()
     {
         $requestname = 'mytestrequestnameincludesdata';
-        
+
         //Create requests with data
         factory(ProcessRequest::class)->create([
             'name' => $requestname,
@@ -102,23 +104,23 @@ class ProcessRequestsTest extends TestCase
         $query = "?page=1&include=data&order_by=data.test&order_direction=ASC&filter=$requestname";
         $response = $this->apiCall('GET', self::API_TEST_URL . $query);
 
-        $response->assertStatus(200);        
-        $response->assertJsonFragment(['data' => ['test' => 'value1']]);            
+        $response->assertStatus(200);
+        $response->assertJsonFragment(['data' => ['test' => 'value1']]);
     }
-    
+
     /**
      * Get a list of Request with parameters
      */
     public function testListRequestOrderByData()
     {
         $requestname = 'mytestrequestnameorderbydata';
-        
+
         //Create requests with data
         factory(ProcessRequest::class)->create([
             'name' => $requestname,
             'data' => ['test' => 'value1'],
         ]);
-        
+
         factory(ProcessRequest::class)->create([
             'name' => $requestname,
             'data' => ['test' => 'value2'],
@@ -131,15 +133,15 @@ class ProcessRequestsTest extends TestCase
         //Verify that the request with test data of "value1" is first
         $response->assertStatus(200);
         $this->assertEquals('value1', $response->json()['data'][0]['data']['test']);
-        
+
         //Set direction to descending
         $query = "?page=1&include=data&order_by=data.test&order_direction=DESC&filter=$requestname";
         $response = $this->apiCall('GET', self::API_TEST_URL . $query);
-        
+
         //Verify that the request with test data of "value2" is first
         $response->assertStatus(200);
-        $this->assertEquals('value2', $response->json()['data'][0]['data']['test']);        
-    }    
+        $this->assertEquals('value2', $response->json()['data'][0]['data']['test']);
+    }
 
     /**
      * Get a list of Request with parameters
@@ -466,5 +468,32 @@ class ProcessRequestsTest extends TestCase
         // The list of all requests includes everything
         $response = $this->apiCall('GET', self::API_TEST_URL . '?type=all');
         $this->assertEquals(9, $response->json()['meta']['total']);
+    }
+
+    /**
+     * Verifies that a file uploaded in a request can be downloaded
+     */
+    public function testDownload()
+    {
+        // We create a fake file to upload
+        $testFileName = 'test.txt';
+        Storage::fake('public');
+        $fileUpload = UploadedFile::fake()->create($testFileName, 1);
+
+        // Create a request
+        $request = factory(ProcessRequest::class)->create();
+
+        // Add the file to the request
+        $addedMedia = $request->addMedia($fileUpload)->toMediaCollection('local');
+
+
+        $route = self::API_TEST_URL . '/'. $request->id . '/files/' . $addedMedia->id;
+        $response = $this->apiCall('GET', $route);
+
+        // Validate the header status code
+        $response->assertStatus(200);
+
+        // Verify that a file with the fake file is downloaded
+        $this->assertEquals($testFileName, $response->getFile()->getFileName());
     }
 }
