@@ -22,6 +22,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Traits\HideSystemResources;
 use DOMElement;
 
 /**
@@ -120,6 +121,7 @@ class Process extends Model implements HasMedia
     use ProcessTaskAssignmentsTrait;
     use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
+    use HideSystemResources;
     use PMQL;
 
     protected $connection = 'processmaker';

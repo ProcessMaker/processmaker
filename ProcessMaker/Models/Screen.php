@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Class Screen
@@ -52,6 +53,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 class Screen extends Model
 {
     use SerializeToIso8601;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 

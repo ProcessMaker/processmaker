@@ -9,6 +9,7 @@ use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents an Eloquent model of a Script
@@ -50,6 +51,7 @@ use ProcessMaker\Models\ScriptCategory;
 class Script extends Model
 {
     use SerializeToIso8601;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 
