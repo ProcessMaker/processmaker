@@ -13,6 +13,7 @@ use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ProcessRequestsCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
@@ -46,7 +47,7 @@ class ProcessRequestController extends Controller
      *
      * @param Request $request
      *
-     * @return ApiCollection
+     * @return ProcessRequestsCollection
      *
      * /**
      * @OA\Get(
@@ -141,7 +142,7 @@ class ProcessRequestController extends Controller
         } else {
             $response = collect([]);
         }
-        return new ApiCollection($response);
+        return new ProcessRequestsCollection($response);
     }
 
     /**
