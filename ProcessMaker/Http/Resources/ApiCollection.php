@@ -88,15 +88,14 @@ class ApiCollection extends ResourceCollection
     public function toResponse($request)
     {
 
-        $this->resource = $this->resource->reject(function($item) {
+        $this->resource->each(function($item, $key) {
             $prefix = strtolower(substr(strrchr(get_class($item), '\\'), 1));
             $attribute = "{$prefix}_category_id";
             if ($item->$attribute && $item->category()->first()->is_system) {
-                return true;
+                $this->resource->forget($key);
             } else if ($item->is_system) {
-                return true;
+                $this->resource->forget($key);
             }
-            return false;
         });
 
         if ($this->resource instanceof Collection) {
