@@ -102,7 +102,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         ];
         $scheduledTask = new ScheduledTask();
         $process = $element->getOwnerProcess()->getEngine()->getProcess();
-        $scheduledTask->process_id = $process->id;
+        $scheduledTask->process_id = $token ? $token->process_id : $process->id;
         $scheduledTask->process_request_id = $token ? $token->processRequest->id : null;
         $scheduledTask->process_request_token_id = $token ? $token->id : null;
         $scheduledTask->configuration = json_encode($configuration);
