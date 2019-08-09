@@ -104,6 +104,6 @@ class Screen extends Model
      */
     public function category()
     {
-        return $this->belongsTo(ProcessCategory::class);
+        return $this->belongsTo(ProcessCategory::class, 'process_category_id');
     }
 }

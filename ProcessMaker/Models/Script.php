@@ -8,7 +8,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
-use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Traits\HideSystemResources;
 
 /**
@@ -233,6 +233,6 @@ class Script extends Model
      */
     public function category()
     {
-        return $this->belongsTo(ScriptCategory::class, 'script_category_id');
+        return $this->belongsTo(ProcessCategory::class, 'process_category_id');
     }
 }

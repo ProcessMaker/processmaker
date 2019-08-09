@@ -5,7 +5,6 @@ use Tests\TestCase;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Screen;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Str;
@@ -63,7 +62,7 @@ class HideSystemCategoriesTest extends TestCase
     private function resourceWithoutCategoryNotFiltered($model) {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
         $instance = factory($model)->create([
-            $prefix . '_category_id' => null
+            'process_category_id' => null
         ]);
         
         $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.index'));
@@ -78,6 +77,28 @@ class HideSystemCategoriesTest extends TestCase
         $this->resourceWithoutCategoryNotFiltered(Process::class);
         $this->resourceWithoutCategoryNotFiltered(Script::class);
         $this->resourceWithoutCategoryNotFiltered(Screen::class);
+    }
+
+    private function resolveRouteBinding($model)
+    {
+        $prefix = strtolower(substr(strrchr($model, '\\'), 1));
+        $hiddenCategory = factory(ProcessCategory::class)->create([
+            'is_system' => true,
+        ]);
+        $hiddenInstance = factory($model)->create([
+            'process_category_id' => $hiddenCategory->id
+        ]);
+
+        $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.show', [$hiddenInstance]));
+        $response->assertStatus(404);
+
+    }
+
+    public function testResolveRouteBinding()
+    {
+        $this->resolveRouteBinding(Process::class);
+        $this->resolveRouteBinding(Script::class);
+        $this->resolveRouteBinding(Screen::class);
     }
 
 }
