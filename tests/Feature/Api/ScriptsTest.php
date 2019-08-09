@@ -23,7 +23,7 @@ class ScriptsTest extends TestCase
         'language',
         'code',
         'category',
-        'script_category_id',
+        'process_category_id',
         'description'
     ];
 
@@ -61,7 +61,7 @@ class ScriptsTest extends TestCase
             'code' => '123',
             'category' => 'Category',
             'description' => 'Description',
-            'script_category_id' => null,
+            'process_category_id' => null,
             'run_as_user_id' => $user->id
         ]);
         //validating the answer is correct.

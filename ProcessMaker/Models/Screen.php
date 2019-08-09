@@ -34,7 +34,7 @@ use ProcessMaker\Traits\HideSystemResources;
  *   @OA\Property(property="config", type="string"),
  *   @OA\Property(property="computed", type="string"),
  *   @OA\Property(property="custom_css", type="string"),
- *   @OA\Property(property="screen_category_id", type="string"),
+ *   @OA\Property(property="process_category_id", type="string"),
  * ),
  * @OA\Schema(
  *   schema="screens",
@@ -104,6 +104,6 @@ class Screen extends Model
      */
     public function category()
     {
-        return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
+        return $this->belongsTo(ProcessCategory::class);
     }
 }

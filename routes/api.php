@@ -53,13 +53,6 @@ Route::group(
     Route::post('screens/{screen}/export', 'ScreenController@export')->name('screens.export')->middleware('can:export-screens');
     Route::post('screens/import', 'ScreenController@import')->name('screens.import')->middleware('can:import-screens');
 
-    // Screen Categories
-    Route::get('screen_categories', 'ScreenCategoryController@index')->name('screen_categories.index')->middleware('can:view-screens');
-    Route::get('screen_categories/{screen_category}', 'ScreenCategoryController@show')->name('screen_categories.show')->middleware('can:view-screens');
-    Route::post('screen_categories', 'ScreenCategoryController@store')->name('screen_categories.store')->middleware('can:edit-screens');
-    Route::put('screen_categories/{screen_category}', 'ScreenCategoryController@update')->name('screen_categories.update')->middleware('can:edit-screens');
-    Route::delete('screen_categories/{screen_category}', 'ScreenCategoryController@destroy')->name('screen_categories.destroy')->middleware('can:edit-screens');
-
     // Scripts
     Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');
     Route::get('scripts/{script}', 'ScriptController@show')->name('scripts.show')->middleware('can:view-scripts');

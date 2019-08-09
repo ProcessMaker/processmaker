@@ -7,7 +7,6 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Models\ScreenCategory;
 use Tests\Feature\Shared\RequestHelper;
 use Illuminate\Support\Str;
 
@@ -15,15 +14,14 @@ class HideSystemCategoriesTest extends TestCase
 {
     use RequestHelper;
 
-    private function categoryFiltered($model) {
-        $prefix = strtolower(substr(strrchr($model, '\\'), 1));
-        $category = factory($model . 'Category')->create([
+    public function testCategoryFiltered() {
+        $category = factory(ProcessCategory::class)->create([
             'is_system' => false,
         ]);
-        $hiddenCategory = factory($model . 'Category')->create([
+        $hiddenCategory = factory(ProcessCategory::class)->create([
             'is_system' => true,
         ]);
-        $response = $this->apiCall('GET', route('api.' . $prefix . '_categories.index'));
+        $response = $this->apiCall('GET', route('api.process_categories.index'));
         $json = $response->json();
         $ids = array_map(function($d) { return $d['id']; }, $json['data']);
 
@@ -32,25 +30,19 @@ class HideSystemCategoriesTest extends TestCase
         $this->assertContains($category->id, $ids);
     }
 
-    public function testCategoryFiltered() {
-        $this->categoryFiltered(Process::class);
-        // $this->categoryFiltered(Script::class); // No api endpoint yet for script categories
-        $this->categoryFiltered(Screen::class);
-    }
-    
     private function resourceInCategoryFiltered($model) {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));
-        $category = factory($model . 'Category')->create([
+        $category = factory(ProcessCategory::class)->create([
             'is_system' => false,
         ]);
         $instance = factory($model)->create([
-            $prefix . '_category_id' => $category->id
+            'process_category_id' => $category->id
         ]);
-        $hiddenCategory = factory($model . 'Category')->create([
+        $hiddenCategory = factory(ProcessCategory::class)->create([
             'is_system' => true,
         ]);
         $hiddenInstance = factory($model)->create([
-            $prefix . '_category_id' => $hiddenCategory->id
+            'process_category_id' => $hiddenCategory->id
         ]);
 
         $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.index'));

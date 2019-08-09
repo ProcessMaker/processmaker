@@ -246,7 +246,7 @@ class ScreenTest extends TestCase
         // assert it creates a script version
         $screen->refresh();
         $version = $screen->versions()->first();
-        $this->assertEquals($version->screen_category_id, $screen->screen_category_id);
+        $this->assertEquals($version->process_category_id, $screen->process_category_id);
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->description, $original_attributes['description']);
         $this->assertEquals($version->config, null);
