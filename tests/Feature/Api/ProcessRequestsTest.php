@@ -473,7 +473,7 @@ class ProcessRequestsTest extends TestCase
     /**
      * Verifies that a file uploaded in a request can be downloaded
      */
-    public function testDownload()
+    public function testFileDownload()
     {
         // We create a fake file to upload
         $testFileName = 'test.txt';
@@ -482,6 +482,12 @@ class ProcessRequestsTest extends TestCase
 
         // Create a request
         $request = factory(ProcessRequest::class)->create();
+
+        // Crate a user without administrator privileges
+        $user = factory(User::class)->create([
+            'status' => 'ACTIVE',
+            'is_administrator' => false,
+        ]);
 
         // Add the file to the request
         $addedMedia = $request->addMedia($fileUpload)->toMediaCollection('local');
