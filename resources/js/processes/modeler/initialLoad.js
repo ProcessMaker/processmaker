@@ -21,9 +21,7 @@ import {
   callActivity,
   eventBasedGateway,
   intermediateMessageCatchEvent,
-  boundaryTimerEvent,
-  boundaryErrorEvent,
-  boundarySignalEvent
+  boundaryTimerEvent
 } from '@processmaker/modeler';
 import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
@@ -64,9 +62,7 @@ let nodeTypes = [
   textAnnotation,
   eventBasedGateway,
   intermediateMessageCatchEvent,
-  boundaryTimerEvent,
-  boundaryErrorEvent,
-  boundarySignalEvent
+  boundaryTimerEvent
 ];
 
 ProcessMaker.nodeTypes.push(startEvent);
