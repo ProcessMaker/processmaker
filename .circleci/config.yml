@@ -93,8 +93,6 @@ jobs:
 
       - run: composer install -n --prefer-dist
 
-      - run: sudo npm install -g npm@6.4.1 && npm ci
-
       - run:
           name: 'Remove cached config file'
           command: |
@@ -105,6 +103,8 @@ jobs:
             echo "regenerate cache file"
             sudo php artisan config:cache
             sudo ls bootstrap/cache
+
+      - run: sudo npm install -g npm@6.4.1 && npm ci
 
       - save_cache:
           paths:
