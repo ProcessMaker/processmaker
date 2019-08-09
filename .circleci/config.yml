@@ -96,6 +96,12 @@ jobs:
       - run: sudo npm install -g npm@6.4.1 && npm ci
 
       - run: sudo rm -f processmaker/bootstrap/cache/config.php
+      - run:
+          name: 'Remove cached config file'
+          command: |
+            echo "Remove cached config file"
+            sudo rm -f processmaker/bootstrap/cache/config.php
+            sudo ls processmaker/bootstrap/cache
 
       - save_cache:
           paths:
