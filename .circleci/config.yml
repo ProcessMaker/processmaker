@@ -98,9 +98,12 @@ jobs:
       - run:
           name: 'Remove cached config file'
           command: |
+            sudo ls bootstrap/cache
             echo "Remove cached config file"
-            echo "pwd"
             sudo rm -f bootstrap/cache/config.php
+            sudo ls bootstrap/cache
+            echo "regenerate cache file"
+            sudo php artisan config:cache
             sudo ls bootstrap/cache
 
       - save_cache:
