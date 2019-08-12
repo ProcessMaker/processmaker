@@ -4,6 +4,11 @@
     {{ __('Request') . ' #' . $request->getKey() . ' - ' .  $screen->title }}
 @endsection
 
+@section('meta')
+    <meta name="request-id" content="{{ $request->getKey() }}">
+@endsection
+
+
 @section('sidebar')
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_request')])
 @endsection
