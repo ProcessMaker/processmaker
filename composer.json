@@ -30,7 +30,7 @@
     "laravelcollective/html": "^5.4.0",
     "lavary/laravel-menu": "^1.7",
     "moontoast/math": "^1.1",
-    "mustache/mustache": "^2.12.0",
+    "mustache/mustache": "^2.12",
     "phing/phing": "^2.16",
     "pion/laravel-chunk-upload": "dev-master",
     "predis/predis": "^1.1",
@@ -47,7 +47,6 @@
     "zendframework/zend-diactoros": "1.*"
   },
   "require-dev": {
-    "barryvdh/laravel-debugbar": "^3.2",
     "filp/whoops": "^2.0",
     "laravel/dusk": "^5.4",
     "laravel/homestead": "^7.18",
