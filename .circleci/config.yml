@@ -102,7 +102,6 @@ jobs:
             sudo ls bootstrap/cache
             echo "regenerate cache file"
             sudo php artisan config:clear
-            sudo php artisan config:cache
             sudo ls bootstrap/cache
 
       - run: sudo npm install -g npm@6.4.1 && npm ci
@@ -156,7 +155,6 @@ jobs:
             sudo ls bootstrap/cache
             echo "regenerate cache file"
             sudo php artisan config:clear
-            sudo php artisan config:cache
             sudo ls bootstrap/cache
 
       # run tests!
