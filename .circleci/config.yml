@@ -100,16 +100,12 @@ jobs:
             echo "Remove cached config file"
             sudo rm -f bootstrap/cache/config.php
             sudo ls bootstrap/cache
+            echo "regenerate cache file"
+            sudo php artisan config:clear
+            sudo php artisan config:cache
+            sudo ls bootstrap/cache
 
       - run: sudo npm install -g npm@6.4.1 && npm ci
-
-      - run:
-          name: 'Remove cached config file 2'
-          command: |
-            sudo ls bootstrap/cache
-            echo "Remove cached config file"
-            sudo rm -f bootstrap/cache/config.php
-            sudo ls bootstrap/cache
 
       - save_cache:
           paths:
