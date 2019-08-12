@@ -3380,7 +3380,7 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "dev-master",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
