@@ -22,7 +22,6 @@ class ScriptsTest extends TestCase
         'title',
         'language',
         'code',
-        'category',
         'process_category_id',
         'description'
     ];
@@ -59,7 +58,6 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
             'language' => 'php',
             'code' => '123',
-            'category' => 'Category',
             'description' => 'Description',
             'process_category_id' => null,
             'run_as_user_id' => $user->id
@@ -83,7 +81,6 @@ class ScriptsTest extends TestCase
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
-            'category' => 'Category',
             'language' => 'php',
             'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
@@ -104,7 +101,6 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
             'key' => 'some-key',
             'code' => '123',
-            'category' => 'Category',
             'language' => 'php',
         ]);
         $response->assertStatus(422);
@@ -234,7 +230,6 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'title' => '',
             'language' => 'php',
-            'category' => $faker->word(),
             'code' => $faker->sentence(3),
         ]);
 
@@ -263,7 +258,6 @@ class ScriptsTest extends TestCase
             'title' => $script->title,
             'language' => 'lua',
             'description' => 'jdbsdfkj',
-            'category' => 'Category',
             'code' => $faker->sentence(3),
             'run_as_user_id' => $user->id
         ]);
@@ -317,7 +311,6 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => 'TITLE',
             'language' => 'php',
-            'category' => 'Category',
             'description' => $faker->sentence(5),
             'run_as_user_id' => $user->id
         ]);
@@ -413,7 +406,6 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => "TITLE",
             'language' => 'php',
-            'category' => 'Category',
             'description' => $faker->sentence(5),
         ]);
         $response->assertStatus(422);

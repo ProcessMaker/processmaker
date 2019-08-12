@@ -19,7 +19,7 @@ class ScreenTest extends TestCase
     const STRUCTURE = [
         'title',
         'description',
-        'category',
+        'process_category_id',
         'config',
     ];
 
