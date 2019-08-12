@@ -36,11 +36,11 @@ class CallActivity implements CallActivityInterface
             ActivityInterface::EVENT_ACTIVITY_ACTIVATED,
             function ($self, TokenInterface $token, FlowInterface $sequenceFlow) {
                 $instance = $this->callSubprocess($token, $sequenceFlow);
-                $this->linkProcesses($token, $instance);
-                $this->syncronizeInstances($token->getInstance(), $instance);
                 $this->getRepository()
                     ->getTokenRepository()
                     ->persistCallActivityActivated($token, $instance, $sequenceFlow);
+                $this->linkProcesses($token, $instance);
+                $this->syncronizeInstances($token->getInstance(), $instance);
             }
         );
     }
@@ -144,8 +144,9 @@ class CallActivity implements CallActivityInterface
         } elseif (count($refs) === 2) {
             // Capability to reuse other processes inside a process
             $process = Process::findOrFail($refs[1]);
-            return isset($this->getProcess()->getEngine()->currentInstance) ? $this->getProcess()->getEngine()->currentInstance->getProcess()
-                : $process->getDefinitions()->getElementInstanceById($refs[0]);
+            $engine = $this->getProcess()->getEngine();
+            return isset($engine->currentInstance) ? $engine->currentInstance->getProcess()
+                : $process->getDefinitions(false, $engine)->getElementInstanceById($refs[0]);
         }
     }
 
@@ -173,7 +174,7 @@ class CallActivity implements CallActivityInterface
     public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
     {
         if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && !empty($token->subprocess_request_id)) {
-            $subprocess = $this->getProcess()->getEngine()->loadExecutionInstance($token->subprocess_request_id);
+            $subprocess = $this->getProcess()->getEngine()->loadProcessRequest($token->subProcessRequest);
             $this->linkProcesses($token, $subprocess);
         }
         return $this->addTokenBase($instance, $token);
