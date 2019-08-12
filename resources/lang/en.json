@@ -869,5 +869,9 @@
     "Regenerating CSS Files": "Regenerating CSS Files",
     "Please wait while the files are generated. The screen will be updated when finished.": "Please wait while the files are generated. The screen will be updated when finished.",
     "We recommended a transparent PNG at :size pixels.": "We recommended a transparent PNG at :size pixels.",
-    "Print": "Print"
+    "Print": "Print",
+    "Lane Above": "Lane Above",
+    "Lane Below": "Lane Below",
+    "New Sequence Flow": "New Sequence Flow",
+    "Association Flow": "Association Flow"
 }
