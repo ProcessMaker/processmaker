@@ -147,6 +147,18 @@ jobs:
           name: 'Media Storage Link'
           command: 'php artisan storage:link'
 
+      - run:
+          name: 'Remove cached config file 2'
+          command: |
+            sudo ls bootstrap/cache
+            echo "Remove cached config file"
+            sudo rm -f bootstrap/cache/config.php
+            sudo ls bootstrap/cache
+            echo "regenerate cache file"
+            sudo php artisan config:clear
+            sudo php artisan config:cache
+            sudo ls bootstrap/cache
+
       # run tests!
       - run:
           name: 'PHPUnit'
