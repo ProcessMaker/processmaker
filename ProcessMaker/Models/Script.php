@@ -33,6 +33,7 @@ use ProcessMaker\Traits\HideSystemResources;
  *   @OA\Property(property="timeout", type="integer"),
  *   @OA\Property(property="run_as_user_id", type="integer"),
  *   @OA\Property(property="key", type="string"),
+ *   @OA\Property(property="process_category_id", type="integer"),
  * ),
  * @OA\Schema(
  *   schema="scripts",

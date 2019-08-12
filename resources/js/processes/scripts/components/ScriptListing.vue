@@ -110,7 +110,7 @@ export default {
       dupScript: {
         title: "",
         type: "",
-        category: "",
+        process_category_id: "",
         description: ""
       },
       errors: [],
@@ -138,8 +138,8 @@ export default {
         },
         {
           title: () => this.$t("Category"),
-          name: "category",
-          sortField: "category"
+          name: "category.name",
+          sortField: "process_categories.name"
         },
         {
           title: () => this.$t("Language"),
@@ -204,7 +204,7 @@ export default {
           this.dupScript.language = data.language;
           this.dupScript.code = data.code;
           this.dupScript.description = data.description;
-          this.dupScript.category = data.category;
+          this.dupScript.process_category_id = data.process_category_id;
           this.dupScript.id = data.id;
           this.dupScript.run_as_user_id = data.run_as_user_id;
           this.showModal();
@@ -247,7 +247,7 @@ export default {
             this.orderBy +
             "&order_direction=" +
             this.orderDirection +
-            "&include=user"
+            "&include=category"
         )
         .then(response => {
           this.data = this.transform(response.data);

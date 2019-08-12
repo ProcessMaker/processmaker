@@ -41,7 +41,6 @@ class ScriptController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
      *         response=200,
@@ -65,7 +64,10 @@ class ScriptController extends Controller
     public function index(Request $request)
     {
         // Do not return results when a key is set. Those are for connectors.
-        $query = Script::where('key', null);
+        $query = Script::select('scripts.*')->where('key', null);
+        
+        // For category name filtering and sorting
+        $query->leftJoin('process_categories', 'scripts.process_category_id', '=', 'process_categories.id');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -73,9 +75,14 @@ class ScriptController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->Where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
-                    ->orWhere('category', 'like', $filter)
-                    ->orWhere('language', 'like', $filter);
+                    ->orWhere('language', 'like', $filter)
+                    ->orWhere('process_categories.name', 'like', $filter);
             });
+        }
+
+        $includes = explode(',', $request->input('include'));
+        if (!empty($includes)) {
+            $query->with($includes);
         }
 
         $response =

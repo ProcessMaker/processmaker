@@ -17,10 +17,12 @@ class MoveCagetoriesToProcessCategories extends Migration
         Schema::table('screens', function (Blueprint $table) {
             $table->dropForeign('screens_screen_category_id_foreign');
             $table->dropColumn('screen_category_id');
+            $table->dropColumn('category');
             $table->unsignedInteger('process_category_id')->nullable()->index()->after('id');
         });
         Schema::table('scripts', function (Blueprint $table) {
             $table->dropColumn('script_category_id');
+            $table->dropColumn('category');
             $table->unsignedInteger('process_category_id')->nullable()->index()->after('id');
         });
 

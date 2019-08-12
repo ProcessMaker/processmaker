@@ -69,14 +69,18 @@
                             <div class="invalid-feedback" v-for="description in addError.description">@{{description}}
                             </div>
                         </div>
-<div class="form-group">
-                            {!!Form::label('category', __('Category'))!!}
-                            {!!Form::text('category', null, ['class'=> 'form-control', 'v-model'=> 'category', 'v-bind:class' =>
-                            '{\'form-control\':true, \'is-invalid\':addError.category}'])!!}
-                            <small class="form-text text-muted"
-                                   v-if="! addError.category">{{ __('The script name must be distinct.') }}</small>
-                            <div class="invalid-feedback" v-for="category in addError.category">@{{category}}</div>
+
+                        <div class="form-group">
+                            {!! Form::label('process_category_id', __('Category'))!!}
+                            {!! Form::select('process_category_id', [null => ''] + $categories, null, [
+                            'class'=> 'form-control',
+                            'v-model'=> 'process_category_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
+                            <div class="invalid-feedback" v-for="category in addError.process_category_id">
+                                @{{category}}
+                            </div>
                         </div>
+
                         <div class="form-group">
                             {!!Form::label('language', __('Language'))!!}
                             {!!Form::select('language', [''=>__('Select')] + $scriptFormats, null, ['class'=>
@@ -145,7 +149,7 @@
               title: '',
               language: '',
               description: '',
-              category: '',
+              process_category_id: '',
               code: '',
               addError: {},
               selectedUser: '',
@@ -158,7 +162,7 @@
                 this.title = '';
                 this.language = '';
                 this.description = '';
-                this.category = '';
+                this.process_category_id = '';
                 this.code = '';
                 this.timeout = 60;
                 this.addError = {};
@@ -168,7 +172,7 @@
                   name: null,
                   description: null,
                   status: null,
-                  category: null
+                  process_category_id: null
                 });
                 //single click
                 if (this.disabled) {
@@ -179,7 +183,7 @@
                   title: this.title,
                   language: this.language,
                   description: this.description,
-                  category: this.category,
+                  process_category_id: this.process_category_id,
                   run_as_user_id: this.selectedUser.id,
                   code: "[]",
                   timeout: this.timeout

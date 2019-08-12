@@ -51,6 +51,16 @@
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
                         <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                     </div>
+
+                    <div class="form-group">
+                        {!! Form::label('process_category_id', __('Category'))!!}
+                        {!! Form::select('process_category_id', [null => ''] + $categories, null, [
+                        'class'=> 'form-control',
+                        'v-model'=> 'formData.process_category_id',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.process_category_id}']) !!}
+                        <div class="invalid-feedback" v-if="errors.description">@{{errors.process_category_id[0]}}</div>
+                    </div>
+
                     <div class="form-group">
                         {!! Form::label('timeout', __('Timeout')) !!}
                         <div class="form-row ml-0">
