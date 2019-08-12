@@ -35,7 +35,7 @@
         </template>
 
         <template slot="assignee" slot-scope="props">
-          <avatar-image size="25" :input-data="props.rowData.user" hide-name="true"></avatar-image>
+          <avatar-image size="25" :input-data="props.rowData.user" hide-name="true" v-if="props.rowData.user"></avatar-image>
         </template>
 
         <template slot="dueDate" slot-scope="props">
