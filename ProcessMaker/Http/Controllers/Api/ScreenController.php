@@ -61,7 +61,10 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Screen::query();
+        $query = Screen::select('screens.*');
+        
+        // For category name filtering and sorting
+        $query->leftJoin('process_categories', 'screens.process_category_id', '=', 'process_categories.id');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -69,7 +72,7 @@ class ScreenController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
-                    ->orWhere('category', 'like', $filter)
+                    ->orWhere('process_categories.name', 'like', $filter)
                     ->orWhere('type', 'like', $filter)
                     ->orWhere('config', 'like', $filter);
             });
@@ -77,6 +80,12 @@ class ScreenController extends Controller
         if ($request->input('type')) {
             $query->where('type', $request->input('type'));
         }
+
+        if ($request->input('include')) {
+            $includes = explode(",", $request->input('include'));
+            $query->with($includes);
+        }
+
         $response =
             $query->orderBy(
                 $request->input('order_by', 'title'),

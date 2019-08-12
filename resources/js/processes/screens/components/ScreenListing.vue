@@ -103,7 +103,7 @@
         </div>
         <div class="form-group">
           <label for="description">{{$t('Category')}}</label>
-          <input type="text" class="form-control" id="category" v-model="dupScreen.category" />
+          <input type="text" class="form-control" id="category" v-model="dupScreen.process_category_id" />
         </div>
         <div class="form-group">
           <label for="description">{{$t('Description')}}</label>
@@ -130,7 +130,7 @@ export default {
       dupScreen: {
         title: "",
         type: "",
-        category: "",
+        process_category_id: "",
         description: ""
       },
       errors: [],
@@ -156,8 +156,8 @@ export default {
         },
         {
           title: this.$t("Category"),
-          name: "category",
-          sortField: "category"
+          name: "category.name",
+          sortField: "process_categories.name"
         },
         {
           title: this.$t("Type"),
@@ -221,7 +221,7 @@ export default {
         case "duplicate-item":
           this.dupScreen.title = data.title + " Copy";
           this.dupScreen.type = data.type;
-          this.dupScreen.category = data.category;
+          this.dupScreen.process_category_id = data.process_category_id;
           this.dupScreen.description = data.description;
           this.dupScreen.id = data.id;
           this.showModal();
@@ -270,7 +270,8 @@ export default {
             "&order_by=" +
             this.orderBy +
             "&order_direction=" +
-            this.orderDirection
+            this.orderDirection +
+            "&include=category"
         )
         .then(response => {
           this.data = this.transform(response.data);

@@ -33,12 +33,13 @@
                         <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('category', __('Category')) !!}
-                        {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
-                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
-                        <small class="form-text text-muted" v-if="! errors.category">{{__('The screen name must be distinct.') }}</small>
+                        {!! Form::label('process_category_id', __('Category'))!!}
+                        {!! Form::select('process_category_id', [null => ''] + $categories, null, [
+                        'class'=> 'form-control',
+                        'v-model'=> 'formData.process_category_id',
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.process_category_id}']) !!}
                         <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
-                    </div>                  
+                    </div>
                     <br>
                     <div class="text-right">
                         {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}

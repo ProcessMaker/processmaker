@@ -80,8 +80,8 @@ class ScriptController extends Controller
             });
         }
 
-        $includes = explode(',', $request->input('include'));
-        if (!empty($includes)) {
+        if ($request->input('include')) {
+            $includes = explode(",", $request->input('include'));
             $query->with($includes);
         }
 

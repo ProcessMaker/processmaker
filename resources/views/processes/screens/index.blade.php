@@ -79,15 +79,16 @@
                             <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
                             </div>
                         </div>
-<div class="form-group">
-                            {!! Form::label('category', __('Category')) !!}
-                            {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
-                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
-                            <small class="form-text text-muted" v-if="! errors.category">
-                                {{ __('The screen category is required.') }}
-                            </small>
-                            <div class="invalid-feedback" v-for="title in errors.category">@{{category}}</div>
-                        </div>                        
+                        <div class="form-group">
+                            {!! Form::label('process_category_id', __('Category'))!!}
+                            {!! Form::select('process_category_id', [null => ''] + $categories, null, [
+                            'class'=> 'form-control',
+                            'v-model'=> 'formData.process_category_id',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.process_category_id}']) !!}
+                            <div class="invalid-feedback" v-for="category in errors.process_category_id">
+                                @{{category}}
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
@@ -117,7 +118,7 @@
                   'title': null,
                   'type': null,
                   'description': null,
-                  'category': null,
+                  'process_category_id': null,
                 },
                 disabled: false,
               }
@@ -132,6 +133,7 @@
                   title: null,
                   type: '',
                   description: null,
+                  process_category_id: null,
                 });
               },
               resetErrors() {

@@ -9,6 +9,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ProcessCategory;
 
 class ScreenController extends Controller
 {
@@ -23,7 +24,11 @@ class ScreenController extends Controller
         foreach(ScreenType::pluck('name')->toArray() as $type) {
             $types[$type] = __(ucwords(strtolower($type)));
         }
-        return view('processes.screens.index', compact('types'));
+        
+        $categories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])
+            ->pluck('name' , 'id')->toArray();
+
+        return view('processes.screens.index', compact('types', 'categories'));
     }
 
     /**
@@ -35,7 +40,10 @@ class ScreenController extends Controller
      */
     public function edit(Screen $screen)
     {
-        return view('processes.screens.edit', compact('screen'));
+        $categories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])
+            ->pluck('name' , 'id')->toArray();
+
+        return view('processes.screens.edit', compact('screen', 'categories'));
     }
 
     /**
