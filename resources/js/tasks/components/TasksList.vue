@@ -246,7 +246,7 @@ export default {
             this.page +
             "&include=process,processRequest,processRequest.user,user" +
             "&pmql=" +
-            this.$parent.pmql +
+            encodeURIComponent(this.$parent.pmql) +
             "&per_page=" +
             this.perPage +
             "&user_id=" +
