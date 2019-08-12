@@ -76,7 +76,7 @@
                             <small class="form-text text-muted"
                                    v-if="! addError.category">{{ __('The script name must be distinct.') }}</small>
                             <div class="invalid-feedback" v-for="category in addError.category">@{{category}}</div>
-                        </div>                        
+                        </div>
                         <div class="form-group">
                             {!!Form::label('language', __('Language'))!!}
                             {!!Form::select('language', [''=>__('Select')] + $scriptFormats, null, ['class'=>
@@ -86,7 +86,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="typo__label">{{__('Run script as')}}</label>
+                            <label class="typo__label">{{__('Run Script As')}}</label>
                             <multiselect v-model="selectedUser"
                                          label="fullname"
                                          :options="users"
@@ -116,7 +116,7 @@
                                 <div class="invalid-feedback" v-for="timeout in addError.timeout">@{{timeout}}</div>
                             </div>
                             <small class="form-text text-muted" v-if="! addError.timeout">
-                                {{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}
+                                {{ __('Enter how many seconds the Script runs before timing out (0 is unlimited).') }}
                             </small>
                         </div>
                     </div>

@@ -297,10 +297,19 @@ import formTypes from "./formTypes";
     },
     methods: {
       containsSubmitButton() {
-        return this.config.some(config => config.items.some(this.isSubmitButton));
+        return this.config.some(config => {
+          return this.itemsContainSubmitButton(config.items);
+        });
       },
       isSubmitButton(item) {
         return item.component === 'FormButton' && item.config.event === 'submit';
+      },
+      itemsContainSubmitButton(items) {
+        return items.some(item => {
+          return item.container
+            ? item.items.some(this.itemsContainSubmitButton)
+            : this.isSubmitButton(item);
+        });
       },
       beforeExportScreen() {
         this.saveScreen(true);

@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -209,6 +210,42 @@ class ProcessTest extends TestCase
 
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(201, $response);
+    }
+
+
+    /**
+     * Verifies that a new request can be created
+     */
+    public function testCreateRequest()
+    {
+        $this->withoutExceptionHandling();
+        // Load the process to be used in the test
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
+        ]);
+
+        $route = route('api.process_events.trigger', $process);
+
+        $initialData = [
+            'Field1' => 'Value of Field 1',
+            'Field2' => 'htt://www.files.com'
+        ];
+
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID', $initialData);
+        $this->assertStatus(201, $response);
+
+        // Verify that the initial data was stored
+        $requestRoute =route('api.requests.show', ['request'=>$response->getData()->id]) . '?include=data';
+        $requestResponse = $this->apiCall('GET',$requestRoute );
+
+        // Assert structure
+        $requestResponse->assertJsonStructure([
+            'data' => ['Field1', 'Field2']
+        ]);
+
+        // Assert that stored values are correct
+        $this->assertEquals($initialData['Field1'], $requestResponse->getData()->data->Field1);
+        $this->assertEquals($initialData['Field2'], $requestResponse->getData()->data->Field2);
     }
 
     /**
