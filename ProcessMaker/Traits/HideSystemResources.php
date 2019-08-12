@@ -8,9 +8,9 @@ trait HideSystemResources
     {
         $item = parent::resolveRouteBinding($value);
 
-        if ($item->process_category_id && $item->category()->first()->is_system) {
+        if ($item && $item->process_category_id && $item->category()->first()->is_system) {
             abort(404);
-        } else if ($item->is_system) {
+        } else if ($item && $item->is_system) {
             abort(404);
         }
 
