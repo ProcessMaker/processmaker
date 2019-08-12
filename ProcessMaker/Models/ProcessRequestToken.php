@@ -299,4 +299,13 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         return $this->hasMany(ScheduledTask::class, 'process_request_token_id');
     }
+
+    /**
+     * Get the sub-process request associated to the token.
+     *
+     */
+    public function subProcessRequest()
+    {
+        return $this->belongsTo(ProcessRequest::class, 'subprocess_request_id');
+    }
 }
