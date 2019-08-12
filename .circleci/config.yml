@@ -97,10 +97,6 @@ jobs:
           name: 'Remove cached config file'
           command: |
             sudo ls bootstrap/cache
-            echo "Remove cached config file"
-            sudo rm -f bootstrap/cache/config.php
-            sudo ls bootstrap/cache
-            echo "regenerate cache file"
             sudo php artisan config:clear
             sudo ls bootstrap/cache
 
@@ -145,17 +141,6 @@ jobs:
       - run:
           name: 'Media Storage Link'
           command: 'php artisan storage:link'
-
-      - run:
-          name: 'Remove cached config file 2'
-          command: |
-            sudo ls bootstrap/cache
-            echo "Remove cached config file"
-            sudo rm -f bootstrap/cache/config.php
-            sudo ls bootstrap/cache
-            echo "regenerate cache file"
-            sudo php artisan config:clear
-            sudo ls bootstrap/cache
 
       # run tests!
       - run:
