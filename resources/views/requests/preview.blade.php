@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{ $screen->title }}
+    {{ __('Request') . ' #' . $request->getKey() . ' - ' .  $screen->title }}
 @endsection
 
 @section('sidebar')
