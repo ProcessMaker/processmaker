@@ -101,18 +101,10 @@ class ExportProcess implements ShouldQueue
      */
     private function packageProcess()
     {
-        $this->package['process'] = $this->process->append('notifications', 'task_notifications')->toArray();
-        $this->package['process']['bpmn'] = $this->process->bpmn;
-    }
-
-    /**
-     * Package the process category associated with our process.
-     *
-     * @return void
-     */
-    private function packageProcessCategory()
-    {
-        $this->package['process_category'] = $this->process->category->toArray();
+        $processEntry = $this->process->append('notifications', 'task_notifications')->toArray();
+        $processEntry['bpmn'] = $this->process->bpmn;
+        $this->handleCategory($this->process, $processEntry);
+        $this->package['process'] =  $processEntry;
     }
 
     /**
@@ -144,7 +136,9 @@ class ExportProcess implements ShouldQueue
             $screens = Screen::whereIn('id', $screenIds)->get();
 
             $screens->each(function ($screen) {
-                $this->package['screens'][] = $screen->toArray();
+                $screenEntry = $screen->toArray();
+                $this->handleCategory($screen, $screenEntry);
+                $this->package['screens'][] = $screenEntry;
             });
         }
     }
@@ -169,9 +163,33 @@ class ExportProcess implements ShouldQueue
         if (count($scriptIds)) {
             $scripts = Script::whereIn('id', $scriptIds)->get();
 
-            $scripts->each(function ($scripts) {
-                $this->package['scripts'][] = $scripts->toArray();
+            $scripts->each(function ($script) {
+                $scriptEntry = $script->toArray();
+                $this->handleCategory($script, $scriptEntry);
+                $this->package['scripts'][] = $scriptEntry;
             });
+        }
+    }
+
+    private function handleCategory($object, &$entry)
+    {
+        if (!isset($this->package['process_category'])) {
+            $this->package['process_category'] = [];
+        }
+
+        // Set the category name so we can associate it again during import
+        if ($object->category) {
+            $alreadyPackagedCategory = false;
+            foreach ($this->package['process_category'] as $categoryEntry) {
+                if ($categoryEntry['id'] === $object->process_category_id) {
+                    $alreadyPackagedCategory = true;
+                    break;
+                }
+            }
+            if (!$alreadyPackagedCategory) {
+                $this->package['process_category'][] = $object->category->toArray();
+            }
+            $entry['_category_name'] = $object->category->name;
         }
     }
 
@@ -208,7 +226,6 @@ class ExportProcess implements ShouldQueue
         $this->package['version'] = '1';
         $this->removeAssignedEntities();
         $this->packageProcess();
-        $this->packageProcessCategory();
         $this->packageScreens();
         $this->packageScripts();
         $this->packageEnvironmentVariables();

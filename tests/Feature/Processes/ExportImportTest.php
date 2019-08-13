@@ -7,12 +7,14 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Notifications\ProcessCanceledNotification;
 
 class ExportImportTest extends TestCase
 {
@@ -158,6 +160,7 @@ class ExportImportTest extends TestCase
 
         // Test to ensure our admin user can export a process
         $this->user = $adminUser;
+        // $this->exportAndImport($process, 'leave_absence_request.json')
         $response = $this->apiCall('POST', "/processes/{$process->id}/export");
         $response->assertStatus(200);
         $response->assertJsonStructure(['url']);
@@ -404,5 +407,102 @@ class ExportImportTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonStructure(['message']);
+    }
+
+    public function testCategoryExportImport()
+    {
+        $scriptCategory = factory(ProcessCategory::class)->create();
+        $screenCategory = factory(ProcessCategory::class)->create();
+        $processCategory = factory(ProcessCategory::class)->create();
+
+        $script = factory(Script::class)->create([
+            'process_category_id' => $scriptCategory->id
+        ]);
+        $noCatScript = factory(Script::class)->create([
+            'process_category_id' => null
+        ]);
+        $screen = factory(Screen::class)->create([
+            'process_category_id' => $screenCategory->id
+        ]);
+        $bpmn = file_get_contents(base_path('tests/Fixtures/process_with_categories.bpmn'));
+        $bpmn = str_replace([
+            '[screen]', '[cat_script]', '[no_cat_script]',
+        ],[
+            $screen->id, $script->id, $noCatScript->id
+        ], $bpmn);
+
+        $process = factory(Process::class)->create([
+            'process_category_id' => $processCategory->id,
+            'name' => 'Category Export Test',
+            'bpmn' => $bpmn,
+        ]);
+
+        $this->assertCount(3, ProcessCategory::all());
+
+        $file = $this->export($process, 'category_export_test.json');
+        $response = $this->import($file);
+
+        // With existing categories, assets are added to the categories
+        $this->assertCount(2, $processCategory->processes);
+        $importedProcess = $processCategory->processes()->orderBy('id', 'desc')->first();
+        if (!$importedProcess) {
+            eval(\Psy\sh());
+        }
+        $this->assertEquals('Category Export Test 2', $importedProcess->name);
+        $this->assertEquals($processCategory->id, $importedProcess->category->id);
+
+        $importedScript = Script::where('title', $script->title . ' 2')->firstOrFail();
+        $this->assertEquals($scriptCategory->id, $importedScript->category->id);
+        
+        $importedScriptNoCat = Script::where('title', $noCatScript->title . ' 2')->firstOrFail();
+        $this->assertEquals(null, $importedScriptNoCat->process_category_id);
+        
+        // Assert no new categories created
+        $this->assertCount(3, ProcessCategory::all());
+
+        // Without existing categories, categories are created
+        $file = $this->export($process, 'category_export_test.json');
+
+        ProcessCategory::query()->delete();
+        $this->assertCount(0, ProcessCategory::all());
+        
+        $response = $this->import($file);
+        $this->assertCount(3, ProcessCategory::all());
+    }
+
+    private function export($process, $expectedName)
+    {
+        // Test to ensure our admin user can export a process
+        $response = $this->apiCall('POST', "/processes/{$process->id}/export");
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['url']);
+
+        // Test to ensure we can download the exported file
+        $response = $this->webCall('GET', $response->json('url'));
+        $response->assertStatus(200);
+        $response->assertHeader('content-disposition', 'attachment; filename=' . $expectedName);
+
+        // Get our file contents (we have to do it this way because of
+        // Symfony's weird response API)
+        ob_start();
+        $content = $response->sendContent();
+        $content = ob_get_clean();
+
+        // Save the file contents and convert them to an UploadedFile
+        $fileName = tempnam(sys_get_temp_dir(), 'exported');
+        file_put_contents($fileName, $content);
+        $file = new UploadedFile($fileName, $expectedName, null, null, null, true);
+
+        return $file;
+    }
+
+    private function import($file)
+    {
+        $response = $this->apiCall('POST', "/processes/import", [
+            'file' => $file,
+        ]);
+        $response->assertStatus(200);
+
+        return $response;
     }
 }

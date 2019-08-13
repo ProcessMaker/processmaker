@@ -387,6 +387,7 @@ class ImportProcess implements ShouldQueue
                 $new->computed = $screen->computed;
                 $new->custom_css = $screen->custom_css;
                 $new->created_at = $this->formatDate($screen->created_at);
+                $this->handleCategory($screen, $new);
                 $new->save();
 
                 $this->updateScreenRefs($screen->id, $new->id, $process);
@@ -455,6 +456,7 @@ class ImportProcess implements ShouldQueue
                 $new->language = $script->language;
                 $new->code = $script->code;
                 $new->created_at = $this->formatDate($script->created_at);
+                $this->handleCategory($script, $new);
                 $new->save();
 
                 $this->updateScriptRefs($script->id, $new->id);
@@ -465,6 +467,19 @@ class ImportProcess implements ShouldQueue
             $this->finishStatus('scripts');
         } catch (\Exception $e) {
             $this->finishStatus('scripts', true);
+        }
+    }
+
+    private function handleCategory($entry, &$new)
+    {
+        if (isset($entry->_category_name)) {
+            $category = ProcessCategory::where('name', $entry->_category_name)->first();
+            if (!$category) {
+                $category = new ProcessCategory;
+                $category->name = $entry->_category_name;
+                $category->saveOrFail();
+            } 
+            $new->process_category_id = $category->id;
         }
     }
 
@@ -512,7 +527,6 @@ class ImportProcess implements ShouldQueue
         try {
             $this->prepareStatus('process', true);
             $new = new Process;
-            $new->process_category_id = $this->new['process_category']->id;
             $new->user_id = $this->currentUser()->id;
             $new->bpmn = $process->bpmn;
             $new->description = $process->description;
@@ -520,6 +534,15 @@ class ImportProcess implements ShouldQueue
             $new->status = $process->status;
             $new->created_at = $this->formatDate($process->created_at);
             $new->deleted_at = $this->formatDate($process->deleted_at);
+
+            if (isset($process->_category_name)) {
+                $this->handleCategory($process, $new);
+
+            } else {
+                // handle legacy imports that only had one category set
+                $new->process_category_id = $this->new['process_category']->id;
+            }
+
             $new->save();
 
             if (property_exists($process, 'notifications')) {
@@ -641,7 +664,9 @@ class ImportProcess implements ShouldQueue
             ];
         }
 
-        $this->saveProcessCategory($this->file->process_category);
+        foreach ((array) $this->file->process_category as $category) {
+            $this->saveProcessCategory($category);
+        }
         $this->saveProcess($this->file->process);
         $this->saveScripts($this->file->scripts);
         $this->saveScreens($this->file->screens, $this->file->process);
