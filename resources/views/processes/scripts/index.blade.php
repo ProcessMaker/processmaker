@@ -87,21 +87,8 @@
 
                         <div class="form-group">
                             <label class="typo__label">{{__('Run script as')}}</label>
-                            <multiselect v-model="selectedUser"
-                                         label="fullname"
-                                         :options="users"
-                                         :show-labels="false"
-                                         :placeholder="$t('Select')"
-                                         :searchable="true"
-                                         :class="{'is-invalid': addError.run_as_user_id}">
-                                <template slot="noResult" >
-                                    {{ __('No elements found. Consider changing the search query.') }}
-                                </template>
-
-                                <template slot="noOptions" >
-                                    {{ __('No Data Available') }}
-                                </template>
-                            </multiselect>
+                            <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': addError.run_as_user_id}">
+                            </select-user>
                             <small class="form-text text-muted" v-if="! addError.run_as_user_id">{{__('Select a user to set the API access of the Script')}}</small>
                             <div class="invalid-feedback" v-for="run_as_user_id in addError.run_as_user_id">@{{run_as_user_id}}</div>
                         </div>
@@ -149,7 +136,7 @@
               code: '',
               addError: {},
               selectedUser: '',
-              users:@json($users),
+              users: [],
               timeout: 60,
               disabled: false,
             },
@@ -180,7 +167,7 @@
                   language: this.language,
                   description: this.description,
                   category: this.category,
-                  run_as_user_id: this.selectedUser.id,
+                  run_as_user_id: this.selectedUser ? this.selectedUser.id : null,
                   code: "[]",
                   timeout: this.timeout
                 })
