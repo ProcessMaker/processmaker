@@ -76,7 +76,7 @@
                             <small class="form-text text-muted"
                                    v-if="! addError.category">{{ __('The script name must be distinct.') }}</small>
                             <div class="invalid-feedback" v-for="category in addError.category">@{{category}}</div>
-                        </div>                        
+                        </div>
                         <div class="form-group">
                             {!!Form::label('language', __('Language'))!!}
                             {!!Form::select('language', [''=>__('Select')] + $scriptFormats, null, ['class'=>
@@ -86,9 +86,22 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="typo__label">{{__('Run script as')}}</label>
-                            <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': addError.run_as_user_id}">
-                            </select-user>
+                            <label class="typo__label">{{__('Run Script As')}}</label>
+                            <multiselect v-model="selectedUser"
+                                         label="fullname"
+                                         :options="users"
+                                         :show-labels="false"
+                                         :placeholder="$t('Select')"
+                                         :searchable="true"
+                                         :class="{'is-invalid': addError.run_as_user_id}">
+                                <template slot="noResult" >
+                                    {{ __('No elements found. Consider changing the search query.') }}
+                                </template>
+
+                                <template slot="noOptions" >
+                                    {{ __('No Data Available') }}
+                                </template>
+                            </multiselect>
                             <small class="form-text text-muted" v-if="! addError.run_as_user_id">{{__('Select a user to set the API access of the Script')}}</small>
                             <div class="invalid-feedback" v-for="run_as_user_id in addError.run_as_user_id">@{{run_as_user_id}}</div>
                         </div>
@@ -103,7 +116,7 @@
                                 <div class="invalid-feedback" v-for="timeout in addError.timeout">@{{timeout}}</div>
                             </div>
                             <small class="form-text text-muted" v-if="! addError.timeout">
-                                {{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}
+                                {{ __('Enter how many seconds the Script runs before timing out (0 is unlimited).') }}
                             </small>
                         </div>
                     </div>

@@ -38,7 +38,7 @@
                                                         aria-controls="tab-form" aria-selected="true"
                                                         class="nav-link active">{{__('Form')}}</a></li>
                                 <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
-                                                        aria-controls="tab-data" aria-selected="false"
+                                                        aria-controls="tab-data" aria-selected="false" @click="resizeMonaco"
                                                         class="nav-link">{{__('Data')}}</a></li>
                             </ul>
                         @endcan
@@ -258,6 +258,11 @@
           },
           disabled() {
             return this.selectedUser ? this.selectedUser.length === 0 : true;
+          },
+          styleDataMonaco()
+          {
+            let height = window.innerHeight * 0.55;
+            return "height: " + height+ "px; border:1px solid gray;";
           }
         },
         methods: {
@@ -301,7 +306,6 @@
           },
           reassignUser() {
             if (this.selectedUser) {
-              console.log(this.selectedUser);
               ProcessMaker.apiClient
                 .put("tasks/" + this.task.id, {
                   user_id: this.selectedUser.id
@@ -345,12 +349,17 @@
               src: user.avatar,
               name: user.fullname
             }];
+          },
+          resizeMonaco()
+          {
+            let editor = this.$refs.monaco.getMonaco();
+            editor.layout({height:window.innerHeight*0.65});
           }
         },
         mounted() {
-          this.statusCard = this.classHeaderCard(this.task.advanceStatus)
-          this.userAssigned = this.assigned
-          this.userRequested = this.requested
+          this.statusCard = this.classHeaderCard(this.task.advanceStatus);
+          this.userAssigned = this.assigned;
+          this.userRequested = this.requested;
           this.updateRequestData = debounce(this.updateRequestData, 1000);
           this.editJsonData();
         }
