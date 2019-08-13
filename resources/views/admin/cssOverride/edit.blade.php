@@ -53,7 +53,9 @@
                         <ul class="list-group w-100">
                             <li class="list-group-item" v-for="item in customColors">
                                 <div class="input-group">
-                                    <color-picker :color="item.value" v-model="item.value"></color-picker>
+                                    <div v-bind:class = "(item.value == '#000000') ? 'text-light' : ''">
+                                        <color-picker :color="item.value" v-model="item.value"></color-picker>
+                                    </div>
                                     <div class="input-group-append">
                                         <span class="pl-2">@{{ item.title }}</span>
                                     </div>
@@ -180,15 +182,15 @@
                 title: __('Danger')
               },
               {
+                id: '$dark',
+                value: '#000000',
+                title: __('Dark')
+              },
+              {
                 id: '$light',
                 value: '#ffffff',
                 title: __('Light')
               },
-              {
-                id: '$dark',
-                value: '#000000',
-                title: __('Dark')
-              }
             ],
             fontsDefault: [
               {
