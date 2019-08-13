@@ -7,5 +7,5 @@
         </button>
     </div>
     <monaco-editor ref="monaco" :options="monacoLargeOptions" v-model="jsonData"
-        language="json" style="border:1px solid gray;"></monaco-editor>
+        language="json" style="border:1px solid gray; min-height:400px"></monaco-editor>
 </div>
