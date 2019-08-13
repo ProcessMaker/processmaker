@@ -182,8 +182,9 @@ class PerformanceTest extends TestCase
     private $repetitions = 50;
     // Inicial size of database
     private $dbSize = 100;
-    const MIN_ROUTE_SPEED = 1;
-    const ACCEPTABLE_ROUTE_SPEED = 11;
+    const MIN_ROUTE_SPEED = 0.1;
+    const ACCEPTABLE_ROUTE_SPEED = 1;
+    const DESIRABLE_ROUTE_SPEED = 11;
 
     public function RoutesListProvider()
     {
@@ -220,12 +221,14 @@ class PerformanceTest extends TestCase
         $this->addMeasurement('routes', [
             'route' => $route,
             'params' => $params,
-            'color' => $speed < self::MIN_ROUTE_SPEED ? 'table-danger' : ($speed >= self::ACCEPTABLE_ROUTE_SPEED ? 'table-success' : ''),
+            'color' => $speed < self::MIN_ROUTE_SPEED ? 'table-danger' :
+                ($speed < self::ACCEPTABLE_ROUTE_SPEED ? 'table-warning' :
+                ($speed >= self::DESIRABLE_ROUTE_SPEED ? 'table-success' : '')),
             'speed' => round($speed * 10) / 10,
             'requestsPerSecond' => $requestsPerSecond,
             'time' => round($time / $times * 100000) / 100,
         ]);
-        $this->writeReport('routes', 'coverage/performance.html', 'routes.performance.template.php');
+        $this->writeReport('routes', 'coverage/route_performance.html', 'routes.performance.template.php');
         $this->assertGreaterThanOrEqual(self::MIN_ROUTE_SPEED, $speed, "Slow route response [$route]\n             Speed ~ $requestsPerSecond [reqs/sec]");
     }
 }
