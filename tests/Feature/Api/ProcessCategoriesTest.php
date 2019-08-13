@@ -6,6 +6,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -86,7 +88,7 @@ class ProcessCategoriesTest extends TestCase
     /**
      * Test to verify our process categories listing api endpoint works without any filters
      */
-    public function testProcessesListing()
+    public function testProcessCategoryListing()
     {
         $initialCount = ProcessCategory::count();
         // Create some processes
@@ -287,7 +289,19 @@ class ProcessCategoriesTest extends TestCase
         $response->assertJsonCount((2 + $initialRows) % 5, 'data');
     }
 
-
+    public function testCounts()
+    {
+        $category = factory(ProcessCategory::class)->create();
+        factory(Process::class, 4)->create(['process_category_id' => $category->id]);
+        factory(Screen::class, 5)->create(['process_category_id' => $category->id]);
+        factory(Script::class, 6)->create(['process_category_id' => $category->id]);
+        
+        $response = $this->apiCall('GET', route($this->resource . '.index'));
+        $json = $response->json()['data'][0];
+        $this->assertEquals(4, $json['processes_count']);
+        $this->assertEquals(5, $json['screens_count']);
+        $this->assertEquals(6, $json['scripts_count']);
+    }
 
     /**
      * Test show process category

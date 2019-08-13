@@ -5,6 +5,8 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
 
@@ -66,5 +68,25 @@ class ProcessCategory extends Model
     public function processes()
     {
         return $this->hasMany(Process::class);
+    }
+    
+    /**
+     * Get scripts
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scripts()
+    {
+        return $this->hasMany(Script::class);
+    }
+    
+    /**
+     * Get scripts
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function screens()
+    {
+        return $this->hasMany(Screen::class);
     }
 }

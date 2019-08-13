@@ -664,7 +664,12 @@ class ImportProcess implements ShouldQueue
             ];
         }
 
-        foreach ((array) $this->file->process_category as $category) {
+        $categories = $this->file->process_category;
+        if (!is_array($categories)) {
+            // handle legacy imports that only had one category set
+            $categories = [$categories];
+        }
+        foreach ($categories as $category) {
             $this->saveProcessCategory($category);
         }
         $this->saveProcess($this->file->process);

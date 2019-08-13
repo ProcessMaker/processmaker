@@ -53,19 +53,15 @@ class ProcessCategoryController extends Controller
     public function index(Request $request)
     {
         $query = ProcessCategory::query();
-        $include = $request->input('include', '');
-
-        if ($include) {
-            $include = explode(',', $include);
-            $count = array_search('processesCount', $include);
-            if ($count !== false) {
-                unset($include[$count]);
-                $query->withCount('processes');
-            }
-            if ($include) {
+        if ($request->input('include')) {
+            $includes = explode(',', $request->input('include'));
+            foreach ($includes as $include) {
                 $query->with($include);
             }
         }
+        $query->withCount('processes')
+            ->withCount('screens')
+            ->withCount('scripts');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {

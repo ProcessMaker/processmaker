@@ -30,7 +30,7 @@
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Remove')"
-                v-if="permission.includes('delete-categories') && props.rowData.processes_count == 0"
+                v-if="permission.includes('delete-categories') && noAssocations(props.rowData)"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -84,6 +84,16 @@ export default {
           sortField: "processes_count"
         },
         {
+          title: () => this.$t("# Screens"),
+          name: "screens_count",
+          sortField: "screens_count"
+        },
+        {
+          title: () => this.$t("# Scripts"),
+          name: "scripts_count",
+          sortField: "scripts_count"
+        },
+        {
           title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
@@ -103,6 +113,12 @@ export default {
     };
   },
   methods: {
+    noAssocations(data)
+    {
+      return data.processes_count == 0 &&
+        data.screens_count == 0 &&
+        data.scripts_count == 0
+    },
     fetch() {
       this.loading = true;
 
@@ -118,8 +134,7 @@ export default {
             "&order_by=" +
             this.orderBy +
             "&order_direction=" +
-            this.orderDirection +
-            "&include=processesCount"
+            this.orderDirection
         )
         .then(response => {
           if (response.data.data.length === 0) {
