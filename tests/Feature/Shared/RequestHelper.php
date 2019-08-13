@@ -79,9 +79,13 @@ trait RequestHelper
                 ];
             }
             $json['trace'] = array_slice($json['trace'], 0, 5);
-            echo "\nResponse Debug Information:\n";
-            var_dump($json);
-            echo "\n";
+            error_log((isset($this->_debug_response->exception) ? get_class($this->_debug_response->exception) : '') . ': ' . $json['message']);
+            isset($json['file']) ? error_log($json['file'] . ':' . $json['line'])
+                : error_log($json['class'] . '::' . $json['function']);
+            foreach($json['trace'] as $trace) {
+                isset($trace['file']) ? error_log($trace['file'] . ':' . $trace['line'])
+                : error_log($trace['class'] . '::' . $trace['function']);
+            }
         }
     }
 }
