@@ -160,8 +160,8 @@ jobs:
           name: 'Jest'
           command: 'npm run test'
 
-      #- store_artifacts:
-      #    path: coverage
+      - store_artifacts:
+          path: coverage
 
       #- store_artifacts:
       #    path: tests/js/coverage
