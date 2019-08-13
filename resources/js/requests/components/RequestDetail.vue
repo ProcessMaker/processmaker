@@ -9,8 +9,15 @@
                       :fields="fields"
                       :data="data"
                       data-path="data"
-                      pagination-path="meta">
-
+                      pagination-path="meta"
+            >
+                <template slot="ids" slot-scope="props">
+                    <b-link v-if="isEditable(props.rowData)"
+                            @click="onAction('edit', props.rowData, props.rowIndex)">
+                        #{{props.rowData.id}}
+                    </b-link>
+                    <span v-else>#{{props.rowData.id}}</span>
+                </template>
                 <template slot="name" slot-scope="props">
                     <b-link v-if="isEditable(props.rowData)"
                             @click="onAction('edit', props.rowData, props.rowIndex)">
@@ -49,6 +56,12 @@
           }
         ],
         fields: [
+          {
+            name: "__slot:ids",
+            title: "#",
+            field: "id",
+            sortField: "id"
+          },
           {
             title: () => this.$t("TASK"),
             name: "__slot:name",
@@ -151,7 +164,7 @@
 </script>
 
 <style lang="scss" scoped>
-    /deep/ tr td:nth-child(2) {
+    /deep/ tr td:nth-child(3) {
         padding: 6px 10px;
     }
 </style>
