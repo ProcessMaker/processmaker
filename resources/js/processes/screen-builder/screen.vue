@@ -43,7 +43,7 @@
           :initialConfig="screen.config"
           :title="screen.title"
           :class="displayBuilder ? 'd-flex' : 'd-none'"
-          :screenType="screen.type"
+          :screenType="type"
           ref="builder"
           @change="updateConfig"
         />
