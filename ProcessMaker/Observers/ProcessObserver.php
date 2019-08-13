@@ -23,4 +23,14 @@ class ProcessObserver
             throw new ReferentialIntegrityException($process, $query->first());
         }
     }
+
+    /**
+     * Handle the Process "saving" event.
+     *
+     * @param Process $process
+     */
+    public function saving(Process $process)
+    {
+        $process->start_events = $process->getUpdatedStartEvents();
+    }
 }
