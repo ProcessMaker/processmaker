@@ -97,127 +97,8 @@ const colorProperty = {
 const TableControl = FormBuilderControls.find(control => control.editorComponent === FormMultiColumn);
 const RichTextControl = FormBuilderControls.find(control => control.editorComponent === FormHtmlEditor);
 
-let initialControls = [{
-    builderComponent: FormText,
-    builderBinding: "FormText",
-    rendererComponent: FormText,
-    rendererBinding: "FormText",
-    control: {
-        label: "Text",
-        component: "FormText",
-        "editor-component": "FormText",
-        config: {
-            icon: "fas fa-align-justify",
-            label: "New Text",
-            fontSize: "1em",
-            fontWeight: "normal",
-            textAlign: "left",
-            verticalAlign: "top",
-            name: ""
-        },
-        inspector: [
-            {
-                type: "FormTextArea",
-                field: "label",
-                config: {
-                    rows: 5,
-                    label: "Text Content",
-                    helper: "The text to display"
-                }
-            },
-            {
-                type: "FormMultiselect",
-                field: "fontWeight",
-                config: {
-                    label: "Font Weight",
-                    helper: "The weight of the text",
-                    options: [{
-                        value: "normal",
-                        content: "Normal"
-                    },
-                    {
-                        value: "bold",
-                        content: "Bold"
-                    }
-                    ]
-                }
-            },
-            {
-                type: "FormMultiselect",
-                field: "textAlign",
-                config: {
-                    label: "Text Horizontal Alignment",
-                    helper: "Horizontal alignment of the text",
-                    options: [{
-                        value: "center",
-                        content: "Center"
-                    },
-                    {
-                        value: "left",
-                        content: "Left"
-                    },
-                    {
-                        value: "right",
-                        content: "Right"
-                    },
-                    {
-                        value: "justify",
-                        content: "Justify"
-                    }
-                    ]
-                }
-            },
-            {
-                type: "FormMultiselect",
-                field: "verticalAlign",
-                config: {
-                    label: "Text Vertical Alignment",
-                    helper: "Vertical alignment of the text",
-                    options: [{
-                        value: "top",
-                        content: "Top"
-                    },
-                    {
-                        value: "middle",
-                        content: "Middle"
-                    },
-                    {
-                        value: "bottom",
-                        content: "Bottom"
-                    }
-                    ]
-                }
-            },
-            {
-                type: "FormMultiselect",
-                field: "fontSize",
-                config: {
-                    label: "Font Size",
-                    helper: "The size of the text in em",
-                    options: [{
-                        value: "0.5em",
-                        content: "0.5"
-                    },
-                    {
-                        value: "1em",
-                        content: "1"
-                    },
-                    {
-                        value: "1.5em",
-                        content: "1.5"
-                    },
-                    {
-                        value: "2em",
-                        content: "2"
-                    }
-                    ]
-                }
-            },
-            bgcolorProperty,
-            colorProperty
-        ]
-    }
-},
+let initialControls = [
+RichTextControl,
 {
     builderComponent: FormText,
     builderBinding: "FormText",
@@ -311,8 +192,7 @@ TableControl,
 
     }
 
-},
-RichTextControl
+}
 ];
 
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
