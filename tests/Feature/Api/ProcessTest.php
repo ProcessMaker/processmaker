@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -163,15 +164,19 @@ class ProcessTest extends TestCase
     {
         ProcessRequest::query()->delete();
 
-        // Create 3 categories
-        $cat1 = factory(ProcessCategory::class)->create(['name' => 'Z cat']);
-        $cat2 = factory(ProcessCategory::class)->create(['name' => 'A cat']);
-        $cat3 = factory(ProcessCategory::class)->create(['name' => 'M cat']);
+        //get process with start event
+        $file = Process::getProcessTemplatesPath() . '/SingleTask.bpmn';
+        $bpmn = file_get_contents($file);
 
-        // Create 2 processes for every category
+        // Create 3 categories
+        $cat1 = factory(ProcessCategory::class)->create(['name' => 'Z cat', 'status' => 'ACTIVE']);
+        $cat2 = factory(ProcessCategory::class)->create(['name' => 'A cat', 'status' => 'ACTIVE']);
+        $cat3 = factory(ProcessCategory::class)->create(['name' => 'M cat', 'status' => 'ACTIVE']);
+
+        // Create processes for every category
         factory(Process::class, 2)->create(['process_category_id' => $cat1->id]);
-        factory(Process::class, 2)->create(['process_category_id' => $cat2->id, 'name' => 'ZProcess']);
-        factory(Process::class, 2)->create(['process_category_id' => $cat2->id, 'name' => 'BProcess']);
+        factory(Process::class)->create(['process_category_id' => $cat2->id, 'name' => 'ZProcess', 'status' => 'ACTIVE', 'bpmn' => $bpmn]);
+        factory(Process::class)->create(['process_category_id' => $cat2->id, 'name' => 'BProcess', 'status' => 'ACTIVE', 'bpmn' => $bpmn]);
         factory(Process::class, 2)->create(['process_category_id' => $cat3->id]);
 
         $response = $this->apiCall('GET', route('api.processes.start', ['order_by' => 'category.name,name']));
@@ -205,6 +210,42 @@ class ProcessTest extends TestCase
 
         $response = $this->apiCall('POST', $route . '?event=StartEventUID');
         $this->assertStatus(201, $response);
+    }
+
+
+    /**
+     * Verifies that a new request can be created
+     */
+    public function testCreateRequest()
+    {
+        $this->withoutExceptionHandling();
+        // Load the process to be used in the test
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
+        ]);
+
+        $route = route('api.process_events.trigger', $process);
+
+        $initialData = [
+            'Field1' => 'Value of Field 1',
+            'Field2' => 'htt://www.files.com'
+        ];
+
+        $response = $this->apiCall('POST', $route . '?event=StartEventUID', $initialData);
+        $this->assertStatus(201, $response);
+
+        // Verify that the initial data was stored
+        $requestRoute =route('api.requests.show', ['request'=>$response->getData()->id]) . '?include=data';
+        $requestResponse = $this->apiCall('GET',$requestRoute );
+
+        // Assert structure
+        $requestResponse->assertJsonStructure([
+            'data' => ['Field1', 'Field2']
+        ]);
+
+        // Assert that stored values are correct
+        $this->assertEquals($initialData['Field1'], $requestResponse->getData()->data->Field1);
+        $this->assertEquals($initialData['Field2'], $requestResponse->getData()->data->Field2);
     }
 
     /**

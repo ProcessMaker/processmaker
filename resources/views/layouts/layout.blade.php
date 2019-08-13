@@ -54,14 +54,14 @@
 
 <body>
 <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
-  <div id="sidebar" :class="{expanded: expanded}">
+  <div id="sidebar" class="d-print-none" :class="{expanded: expanded}">
       @yield('sidebar')
   </div>
 
   <div class="d-flex flex-grow-1 flex-column" style="overflow: hidden;">
     @include('layouts.navbar')
     @yield('breadcrumbs')
-    <div class="flex-grow-1 d-flex flex-column h-100" id="mainbody">
+    <div class="flex-grow-1 d-flex flex-column overflow-hidden" id="mainbody">
       <div class="main flex-grow-1 h-100">
         @yield('content')
       </div>

@@ -18,6 +18,8 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
+use ProcessMaker\Jobs\BoundaryEvent;
 
 class WorkflowManager
 {
@@ -68,6 +70,30 @@ class WorkflowManager
         //Validate data
         $this->validateData($data, $definitions);
         CatchEvent::dispatchNow($definitions, $instance, $token, $data);
+    }
+
+
+    /**
+     * Trigger a boundary event
+     *
+     * @param Definitions $definitions
+     * @param ExecutionInstanceInterface $instance
+     * @param TokenInterface $token
+     * @param BoundaryEventInterface $boundaryEvent
+     * @param array $data
+     *
+     * @return void
+     */
+    public function triggerBoundaryEvent(
+        Definitions $definitions,
+        ExecutionInstanceInterface $instance,
+        TokenInterface $token,
+        BoundaryEventInterface $boundaryEvent,
+        array $data
+    ) {
+        //Validate data
+        $this->validateData($data, $definitions);
+        BoundaryEvent::dispatchNow($definitions, $instance, $token, $boundaryEvent, $data);
     }
 
     /**

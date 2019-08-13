@@ -66,18 +66,19 @@ export default {
   data() {
     return {
       orderBy: "id",
+      orderDirection: "DESC",
       additionalParams: "",
       sortOrder: [
         {
           field: "id",
           sortField: "id",
-          direction: "asc"
+          direction: "desc"
         }
       ],
       fields: [
         {
           name: "__slot:ids",
-          title: '#',
+          title: "#",
           field: "id",
           sortField: "id"
         },
@@ -118,14 +119,14 @@ export default {
     switch (Processmaker.status) {
       // if there is no status, meaning its on my requests, We should only show the in progress status
       case "":
-        status = 'In Progress';
+        status = "In Progress";
         this.$parent.requester.push(Processmaker.user);
         break;
       case "in_progress":
-        status = 'In Progress';
+        status = "In Progress";
         break;
       case "completed":
-        status = 'Completed';
+        status = "Completed";
         break;
     }
     if (status) {
@@ -196,7 +197,6 @@ export default {
       return data;
     },
     fetch(resetPagination) {
-
       if (resetPagination) {
         this.page = 1;
       }

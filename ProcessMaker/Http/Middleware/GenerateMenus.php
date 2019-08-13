@@ -63,6 +63,12 @@ class GenerateMenus
                 ]);
             }
             if (\Auth::check() && \Auth::user()->is_administrator) {
+                $submenu->add(__('Customize UI'), [
+                    'route' => 'customize-ui.edit',
+                    'icon' => 'fa-palette',
+                ]);
+            }
+            if (\Auth::check() && \Auth::user()->is_administrator) {
                 $submenu->add(__('Queue Management'), [
                     'route' => 'horizon.index',
                     'icon' => 'fa-infinity',

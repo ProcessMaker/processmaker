@@ -343,11 +343,11 @@ class TaskController extends Controller
         $orderedTasks = collect([]);
 
         foreach($orderedRequests as $item) {
-            $element= $tasksList->first(function ($value, $key) use($item) {
+            $elements = $tasksList->filter(function ($value, $key) use($item) {
                 return $value->process_request_id == $item->id;
             });
 
-            $orderedTasks->push($element);
+            $orderedTasks = $orderedTasks->merge($elements);
         }
 
         return $orderedTasks;

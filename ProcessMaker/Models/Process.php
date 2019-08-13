@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -398,10 +399,12 @@ class Process extends Model implements HasMedia
      *
      * @return \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
-    public function getDefinitions($forceParse = false)
+    public function getDefinitions($forceParse = false, $engine = null)
     {
         if ($forceParse || empty($this->bpmnDefinitions)) {
-            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
+            $options = ['process' => $this];
+            !$engine ?: $options['engine'] = $engine;
+            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
                 //Load the collaborations if exists
@@ -493,7 +496,7 @@ class Process extends Model implements HasMedia
                 $user = $this->getNextUserAssignment($activity->getId());
                 break;
             case 'requester':
-                $user = $token->getInstance()->user_id;
+                $user = $this->getRequester($token);
                 break;
             case 'previous_task_assignee':
                 $rule = new PreviousTaskAssignee();
@@ -599,7 +602,7 @@ class Process extends Model implements HasMedia
                             $user = $item->assignee;
                             break;
                         case 'requester':
-                            $user = $token->getInstance()->user_id;
+                            $user = $this->getRequester($token);
                             break;
                         case 'manual':
                         case 'self_service':
@@ -776,5 +779,22 @@ class Process extends Model implements HasMedia
             }
         }
         return $hasTimerStartEvent;
+    }
+
+    /**
+     * Get the requester of the current token
+     *
+     * @param string $processTaskUuid
+     *
+     * @return Integer $user_id
+     * @throws TaskDoesNotHaveRequesterException
+     */
+    private function getRequester($token)
+    {
+        $user_id = $token->getInstance()->user_id;
+        if (!$user_id) {
+            throw new TaskDoesNotHaveRequesterException();
+        }
+        return $user_id;
     }
 }

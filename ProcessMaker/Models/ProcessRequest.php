@@ -2,20 +2,19 @@
 
 namespace ProcessMaker\Models;
 
-use Log;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Managers\TaskSchedulerManager;
+use Log;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
+use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Query\Traits\PMQL;
 use Throwable;
-use ProcessMaker\Traits\SqlsrvSupportTrait;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -138,16 +137,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->bootElement([]);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::created(function ($model) {
-            $manager = new TaskSchedulerManager();
-            $manager->registerIntermediateTimerEvents($model);
-        });
-    }
-
     /**
      * Validation rules.
      *
@@ -251,6 +240,31 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         return $screen;
     }
+
+    /**
+     * Get screen requested
+     *
+     * @return array of screens
+     */
+    public function getScreensRequested()
+    {
+        $tokens = $this->tokens()
+            ->whereNotIn('element_type', ['startEvent', 'end_event'])
+            ->where('status', 'CLOSED')
+            ->get();
+        $screens = [];
+        foreach ($tokens as $token) {
+            $definition = $token->getDefinition();
+            if (array_key_exists('screenRef', $definition)) {
+                $screen = Screen::find($definition['screenRef']);
+                $screen->element_name = $token->element_name;
+                $screen->element_type = $token->element_type;
+                $screens[] = $screen;
+            }
+        }
+        return $screens;
+    }
+
 
     /**
      * Get tokens of the request.
@@ -424,5 +438,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function parentRequest()
     {
         return $this->belongsTo(ProcessRequest::class, 'parent_request_id');
+    }
+
+    /**
+     * Scheduled task of the request.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scheduledTasks()
+    {
+        return $this->hasMany(ScheduledTask::class, 'process_request_id');
     }
 }
