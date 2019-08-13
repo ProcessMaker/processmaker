@@ -183,6 +183,11 @@
                 id: '$light',
                 value: '#ffffff',
                 title: __('Light')
+              },
+              {
+                id: '$dark',
+                value: '#000000',
+                title: __('Dark')
               }
             ],
             fontsDefault: [
