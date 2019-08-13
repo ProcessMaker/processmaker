@@ -52,9 +52,7 @@ class ExtendedPMQLTest extends TestCase
     
     public function testHandleFieldWildcard()
     {
-        if (DB::connection()->getDriverName() == 'sqlsrv') {
-            $this->markTestSkipped('PMQL does not yet support JSON fields on Microsoft SQL Server.');
-        }
+        $this->markTestSkipped('PMQL does not yet support JSON fields on Microsoft SQL Server.');
         
         // Instantiate Faker
         $faker = Factory::create();
