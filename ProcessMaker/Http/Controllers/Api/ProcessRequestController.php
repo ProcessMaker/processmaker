@@ -25,7 +25,6 @@ use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Jobs\CancelRequest;
-use ProcessMaker\PmqlHelper;
 
 class ProcessRequestController extends Controller
 {
@@ -115,8 +114,7 @@ class ProcessRequestController extends Controller
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
-                $helper = new PmqlHelper('request');
-                $query->pmql($pmql, $helper->aliases());
+                $query->pmql($pmql);
             } catch (QueryException $e) {
                 return response(['message' => __('Your PMQL search could not be completed.')], 400);
             } catch (SyntaxError $e) {
