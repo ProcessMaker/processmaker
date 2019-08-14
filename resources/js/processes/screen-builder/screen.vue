@@ -35,7 +35,7 @@
       </b-card-header>
 
       <!-- Card Body -->
-      <b-card-body class="overflow-auto p-0" id="screen-builder-container">
+      <b-card-body class="overflow-auto p-0 h-100" id="screen-builder-container">
         <!-- Vue-form-builder -->
         <vue-form-builder
           class="m-0"
