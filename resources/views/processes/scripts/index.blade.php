@@ -69,7 +69,7 @@
                             <div class="invalid-feedback" v-for="description in addError.description">@{{description}}
                             </div>
                         </div>
-<div class="form-group">
+                        <div class="form-group">
                             {!!Form::label('category', __('Category'))!!}
                             {!!Form::text('category', null, ['class'=> 'form-control', 'v-model'=> 'category', 'v-bind:class' =>
                             '{\'form-control\':true, \'is-invalid\':addError.category}'])!!}
