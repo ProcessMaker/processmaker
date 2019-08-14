@@ -8,6 +8,10 @@ trait HideSystemResources
     {
         $item = parent::resolveRouteBinding($value);
 
+        if (!$item) {
+            abort(404);
+        }
+
         $prefix = strtolower(substr(strrchr(get_class($item), '\\'), 1));
         $attribute = "{$prefix}_category_id";
         if ($item->$attribute && $item->category()->first()->is_system) {
