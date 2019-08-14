@@ -302,6 +302,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
+                            <div class="card card-body table-card">
                                 <table class="table">
                                     <thead>
                                     <tr>
@@ -342,6 +343,7 @@
                                 <button class="btn btn-secondary float-right" @click="generateToken">
                                     {{__('Generate New Token')}}
                                 </button>
+                            </div>
                         </div>
                     </div>
                 </div>
