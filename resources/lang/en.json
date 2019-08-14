@@ -870,5 +870,6 @@
     "Regenerating CSS Files": "Regenerating CSS Files",
     "Please wait while the files are generated. The screen will be updated when finished.": "Please wait while the files are generated. The screen will be updated when finished.",
     "We recommended a transparent PNG at :size pixels.": "We recommended a transparent PNG at :size pixels.",
-    "Print": "Print"
+    "Print": "Print",
+    "Are you sure you want to reset the UI styles?": "Are you sure you want to reset the UI styles?"
 }
