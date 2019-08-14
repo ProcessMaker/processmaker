@@ -149,7 +149,7 @@
               code: '',
               addError: {},
               selectedUser: '',
-              users:@json($users),
+              users: [],
               timeout: 60,
               disabled: false,
             },
@@ -180,7 +180,7 @@
                   language: this.language,
                   description: this.description,
                   category: this.category,
-                  run_as_user_id: this.selectedUser.id,
+                  run_as_user_id: this.selectedUser ? this.selectedUser.id : null,
                   code: "[]",
                   timeout: this.timeout
                 })

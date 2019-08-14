@@ -493,7 +493,7 @@ class ProcessController extends Controller
             $process->startEvents = $process->events->filter(function ($event) {
                 $eventIsTimerStart = collect($event['eventDefinitions'])
                         ->filter(function ($eventDefinition) {
-                            return get_class($eventDefinition) == TimerEventDefinition::class;
+                            return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
                 return !$eventIsTimerStart;
             });

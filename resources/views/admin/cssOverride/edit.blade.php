@@ -53,7 +53,9 @@
                         <ul class="list-group w-100">
                             <li class="list-group-item" v-for="item in customColors">
                                 <div class="input-group">
-                                    <color-picker :color="item.value" v-model="item.value"></color-picker>
+                                    <div v-bind:class = "(item.value == '#000000') ? 'text-light input-group-prepend' : 'input-group-prepend'">
+                                        <color-picker :color="item.value" v-model="item.value"></color-picker>
+                                    </div>
                                     <div class="input-group-append">
                                         <span class="pl-2">@{{ item.title }}</span>
                                     </div>
@@ -151,7 +153,7 @@
             colorDefault: [
               {
                 id: '$primary',
-                value: '#3397e1',
+                value: '#3397E1',
                 title: __('Primary')
               },
               {
@@ -161,29 +163,34 @@
               },
               {
                 id: '$success',
-                value: '#00bf9c',
+                value: '#00BF9C',
                 title: __('Success')
               },
               {
                 id: '$info',
-                value: '#17a2b8',
+                value: '#17A2B8',
                 title: __('Info')
               },
               {
                 id: '$warning',
-                value: '#fbbe02',
+                value: '#FBBE02',
                 title: __('Warning')
               },
               {
                 id: '$danger',
-                value: '#ed4757',
+                value: '#ED4757',
                 title: __('Danger')
               },
               {
+                id: '$dark',
+                value: '#000000',
+                title: __('Dark')
+              },
+              {
                 id: '$light',
-                value: '#ffffff',
+                value: '#FFFFFF',
                 title: __('Light')
-              }
+              },
             ],
             fontsDefault: [
               {

@@ -4,15 +4,17 @@ use Faker\Generator as Faker;
 use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\User;
 
+$onePassword = Hash::make('oneOnlyPassword');
+
 /**
  * Model factory for a User
  */
-$factory->define(User::class, function (Faker $faker) {
+$factory->define(User::class, function (Faker $faker) use($onePassword) {
 
     return [
         'username' => $faker->unique()->userName,
         'email' => $faker->unique()->email,
-        'password' => Hash::make($faker->password),
+        'password' => $onePassword,
 
         'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
 

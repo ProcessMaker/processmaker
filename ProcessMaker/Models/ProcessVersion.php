@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string process_category_id
  * @property string process_id
  * @property string status
+ * @property string start_events
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
