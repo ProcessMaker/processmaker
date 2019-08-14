@@ -259,6 +259,10 @@ import formTypes from "./formTypes";
 
         const validationErrors = [];
 
+        if (this.type === formTypes.form && !this.containsSubmitButton()) {
+          validationErrors.push({ message: 'Form requires a submit button' });
+        }
+
         this.config.forEach(page => {
           validationErrors.push(...this.getValidationErrorsForItems(page.items, page));
         });
