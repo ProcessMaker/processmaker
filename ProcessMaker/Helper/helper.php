@@ -8,11 +8,12 @@ use function GuzzleHttp\json_encode;
  *
  * @return array
  */
-function lavaryMenuArray($menu)
+function lavaryMenuArray($menu, $includeSubMenus = false)
 {
     $children = [];
-    if ($menu->children()) {
-        foreach ($menu->children() as $child) {
+    $subMenus = $includeSubMenus ? $menu->children() : null;
+    if ($subMenus) {
+        foreach ($subMenus as $child) {
             $children[] = lavaryMenuArray($child);
         }
     }
@@ -34,5 +35,5 @@ function lavaryMenuArray($menu)
  */
 function lavaryMenuJson($menu)
 {
-    return json_encode(lavaryMenuArray($menu));
+    return json_encode(lavaryMenuArray($menu, true));
 }
