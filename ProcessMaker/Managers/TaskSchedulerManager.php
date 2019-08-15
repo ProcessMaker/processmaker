@@ -137,7 +137,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 if ($lastExecution === null) {
                     continue;
                 }
-                $nextDate = $this->nextDate($today, $config, $lastExecution);
+                $owner = $task->processRequestToken ?: $task->processRequest ?: $task->process;
+                $ownerDateTime = $owner->created_at;
+                $nextDate = $this->nextDate($today, $config, $lastExecution, $ownerDateTime);
 
                 // if no execution date exists we go to the next task
                 if (empty($nextDate)) {
@@ -316,18 +318,18 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      *
      * @return DateTimeInterface
      */
-    public function nextDate(DateTimeInterface $currentDate, $timerConfig, DateTimeInterface $lastExecution = null)
+    public function nextDate(DateTimeInterface $currentDate, $timerConfig, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
     {
         $result = null;
         switch ($timerConfig->type) {
             case 'TimeDate':
-                $result = $this->nextDateForOneDate($currentDate, $timerConfig->interval, $lastExecution);
+                $result = $this->nextDateForOneDate($currentDate, $timerConfig->interval, $lastExecution, $ownerDateTime);
                 break;
             case 'TimeCycle':
-                $result = $this->nextDateForCyclical($currentDate, $timerConfig->interval, $lastExecution);
+                $result = $this->nextDateForCyclical($currentDate, $timerConfig->interval, $lastExecution, $ownerDateTime);
                 break;
             case 'TimeDuration':
-                $result = $this->nextDateForDuration($currentDate, $timerConfig->interval, $lastExecution);
+                $result = $this->nextDateForDuration($currentDate, $timerConfig->interval, $lastExecution, $ownerDateTime);
                 break;
         }
 
@@ -345,8 +347,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         if (isset($timer->date)) {
             return new DateTime($timer->date, new DateTimeZone($timer->timezone));
-        } elseif (isset($timer->start)) {
-            $start = $this->loadTimerFromJson($timer->start);
+        } elseif (isset($timer->interval)) {
+            $start = $timer->start ? $this->loadTimerFromJson($timer->start) : null;
             $interval = $this->loadTimerFromJson($timer->interval);
             $end = $timer->end ? $this->loadTimerFromJson($timer->end) : null;
             $recurrences = $timer->recurrences;
@@ -376,18 +378,19 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      *
      * @return DateTimeInterface
      */
-    private function nextDateForCyclical(DateTimeInterface $currentDate, $jsonCycle, DateTimeInterface $lastExecution = null)
+    private function nextDateForCyclical(DateTimeInterface $currentDate, $jsonCycle, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
     {
         $cycle = $this->loadTimerFromJson($jsonCycle);
         $nextDateTime = null;
-        $dateTime = clone $cycle->start;
+        $dateTime = clone ($cycle->start ?: $ownerDateTime);
         $recurrences = $cycle->recurrences;
+        $method = config('app.timer_events_seconds') . 'DateTime';
         while (true) {
             if (($cycle->end && $dateTime > $cycle->end)
                 || (!$cycle->end && $cycle->recurrences && $recurrences <= 0)) {
                 break;
             }
-            if ((!$lastExecution || $lastExecution < $dateTime)) {
+            if ((!$lastExecution || $this->$method($lastExecution) < $this->$method($dateTime))) {
                 $nextDateTime = clone $dateTime;
                 break;
             }
@@ -406,7 +409,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      *
      * @return DateTime
      */
-    private function nextDateForOneDate(DateTimeInterface $currentDate, $jsonDateTime, DateTimeInterface $lastExecution = null)
+    private function nextDateForOneDate(DateTimeInterface $currentDate, $jsonDateTime, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
     {
         $dateTime = $this->loadTimerFromJson($jsonDateTime);
         return (!$lastExecution || $lastExecution < $dateTime) ? $dateTime : null;
@@ -421,11 +424,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      *
      * @return DateTime
      */
-    private function nextDateForDuration(DateTimeInterface $currentDate, $jsonInterval, DateTimeInterface $lastExecution = null)
+    private function nextDateForDuration(DateTimeInterface $currentDate, $jsonInterval, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
     {
         $interval = $this->loadTimerFromJson($jsonInterval);
-        $dateTime = (clone ($lastExecution ?: $currentDate))->add($interval);
-        return (!$lastExecution || $lastExecution < $dateTime) ? $dateTime : null;
+        $dateTime = (clone ($ownerDateTime ?: $lastExecution ?: $currentDate))->add($interval);
+        $method = config('app.timer_events_seconds') . 'DateTime';
+        return (!$lastExecution || $this->$method($lastExecution) < $this->$method($dateTime)) ? $dateTime : null;
     }
 
     /**
@@ -451,6 +455,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             return self::$today = $today;
         }
         self::$today = $today instanceof DateTime ? clone $today : (new DateTime($today))->setTimezone(new DateTimeZone('UTC'));
+        Carbon::setTestNow(clone self::$today);
         return clone self::$today;
     }
 
