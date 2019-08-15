@@ -38,10 +38,10 @@ use Throwable;
  *   @OA\Property(property="user_id", type="string", format="id"),
  *   @OA\Property(property="callable_id", type="string", format="id"),
  *   @OA\Property(property="data", type="string", format="json"),
- *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED"}), 
- *   @OA\Property(property="name", type="string"), 
- *   @OA\Property(property="process_id", type="integer"), 
- *   @OA\Property(property="process", type="object"), 
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED"}),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="process_id", type="integer"),
+ *   @OA\Property(property="process", type="object"),
  * ),
  * @OA\Schema(
  *   schema="processRequest",
@@ -259,6 +259,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 $screen = Screen::find($definition['screenRef']);
                 $screen->element_name = $token->element_name;
                 $screen->element_type = $token->element_type;
+                $screen->data = $token->data;
                 $screens[] = $screen;
             }
         }

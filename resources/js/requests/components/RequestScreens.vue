@@ -105,7 +105,6 @@
       fetch() {
         this.screens.forEach(item => {
           item.view = false;
-          item.data = this.information;
           return item;
         });
         this.data = this.screens;
