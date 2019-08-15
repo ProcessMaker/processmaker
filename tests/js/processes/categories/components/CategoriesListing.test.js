@@ -7,6 +7,9 @@ describe('Process Categories', () => {
   beforeEach(() => {
     // TODO: move to manual __mock__
     global.ProcessMaker = {
+      EventBus: {
+        $on: jest.fn()
+      },
       apiClient: {
         get: () => {
           return {
@@ -18,12 +21,13 @@ describe('Process Categories', () => {
     };
     const $t = () => {
     };
-    // wrapper = shallowMount(CategoriesListing, {
-    //   mocks: {$t},
-    // });
+
+    wrapper = shallowMount(CategoriesListing, {
+      mocks: {$t}
+    });
   });
 
   it('foo', () => {
-     // expect(wrapper.vm.orderBy).toEqual("name");
+      expect(wrapper.vm.orderBy).toEqual("name");
   });
 });
