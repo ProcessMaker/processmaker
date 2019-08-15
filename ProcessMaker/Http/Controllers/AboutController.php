@@ -14,6 +14,13 @@ class AboutController extends Controller
      */
     public function index()
     {
-        return view('about.index');
+        $path = base_path('vendor/processmaker');
+        $directories = \File::directories($path);
+        $packages = array();
+        foreach($directories as $directory) {
+            $content = json_decode(file_get_contents($path . '/' . basename($directory) . '/composer.json'));
+            array_push($packages, $content);
+        }
+        return view('about.index', compact('packages'));
     }
 }
