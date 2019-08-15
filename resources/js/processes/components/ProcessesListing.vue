@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for="/scripts\?page/"
+            :for="/processes/"
             v-show="shouldShowLoader"
             :empty="$t('No Data Available')"
             :empty-desc="$t('')"
