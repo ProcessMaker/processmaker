@@ -26,6 +26,7 @@
         <hr>
         <a href="https://processmaker.gitbook.io/processmaker/" target="_blank">{{__('Documentation')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
+        @if ($packages)
         <h5>{{ __('Packages Installed') }}</h5>
         <ul class="list-group-flush p-0">
             @foreach ($packages as $package)
@@ -40,6 +41,7 @@
             </li>
           @endforeach
         </ul>
+        @endif
         &copy; {{date('Y')}} - {{__('All Rights Reserved')}}
       </div>
     </div>
