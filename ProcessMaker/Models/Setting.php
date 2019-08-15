@@ -45,6 +45,7 @@ class Setting extends Model implements HasMedia
     //Disk
     public const DISK_CSS = 'settings';
     //collection media library
+    public const COLLECTION_CSS_LOGIN = 'login';
     public const COLLECTION_CSS_LOGO = 'logo';
     public const COLLECTION_CSS_ICON = 'icon';
 
@@ -100,6 +101,27 @@ class Setting extends Model implements HasMedia
     public static function byKey($key)
     {
         return self::where('key', $key)->first();
+    }
+
+    public static function getLogin()
+    {
+        if (Cache::has('css-login')) {
+            return Cache::get('css-login');
+        }
+        //default login
+        $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker_login.png'));
+        //custom login
+        $setting = self::byKey('css-override');
+        if ($setting) {
+            $mediaFile = $setting->getMedia(self::COLLECTION_CSS_LOGIN);
+
+            foreach ($mediaFile as $media) {
+                $url = $media->getFullUrl();
+            }
+        }
+        Cache::put('css-login', $url, now()->addMinutes(10));
+
+        return $url;
     }
 
     public static function getLogo()
