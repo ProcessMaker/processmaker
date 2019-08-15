@@ -77,6 +77,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         'id',
         'updated_at',
         'created_at',
+        'data',
     ];
 
     /**
@@ -87,7 +88,8 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $hidden = [
-        'bpmn'
+        'bpmn',
+        'data',
     ];
 
     /**
@@ -120,6 +122,15 @@ class ProcessRequestToken extends Model implements TokenInterface
         'due_at',
         'initiated_at',
         'riskchanges_at',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
     ];
 
     /**

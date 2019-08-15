@@ -14,7 +14,7 @@ class AddDataToProcessRequestTokens extends Migration
     public function up()
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
-            $table->json('data');
+            $table->json('data')->nullable();
         });
     }
 
