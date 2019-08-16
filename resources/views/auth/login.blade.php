@@ -5,7 +5,10 @@ Login
 @section('content')
 <div align="container">
   <div align="center" class="p-5">
-    <img src={{asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'))}}>
+    @php
+      $loginLogo = \ProcessMaker\Models\Setting::getLogin();
+    @endphp
+    <img src={{$loginLogo}}>
   </div>
 
   <div class="row">
