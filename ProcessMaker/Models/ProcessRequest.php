@@ -260,6 +260,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 $screen->element_name = $token->element_name;
                 $screen->element_type = $token->element_type;
                 $screen->data = $token->data;
+                $screen->screen_id = $screen->id;
+                $screen->id = $token->id;
                 $screens[] = $screen;
             }
         }

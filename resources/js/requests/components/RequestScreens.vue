@@ -96,11 +96,12 @@
 
     methods: {
       preview(data) {
-        window.open('/requests/' + this.id + '/screen/' + data.id);
+        window.open('/requests/' + this.id + '/screen/' + data.screen_id);
       },
       previewScreen(data) {
         data.view = !data.view;
-        this.$refs.screens.toggleDetailRow(data.id)
+        console.log(data);
+        this.$refs.screens.toggleDetailRow(data.id);
       },
       fetch() {
         this.screens.forEach(item => {
