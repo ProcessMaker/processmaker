@@ -88,26 +88,26 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 Broadcast::routes();
 
 // Authentication Routes...
-$this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
-$this->post('login', 'Auth\LoginController@loginWithIntendedCheck');
-$this->get('logout', 'Auth\LoginController@logout')->name('logout');
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('login', 'Auth\LoginController@loginWithIntendedCheck');
+Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 
 // Password Reset Routes...
-$this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
-$this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-$this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-$this->post('password/reset', 'Auth\ResetPasswordController@reset');
+Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 //overwrite laravel passport
-$this->get('oauth/clients', 'Auth\ClientController@index')->name('passport.clients.index')->middleware('can:view-auth_clients');
-$this->get('oauth/clients/{client_id}', 'Auth\ClientController@show')->name('passport.clients.show')->middleware('can:view-auth_clients');
-$this->post('oauth/clients', 'Auth\ClientController@store')->name('passport.clients.store')->middleware('can:create-auth_clients');
-$this->put('oauth/clients/{client_id}', 'Auth\ClientController@update')->name('passport.clients.update')->middleware('can:edit-auth_clients');
-$this->delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->name('passport.clients.update')->middleware('can:delete-auth_clients');
+Route::get('oauth/clients', 'Auth\ClientController@index')->name('passport.clients.index')->middleware('can:view-auth_clients');
+Route::get('oauth/clients/{client_id}', 'Auth\ClientController@show')->name('passport.clients.show')->middleware('can:view-auth_clients');
+Route::post('oauth/clients', 'Auth\ClientController@store')->name('passport.clients.store')->middleware('can:create-auth_clients');
+Route::put('oauth/clients/{client_id}', 'Auth\ClientController@update')->name('passport.clients.update')->middleware('can:edit-auth_clients');
+Route::delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->name('passport.clients.update')->middleware('can:delete-auth_clients');
 
-$this->get('password/success', function () {
+Route::get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
 
 
-$this->get('/unavailable', 'UnavailableController@show')->name('error.unavailable');
+Route::get('/unavailable', 'UnavailableController@show')->name('error.unavailable');
