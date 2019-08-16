@@ -66,7 +66,7 @@ class CssOverrideController extends Controller
             Cache::forget('css-icon');
         }
         if ($request->has('fileLogin')) {
-            $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
+            $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
             Cache::forget('css-login');
         }
 
