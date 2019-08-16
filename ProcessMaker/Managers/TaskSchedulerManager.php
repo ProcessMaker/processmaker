@@ -51,7 +51,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         if ($definitions) {
             $definitions->getEngine()->getJobManager()->enableRegisterStartEvents();
             $processDefinitions = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
-            foreach($processDefinitions as $processDefinition) {
+            foreach ($processDefinitions as $processDefinition) {
                 $element = $processDefinition->getBpmnElementInstance();
                 $definitions->getEngine()->loadProcess($element);
             }
@@ -121,6 +121,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function scheduleTasks(Schedule $schedule)
     {
+        $today = $this->today();
         try {
             if (!Schema::hasTable('scheduled_tasks')) {
                 return;
@@ -128,7 +129,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
             $tasks = ScheduledTask::all();
 
-            $today = $this->today();
             foreach ($tasks as $task) {
                 $config = json_decode($task->configuration);
 
@@ -143,7 +143,13 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 if (empty($nextDate)) {
                     continue;
                 }
-                if ($nextDate <= $today) {
+
+                // Since the task scheduler has a presition of 1 minute (crontab)
+                // the times must be rounded or trucated to the nearest HH:MM:00 before compare
+                $method = config('app.timer_events_seconds') . 'DateTime';
+                $todayWithoutSeconds = $this->$method($today);
+                $nextDateWithoutSeconds = $this->$method($nextDate);
+                if ($nextDateWithoutSeconds <= $todayWithoutSeconds) {
                     switch ($task->type) {
                         case 'TIMER_START_EVENT':
                             $this->executeTimerStartEvent($task, $config);
@@ -172,6 +178,30 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         } catch (PDOException $e) {
             Log::error('The connection to the database had problems');
         }
+    }
+
+    /**
+     * Round a date time to the nearest minute.
+     *
+     * @param DateTimeInterface $date
+     *
+     * @return DateTimeInterface
+     */
+    public function roundDateTime(DateTimeInterface $date)
+    {
+        return (clone $date)->setTimestamp(round($date->getTimestamp() / 60) * 60);
+    }
+
+    /**
+     * Truncate date time to 0 seconds
+     *
+     * @param DateTimeInterface $date
+     *
+     * @return DateTimeInterface
+     */
+    public function truncateDateTime(DateTimeInterface $date)
+    {
+        return (clone $date)->setTimestamp(intval($date->getTimestamp() / 60) * 60);
     }
 
     /**
@@ -283,7 +313,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @param DateTimeInterface $currentDate
      * @param object $intervalConfig
      * @param DateTimeInterface $lastExecution
-     * @return void
+     *
+     * @return DateTimeInterface
      */
     public function nextDate(DateTimeInterface $currentDate, $timerConfig, DateTimeInterface $lastExecution = null)
     {
@@ -314,13 +345,13 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         if (isset($timer->date)) {
             return new DateTime($timer->date, new DateTimeZone($timer->timezone));
-        } elseif(isset($timer->start)) {
+        } elseif (isset($timer->start)) {
             $start = $this->loadTimerFromJson($timer->start);
             $interval = $this->loadTimerFromJson($timer->interval);
             $end = $timer->end ? $this->loadTimerFromJson($timer->end) : null;
             $recurrences = $timer->recurrences;
             return new DatePeriod($start, $interval, $end ? $end : ($recurrences ?: -1));
-        } elseif(isset($timer->y)) {
+        } elseif (isset($timer->y)) {
             return new DateInterval(sprintf(
                 'P%sY%sM%sDT%sH%sM%sS',
                 $timer->y,
@@ -330,7 +361,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                 $timer->i,
                 $timer->s + $timer->f
             ));
-        } elseif(is_string($timer)) {
+        } elseif (is_string($timer)) {
             $expression = new TimerExpression();
             $expression->setBody($timer);
             return $expression([]);
@@ -351,16 +382,16 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $nextDateTime = null;
         $dateTime = clone $cycle->start;
         $recurrences = $cycle->recurrences;
-        while(true) {
-            if ( ($cycle->end && $dateTime > $cycle->end)
-                || (!$cycle->end && $cycle->recurrences && $recurrences <= 0) ) {
+        while (true) {
+            if (($cycle->end && $dateTime > $cycle->end)
+                || (!$cycle->end && $cycle->recurrences && $recurrences <= 0)) {
                 break;
             }
-            if ( (!$lastExecution || $lastExecution < $dateTime)) {
+            if ((!$lastExecution || $lastExecution < $dateTime)) {
                 $nextDateTime = clone $dateTime;
                 break;
             }
-            $recurrences --;
+            $recurrences--;
             $dateTime->add($cycle->interval);
         }
         return $nextDateTime;
@@ -494,7 +525,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function listen($events, $listener)
-    { }
+    {
+    }
 
     /**
      * Determine if a given event has listeners.
@@ -504,7 +536,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return bool
      */
     public function hasListeners($eventName)
-    { }
+    {
+    }
 
     /**
      * Register an event subscriber with the dispatcher.
@@ -514,7 +547,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function subscribe($subscriber)
-    { }
+    {
+    }
 
     /**
      * Dispatch an event until the first non-null response is returned.
@@ -525,7 +559,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return array|null
      */
     public function until($event, $payload = [])
-    { }
+    {
+    }
 
     /**
      * Dispatch an event and call the listeners.
@@ -537,7 +572,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return array|null
      */
     public function dispatch($event, $payload = [], $halt = false)
-    { }
+    {
+    }
 
     /**
      * Register an event and payload to be fired later.
@@ -548,7 +584,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function push($event, $payload = [])
-    { }
+    {
+    }
 
     /**
      * Flush a set of pushed events.
@@ -558,7 +595,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function flush($event)
-    { }
+    {
+    }
 
     /**
      * Remove a set of listeners from the dispatcher.
@@ -568,7 +606,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function forget($event)
-    { }
+    {
+    }
 
     /**
      * Forget all of the queued listeners.
@@ -576,5 +615,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function forgetPushed()
-    { }
+    {
+    }
 }

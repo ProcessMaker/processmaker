@@ -28,18 +28,18 @@ abstract class BpmnAction implements ShouldQueue
         //Load the process definition
         $processModel = Definitions::find($this->definitionsId);
         $definitions = $processModel->getDefinitions();
+        $engine = $definitions->getEngine();
 
         //Load the instances of the process and its collaborators
-        $instance = isset($this->instanceId) ? $definitions->getEngine()->loadExecutionInstance($this->instanceId) : null;
+        $instance = isset($this->instanceId) ? $engine->loadExecutionInstance($this->instanceId) : null;
         if ($instance && $instance->collaboration) {
             foreach ($instance->collaboration->requests as $request) {
                 if ($request->getKey() !== $instance->getKey()) {
                     if ($request->process->id === $processModel->id) {
-                        $definitions->getEngine()->loadExecutionInstance($request->getKey());
+                        $engine->loadProcessRequest($request);
                     } else {
-                        $engine = $request->process->getDefinitions()->getEngine();
                         $engine->currentInstance = $instance;
-                        $engine->loadExecutionInstance($request->getKey());
+                        $engine->loadProcessRequest($request);
                     }
                 }
             }
@@ -75,7 +75,7 @@ abstract class BpmnAction implements ShouldQueue
 
         //Run engine to the next state
         try {
-            $definitions->getEngine()->runToNextState();
+            $engine->runToNextState();
         } catch (Throwable $exception) {
             // Change the Request to error status
             $request = !$instance && $this instanceof StartEvent ? $response : $instance;

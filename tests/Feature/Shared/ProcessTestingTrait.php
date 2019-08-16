@@ -19,12 +19,11 @@ trait ProcessTestingTrait
     /**
      * Create new process from a BPMN
      */
-    private function createProcess($bpmn, array $users = [])
+    private function createProcess($attributes, array $users = [])
     {
+        $attributes = is_string($attributes) ? ['bpmn' => $attributes] : $attributes;
         // Create a new process
-        $process = factory(Process::class)->create([
-            'bpmn' => $bpmn,
-        ]);
+        $process = factory(Process::class)->create($attributes);
 
         $definitions = $process->getDefinitions();
         foreach ($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'task') as $task) {

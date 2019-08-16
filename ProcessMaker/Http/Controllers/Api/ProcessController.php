@@ -493,7 +493,7 @@ class ProcessController extends Controller
             $process->startEvents = $process->events->filter(function ($event) {
                 $eventIsTimerStart = collect($event['eventDefinitions'])
                         ->filter(function ($eventDefinition) {
-                            return get_class($eventDefinition) == TimerEventDefinition::class;
+                            return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
                 return !$eventIsTimerStart;
             });
@@ -828,11 +828,29 @@ class ProcessController extends Controller
      *           type="string",
      *         )
      *     ),
+     *      @OA\RequestBody(
+     *         description="data that will be stored as part of the created request",
+     *         required=false,
+     *         @OA\JsonContent(
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="stringField",
+     *                     type="string",
+     *                     example="string example"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="integerField",
+     *                     type="string",
+     *                     example="1"
+     *                 )
+     *             )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
+     *
      * )
      */
     public function triggerStartEvent(Process $process, Request $request)
