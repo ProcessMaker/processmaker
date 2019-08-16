@@ -117,7 +117,7 @@ class Setting extends Model implements HasMedia
             }
         }
 
-        return $url;
+        return $url . '?id=' . bin2hex(random_bytes(16));
     }
 
     public static function getLogo()
@@ -151,6 +151,6 @@ class Setting extends Model implements HasMedia
             }
         }
 
-        return $url;
+        return $url . '?id=' . bin2hex(random_bytes(16));
     }
 }
