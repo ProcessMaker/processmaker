@@ -105,9 +105,6 @@ class Setting extends Model implements HasMedia
 
     public static function getLogin()
     {
-        if (Cache::has('css-login')) {
-            return Cache::get('css-login');
-        }
         //default login
         $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker_login.png'));
         //custom login
@@ -119,16 +116,12 @@ class Setting extends Model implements HasMedia
                 $url = $media->getFullUrl();
             }
         }
-        Cache::put('css-login', $url, now()->addMinutes(10));
 
         return $url;
     }
 
     public static function getLogo()
     {
-        if (Cache::has('css-logo')) {
-            return Cache::get('css-logo');
-        }
         //default logo
         $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker_logo.png'));
         //custom logo
@@ -140,16 +133,12 @@ class Setting extends Model implements HasMedia
                 $url = $media->getFullUrl();
             }
         }
-        Cache::put('css-logo', $url, now()->addMinutes(10));
 
         return $url;
     }
 
     public static function getIcon()
     {
-        if (Cache::has('css-icon')) {
-            return Cache::get('css-icon');
-        }
         //default icon
         $url = asset(env('ICON_PATH_PATH', '/img/processmaker_icon.png'));
         //custom icon
@@ -161,7 +150,6 @@ class Setting extends Model implements HasMedia
                 $url = $media->getFullUrl();
             }
         }
-        Cache::put('css-icon', $url, now()->addMinutes(10));
 
         return $url;
     }
