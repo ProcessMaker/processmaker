@@ -869,6 +869,6 @@
     "The styles were recompiled.": "The styles were recompiled.",
     "Regenerating CSS Files": "Regenerating CSS Files",
     "Please wait while the files are generated. The screen will be updated when finished.": "Please wait while the files are generated. The screen will be updated when finished.",
-    "We recommended a transparent PNG at :size pixels.": "We recommended a transparent PNG at :size pixels.",
+    "Use a transparent PNG at :size pixels for best results.": "Use a transparent PNG at :size pixels for best results.",
     "Print": "Print"
 }

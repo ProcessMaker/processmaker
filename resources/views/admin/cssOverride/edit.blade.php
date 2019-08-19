@@ -19,7 +19,7 @@
                 <div class="card card-body">
                     <div class="form-group">
                         {!! Form::label('fileLogo', __('Custom Logo')) !!}
-                        <small class="d-block">{{ __('We recommended a transparent PNG at :size pixels.', ['size' => '150x40']) }}</small>
+                        <small class="d-block">{{ __('Use a transparent PNG at :size pixels for best results.', ['size' => '150x40']) }}</small>
                         <div class="input-group">
                             <input type="text" name="fileLogo" class="form-control" v-model="fileLogo.selectedFile"
                                    placeholder="{{__('Choose logo image')}}">
@@ -34,7 +34,7 @@
                     </div>
                     <div class="form-group">
                         {!! Form::label('fileIcon', __('Custom Icon')) !!}
-                        <small class="d-block">{{ __('We recommended a transparent PNG at :size pixels.', ['size' => '40x40']) }}</small>
+                        <small class="d-block">{{ __('Use a transparent PNG at :size pixels for best results.', ['size' => '40x40']) }}</small>
                         <div class="input-group">
                             <input type="text" name="fileIcon" class="form-control" v-model="fileIcon.selectedFile"
                                    placeholder="{{__('Choose icon image')}}">
