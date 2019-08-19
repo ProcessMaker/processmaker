@@ -79,7 +79,7 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = Process::active()->with($include);
+        $processes = Process::nonSystem()->active()->with($include);
         if ($status === 'inactive') {
             $processes = Process::inactive()->with($include);
         }
@@ -470,7 +470,7 @@ class ProcessController extends Controller
         $orderDirections = explode(',', $request->input('order_direction', 'asc'));
         $include = $this->getRequestInclude($request);
 
-        $query = Process::with($include)->with('events')
+        $query = Process::nonSystem()->with($include)->with('events')
             ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')

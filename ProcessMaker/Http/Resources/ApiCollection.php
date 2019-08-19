@@ -87,17 +87,6 @@ class ApiCollection extends ResourceCollection
      */
     public function toResponse($request)
     {
-
-        $this->resource->each(function($item, $key) {
-            $prefix = strtolower(substr(strrchr(get_class($item), '\\'), 1));
-            $attribute = "{$prefix}_category_id";
-            if ($item->$attribute && $item->category()->first()->is_system) {
-                $this->resource->forget($key);
-            } else if ($item->is_system) {
-                $this->resource->forget($key);
-            }
-        });
-
         if ($this->resource instanceof Collection) {
             $this->resource = $this->collectionToPaginator($this->resource, $request);
         }
