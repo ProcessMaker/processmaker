@@ -103,7 +103,7 @@ class GenerateMenus
                 'icon' => 'fa-clipboard-check',
             ]);
             if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
-                $submenu->add(__('Request All'), [
+                $submenu->add(__('All Requests'), [
                     'route' => ['requests_by_type', 'all'],
                     'icon' => 'fa-clipboard',
                 ]);
