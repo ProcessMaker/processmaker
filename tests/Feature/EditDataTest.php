@@ -24,7 +24,7 @@ class EditDataTest extends TestCase
 {
     use RequestHelper;
     
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

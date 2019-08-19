@@ -17,7 +17,7 @@ abstract class TestCase extends BaseTestCase
      * Run additional setUps from traits.
      *
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         foreach (get_class_methods($this) as $method) {
@@ -32,7 +32,7 @@ abstract class TestCase extends BaseTestCase
      * Run additional tearDowns from traits.
      *
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
         foreach (get_class_methods($this) as $method) {

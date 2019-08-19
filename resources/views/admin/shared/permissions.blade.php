@@ -2,12 +2,12 @@
     <div class="card">
         <div class="card-header">
             <div class="mb-0">
-                <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#{{ str_slug($groupName) }}">
+                <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#{{ \Illuminate\Support\Str::slug($groupName) }}">
                  <div>{{__($groupName)}}</div> <div><i class="fas fa-chevron-circle-down arrow-open mr-2"></i> <i class="fas fa-chevron-circle-left arrow-closed mr-2"></i> </div>  
                 </button>
             </div>
         </div>
-        <div id="{{ str_slug($groupName) }}" class="collapse" >
+        <div id="{{ \Illuminate\Support\Str::slug($groupName) }}" class="collapse" >
             <div class="card-body">
                 @foreach ($permissions as $permission)
                     <label><input type="checkbox"

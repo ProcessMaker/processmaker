@@ -17,6 +17,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\SanitizeHelper;
+use Illuminate\Support\Str;
 
 class TaskController extends Controller
 {
@@ -116,7 +117,7 @@ class TaskController extends Controller
         // order by one or more columns
         $orderColumns = explode(',', $request->input('order_by', 'updated_at'));
         foreach($orderColumns as $column) {
-            if (!str_contains($column, '.')) {
+            if (!Str::contains($column, '.')) {
                 $query->orderBy( $column, $request->input('order_direction', 'asc'));
             }
         }
@@ -324,7 +325,7 @@ class TaskController extends Controller
                 return trim($value);
             });
         $requestColumns = $orderColumns->filter(function($value, $key) {
-            return str_contains($value, 'process_requests.');
+            return Str::contains($value, 'process_requests.');
         })->sort();
 
         // if there ins't an order by request name, tasks are already ordered
