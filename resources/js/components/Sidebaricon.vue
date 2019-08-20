@@ -1,7 +1,7 @@
 <template>
     <div class="filter-bar justify-content-between" id="Sidebaricon">
       <li class="nav-item">
-        <a :href="item.url" class="nav-link" v-b-tooltip.hover.bottomleft="item.title"  @click="toggle">
+        <a :href="item.url" class="nav-link" v-b-tooltip.hover.bottomleft="item.title"  @click="toggle" :target="item.attributes.target">
           <i v-if="item.attributes.icon" class="fas nav-icon" :class="item.attributes.icon" ></i>
           <img v-if="item.attributes.file" :src="item.attributes.file" class="nav-icon" id="custom_icon">
           <span class="nav-text" v-if="expanded()" v-cloak >

@@ -160,11 +160,6 @@ class GenerateMenus
 
         Menu::make('sidebar_about', function ($menu) { 
             $submenu = $menu->add(__('About'));
-            $submenu->add(__('Log Out'), [
-                'route' => 'logout',
-                'icon' => 'fa-sign-out-alt',
-                'id' => 'dropdownItem'
-            ]);
             $submenu->add(__('Profile'), [
                 'route' => 'profile.edit',
                 'icon' => 'fa-user',
@@ -174,11 +169,17 @@ class GenerateMenus
                 'url' => 'https://processmaker.gitbook.io/processmaker',
                 'icon' => 'fa-question-circle',
                 'id' => 'dropdownItem',
-                ['target' => '_blank']
+                'target' => '_blank'
             ]);
             $submenu->add(__('Report an issue'), [
                 'url' => 'https://docs.google.com/forms/d/e/1FAIpQLScnYje8uTACYwp3VxdRoA26OFkbfFs6kuXofqY-QXXsG-h9xA/viewform',
                 'icon' => 'fa-bug',
+                'id' => 'dropdownItem',
+                'target' => '_blank'
+            ]);
+            $submenu->add(__('Log Out'), [
+                'route' => 'logout',
+                'icon' => 'fa-sign-out-alt',
                 'id' => 'dropdownItem'
             ]);
         });
