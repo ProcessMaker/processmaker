@@ -38,7 +38,7 @@ class ProcessController extends Controller
 
         $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
-        $processCategories = ProcessCategory::where('status', 'ACTIVE')->get();
+        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->get();
         $processCategoryArray = ['' => 'None'];
         foreach ($processCategories as $pc) {
             $processCategoryArray[$pc->id] = $pc->name;

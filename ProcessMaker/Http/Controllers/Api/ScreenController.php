@@ -61,7 +61,7 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Screen::query();
+        $query = Screen::nonSystem();
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
