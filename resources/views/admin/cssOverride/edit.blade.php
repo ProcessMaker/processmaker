@@ -90,6 +90,7 @@
                     </div>
                     <br>
                     <div class="text-right">
+                        {!! Form::button(__('Reset'), ['class'=>'btn btn-secondary mr-2', '@click' => 'onReset', ':disabled' => '!config' ]) !!}
                         {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                         {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onSubmit']) !!}
                     </div>
@@ -324,6 +325,27 @@
             formData.append('sansSerifFont', JSON.stringify(this.selectedSansSerifFont));
 
             this.onCreate(formData);
+          },
+          onReset() {
+            let that = this;
+            ProcessMaker.confirmModal(
+              this.$t('Caution!'),
+              "<b>" + this.$t('Are you sure you want to reset the UI styles?') + "</b>",
+              "",
+              () => {
+                let formData = new FormData();
+                formData.append('key', this.key);
+                formData.append('reset', 'true');
+                formData.append('fileLogoName', '');
+                formData.append('fileIconName', '');
+                formData.append('fileLogo', '');
+                formData.append('fileIcon', '');
+                formData.append('variables', JSON.stringify(this.colorDefault));
+                formData.append('sansSerifFont', JSON.stringify({id:"'Open Sans'", value:'Open Sans'}));
+
+                this.onCreate(formData);
+              }
+            );
           },
           onCreate(data) {
             ProcessMaker.apiClient.post('customize-ui', data)

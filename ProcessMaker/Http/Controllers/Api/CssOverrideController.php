@@ -65,6 +65,9 @@ class CssOverrideController extends Controller
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
             Cache::forget('css-icon');
         }
+        if ($request->has('reset') && $request->input('reset')) {
+            $setting->delete();
+        }
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
