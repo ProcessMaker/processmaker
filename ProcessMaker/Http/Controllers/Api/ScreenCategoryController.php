@@ -62,7 +62,7 @@ class ScreenCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ScreenCategory::query();
+        $query = ScreenCategory::nonSystem();
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->where(function ($query) use ($filter) {

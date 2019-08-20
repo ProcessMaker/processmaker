@@ -4,7 +4,6 @@ namespace ProcessMaker\Managers;
 
 use Carbon\Carbon;
 use DateInterval;
-use DatePeriod;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
@@ -19,6 +18,7 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\TimerExpression;
 use ProcessMaker\Nayra\Bpmn\Models\BoundaryEvent;
+use ProcessMaker\Nayra\Bpmn\Models\DatePeriod;
 use ProcessMaker\Nayra\Bpmn\Models\IntermediateCatchEvent;
 use ProcessMaker\Nayra\Bpmn\Models\StartEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
@@ -102,7 +102,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         ];
         $scheduledTask = new ScheduledTask();
         $process = $element->getOwnerProcess()->getEngine()->getProcess();
-        $scheduledTask->process_id = $process->id;
+        $scheduledTask->process_id = $token ? $token->process_id : $process->id;
         $scheduledTask->process_request_id = $token ? $token->processRequest->id : null;
         $scheduledTask->process_request_token_id = $token ? $token->id : null;
         $scheduledTask->configuration = json_encode($configuration);
@@ -350,7 +350,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             $interval = $this->loadTimerFromJson($timer->interval);
             $end = $timer->end ? $this->loadTimerFromJson($timer->end) : null;
             $recurrences = $timer->recurrences;
-            return new DatePeriod($start, $interval, $end ? $end : ($recurrences ?: -1));
+            return new DatePeriod($start, $interval, [$end, $recurrences - 1]);
         } elseif (isset($timer->y)) {
             return new DateInterval(sprintf(
                 'P%sY%sM%sDT%sH%sM%sS',
