@@ -11,6 +11,7 @@ $factory->define(ScreenCategory::class, function (Faker $faker) {
         'name' => $faker->unique()->sentence(),
         'status' => $faker->randomElement(
             ['ACTIVE', 'INACTIVE']
-        )
+        ),
+        'is_system' => false
     ];
 });
