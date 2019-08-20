@@ -128,8 +128,6 @@ class TaskController extends Controller
 
         $inOverdue = $inOverdueQuery->count();
 
-        $pmql = $request->input('pmql', '');
-
         $statusFilter = $request->input('statusfilter', '');
         if ($statusFilter) {
             $statusFilter = explode(',', $statusFilter);
@@ -142,74 +140,18 @@ class TaskController extends Controller
             }
         }
 
-        try {
-            if (!empty($pmql)) {
-                $query->pmql($pmql, function($expression) {
-
-                    //Handle request name
-                    if ($expression->field->field() == 'request') {
-                        return function($query) use($expression) {
-                            $processRequests = ProcessRequest::where('name', $expression->value->value())->get();
-                            $query->whereIn('process_request_tokens.process_request_id', $processRequests->pluck('id'));
-                        };
-                    }
-
-                    //Handle task name
-                    if ($expression->field->field() == 'task') {
-                        return function($query) use($expression) {
-                            $query->where('process_request_tokens.element_name', $expression->value->value());
-                        };
-                    }
-
-                    //Handle task status
-                    if ($expression->field->field() == 'status') {
-                        return function($query) use($expression) {
-                            $value = $expression->value->value();
-
-                            if (array_key_exists($value, $this->statusMap)) {
-                                $value = $this->statusMap[$value];
-                            }
-
-                            $query->where('process_request_tokens.status', $value);
-                        };
-                    }
-
-                    if (is_object($expression->field->field())) {
-                        return function($query) use ($expression) {
-                            $field = $expression->field->toEloquent();
-                            $operator = $expression->operator;
-                            $value = $expression->value->value();
-
-                            $requests = ProcessRequest::where($field, $operator, $value)->get();
-                            $query->whereIn('process_request_id', $requests->pluck('id'));
-                        };
-                    } else {
-                        if (stripos($expression->field->field(), 'data.') === 0) {
-                            $field = $expression->field->field();
-                            $operator = $expression->operator;
-                            $value = $expression->value->value();
-                            if (is_string($value)) {
-                                $value = '"' . $value . '"';
-                            }
-
-                            $pmql = "$field $operator $value";
-
-                            return function($query) use ($pmql) {
-                                $requests = ProcessRequest::pmql($pmql)->get();
-                                $query->whereIn('process_request_id', $requests->pluck('id'));
-                            };
-                        }
-                    }
-                });
+        $pmql = $request->input('pmql', '');
+        if (!empty($pmql)) {
+            try {
+                $query->pmql($pmql);
+            } catch (QueryException $e) {
+                return response(['message' => __('Your PMQL search could not be completed.')], 400);
+            } catch (SyntaxError $e) {
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
-
-            $response = $this->handleOrderByRequestName($request, $query->get());
-
-        } catch (QueryException $e) {
-            return response(['message' => __('Your PMQL search could not be completed.')], 400);
-        } catch (SyntaxError $e) {
-            return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
         }
+        
+        $response = $this->handleOrderByRequestName($request, $query->get());
 
         $response = $response->filter(function($processRequestToken) {
             return Auth::user()->can('view', $processRequestToken);
