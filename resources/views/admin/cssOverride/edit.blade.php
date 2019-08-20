@@ -18,6 +18,21 @@
             <div class="col">
                 <div class="card card-body">
                     <div class="form-group">
+                        {!! Form::label('fileLogin', __('Custom Login Logo')) !!}
+                        <small class="d-block">{{ __('We recommended a transparent PNG at :size pixels.', ['size' => '292x52']) }}</small>
+                        <div class="input-group">
+                            <input type="text" name="fileLogin" class="form-control" v-model="fileLogin.selectedFile"
+                                   placeholder="{{__('Choose a login logo image')}}">
+                            <button @click="browseLogin" class="btn btn-secondary"><i class="fas fa-upload"></i>
+                                {{__('Upload file')}}
+                            </button>
+                            <input type="file" class="custom-file-input" :class="{'is-invalid': errors.logo}"
+                                   ref="customFileLogin" @change.prevent="onFileChangeLogin"
+                                   accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
+                            <div class="invalid-feedback d-block" v-for="error in errors.fileLogin">@{{error}}</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         {!! Form::label('fileLogo', __('Custom Logo')) !!}
                         <small class="d-block">{{ __('We recommended a transparent PNG at :size pixels.', ['size' => '150x40']) }}</small>
                         <div class="input-group">
@@ -138,6 +153,10 @@
           return {
             config: @json($config),
             key: 'css-override',
+            fileLogin: {
+              file: null,
+              selectedFile: null,
+            },
             fileLogo: {
               file: null,
               selectedFile: null,
@@ -256,6 +275,7 @@
               },
             ],
             errors: {
+              'login': null,
               'logo': null,
               'icon': null,
               'colors': null,
@@ -268,6 +288,9 @@
             handler() {
               if (!this.config || !this.config.config) {
                 return;
+              }
+              if (this.config.config.login != "null") {
+                this.fileLogin.selectedFile = this.config.config.login;
               }
               if (this.config.config.logo != "null") {
                 this.fileLogo.selectedFile = this.config.config.logo;
@@ -304,6 +327,7 @@
         methods: {
           resetErrors() {
             this.errors = Object.assign({}, {
+              login: null,
               logo: null,
               icon: null,
               colors: null
@@ -317,8 +341,10 @@
 
             let formData = new FormData();
             formData.append('key', this.key);
+            formData.append('fileLoginName', this.fileLogin.selectedFile);
             formData.append('fileLogoName', this.fileLogo.selectedFile);
             formData.append('fileIconName', this.fileIcon.selectedFile);
+            formData.append('fileLogin', this.fileLogin.file);
             formData.append('fileLogo', this.fileLogo.file);
             formData.append('fileIcon', this.fileIcon.file);
             formData.append('variables', JSON.stringify(this.customColors));
@@ -372,10 +398,25 @@
           font(value) {
             return 'font-family:' + value;
           },
+          browseLogin() {
+            this.$refs.customFileLogin.click();
+          },
+          onFileChangeLogin(e) {
+            console.log('onFileChangeLogin');
+            let files = e.target.files || e.dataTransfer.files;
+
+            if (!files.length) {
+              return;
+            }
+
+            this.fileLogin.selectedFile = files[0].name;
+            this.fileLogin.file = this.$refs.customFileLogin.files[0];
+          },
           browseLogo() {
             this.$refs.customFileLogo.click();
           },
           onFileChangeLogo(e) {
+            console.log('onFileChangeLogo');
             let files = e.target.files || e.dataTransfer.files;
 
             if (!files.length) {
@@ -389,6 +430,7 @@
             this.$refs.customFileIcon.click();
           },
           onFileChangeIcon(e) {
+            console.log('onFileChangeIcon');
             let files = e.target.files || e.dataTransfer.files;
 
             if (!files.length) {
