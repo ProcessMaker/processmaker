@@ -22,6 +22,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Traits\HideSystemResources;
 use DOMElement;
 
 /**
@@ -120,6 +121,7 @@ class Process extends Model implements HasMedia
     use ProcessTaskAssignmentsTrait;
     use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
+    use HideSystemResources;
     use PMQL;
 
     protected $connection = 'processmaker';
@@ -843,10 +845,22 @@ class Process extends Model implements HasMedia
      */
     private function getRequester($token)
     {
-        $user_id = $token->getInstance()->user_id;
-        if (!$user_id) {
+        $processRequest = $token->getInstance();
+
+        // Check for anonymous web entry
+        $startEvent = $processRequest->tokens()->where('element_type', 'startEvent')->firstOrFail();
+        $canBeAnonymous = false;
+        if (isset($startEvent->getDefinition()['config'])) {
+            $config = json_decode($startEvent->getDefinition()['config'], true);
+            if ($config && $config['web_entry'] && $config['web_entry']['mode'] === 'ANONYMOUS') {
+                $canBeAnonymous = true;
+            }
+        }
+
+        if (!$processRequest->user_id && $canBeAnonymous) {
             throw new TaskDoesNotHaveRequesterException();
         }
-        return $user_id;
+
+        return $processRequest->user_id;
     }
 }

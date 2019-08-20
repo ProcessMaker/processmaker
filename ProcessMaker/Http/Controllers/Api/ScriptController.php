@@ -65,7 +65,7 @@ class ScriptController extends Controller
     public function index(Request $request)
     {
         // Do not return results when a key is set. Those are for connectors.
-        $query = Script::where('key', null);
+        $query = Script::nonSystem()->where('key', null);
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
