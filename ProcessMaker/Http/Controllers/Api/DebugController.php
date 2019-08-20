@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 class DebugController extends Controller
 {
@@ -11,7 +12,7 @@ class DebugController extends Controller
     {
         \Log::debug(
             "Unhandled Javascript API Error: " . 
-            str_limit($request->getContent(), 100000)
+            Str::limit($request->getContent(), 100000)
         );
         return response('', 204);
     }

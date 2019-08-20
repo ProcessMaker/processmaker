@@ -43,6 +43,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
         ProcessRequestToken::observe(ProcessRequestTokenObserver::class);
         ProcessCollaboration::observe(ProcessCollaborationObserver::class);
 
+        // Laravy Menu
+        Blade::directive('lavaryMenuJson', function ($menu) {
+            return "<?php echo htmlentities(lavaryMenuJson({$menu}), ENT_QUOTES); ?>";
+        });
+
         parent::boot();
     }
 
@@ -97,10 +102,5 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         // we are using custom passport migrations
         Passport::ignoreMigrations();
-
-        // Laravy Menu
-        Blade::directive('lavaryMenuJson', function ($menu) {
-            return "<?php echo htmlentities(lavaryMenuJson({$menu}), ENT_QUOTES); ?>";
-        });
     }
 }

@@ -210,7 +210,7 @@ export default {
             this.perPage +
             "&include=process,participants" +
             "&pmql=" +
-            this.$parent.pmql +
+            encodeURIComponent(this.$parent.pmql) +
             "&order_by=" +
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +

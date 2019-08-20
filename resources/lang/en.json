@@ -279,7 +279,7 @@
     "Error": "Error",
     "Errors": "Errors",
     "Event has multiple event definitions": "Event has multiple event definitions",
-    "Event-based Gateway": "Event-based Gateway",
+    "Event-Based Gateway": "Event-based Gateway",
     "Exclusive Gateway": "Exclusive Gateway",
     "Expires At": "Expires At",
     "Export Process": "Export Process",
@@ -872,4 +872,8 @@
     "We recommended a transparent PNG at :size pixels.": "We recommended a transparent PNG at :size pixels.",
     "Print": "Print",
     "Are you sure you want to reset the UI styles?": "Are you sure you want to reset the UI styles?"
+    "Lane Above": "Lane Above",
+    "Lane Below": "Lane Below",
+    "New Sequence Flow": "New Sequence Flow",
+    "Association Flow": "Association Flow"
 }

@@ -15,7 +15,7 @@ class FlashMessageTest extends TestCase
   /**
    *  Init data user and process
    */
-  protected function setUp()
+  protected function setUp(): void
   {
       parent::setUp();
       $user = factory(User::class)->create();
