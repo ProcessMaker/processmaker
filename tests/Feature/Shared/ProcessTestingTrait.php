@@ -91,18 +91,16 @@ trait ProcessTestingTrait
      * @param ProcessRequestToken $token
      * @param array $data
      *
-     * @return ProcessRequestToken
+     * @return ProcessRequestToken|\Illuminate\Foundation\Testing\TestResponse
      */
-    private function completeTask(ProcessRequestToken $token, array $data = [])
+    private function completeTask(ProcessRequestToken $token, array $data = [], $return = 'token')
     {
         $route = route('api.tasks.update', [$token->getKey()]);
         $response = $this->apiCall('PUT', $route, [
             'status' => 'COMPLETED',
             'data' => $data,
         ]);
-        $requestJson = $response->json();
-        $response->assertStatus(200, $requestJson);
-        return ProcessRequestToken::find($requestJson['id']);
+        return $return === 'response' ? $response : ProcessRequestToken::find($response->json()['id']);
     }
 
     /**
