@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Mustache_Engine;
 use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Exception\SyntaxErrorException;
@@ -44,6 +45,20 @@ class FormalExpression implements FormalExpressionInterface
     }
 
     /**
+     * Parse mustache syntax
+     *
+     * @param string $expression
+     * @param array $data
+     *
+     * @return mixed
+     */
+    private function mustacheTimerExpression($expression, $data)
+    {
+        $mustache = new Mustache_Engine();
+        return $mustache->render($expression, $data);
+    }
+
+    /**
      * Evaluate the format expression.
      *
      * @param array $data
@@ -52,7 +67,8 @@ class FormalExpression implements FormalExpressionInterface
      */
     private function evaluate(array $data)
     {
-        if (!trim($this->getBody())) {
+        $body = $this->mustacheTimerExpression($this->getBody(), $data);
+        if (!trim($body)) {
             return true;
         }
 
@@ -64,7 +80,7 @@ class FormalExpression implements FormalExpressionInterface
         $encoder = isset(self::languages[$language][1]) ? self::languages[$language][1] : null;
         try {
             $values = $encoder ? $this->$encoder($data) : $data;
-            return $this->$evaluator->evaluate($this->getBody(), $values);
+            return $this->$evaluator->evaluate($body, $values);
         } catch (SyntaxError $syntaxError) {
             throw new SyntaxErrorException($syntaxError);
         } catch (Throwable $error) {
@@ -74,9 +90,9 @@ class FormalExpression implements FormalExpressionInterface
 
     /**
      * Prepare the data for the FEEL evaluator
-     * 
+     *
      * @param array $data
-     * 
+     *
      * @return array
      */
     private function feelEncode(array $data)
