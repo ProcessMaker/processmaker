@@ -452,10 +452,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     public static function fakeToday($today)
     {
         if ($today === null) {
+            Carbon::setTestNow(null);
             return self::$today = $today;
         }
-        self::$today = $today instanceof DateTime ? clone $today : (new DateTime($today))->setTimezone(new DateTimeZone('UTC'));
-        Carbon::setTestNow(clone self::$today);
+        $fake = $today instanceof DateTime ? clone $today : (new DateTime($today))->setTimezone(new DateTimeZone('UTC'));
+        self::$today = new Carbon($fake->format('c'));
+        Carbon::setTestNow($fake->format('c'));
         return clone self::$today;
     }
 
