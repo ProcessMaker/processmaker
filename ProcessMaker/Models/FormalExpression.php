@@ -52,7 +52,7 @@ class FormalExpression implements FormalExpressionInterface
      *
      * @return mixed
      */
-    private function mustacheTimerExpression($expression, $data)
+    private function mustacheExpression($expression, $data)
     {
         $mustache = new Mustache_Engine();
         return $mustache->render($expression, $data);
@@ -67,7 +67,7 @@ class FormalExpression implements FormalExpressionInterface
      */
     private function evaluate(array $data)
     {
-        $body = $this->mustacheTimerExpression($this->getBody(), $data);
+        $body = $this->mustacheExpression($this->getBody(), $data);
         if (!trim($body)) {
             return true;
         }
