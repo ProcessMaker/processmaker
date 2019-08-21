@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents a business process category definition.
@@ -37,6 +38,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 class ProcessCategory extends Model
 {
     use SerializeToIso8601;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 

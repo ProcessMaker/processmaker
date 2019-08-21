@@ -36,18 +36,18 @@ class ProcessRequestFileTest extends TestCase
         $this->assertEquals($response->json()['data'][0]['file_name'], 'photo.jpg');
     }
 
-    
+
     /**
      * Test file upload associated with a process request id
      *
-     * 
-     */ 
+     *
+     */
     public function testFileUploadWithProcessRequestID()
     {
         //create a request
         $process_request = factory(ProcessRequest::class)->create();
 
-        //post photo id with the request 
+        //post photo id with the request
         $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
             'file' => File::image('photo.jpg')
         ]);
@@ -57,13 +57,13 @@ class ProcessRequestFileTest extends TestCase
     }
 
     /**
-     * test update of an existing file 
+     * test update of an existing file
      */
     public function testFileUpdate()
     {
         //create a request
         $process_request = factory(ProcessRequest::class)->create();
-        // upload file 
+        // upload file
         $fileUpload = File::image('photo.jpg');
 
         $fileUploadUpdate= File::image('updatedFile.jpg');
@@ -82,13 +82,13 @@ class ProcessRequestFileTest extends TestCase
     }
 
     /**
-     * test delete of Media attached to a request 
+     * test delete of Media attached to a request
      */
-    public function testDeleteFile() 
+    public function testDeleteFile()
     {
         //create a request
         $process_request = factory(ProcessRequest::class)->create();
-        // upload file 
+        // upload file
         $fileUpload = File::image('HEEEEy.jpg');
         $process_request->addMedia($fileUpload)->toMediaCollection();
         //delete the file
@@ -118,8 +118,8 @@ class ProcessRequestFileTest extends TestCase
         $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files/' . $file2->id);
         $response->assertStatus(200);
         $this->assertEquals(
-            $response->headers->get('content-disposition'),
-            'attachment; filename="photo2.jpg"'
+            'attachment; filename=photo2.jpg',
+            $response->headers->get('content-disposition')
         );
     }
 }

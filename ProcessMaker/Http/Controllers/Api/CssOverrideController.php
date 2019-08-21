@@ -66,6 +66,15 @@ class CssOverrideController extends Controller
             Cache::forget('css-icon');
         }
 
+        if ($request->has('fileLogin')) {
+          $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
+          Cache::forget('css-login');
+        }
+        
+        if ($request->has('reset') && $request->input('reset')) {
+          $setting->delete();
+        }
+
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
         $this->compileSass(json_decode($request->input('variables', '[]'), true));
@@ -119,6 +128,10 @@ class CssOverrideController extends Controller
         $setting->fill($request->input());
         $setting->saveOrFail();
 
+        if ($request->has('fileLogin') && $request->input('fileLogin')) {
+            $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
+            Cache::forget('css-login');
+        }
         if ($request->has('fileLogo') && $request->input('fileLogo')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
             Cache::forget('css-logo');
@@ -202,6 +215,7 @@ class CssOverrideController extends Controller
     private function formatConfig(Request $request)
     {
         return [
+            'login' => $request->input('fileLoginName', ''),
             'logo' => $request->input('fileLogoName', ''),
             'icon' => $request->input('fileIconName', ''),
             'variables' => $request->input('variables', ''),

@@ -52,6 +52,7 @@ class CompileSass implements ShouldQueue
 
         if (Str::contains($this->properties['tag'], 'app')) {
             $this->fixPathsInGeneratedAppCss();
+            $this->updateCacheBuster();
         }
 
         $user = User::find($this->properties['user']);
@@ -91,5 +92,23 @@ class CompileSass implements ShouldQueue
         $re = '/(content:\s)\\\\\"(\\\\[0-9abcdef]+)\\\\\"/m';
         $file = preg_replace($re,'$1"$2"', $file );
         file_put_contents('public/css/app.css', $file);
+    }
+
+    private function updateCacheBuster()
+    {
+        chdir(app()->basePath());
+
+        $file = file_get_contents("public/mix-manifest.json");
+        $guid = bin2hex(random_bytes(16));
+        $re = '/\"\:\s"\/css\/sidebar\.css.+id=(.*)\"/m';
+        $file = preg_replace($re, '": "/css/sidebar.css?id=' . $guid . '"', $file );
+        $guid = bin2hex(random_bytes(16));
+        $re = '/\"\:\s"\/css\/app\.css.+id=(.*)\"/m';
+        $file = preg_replace($re, '": "/css/app.css?id=' . $guid . '"', $file );
+        $guid = bin2hex(random_bytes(16));
+        $re = '/\"\:\s"\/css\/admin\/queues\.css.+id=(.*)\"/m';
+        $file = preg_replace($re, '": "/css/admin/queues.css?id=' . $guid . '"', $file );
+
+        file_put_contents('public/mix-manifest.json', $file);
     }
 }

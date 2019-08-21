@@ -52,7 +52,7 @@ class ProcessCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ProcessCategory::query();
+        $query = ProcessCategory::nonSystem();
         $include = $request->input('include', '');
 
         if ($include) {
