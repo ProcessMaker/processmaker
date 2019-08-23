@@ -40,7 +40,6 @@
                 <xsd:attribute name="assignmentRules" type="xsd:string"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="validations" type="xsd:string"/>
-                <xsd:attribute name="validations" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
