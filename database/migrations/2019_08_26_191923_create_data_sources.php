@@ -22,7 +22,7 @@ class CreateDataSources extends Migration
             $table->enum('authtype', ['NONE', 'BASIC', 'BEARER'])->default('NONE');
             $table->text('credentials')->nullable(); // encrypted JSON
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
-            $table->unsignedBigInteger('data_store_category_id');
+            $table->unsignedBigInteger('data_source_category_id');
             $table->timestamps();
 
             // Indexes
