@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDataStores extends Migration
+class CreateDataSources extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateDataStores extends Migration
      */
     public function up()
     {
-        Schema::create('data_stores', function (Blueprint $table) {
+        Schema::create('data_sources', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->text('description')->nullable();
@@ -26,10 +26,10 @@ class CreateDataStores extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->index('data_store_category_id');
+            $table->index('data_source_category_id');
 
             // Foreign keys
-            $table->foreign('data_store_category_id')->references('id')->on('data_store_categories')->onDelete('cascade');
+            $table->foreign('data_source_category_id')->references('id')->on('data_source_categories')->onDelete('cascade');
         });
     }
 

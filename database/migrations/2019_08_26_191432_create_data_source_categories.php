@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDataStoreCategories extends Migration
+class CreateDataSourceCategories extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateDataStoreCategories extends Migration
      */
     public function up()
     {
-        Schema::create('data_store_categories', function (Blueprint $table) {
+        Schema::create('data_source_categories', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
@@ -29,6 +29,6 @@ class CreateDataStoreCategories extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('data_store_categories');
+        Schema::dropIfExists('data_source_categories');
     }
 }
