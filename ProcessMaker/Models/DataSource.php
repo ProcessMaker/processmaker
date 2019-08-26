@@ -4,12 +4,18 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Traits\Encryptable;
 
 class DataSource extends Model
 {
 
+    use Encryptable;
+
     protected $connection = 'processmaker';
 
+    protected $encryptable = [
+        'credentials'
+    ];
     /**
      * Validation rules
      *
