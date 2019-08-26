@@ -2,7 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
-use ProcessMaker\Model;
+use ProcessMaker\Models\DataStoreCategory;
 use Faker\Generator as Faker;
 
 $factory->define(DataStoreCategory::class, function (Faker $faker) {
