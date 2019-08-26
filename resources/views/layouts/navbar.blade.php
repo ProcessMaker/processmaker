@@ -16,7 +16,7 @@
                 @close="sessionShow=false">
         </session-modal>
         <div v-if="alerts.length > 0" class="alert-wrapper">
-            <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade @dismissed="alertDismissed(item)">
+            <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade @dismissed="alertDismissed(item)" @dismiss-count-down="alertDownChanged($event, item)">
                 @{{item.alertText}}
             </b-alert>
         </div>
