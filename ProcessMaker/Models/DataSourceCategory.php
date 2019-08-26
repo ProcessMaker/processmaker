@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\models;
+namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
