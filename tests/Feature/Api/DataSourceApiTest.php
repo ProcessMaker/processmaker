@@ -35,7 +35,7 @@ class DataSourceApiTest extends TestCase
     public function testAuthGetAllSources()
     {
 
-        $response = $this->get('/api/1.0/'.self::API_URL);
+        $response = $this->get('/api/1.0'.self::API_URL);
 
         $response->assertUnauthorized();        
 
