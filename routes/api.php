@@ -152,6 +152,9 @@ Route::group(
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
 
+    // Data Sources
+    Route::apiResource('datasources', 'DataSourceController');
+
     // Returns a json error message instead of HTML
     Route::fallback(function(){
         return response()->json(['error' => 'Not Found'], 404);
