@@ -56,46 +56,57 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            {!! Form::label('title', __('Name')) !!}
-                            {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
-                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                            <small class="form-text text-muted" v-if="! errors.title">
-                                {{ __('The screen name must be distinct.') }}
-                            </small>
-                            <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!! Form::label('type', __('Type')) !!}
-                            {!! Form::select('type', [null => __('Select')] + $types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
-                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
-                            <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!! Form::label('description', __('Description')) !!}
-                            {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
-                            'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
-                            <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
+                    @if ($screenCategories !== 0)
+                        <div class="modal-body">
+                            <div class="form-group">
+                                {!! Form::label('title', __('Name')) !!}
+                                {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
+                                'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
+                                <small class="form-text text-muted" v-if="! errors.title">
+                                    {{ __('The screen name must be distinct.') }}
+                                </small>
+                                <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('type', __('Type')) !!}
+                                {!! Form::select('type', [null => __('Select')] + $types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                                'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
+                                <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('description', __('Description')) !!}
+                                {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
+                                'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
+                                <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('category', __('Category')) !!}
+                                {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
+                                'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
+                                <small class="form-text text-muted" v-if="! errors.category">
+                                    {{ __('The screen category is required.') }}
+                                </small>
+                                <div class="invalid-feedback" v-for="title in errors.category">@{{category}}</div>
                             </div>
                         </div>
-<div class="form-group">
-                            {!! Form::label('category', __('Category')) !!}
-                            {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
-                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
-                            <small class="form-text text-muted" v-if="! errors.category">
-                                {{ __('The screen category is required.') }}
-                            </small>
-                            <div class="invalid-feedback" v-for="title in errors.category">@{{category}}</div>
-                        </div>                        
-                    </div>
+                    @else
+                        <div class="modal-body">
+                            <div>{{__('Categories are required to create a screen')}}</div>
+                            <a href="{{ url('designer/screens/categories') }}" class="btn btn-primary container mt-2">
+                                {{__('Add Category')}}
+                            </a>
+                        </div>
+                    @endif
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
                             {{__('Cancel')}}
                         </button>
-                        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
-                            {{__('Save')}}
-                        </button>
+                        @if ($screenCategories !== 0)
+                            <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
+                                {{__('Save')}}
+                            </button>
+                        @endif
                     </div>
                 </div>
             </div>

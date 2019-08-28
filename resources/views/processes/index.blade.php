@@ -117,7 +117,7 @@
                     @else
                         <div class="modal-body">
                             <div>{{__('Categories are required to create a process')}}</div>
-                            <a href="{{ url('designer/categories') }}" class="btn btn-primary container mt-2">
+                            <a href="{{ url('designer/processes/categories') }}" class="btn btn-primary container mt-2">
                                 {{__('Add Category')}}
                             </a>
                         </div>
