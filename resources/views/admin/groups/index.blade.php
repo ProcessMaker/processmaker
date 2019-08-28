@@ -53,7 +53,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!! Form::label('name', __('Name')) !!}
+                            {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
                             {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
                             'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
                             <small id="emailHelp"
