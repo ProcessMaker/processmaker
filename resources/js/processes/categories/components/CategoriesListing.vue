@@ -37,7 +37,7 @@
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Remove')"
-                v-if="permission.includes('delete-categories') && props.rowData.processes_count == 0"
+                v-if="permission.includes('delete-categories') && props.rowData[count] == 0"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -63,7 +63,7 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "permission","apiRoute", "location", "include", "labelCount"],
+  props: ["filter", "permission","apiRoute", "location", "include", "labelCount", "count"],
   data() {
     return {
       orderBy: "name",
@@ -88,8 +88,8 @@ export default {
         },
         {
           title: () => this.labelCount,
-          name: "processes_count",
-          sortField: "processes_count"
+          name: this.count,
+          sortField: this.count
         },
         {
           title: () => this.$t("Modified"),

@@ -63,6 +63,20 @@ class ScriptCategoryController extends Controller
     public function index(Request $request)
     {
         $query = ScriptCategory::nonSystem();
+        $include = $request->input('include', '');
+
+        if ($include) {
+            $include = explode(',', $include);
+            $count = array_search('scriptsCount', $include);
+            if ($count !== false) {
+                unset($include[$count]);
+                $query->withCount('scripts');
+            }
+            if ($include) {
+                $query->with($include);
+            }
+        }
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->where(function ($query) use ($filter) {
@@ -77,8 +91,6 @@ class ScriptCategoryController extends Controller
             $request->input('order_by', 'name'),
             $request->input('order_direction', 'asc')
         );
-        $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
-        $query->with($include);
         $response = $query->paginate($request->input('per_page', 10));
         return new ApiCollection($response);
     }
@@ -157,7 +169,7 @@ class ScriptCategoryController extends Controller
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Throwable
-     * 
+     *
      * @OA\Put(
      *     path="/script_categories/{script_category_id}",
      *     summary="Update a script Category",

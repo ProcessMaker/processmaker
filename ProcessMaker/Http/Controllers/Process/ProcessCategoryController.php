@@ -28,9 +28,10 @@ class ProcessCategoryController extends Controller
         $create = 'create-categories';
         $include = 'processesCount';
         $labelCount = __('# Processes');
+        $count = 'processes_count';
 
 
-        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount'));
+        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
     }
 
     /**

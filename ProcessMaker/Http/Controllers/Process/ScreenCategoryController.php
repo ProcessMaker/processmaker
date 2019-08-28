@@ -26,11 +26,12 @@ class ScreenCategoryController extends Controller
         $route = 'screen_categories';
         $location = '/designer/screens/categories';
         $create = 'create-categories';
-        $include = '';
+        $include = 'screensCount';
         $labelCount = __('# Screens');
+        $count = 'screens_count';
 
 
-        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount'));
+        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
     }
 
     /**

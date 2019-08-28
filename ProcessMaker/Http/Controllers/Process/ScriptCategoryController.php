@@ -26,11 +26,12 @@ class ScriptCategoryController extends Controller
         $route = 'script_categories';
         $location = '/designer/scripts/categories';
         $create = 'create-categories';
-        $include = '';
+        $include = 'scriptsCount';
         $labelCount = __('# Scripts');
+        $count = 'scripts_count';
 
 
-        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount'));
+        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
     }
 
     /**

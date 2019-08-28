@@ -35,7 +35,7 @@
                 @endcan
             </div>
         </div>
-        <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory" :filter="filter" api-route="{{$route}}" :permission="{{$permissions}}" location="{{$location}}" include="{{$include}}" label-count="{{$labelCount}}">
+        <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory" :filter="filter" api-route="{{$route}}" :permission="{{$permissions}}" location="{{$location}}" include="{{$include}}" label-count="{{$labelCount}}" count="{{$count}}">
         </categories-listing>
     </div>
 
