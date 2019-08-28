@@ -68,7 +68,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             $response = $script->runScript($data, $configuration);
             if (is_array($response['output'])) {
                 // Validate data
-                WorkflowManager::validateData($response['output'], $processModel);
+                WorkflowManager::validateData($response['output'], $processModel, $element);
                 foreach ($response['output'] as $key => $value) {
                     $dataStore->putData($key, $value);
                 }

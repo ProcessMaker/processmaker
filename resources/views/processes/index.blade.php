@@ -36,12 +36,14 @@
             </div>
             <div class="col-8" align="right">
                 @can('import-processes')
-                    <a href="#" id="import_process" class="btn btn-outline-secondary" @click="goToImport"><i class="fas fa-file-import"></i>
+                    <a href="#" id="import_process" class="btn btn-outline-secondary" @click="goToImport">
+                        <i class="fas fa-file-import"></i>
                         {{__('Import')}}</a>
                 @endcan
                 @can('create-processes')
-                    <a href="#" id="create_process" class="btn btn-secondary" data-toggle="modal" data-target="#addProcess"><i
-                                class="fas fa-plus"></i>
+                    <a href="#" id="create_process" class="btn btn-secondary" data-toggle="modal"
+                       data-target="#addProcess">
+                        <i class="fas fa-plus"></i>
                         {{__('Process')}}</a>
                 @endcan
             </div>
@@ -92,7 +94,9 @@
                                     @{{description}}
                                 </div>
                             </div>
-                            <category-select :label="$t('Category')" api-get="process_categories" api-list="process_categories" v-model="process_category_id" :errors="addError.process_category_id">
+                            <category-select :label="$t('Category')" api-get="process_categories"
+                                             api-list="process_categories" v-model="process_category_id"
+                                             :errors="addError.process_category_id">
                             </category-select>
                             <div class="form-group">
                                 {!! Form::label('fileName', __('Upload BPMN File (optional)')) !!}
@@ -101,7 +105,9 @@
                                     <button @click="browse" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                         {{__('Upload file')}}
                                     </button>
-                                    <input type="file" class="custom-file-input" :class="{'is-invalid': addError.bpmn && addError.bpmn.length}" ref="customFile" @change="onFileChange" accept=".bpmn" style="height: 1em;">
+                                    <input type="file" class="custom-file-input"
+                                           :class="{'is-invalid': addError.bpmn && addError.bpmn.length}"
+                                           ref="customFile" @change="onFileChange" accept=".bpmn" style="height: 1em;">
                                     <div class="invalid-feedback" v-for="error in addError.bpmn">@{{error}}</div>
                                 </div>
                             </div>

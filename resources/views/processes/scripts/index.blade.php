@@ -72,7 +72,9 @@
                                     @{{description}}
                                 </div>
                             </div>
-                            <category-select :label="$t('Category')" api-get="script_categories" api-list="script_categories" v-model="script_category_id" :errors="addError.script_category_id">
+                            <category-select :label="$t('Category')" api-get="script_categories"
+                                             api-list="script_categories" v-model="script_category_id"
+                                             :errors="addError.script_category_id">
                             </category-select>
                             <div class="form-group">
                                 {!!Form::label('language', __('Language'))!!}
@@ -93,7 +95,6 @@
                                     @{{run_as_user_id}}
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 {!! Form::label('timeout', __('Timeout')) !!}
                                 <div class="form-row ml-0">
