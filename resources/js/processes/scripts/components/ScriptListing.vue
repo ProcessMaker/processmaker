@@ -146,8 +146,8 @@ export default {
         },
         {
           title: () => this.$t("Category"),
-          name: "category",
-          sortField: "category"
+          name: "category.name",
+          sortField: "category.name"
         },
         {
           title: () => this.$t("Language"),
@@ -255,7 +255,7 @@ export default {
             this.orderBy +
             "&order_direction=" +
             this.orderDirection +
-            "&include=user"
+            "&include=category"
         )
         .then(response => {
           this.data = this.transform(response.data);
