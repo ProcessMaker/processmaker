@@ -17,7 +17,7 @@ use ProcessMaker\Traits\HideSystemResources;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
- *  * @OA\Schema(
+ * @OA\Schema(
  *   schema="ScreenCategoryEditable",
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
