@@ -31,3 +31,5 @@ storage/ssl
 storage/api/*
 npm.sh
 laravel-echo-server.lock
+public/.htaccess
+coverage

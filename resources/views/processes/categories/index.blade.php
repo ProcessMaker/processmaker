@@ -10,6 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
+        __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
         __('Categories') => null,
     ]])
@@ -113,7 +114,7 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The category was created.')}}', 'success', 5, true);
-                    window.location = '/processes/categories';
+                    window.location = '/designer/categories';
                   })
                   .catch(error => {
                     this.disabled = false;

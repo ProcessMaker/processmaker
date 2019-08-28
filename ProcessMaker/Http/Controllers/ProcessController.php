@@ -38,7 +38,7 @@ class ProcessController extends Controller
 
         $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
-        $processCategories = ProcessCategory::where('status', 'ACTIVE')->get();
+        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->get();
         $processCategoryArray = ['' => 'None'];
         foreach ($processCategories as $pc) {
             $processCategoryArray[$pc->id] = $pc->name;
@@ -63,11 +63,9 @@ class ProcessController extends Controller
             ->get()
             ->pluck('name', 'id')
             ->toArray();
-        $screens = Screen::orderBy('title')
-            ->where('type', 'DISPLAY')
-            ->get()
-            ->pluck('title', 'id')
-            ->toArray();
+
+        $screenCancel = Screen::find($process->cancel_screen_id);
+        $screenRequestDetail = Screen::find($process->request_detail_screen_id);
 
         $list = $this->listUsersAndGroups();
 
@@ -78,7 +76,7 @@ class ProcessController extends Controller
         $canEditData = $this->listCan('EditData', $process);
         $addons = $this->getPluginAddons('edit', compact(['process']));
 
-        return view('processes.edit', compact(['process', 'categories', 'screens', 'list', 'canCancel', 'canStart', 'canEditData', 'addons']));
+        return view('processes.edit', compact(['process', 'categories', 'screenRequestDetail', 'screenCancel', 'list', 'canCancel', 'canStart', 'canEditData', 'addons']));
     }
 
     /**
@@ -173,6 +171,14 @@ class ProcessController extends Controller
         return view('processes.import');
     }
 
+    /**
+     * Download the JSON definition of the process
+     *
+     * @param Process $process
+     * @param string $key
+     *
+     * @return stream
+     */
     public function download(Process $process, $key)
     {
         $fileName = snake_case($process->name) . '.json';
@@ -183,7 +189,9 @@ class ProcessController extends Controller
         } else {
             return response()->streamDownload(function () use ($fileContents) {
                 echo $fileContents;
-            }, $fileName);
+            }, $fileName, [
+                'Content-type' => 'application/json',
+            ]);
         }
     }
 

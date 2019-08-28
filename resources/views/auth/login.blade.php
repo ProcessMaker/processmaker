@@ -5,7 +5,10 @@ Login
 @section('content')
 <div align="container">
   <div align="center" class="p-5">
-    <img src={{asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'))}}>
+    @php
+      $loginLogo = \ProcessMaker\Models\Setting::getLogin();
+    @endphp
+    <img src={{$loginLogo}}>
   </div>
 
   <div class="row">
@@ -43,7 +46,7 @@ Login
           {{ __('Remember me') }}</label>
           </div>
           <div class="form-group">
-            <button type="submit" class="btn btn-success btn-block text-uppercase" dusk="login">{{ __('Log In') }}</button>
+            <button type="submit" name="login" class="btn btn-success btn-block text-uppercase" dusk="login">{{ __('Log In') }}</button>
           </div>
           <div class="form-group">
               <a href="{{ route('password.request') }}">

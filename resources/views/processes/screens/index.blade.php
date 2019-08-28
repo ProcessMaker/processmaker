@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Screens') => null,
     ]])
     <div class="px-3 page-content" id="screenIndex">
@@ -79,6 +79,15 @@
                             <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
                             </div>
                         </div>
+<div class="form-group">
+                            {!! Form::label('category', __('Category')) !!}
+                            {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
+                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
+                            <small class="form-text text-muted" v-if="! errors.category">
+                                {{ __('The screen category is required.') }}
+                            </small>
+                            <div class="invalid-feedback" v-for="title in errors.category">@{{category}}</div>
+                        </div>                        
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
@@ -108,6 +117,7 @@
                   'title': null,
                   'type': null,
                   'description': null,
+                  'category': null,
                 },
                 disabled: false,
               }
@@ -145,7 +155,7 @@
                 ProcessMaker.apiClient.post('screens', this.formData)
                   .then(response => {
                     ProcessMaker.alert('{{__('The screen was created.')}}', 'success');
-                    window.location = '/processes/screen-builder/' + response.data.id + '/edit';
+                    window.location = '/designer/screen-builder/' + response.data.id + '/edit';
                   })
                   .catch(error => {
                     this.disabled = false;

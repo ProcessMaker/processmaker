@@ -8,6 +8,8 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
+use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents an Eloquent model of a Script
@@ -24,24 +26,32 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
  *
  * @OA\Schema(
  *   schema="scriptsEditable",
- *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="language", type="string"),
  *   @OA\Property(property="code", type="string"),
- *   @OA\Property(property="teimout", type="integer"),
+ *   @OA\Property(property="timeout", type="integer"),
+ *   @OA\Property(property="run_as_user_id", type="integer"),
+ *   @OA\Property(property="key", type="string"),
  * ),
  * @OA\Schema(
  *   schema="scripts",
  *   allOf={@OA\Schema(ref="#/components/schemas/scriptsEditable")},
+ *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * ),
+ * 
+ * @OA\Schema(
+ *   schema="scriptsPreview",
+ *   @OA\Property(property="status", type="string"),
  * )
  *
  */
 class Script extends Model
 {
     use SerializeToIso8601;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 
@@ -216,5 +226,13 @@ class Script extends Model
     {
         # return the default admin user
         return User::where('is_administrator', true)->firstOrFail();
+    }
+
+    /**
+     * Get the associated category
+     */
+    public function category()
+    {
+        return $this->belongsTo(ScriptCategory::class, 'script_category_id');
     }
 }

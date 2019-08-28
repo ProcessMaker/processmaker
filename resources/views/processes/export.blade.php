@@ -10,6 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
+        __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
         __('Export') => null,
     ]])
@@ -22,7 +23,7 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">{{__('You are about to export a Process.')}}</h5>
-                    <p class="card-text">{{__('User assignments and sensitive environment variables will not be exported.')}}</p>
+                    <p class="card-text">{{__('User assignments and sensitive Environment Variables will not be exported.')}}</p>
                 </div>
                 <div class="card-footer bg-light" align="right">
                     <button type="button" class="btn btn-outline-secondary" @click="onCancel">{{__('Cancel')}}</button>

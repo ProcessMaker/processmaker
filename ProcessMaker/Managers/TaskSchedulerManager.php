@@ -2,25 +2,38 @@
 
 namespace ProcessMaker\Managers;
 
+use Carbon\Carbon;
+use DateInterval;
+use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
+use Exception;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use PDOException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
-use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
+use ProcessMaker\Models\TimerExpression;
+use ProcessMaker\Nayra\Bpmn\Models\BoundaryEvent;
+use ProcessMaker\Nayra\Bpmn\Models\DatePeriod;
+use ProcessMaker\Nayra\Bpmn\Models\IntermediateCatchEvent;
+use ProcessMaker\Nayra\Bpmn\Models\StartEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\JobManagerInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 
 class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 {
+    private static $today = null;
+    protected $registerStartEvents = false;
+
     /**
      *
      * Register in the database any Timer Start Event of a process
@@ -34,134 +47,71 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         ScheduledTask::where('process_id', $process->id)
             ->where('type', 'TIMER_START_EVENT')
             ->delete();
-
-        foreach ($process->getStartEvents() as $startEvent) {
-            if (key_exists('eventDefinitions', $startEvent) && $startEvent['eventDefinitions']->count() > 0) {
-                foreach ($startEvent['eventDefinitions'] as $eventDefinition) {
-                    // here we just register Timer Events
-                    if (get_class($eventDefinition) !== TimerEventDefinition::class) {
-                        continue;
-                    }
-
-                    $timeDate = $eventDefinition->getTimeDate();
-                    $timeCycle = $eventDefinition->getTimeCycle();
-                    $timeDuration = $eventDefinition->getTimeDuration();
-
-                    $timeEventType = '';
-                    $period = null;
-                    $intervals = [];
-
-                    if ($timeDate && empty($timeEventType)) {
-                        $timeEventType = 'TimeDate';
-                        $period = $eventDefinition->getTimeDate()->getBody();
-                    }
-
-                    if ($timeCycle && empty($timeEventType)) {
-                        $timeEventType = 'TimeCycle';
-                        $period = $eventDefinition->getTimeCycle()->getBody();
-                        $intervals = explode('|', $period);
-                    }
-
-                    if ($timeDuration && empty($timeEventType)) {
-                        $timeEventType = 'TimeDuration';
-                        $period = $eventDefinition->getTimeDuration()->getBody();
-                    }
-
-                    $init = $period[0] === 'R' ? 0 : 1;
-                    for ($i = $init; $i < count($intervals); $i++) {
-                        $parts = $this->getIntervalParts($intervals[$i]);
-
-                        $configuration = [
-                            'type' => $timeEventType,
-                            'interval' => $this->buildInterval($parts, $timeEventType),
-                            'element_id' => $startEvent['id']
-                        ];
-
-                        $scheduledTask = new ScheduledTask();
-                        $scheduledTask->process_id = $process->id;
-                        $scheduledTask->configuration = json_encode($configuration);
-                        $scheduledTask->type = 'TIMER_START_EVENT';
-                        $scheduledTask->last_execution = (new \DateTime())
-                            ->setTimezone(new DateTimeZone('UTC'))
-                            ->format('Y-m-d H:i:s');
-                        $scheduledTask->save();
-                    }
-                }
+        $definitions = $process->getDefinitions();
+        if ($definitions) {
+            $definitions->getEngine()->getJobManager()->enableRegisterStartEvents();
+            $processDefinitions = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
+            foreach ($processDefinitions as $processDefinition) {
+                $element = $processDefinition->getBpmnElementInstance();
+                $definitions->getEngine()->loadProcess($element);
             }
+            $definitions->getEngine()->getJobManager()->disableRegisterStartEvents();
         }
     }
 
+    /**
+     * Enable register start events during process loading
+     */
+    public function enableRegisterStartEvents()
+    {
+        $this->registerStartEvents = true;
+    }
 
     /**
-     * Register in the database Intermediate events of a request
-     *
-     * @param ProcessRequest $request
+     * Disable register start events during process loading
      */
-    public function registerIntermediateTimerEvents(ProcessRequest $request)
+    public function disableRegisterStartEvents()
     {
-        $process = $request->process;
+        $this->registerStartEvents = false;
+    }
 
-        ScheduledTask::where('process_id', $process->id)
-            ->where('type', 'INTERMEDIATE_TIMER_EVENT')
-            ->where('process_request_id', $request->id)
-            ->delete();
-
-        foreach ($process->getIntermediateCatchEvents() as $timerEvent) {
-            if (key_exists('eventDefinitions', $timerEvent) && $timerEvent['eventDefinitions']->count() > 0) {
-                foreach ($timerEvent['eventDefinitions'] as $eventDefinition) {
-                    // here we just register Timer Events
-                    if (get_class($eventDefinition) !== TimerEventDefinition::class) {
-                        continue;
-                    }
-
-                    $timeDate = $eventDefinition->getTimeDate();
-                    $timeCycle = $eventDefinition->getTimeCycle();
-                    $timeDuration = $eventDefinition->getTimeDuration();
-
-                    $timeEventType = '';
-                    $period = null;
-                    $intervals = [];
-
-                    if ($timeDate && empty($timeEventType)) {
-                        $timeEventType = 'TimeDate';
-                        $period = $eventDefinition->getTimeDate()->getBody();
-                        $intervals = explode('|', $period);
-                    }
-
-                    if ($timeCycle && empty($timeEventType)) {
-                        $timeEventType = 'TimeCycle';
-                        $period = $eventDefinition->getTimeCycle()->getBody();
-                        $intervals = explode('|', $period);
-                    }
-
-                    if ($timeDuration && empty($timeEventType)) {
-                        $timeEventType = 'TimeDuration';
-                        $period = $eventDefinition->getTimeDuration()->getBody();
-                        $intervals = explode('|', $period);
-                    }
-
-                    $init = ($period[0] === 'R' || $timeDate || $timeDuration) ? 0 : 1;
-                    for ($i = $init; $i < count($intervals); $i++) {
-                        $parts = $this->getIntervalParts($intervals[$i]);
-                        $configuration = [
-                            'type' => $timeEventType,
-                            'interval' => $this->buildInterval($parts, $timeEventType),
-                            'element_id' => $timerEvent['id']
-                        ];
-
-                        $scheduledTask = new ScheduledTask();
-                        $scheduledTask->process_id = $process->id;
-                        $scheduledTask->process_request_id = $request->id;
-                        $scheduledTask->configuration = json_encode($configuration);
-                        $scheduledTask->type = 'INTERMEDIATE_TIMER_EVENT';
-                        $scheduledTask->last_execution = (new \DateTime())
-                            ->setTimezone(new DateTimeZone('UTC'))
-                            ->format('Y-m-d H:i:s');
-                        $scheduledTask->save();
-                    }
-                }
-            }
-        }
+    /**
+     * Schedule a task in the database
+     *
+     * @param Process $process
+     * @param array $configuration
+     * @param string $type
+     *
+     * @return ScheduledTask
+     */
+    private function scheduleTask(
+        $interval,
+        FlowElementInterface $element,
+        TokenInterface $token = null
+    ) {
+        $timeEventType = $interval instanceof DateTimeInterface ? 'TimeDate' : ($interval instanceof DatePeriod ? 'TimeCycle' : ($interval instanceof DateInterval ? 'TimeDuration' : null));
+        $types = [
+            IntermediateCatchEvent::class => 'INTERMEDIATE_TIMER_EVENT',
+            StartEvent::class => 'TIMER_START_EVENT',
+            BoundaryEvent::class => 'BOUNDARY_TIMER_EVENT',
+        ];
+        $configuration = [
+            'type' => $timeEventType,
+            'interval' => $interval,
+            'element_id' => $element->getId(),
+        ];
+        $scheduledTask = new ScheduledTask();
+        $process = $element->getOwnerProcess()->getEngine()->getProcess();
+        $scheduledTask->process_id = $token ? $token->process_id : $process->id;
+        $scheduledTask->process_request_id = $token ? $token->processRequest->id : null;
+        $scheduledTask->process_request_token_id = $token ? $token->id : null;
+        $scheduledTask->configuration = json_encode($configuration);
+        $scheduledTask->type = $types[get_class($element)];
+        $scheduledTask->last_execution = $this->today()
+            ->setTimezone(new DateTimeZone('UTC'))
+            ->format('Y-m-d H:i:s');
+        $scheduledTask->save();
+        return $scheduledTask;
     }
 
     /**
@@ -171,6 +121,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function scheduleTasks(Schedule $schedule)
     {
+        $today = $this->today();
         try {
             if (!Schema::hasTable('scheduled_tasks')) {
                 return;
@@ -178,25 +129,29 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
             $tasks = ScheduledTask::all();
 
-            $today = (new \DateTime())->setTimezone(new DateTimeZone('UTC'));
             foreach ($tasks as $task) {
                 $config = json_decode($task->configuration);
 
-                $lastExecution = new \DateTime($task->last_execution, new DateTimeZone('UTC'));
+                $lastExecution = new DateTime($task->last_execution, new DateTimeZone('UTC'));
 
                 if ($lastExecution === null) {
                     continue;
                 }
-
-                $nextDate = $this->nextDate($lastExecution, $config);
-                $nextDate = !empty($nextDate) ? $nextDate->setTimezone(new DateTimeZone('UTC')) : null;
+                $owner = $task->processRequestToken ?: $task->processRequest ?: $task->process;
+                $ownerDateTime = $owner->created_at;
+                $nextDate = $this->nextDate($today, $config, $lastExecution, $ownerDateTime);
 
                 // if no execution date exists we go to the next task
                 if (empty($nextDate)) {
                     continue;
                 }
 
-                $schedule->call(function () use ($task, $config, $today) {
+                // Since the task scheduler has a presition of 1 minute (crontab)
+                // the times must be rounded or trucated to the nearest HH:MM:00 before compare
+                $method = config('app.timer_events_seconds') . 'DateTime';
+                $todayWithoutSeconds = $this->$method($today);
+                $nextDateWithoutSeconds = $this->$method($nextDate);
+                if ($nextDateWithoutSeconds <= $todayWithoutSeconds) {
                     switch ($task->type) {
                         case 'TIMER_START_EVENT':
                             $this->executeTimerStartEvent($task, $config);
@@ -210,17 +165,54 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
                                 $task->save();
                             }
                             break;
+                        case 'BOUNDARY_TIMER_EVENT':
+                            $executed = $this->executeBoundaryTimerEvent($task, $config);
+                            $task->last_execution = $today->format('Y-m-d H:i:s');
+                            if ($executed) {
+                                $task->save();
+                            }
+                            break;
+                        default:
+                            throw new Exception('Unknown timer event: ' . $task->type);
                     }
-                })->when(function () use ($nextDate, $today) {
-                    return $nextDate->setTimezone(new DateTimeZone('UTC')) < $today->setTimezone(new DateTimeZone('UTC'));
-                });
+                }
             }
-        } catch (\PDOException $e) {
+        } catch (PDOException $e) {
             Log::error('The connection to the database had problems');
         }
     }
 
-    public function executeTimerStartEvent($task, $config)
+    /**
+     * Round a date time to the nearest minute.
+     *
+     * @param DateTimeInterface $date
+     *
+     * @return DateTimeInterface
+     */
+    public function roundDateTime(DateTimeInterface $date)
+    {
+        return (clone $date)->setTimestamp(round($date->getTimestamp() / 60) * 60);
+    }
+
+    /**
+     * Truncate date time to 0 seconds
+     *
+     * @param DateTimeInterface $date
+     *
+     * @return DateTimeInterface
+     */
+    public function truncateDateTime(DateTimeInterface $date)
+    {
+        return (clone $date)->setTimestamp(intval($date->getTimestamp() / 60) * 60);
+    }
+
+    /**
+     * Execute a timer start event
+     *
+     * @param ScheduledTask $task
+     * @param object $config
+     */
+    public function executeTimerStartEvent(ScheduledTask $task, $config)
     {
         // Get the event BPMN element
         $id = $task->process_id;
@@ -246,7 +238,13 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
     }
 
-    public function executeIntermediateTimerEvent($task, $config)
+    /**
+     * Execute a timer start event
+     *
+     * @param ScheduledTask $task
+     * @param object $config
+     */
+    public function executeIntermediateTimerEvent(ScheduledTask $task, $config)
     {
         //Get the event BPMN element
         $id = $task->process_id;
@@ -257,7 +255,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $process = Process::find($id);
         $request = ProcessRequest::find($task->process_request_id);
 
-
         $definitions = $process->getDefinitions();
         if (!$definitions->findElementById($config->element_id)) {
             return;
@@ -267,7 +264,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             ->where('element_id', $config->element_id)
             ->where('status', 'ACTIVE')->get();
         $executed = false;
-        foreach($catches as $catch) {
+        foreach ($catches as $catch) {
             WorkflowManager::completeCatchEvent($process, $request, $catch, []);
             $executed = true;
         }
@@ -275,154 +272,193 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         return $executed;
     }
 
-    public function nextDate($currentDate, $intervalConfig, $firstOccurrenceDate = null)
+    /**
+     * Execute a timer start event
+     *
+     * @param ScheduledTask $task
+     * @param object $config
+     */
+    public function executeBoundaryTimerEvent($task, $config)
+    {
+        //Get the event BPMN element
+        $id = $task->process_id;
+        if (!$id) {
+            return;
+        }
+
+        $request = ProcessRequest::find($task->process_request_id);
+        $process = $request->process;
+
+        $definitions = $process->getDefinitions();
+        $catch = $definitions->getBoundaryEvent($config->element_id);
+        if (!$catch) {
+            return;
+        }
+
+        $activity = $catch->getAttachedTo();
+        $tokens = $request->tokens()
+            ->where('element_id', $activity->getId())
+            ->where('status', 'ACTIVE')->get();
+
+        $executed = false;
+        foreach ($tokens as $token) {
+            WorkflowManager::triggerBoundaryEvent($process, $request, $token, $catch, []);
+            $executed = true;
+        }
+
+        return $executed;
+    }
+
+    /**
+     * Get next date for a timer configuration
+     *
+     * @param DateTimeInterface $currentDate
+     * @param object $intervalConfig
+     * @param DateTimeInterface $lastExecution
+     *
+     * @return DateTimeInterface
+     */
+    public function nextDate(DateTimeInterface $currentDate, $timerConfig, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
     {
         $result = null;
-        switch ($intervalConfig->type) {
+        switch ($timerConfig->type) {
             case 'TimeDate':
-                $result = $this->nextDateForOneDate($currentDate, $intervalConfig->interval, $firstOccurrenceDate =
-                    null);
+                $result = $this->nextDateForOneDate($currentDate, $timerConfig->interval, $lastExecution, $ownerDateTime);
                 break;
             case 'TimeCycle':
-                $result = $this->nextDateForCyclical($currentDate, $intervalConfig->interval, $firstOccurrenceDate =
-                    null);
+                $result = $this->nextDateForCyclical($currentDate, $timerConfig->interval, $lastExecution, $ownerDateTime);
                 break;
             case 'TimeDuration':
-                $result = $this->nextDateForDuration($currentDate, $intervalConfig->interval, $firstOccurrenceDate =
-                    null);
+                $result = $this->nextDateForDuration($currentDate, $timerConfig->interval, $lastExecution, $ownerDateTime);
                 break;
         }
 
         return $result;
     }
 
-    public function nextDateForCyclical($currentDate, $nayraInterval, $firstOccurrenceDate = null)
+    /**
+     * Load a DateTime|DatePeriod|DateInterval from a json object
+     *
+     * @param object $timer
+     *
+     * @return DateTime|DatePeriod|DateInterval
+     */
+    private function loadTimerFromJson($timer)
     {
-        $parts = $this->getIntervalParts($nayraInterval);
-        $firstDate = $firstOccurrenceDate === null
-            ? $parts['firstDate']
-            : $firstOccurrenceDate->format('Y-m-d H:i:s:z');
+        if (isset($timer->date)) {
+            return new DateTime($timer->date, new DateTimeZone($timer->timezone));
+        } elseif (isset($timer->interval)) {
+            $start = $timer->start ? $this->loadTimerFromJson($timer->start) : null;
+            $interval = $this->loadTimerFromJson($timer->interval);
+            $end = $timer->end ? $this->loadTimerFromJson($timer->end) : null;
+            $recurrences = $timer->recurrences;
+            return new DatePeriod($start, $interval, [$end, $recurrences - 1]);
+        } elseif (isset($timer->y)) {
+            return new DateInterval(sprintf(
+                'P%sY%sM%sDT%sH%sM%sS',
+                $timer->y,
+                $timer->m,
+                $timer->d,
+                $timer->h,
+                $timer->i,
+                $timer->s + $timer->f
+            ));
+        } elseif (is_string($timer)) {
+            $expression = new TimerExpression();
+            $expression->setBody($timer);
+            return $expression([]);
+        }
+    }
 
-        $cont = 1;
-        $nextDate = new \DateTime($firstDate);
-        $endDate = new \DateTime($parts['endDate']);
-
-        $dateToWork = empty($currentDate) ? new \DateTime() : $currentDate;
-
-        // if the interval's first date has passed, we calculate the next date of the interval
-        if ((new \DateTime($firstDate)) < $dateToWork) {
-            while ($cont < $parts['recurrences'] || $parts['repetitions'] === 'R') {
-
-                if ($nextDate >= $endDate) {
-                    return null;
-                }
-
-                if ($parts['period']) {
-                    $nextDate->add($parts['period']->getDateInterval());
-                }
-
-                if ($nextDate >= $dateToWork) {
-                    break;
-                }
-                $cont++;
+    /**
+     * Get the next datetime event of a cycle.
+     *
+     * @param DateTimeInterface $currentDate
+     * @param string $nayraInterval
+     *
+     * @return DateTimeInterface
+     */
+    private function nextDateForCyclical(DateTimeInterface $currentDate, $jsonCycle, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
+    {
+        $cycle = $this->loadTimerFromJson($jsonCycle);
+        $nextDateTime = null;
+        $dateTime = clone ($cycle->start ?: $ownerDateTime);
+        $recurrences = $cycle->recurrences;
+        $method = config('app.timer_events_seconds') . 'DateTime';
+        while (true) {
+            if (($cycle->end && $dateTime > $cycle->end)
+                || (!$cycle->end && $cycle->recurrences && $recurrences <= 0)) {
+                break;
             }
-        }
-
-        // if the number of occurrences is reached, no nextDate exists
-        if ($cont == $parts['recurrences'] && $parts['repetitions'] !== 'R') {
-            $nextDate = null;
-        }
-
-        return $nextDate;
-    }
-
-    public function nextDateForOneDate($currentDate, $nayraInterval, $firstOccurrenceDate = null)
-    {
-        $parts = $this->getIntervalParts($nayraInterval);
-        $firstDate = $firstOccurrenceDate === null
-            ? $parts['firstDate']
-            : $firstOccurrenceDate->format('Y-m-d H:i:s:z');
-
-        $diff = date_diff(new \DateTime($firstDate), $currentDate);
-        if ($diff->days * 24 * 60 + $diff->h * 60 + $diff->i < 2) {
-            return new \DateTime($firstDate);
-        }
-
-        return null;
-    }
-
-    public function nextDateForDuration($currentDate, $nayraInterval, $firstOccurrenceDate = null)
-    {
-        $parts = $this->getIntervalParts($nayraInterval);
-        return $currentDate->add($parts['period']);
-    }
-
-    private function getIntervalParts($nayraInterval)
-    {
-        $result = [];
-        $parts = explode('/', $nayraInterval);
-
-        if (count($parts) === 1 && $nayraInterval[0] === 'P') {
-            $result['repetitions'] = '1';
-            $result['interval'] = $parts[0];
-            $result['firstDate'] = null;
-            $result['period'] = new \DateInterval($nayraInterval);
-            $result['recurrences'] = 1;
-            return $result;
-        }
-
-        $result['endDate'] = (count($parts) === 4)
-            ? (new \DateTime($parts[3]))
-            ->setTimezone(new DateTimeZone('UTC'))
-            ->format('Y-m-d\TH:i:s') . 'Z'
-            : (new \DateTime())
-            ->add(new \DateInterval('P10Y'))
-            ->setTimezone(new DateTimeZone('UTC'))
-            ->format('Y-m-d\TH:i:s') . 'Z';
-
-        //if it is a specific date
-        if (count($parts) === 1) {
-            $result['repetitions'] = '1';
-            $result['interval'] = null;
-            $result['firstDate'] = (new \DateTime($parts[0]))
-                ->setTimezone(new DateTimeZone('UTC'))
-                ->format('Y-m-d\TH:i:s') . 'Z';
-            $result['period'] = null;
-            $result['recurrences'] = 2;
-            return $result;
-        }
-
-        $result['repetitions'] = $parts[0];
-        $result['interval'] = $parts[2];
-
-        $date = new \DateTime($parts[1]);
-        $result['firstDate'] = $date->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s') . 'Z';
-
-        if ($result['repetitions'] === 'R') {
-            $result['period'] = new \DatePeriod('R1000000/' . $result['firstDate'] . '/' . $result['interval']);
-        } else {
-            $result['period'] = new \DatePeriod($result['repetitions'] . '/' . $result['firstDate'] . '/' . $result['interval']);
-        }
-
-        $result['recurrences'] = $result['period']->recurrences;
-        return $result;
-    }
-
-    private function buildInterval($parts, $timeEventType)
-    {
-        $result = null;
-        switch ($timeEventType) {
-            case 'TimeDate':
-                $result = $parts['firstDate'];
+            if ((!$lastExecution || $this->$method($lastExecution) < $this->$method($dateTime))) {
+                $nextDateTime = clone $dateTime;
                 break;
-            case 'TimeCycle':
-                $result = $parts['repetitions'] . '/' . $parts['firstDate'] . '/' . $parts['interval'] . '/' . $parts['endDate'];
-                break;
-            case 'TimeDuration':
-                $result = $parts['interval'];
-                break;
+            }
+            $recurrences--;
+            $dateTime->add($cycle->interval);
         }
-        return $result;
+        return $nextDateTime;
+    }
+
+    /**
+     * Get the next DateTime execution for a datetime timer
+     *
+     * @param DateTimeInterface $currentDate
+     * @param object $jsonDateTime
+     * @param DateTimeInterface $lastExecution
+     *
+     * @return DateTime
+     */
+    private function nextDateForOneDate(DateTimeInterface $currentDate, $jsonDateTime, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
+    {
+        $dateTime = $this->loadTimerFromJson($jsonDateTime);
+        return (!$lastExecution || $lastExecution < $dateTime) ? $dateTime : null;
+    }
+
+    /**
+     * Get the next DateTime execution for a duration timer
+     *
+     * @param DateTimeInterface $currentDate
+     * @param object $jsonInterval
+     * @param DateTimeInterface $lastExecution
+     *
+     * @return DateTime
+     */
+    private function nextDateForDuration(DateTimeInterface $currentDate, $jsonInterval, DateTimeInterface $lastExecution = null, DateTimeInterface $ownerDateTime = null)
+    {
+        $interval = $this->loadTimerFromJson($jsonInterval);
+        $dateTime = (clone ($ownerDateTime ?: $lastExecution ?: $currentDate))->add($interval);
+        $method = config('app.timer_events_seconds') . 'DateTime';
+        return (!$lastExecution || $this->$method($lastExecution) < $this->$method($dateTime)) ? $dateTime : null;
+    }
+
+    /**
+     * Get today date.
+     *
+     * @return DateTime
+     */
+    public function today()
+    {
+        return self::$today ?: (Carbon::now())->setTimezone(new DateTimeZone('UTC'));
+    }
+
+    /**
+     * Set a fake today date
+     *
+     * @param mixed $today
+     *
+     * @return DateTime
+     */
+    public static function fakeToday($today)
+    {
+        if ($today === null) {
+            Carbon::setTestNow(null);
+            return self::$today = $today;
+        }
+        $fake = $today instanceof DateTime ? clone $today : (new DateTime($today))->setTimezone(new DateTimeZone('UTC'));
+        self::$today = new Carbon($fake->format('c'));
+        Carbon::setTestNow($fake->format('c'));
+        return clone self::$today;
     }
 
     /**
@@ -441,7 +477,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         TimerEventDefinitionInterface $eventDefinition,
         FlowElementInterface $element,
         TokenInterface $token = null
-    ) { }
+    ) {
+        if ($token || ($this->registerStartEvents && !$token)) {
+            $this->scheduleTask($datetime, $element, $token);
+        }
+    }
 
     /**
      * Schedule a job for a specific cycle for the given BPMN element, event definition
@@ -457,7 +497,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         TimerEventDefinitionInterface $eventDefinition,
         FlowElementInterface $element,
         TokenInterface $token = null
-    ) { }
+    ) {
+        if ($token || ($this->registerStartEvents && !$token)) {
+            $this->scheduleTask($cycle, $element, $token);
+        }
+    }
 
     /**
      * Schedule a job execution after a time duration for the given BPMN element,
@@ -473,7 +517,11 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         TimerEventDefinitionInterface $eventDefinition,
         FlowElementInterface $element,
         TokenInterface $token = null
-    ) { }
+    ) {
+        if ($token || ($this->registerStartEvents && !$token)) {
+            $this->scheduleTask($duration, $element, $token);
+        }
+    }
 
     /**
      * Register an event listener with the dispatcher.
@@ -484,7 +532,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function listen($events, $listener)
-    { }
+    {
+    }
 
     /**
      * Determine if a given event has listeners.
@@ -494,7 +543,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return bool
      */
     public function hasListeners($eventName)
-    { }
+    {
+    }
 
     /**
      * Register an event subscriber with the dispatcher.
@@ -504,7 +554,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function subscribe($subscriber)
-    { }
+    {
+    }
 
     /**
      * Dispatch an event until the first non-null response is returned.
@@ -515,7 +566,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return array|null
      */
     public function until($event, $payload = [])
-    { }
+    {
+    }
 
     /**
      * Dispatch an event and call the listeners.
@@ -527,7 +579,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return array|null
      */
     public function dispatch($event, $payload = [], $halt = false)
-    { }
+    {
+    }
 
     /**
      * Register an event and payload to be fired later.
@@ -538,7 +591,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function push($event, $payload = [])
-    { }
+    {
+    }
 
     /**
      * Flush a set of pushed events.
@@ -548,7 +602,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function flush($event)
-    { }
+    {
+    }
 
     /**
      * Remove a set of listeners from the dispatcher.
@@ -558,7 +613,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function forget($event)
-    { }
+    {
+    }
 
     /**
      * Forget all of the queued listeners.
@@ -566,5 +622,6 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      * @return void
      */
     public function forgetPushed()
-    { }
+    {
+    }
 }

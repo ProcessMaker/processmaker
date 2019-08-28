@@ -81,13 +81,13 @@ class NotificationController extends Controller
             'read_at',
             'created_at',
             'updated_at',
-            'data->>type as type',
-            'data->>name as name',
-            'data->>message as message',
-            'data->>processName as processName',
-            'data->>userName as userName',
-            'data->>request_id as request_id',
-            'data->>url as url')
+            'data->type as type',
+            'data->name as name',
+            'data->message as message',
+            'data->processName as processName',
+            'data->userName as userName',
+            'data->request_id as request_id',
+            'data->url as url')
             ->where('notifiable_type', User::class)
             ->where('notifiable_id', Auth::user()->id);
 
@@ -167,7 +167,7 @@ class NotificationController extends Controller
      * @internal param id $id
      *
      * @OA\Get(
-     *     path="/notifications/notificationId",
+     *     path="/notifications/{notification_id}",
      *     summary="Get single notification by ID",
      *     operationId="getNotificationById",
      *     tags={"Notifications"},
@@ -203,7 +203,7 @@ class NotificationController extends Controller
      * @throws \Throwable
      *
      * @OA\Put(
-     *     path="/notifications/notificationId",
+     *     path="/notifications/{notification_id}",
      *     summary="Update a notification",
      *     operationId="updateNotification",
      *     tags={"Notifications"},
@@ -221,9 +221,8 @@ class NotificationController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/notificationsEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/notifications")
+     *         response=204,
+     *         description="success"
      *     ),
      * )
      */
@@ -244,7 +243,7 @@ class NotificationController extends Controller
      * @return ResponseFactory|Response
      *
      * @OA\Delete(
-     *     path="/notifications/notificationId",
+     *     path="/notifications/{notification_id}",
      *     summary="Delete a notification",
      *     operationId="deleteNotification",
      *     tags={"Notifications"},
@@ -259,8 +258,7 @@ class NotificationController extends Controller
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/notifications")
+     *         description="success"
      *     ),
      * )
      */
@@ -299,7 +297,7 @@ class NotificationController extends Controller
      *       ),
      *     ),
      *     @OA\Response(
-     *         response=204,
+     *         response=201,
      *         description="success",
      *     ),
      * )
@@ -315,6 +313,40 @@ class NotificationController extends Controller
             ->update(['read_at' => Carbon::now()]);
         return response([], 201);
     }
+
+     /**
+     * Update notifications as unread
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     *     @OA\Put(
+     *     path="/unread_notifications",
+     *     summary="Mark notifications as unread by the user",
+     *     tags={"Notifications"},
+     *
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(
+     *          @OA\Property(
+     *              property="message_ids",
+     *              type="array",
+     *              description="list of message ids that will be marked as read",
+     *              @OA\Items (type="string")),
+     *          @OA\Property(
+     *              property="routes",
+     *              type="array",
+     *              description="all messages that has an url that is in this list will be marked as read",
+     *              @OA\Items (type="string"))
+     *       ),
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *     ),
+     * )
+     */
 
     public function updateAsUnread(Request $request)
     {
@@ -350,12 +382,12 @@ class NotificationController extends Controller
      *       required=true,
      *       @OA\JsonContent(
      *          @OA\Property(
-     *              property="id",
+     *              property="notifiable_id",
      *              type="integer",
      *              description="Polymorphic relation id",
      *              @OA\Items (type="integer")),
      *          @OA\Property(
-     *              property="type",
+     *              property="notifiable_type",
      *              type="string",
      *              description="Polymorphic relation type",
      *              @OA\Items (type="string"))

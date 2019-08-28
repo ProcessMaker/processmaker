@@ -43,7 +43,7 @@
                                     {{__('Summary')}}
                                 </a>
                             </li>
-                            @if ($request->status === 'COMPLETED')
+                            @if ($request->status === 'COMPLETED' && !$request->errors)
                                 @can('editData', $request)
                                     <li>
                                         <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab"
@@ -64,6 +64,12 @@
                                        aria-controls="files" aria-selected="false">{{__('Files')}}</a>
                                 </li>
                             @endif
+                                <li class="nav-item" v-show="canViewPrint">
+                                    <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms"
+                                       role="tab" aria-controls="forms" aria-selected="false">
+                                        {{__('Forms')}}
+                                    </a>
+                                </li>
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
@@ -80,7 +86,7 @@
                              role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <template v-if="showScreenSummary">
-                                    <div class="card">
+                                    <div class="card mt-3">
                                         <div class="card-body">
                                             <task-screen ref="screen" :screen="screenSummary" :data="dataSummary"/>
                                         </div>
@@ -88,20 +94,22 @@
                                 </template>
                                 <template v-else>
                                     <template v-if="summary.length > 0">
-                                        <table class="vuetable table table-hover mt-3 border">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col">{{ __('Key') }}</th>
-                                                <th scope="col">{{ __('Value') }}</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr v-for="item in summary">
-                                                <td>@{{item.key}}</td>
-                                                <td>@{{item.value}}</td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
+                                        <div class="card mt-3">
+                                            <table class="vuetable table table-hover">
+                                                <thead>
+                                                <tr>
+                                                    <th scope="col">{{ __('Key') }}</th>
+                                                    <th scope="col">{{ __('Value') }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="item in summary">
+                                                    <td>@{{item.key}}</td>
+                                                    <td>@{{item.value}}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </template>
                                     <template v-else>
                                         <div class="card mt-3">
@@ -122,20 +130,29 @@
                                 </template>
                             </template>
                             <template v-else>
-                                <div class="card mt-3">
-                                    <div class="card-header">
-                                        <h5>
-                                            {{ __('Request In Progress') }}
-                                        </h5>
+                                <template v-if="showScreenRequestDetail">
+                                    <div class="card mt-3">
+                                        <div class="card-body">
+                                            <task-screen ref="screenRequestDetail" :screen="screenRequestDetail" :data="dataSummary"/>
+                                        </div>
                                     </div>
+                                </template>
+                                <template v-else>
+                                    <div class="card mt-3">
+                                        <div class="card-header">
+                                            <h5>
+                                                {{ __('Request In Progress') }}
+                                            </h5>
+                                        </div>
 
-                                    <div class="card-body">
-                                        <p class="card-text">
-                                            {{__('This Request is currently in progress.')}}
-                                            {{__('This screen will be populated once the Request is completed.')}}
-                                        </p>
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                {{__('This Request is currently in progress.')}}
+                                                {{__('This screen will be populated once the Request is completed.')}}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                </template>
                             </template>
                         </div>
                         @if ($request->status === 'COMPLETED')
@@ -150,7 +167,7 @@
                             </request-detail>
                         </div>
                         <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                            <div class="mt-3">
+                            <div class="card mt-3">
                                 <div>
                                     <table class="vuetable table table-hover">
                                         <thead>
@@ -174,6 +191,10 @@
                                     </table>
                                 </div>
                             </div>
+                        </div>
+                        <div class="tab-pane fade" id="forms" role="tabpanel" aria-labelledby="forms-tab" v-show="canViewPrint">
+                            <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested" ref="forms">
+                            </request-screens>
                         </div>
                     </div>
                 </div>
@@ -306,10 +327,12 @@
             showJSONEditor: false,
             data: @json($request->data),
             requestId: @json($request->getKey()),
+            screenRequested: @json($screenRequested),
             request: @json($request),
             files: @json($files),
             refreshTasks: 0,
             canCancel: @json($canCancel),
+            canViewPrint : @json($canPrintScreens),
             status: 'ACTIVE',
             userRequested: [],
             errorLogs: @json(['data'=>$request->errors]),
@@ -366,6 +389,18 @@
               options[option.key] = option.value
             });
             return options;
+          },
+          /**
+           * If the screen request detail is configured.
+           **/
+          showScreenRequestDetail() {
+            return !!this.request.request_detail_screen;
+          },
+          /**
+           * Get Screen request detail
+           * */
+          screenRequestDetail() {
+            return this.request.request_detail_screen ? this.request.request_detail_screen.config : null;
           },
           classStatusCard() {
             let header = {

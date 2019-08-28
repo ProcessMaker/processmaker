@@ -1,7 +1,13 @@
 <template>
   <div class="data-table">
-    <data-loading :for="/requests\?page/" v-show="shouldShowLoader" />
-    <div v-show="!shouldShowLoader" class="card card-body table-card">
+    <data-loading
+            :for="/requests\?page/"
+            v-show="shouldShowLoader"
+            :empty="$t('No Data Available')"
+            :empty-desc="$t('')"
+            empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -66,18 +72,19 @@ export default {
   data() {
     return {
       orderBy: "id",
+      orderDirection: "DESC",
       additionalParams: "",
       sortOrder: [
         {
           field: "id",
           sortField: "id",
-          direction: "asc"
+          direction: "desc"
         }
       ],
       fields: [
         {
           name: "__slot:ids",
-          title: '#',
+          title: "#",
           field: "id",
           sortField: "id"
         },
@@ -118,14 +125,14 @@ export default {
     switch (Processmaker.status) {
       // if there is no status, meaning its on my requests, We should only show the in progress status
       case "":
-        status = 'In Progress';
+        status = "In Progress";
         this.$parent.requester.push(Processmaker.user);
         break;
       case "in_progress":
-        status = 'In Progress';
+        status = "In Progress";
         break;
       case "completed":
-        status = 'Completed';
+        status = "Completed";
         break;
     }
     if (status) {
@@ -196,7 +203,6 @@ export default {
       return data;
     },
     fetch(resetPagination) {
-
       if (resetPagination) {
         this.page = 1;
       }
@@ -210,7 +216,7 @@ export default {
             this.perPage +
             "&include=process,participants" +
             "&pmql=" +
-            this.$parent.pmql +
+            encodeURIComponent(this.$parent.pmql) +
             "&order_by=" +
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +

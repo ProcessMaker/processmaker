@@ -1,6 +1,13 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <data-loading
+            :for="/environment_variables\?page/"
+            v-show="shouldShowLoader"
+            :empty="$t('No Data Available')"
+            :empty-desc="$t('')"
+            empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -52,9 +59,10 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter", "permission"],
   data() {
     return {
@@ -102,12 +110,14 @@ export default {
       switch (action) {
         case "edit-item":
           window.location =
-            "/processes/environment-variables/" + data.id + "/edit";
+            "/designer/environment-variables/" + data.id + "/edit";
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the environment variable ") +
+            this.$t(
+              "Are you sure you want to delete the environment variable "
+            ) +
               data.name +
               this.$t("?"),
             "",

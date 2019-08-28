@@ -3,13 +3,13 @@ namespace ProcessMaker;
 
 use \Exception;
 use \ZipArchive;
+use function GuzzleHttp\json_decode;
 
 class BuildSdk {
     private $rebuild = false;
     private $debug = false;
     private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
     private $lang = null;
-    private $supportedLangs = ['php', 'lua', 'javascript'];
     private $outputPath = null;
     private $jsonPath = null;
 
@@ -23,7 +23,27 @@ class BuildSdk {
     public function run()
     {
         $this->runChecks();
+        $this->startBootSequence();
 
+        $response = $this->docker($this->curlPost());
+
+        $json = json_decode($response, true);
+        if (!array_key_exists('link', $json)) {
+            throw new Exception("Generator Error: " . $response);
+        }
+        $link = $json['link'];
+
+        $zip = $this->getZip($link);
+        $folder = $this->unzip($zip);
+        $this->commentErroneousCode($folder); // lua
+        $this->addMissingDependency($folder); // java
+        $this->removeDateTime($folder); // csharp
+        $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
+        $this->log("DONE. Api is at {$this->outputDir()}");
+    }
+
+    private function startBootSequence()
+    {
         $existing = $this->existingContainer();
 
         if ($this->rebuild && $existing !== "") {
@@ -42,25 +62,11 @@ class BuildSdk {
         $this->runCmd('docker start generator || echo "Container already running"');
 
         $this->waitForBoot();
-
-        $response = $this->docker($this->curlPost());
-
-        $json = json_decode($response, true);
-        if (!array_key_exists('link', $json)) {
-            throw new Exception("Generator Error: " . $response);
-        }
-        $link = $json['link'];
-
-        $zip = $this->getZip($link);
-        $folder = $this->unzip($zip);
-        $this->commentErroneousCode($folder);
-        $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
-        $this->log("DONE. Api is at {$this->outputDir()}");
     }
 
     public function setLang($value)
     {
-        if (!in_array($value, $this->supportedLangs)) {
+        if (!in_array($value, $this->getAvailableLanguages())) {
             throw new Exception("$value language is not supported");
         }
         $this->lang = $value;
@@ -71,14 +77,15 @@ class BuildSdk {
         if (!$this->lang) {
             throw new Exception("Language must be specified using setLang()");
         }
-        $this->waitForBoot();
+        $this->startBootSequence();
         return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients/{$this->lang}");
     }
     
     public function getAvailableLanguages()
     {
-        $this->waitForBoot();
-        return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients");
+        $this->startBootSequence();
+        $result = $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients");
+        return json_decode($result, true);
     }
 
     private function runChecks()
@@ -207,7 +214,7 @@ class BuildSdk {
 
     private function apiJsonRaw()
     {
-        return file_get_contents($this->jsonPath);
+        return json_encode(json_decode(file_get_contents($this->jsonPath)));
     }
 
     private function runCmd($cmd)
@@ -233,6 +240,35 @@ class BuildSdk {
     {
         if ($this->lang === 'lua') {
             $this->runCmd("find {$folder} -name '*.lua' -exec sed -i -E 's/(req\.readers:upsert.*)/-- \\1/g' {} \;");
+        }
+    }
+
+    private function addMissingDependency($folder)
+    {
+        if ($this->lang !== 'java') {
+            return;
+        }
+        $file = "{$folder}/pom.xml";
+        $dom = new \DOMDocument();
+        $dom->load($file);
+        $deps = $dom->getElementsByTagName('dependencies')[0];
+        $dep = $dom->createDocumentFragment();
+        $dep->appendXML('
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>2.3</version>
+            </dependency>
+        ');
+        $deps->appendChild($dep);
+        file_put_contents($file, $dom->saveXml());
+    }
+    
+    private function removeDateTime($folder)
+    {
+        if ($this->lang === 'csharp') {
+            // $this->runCmd("find {$folder} -name '*.cs' -exec sed -i -E 's/DateTime\?/DateTime/g' {} \;");
+            unlink("{$folder}/src/ProcessMakerSDK/Model/DateTime.cs");
         }
     }
 }

@@ -1,4 +1,5 @@
 @import "_variables";
+@import "../_colors";
 
 $blue:    #007bff !default;
 $indigo:  #6610f2 !default;
@@ -26,14 +27,14 @@ $gray-900: #212529 !default;
 $black:    #000 !default;
 
 
-$primary:       $blue !default;
-$secondary:     $gray-600 !default;
-$success:       $green !default;
-$info:          $cyan !default;
-$warning:       $yellow !default;
-$danger:        $red !default;
-$light:         $gray-100 !default;
-$dark:          $gray-800 !default;
+//$primary:       $blue !default;
+//$secondary:     $gray-600 !default;
+//$success:       $green !default;
+//$info:          $cyan !default;
+//$warning:       $yellow !default;
+//$danger:        $red !default;
+//$light:         $gray-100 !default;
+//$dark:          $gray-800 !default;
 
 
 

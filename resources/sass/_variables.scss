@@ -1,9 +1,16 @@
+@import 'colors';
+
+@import 'fonts';
+
 // Changing the body background and text
 $body-bg: #f7f9fb;
 
 // Fonts
 
-$font-family-sans-serif: 'Open Sans' !default;
+// The sans serif can be customized  by the user and are stored in the _fonts.css,
+// the commented line is the original value:
+//$font-family-sans-serif: 'Open Sans' !default;
+
 $font-family-serif: Georgia, 'Times New Roman', Times, serif !default;
 
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
@@ -21,14 +28,16 @@ $font-size-h4: ceil($font-size-base * 1.4) !default; // ~18px
 $font-size-h5: $font-size-base !default;
 $font-size-h6: ceil($font-size-base * 0.75) !default; // ~12px
 
-// Changing the theme colors
-$primary: #3397e1;
-$secondary: #788793;
-$success: #00bf9c;
-$info: #17a2b8;
-$warning: #fbbe02;
-$danger: #ed4757;
-$light: #ffffff;
+// The main colors can be customized by the user and are stored in _colors.css,
+// the commented lines have the original bootstrap values:
+//$primary: #3397e1;
+//$secondary: #788793;
+//$success: #00bf9c;
+//$info: #17a2b8;
+//$warning: #fbbe02;
+//$danger: #ed4757;
+//$light: #ffffff;
+
 $hover: rgba(255, 255, 255, .3);
 
 $grey-bg: #e9edf1;
@@ -78,7 +87,7 @@ $breadcrumb-separator: '>';
 //table
 // $table-cell-padding:            10px !default;
 // $table-condensed-cell-padding:  5px !default;
-$table-bg: $light !default;
+$table-bg: transparent !default;
 $table-bg-accent: #f9f9f9 !default;
 $table-bg-hover: $grey-bg !default;
 $table-bg-active: $table-bg-hover !default;
@@ -89,9 +98,9 @@ $table-border-color: $grey-bg !default;
 //
 
 ////checkbox
+$custom-control-indicator-checked-color: #ffffff;
 $custom-checkbox-indicator-indeterminate-bg: #788793;
 $custom-checkbox-indicator-indeterminate-color: #ffffff;
-
 
 ////custom switch
 

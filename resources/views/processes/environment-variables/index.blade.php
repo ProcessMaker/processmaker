@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Environment Variables') => null,
     ]])
     <div class="px-3 page-content" id="process-variables-listing">
@@ -122,7 +122,7 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The environment variable was created.')}}', 'success');
-                    window.location = '/processes/environment-variables';
+                    window.location = '/designer/environment-variables';
                   })
                   .catch(error => {
                     this.disabled = false;

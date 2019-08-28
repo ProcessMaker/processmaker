@@ -29,37 +29,7 @@ class CommentController extends Controller
      * @return \ProcessMaker\Http\Resources\ApiCollection
      *
      * @return \Illuminate\Http\Response
-     *
-     * @OA\Get(
-     *     path="/comments",
-     *     summary="Returns all comments for a given type",
-     *     operationId="getComments",
-     *     tags={"Comments"},
-     *     @OA\Parameter(ref="#/components/parameters/commentable_id"),
-     *     @OA\Parameter(ref="#/components/parameters/commentable_type"),
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
-     *     @OA\Parameter(ref="#/components/parameters/order_by"),
-     *     @OA\Parameter(ref="#/components/parameters/order_direction"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="list of comments",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/comments"),
-     *             ),
-     *             @OA\Property(
-     *                 property="meta",
-     *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
-     *             ),
-     *         ),
-     *     ),
-     * )
+     * 
      */
     public function index(Request $request)
     {
@@ -100,21 +70,6 @@ class CommentController extends Controller
      *
      * @throws \Throwable
      *
-     * @OA\Post(
-     *     path="/comments",
-     *     summary="Save a new comment",
-     *     operationId="createComments",
-     *     tags={"Comments"},
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/commentsEditable")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/comments")
-     *     ),
-     * )
      */
     public function store(Request $request)
     {
@@ -136,26 +91,6 @@ class CommentController extends Controller
      *
      * @return CommentResource
      *
-     * @OA\Get(
-     *     path="/comments/commentId",
-     *     summary="Get single comment by ID",
-     *     operationId="getCommentById",
-     *     tags={"Comments"},
-     *     @OA\Parameter(
-     *         description="ID of comments to return",
-     *         in="path",
-     *         name="comment_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successfully found the comments",
-     *         @OA\JsonContent(ref="#/components/schemas/comments")
-     *     ),
-     * )
      */
     public function show(Comment $comment)
     {
@@ -171,30 +106,6 @@ class CommentController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Throwable
      *
-     * @OA\Put(
-     *     path="/comments/commentId",
-     *     summary="Update a comment",
-     *     operationId="updateComment",
-     *     tags={"Comments"},
-     *     @OA\Parameter(
-     *         description="ID of comment to return",
-     *         in="path",
-     *         name="comment_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/commentsEditable")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/comments")
-     *     ),
-     * )
      */
     public function update(Comment $comment, Request $request)
     {
@@ -216,26 +127,6 @@ class CommentController extends Controller
      *
      * @throws \Exception
      *
-     * @OA\Delete(
-     *     path="/comments/id",
-     *     summary="Delete a comments",
-     *     operationId="deleteComments",
-     *     tags={"Comments"},
-     *     @OA\Parameter(
-     *         description="ID of comments to return",
-     *         in="path",
-     *         name="comment_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=204,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/comments")
-     *     ),
-     * )
      */
     public function destroy(Comment $comment)
     {

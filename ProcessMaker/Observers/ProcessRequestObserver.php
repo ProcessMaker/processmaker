@@ -29,6 +29,19 @@ class ProcessRequestObserver
         //A request delete child requests in cascade
         ProcessRequest::where('parent_request_id', $request->id)
             ->delete();
+    }
 
+    /**
+     * Handle the process request "saved" event.
+     *
+     * @param  ProcessRequest  $request
+     * @return void
+     */
+    public function saved(ProcessRequest $request)
+    {
+        if ($request->status === 'COMPLETED') {
+            // Remove scheduled tasks for this request
+            $request->scheduledTasks()->delete();
+        }
     }
 }

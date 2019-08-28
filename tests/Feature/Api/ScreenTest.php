@@ -19,6 +19,7 @@ class ScreenTest extends TestCase
     const STRUCTURE = [
         'title',
         'description',
+        'category',
         'config',
     ];
 
@@ -186,14 +187,14 @@ class ScreenTest extends TestCase
     {
         //load Screen
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
-                'config' => [
-                    'field' => 'field 1',
-                    'field 2' => [
-                        'data1' => 'text',
-                        'data2' => 'text 2'
-                    ]
+            'config' => [
+                'field' => 'field 1',
+                'field 2' => [
+                    'data1' => 'text',
+                    'data2' => 'text 2'
                 ]
-            ])->id;
+            ]
+        ])->id;
         $response = $this->apiCall('GET', $url);
         //Validate the answer is correct
         $response->assertStatus(200);
@@ -249,7 +250,7 @@ class ScreenTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->description, $original_attributes['description']);
         $this->assertEquals($version->config, null);
-        $this->assertEquals((string)$version->created_at, (string)$yesterday);
+        $this->assertEquals((string) $version->created_at, (string) $yesterday);
         $this->assertLessThan(3, $version->updated_at->diffInSeconds($screen->updated_at));
     }
 
@@ -261,8 +262,8 @@ class ScreenTest extends TestCase
         $faker = Faker::create();
         $type = 'FORM';
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
-                'type' => $type
-            ])->id;
+            'type' => $type
+        ])->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => 'ScreenTitleTest',
             'type' => 'DETAIL',
@@ -280,8 +281,8 @@ class ScreenTest extends TestCase
         $faker = Faker::create();
         $config = '{"foo":"bar"}';
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
-                'config' => $config
-            ])->id . '/duplicate';
+            'config' => $config
+        ])->id . '/duplicate';
         $response = $this->apiCall('PUT', $url, [
             'title' => "TITLE",
             'type' => 'FORM',
@@ -300,9 +301,9 @@ class ScreenTest extends TestCase
         $faker = Faker::create();
         $title = 'Some title';
         $url = self::API_TEST_SCREEN . '/' . factory(Screen::class)->create([
-                'title' => $title,
-                'type' => 'DISPLAY',
-            ])->id;
+            'title' => $title,
+            'type' => 'DISPLAY',
+        ])->id;
         $response = $this->apiCall('PUT', $url, [
             'title' => $title,
             'description' => $faker->sentence(5),
@@ -336,26 +337,4 @@ class ScreenTest extends TestCase
         //Validate the answer is correct
         $response->assertStatus(405);
     }
-    
-    /**
-     * Server side rendering of email screens
-     */
-    public function testScreenRender()
-    {
-        $this->markTestSkipped(
-            'api /screens/{id}/render not yet implemented.'
-        );
-        $screen = factory(Screen::class)->create([
-            'type' => 'EMAIL',
-            'config' => ''
-        ]);
-        $url = self::API_TEST_SCREEN . '/' . $screen->id . '/render';
-        $data = [
-            'foo' => 'bar'
-        ];
-        $response = $this->apiCall('POST', $url, $data);
-        $json = $response->json();
-        $this->assertEquals($json['html'], '<div data-server-rendered="true">Test SSR</div>');
-    }
-
 }

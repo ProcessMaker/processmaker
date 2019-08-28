@@ -123,6 +123,7 @@ class ScreenCategoriesTest extends TestCase
         $initialActiveCount = ScreenCategory::where('status','ACTIVE')->count();
         $initialInactiveCount = ScreenCategory::where('status','INACTIVE')->count();
 
+        factory(ScreenCategory::class, 3)->create(['is_system' => true, 'status' => 'ACTIVE']);
         // Create some screens
         $screenActive = [
             'num' => 10,
@@ -189,6 +190,7 @@ class ScreenCategoriesTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE'
         ];
+        
         factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
         factory(ScreenCategory::class, $screenInactive['num'])->create(['status' => $screenInactive['status']]);
 

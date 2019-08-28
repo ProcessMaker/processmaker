@@ -56,7 +56,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $eventBus = app('events');
 
             //Initialize the BpmnEngine
-            $engine = new BpmnEngine($repository, $eventBus);
+            $engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
 
             $engine->setJobManager(new TaskSchedulerManager());
 
@@ -64,6 +64,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $bpmnRepository = new BpmnDocument();
             $bpmnRepository->setEngine($engine);
             $bpmnRepository->setFactory($repository);
+            $bpmnRepository->setSkipElementsNotImplemented(true);
             $mapping = $bpmnRepository->getBpmnElementsMapping();
             $engine->setStorage($bpmnRepository);
             $engine->setProcess($params['process']);

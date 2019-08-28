@@ -189,9 +189,8 @@ class GroupController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/groupsEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/groups")
      *     ),
      * )
      */
@@ -228,7 +227,6 @@ class GroupController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/groups")
      *     ),
      * )
      */
@@ -246,15 +244,28 @@ class GroupController extends Controller
      * @return ApiCollection
      *
      * @OA\Get(
-     *     path="/group_users",
+     *     path="/group_users/{group_id}",
      *     summary="Returns all users of a group",
      *     operationId="getMembers",
      *     tags={"Group Users"},
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
-     *     @OA\Parameter(ref="#/components/parameters/order_by"),
+     *     @OA\Parameter(
+     *         description="ID of notification to return",
+     *         in="path",
+     *         name="group_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="filter",
+     *         name="filter",
+     *         in="query",
+     *         description="Filter results by string. Searches Name and Status. Status must match exactly. Others can be a substring.",
+     *         @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
      *         response=200,

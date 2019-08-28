@@ -17,7 +17,6 @@ use ProcessMaker\Query\Traits\PMQL;
  *
  * @OA\Schema(
  *   schema="groupsEditable",
- *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
@@ -30,6 +29,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *          type = "object",
  *          @OA\Property(property="created_at", type="string", format="date-time"),
  *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *          @OA\Property(property="id", type="string", format="id"),
  *      )
  *   }
  * )

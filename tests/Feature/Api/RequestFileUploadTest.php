@@ -9,8 +9,9 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
+use ProcessMaker\Providers\WorkflowServiceProvider;
 
-class TaskAssignmentPreviousOwnerTest extends TestCase
+class RequestFileUploadTest extends TestCase
 {
     use RequestHelper;
 
@@ -56,9 +57,9 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
         $uploadTask = $request->tokens()->where('status', 'ACTIVE')->first();
         $route = route('api.requests.files.store', [$request->id, 'event' => 'node_1']);
         $response = $this->actingAs($uploadTask->user, 'api')
-                         ->json('POST', $route, [
-                             'file' => File::image('photo.jpg')
-                         ]);
+            ->json('POST', $route, [
+                'file' => File::image('photo.jpg')
+            ]);
         // Check the user has access to upload a file
         $response->assertStatus(200);
         // Check the file was uploaded
@@ -98,9 +99,9 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
         // Upload file with a user that does not participate in the request
         $route = route('api.requests.files.store', [$request->id, 'event' => 'node_1']);
         $response = $this->actingAs($doesNotParticipateUser, 'api')
-                         ->json('POST', $route, [
-                             'file' => File::image('photo.jpg')
-                         ]);
+            ->json('POST', $route, [
+                'file' => File::image('photo.jpg')
+            ]);
         // Check the user does not have access to upload a file
         $response->assertStatus(403);
         // Check the file was not uploaded
@@ -113,27 +114,27 @@ class TaskAssignmentPreviousOwnerTest extends TestCase
     private function loadTestProcess($bpmn, array $users = [])
     {
         // Create a new process
-        $this->process = factory(Process::class)->create();
-
-        // Load a single task process
-        $this->process->bpmn = $bpmn;
+        $this->process = factory(Process::class)->create([
+            'bpmn' => $bpmn,
+        ]);
 
         $definitions = $this->process->getDefinitions();
         foreach ($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'task') as $task) {
-            if ($task->getAttribute('assignment') === 'user') {
-                $userId = $task->getAttribute('assignedUsers');
+            if ($task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment') === 'user') {
+                $userId = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
                 if (isset($users[$userId])) {
-                    $task->setAttribute('assignedUsers', $users[$userId]->id);
+                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers', $users[$userId]->id);
                 } elseif (!User::find($userId)) {
                     $users[$userId] = factory(User::class)->create([
                         'id' => $userId,
                         'status' => 'ACTIVE',
                     ]);
                     $users[$userId] =
-                    $task->setAttribute('assignedUsers', $users[$userId]->id);
+                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers', $users[$userId]->id);
                 }
             }
         }
+        $this->process->bpmn = $definitions->saveXml();
         // When save the process creates the assignments
         $this->process->save();
     }

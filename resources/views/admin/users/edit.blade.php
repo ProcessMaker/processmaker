@@ -175,7 +175,7 @@
                                         <h5 class="mt-2">{{__('Localization')}}</h5>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!!Form::label('datetime_format', __('Date format'));!!}
+                                                {!!Form::label('datetime_format', __('Date Format'));!!}
                                                 <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">
@@ -185,7 +185,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group col">
-                                                {!!Form::label('timezone', __('Time zone'));!!}
+                                                {!!Form::label('timezone', __('Time Zone'));!!}
                                                 <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
                                                 </b-form-select>
                                                 <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
@@ -302,6 +302,7 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
+                            <div class="card card-body table-card">
                                 <table class="table">
                                     <thead>
                                     <tr>
@@ -342,6 +343,7 @@
                                 <button class="btn btn-secondary float-right" @click="generateToken">
                                     {{__('Generate New Token')}}
                                 </button>
+                            </div>
                         </div>
                     </div>
                 </div>

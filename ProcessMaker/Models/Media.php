@@ -36,7 +36,7 @@ use Spatie\MediaLibrary\Models\Media as Model;
  *   @OA\Property(property="size", type="integer"),
  *   @OA\Property(property="manipulations", type="string"),
  *   @OA\Property(property="custom_properties", type="string"),
- *   @OA\Property(property="responsive_images", type="array", items="string"),
+ *   @OA\Property(property="responsive_images", @OA\Schema(type="array", @OA\Items(type="string"))),
  *   @OA\Property(property="order_column", type="integer"),
  * ),
  * @OA\Schema(
@@ -44,6 +44,10 @@ use Spatie\MediaLibrary\Models\Media as Model;
  *   allOf={@OA\Schema(ref="#/components/schemas/mediaEditable")},
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ * ),
+ * @OA\Schema(
+ *   schema="mediaExported",
+ *   @OA\Property(property="url", type="string"),
  * )
  */
 class Media extends Model

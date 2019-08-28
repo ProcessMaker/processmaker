@@ -10,9 +10,9 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Screens') => route('screens.index'),
-        __('Configure') . " " . $screen->title => null,
+        $screen->title => null,
     ]])
     <div class="container" id="editGroup">
         <div class="row">
@@ -32,6 +32,13 @@
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
                         <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                     </div>
+                    <div class="form-group">
+                        {!! Form::label('category', __('Category')) !!}
+                        {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
+                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
+                        <small class="form-text text-muted" v-if="! errors.category">{{__('The screen name must be distinct.') }}</small>
+                        <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
+                    </div>                  
                     <br>
                     <div class="text-right">
                         {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
@@ -69,7 +76,7 @@
                     });
                 },
                 onClose() {
-                    window.location.href = '/processes/screens';
+                    window.location.href = '/designer/screens';
                 },
                 onUpdate() {
                     this.resetErrors();

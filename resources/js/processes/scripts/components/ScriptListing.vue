@@ -1,6 +1,13 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <data-loading
+            :for="/scripts\?page/"
+            v-show="shouldShowLoader"
+            :empty="$t('No Data Available')"
+            :empty-desc="$t('')"
+            empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -83,18 +90,12 @@
             id="title"
             v-model="dupScript.title"
             v-bind:class="{ 'is-invalid': errors.title }"
-          >
+          />
           <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
           <label for="description">{{ $t('Description') }}</label>
           <textarea class="form-control" id="description" rows="3" v-model="dupScript.description"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="type">{{ $t('Language') }}</label>
-          <select class="form-control" id="type" disabled>
-            <option>{{dupScript.language}}</option>
-          </select>
         </div>
       </form>
       <div slot="modal-footer" class="w-100" align="right">
@@ -107,15 +108,17 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter", "id", "permission", "scriptFormats"],
   data() {
     return {
       dupScript: {
         title: "",
         type: "",
+        category: "",
         description: ""
       },
       errors: [],
@@ -140,6 +143,11 @@ export default {
           title: () => this.$t("Description"),
           name: "description",
           sortField: "description"
+        },
+        {
+          title: () => this.$t("Category"),
+          name: "category",
+          sortField: "category"
         },
         {
           title: () => this.$t("Language"),
@@ -169,7 +177,7 @@ export default {
 
   methods: {
     goToEdit(data) {
-      window.location = "/processes/scripts/" + data + "/edit";
+      window.location = "/designer/scripts/" + data + "/edit";
     },
     showModal() {
       this.$refs.myModalRef.show();
@@ -181,7 +189,7 @@ export default {
       ProcessMaker.apiClient
         .put("scripts/" + this.dupScript.id + "/duplicate", this.dupScript)
         .then(response => {
-          ProcessMaker.alert(this.$t('The script was duplicated.'), "success");
+          ProcessMaker.alert(this.$t("The script was duplicated."), "success");
           this.hideModal();
           this.fetch();
         })
@@ -194,7 +202,7 @@ export default {
     onAction(action, data, index) {
       switch (action) {
         case "edit-script":
-          window.location.href = "/processes/scripts/" + data.id + "/builder";
+          window.location.href = "/designer/scripts/" + data.id + "/builder";
           break;
         case "edit-item":
           this.goToEdit(data.id);
@@ -204,6 +212,7 @@ export default {
           this.dupScript.language = data.language;
           this.dupScript.code = data.code;
           this.dupScript.description = data.description;
+          this.dupScript.category = data.category;
           this.dupScript.id = data.id;
           this.dupScript.run_as_user_id = data.run_as_user_id;
           this.showModal();
@@ -211,7 +220,9 @@ export default {
         case "remove-item":
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t('Are you sure you want to delete {{item}}?', {item: data.title}),
+            this.$t("Are you sure you want to delete {{item}}?", {
+              item: data.title
+            }),
             "",
             () => {
               this.$emit("delete", data);

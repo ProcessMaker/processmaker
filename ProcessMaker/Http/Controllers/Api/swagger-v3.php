@@ -76,6 +76,6 @@
  *           @OA\Property(property="date", type="string"),
  *         ),
  *     ),
- *     security={{"pm_api_token": {}}, {"pm_api_auth_code": {}}},
+ *     security={{"pm_api_token": {}}, {"pm_api_key": {}},{"pm_api_auth_code": {}}},
  * )
  */

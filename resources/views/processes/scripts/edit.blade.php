@@ -10,7 +10,7 @@
 
 @section('content')
     @include('shared.breadcrumbs', ['routes' => [
-        __('Processes') => route('processes.index'),
+        __('Designer') => route('processes.index'),
         __('Scripts') => route('scripts.index'),
         __('Configure') . " " . $script->title => null,
     ]])
@@ -29,20 +29,8 @@
                     </div>
                     <div class="form-group">
                         <label class="typo__label">{{__('Run script as')}}</label>
-                        <multiselect v-model="selectedUser"
-                                     label="fullname"
-                                     :show-labels="false"
-                                     :options="options"
-                                     :searchable="true"
-                                     :class="{'is-invalid': errors.run_as_user_id}">
-                            <template slot="noResult" >
-                                {{ __('No elements found. Consider changing the search query.') }}
-                            </template>
-
-                            <template slot="noOptions" >
-                                {{ __('No Data Available') }}
-                            </template>
-                        </multiselect>
+                        <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': errors.run_as_user_id}">
+                        </select-user>
                         <div class="invalid-feedback" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
                     </div>
                     <div class="form-group">
@@ -82,8 +70,7 @@
         data() {
           return {
             formData: @json($script),
-            options:@json($users),
-            selectedUser: "",
+            selectedUser: @json($selectedUser),
             errors: {
               'title': null,
               'language': null,
@@ -91,14 +78,6 @@
               'timeout': null,
               'status': null
             }
-          }
-        },
-        mounted() {
-          let users = this.options.filter(u => {
-            return u.id === this.formData.run_as_user_id
-          });
-          if (users.length > 0) {
-            this.selectedUser = users[0];
           }
         },
         methods: {
@@ -111,7 +90,7 @@
             });
           },
           onClose() {
-            window.location.href = '/processes/scripts';
+            window.location.href = '/designer/scripts';
           },
           onUpdate() {
             this.resetErrors();

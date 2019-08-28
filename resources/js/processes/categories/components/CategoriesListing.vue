@@ -1,6 +1,13 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <data-loading
+            :for="/categories\?page/"
+            v-show="shouldShowLoader"
+            :empty="$t('No Data Available')"
+            :empty-desc="$t('')"
+            empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -52,9 +59,10 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter", "permission"],
   data() {
     return {
@@ -68,7 +76,7 @@ export default {
       ],
       fields: [
         {
-          title: () => this.$t('Name'),
+          title: () => this.$t("Name"),
           name: "name",
           sortField: "name"
         },
@@ -122,23 +130,27 @@ export default {
             "&include=processesCount"
         )
         .then(response => {
-          if(response.data.data.length === 0){
-              $('#createProcessCategory').modal('show')
-            }else {
-              this.data = this.transform(response.data);
-              this.loading = false;
-            }
+          if (response.data.data.length === 0) {
+            $("#createProcessCategory").modal("show");
+          } else {
+            this.data = this.transform(response.data);
+            this.loading = false;
+          }
         });
     },
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
-          window.location = "/processes/categories/" + data.id + "/edit";
+          window.location = "/designer/categories/" + data.id + "/edit";
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
-            this.$t('Caution!'),
-            "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.name}) + "</b>",
+            this.$t("Caution!"),
+            "<b>" +
+              this.$t("Are you sure you want to delete {{item}}?", {
+                item: data.name
+              }) +
+              "</b>",
             "",
             () => {
               this.$emit("delete", data);

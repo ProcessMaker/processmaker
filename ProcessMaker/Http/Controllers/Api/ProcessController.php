@@ -19,6 +19,7 @@ use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 
 class ProcessController extends Controller
 {
@@ -78,7 +79,7 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = Process::active()->with($include);
+        $processes = Process::nonSystem()->active()->with($include);
         if ($status === 'inactive') {
             $processes = Process::inactive()->with($include);
         }
@@ -117,7 +118,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
      *     ),
      * )
      */
@@ -146,7 +147,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
      *     ),
      * )
      */
@@ -181,7 +182,21 @@ class ProcessController extends Controller
         } else {
             $process->bpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
         }
-        $process->saveOrFail();
+        try {
+            $process->saveOrFail();
+        } catch (ElementNotFoundException $error) {
+            return response(
+                ['message' => __('The bpm definition is not valid'),
+                    'errors' => [
+                        'bpmn' => [
+                            __('The bpm definition is not valid'),
+                            __('Element ":element_id" not found', ['element_id' => $error->elementId])
+                        ]
+                    ]
+                ],
+                422
+            );
+        }
         return new Resource($process->refresh());
     }
 
@@ -214,7 +229,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
      *     ),
      * )
      */
@@ -455,7 +470,7 @@ class ProcessController extends Controller
         $orderDirections = explode(',', $request->input('order_direction', 'asc'));
         $include = $this->getRequestInclude($request);
 
-        $query = Process::with($include)->with('events')
+        $query = Process::nonSystem()->with($include)->with('events')
             ->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
@@ -478,7 +493,7 @@ class ProcessController extends Controller
             $process->startEvents = $process->events->filter(function ($event) {
                 $eventIsTimerStart = collect($event['eventDefinitions'])
                         ->filter(function ($eventDefinition) {
-                            return get_class($eventDefinition) == TimerEventDefinition::class;
+                            return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
                 return !$eventIsTimerStart;
             });
@@ -567,7 +582,6 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
@@ -586,7 +600,7 @@ class ProcessController extends Controller
      *
      * @return Response
      *
-     * @OA\Get(
+     * @OA\Post(
      *     path="/processes/{processId}/export",
      *     summary="Export a single process by ID",
      *     operationId="exportProcess",
@@ -632,9 +646,9 @@ class ProcessController extends Controller
      *     operationId="importProcess",
      *     tags={"Processes"},
      *     @OA\Response(
-     *         response=201,
+     *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessImport")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -685,10 +699,18 @@ class ProcessController extends Controller
      *     summary="Update assignments after import",
      *     operationId="assignmentProcess",
      *     tags={"Processes"},
+     *     @OA\Parameter(
+     *         description="ID of process to return",
+     *         in="path",
+     *         name="process_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
      *     @OA\Response(
-     *         response=201,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -718,7 +740,7 @@ class ProcessController extends Controller
 
             //Update assignments in start Events, task, user Tasks
             $definitions = $process->getDefinitions();
-            $tags = ['startEvent', 'task', 'userTask'];
+            $tags = ['startEvent', 'task', 'userTask', 'manualTask'];
             foreach ($tags as $tag) {
                 $elements = $definitions->getElementsByTagName($tag);
                 foreach ($elements as $element) {
@@ -806,15 +828,29 @@ class ProcessController extends Controller
      *           type="string",
      *         )
      *     ),
-     *     @OA\RequestBody(
-     *       required=false,
-     *       @OA\JsonContent()
+     *      @OA\RequestBody(
+     *         description="data that will be stored as part of the created request",
+     *         required=false,
+     *         @OA\JsonContent(
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="stringField",
+     *                     type="string",
+     *                     example="string example"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="integerField",
+     *                     type="string",
+     *                     example="1"
+     *                 )
+     *             )
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
+     *
      * )
      */
     public function triggerStartEvent(Process $process, Request $request)

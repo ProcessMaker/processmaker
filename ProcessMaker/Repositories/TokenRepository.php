@@ -117,6 +117,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->user_id = empty(Auth::user()) ? null : Auth::user()->id;
 
+        $token->data = null;
         $token->due_at = null;
         $token->initiated_at = null;
         $token->riskchanges_at = null;
@@ -158,6 +159,9 @@ class TokenRepository implements TokenRepositoryInterface
     {
         $this->removeUserFromData($token->getInstance());
         $this->removeRequestFromData($token->getInstance());
+        if ($this->getActivityType($activity) === 'callActivity') {
+            $this->removeParentFromData($token->getInstance());
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
@@ -181,6 +185,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
         $token->process_request_id = $token->getInstance()->getKey();
+        $token->data = $token->getInstance()->getDataStore()->getData();
         $token->save();
         $token->setId($token->getKey());
     }
@@ -362,6 +367,16 @@ class TokenRepository implements TokenRepositoryInterface
     private function removeRequestFromData(Instance $instance)
     {
         $instance->getDataStore()->removeData('_request');
+    }
+
+    /**
+     * Remove _parent magic variable from the request data.
+     *
+     * @param Instance $instance
+     */
+    private function removeParentFromData(Instance $instance)
+    {
+        $instance->getDataStore()->removeData('_parent');
     }
 
 

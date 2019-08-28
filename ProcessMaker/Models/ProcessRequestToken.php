@@ -10,7 +10,7 @@ use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\SerializeToIso8601;
 use \Illuminate\Auth\Access\AuthorizationException;
-use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Traits\ExtendedPMQL;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -37,6 +37,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *   @OA\Property(property="due_at", type="date-time"),
  *   @OA\Property(property="initiated_at", type="string", format="date-time"),
  *   @OA\Property(property="riskchanges_at", type="string", format="date-time"),
+ *   @OA\Property(property="subprocess_start_event_id", type="string"),
  * ),
  * @OA\Schema(
  *   schema="processRequestToken",
@@ -48,16 +49,20 @@ use ProcessMaker\Query\Traits\PMQL;
  *          @OA\Property(property="process_request_id", type="string", format="id"),
  *          @OA\Property(property="element_id", type="string", format="id"),
  *          @OA\Property(property="element_type", type="string", format="id"),
+ *          @OA\Property(property="element_index", type="string"),
+ *          @OA\Property(property="element_name", type="string"),
  *          @OA\Property(property="created_at", type="string", format="date-time"),
  *          @OA\Property(property="updated_at", type="string", format="date-time"),
  *          @OA\Property(property="initiated_at", type="string", format="date-time"),
+ *          @OA\Property(property="advanceStatus", type="string"),
+ *          @OA\Property(property="due_notified", type="integer"),
  *       )
  *   }
  * )
  */
 class ProcessRequestToken extends Model implements TokenInterface
 {
-    use PMQL;
+    use ExtendedPMQL;
     use TokenTrait;
     use SerializeToIso8601;
 
@@ -72,6 +77,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         'id',
         'updated_at',
         'created_at',
+        'data',
     ];
 
     /**
@@ -82,7 +88,8 @@ class ProcessRequestToken extends Model implements TokenInterface
      * @var array
      */
     protected $hidden = [
-        'bpmn'
+        'bpmn',
+        'data',
     ];
 
     /**
@@ -115,6 +122,15 @@ class ProcessRequestToken extends Model implements TokenInterface
         'due_at',
         'initiated_at',
         'riskchanges_at',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'data' => 'array',
     ];
 
     /**
@@ -284,4 +300,165 @@ class ProcessRequestToken extends Model implements TokenInterface
             throw new AuthorizationException("Not authorized to view this task");
         }
     }
+
+    /**
+     * Scheduled task for this token
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function scheduledTasks()
+    {
+        return $this->hasMany(ScheduledTask::class, 'process_request_token_id');
+    }
+
+    /**
+     * Get the sub-process request associated to the token.
+     *
+     */
+    public function subProcessRequest()
+    {
+        return $this->belongsTo(ProcessRequest::class, 'subprocess_request_id');
+    }
+
+    /**
+     * PMQL field alias (started = created_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasStarted()
+    {
+        return 'created_at';
+    }
+
+    /**
+     * PMQL field alias (created = created_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasCreated()
+    {
+        return 'created_at';
+    }
+
+    /**
+     * PMQL field alias (modified = updated_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasModified()
+    {
+        return 'updated_at';
+    }
+
+    /**
+     * PMQL field alias (due = due_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasDue()
+    {
+        return 'due_at';
+    }
+
+    /**
+     * PMQL field alias (completed = completed_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasCompleted()
+    {
+        return 'completed_at';
+    }
+    
+    /**
+     * PMQL value alias for status field
+     *
+     * @param string $value
+     * 
+     * @return callback
+     */        
+    public function valueAliasStatus($value)
+    {
+        $statusMap = [
+            'in progress' => 'ACTIVE',
+            'completed' => 'CLOSED',
+        ];
+        
+        $value = mb_strtolower($value);
+    
+        return function($query) use ($value, $statusMap) {
+            if (array_key_exists($value, $statusMap)) {
+                $query->where('status', $statusMap[$value]);
+            } else {
+                $query->where('status', $value);
+            }
+        };
+    }
+    
+    /**
+     * PMQL value alias for request field
+     *
+     * @param string $value
+     * @param ProcessMaker\Query\Expression $expression
+     * 
+     * @return callback
+     */
+    public function valueAliasRequest($value, $expression)
+    {
+        return function($query) use($expression, $value) {
+            $processRequests = ProcessRequest::where('name', $value)->get();
+            $query->whereIn('process_request_tokens.process_request_id', $processRequests->pluck('id'));
+        };
+    }
+    
+    /**
+     * PMQL value alias for task field
+     *
+     * @param string $value
+     * @param ProcessMaker\Query\Expression $expression
+     *
+     * @return callback
+     */
+    public function valueAliasTask($value, $expression)
+    {
+        return function($query) use($expression, $value) {
+            $query->where('process_request_tokens.element_name', $value);
+        };
+    }
+    
+    /**
+     * PMQL wildcard for process request & data fields
+     *
+     * @param string $value
+     * @param ProcessMaker\Query\Expression $expression
+     *
+     * @return mixed
+     */
+    public function fieldWildcard($value, $expression)
+    {
+        if (is_object($expression->field->field())) {
+            return function($query) use ($expression, $value) {
+                $field = $expression->field->toEloquent();
+                $operator = $expression->operator;
+
+                $requests = ProcessRequest::where($field, $operator, $value)->get();
+                $query->whereIn('process_request_id', $requests->pluck('id'));
+            };
+        } else {
+            if (stripos($expression->field->field(), 'data.') === 0) {
+                $field = $expression->field->field();
+                $operator = $expression->operator;
+                if (is_string($value)) {
+                    $value = '"' . $value . '"';
+                }
+
+                $pmql = "$field $operator $value";
+
+                return function($query) use ($pmql) {
+                    $requests = ProcessRequest::pmql($pmql)->get();
+                    $query->whereIn('process_request_id', $requests->pluck('id'));
+                };
+            }
+        }
+    } 
 }

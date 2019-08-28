@@ -13,6 +13,7 @@ use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ProcessRequestsCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
@@ -25,7 +26,6 @@ use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Jobs\CancelRequest;
-use ProcessMaker\PmqlHelper;
 
 class ProcessRequestController extends Controller
 {
@@ -46,7 +46,7 @@ class ProcessRequestController extends Controller
      *
      * @param Request $request
      *
-     * @return ApiCollection
+     * @return ProcessRequestsCollection
      *
      * /**
      * @OA\Get(
@@ -115,8 +115,7 @@ class ProcessRequestController extends Controller
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
-                $helper = new PmqlHelper('request');
-                $query->pmql($pmql, $helper->aliases());
+                $query->pmql($pmql);
             } catch (QueryException $e) {
                 return response(['message' => __('Your PMQL search could not be completed.')], 400);
             } catch (SyntaxError $e) {
@@ -141,7 +140,7 @@ class ProcessRequestController extends Controller
         } else {
             $response = collect([]);
         }
-        return new ApiCollection($response);
+        return new ProcessRequestsCollection($response);
     }
 
     /**
@@ -204,9 +203,8 @@ class ProcessRequestController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/processRequestEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
      * )
      */
@@ -315,6 +313,35 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      * @param string $event
      * @return void
+     * 
+     * @OA\Post(
+     *     path="/requests/{process_request_id}/events/{event_id}",
+     *     summary="Update a process request event",
+     *     operationId="updateProcessRequestEvent",
+     *     tags={"Process Requests"},
+     *     @OA\Parameter(
+     *         description="ID of process request to return",
+     *         in="path",
+     *         name="process_request_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="ID of process event to return",
+     *         in="path",
+     *         name="event_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *     ),
+     * )
      */
     public function activateIntermediateEvent(ProcessRequest $request, $event)
     {

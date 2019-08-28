@@ -27,7 +27,7 @@
               </button>
             </div>
 
-            <button v-if="permission.includes('export-screens')" type="button" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
+            <button v-if="permission.includes('export-screens')" type="button" :title="$t('Export Screen')" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
             <button @click="saveScreen(false)" type="button" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
           </b-col>
 
@@ -35,7 +35,7 @@
       </b-card-header>
 
       <!-- Card Body -->
-      <b-card-body class="overflow-auto p-0" id="screen-builder-container">
+      <b-card-body class="overflow-auto p-0 h-100" id="screen-builder-container">
         <!-- Vue-form-builder -->
         <vue-form-builder
           class="m-0"
@@ -43,6 +43,7 @@
           :initialConfig="screen.config"
           :title="screen.title"
           :class="displayBuilder ? 'd-flex' : 'd-none'"
+          :screenType="type"
           ref="builder"
           @change="updateConfig"
         />
@@ -58,7 +59,9 @@
               :config="config"
               :computed="computed"
               :custom-css="customCSS"
-              v-on:css-errors="cssErrors = $event"/>
+              v-on:css-errors="cssErrors = $event"
+              :mock-magic-variables="mockMagicVariables"
+            />
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
@@ -149,6 +152,7 @@
   import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
   import VueJsonPretty from 'vue-json-pretty';
   import MonacoEditor from "vue-monaco";
+  import mockMagicVariables from './mockMagicVariables';
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -194,6 +198,7 @@ import formTypes from "./formTypes";
           lineNumbers: 'off',
           minimap: false,
         },
+        mockMagicVariables,
       };
     },
     components: {
@@ -248,6 +253,10 @@ import formTypes from "./formTypes";
         return this.validationErrors.length + errorCount
       },
       validationErrors() {
+        if (!this.toggleValidation) {
+          return [];
+        }
+
         const validationErrors = [];
 
         if (this.type === formTypes.form && !this.containsSubmitButton()) {
@@ -255,31 +264,10 @@ import formTypes from "./formTypes";
         }
 
         this.config.forEach(page => {
-          page.items.forEach(item => {
-            let data = item.config ? item.config : {};
-            let rules = {};
-            item.inspector.forEach(property => {
-              if (property.config.validation) {
-                rules[property.field] = property.config.validation;
-              }
-            });
-            let validator = new Validator(data, rules);
-            // Validation will not run until you call passes/fails on it
-            if(!validator.passes()) {
-              Object.keys(validator.errors.errors).forEach(field => {
-                validator.errors.errors[field].forEach(error => {
-                  validationErrors.push({
-                    message: error,
-                    page: page,
-                    item: item,
-                  });
-                });
-              });
-            }
-          });
+          validationErrors.push(...this.getValidationErrorsForItems(page.items, page));
         });
 
-        return this.toggleValidation ? validationErrors : [] ;
+        return validationErrors;
       },
     },
     mounted() {
@@ -292,11 +280,57 @@ import formTypes from "./formTypes";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
+      getValidationErrorsForItems(items, page) {
+        const validationErrors = [];
+
+        items.forEach(item => {
+          if (item.container) {
+            item.items.forEach(containerItems => {
+              validationErrors.push(...this.getValidationErrorsForItems(containerItems, page));
+            });
+          }
+
+          const data = item.config || {};
+          const rules = {};
+
+          item.inspector.forEach(property => {
+            if (property.config.validation) {
+              rules[property.field] = property.config.validation;
+            }
+          });
+
+          const validator = new Validator(data, rules);
+
+          // Validation will not run until you call passes/fails on it
+          if (!validator.passes()) {
+            Object.keys(validator.errors.errors).forEach(field => {
+              validator.errors.errors[field].forEach(error => {
+                validationErrors.push({
+                  message: error,
+                  page,
+                  item,
+                });
+              });
+            });
+          }
+        });
+
+        return validationErrors;
+      },
       containsSubmitButton() {
-        return this.config.some(config => config.items.some(this.isSubmitButton));
+        return this.config.some(config => {
+          return this.itemsContainSubmitButton(config.items);
+        });
       },
       isSubmitButton(item) {
         return item.component === 'FormButton' && item.config.event === 'submit';
+      },
+      itemsContainSubmitButton(items) {
+        return items.some(item => {
+          return item.container
+            ? item.items.some(this.itemsContainSubmitButton)
+            : this.isSubmitButton(item);
+        });
       },
       beforeExportScreen() {
         this.saveScreen(true);
@@ -339,7 +373,7 @@ import formTypes from "./formTypes";
           })
       }, 60000),
       onClose() {
-        window.location.href = "/processes/screens";
+        window.location.href = "/designer/screens";
       },
       beforeExportScreen() {
         this.saveScreen(true);

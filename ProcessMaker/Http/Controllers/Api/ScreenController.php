@@ -61,7 +61,7 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Screen::query();
+        $query = Screen::nonSystem();
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -69,6 +69,7 @@ class ScreenController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
+                    ->orWhere('category', 'like', $filter)
                     ->orWhere('type', 'like', $filter)
                     ->orWhere('config', 'like', $filter);
             });
@@ -91,8 +92,8 @@ class ScreenController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     *     @OA\Get(
-     *     path="/screens/screensId",
+     * @OA\Get(
+     *     path="/screens/{screens_id}",
      *     summary="Get single screens by ID",
      *     operationId="getScreensById",
      *     tags={"Screens"},
@@ -107,7 +108,7 @@ class ScreenController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the screens",
+     *         description="Successfully found the screen",
      *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
@@ -124,7 +125,7 @@ class ScreenController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     *     @OA\Post(
+     *  @OA\Post(
      *     path="/screens",
      *     summary="Save a new screens",
      *     operationId="createScreens",
@@ -158,7 +159,7 @@ class ScreenController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/screens/screensId",
+     *     path="/screens/{screens_id}",
      *     summary="Update a screen",
      *     operationId="updateScreen",
      *     tags={"Screens"},
@@ -176,9 +177,8 @@ class ScreenController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *         response=204,
+     *         description="success"
      *     ),
      * )
      */
@@ -189,10 +189,8 @@ class ScreenController extends Controller
         $screen->fill($request->input());
         $screen->saveOrFail();
 
-        unset(
-            $original_attributes['id'],
-            $original_attributes['updated_at']
-        );
+        unset($original_attributes['id'],
+        $original_attributes['updated_at']);
         $screen->versions()->create($original_attributes);
 
         return response([], 204);
@@ -207,7 +205,7 @@ class ScreenController extends Controller
      * @return ResponseFactory|Response
      *
      *     @OA\Put(
-     *     path="/screens/screensId/duplicate",
+     *     path="/screens/{screens_id}/duplicate",
      *     summary="duplicate a screen",
      *     operationId="duplicateScript",
      *     tags={"Screens"},
@@ -225,7 +223,7 @@ class ScreenController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/screensEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=201,
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
@@ -262,7 +260,7 @@ class ScreenController extends Controller
      *
      * @return ResponseFactory|Response
      *     @OA\Delete(
-     *     path="/screens/screensId",
+     *     path="/screens/{screens_id}",
      *     summary="Delete a screen",
      *     operationId="deleteScreen",
      *     tags={"Screens"},
@@ -278,7 +276,6 @@ class ScreenController extends Controller
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
      *     ),
      * )
      */
@@ -295,8 +292,8 @@ class ScreenController extends Controller
      *
      * @return Response
      *
-     * @OA\Get(
-     *     path="/screens/screensId/export",
+     * @OA\Post(
+     *     path="/screens/{screensId}/export",
      *     summary="Export a single screen by ID",
      *     operationId="exportScreen",
      *     tags={"Screens"},
@@ -311,8 +308,8 @@ class ScreenController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the screen",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *         description="Successfully exported the screen",
+     *         @OA\JsonContent(ref="#/components/schemas/screenExported")
      *     ),
      * )
      */
@@ -321,9 +318,9 @@ class ScreenController extends Controller
         $fileKey = ExportScreen::dispatchNow($screen);
 
         if ($fileKey) {
-            return ['url' => url("/processes/screens/{$screen->id}/download/{$fileKey}")];
+            return ['url' => url("/designer/screens/{$screen->id}/download/{$fileKey}")];
         } else {
-            return response(['error' => __('Unable to Export Screen')], 500) ;
+            return response(['error' => __('Unable to Export Screen')], 500);
         }
     }
 

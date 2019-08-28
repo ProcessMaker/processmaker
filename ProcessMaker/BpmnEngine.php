@@ -2,11 +2,13 @@
 
 namespace ProcessMaker;
 
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\Engine\EngineTrait;
-use ProcessMaker\Models\Process;
+
 /**
  * Test implementation for EngineInterface.
  *
@@ -100,5 +102,27 @@ class BpmnEngine implements EngineInterface
     {
         $this->process = $process;
         return $this;
+    }
+
+    /**
+     * Load an execution instance from an external storage.
+     *
+     * @param ProcessRequest $instance
+     *
+     * @return ExecutionInstanceInterface|null
+     */
+    public function loadProcessRequest(ProcessRequest $instance)
+    {
+        // If exists return the already loaded instance by id 
+        foreach($this->executionInstances as $executionInstance) {
+            if ($executionInstance->getId() === $instance->getKey()) {
+                return $executionInstance;
+            }
+        }
+        $parentStorage = $this->getStorage();
+        $this->setStorage($instance->process->getDefinitions(false, $this));
+        $instance = $this->loadExecutionInstance($instance->getKey());
+        $this->setStorage($parentStorage);
+        return $instance;
     }
 }

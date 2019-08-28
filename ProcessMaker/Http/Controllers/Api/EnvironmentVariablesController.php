@@ -99,7 +99,7 @@ class EnvironmentVariablesController extends Controller
     *     ),
     *     @OA\Response(
     *         response=200,
-    *         description="Successfully found the process",
+    *         description="Successfully found the environment variable",
     *         @OA\JsonContent(ref="#/components/schemas/environment_variables")
     *     ),
     * )
@@ -123,7 +123,7 @@ class EnvironmentVariablesController extends Controller
     *     tags={"Environment Variables"},
     *     @OA\RequestBody(
     *       required=true,
-    *       @OA\JsonContent(ref="#/components/schemas/environment_variablesEditable")
+    *       @OA\JsonContent(ref="#/components/schemas/create_environment_variablesEditable")
     *     ),
     *     @OA\Response(
     *         response=201,
@@ -193,7 +193,7 @@ class EnvironmentVariablesController extends Controller
     *         )
     *     ),
     *     @OA\Response(
-    *         response=204,
+    *         response=200,
     *         description="success",
     *         @OA\JsonContent(ref="#/components/schemas/environment_variables")
     *     ),

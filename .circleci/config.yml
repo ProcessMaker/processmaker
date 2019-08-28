@@ -32,11 +32,10 @@ jobs:
           name: Set Build Name Environment Variable
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
-            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. -)' >> $BASH_ENV
+            echo 'export BUILD_NAME=$(echo "$CIRCLE_BRANCH" | tr /. - | tr "[:upper:]" "[:lower:]")' >> $BASH_ENV
             echo 'export QA_DB_NAME=$(echo "processmaker$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             echo 'export QA_DATA_DB_NAME=$(echo "processmaker_data$CIRCLE_BRANCH" | tr -d /.-)' >> $BASH_ENV
             source $BASH_ENV
-
       - run:
           name: QA Host SSH Host Identifier Import
           command: |
@@ -44,7 +43,6 @@ jobs:
             echo $BUILDBOT_HOST_IDENTIFIER >> ~/.ssh/known_hosts
             echo $QA_PROCESSMAKERBUILDS_HOST_IDENTIFIER	>> ~/.ssh/known_hosts
             chmod 0600 ~/.ssh/known_hosts
-
       - checkout
 
       # Install PHP dependencies
@@ -72,7 +70,6 @@ jobs:
             sudo pecl install sqlsrv
             sudo pecl install pdo_sqlsrv
             sudo docker-php-ext-enable sqlsrv pdo_sqlsrv
-
       # Install old libssl-1.0.0 due to ODBC13 issue. See: https://github.com/Microsoft/msphpsql/issues/484
       - run:
           name: 'ODBC13 libssl workaround'
@@ -80,7 +77,6 @@ jobs:
             echo "deb http://deb.debian.org/debian jessie main" | sudo tee -a /etc/apt/sources.list
             sudo apt-get update
             sudo apt-get install libssl1.0.0
-
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -114,16 +110,18 @@ jobs:
             php artisan l5:generate
             mkdir -p /tmp/processmaker-sdk-php
             php artisan processmaker:sdk php /tmp/processmaker-sdk-php
+            mkdir -p /tmp/processmaker-sdk-node
+            php artisan processmaker:sdk javascript /tmp/processmaker-sdk-node
             mkdir -p /tmp/processmaker-sdk-lua
             php artisan processmaker:sdk lua /tmp/processmaker-sdk-lua
-
       - run:
           name: Configure scripts executor
           command: |
-            docker pull processmaker/executor:php
-            docker pull processmaker/executor:lua
+            docker pull processmaker4/executor-php:latest
+            docker pull processmaker4/executor-lua:latest
+            docker pull processmaker4/executor-node:latest
+            docker pull jbergknoff/sass:latest
             sudo mkdir -m777 /opt/executor
-
       #- run: sudo docker-php-ext-enable xdebug
 
       # Build frontend assets for production
@@ -138,32 +136,32 @@ jobs:
 
       # run tests!
       - run:
-          name: "PHPUnit"
-          command: "./vendor/bin/phpunit -d memory_limit=-1"
+          name: 'PHPUnit'
+          command: './vendor/bin/phpunit -v -d memory_limit=-1'
           environment:
-            DB_DATABASE: "circle_test"
-            DB_PASSWORD: "P4ssW0rd1!"
-            DB_USERNAME: "root"
-            DATA_DB_DRIVER: "sqlsrv"
-            DATA_DB_HOST: "127.0.0.1"
-            DATA_DB_PORT: "1433"
-            DATA_DB_DATABASE: "userexternal"
-            DATA_DB_USERNAME: "sa"
-            DATA_DB_PASSWORD: "P4ssW0rd1!"
-            RUN_MSSQL_TESTS: "true"
-            MSSQL_HOST: "127.0.0.1"
-            MSSQL_PORT: "1433"
-            MSSQL_DATABASE: "test"
-            MSSQL_USERNAME: "sa"
-            MSSQL_PASSWORD: "P4ssW0rd1!"
-            PROCESSMAKER_SCRIPTS_HOME: "/opt/executor"
-            PROCESSMAKER_SCRIPTS_DOCKER_MODE: "copying"
+            DB_DATABASE: 'circle_test'
+            DB_PASSWORD: 'P4ssW0rd1!'
+            DB_USERNAME: 'root'
+            DATA_DB_DRIVER: 'sqlsrv'
+            DATA_DB_HOST: '127.0.0.1'
+            DATA_DB_PORT: '1433'
+            DATA_DB_DATABASE: 'test'
+            DATA_DB_USERNAME: 'sa'
+            DATA_DB_PASSWORD: 'P4ssW0rd1!'
+            RUN_MSSQL_TESTS: 'true'
+            MSSQL_HOST: '127.0.0.1'
+            MSSQL_PORT: '1433'
+            MSSQL_DATABASE: 'test'
+            MSSQL_USERNAME: 'sa'
+            MSSQL_PASSWORD: 'P4ssW0rd1!'
+            PROCESSMAKER_SCRIPTS_HOME: '/opt/executor'
+            PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
       - run:
           name: 'Jest'
           command: 'npm run test'
 
-      #- store_artifacts:
-      #    path: coverage
+      - store_artifacts:
+          path: coverage
 
       #- store_artifacts:
       #    path: tests/js/coverage
@@ -191,10 +189,6 @@ jobs:
             echo "APP_URL=https://${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env
             echo "PROXIES=*" >> .env
             echo "PROXIES_AWS=true" >> .env
-            # Put in configuration for SauceLabs Cloud based Browser Testing
-            echo "SAUCELABS_BROWSER_TESTING=true" >> .env
-            echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env
-            echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env
             # Put in configuration file for Broadcaster
             echo "BROADCAST_DRIVER=redis" >> .env
             echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env
@@ -205,12 +199,40 @@ jobs:
             echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env
             echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env
             echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env
-
+            echo "APP_KEY=" >> .env.dusk.staging
+            echo "APP_DEBUG=FALSE" >> .env.dusk.staging
+            echo "APP_NAME=ProcessMaker" >> .env.dusk.staging
+            echo "APP_ENV=staging" >> .env.dusk.staging
+            echo "DB_HOSTNAME=${QA_RDS_HOST}" >> .env.dusk.staging
+            echo "DB_DATABASE=${QA_DB_NAME}" >> .env.dusk.staging
+            echo "DB_USERNAME=${QA_RDS_USERNAME}" >> .env.dusk.staging
+            echo "DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env.dusk.staging
+            echo "DATA_DB_DRIVER=mysql" >> .env.dusk.staging
+            echo "DATA_DB_HOST=${QA_RDS_HOST}" >> .env.dusk.staging
+            echo "DATA_DB_DATABASE=${QA_DATA_DB_NAME}" >> .env.dusk.staging
+            echo "DATA_DB_PORT=3306" >> .env.dusk.staging
+            echo "DATA_DB_USERNAME=${QA_RDS_USERNAME}" >> .env.dusk.staging
+            echo "DATA_DB_PASSWORD=${QA_RDS_PASSWORD}" >> .env.dusk.staging
+            echo "APP_URL=https://dusk-${BUILD_NAME}${QA_HOST_SUFFIX}" >> .env.dusk.staging 
+            # Put in configuration for SauceLabs Cloud based Browser Testing
+            echo "SAUCELABS_BROWSER_TESTING=true" >> .env.dusk.staging
+            echo "SAUCELABS_USERNAME=${SAUCELABS_USERNAME}" >> .env.dusk.staging
+            echo "SAUCELABS_ACCESS_KEY=${SAUCELABS_ACCESS_KEY}" >> .env.dusk.staging
+            # Put in configuration file for Broadcaster
+            echo "BROADCAST_DRIVER=redis" >> .env.dusk.staging
+            echo "BROADCASTER_HOST=%%BROADCASTER_HOST%%" >> .env.dusk.staging
+            echo "BROADCASTER_KEY=21a795019957dde6bcd96142e05d4b10" >> .env.dusk.staging
+            echo "REDIS_PORT=%%REDISPORT%%" >> .env.dusk.staging
+            echo "PROCESSMAKER_SCRIPTS_HOME=/home/circleci/tmp" >> .env.dusk.staging
+            echo "HOME=/home/circleci" >> .env.dusk.staging
+            echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env.dusk.staging
+            echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env.dusk.staging
+            echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env.dusk.staging           
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
             cp tests/storage/keys/* storage/keys/
-
+    
       - run:
           name: 'QA Package'
           command: './vendor/bin/phing package -Dpackage_name=processmaker-qa-${BUILD_NAME}.tar.gz'
@@ -242,7 +264,14 @@ jobs:
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo /bin/bash /root/cloudops/containerDeploy.sh $BUILD_NAME"
             # Generate Passport Keys
             ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan passport:keys"
-
+                    
+      - run:
+          name: 'Preparing the dusk test with SauceLabs'
+          command: |
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo rm -rf ~/builds/dusk-$BUILD_NAME "
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo cp -rp ~/builds/$BUILD_NAME ~/builds/dusk-$BUILD_NAME "
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service nginx restart"
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo service php-fpm restart"
       - run:
           name: 'SauceLabs Browser Tests: Chrome'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "cd ~/builds/$BUILD_NAME && php artisan dusk"'
@@ -274,6 +303,11 @@ jobs:
             SAUCELABS_BROWSER: 'safari'
             SAUCELABS_PLATFORM: 'macOS 10.13'
             SAUCELABS_BROWSER_VERSION: '11.0'
+    
+      - run:
+          name: 'Remove the files created'
+          command: |
+            ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "sudo rm -rf ~/builds/dusk-$BUILD_NAME "
 
       - run:
           name: 'Final QA Artisan DB Migration'

@@ -11,6 +11,7 @@ import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
+import SelectUser from './components/SelectUser';
 
 /******
  * Global adjustment parameters for moment.js.
@@ -34,6 +35,7 @@ window.moment = moment;
 
 Vue.component('multiselect', Multiselect);
 Vue.component('Sidebaricon', Sidebaricon);
+Vue.component('select-user', SelectUser);
 
 //Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
@@ -168,6 +170,12 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     window.ProcessMaker.EventBus.$emit("api-client-error", error);
     if (error.response && error.response.status && error.response.status === 401) {
         window.location = "/login";
+    } else if (!error.config.url.match('/debug')) {
+        window.ProcessMaker.apiClient.post('/debug', {
+            message: error.message,
+            code: error.code,
+            config: error.config
+        })
     }
     return Promise.reject(error);
 });

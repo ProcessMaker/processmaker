@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
@@ -22,6 +22,8 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Traits\HideSystemResources;
+use DOMElement;
 
 /**
  * Represents a business process definition.
@@ -33,6 +35,7 @@ use ProcessMaker\Query\Traits\PMQL;
  * @property string $description
  * @property string $name
  * @property string $status
+ * @property string start_events
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
@@ -42,6 +45,10 @@ use ProcessMaker\Query\Traits\PMQL;
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="pause_timer_start", type="integer"),
+ *   @OA\Property(property="cancel_screen_id", type="integer"),
+ *   @OA\Property(property="has_timer_start_events", type="boolean"),
+ *   @OA\Property(property="start_events", type="string", format="json"),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -54,7 +61,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
  *       )
  *   }
- * )
+ * ),
  * @OA\Schema(
  *     schema="ProcessStartEvents",
  *     @OA\Schema(
@@ -65,7 +72,7 @@ use ProcessMaker\Query\Traits\PMQL;
  *         @OA\Property(property="id", type="string"),
  *         @OA\Property(property="name", type="string"),
  *     )
- * )
+ * ),
  * @OA\Schema(
  *     schema="ProcessWithStartEvents",
  *     allOf={
@@ -75,8 +82,35 @@ use ProcessMaker\Query\Traits\PMQL;
  *             property="startEvents",
  *             type="array",
  *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
- *         )),
- *     },
+ *         ),
+ *         @OA\Property(
+ *             property="events",
+ *             type="array",
+ *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
+ *         ))
+ *     }
+ * ),
+ *
+ * @OA\Schema(
+ *     schema="ProcessImport",
+ *     allOf={
+ *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),
+ *      @OA\Schema(
+ *         @OA\Property( property="status", type="object"),
+ *         @OA\Property( property="assignable", type="array[]")
+ *      )
+ *    }
+ * ),
+ *
+ * @OA\Schema(
+ *   schema="CreateNewProcess",
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/ProcessEditable"),
+ *       @OA\Schema(ref="#/components/schemas/Process"),
+ *       @OA\Schema(
+ *           @OA\Property(property="notifications", type="array[]"),
+ *       )
+ *   }
  * )
  */
 class Process extends Model implements HasMedia
@@ -87,6 +121,7 @@ class Process extends Model implements HasMedia
     use ProcessTaskAssignmentsTrait;
     use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
+    use HideSystemResources;
     use PMQL;
 
     protected $connection = 'processmaker';
@@ -157,6 +192,10 @@ class Process extends Model implements HasMedia
 
     protected $appends = [
         'has_timer_start_events',
+    ];
+
+    protected $casts = [
+        'start_events' => 'array',
     ];
 
     /**
@@ -368,10 +407,12 @@ class Process extends Model implements HasMedia
      *
      * @return \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
-    public function getDefinitions($forceParse = false)
+    public function getDefinitions($forceParse = false, $engine = null)
     {
         if ($forceParse || empty($this->bpmnDefinitions)) {
-            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, ['process' => $this]);
+            $options = ['process' => $this];
+            !$engine ?: $options['engine'] = $engine;
+            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
                 //Load the collaborations if exists
@@ -463,7 +504,7 @@ class Process extends Model implements HasMedia
                 $user = $this->getNextUserAssignment($activity->getId());
                 break;
             case 'requester':
-                $user = $token->getInstance()->user_id;
+                $user = $this->getRequester($token);
                 break;
             case 'previous_task_assignee':
                 $rule = new PreviousTaskAssignee();
@@ -569,7 +610,7 @@ class Process extends Model implements HasMedia
                             $user = $item->assignee;
                             break;
                         case 'requester':
-                            $user = $token->getInstance()->user_id;
+                            $user = $this->getRequester($token);
                             break;
                         case 'manual':
                         case 'self_service':
@@ -645,19 +686,65 @@ class Process extends Model implements HasMedia
         $isAdmin = $user ? $user->is_administrator : false;
         $permissions = $filterWithPermissions && !$isAdmin ? $this->getStartEventPermissions() : [];
         $nofilter = $isAdmin || !$filterWithPermissions;
-        $definitions = $this->getDefinitions();
         $response = [];
-        $startEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
-        foreach ($startEvents as $startEvent) {
-            if ($nofilter || ($user && isset($permissions[$startEvent->getAttribute('id')]) && in_array($user->id, $permissions[$startEvent->getAttribute('id')]))) {
-                $bpmnNode = $startEvent->getBpmnElementInstance();
-                $properties = $bpmnNode->getProperties();
-                $properties['ownerProcessId'] = $bpmnNode->getOwnerProcess()->getId();
-                $properties['ownerProcessName'] = $bpmnNode->getOwnerProcess()->getName();
-                $response[] = $properties;
+        if (!isset($this->start_events)) {
+            $this->start_events = $this->getUpdatedStartEvents();
+        }
+        foreach ($this->start_events as $startEvent) {
+            $id = $startEvent['id'];
+            if ($nofilter || ($user && isset($permissions[$id]) && in_array($user->id, $permissions[$id]))) {
+                $response[] = $startEvent;
             }
         }
         return $response;
+    }
+
+    /**
+     * Get an updated list of start events from BPMN
+     *
+     * @return array
+     */
+    public function getUpdatedStartEvents()
+    {
+        $response = [];
+        if (empty($this->bpmn)) {
+            return $response;
+        }
+        $definitions = new BpmnDocument();
+        $definitions->loadXML($this->bpmn);
+        $startEvents = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent');
+        foreach ($startEvents as $startEvent) {
+            $properties = $this->nodeAttributes($startEvent);
+            $properties['ownerProcessId'] = $startEvent->parentNode->getAttribute('id');
+            $properties['ownerProcessName'] = $startEvent->parentNode->getAttribute('name');
+            $startEvent->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'timerEventDefinition');
+            $properties['eventDefinitions'] = [];
+            foreach ($startEvent->childNodes as $node) {
+                if (substr($node->localName, -15) === 'EventDefinition') {
+                    $eventDefinition = $this->nodeAttributes($node);
+                    $eventDefinition['$type'] = $node->localName;
+                    $properties['eventDefinitions'][] = $eventDefinition;
+                }
+            }
+            $response[] = $properties;
+        }
+        return $response;
+    }
+
+    /**
+     * Get node element attributes
+     *
+     * @param DOMElement $node
+     *
+     * @return array
+     */
+    private function nodeAttributes(DOMElement $node)
+    {
+        $array = [];
+        foreach ($node->attributes as $attribute) {
+            $array[$attribute->localName] = $attribute->nodeValue;
+        }
+        return $array;
     }
 
     public function getIntermediateCatchEvents()
@@ -742,9 +829,38 @@ class Process extends Model implements HasMedia
         $hasTimerStartEvent = false;
         foreach ($this->getStartEvents() as $event) {
             foreach ($event['eventDefinitions'] as $definition) {
-                $hasTimerStartEvent = $hasTimerStartEvent || $definition instanceof TimerEventDefinitionInterface;
+                $hasTimerStartEvent = $hasTimerStartEvent || $definition['$type'] === 'timerEventDefinition';
             }
         }
         return $hasTimerStartEvent;
+    }
+
+    /**
+     * Get the requester of the current token
+     *
+     * @param string $processTaskUuid
+     *
+     * @return Integer $user_id
+     * @throws TaskDoesNotHaveRequesterException
+     */
+    private function getRequester($token)
+    {
+        $processRequest = $token->getInstance();
+
+        // Check for anonymous web entry
+        $startEvent = $processRequest->tokens()->where('element_type', 'startEvent')->firstOrFail();
+        $canBeAnonymous = false;
+        if (isset($startEvent->getDefinition()['config'])) {
+            $config = json_decode($startEvent->getDefinition()['config'], true);
+            if ($config && $config['web_entry'] && $config['web_entry']['mode'] === 'ANONYMOUS') {
+                $canBeAnonymous = true;
+            }
+        }
+
+        if (!$processRequest->user_id && $canBeAnonymous) {
+            throw new TaskDoesNotHaveRequesterException();
+        }
+
+        return $processRequest->user_id;
     }
 }

@@ -29,7 +29,7 @@ initialControls.push({
             type: "FormInput",
             field: "label",
             config: {
-                label: "Text Label",
+                label: "Label",
                 helper: "The text to display"
             }
         },
@@ -37,7 +37,7 @@ initialControls.push({
             type: "FormInput",
             field: "name",
             config: {
-                label: "Upload Name",
+                label: "Name",
                 helper: "The name of the upload"
             }
         }
@@ -61,7 +61,7 @@ initialControls.push({
             type: "FormInput",
             field: "label",
             config: {
-                label: "Text Label",
+                label: "Label",
                 helper: "The text to display"
             }
         },
@@ -69,13 +69,19 @@ initialControls.push({
             type: "FormInput",
             field: "name",
             config: {
-                label: "Download Name",
+                label: "Name",
                 helper: "The name of the Download"
             }
         }
         ]
     }
 });
+
+// The submit button has by default the 'submit' value
+let submitButton = initialControls.find(x => x.control.label === "Submit");
+if (submitButton) {
+    submitButton.control.config.fieldValue = "submit";
+}
 
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
     for (let i = 0; i < initialControls.length; i++) {
@@ -100,7 +106,7 @@ ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
 
         for (let j = 0; j < item.control.inspector.length; j++) {
             let config = item.control.inspector[j].config;
-            if (config.label === "Field Name") {
+            if (config.label === "Key Name") {
                 config.validation = "regex:/^(?:[A-Z_a-z])(?:[0-9A-Z_a-z])*$/|required";
             }
         }

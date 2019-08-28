@@ -1,6 +1,13 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <data-loading
+            :for="/clients/"
+            v-show="shouldShowLoader"
+            :empty="$t('No Data Available')"
+            :empty-desc="$t('')"
+            empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :css="css"
@@ -52,9 +59,10 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter"],
   data() {
     return {
@@ -94,7 +102,7 @@ export default {
       ProcessMaker.apiClient
         .get("/oauth/clients", { baseURL: "/" })
         .then(response => {
-          this.data = response.data;
+          this.data = response.data.data;
           this.loading = false;
         });
     },

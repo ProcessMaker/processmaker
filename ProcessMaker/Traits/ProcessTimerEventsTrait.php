@@ -10,6 +10,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Providers\WorkflowServiceProvider as PM;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 
 /**
  * Update the task assignments

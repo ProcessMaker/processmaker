@@ -20,11 +20,16 @@ class ProcessCategoryController extends Controller
      *     summary="Returns all processes categories that the user has access to",
      *     operationId="getProcessCategories",
      *     tags={"Process Categories"},
-     *     @OA\Parameter(ref="#/components/parameters/filter"),
+     *    @OA\Parameter(
+     *        parameter="filter",
+     *        name="filter",
+     *        in="query",
+     *        description="Filter results by string. Searches Name and Status. All fields must match exactly.",
+     *        @OA\Schema(type="string"),
+     *     ),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"),
-     *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Parameter(ref="#/components/parameters/per_page"), 
      *
      *     @OA\Response(
      *         response=200,
@@ -47,7 +52,7 @@ class ProcessCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ProcessCategory::query();
+        $query = ProcessCategory::nonSystem();
         $include = $request->input('include', '');
 
         if ($include) {

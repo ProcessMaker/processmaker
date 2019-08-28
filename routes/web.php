@@ -4,8 +4,8 @@ use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
 
 Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], function () {
 
-// Routes related to Authentication (password reset, etc)
-// Auth::routes();
+    // Routes related to Authentication (password reset, etc)
+    // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
         Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
         // Route::get('groups/{group}', 'GroupController@show')->name('groups.show')->middleware('can:show-groups,group');
@@ -15,11 +15,13 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
         Route::get('users/{user}/edit', 'UserController@edit')->name('users.edit')->middleware('can:edit-users,user');
 
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth_clients');
+
+        Route::get('customize-ui', 'CssOverrideController@edit')->name('customize-ui.edit');
     });
 
     Route::get('admin', 'AdminController@index')->name('admin.index');
 
-    Route::namespace('Process')->prefix('processes')->group(function () {
+    Route::namespace('Process')->prefix('designer')->group(function () {
         Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index')->middleware('can:view-environment_variables');
         Route::get('environment-variables/{environment_variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit')->middleware('can:edit-environment_variables,environment_variable ');
 
@@ -67,6 +69,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('request/{requestID}/files/{fileID}', 'RequestController@downloadFiles');
     Route::get('requests', 'RequestController@index')->name('requests.index');
     Route::get('requests/{request}', 'RequestController@show')->name('requests.show');
+    Route::get('requests/{request}/screen/{screen}', 'RequestController@screenPreview')->name('requests.screen-preview');
 
     Route::get('tasks/search', 'TaskController@search')->name('tasks.search');
     Route::get('tasks', 'TaskController@index')->name('tasks.index');
@@ -76,7 +79,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('notifications', 'NotificationController@index')->name('notifications.index');
 
     // Allows for a logged in user to see navigation on a 404 page
-    Route::fallback(function(){
+    Route::fallback(function () {
         return response()->view('errors.404', [], 404);
     })->name('fallback');
 });
@@ -85,25 +88,26 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 Broadcast::routes();
 
 // Authentication Routes...
-$this->get('login', 'Auth\LoginController@showLoginForm')->name('login');
-$this->post('login', 'Auth\LoginController@loginWithIntendedCheck');
-$this->get('logout', 'Auth\LoginController@logout')->name('logout');
+Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('login', 'Auth\LoginController@loginWithIntendedCheck');
+Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 
 // Password Reset Routes...
-$this->get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
-$this->post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-$this->get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-$this->post('password/reset', 'Auth\ResetPasswordController@reset');
+Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
+Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 //overwrite laravel passport
-$this->post('oauth/clients', 'Auth\ClientController@store')->name('passport.clients.store')->middleware('can:create-auth_clients');
-$this->put('oauth/clients/{client_id}', 'Auth\ClientController@update')->name('passport.clients.update')->middleware('can:edit-auth_clients');
-$this->delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->name('passport.clients.update')->middleware('can:delete-auth_clients');
+Route::get('oauth/clients', 'Auth\ClientController@index')->name('passport.clients.index')->middleware('can:view-auth_clients');
+Route::get('oauth/clients/{client_id}', 'Auth\ClientController@show')->name('passport.clients.show')->middleware('can:view-auth_clients');
+Route::post('oauth/clients', 'Auth\ClientController@store')->name('passport.clients.store')->middleware('can:create-auth_clients');
+Route::put('oauth/clients/{client_id}', 'Auth\ClientController@update')->name('passport.clients.update')->middleware('can:edit-auth_clients');
+Route::delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->name('passport.clients.update')->middleware('can:delete-auth_clients');
 
-$this->get('password/success', function () {
+Route::get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
 
 
-$this->get('/unavailable', 'UnavailableController@show')->name('error.unavailable');
-
+Route::get('/unavailable', 'UnavailableController@show')->name('error.unavailable');
