@@ -30,8 +30,7 @@ class ProcessCategoryController extends Controller
         $labelCount = __('# Processes');
         $count = 'processes_count';
 
-
-        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
+        return view('categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
     }
 
     /**
@@ -48,6 +47,6 @@ class ProcessCategoryController extends Controller
         $location = '/designer/processes/categories';
         $titleMenu = __('Categories');
         $routeMenu = 'categories.index';
-        return view('processes.categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
+        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
     }
 }

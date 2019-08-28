@@ -19,8 +19,8 @@ class ScriptCategoryController extends Controller
         $btnCreate = __('Category');
         $titleMenu = __('Scripts');
         $routeMenu = 'scripts.index';
-        $titleModal = __('Create Script Category');
-        $fieldName = __('Category Script Name');
+        $titleModal = __('Create Category');
+        $fieldName = __('Category Name');
         $distinctName = __('The category name must be distinct.');
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'script_categories';
@@ -30,8 +30,7 @@ class ScriptCategoryController extends Controller
         $labelCount = __('# Scripts');
         $count = 'scripts_count';
 
-
-        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
+        return view('categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
     }
 
     /**
@@ -48,6 +47,6 @@ class ScriptCategoryController extends Controller
         $routeMenu = 'script-categories.index';
         $route = 'script_categories';
         $location = '/designer/scripts/categories';
-        return view('processes.categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
+        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
     }
 }
