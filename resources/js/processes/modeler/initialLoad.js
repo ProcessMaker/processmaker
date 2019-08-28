@@ -135,12 +135,24 @@ ProcessMaker.EventBus.$on(
 
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {
-      component: 'StartPermission',
+      component: 'FormAccordion',
+      container: true,
       config: {
-        label: 'Permission To Start',
-        helper: '',
-        name: 'startPermission'
-      }
+        initiallyOpen: false,
+        label: 'Start Permissions',
+        icon: 'user-shield',
+        name: 'startPermissions',
+      },
+      items: [
+        {
+          component: 'StartPermission',
+          config: {
+            label: 'Permission To Start',
+            helper: '',
+            name: 'startPermission'
+          }
+        },
+      ],
     });
 
     /* Register the inspector extensions for tasks */
