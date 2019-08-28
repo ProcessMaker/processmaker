@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Process;
 
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessCategory;
 
@@ -14,7 +15,19 @@ class ProcessCategoryController extends Controller
      */
     public function index()
     {
-        return view('processes.categories.index');
+        $title = __('Process Categories');
+        $btnCreate = __('Category');
+        $titleMenu = __('Categories');
+        $titleModal = __('Create Category');
+        $fieldName = __('Category Name');
+        $distinctName = __('The category name must be distinct.');
+        $permissions = Auth::user()->hasPermissionsFor('categories');
+        $route = 'process_categories';
+        $location = '/designer/processes/categories';
+        $create = 'create-categories';
+
+
+        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create'));
     }
 
     /**

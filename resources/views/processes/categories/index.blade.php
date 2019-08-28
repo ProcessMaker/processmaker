@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Process Categories')}}
+    {{ $title }}
 @endsection
 
 @section('sidebar')
@@ -12,9 +12,9 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
-        __('Categories') => null,
+        $titleMenu => null,
     ]])
-    <div class="px-3 page-content" id="process-categories-listing">
+    <div class="px-3 page-content" id="categories-listing">
         <div class="row">
             <div class="col">
                 <div class="input-group">
@@ -27,36 +27,36 @@
                 </div>
             </div>
             <div class="col-8" align="right">
-                @can('create-categories')
+                @can($create)
                     <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
-                            data-target="#createProcessCategory">
-                        <i class="fas fa-plus"></i> {{__('Category')}}
+                            data-target="#createCategory">
+                        <i class="fas fa-plus"></i> {{ $btnCreate }}
                     </button>
                 @endcan
             </div>
         </div>
         <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory" :filter="filter"
-                            :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}">
+                            :permission="{{$permissions}}">
         </categories-listing>
     </div>
 
-    @can('create-categories')
-        <div class="modal" tabindex="-1" role="dialog" id="createProcessCategory">
+    @can($create)
+        <div class="modal" tabindex="-1" role="dialog" id="createCategory">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{__('Create Category')}}</h5>
+                        <h5 class="modal-title">{{ $titleModal }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('name', __('Category Name'))!!}
+                            {!!Form::label('name', $fieldName)!!}
                             {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                             <small class="form-text text-muted" v-if="! errors.name">
-                                {{ __('The category name must be distinct.') }}
+                                {{ $distinctName }}
                             </small>
                             <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                         </div>
@@ -83,17 +83,23 @@
 @endsection
 
 @section('js')
+    <script>
+      //Data needed for default search
+      window.Processmaker.delete = '{{ $route }}';
+    </script>
     <script src="{{mix('js/processes/categories/index.js')}}"></script>
 
-    @can('create-categories')
+    @can($create)
         <script>
           new Vue({
-            el: '#createProcessCategory',
+            el: '#createCategory',
             data: {
               errors: {},
               name: '',
               status: 'ACTIVE',
               disabled: false,
+              route: @json($route),
+              location: @json($location),
             },
             methods: {
               onClose() {
@@ -108,13 +114,13 @@
                   return
                 }
                 this.disabled = true;
-                ProcessMaker.apiClient.post('process_categories', {
+                ProcessMaker.apiClient.post(this.route, {
                   name: this.name,
                   status: this.status
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The category was created.')}}', 'success', 5, true);
-                    window.location = '/designer/categories';
+                    window.location = this.location;
                   })
                   .catch(error => {
                     this.disabled = false;

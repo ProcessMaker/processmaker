@@ -131,7 +131,7 @@ export default {
         )
         .then(response => {
           if (response.data.data.length === 0) {
-            $("#createProcessCategory").modal("show");
+            $("#createCategory").modal("show");
           } else {
             this.data = this.transform(response.data);
             this.loading = false;
