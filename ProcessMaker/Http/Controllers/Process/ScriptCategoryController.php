@@ -4,27 +4,27 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScriptCategory;
 
-class ScreenCategoryController extends Controller
+class ScriptCategoryController extends Controller
 {
     /**
-     * Get list of Screen Categories
+     * Get list of Script Categories
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
-        $title = __('Screen Categories');
+        $title = __('Script Categories');
         $btnCreate = __('Category');
-        $titleMenu = __('Screens');
-        $routeMenu = 'screens.index';
-        $titleModal = __('Create Screen Category');
-        $fieldName = __('Category Screen Name');
+        $titleMenu = __('Scripts');
+        $routeMenu = 'scripts.index';
+        $titleModal = __('Create Script Category');
+        $fieldName = __('Category Script Name');
         $distinctName = __('The category name must be distinct.');
         $permissions = Auth::user()->hasPermissionsFor('categories');
-        $route = 'screen_categories';
-        $location = '/designer/screens/categories';
+        $route = 'script_categories';
+        $location = '/designer/script/categories';
         $create = 'create-categories';
 
 
@@ -32,14 +32,14 @@ class ScreenCategoryController extends Controller
     }
 
     /**
-     * Get a specific screen category
+     * Get a specific script category
      *
-     * @param ScreenCategory $screenCategory
+     * @param ScriptCategory $scriptCategory
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(ScreenCategory $screenCategory)
+    public function edit(ScriptCategory $scriptCategory)
     {
-        return view('processes.categories.edit', compact('screenCategory'));
+        return view('processes.categories.edit', compact('scriptCategory'));
     }
 }

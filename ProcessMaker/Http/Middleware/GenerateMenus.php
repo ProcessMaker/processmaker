@@ -140,6 +140,13 @@ class GenerateMenus
                     'id' => 'process-scripts'
                 ]);
             }
+            if (\Auth::check() && \Auth::user()->can('view-categories')) {
+                $submenu->add(__('Script Categories'), [
+                    'route' => 'script-categories.index',
+                    'icon' => 'fa-sitemap',
+                    'id' => 'script-categories'
+                ]);
+            }
             if (\Auth::check() && \Auth::user()->can('view-screens')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
