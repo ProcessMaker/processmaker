@@ -234,6 +234,7 @@ jobs:
             echo "LARAVEL_ECHO_SERVER_AUTH_HOST=%%AUTHHOST%%" >> .env.dusk.staging
             echo "LARAVEL_ECHO_SERVER_PORT=%%ECHOPORT%%" >> .env.dusk.staging
             echo "LARAVEL_ECHO_SERVER_DEBUG=true" >> .env.dusk.staging
+            echo "TELESCOPE_ENABLED=false" >> .env.dusk.staging
             # Generate unique app key
             php artisan key:generate --force
             # Copy over our test oauth keys. Regular install will create new ones
