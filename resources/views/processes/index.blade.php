@@ -93,7 +93,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('process_category_id', __('Category'))!!}
+                                {!! Form::label('process_category_id', __('Category'))!!}<small class="ml-1">*</small>
                                 {!! Form::select('process_category_id', [null => __('Select')] + $processCategories, null, [
                                 'class'=> 'form-control',
                                 'v-model'=> 'process_category_id',
