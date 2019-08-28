@@ -55,7 +55,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('title', __('Name'))!!}
+                            {!!Form::label('title', __('Name'))!!}<small class="ml-1">*</small>
                             {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' =>
                             '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
                             <small class="form-text text-muted"
@@ -63,7 +63,7 @@
                             <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('description', __('Description'))!!}
+                            {!!Form::label('description', __('Description'))!!}<small class="ml-1">*</small>
                             {!!Form::textarea('description', null, ['rows'=>'2','class'=> 'form-control', 'v-model'=> 'description',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.description}'])!!}
                             <div class="invalid-feedback" v-for="description in addError.description">@{{description}}
@@ -78,7 +78,7 @@
                             <div class="invalid-feedback" v-for="category in addError.category">@{{category}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('language', __('Language'))!!}
+                            {!!Form::label('language', __('Language'))!!}<small class="ml-1">*</small>
                             {!!Form::select('language', [''=>__('Select')] + $scriptFormats, null, ['class'=>
                             'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true,
                             \'is-invalid\':addError.language}']);!!}
@@ -86,7 +86,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="typo__label">{{__('Run script as')}}</label>
+                            <label class="typo__label">{{__('Run script as')}}<small class="ml-1">*</small>
                             <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': addError.run_as_user_id}">
                             </select-user>
                             <small class="form-text text-muted" v-if="! addError.run_as_user_id">{{__('Select a user to set the API access of the Script')}}</small>

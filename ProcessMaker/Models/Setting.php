@@ -106,7 +106,7 @@ class Setting extends Model implements HasMedia
     public static function getLogin()
     {
         //default login
-        $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker_login.png'));
+        $url = asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'));
         //custom login
         $setting = self::byKey('css-override');
         if ($setting) {

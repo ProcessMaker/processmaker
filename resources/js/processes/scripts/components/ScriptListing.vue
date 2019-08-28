@@ -83,7 +83,7 @@
     <b-modal ref="myModalRef" :title="$t('Copy Script')" centered>
       <form>
         <div class="form-group">
-          <label for="title">{{ $t('Name') }}</label>
+          <label for="title">{{ $t('Name') }}<small class="ml-1">*</small></label>
           <input
             type="text"
             class="form-control"
