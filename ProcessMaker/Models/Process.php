@@ -573,6 +573,14 @@ class Process extends Model implements HasMedia
         if (empty($users)) {
             throw new TaskDoesNotHaveUsersException($processTaskUuid);
         }
+        sort($users);
+        if ($last) {
+            foreach ($users as $user) {
+                if ($user > $last->user_id) {
+                    return $user;
+                }
+            }
+        }
         return $users[0];
     }
 
