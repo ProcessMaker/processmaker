@@ -43,8 +43,10 @@ class ScreenCategory extends Model
         'is_system'
     ];
 
-    public static function rules()
+    public static function rules($existing = null)
     {
+        $unique = Rule::unique('screen_categories')->ignore($existing);
+
         return [
             'name' => 'required|string|max:100|unique:screen_categories,name',
             'status' => 'required|string|in:ACTIVE,INACTIVE'

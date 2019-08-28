@@ -43,10 +43,12 @@ class ScriptCategory extends Model
         'is_system'
     ];
 
-    public static function rules()
+    public static function rules($existing = null)
     {
+        $unique = Rule::unique('script_categories')->ignore($existing);
+
         return [
-            'name' => 'required|string|max:100|unique:script_categories,name',
+            'name' => ['required', 'string', 'max:100', $unique],
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
     }
