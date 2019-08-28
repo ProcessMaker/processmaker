@@ -20,6 +20,8 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
 use ProcessMaker\Jobs\BoundaryEvent;
+use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
 
 class WorkflowManager
 {
@@ -51,7 +53,8 @@ class WorkflowManager
     public function completeTask(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
         //Validate data
-        $this->validateData($data, $definitions);
+        $element = $token->getDefinition(true);
+        $this->validateData($data, $definitions, $element);
         CompleteActivity::dispatchNow($definitions, $instance, $token, $data);
     }
 
@@ -68,10 +71,10 @@ class WorkflowManager
     public function completeCatchEvent(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
     {
         //Validate data
-        $this->validateData($data, $definitions);
+        $element = $token->getDefinition(true);
+        $this->validateData($data, $definitions, $element);
         CatchEvent::dispatchNow($definitions, $instance, $token, $data);
     }
-
 
     /**
      * Trigger a boundary event
@@ -92,7 +95,7 @@ class WorkflowManager
         array $data
     ) {
         //Validate data
-        $this->validateData($data, $definitions);
+        $this->validateData($data, $definitions, $boundaryEvent);
         BoundaryEvent::dispatchNow($definitions, $instance, $token, $boundaryEvent, $data);
     }
 
@@ -107,7 +110,7 @@ class WorkflowManager
     public function triggerStartEvent(Definitions $definitions, StartEventInterface $event, array $data)
     {
         //Validate data
-        $this->validateData($data, $definitions);
+        $this->validateData($data, $definitions, $event);
         //Schedule BPMN Action
         return StartEvent::dispatchNow($definitions, $event, $data);
     }
@@ -124,7 +127,7 @@ class WorkflowManager
     public function callProcess(Definitions $definitions, ProcessInterface $process, array $data)
     {
         //Validate data
-        $this->validateData($data, $definitions);
+        $this->validateData($data, $definitions, $process);
         //Validate user permissions
         //Validate BPMN rules
         //Log BPMN actions
@@ -175,13 +178,15 @@ class WorkflowManager
      * Validate data
      *
      * @param array $data
+     * @param Definitions $Definitions
+     * @param EntityInterface $element
      *
      * @return void
      */
-    public function validateData(array $data, Definitions $Definitions) {
+    public function validateData(array $data, Definitions $Definitions, EntityInterface $element) {
         $this->validator = Validator::make($data, []);
         foreach($this->validations as $validation) {
-            call_user_func($validation, $this->validator, $Definitions);
+            call_user_func($validation, $this->validator, $Definitions, $element);
         }
         $this->validator->validate($data);
     }

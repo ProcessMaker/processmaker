@@ -21,6 +21,7 @@
                 <xsd:attribute name="assignedGroups" type="xsd:string"/>
                 <xsd:attribute name="assignmentRules" type="xsd:string"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
+                <xsd:attribute name="validations" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -38,6 +39,7 @@
                 <xsd:attribute name="assignedGroups" type="xsd:string"/>
                 <xsd:attribute name="assignmentRules" type="xsd:string"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
+                <xsd:attribute name="validations" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -48,6 +50,7 @@
                 <xsd:attribute name="scriptRef" type="xsd:string"/>
                 <xsd:attribute name="scriptVersion" type="xsd:string" use="optional"/>
                 <xsd:attribute name="config" type="xsd:string" use="optional"/>
+                <xsd:attribute name="validations" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -56,6 +59,7 @@
         <xsd:complexContent>
             <xsd:extension base="bpmn:tServiceTask">
                 <xsd:attribute name="config" type="xsd:string" use="optional"/>
+                <xsd:attribute name="validations" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -84,6 +88,7 @@
                 <xsd:attribute name="assignedUsers" type="xsd:string" use="optional"/>
                 <xsd:attribute name="assignedGroups" type="xsd:string" use="optional"/>
                 <xsd:attribute name="config" type="xsd:string" use="optional"/>
+                <xsd:attribute name="validations" type="xsd:string"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

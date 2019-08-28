@@ -77,7 +77,12 @@ window.ProcessMaker.navbar = new Vue({
         };
     },
     methods: {
+        alertDownChanged(dismissCountDown, item) {
+            item.alertShow = dismissCountDown;
+            this.saveLocalAlerts(this.alerts);
+        },
         alertDismissed(alert) {
+            alert.alertShow = 0;
             const index = this.alerts.indexOf(alert);
             let copy = _.cloneDeep(this.alerts)
             index > -1 ? copy.splice(index, 1) : null;
