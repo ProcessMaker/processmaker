@@ -80,7 +80,7 @@
                                 <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
                                 </div>
                             </div>
-                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.category" :errors="errors.category">
+                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
                             </category-select>
                         </div>
                     @else

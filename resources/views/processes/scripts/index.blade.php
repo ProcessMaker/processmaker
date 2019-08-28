@@ -72,7 +72,7 @@
                                     @{{description}}
                                 </div>
                             </div>
-                            <category-select :label="$t('Category')" api-get="script_categories" api-list="script_categories" v-model="category" :errors="addError.category">
+                            <category-select :label="$t('Category')" api-get="script_categories" api-list="script_categories" v-model="script_category_id" :errors="addError.script_category_id">
                             </category-select>
                             <div class="form-group">
                                 {!!Form::label('language', __('Language'))!!}
@@ -143,7 +143,7 @@
               title: '',
               language: '',
               description: '',
-              category: '',
+              script_category_id: '',
               code: '',
               addError: {},
               selectedUser: '',
@@ -156,7 +156,7 @@
                 this.title = '';
                 this.language = '';
                 this.description = '';
-                this.category = '';
+                this.script_category_id = '';
                 this.code = '';
                 this.timeout = 60;
                 this.addError = {};
@@ -166,7 +166,7 @@
                   name: null,
                   description: null,
                   status: null,
-                  category: null
+                  script_category_id: null
                 });
                 //single click
                 if (this.disabled) {
@@ -177,7 +177,7 @@
                   title: this.title,
                   language: this.language,
                   description: this.description,
-                  category: this.category,
+                  script_category_id: this.script_category_id,
                   run_as_user_id: this.selectedUser ? this.selectedUser.id : null,
                   code: "[]",
                   timeout: this.timeout
