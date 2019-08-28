@@ -26,9 +26,11 @@ class ScreenCategoryController extends Controller
         $route = 'screen_categories';
         $location = '/designer/screens/categories';
         $create = 'create-categories';
+        $include = '';
+        $labelCount = __('# Screens');
 
 
-        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create'));
+        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount'));
     }
 
     /**
@@ -40,6 +42,11 @@ class ScreenCategoryController extends Controller
      */
     public function edit(ScreenCategory $screenCategory)
     {
-        return view('processes.categories.edit', compact('screenCategory'));
+        $category = $screenCategory;
+        $titleMenu = __('Categories');
+        $routeMenu = 'screen-categories.index';
+        $route = 'screen_categories';
+        $location = '/designer/screens/categories';
+        return view('processes.categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
     }
 }

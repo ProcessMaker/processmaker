@@ -24,11 +24,13 @@ class ScriptCategoryController extends Controller
         $distinctName = __('The category name must be distinct.');
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'script_categories';
-        $location = '/designer/script/categories';
+        $location = '/designer/scripts/categories';
         $create = 'create-categories';
+        $include = '';
+        $labelCount = __('# Scripts');
 
 
-        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create'));
+        return view('processes.categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount'));
     }
 
     /**
@@ -40,6 +42,11 @@ class ScriptCategoryController extends Controller
      */
     public function edit(ScriptCategory $scriptCategory)
     {
-        return view('processes.categories.edit', compact('scriptCategory'));
+        $category = $scriptCategory;
+        $titleMenu = __('Categories');
+        $routeMenu = 'script-categories.index';
+        $route = 'script_categories';
+        $location = '/designer/scripts/categories';
+        return view('processes.categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
     }
 }

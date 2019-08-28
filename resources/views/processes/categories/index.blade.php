@@ -35,8 +35,7 @@
                 @endcan
             </div>
         </div>
-        <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory" :filter="filter"
-                            :permission="{{$permissions}}">
+        <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory" :filter="filter" api-route="{{$route}}" :permission="{{$permissions}}" location="{{$location}}" include="{{$include}}" label-count="{{$labelCount}}">
         </categories-listing>
     </div>
 
@@ -85,7 +84,7 @@
 @section('js')
     <script>
       //Data needed for default search
-      window.Processmaker.delete = '{{ $route }}';
+      window.Processmaker.route = '{{ $route }}';
     </script>
     <script src="{{mix('js/processes/categories/index.js')}}"></script>
 

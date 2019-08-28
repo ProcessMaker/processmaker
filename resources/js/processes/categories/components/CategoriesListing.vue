@@ -63,7 +63,7 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "permission"],
+  props: ["filter", "permission","apiRoute", "location", "include", "labelCount"],
   data() {
     return {
       orderBy: "name",
@@ -87,7 +87,7 @@ export default {
           callback: this.formatStatus
         },
         {
-          title: () => this.$t("# Processes"),
+          title: () => this.labelCount,
           name: "processes_count",
           sortField: "processes_count"
         },
@@ -116,8 +116,8 @@ export default {
 
       // Load from our api client
       ProcessMaker.apiClient
-        .get(
-          "process_categories?page=" +
+        .get(this.apiRoute +
+          "?page=" +
             this.page +
             "&per_page=" +
             this.perPage +
@@ -127,7 +127,7 @@ export default {
             this.orderBy +
             "&order_direction=" +
             this.orderDirection +
-            "&include=processesCount"
+            "&include=" + this.include
         )
         .then(response => {
           if (response.data.data.length === 0) {
@@ -141,7 +141,7 @@ export default {
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
-          window.location = "/designer/categories/" + data.id + "/edit";
+          window.location = this.location + "/" + data.id + "/edit";
           break;
         case "remove-item":
           ProcessMaker.confirmModal(

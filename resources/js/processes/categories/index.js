@@ -19,7 +19,7 @@ new Vue({
       this.$refs.addEdit.$refs.modal.show();
     },
     deleteCategory(data) {
-      ProcessMaker.apiClient.delete(`${window.Processmaker.delete}/${data.id}`)
+      ProcessMaker.apiClient.delete(`${window.Processmaker.route}/${data.id}`)
         .then((response) => {
           ProcessMaker.alert("The category was deleted.", "success");
           this.reload();
