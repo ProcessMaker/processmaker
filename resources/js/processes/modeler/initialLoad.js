@@ -29,6 +29,7 @@ import GroupSelect from './components/inspector/GroupSelect';
 import TaskNotifications from './components/inspector/TaskNotifications';
 import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
+import TaskDueIn from './components/inspector/TaskDueIn';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
@@ -39,6 +40,7 @@ Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('TaskNotifications', TaskNotifications);
 Vue.component('ExpressionEditor', ExpressionEditor);
 Vue.component('TaskAssignment', TaskAssignment);
+Vue.component('TaskDueIn', TaskDueIn);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
@@ -152,19 +154,50 @@ ProcessMaker.EventBus.$on(
       }
     });
     registerInspectorExtension(task, {
-      component: 'TaskAssignment',
+      component: 'TaskDueIn',
       config: {
-        label: 'Task Assignment',
-        helper: '',
-        name: 'taskAssignment'
+        label: 'Due In',
+        helper: 'Time when the task will be due',
+        name: 'taskDueIn',
       }
     });
     registerInspectorExtension(task, {
-      component: 'TaskNotifications',
+      component: 'FormAccordion',
+      container: true,
       config: {
-        label: 'Task Notifications',
-        helper: 'Users that should be notified about task events'
-      }
+        initiallyOpen: false,
+        label: 'Assignment Rules',
+        icon: 'users',
+        name: 'assignmentRules',
+      },
+      items: [
+        {
+          component: 'TaskAssignment',
+          config: {
+            label: 'Task Assignment',
+            helper: '',
+            name: 'taskAssignment'
+          }
+        },
+      ],
+    });
+    registerInspectorExtension(task, {
+      component: 'FormAccordion',
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: 'Notifications',
+        icon: 'bell',
+        name: 'notifications',
+      },
+      items: [
+        {
+          component: 'TaskNotifications',
+          config: {
+            helper: 'Users that should be notified about task events'
+          }
+        },
+      ],
     });
 
     /* Register the inspector extensions for script tasks */

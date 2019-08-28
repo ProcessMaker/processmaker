@@ -1,7 +1,6 @@
 <template>
     <div>
         <div class="form-group">
-            <label>{{ $t('Task Notifications') }}</label>
             <div class="notification-settings-group">
                 <div class="notification-settings-header">{{ $t('Requester') }}</div>
                 <div class="custom-control custom-switch">
