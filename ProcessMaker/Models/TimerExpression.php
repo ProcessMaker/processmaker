@@ -3,15 +3,15 @@
 namespace ProcessMaker\Models;
 
 use DateInterval;
-use DatePeriod;
 use DateTime;
 use Exception;
-use ProcessMaker\Nayra\Bpmn\BaseTrait;
-use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
 use Mustache_Engine;
+use ProcessMaker\Nayra\Bpmn\BaseTrait;
+use ProcessMaker\Nayra\Bpmn\Models\DatePeriod;
+use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
 
 /**
- * FormalExpression to handel time events
+ * FormalExpression to handle time events
  *
  * @package ProcessMaker\Model
  */

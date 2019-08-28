@@ -7,6 +7,9 @@
                     <div v-if="emptyIconType() === 'beach'">
                         <i class="fas fa-umbrella-beach"></i>
                     </div>
+                    <div v-if="emptyIconType() === 'noData'">
+                        <i class="fas fa-circle-notch"></i>
+                    </div>
                 </div>
                 <h3 class="display-6">{{ emptyText() }}</h3>
                 <p class="lead">{{ emptyDescText() }}</p>

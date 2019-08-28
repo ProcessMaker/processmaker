@@ -42,6 +42,14 @@ class ScheduledTask extends Model
         return $this->belongsTo(ProcessRequest::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function processRequestToken()
+    {
+        return $this->belongsTo(ProcessRequestToken::class);
+    }
+
     public function fillStartEvents()
     {
         $processes = Process::all();

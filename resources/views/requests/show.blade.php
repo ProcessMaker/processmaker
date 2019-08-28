@@ -43,7 +43,7 @@
                                     {{__('Summary')}}
                                 </a>
                             </li>
-                            @if ($request->status === 'COMPLETED')
+                            @if ($request->status === 'COMPLETED' && !$request->errors)
                                 @can('editData', $request)
                                     <li>
                                         <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab"

@@ -35,7 +35,7 @@
       </b-card-header>
 
       <!-- Card Body -->
-      <b-card-body class="overflow-auto p-0" id="screen-builder-container">
+      <b-card-body class="overflow-auto p-0 h-100" id="screen-builder-container">
         <!-- Vue-form-builder -->
         <vue-form-builder
           class="m-0"
@@ -43,6 +43,7 @@
           :initialConfig="screen.config"
           :title="screen.title"
           :class="displayBuilder ? 'd-flex' : 'd-none'"
+          :screenType="type"
           ref="builder"
           @change="updateConfig"
         />
@@ -252,6 +253,10 @@ import formTypes from "./formTypes";
         return this.validationErrors.length + errorCount
       },
       validationErrors() {
+        if (!this.toggleValidation) {
+          return [];
+        }
+
         const validationErrors = [];
 
         if (this.type === formTypes.form && !this.containsSubmitButton()) {
@@ -259,31 +264,10 @@ import formTypes from "./formTypes";
         }
 
         this.config.forEach(page => {
-          page.items.forEach(item => {
-            let data = item.config ? item.config : {};
-            let rules = {};
-            item.inspector.forEach(property => {
-              if (property.config.validation) {
-                rules[property.field] = property.config.validation;
-              }
-            });
-            let validator = new Validator(data, rules);
-            // Validation will not run until you call passes/fails on it
-            if(!validator.passes()) {
-              Object.keys(validator.errors.errors).forEach(field => {
-                validator.errors.errors[field].forEach(error => {
-                  validationErrors.push({
-                    message: error,
-                    page: page,
-                    item: item,
-                  });
-                });
-              });
-            }
-          });
+          validationErrors.push(...this.getValidationErrorsForItems(page.items, page));
         });
 
-        return this.toggleValidation ? validationErrors : [] ;
+        return validationErrors;
       },
     },
     mounted() {
@@ -296,6 +280,43 @@ import formTypes from "./formTypes";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
+      getValidationErrorsForItems(items, page) {
+        const validationErrors = [];
+
+        items.forEach(item => {
+          if (item.container) {
+            item.items.forEach(containerItems => {
+              validationErrors.push(...this.getValidationErrorsForItems(containerItems, page));
+            });
+          }
+
+          const data = item.config || {};
+          const rules = {};
+
+          item.inspector.forEach(property => {
+            if (property.config.validation) {
+              rules[property.field] = property.config.validation;
+            }
+          });
+
+          const validator = new Validator(data, rules);
+
+          // Validation will not run until you call passes/fails on it
+          if (!validator.passes()) {
+            Object.keys(validator.errors.errors).forEach(field => {
+              validator.errors.errors[field].forEach(error => {
+                validationErrors.push({
+                  message: error,
+                  page,
+                  item,
+                });
+              });
+            });
+          }
+        });
+
+        return validationErrors;
+      },
       containsSubmitButton() {
         return this.config.some(config => {
           return this.itemsContainSubmitButton(config.items);

@@ -10,6 +10,7 @@ use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Process;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -63,6 +64,11 @@ class RequestController extends Controller
         if (!Auth::user()->is_administrator && !Auth::user()->can('view-all_requests')) {
             $query->startedMe(Auth::user()->id);
         }
+
+        $hiddenProcessIds = Process::whereHas('category', function($q) {
+            $q->where('is_system', true);
+        })->pluck('id');
+        $query->whereNotIn('process_id', $hiddenProcessIds);
 
         switch ($type) {
             case 'allRequest':
@@ -154,6 +160,6 @@ class RequestController extends Controller
     public function downloadFiles(ProcessRequest $requestID, Media $fileID)
     {
         $requestID->getMedia();
-        return response()->download($fileID->getPath(), $fileID->name);
+        return response()->download($fileID->getPath(), $fileID->file_name);
     }
 }

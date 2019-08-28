@@ -36,7 +36,7 @@
     "predis/predis": "^1.1",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "dev-master",
-    "processmaker/pmql": "dev-master",
+    "processmaker/pmql": "1.1.0",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",
