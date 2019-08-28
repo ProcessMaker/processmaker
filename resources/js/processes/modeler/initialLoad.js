@@ -240,19 +240,50 @@ ProcessMaker.EventBus.$on(
       }
     });
     registerInspectorExtension(manualTask, {
-      component: 'TaskAssignment',
+      component: 'TaskDueIn',
       config: {
-        label: 'Task Assignment',
-        helper: '',
-        name: 'taskAssignment'
+        label: 'Due In',
+        helper: 'Time when the task will be due',
+        name: 'taskDueIn',
       }
     });
     registerInspectorExtension(manualTask, {
-      component: 'TaskNotifications',
+      component: 'FormAccordion',
+      container: true,
       config: {
-        label: 'Task Notifications',
-        helper: 'Users that should be notified about task events'
-      }
+        initiallyOpen: false,
+        label: 'Assignment Rules',
+        icon: 'users',
+        name: 'assignmentRules',
+      },
+      items: [
+        {
+          component: 'TaskAssignment',
+          config: {
+            label: 'Task Assignment',
+            helper: '',
+            name: 'taskAssignment'
+          }
+        },
+      ],
+    });
+    registerInspectorExtension(manualTask, {
+      component: 'FormAccordion',
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: 'Notifications',
+        icon: 'bell',
+        name: 'notifications',
+      },
+      items: [
+        {
+          component: 'TaskNotifications',
+          config: {
+            helper: 'Users that should be notified about task events'
+          }
+        },
+      ],
     });
   }
 );
