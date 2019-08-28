@@ -1,5 +1,8 @@
 import Vue from 'vue'
 import ScreenListing from './components/ScreenListing'
+import CategorySelect from "../categories/components/CategorySelect";
+
+Vue.component('category-select', CategorySelect);
 
 new Vue({
     el: '#screenIndex',

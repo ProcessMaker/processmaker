@@ -72,14 +72,8 @@
                                     @{{description}}
                                 </div>
                             </div>
-                            <div class="form-group">
-                                {!!Form::label('category', __('Category'))!!}
-                                {!!Form::text('category', null, ['class'=> 'form-control', 'v-model'=> 'category', 'v-bind:class' =>
-                                '{\'form-control\':true, \'is-invalid\':addError.category}'])!!}
-                                <small class="form-text text-muted"
-                                       v-if="! addError.category">{{ __('The script name must be distinct.') }}</small>
-                                <div class="invalid-feedback" v-for="category in addError.category">@{{category}}</div>
-                            </div>
+                            <category-select :label="$t('Category')" api-get="script_categories" api-list="script_categories" v-model="category" :errors="addError.category">
+                            </category-select>
                             <div class="form-group">
                                 {!!Form::label('language', __('Language'))!!}
                                 {!!Form::select('language', [''=>__('Select')] + $scriptFormats, null, ['class'=>
@@ -117,7 +111,7 @@
                     @else
                         <div class="modal-body">
                             <div>{{__('Categories are required to create a script')}}</div>
-                            <a href="{{ url('designer/screens/categories') }}" class="btn btn-primary container mt-2">
+                            <a href="{{ url('designer/scripts/categories') }}" class="btn btn-primary container mt-2">
                                 {{__('Add Category')}}
                             </a>
                         </div>

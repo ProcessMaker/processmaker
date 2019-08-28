@@ -68,7 +68,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @if (count($processCategories) > 1)
+                    @if ($processCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
                                 {!! Form::label('name', __('Name')) !!}
@@ -92,16 +92,8 @@
                                     @{{description}}
                                 </div>
                             </div>
-                            <div class="form-group">
-                                {!! Form::label('process_category_id', __('Category'))!!}
-                                {!! Form::select('process_category_id', [null => __('Select')] + $processCategories, null, [
-                                'class'=> 'form-control',
-                                'v-model'=> 'process_category_id',
-                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
-                                <div class="invalid-feedback" v-for="category in addError.process_category_id">
-                                    @{{category}}
-                                </div>
-                            </div>
+                            <category-select :label="$t('Category')" api-get="process_categories" api-list="process_categories" v-model="process_category_id" :errors="addError.process_category_id">
+                            </category-select>
                             <div class="form-group">
                                 {!! Form::label('fileName', __('Upload BPMN File (optional)')) !!}
                                 <div class="input-group">
@@ -125,7 +117,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                                 @click="onClose">{{__('Cancel')}}</button>
-                        @if (count($processCategories) > 1)
+                        @if ($processCategories !== 0)
                             <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
                                 {{__('Save')}}
                             </button>
@@ -138,7 +130,7 @@
 @endsection
 
 @section('js')
-
+    <script src="{{mix('js/processes/index.js')}}"></script>
     @can('create-processes')
         <script>
           new Vue({
@@ -221,5 +213,5 @@
         </script>
     @endcan
 
-    <script src="{{mix('js/processes/index.js')}}"></script>
+
 @endsection

@@ -80,15 +80,8 @@
                                 <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
                                 </div>
                             </div>
-                            <div class="form-group">
-                                {!! Form::label('category', __('Category')) !!}
-                                {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
-                                'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
-                                <small class="form-text text-muted" v-if="! errors.category">
-                                    {{ __('The screen category is required.') }}
-                                </small>
-                                <div class="invalid-feedback" v-for="title in errors.category">@{{category}}</div>
-                            </div>
+                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.category" :errors="errors.category">
+                            </category-select>
                         </div>
                     @else
                         <div class="modal-body">
