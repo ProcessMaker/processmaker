@@ -120,7 +120,7 @@ class GenerateMenus
                 ]);
             }
             if (\Auth::check() && \Auth::user()->can('view-categories')) {
-                $submenu->add(__('Categories'), [
+                $submenu->add(__('Process Categories'), [
                     'route' => 'categories.index',
                     'icon' => 'fa-sitemap',
                     'id' => 'process-categories'
@@ -145,6 +145,13 @@ class GenerateMenus
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens'
+                ]);
+            }
+            if (\Auth::check() && \Auth::user()->can('view-categories')) {
+                $submenu->add(__('Screen Categories'), [
+                    'route' => 'screen-categories.index',
+                    'icon' => 'fa-sitemap',
+                    'id' => 'screen-categories'
                 ]);
             }
             if (\Auth::check() && \Auth::user()->can('view-environment_variables')) {

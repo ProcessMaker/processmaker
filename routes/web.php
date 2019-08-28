@@ -38,6 +38,8 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 
         Route::get('processes/categories', 'ProcessCategoryController@index')->name('categories.index')->middleware('can:view-categories');
         Route::get('processes/categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories,processCategory');
+
+        Route::get('screens/categories', 'ScreenCategoryController@index')->name('screen-categories.index')->middleware('can:view-categories');
     });
 
     Route::get('processes', 'ProcessController@index')->name('processes.index');
