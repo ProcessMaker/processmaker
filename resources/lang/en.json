@@ -666,6 +666,7 @@
   "Text": "Text",
   "Textarea": "Textarea",
   "Th": "T",
+  "The :attribute must be a file of type: jpg, jpeg, png, or gif.": "The :attribute must be a file of type: jpg, jpeg, png, or gif.",
   "The auth client was ": "The auth client was ",
   "The bpm definition is not valid": "The bpm definition is not valid",
   "The category field is required.": "The category field is required.",
