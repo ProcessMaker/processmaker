@@ -1,22 +1,4 @@
 import Vue from 'vue';
-import screenEdit from './components/fields-screen';
+import CategorySelect from "../categories/components/CategorySelect";
 
-new Vue({
-  el: '#screen-edit',
-  data: {},
-  components: {
-    screenEdit
-  },
-  methods: {
-    onClose() {
-      window.location.href = '/designer/screens';
-    },
-    onSave() {
-      this.$refs.screenEdit.onSave();
-    },
-    afterUpdate() {
-      ProcessMaker.alert('The screen was saved.', 'success');
-      this.onClose();
-    }
-  }
-});
+Vue.component('category-select', CategorySelect);

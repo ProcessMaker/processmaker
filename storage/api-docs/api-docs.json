@@ -2844,6 +2844,189 @@
                 }
             }
         },
+        "/script_categories": {
+            "get": {
+                "tags": [
+                    "Script Categories"
+                ],
+                "summary": "Returns all scripts categories that the user has access to",
+                "operationId": "getScriptCategories",
+                "parameters": [
+                    {
+                        "parameter": "filter",
+                        "name": "filter",
+                        "in": "query",
+                        "description": "Filter results by string. Searches Name, Description, and Status. All fields must match exactly.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of scripts categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Display a listing of the Script Categories.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ScriptCategory"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Display a listing of the Script Categories.",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Script Categories"
+                ],
+                "summary": "Save a new Script Category",
+                "operationId": "createScriptCategory",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ScriptCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ScriptCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/script_categories/{script_category_id}": {
+            "get": {
+                "tags": [
+                    "Script Categories"
+                ],
+                "summary": "Get single script category by ID",
+                "operationId": "getScriptCategoryById",
+                "parameters": [
+                    {
+                        "name": "script_category_id",
+                        "in": "path",
+                        "description": "ID of script category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the script",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ScriptCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Script Categories"
+                ],
+                "summary": "Update a script Category",
+                "operationId": "updateScriptCategory",
+                "parameters": [
+                    {
+                        "name": "script_category_id",
+                        "in": "path",
+                        "description": "ID of script category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ScriptCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ScriptCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Script Categories"
+                ],
+                "summary": "Delete a script category",
+                "operationId": "deleteScriptCategory",
+                "parameters": [
+                    {
+                        "name": "script_category_id",
+                        "in": "path",
+                        "description": "ID of script category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
         "/scripts": {
             "get": {
                 "tags": [
@@ -4634,6 +4817,48 @@
                     }
                 },
                 "type": "object"
+            },
+            "ScriptCategoryEditable": {
+                "properties": {
+                    "name": {
+                        "description": "Represents a business script category definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Represents a business script category definition.",
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "ScriptCategory": {
+                "properties": {
+                    "id": {
+                        "description": "Represents a business script category definition.",
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "created_at": {
+                        "description": "Represents a business script category definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Represents a business script category definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ScriptCategoryEditable"
+                    }
+                ]
             },
             "settingsEditable": {
                 "properties": {
