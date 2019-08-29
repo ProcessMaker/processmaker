@@ -1,6 +1,13 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <data-loading
+            :for="/categories\?page/"
+            v-show="shouldShowLoader"
+            :empty="$t('No Data Available')"
+            :empty-desc="$t('')"
+            empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -30,7 +37,7 @@
                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Remove')"
-                v-if="permission.includes('delete-categories') && props.rowData.processes_count == 0"
+                v-if="permission.includes('delete-categories') && props.rowData[count] == 0"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -52,10 +59,11 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
-  mixins: [datatableMixin],
-  props: ["filter", "permission"],
+  mixins: [datatableMixin, dataLoadingMixin],
+  props: ["filter", "permission","apiRoute", "location", "include", "labelCount", "count"],
   data() {
     return {
       orderBy: "name",
@@ -79,9 +87,9 @@ export default {
           callback: this.formatStatus
         },
         {
-          title: () => this.$t("# Processes"),
-          name: "processes_count",
-          sortField: "processes_count"
+          title: () => this.labelCount,
+          name: this.count,
+          sortField: this.count
         },
         {
           title: () => this.$t("Modified"),
@@ -108,8 +116,8 @@ export default {
 
       // Load from our api client
       ProcessMaker.apiClient
-        .get(
-          "process_categories?page=" +
+        .get(this.apiRoute +
+          "?page=" +
             this.page +
             "&per_page=" +
             this.perPage +
@@ -119,11 +127,11 @@ export default {
             this.orderBy +
             "&order_direction=" +
             this.orderDirection +
-            "&include=processesCount"
+            "&include=" + this.include
         )
         .then(response => {
           if (response.data.data.length === 0) {
-            $("#createProcessCategory").modal("show");
+            $("#createCategory").modal("show");
           } else {
             this.data = this.transform(response.data);
             this.loading = false;
@@ -133,7 +141,7 @@ export default {
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
-          window.location = "/designer/categories/" + data.id + "/edit";
+          window.location = this.location + "/" + data.id + "/edit";
           break;
         case "remove-item":
           ProcessMaker.confirmModal(

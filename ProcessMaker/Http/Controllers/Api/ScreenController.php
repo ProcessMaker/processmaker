@@ -61,7 +61,21 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Screen::query();
+        $query = Screen::nonSystem();
+        $include = $request->input('include', '');
+
+        if ($include) {
+            $include = explode(',', $include);
+            $count = array_search('categoryCount', $include);
+            if ($count !== false) {
+                unset($include[$count]);
+                $query->withCount('category');
+            }
+            if ($include) {
+                $query->with($include);
+            }
+        }
+
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -69,7 +83,6 @@ class ScreenController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
-                    ->orWhere('category', 'like', $filter)
                     ->orWhere('type', 'like', $filter)
                     ->orWhere('config', 'like', $filter);
             });

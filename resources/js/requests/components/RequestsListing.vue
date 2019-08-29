@@ -1,7 +1,13 @@
 <template>
   <div class="data-table">
-    <data-loading :for="/requests\?page/" v-show="shouldShowLoader" />
-    <div v-show="!shouldShowLoader" class="card card-body table-card">
+    <data-loading
+            :for="/requests\?page/"
+            v-show="shouldShowLoader"
+            :empty="$t('No Data Available')"
+            :empty-desc="$t('')"
+            empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -210,7 +216,7 @@ export default {
             this.perPage +
             "&include=process,participants" +
             "&pmql=" +
-            this.$parent.pmql +
+            encodeURIComponent(this.$parent.pmql) +
             "&order_by=" +
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +

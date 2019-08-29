@@ -1,6 +1,13 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <data-loading
+            :for="/screens/"
+            v-show="shouldShowLoader"
+            :empty="$t('No Data Available')"
+            :empty-desc="$t('')"
+            empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :noDataTemplate="$t('No Data Available')"
@@ -120,9 +127,10 @@
 
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
-  mixins: [datatableMixin],
+  mixins: [datatableMixin, dataLoadingMixin],
   props: ["filter", "id", "permission"],
   data() {
     return {
@@ -156,8 +164,8 @@ export default {
         },
         {
           title: this.$t("Category"),
-          name: "category",
-          sortField: "category"
+          name: "category.name",
+          sortField: "category.name"
         },
         {
           title: this.$t("Type"),
@@ -270,7 +278,8 @@ export default {
             "&order_by=" +
             this.orderBy +
             "&order_direction=" +
-            this.orderDirection
+            this.orderDirection +
+            "&include=category"
         )
         .then(response => {
           this.data = this.transform(response.data);

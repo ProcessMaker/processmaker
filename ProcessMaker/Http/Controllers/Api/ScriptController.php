@@ -65,7 +65,20 @@ class ScriptController extends Controller
     public function index(Request $request)
     {
         // Do not return results when a key is set. Those are for connectors.
-        $query = Script::where('key', null);
+        $query = Script::nonSystem()->where('key', null);
+        $include = $request->input('include', '');
+
+        if ($include) {
+            $include = explode(',', $include);
+            $count = array_search('categoryCount', $include);
+            if ($count !== false) {
+                unset($include[$count]);
+                $query->withCount('category');
+            }
+            if ($include) {
+                $query->with($include);
+            }
+        }
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -73,7 +86,6 @@ class ScriptController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->Where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
-                    ->orWhere('category', 'like', $filter)
                     ->orWhere('language', 'like', $filter);
             });
         }

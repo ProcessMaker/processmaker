@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents a business screen category definition.
@@ -16,7 +17,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
- *  * @OA\Schema(
+ * @OA\Schema(
  *   schema="ScreenCategoryEditable",
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
@@ -32,16 +33,20 @@ use ProcessMaker\Traits\SerializeToIso8601;
 class ScreenCategory extends Model
 {
     use SerializeToIso8601;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 
     protected $fillable = [
         'name',
-        'status'
+        'status',
+        'is_system'
     ];
 
-    public static function rules()
+    public static function rules($existing = null)
     {
+        $unique = Rule::unique('screen_categories')->ignore($existing);
+
         return [
             'name' => 'required|string|max:100|unique:screen_categories,name',
             'status' => 'required|string|in:ACTIVE,INACTIVE'

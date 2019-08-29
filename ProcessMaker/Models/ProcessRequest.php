@@ -9,7 +9,7 @@ use Log;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
-use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -38,10 +38,10 @@ use Throwable;
  *   @OA\Property(property="user_id", type="string", format="id"),
  *   @OA\Property(property="callable_id", type="string", format="id"),
  *   @OA\Property(property="data", type="string", format="json"),
- *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED"}), 
- *   @OA\Property(property="name", type="string"), 
- *   @OA\Property(property="process_id", type="integer"), 
- *   @OA\Property(property="process", type="object"), 
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "COMPLETED"}),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="process_id", type="integer"),
+ *   @OA\Property(property="process", type="object"),
  * ),
  * @OA\Schema(
  *   schema="processRequest",
@@ -65,7 +65,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use ExecutionInstanceTrait;
     use SerializeToIso8601;
     use HasMediaTrait;
-    use PMQL;
+    use ExtendedPMQL;
     use SqlsrvSupportTrait;
 
     protected $connection = 'data';
@@ -259,6 +259,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 $screen = Screen::find($definition['screenRef']);
                 $screen->element_name = $token->element_name;
                 $screen->element_type = $token->element_type;
+                $screen->data = $token->data;
+                $screen->screen_id = $screen->id;
+                $screen->id = $token->id;
                 $screens[] = $screen;
             }
         }
@@ -448,5 +451,121 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function scheduledTasks()
     {
         return $this->hasMany(ScheduledTask::class, 'process_request_id');
+    }
+
+    /**
+     * PMQL field alias (created = created_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasCreated()
+    {
+        return 'created_at';
+    }
+    
+    /**
+     * PMQL field alias (modified = updated_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasModified()
+    {
+        return 'updated_at';
+    }
+        
+    /**
+     * PMQL field alias (started = initiated_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasStarted()
+    {
+        return 'initiated_at';
+    }
+
+    /**
+     * PMQL field alias (completed = completed_at)
+     *
+     * @return string
+     */    
+    public function fieldAliasCompleted()
+    {
+        return 'completed_at';
+    }
+
+    /**
+     * PMQL value alias for request field
+     *
+     * @param string $value
+     *
+     * @return callback
+     */
+    public function valueAliasRequest($value)
+    {
+        return function($query) use ($value) {
+            $processes = Process::where('name', $value)->get();
+            $query->whereIn('process_id', $processes->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for status field
+     *
+     * @param string $value
+     * 
+     * @return callback
+     */        
+    public function valueAliasStatus($value)
+    {
+        $statusMap = [
+            'in progress' => 'ACTIVE',
+            'completed' => 'COMPLETED',
+            'error' => 'ERROR',
+            'canceled' => 'CANCELED',
+        ];
+        
+        $value = mb_strtolower($value);
+    
+        return function($query) use ($value, $statusMap) {
+            if (array_key_exists($value, $statusMap)) {
+                $query->where('status', $statusMap[$value]);
+            } else {
+                $query->where('status', $value);
+            }
+        };
+    }
+
+    /**
+     * PMQL value alias for requester field
+     *
+     * @param string $value
+     * 
+     * @return callback
+     */    
+    private function valueAliasRequester($value)
+    {
+        $user = User::where('username', $value)->get()->first();
+        $requests = ProcessRequest::where('user_id', $user->id)->get();
+
+        return function($query) use ($requests) {
+            $query->whereIn('id', $requests->pluck('id'));
+        };
+    }
+
+    /**
+     * PMQL value alias for participant field
+     *
+     * @param string $value
+     * 
+     * @return callback
+     */
+    private function valueAliasParticipant($value)
+    {
+        $user = User::where('username', $value)->get()->first();
+        $tokens = ProcessRequestToken::where('user_id', $user->id)->get();
+
+        return function($query) use ($tokens) {
+            $query->whereIn('id', $tokens->pluck('process_request_id'));
+        };
     }
 }
