@@ -4,11 +4,11 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 
-class ScreenCategoryController extends Controller
+class ScriptCategoryController extends Controller
 {
     /**
      * A whitelist of attributes that should not be
@@ -21,15 +21,15 @@ class ScreenCategoryController extends Controller
     ];
 
     /**
-     * Display a listing of the Screen Categories.
+     * Display a listing of the Script Categories.
      *
      * @return \Illuminate\Http\JsonResponse
      *
      * @OA\Get(
-     *     path="/screen_categories",
-     *     summary="Returns all screens categories that the user has access to",
-     *     operationId="getScreenCategories",
-     *     tags={"Screen Categories"},
+     *     path="/script_categories",
+     *     summary="Returns all scripts categories that the user has access to",
+     *     operationId="getScriptCategories",
+     *     tags={"Script Categories"},
      *     @OA\Parameter(
      *             parameter="filter",
      *             name="filter",
@@ -43,13 +43,13 @@ class ScreenCategoryController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="list of screens categories",
+     *         description="list of scripts categories",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/ScreenCategory"),
+     *                 @OA\Items(ref="#/components/schemas/ScriptCategory"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
@@ -62,15 +62,15 @@ class ScreenCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ScreenCategory::nonSystem();
+        $query = ScriptCategory::nonSystem();
         $include = $request->input('include', '');
 
         if ($include) {
             $include = explode(',', $include);
-            $count = array_search('screensCount', $include);
+            $count = array_search('scriptsCount', $include);
             if ($count !== false) {
                 unset($include[$count]);
-                $query->withCount('screens');
+                $query->withCount('scripts');
             }
             if ($include) {
                 $query->with($include);
@@ -96,20 +96,21 @@ class ScreenCategoryController extends Controller
     }
 
     /**
-     * Display the specified screen category.
+     * Display the specified script category.
      *
-     * @param ScreenCategory $screenCategory
+     * @param ScriptCategory $scriptCategory
      *
      * @return \Illuminate\Http\JsonResponse
-     *     * @OA\Get(
-     *     path="/screen_categories/{screen_category_id}",
-     *     summary="Get single screen category by ID",
-     *     operationId="getScreenCategoryById",
-     *     tags={"Screen Categories"},
+     *
+     * @OA\Get(
+     *     path="/script_categories/{script_category_id}",
+     *     summary="Get single script category by ID",
+     *     operationId="getScriptCategoryById",
+     *     tags={"Script Categories"},
      *     @OA\Parameter(
-     *         description="ID of screen category to return",
+     *         description="ID of script category to return",
      *         in="path",
-     *         name="screen_category_id",
+     *         name="script_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -117,43 +118,44 @@ class ScreenCategoryController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the screen",
-     *         @OA\JsonContent(ref="#/components/schemas/ScreenCategory")
+     *         description="Successfully found the script",
+     *         @OA\JsonContent(ref="#/components/schemas/ScriptCategory")
      *     ),
      * )
      */
-    public function show(ScreenCategory $screenCategory)
+    public function show(ScriptCategory $scriptCategory)
     {
-        return new ApiResource($screenCategory);
+        return new ApiResource($scriptCategory);
     }
 
     /**
-     * Store a newly created Screen Category in storage
+     * Store a newly created Script Category in storage
      *
      * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
      *
-     *     * @OA\Post(
-     *     path="/screen_categories",
-     *     summary="Save a new Screen Category",
-     *     operationId="createScreenCategory",
-     *     tags={"Screen Categories"},
+     * @OA\Post(
+     *     path="/script_categories",
+     *     summary="Save a new Script Category",
+     *     operationId="createScriptCategory",
+     *     tags={"Script Categories"},
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/ScreenCategoryEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/ScriptCategoryEditable")
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/ScreenCategory")
+     *         @OA\JsonContent(ref="#/components/schemas/ScriptCategory")
      *     ),
      * )
      */
     public function store(Request $request)
     {
-        $request->validate(ScreenCategory::rules());
-        $category = new ScreenCategory();
+        $request->validate(ScriptCategory::rules());
+        $category = new ScriptCategory();
         $category->fill($request->json()->all());
         $category->saveOrFail();
         return new ApiResource($category);
@@ -163,18 +165,20 @@ class ScreenCategoryController extends Controller
      * Updates the current element
      *
      * @param Request $request
-     * @param ScreenCategory $screenCategory
+     * @param ScriptCategory $scriptCategory
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     *      * @OA\Put(
-     *     path="/screen_categories/{screen_category_id}",
-     *     summary="Update a screen Category",
-     *     operationId="updateScreenCategory",
-     *     tags={"Screen Categories"},
+     * @throws \Throwable
+     *
+     * @OA\Put(
+     *     path="/script_categories/{script_category_id}",
+     *     summary="Update a script Category",
+     *     operationId="updateScriptCategory",
+     *     tags={"Script Categories"},
      *     @OA\Parameter(
-     *         description="ID of screen category to return",
+     *         description="ID of script category to return",
      *         in="path",
-     *         name="screen_category_id",
+     *         name="script_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -182,39 +186,40 @@ class ScreenCategoryController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/ScreenCategoryEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/ScriptCategoryEditable")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/ScreenCategory")
+     *         @OA\JsonContent(ref="#/components/schemas/ScriptCategory")
      *     ),
      * )
      */
-    public function update(Request $request, ScreenCategory $screenCategory)
+    public function update(Request $request, ScriptCategory $scriptCategory)
     {
-        $request->validate(ScreenCategory::rules($screenCategory));
-        $screenCategory->fill($request->json()->all());
-        $screenCategory->saveOrFail();
-        return new ApiResource($screenCategory);
+        $request->validate(ScriptCategory::rules($scriptCategory));
+        $scriptCategory->fill($request->json()->all());
+        $scriptCategory->saveOrFail();
+        return new ApiResource($scriptCategory);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param ScreenCategory $screenCategory
+     * @param ScriptCategory $scriptCategory
      *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Exception
      *
-     *      * @OA\Delete(
-     *     path="/screen_categories/{screen_category_id}",
-     *     summary="Delete a screen category",
-     *     operationId="deleteScreenCategory",
-     *     tags={"Screen Categories"},
+     * @OA\Delete(
+     *     path="/script_categories/{script_category_id}",
+     *     summary="Delete a script category",
+     *     operationId="deleteScriptCategory",
+     *     tags={"Script Categories"},
      *     @OA\Parameter(
-     *         description="ID of screen category to return",
+     *         description="ID of script category to return",
      *         in="path",
-     *         name="screen_category_id",
+     *         name="script_category_id",
      *         required=true,
      *         @OA\Schema(
      *           type="string",
@@ -226,16 +231,16 @@ class ScreenCategoryController extends Controller
      *     ),
      * )
      */
-    public function destroy(ScreenCategory $screenCategory)
+    public function destroy(ScriptCategory $scriptCategory)
     {
-        if ($screenCategory->screens->count() !== 0) {
+        if ($scriptCategory->scripts->count() !== 0) {
             return response (
-                ['message'=>'The item should not have associated screens',
-                    'errors'=> ['screens' => $screenCategory->screens->count()]],
-                    422);
+                ['message'=>'The item should not have associated scripts',
+                    'errors'=> ['scripts' => $scriptCategory->scripts->count()]],
+                422);
         }
 
-        $screenCategory->delete();
+        $scriptCategory->delete();
         return response('', 204);
     }
 }

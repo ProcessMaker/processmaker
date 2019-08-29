@@ -40,6 +40,9 @@ trait ProcessTaskAssignmentsTrait
             foreach ($definitions->getElementsByTagName('userTask') as $node) {
                 $assignments = static::setAssignments($node, $assignments);
             }
+            foreach ($definitions->getElementsByTagName('manualTask') as $node) {
+                $assignments = static::setAssignments($node, $assignments);
+            }
             $process->assignments()->createMany($assignments);
         }
     }

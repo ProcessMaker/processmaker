@@ -17,7 +17,7 @@ use ProcessMaker\Traits\HideSystemResources;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
- *  * @OA\Schema(
+ * @OA\Schema(
  *   schema="ScreenCategoryEditable",
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
@@ -43,8 +43,10 @@ class ScreenCategory extends Model
         'is_system'
     ];
 
-    public static function rules()
+    public static function rules($existing = null)
     {
+        $unique = Rule::unique('screen_categories')->ignore($existing);
+
         return [
             'name' => 'required|string|max:100|unique:screen_categories,name',
             'status' => 'required|string|in:ACTIVE,INACTIVE'

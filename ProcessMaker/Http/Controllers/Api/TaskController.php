@@ -236,7 +236,9 @@ class TaskController extends Controller
             if ($task->status === 'CLOSED') {
                 return abort(422, __('Task already closed'));
             }
-            $data = SanitizeHelper::sanitizeData($request->json('data'), $task->getScreen());
+            // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
+            $data = json_decode($request->getContent(), true);
+            $data = SanitizeHelper::sanitizeData($data['data'], $task->getScreen());
             //Call the manager to trigger the start event
             $process = $task->process;
             $instance = $task->processRequest;

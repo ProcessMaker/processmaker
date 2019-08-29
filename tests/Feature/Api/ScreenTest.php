@@ -19,7 +19,7 @@ class ScreenTest extends TestCase
     const STRUCTURE = [
         'title',
         'description',
-        'category',
+        'screen_category_id',
         'config',
     ];
 
@@ -274,7 +274,7 @@ class ScreenTest extends TestCase
     }
 
     /**
-     * Copy Screen 
+     * Copy Screen
      */
     public function testDuplicateScreen()
     {

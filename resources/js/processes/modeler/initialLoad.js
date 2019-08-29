@@ -29,6 +29,7 @@ import GroupSelect from './components/inspector/GroupSelect';
 import TaskNotifications from './components/inspector/TaskNotifications';
 import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
+import TaskDueIn from './components/inspector/TaskDueIn';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
@@ -39,6 +40,7 @@ Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('TaskNotifications', TaskNotifications);
 Vue.component('ExpressionEditor', ExpressionEditor);
 Vue.component('TaskAssignment', TaskAssignment);
+Vue.component('TaskDueIn', TaskDueIn);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
@@ -69,7 +71,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 // Implement user list and group list for intermediate catch event
 // eslint-disable-next-line func-names
 (function() {
-  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[4] = {
+  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[3] = {
     component: 'UserSelect',
     config: {
       label: 'Allowed User',
@@ -77,7 +79,7 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
       name: 'allowedUsers'
     }
   };
-  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[5] = {
+  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[4] = {
     component: 'GroupSelect',
     config: {
       label: 'Allowed Group',
@@ -133,12 +135,24 @@ ProcessMaker.EventBus.$on(
 
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {
-      component: 'StartPermission',
+      component: 'FormAccordion',
+      container: true,
       config: {
-        label: 'Permission To Start',
-        helper: '',
-        name: 'startPermission'
-      }
+        initiallyOpen: false,
+        label: 'Start Permissions',
+        icon: 'user-shield',
+        name: 'startPermissions',
+      },
+      items: [
+        {
+          component: 'StartPermission',
+          config: {
+            label: 'Permission To Start',
+            helper: '',
+            name: 'startPermission'
+          }
+        },
+      ],
     });
 
     /* Register the inspector extensions for tasks */
@@ -152,19 +166,50 @@ ProcessMaker.EventBus.$on(
       }
     });
     registerInspectorExtension(task, {
-      component: 'TaskAssignment',
+      component: 'TaskDueIn',
       config: {
-        label: 'Task Assignment',
-        helper: '',
-        name: 'taskAssignment'
+        label: 'Due In',
+        helper: 'Time when the task will be due',
+        name: 'taskDueIn',
       }
     });
     registerInspectorExtension(task, {
-      component: 'TaskNotifications',
+      component: 'FormAccordion',
+      container: true,
       config: {
-        label: 'Task Notifications',
-        helper: 'Users that should be notified about task events'
-      }
+        initiallyOpen: false,
+        label: 'Assignment Rules',
+        icon: 'users',
+        name: 'assignmentRules',
+      },
+      items: [
+        {
+          component: 'TaskAssignment',
+          config: {
+            label: 'Task Assignment',
+            helper: '',
+            name: 'taskAssignment'
+          }
+        },
+      ],
+    });
+    registerInspectorExtension(task, {
+      component: 'FormAccordion',
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: 'Notifications',
+        icon: 'bell',
+        name: 'notifications',
+      },
+      items: [
+        {
+          component: 'TaskNotifications',
+          config: {
+            helper: 'Users that should be notified about task events'
+          }
+        },
+      ],
     });
 
     /* Register the inspector extensions for script tasks */
@@ -207,19 +252,50 @@ ProcessMaker.EventBus.$on(
       }
     });
     registerInspectorExtension(manualTask, {
-      component: 'TaskAssignment',
+      component: 'TaskDueIn',
       config: {
-        label: 'Task Assignment',
-        helper: '',
-        name: 'taskAssignment'
+        label: 'Due In',
+        helper: 'Time when the task will be due',
+        name: 'taskDueIn',
       }
     });
     registerInspectorExtension(manualTask, {
-      component: 'TaskNotifications',
+      component: 'FormAccordion',
+      container: true,
       config: {
-        label: 'Task Notifications',
-        helper: 'Users that should be notified about task events'
-      }
+        initiallyOpen: false,
+        label: 'Assignment Rules',
+        icon: 'users',
+        name: 'assignmentRules',
+      },
+      items: [
+        {
+          component: 'TaskAssignment',
+          config: {
+            label: 'Task Assignment',
+            helper: '',
+            name: 'taskAssignment'
+          }
+        },
+      ],
+    });
+    registerInspectorExtension(manualTask, {
+      component: 'FormAccordion',
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: 'Notifications',
+        icon: 'bell',
+        name: 'notifications',
+      },
+      items: [
+        {
+          component: 'TaskNotifications',
+          config: {
+            helper: 'Users that should be notified about task events'
+          }
+        },
+      ],
     });
   }
 );

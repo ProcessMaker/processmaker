@@ -1,7 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    {{__('Edit Process Category')}}
+    {{__('Edit Category')}}
 @endsection
 
 @section('sidebar')
@@ -12,8 +12,8 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Processes') => route('processes.index'),
-        __('Categories') => route('categories.index'),
-        __('Edit') . " " . $processCategory->name => null,
+        $titleMenu => route($routeMenu),
+        __('Edit') . " " . $category->name => null,
     ]])
     <div class="container" id="editProcessCategory">
         <div class="row">
@@ -24,7 +24,8 @@
                         {!! Form::label('name', __('Category Name')) !!}
                         {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' => 'formData.name',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.name}']) !!}
-                        <small class="form-text text-muted" v-if="! errors.name">{{__('The category name must be distinct.') }}</small>
+                        <small class="form-text text-muted"
+                               v-if="! errors.name">{{__('The category name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                     </div>
                     <div class="form-group">
@@ -47,42 +48,44 @@
 
 @section('js')
     <script>
-        new Vue({
-            el: '#editProcessCategory',
-            data() {
-                return {
-                    formData: @json($processCategory),
-                    errors: {
-                        'name': null,
-                        'status': null
-                    }
-                }
-            },
-            methods: {
-                resetErrors() {
-                    this.errors = Object.assign({}, {
-                        name: null,
-                        description: null,
-                        status: null
-                    });
-                },
-                onClose() {
-                    window.location.href = '/designer/categories';
-                },
-                onUpdate() {
-                    this.resetErrors();
-                    ProcessMaker.apiClient.put('process_categories/' + this.formData.id, this.formData)
-                        .then(response => {
-                            ProcessMaker.alert('{{__('The category was saved.')}}', 'success');
-                            this.onClose();
-                        })
-                        .catch(error => {
-                            if (error.response.status && error.response.status === 422) {
-                                this.errors = error.response.data.errors;
-                            }
-                        });
-                }
+      new Vue({
+        el: '#editProcessCategory',
+        data() {
+          return {
+            formData: @json($category),
+            location: @json($location),
+            route: @json($route),
+            errors: {
+              'name': null,
+              'status': null
             }
-        });
+          }
+        },
+        methods: {
+          resetErrors() {
+            this.errors = Object.assign({}, {
+              name: null,
+              description: null,
+              status: null
+            });
+          },
+          onClose() {
+            window.location.href = this.location;
+          },
+          onUpdate() {
+            this.resetErrors();
+            ProcessMaker.apiClient.put(this.route + '/' + this.formData.id, this.formData)
+              .then(response => {
+                ProcessMaker.alert('{{__('The category was saved.')}}', 'success');
+                this.onClose();
+              })
+              .catch(error => {
+                if (error.response.status && error.response.status === 422) {
+                  this.errors = error.response.data.errors;
+                }
+              });
+          }
+        }
+      });
     </script>
 @endsection

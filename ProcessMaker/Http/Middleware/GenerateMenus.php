@@ -103,7 +103,7 @@ class GenerateMenus
                 'icon' => 'fa-clipboard-check',
             ]);
             if (\Auth::check() && \Auth::user()->can('view-all_requests')) {
-                $submenu->add(__('Request All'), [
+                $submenu->add(__('All Requests'), [
                     'route' => ['requests_by_type', 'all'],
                     'icon' => 'fa-clipboard',
                 ]);
@@ -120,7 +120,7 @@ class GenerateMenus
                 ]);
             }
             if (\Auth::check() && \Auth::user()->can('view-categories')) {
-                $submenu->add(__('Categories'), [
+                $submenu->add(__('Process Categories'), [
                     'route' => 'categories.index',
                     'icon' => 'fa-sitemap',
                     'id' => 'process-categories'
@@ -140,11 +140,25 @@ class GenerateMenus
                     'id' => 'process-scripts'
                 ]);
             }
+            if (\Auth::check() && \Auth::user()->can('view-categories')) {
+                $submenu->add(__('Script Categories'), [
+                    'route' => 'script-categories.index',
+                    'icon' => 'fa-sitemap',
+                    'id' => 'script-categories'
+                ]);
+            }
             if (\Auth::check() && \Auth::user()->can('view-screens')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens'
+                ]);
+            }
+            if (\Auth::check() && \Auth::user()->can('view-categories')) {
+                $submenu->add(__('Screen Categories'), [
+                    'route' => 'screen-categories.index',
+                    'icon' => 'fa-sitemap',
+                    'id' => 'screen-categories'
                 ]);
             }
             if (\Auth::check() && \Auth::user()->can('view-environment_variables')) {

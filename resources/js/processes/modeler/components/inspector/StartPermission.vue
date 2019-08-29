@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="form-group">
-            <label>{{ $t('Start Permission') }}</label>
+            <label>{{ $t('Type') }}</label>
             <select class="form-control"
                     :value="assignmentGetter"
                     @input="assignmentSetter">
