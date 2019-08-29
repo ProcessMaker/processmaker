@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
@@ -16,22 +17,23 @@ class ScriptController extends Controller
     public function index()
     {
         $scriptFormats = Script::scriptFormatList();
+        $scriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
-        return view('processes.scripts.index', compact('scriptFormats'));
+        return view('processes.scripts.index', compact('scriptFormats', 'scriptCategories'));
     }
 
     public function edit(Script $script, User $users)
     {
         $selectedUser = $script->runAsUser;
         $scriptFormats = Script::scriptFormatList();
-        
+
         return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptFormats'));
     }
 
     public function builder(Script $script)
     {
         $scriptFormat = $script->language_name;
-        
+
         return view('processes.scripts.builder', compact('script', 'scriptFormat'));
     }
 }

@@ -9,7 +9,9 @@ use ProcessMaker\Models\ScriptCategory;
 $factory->define(ScriptCategory::class, function (Faker $faker) {
     return [
         'name' => $faker->unique()->sentence(),
-        'status' => 'ACTIVE',
+        'status' => $faker->randomElement(
+            ['ACTIVE', 'INACTIVE']
+        ),
         'is_system' => false
     ];
 });

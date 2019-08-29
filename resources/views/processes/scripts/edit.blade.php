@@ -27,6 +27,8 @@
                                v-if="! errors.title">{{ __('The script name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
+                    <category-select :label="$t('Category')" api-get="script_categories" api-list="script_categories" v-model="formData.script_category_id" :errors="errors.script_category_id">
+                    </category-select>
                     <div class="form-group">
                         <label class="typo__label">{{__('Run script as')}}</label>
                         <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': errors.run_as_user_id}">
@@ -64,6 +66,7 @@
 @endsection
 
 @section('js')
+    <script src="{{mix('js/processes/scripts/editConfig.js')}}"></script>
     <script>
       new Vue({
         el: '#editScript',
@@ -97,6 +100,7 @@
             ProcessMaker.apiClient.put('scripts/' + this.formData.id, {
               title: this.formData.title,
               language: this.formData.language,
+              script_category_id: this.formData.script_category_id,
               description: this.formData.description,
               run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
               timeout: this.formData.timeout,

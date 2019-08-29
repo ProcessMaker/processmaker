@@ -36,8 +36,14 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
         Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit')->middleware('can:edit-scripts,script');
         Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder')->middleware('can:edit-scripts,script');
 
-        Route::get('categories', 'ProcessCategoryController@index')->name('categories.index')->middleware('can:view-categories');
-        Route::get('categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories,processCategory');
+        Route::get('processes/categories', 'ProcessCategoryController@index')->name('categories.index')->middleware('can:view-categories');
+        Route::get('processes/categories/{processCategory}/edit', 'ProcessCategoryController@edit')->name('categories.edit')->middleware('can:edit-categories,processCategory');
+
+        Route::get('screens/categories', 'ScreenCategoryController@index')->name('screen-categories.index')->middleware('can:view-categories');
+        Route::get('screens/categories/{screenCategory}/edit', 'ScreenCategoryController@edit')->name('screen-categories.edit')->middleware('can:edit-categories,screenCategory');
+
+        Route::get('scripts/categories', 'ScriptCategoryController@index')->name('script-categories.index')->middleware('can:view-categories');
+        Route::get('scripts/categories/{scriptCategory}/edit', 'ScriptCategoryController@edit')->name('script-categories.edit')->middleware('can:edit-categories,scriptCategory');
     });
 
     Route::get('processes', 'ProcessController@index')->name('processes.index');

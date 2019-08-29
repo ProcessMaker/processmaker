@@ -38,15 +38,11 @@ class ProcessController extends Controller
 
         $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
-        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->get();
-        $processCategoryArray = ['' => 'None'];
-        foreach ($processCategories as $pc) {
-            $processCategoryArray[$pc->id] = $pc->name;
-        }
+        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
         return view('processes.index',
             [
                 "processes" => $processes,
-                "processCategories" => $processCategoryArray,
+                "processCategories" => $processCategories,
                 "status" => $status
             ]);
     }
