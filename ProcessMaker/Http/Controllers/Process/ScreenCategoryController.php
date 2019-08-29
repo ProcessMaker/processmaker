@@ -4,49 +4,49 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ScreenCategory;
 
-class ProcessCategoryController extends Controller
+class ScreenCategoryController extends Controller
 {
     /**
-     * Get list of Process Categories
+     * Get list of Screen Categories
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
-        $title = __('Process Categories');
+        $title = __('Screen Categories');
         $btnCreate = __('Category');
-        $titleMenu = __('Processes');
-        $routeMenu = 'processes.index';
-        $titleModal = __('Create Category');
-        $fieldName = __('Category Name');
+        $titleMenu = __('Screens');
+        $routeMenu = 'screens.index';
+        $titleModal = __('Create Screen Category');
+        $fieldName = __('Category Screen Name');
         $distinctName = __('The category name must be distinct.');
         $permissions = Auth::user()->hasPermissionsFor('categories');
-        $route = 'process_categories';
-        $location = '/designer/processes/categories';
+        $route = 'screen_categories';
+        $location = '/designer/screens/categories';
         $create = 'create-categories';
-        $include = 'processesCount';
-        $labelCount = __('# Processes');
-        $count = 'processes_count';
+        $include = 'screensCount';
+        $labelCount = __('# Screens');
+        $count = 'screens_count';
 
         return view('categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
     }
 
     /**
-     * Get a specific process category
+     * Get a specific screen category
      *
-     * @param ProcessCategory $processCategory
+     * @param ScreenCategory $screenCategory
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(ProcessCategory $processCategory)
+    public function edit(ScreenCategory $screenCategory)
     {
-        $category = $processCategory;
-        $route = 'process_categories';
-        $location = '/designer/processes/categories';
+        $category = $screenCategory;
         $titleMenu = __('Categories');
-        $routeMenu = 'categories.index';
+        $routeMenu = 'screen-categories.index';
+        $route = 'screen_categories';
+        $location = '/designer/screens/categories';
         return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
     }
 }

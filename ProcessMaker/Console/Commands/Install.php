@@ -165,6 +165,9 @@ class Install extends Command
         //Create a symbolic link from "public/storage" to "storage/app/public"
         $this->call('storage:link');
 
+
+        $this->call('vendor:publish', ['--tag'=>'telescope-assets', '--force' =>true]);
+
         $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
         $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
         return true;

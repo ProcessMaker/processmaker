@@ -69,6 +69,13 @@ Route::group(
     Route::delete('scripts/{script}', 'ScriptController@destroy')->name('scripts.destroy')->middleware('can:delete-scripts');
     Route::post('scripts/{script}/preview', 'ScriptController@preview')->name('script.preview')->middleware('can:view-scripts');
 
+    // Script Categories
+    Route::get('script_categories', 'ScriptCategoryController@index')->name('script_categories.index')->middleware('can:view-scripts');
+    Route::get('script_categories/{script_category}', 'ScriptCategoryController@show')->name('script_categories.show')->middleware('can:view-scripts');
+    Route::post('script_categories', 'ScriptCategoryController@store')->name('script_categories.store')->middleware('can:edit-scripts');
+    Route::put('script_categories/{script_category}', 'ScriptCategoryController@update')->name('script_categories.update')->middleware('can:edit-scripts');
+    Route::delete('script_categories/{script_category}', 'ScriptCategoryController@destroy')->name('script_categories.destroy')->middleware('can:edit-scripts');
+
     // Processes
     Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');
     Route::get('processes/{process}', 'ProcessController@show')->name('processes.show')->middleware('can:view-processes');

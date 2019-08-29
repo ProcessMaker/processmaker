@@ -57,6 +57,7 @@ use DOMElement;
  *       @OA\Schema(
  *           @OA\Property(property="user_id", type="string", format="id"),
  *           @OA\Property(property="id", type="string", format="id"),
+ *           @OA\Property(property="deleted_at", type="string", format="date-time"),
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
  *       )
@@ -572,6 +573,14 @@ class Process extends Model implements HasMedia
         }
         if (empty($users)) {
             throw new TaskDoesNotHaveUsersException($processTaskUuid);
+        }
+        sort($users);
+        if ($last) {
+            foreach ($users as $user) {
+                if ($user > $last->user_id) {
+                    return $user;
+                }
+            }
         }
         return $users[0];
     }
