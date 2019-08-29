@@ -21,12 +21,14 @@ class RemoveFieldCategoryScreenScript extends Migration
             if ($script->category) {
                 $category = ScriptCategory::firstOrCreate(['name' => $script->category ]);
                 $script->category()->associate($category);
+                $script->save();
             }
         }
         foreach(Screen::all() as $screen) {
             if ($screen->category) {
                 $category = ScreenCategory::firstOrCreate(['name' => $screen->category]);
                 $screen->category()->associate($category);
+                $screen->save();
             }
         }
         Schema::table('scripts', function (Blueprint $table) {
@@ -66,10 +68,12 @@ class RemoveFieldCategoryScreenScript extends Migration
         foreach(Script::all() as $script) {
             $category = $script->category()->first();
             !$category ?: $script->category = $category->name;
+            $script->save();
         }
         foreach(Screen::all() as $screen) {
             $category = $screen->category()->first();
             !$category ?: $screen->category = $category->name;
+            $screen->save();
         }
     }
 }
