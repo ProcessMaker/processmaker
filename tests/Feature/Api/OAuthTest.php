@@ -23,7 +23,7 @@ class OAuthTest extends TestCase
         $response = $this->actingAs($this->user, 'api')
                          ->json('POST', '/oauth/clients', [ 'name' => 'foo', 'types' => []]);
 
-        $this->assertEquals('The types must have at least 1 items.', $response->json()['errors']['types'][0]);
+        $this->assertEquals('The Auth-Client must have at least 1 item chosen.', $response->json()['errors']['types'][0]);
         
         $response = $this->actingAs($this->user, 'api')
                          ->json('POST', '/oauth/clients', [ 'name' => 'foo', 'types' => ['authorization_code_grant']]);

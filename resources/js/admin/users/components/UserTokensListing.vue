@@ -99,7 +99,7 @@
         let tokenId = row.id
         ProcessMaker.confirmModal(
           this.$t("Caution!"),
-          this.$t("Are you sure to delete the token ") + tokenId.substr(0, 7) +
+          this.$t("Are you sure you want to delete the token ") + tokenId.substr(0, 7) +
           this.$t("? Any services using it will no longer have access."),
           "",
           () => {
