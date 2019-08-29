@@ -36,12 +36,14 @@
             </div>
             <div class="col-8" align="right">
                 @can('import-processes')
-                    <a href="#" id="import_process" class="btn btn-outline-secondary" @click="goToImport"><i class="fas fa-file-import"></i>
+                    <a href="#" id="import_process" class="btn btn-outline-secondary" @click="goToImport">
+                        <i class="fas fa-file-import"></i>
                         {{__('Import')}}</a>
                 @endcan
                 @can('create-processes')
-                    <a href="#" id="create_process" class="btn btn-secondary" data-toggle="modal" data-target="#addProcess"><i
-                                class="fas fa-plus"></i>
+                    <a href="#" id="create_process" class="btn btn-secondary" data-toggle="modal"
+                       data-target="#addProcess">
+                        <i class="fas fa-plus"></i>
                         {{__('Process')}}</a>
                 @endcan
             </div>
@@ -68,7 +70,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @if (count($processCategories) > 1)
+                    @if ($processCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
                                 {!! Form::label('name', __('Name')) !!}
@@ -92,16 +94,10 @@
                                     @{{description}}
                                 </div>
                             </div>
-                            <div class="form-group">
-                                {!! Form::label('process_category_id', __('Category'))!!}<small class="ml-1">*</small>
-                                {!! Form::select('process_category_id', [null => __('Select')] + $processCategories, null, [
-                                'class'=> 'form-control',
-                                'v-model'=> 'process_category_id',
-                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.process_category_id}']) !!}
-                                <div class="invalid-feedback" v-for="category in addError.process_category_id">
-                                    @{{category}}
-                                </div>
-                            </div>
+                            <category-select :label="$t('Category')" api-get="process_categories"
+                                             api-list="process_categories" v-model="process_category_id"
+                                             :errors="addError.process_category_id">
+                            </category-select>
                             <div class="form-group">
                                 {!! Form::label('fileName', __('Upload BPMN File (optional)')) !!}
                                 <div class="input-group">
@@ -109,7 +105,9 @@
                                     <button @click="browse" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                         {{__('Upload file')}}
                                     </button>
-                                    <input type="file" class="custom-file-input" :class="{'is-invalid': addError.bpmn && addError.bpmn.length}" ref="customFile" @change="onFileChange" accept=".bpmn" style="height: 1em;">
+                                    <input type="file" class="custom-file-input"
+                                           :class="{'is-invalid': addError.bpmn && addError.bpmn.length}"
+                                           ref="customFile" @change="onFileChange" accept=".bpmn" style="height: 1em;">
                                     <div class="invalid-feedback" v-for="error in addError.bpmn">@{{error}}</div>
                                 </div>
                             </div>
@@ -117,7 +115,7 @@
                     @else
                         <div class="modal-body">
                             <div>{{__('Categories are required to create a process')}}</div>
-                            <a href="{{ url('designer/categories') }}" class="btn btn-primary container mt-2">
+                            <a href="{{ url('designer/processes/categories') }}" class="btn btn-primary container mt-2">
                                 {{__('Add Category')}}
                             </a>
                         </div>
@@ -125,7 +123,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                                 @click="onClose">{{__('Cancel')}}</button>
-                        @if (count($processCategories) > 1)
+                        @if ($processCategories !== 0)
                             <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
                                 {{__('Save')}}
                             </button>
@@ -138,7 +136,7 @@
 @endsection
 
 @section('js')
-
+    <script src="{{mix('js/processes/index.js')}}"></script>
     @can('create-processes')
         <script>
           new Vue({
@@ -221,5 +219,5 @@
         </script>
     @endcan
 
-    <script src="{{mix('js/processes/index.js')}}"></script>
+
 @endsection
