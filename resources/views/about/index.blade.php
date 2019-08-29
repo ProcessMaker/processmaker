@@ -5,7 +5,7 @@
 @endsection
 
 @section('sidebar')
-@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_designer')])
+@include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_about')])
 @endsection
 
 @section('content')
