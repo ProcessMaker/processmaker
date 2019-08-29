@@ -6,7 +6,9 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Models\Script;
 
@@ -23,7 +25,8 @@ class ScreenController extends Controller
         foreach(ScreenType::pluck('name')->toArray() as $type) {
             $types[$type] = __(ucwords(strtolower($type)));
         }
-        return view('processes.screens.index', compact('types'));
+        $screenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        return view('processes.screens.index', compact('types', 'screenCategories'));
     }
 
     /**
