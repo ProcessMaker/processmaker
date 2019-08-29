@@ -53,9 +53,6 @@ class CssOverrideController extends Controller
         if (!$setting) {
             $setting = new Setting();
         }
-        $request->validate(Setting::rules($setting));
-        $setting->fill($request->input());
-        $setting->saveOrFail();
 
         if ($request->has('fileLogo')) {
             $this->uploadFile($setting->refresh(), $request, 'fileLogo', Setting::COLLECTION_CSS_LOGO, Setting::DISK_CSS);
@@ -70,10 +67,14 @@ class CssOverrideController extends Controller
           $this->uploadFile($setting->refresh(), $request, 'fileLogin', Setting::COLLECTION_CSS_LOGIN, Setting::DISK_CSS);
           Cache::forget('css-login');
         }
-        
+
         if ($request->has('reset') && $request->input('reset')) {
           $setting->delete();
         }
+
+        $request->validate(Setting::rules($setting));
+        $setting->fill($request->input());
+        $setting->saveOrFail();
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
@@ -253,7 +254,7 @@ class CssOverrideController extends Controller
             $data = substr($data[$filename], strpos($data[$filename], ',') + 1);
             $type = strtolower($type[1]); // jpg, png, gif
 
-            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'tiff'])) {
+            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
                 throw new \Exception('invalid image type');
             }
 
@@ -268,9 +269,8 @@ class CssOverrideController extends Controller
             $setting->addMedia("/tmp/img.{$type}")
                 ->toMediaCollection($collectionName, $diskName);
         } else if (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
-            $this->validate($request, [
-                $filename => 'mimes:jpg,jpeg,png,gif,bmp,tiff',
-            ]);
+            $customMessage = ['mimes' => __('The :attribute must be a file of type: jpg, jpeg, png, or gif.')];
+            $this->validate($request, [ $filename => '  mimes:jpg,jpeg,png,gif'], $customMessage);
             $setting->addMedia($request->file($filename))
                 ->toMediaCollection($collectionName, $diskName);
         }
