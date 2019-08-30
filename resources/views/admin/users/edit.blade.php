@@ -311,14 +311,14 @@
                                         <i class="fas fa-exclamation-triangle"></i>
                                         {{__("Make sure you copy your access token now. You won't be able to see it again.")}}
                                     </div>
-                                    <button @click="copyTextArea" class="btn btn-secondary">
+                                    <button type="button" @click="copyTextArea" class="btn btn-secondary">
                                         <i class="fas fa-paste"></i>
                                         {{__('Copy Token To Clipboard')}}
                                     </button>
                                     <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
                                 </div>
                                 <hr class="mt-0">
-                                <button class="btn btn-secondary float-right" @click="generateToken">
+                                <button type="button" class="btn btn-secondary float-right" @click="generateToken">
                                     {{__('Generate New Token')}}
                                 </button>
                             </div>
@@ -411,7 +411,7 @@
                         <div v-if="!image" class="no-avatar"
                              align="center">{{__('Click the browse button below to get started')}}</div>
                         <div align="center">
-                            <button @click="browse" class="btn btn-secondary mt-5 mb-2"><i class="fas fa-upload"></i>
+                            <button type="button" @click="browse" class="btn btn-secondary mt-5 mb-2"><i class="fas fa-upload"></i>
                                 {{__('Browse')}}
                             </button>
                         </div>
@@ -425,11 +425,11 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button @click="hideModal" class="btn btn-outline-secondary">
+                    <button type="button" @click="hideModal" class="btn btn-outline-secondary">
                         {{__('Cancel')}}
                     </button>
 
-                    <button @click="saveAndEmit" class="btn btn-secondary">
+                    <button type="button" @click="saveAndEmit" class="btn btn-secondary">
                         {{__('Save')}}
                     </button>
                 </div>

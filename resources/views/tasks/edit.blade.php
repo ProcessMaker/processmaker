@@ -69,7 +69,7 @@
                                 </div>
                                 @if ($task->getBpmnDefinition()->localName==='manualTask' || !$task->getScreen())
                                 <div class="card-footer">
-                                    <button class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
+                                    <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
                                 </div>
                                 @endif
                             @elseif ($task->advanceStatus==='completed')
@@ -121,7 +121,7 @@
                                         <br>
                                         <span>
                                 @if ($task->advanceStatus === 'open')
-                                <button class="btn btn-outline-secondary btn-block" @click="show">
+                                <button type="button" class="btn btn-outline-secondary btn-block" @click="show">
                                     <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                 </button>
                                 @endif

@@ -186,7 +186,7 @@
                     <div>
                         <div v-if="!image" class="no-avatar" align="center">{{__('Click the browse button below to get started')}}</div>
                         <div align="center">
-                            <button @click="browse" class="btn btn-secondary mt-5 mb-2" ><i class="fas fa-upload"></i>
+                            <button type="button" @click="browse" class="btn btn-secondary mt-5 mb-2" ><i class="fas fa-upload"></i>
                                 {{__('Browse')}}
                             </button>
                         </div>
@@ -201,11 +201,11 @@
 
                 <div class="modal-footer">
                     <div>
-                        <button @click="hideModal" class="btn btn-outline-secondary">
+                        <button type="button" @click="hideModal" class="btn btn-outline-secondary">
                             {{__('Cancel')}}
                         </button>
 
-                        <button @click="saveAndEmit" class="btn btn-secondary ml-2">
+                        <button type="button" @click="saveAndEmit" class="btn btn-secondary ml-2">
                             {{__('Continue')}}
                         </button>
                     </div>

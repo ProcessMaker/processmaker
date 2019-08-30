@@ -102,7 +102,7 @@
                                 {!! Form::label('fileName', __('Upload BPMN File (optional)')) !!}
                                 <div class="input-group">
                                     <input type="text" name="fileName" class="form-control" v-model="selectedFile">
-                                    <button @click="browse" class="btn btn-secondary"><i class="fas fa-upload"></i>
+                                    <button type="button" @click="browse" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                         {{__('Upload file')}}
                                     </button>
                                     <input type="file" class="custom-file-input"
