@@ -8,12 +8,14 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
         __('Users') => route('users.index'),
         __('Edit') . " " . $user->fullname => null,
     ]])
+@endsection
+@section('content')
     <div class="container" id="editUser">
         <div class="row">
             <div class="col-12">

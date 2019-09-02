@@ -4,11 +4,13 @@
     {{__('Edit Profile')}}
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Profile') => route('profile.show', $currentUser->id),
         __('Edit') => null,
     ]])
+@endsection
+@section('content')
     <div class="container" id="profileForm" v-cloak>
         <div class="row">
             <div class="col-8">

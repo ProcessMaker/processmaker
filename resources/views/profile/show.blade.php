@@ -4,10 +4,12 @@
 {{__('Profile')}}
 @endsection
 
-@section('content')
+@section('breadcrumbs')
 @include('shared.breadcrumbs', ['routes' => [
     __('Profile') => null,
 ]])
+@endsection
+@section('content')
 <div class="container" id="profileForm">
     <div class="row">
         <div class="col-8">

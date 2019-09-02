@@ -8,10 +8,12 @@
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_about')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
   @include('shared.breadcrumbs', ['routes' => [
       __('About ProcessMaker') => null,
   ]])
+@endsection
+@section('content')
  <div class="container">
     <div class="row">
       <div class="col-8">
