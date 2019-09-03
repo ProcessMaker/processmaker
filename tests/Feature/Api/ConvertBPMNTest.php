@@ -3,19 +3,11 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Providers\WorkflowServiceProvider as PM;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -35,12 +27,23 @@ class ConvertBPMNTest extends TestCase
      */
     public function testConvertSubProcess()
     {
-
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/CP.01.00 Create new customer.bpmn'),
         ]);
         $this->assertNotContains('subProcess', $process->bpmn);
         $this->assertEquals(2, Process::count());
+    }
+
+    /**
+     * Test convert sendTask to scriptTask
+     */
+    public function testConvertSendTask()
+    {
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/adonis.bpmn'),
+        ]);
+        $this->assertNotContains('sendTask', $process->bpmn);
     }
 }
