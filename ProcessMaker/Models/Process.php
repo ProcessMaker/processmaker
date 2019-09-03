@@ -875,6 +875,10 @@ class Process extends Model implements HasMedia
         return $processRequest->user_id;
     }
 
+    /**
+     * Check the BPMN and convert not supported or extended features
+     *
+     */
     public function convertFromExternalBPM()
     {
         $document = new BpmnDocument();
@@ -888,19 +892,25 @@ class Process extends Model implements HasMedia
         // Replace sendTask to scriptTask
         $sendTasks = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'sendTask');
         while ($sendTask = $sendTasks->item(0)) {
-            $scriptTask = $this->changeName($sendTask, 'scriptTask');
+            $scriptTask = $this->cloneNodeAs($sendTask, 'scriptTask');
             $sendTask->parentNode->replaceChild($scriptTask, $sendTask);
         }
         $this->bpmn = $document->saveXml();
         $this->bpmnDefinitions = null;
     }
 
+    /**
+     * Convert a subProcess into a callActivity
+     *
+     * @param BPMNElement $subProcess
+     * @return void
+     */
     private function createCallActivityFrom($subProcess)
     {
-        $element = $this->changeName($subProcess, 'callActivity', ['outgoing', 'incoming']);
+        $element = $this->cloneNodeAs($subProcess, 'callActivity', ['outgoing', 'incoming']);
 
         $definitions = $subProcess->ownerDocument->firstChild->cloneNode(false);
-        $subProcessClone = $this->changeName($subProcess, 'process', [], ['outgoing', 'incoming']);
+        $subProcessClone = $this->cloneNodeAs($subProcess, 'process', [], ['outgoing', 'incoming']);
         $definitions->appendChild($subProcessClone);
 
         $subProcessBpmn = $subProcessClone->ownerDocument->saveXml($definitions);
@@ -917,9 +927,19 @@ class Process extends Model implements HasMedia
         return $element;
     }
 
-    public function changeName($node, $name, $include = [], $exclude = [])
+    /**
+     * Create a clone of a BPMNElement with a different nodeName
+     *
+     * @param BPMNElement $node
+     * @param string $newNodeName
+     * @param array $include
+     * @param array $exclude
+     *
+     * @return BPMNElement
+     */
+    public function cloneNodeAs($node, $newNodeName, $include = [], $exclude = [])
     {
-        $newnode = $node->ownerDocument->createElementNS(BpmnDocument::BPMN_MODEL, $name);
+        $newnode = $node->ownerDocument->createElementNS(BpmnDocument::BPMN_MODEL, $newNodeName);
         foreach ($node->childNodes as $child) {
             if ($child->nodeName !== '#text') {
                 $shortName = explode(':', $child->nodeName);
@@ -937,7 +957,6 @@ class Process extends Model implements HasMedia
         foreach ($node->attributes as $attrName => $attrNode) {
             $newnode->setAttribute($attrName, $attrNode->nodeValue);
         }
-        //$newnode->ownerDocument->replaceChild($newnode, $node);
         return $newnode;
     }
 }
