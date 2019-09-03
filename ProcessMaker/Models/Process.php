@@ -893,8 +893,8 @@ class Process extends Model implements HasMedia
             $callActivity = $this->createCallActivityFrom($subProcess);
             $subProcess->parentNode->replaceChild($callActivity, $subProcess);
             $warnings[] = [
-                'title' => "SubProcess '$id' was converted to CallActivity",
-                'description' => "SubProcess with name '$name' was converted to CallActivity",
+                'title' => __("Element conversion"),
+                'text' => __('SubProcess Conversion', ['name' => $name]),
             ];
         }
         // Replace sendTask to scriptTask
@@ -905,8 +905,8 @@ class Process extends Model implements HasMedia
             $scriptTask = $this->cloneNodeAs($sendTask, 'scriptTask');
             $sendTask->parentNode->replaceChild($scriptTask, $sendTask);
             $warnings[] = [
-                'title' => "SendTask '$id' was converted to ScriptTask",
-                'description' => "SendTask with name '$name' was converted to ScriptTask",
+                'title' => __("Element conversion"),
+                'text' => __('SendTask Conversion', ['name' => $name]),
             ];
         }
         $this->bpmn = $document->saveXml();

@@ -885,6 +885,8 @@
   "Your password has been reset!": "Your password has been reset!",
   "Your PMQL contains invalid syntax.": "Your PMQL contains invalid syntax.",
   "Your PMQL search could not be completed.": "Your PMQL search could not be completed.",
-  "Your profile was saved.": "Your profile was saved."
-
+  "Your profile was saved.": "Your profile was saved.",
+  "Element Conversion": "Element Conversion",
+  "SubProcess Conversion": "SubProcess with name ':name' was converted to CallActivity.",
+  "SendTask Conversion": "SendTask with name ':name' was converted to ScriptTask."
 }
