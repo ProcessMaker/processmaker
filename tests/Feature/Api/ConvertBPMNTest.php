@@ -31,9 +31,9 @@ class ConvertBPMNTest extends TestCase
     public $withPermissions = true;
 
     /**
-     * Test to verify our processes listing api endpoint works without any filters
+     * Test convert subProcess to callActivity
      */
-    public function testProcessesListing()
+    public function testConvertSubProcess()
     {
 
         $process = factory(Process::class)->create([

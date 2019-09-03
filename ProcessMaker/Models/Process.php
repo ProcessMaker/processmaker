@@ -877,10 +877,17 @@ class Process extends Model implements HasMedia
     {
         $document = new BpmnDocument();
         $document->loadXML($this->bpmn);
+        // Replace subProcess by callActivity
         $subProcesses = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'subProcess');
-        while($subProcess = $subProcesses->item(0)) {
+        while ($subProcess = $subProcesses->item(0)) {
             $callActivity = $this->createCallActivityFrom($subProcess);
             $subProcess->parentNode->replaceChild($callActivity, $subProcess);
+        }
+        // Replace sendTask to scriptTask
+        $sendTasks = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'sendTask');
+        while ($sendTask = $sendTasks->item(0)) {
+            $scriptTask = $this->changeName($sendTask, 'scriptTask');
+            $sendTask->parentNode->replaceChild($scriptTask, $sendTask);
         }
         $this->bpmn = $document->saveXml();
         $this->bpmnDefinitions = null;
@@ -888,10 +895,10 @@ class Process extends Model implements HasMedia
 
     private function createCallActivityFrom($subProcess)
     {
-        $element = $this->changeName($subProcess, 'callActivity', ['bpmn:outgoing', 'bpmn:incoming']);
+        $element = $this->changeName($subProcess, 'callActivity', ['outgoing', 'incoming']);
 
         $definitions = $subProcess->ownerDocument->firstChild->cloneNode(false);
-        $subProcessClone = $this->changeName($subProcess, 'process', [], ['bpmn:outgoing', 'bpmn:incoming']);
+        $subProcessClone = $this->changeName($subProcess, 'process', [], ['outgoing', 'incoming']);
         $definitions->appendChild($subProcessClone);
 
         $subProcessBpmn = $subProcessClone->ownerDocument->saveXml($definitions);
@@ -908,14 +915,17 @@ class Process extends Model implements HasMedia
         return $element;
     }
 
-    function changeName($node, $name, $include=[], $exclude=[]) {
+    public function changeName($node, $name, $include = [], $exclude = [])
+    {
         $newnode = $node->ownerDocument->createElementNS(BpmnDocument::BPMN_MODEL, $name);
-        foreach ($node->childNodes as $child){
+        foreach ($node->childNodes as $child) {
             if ($child->nodeName !== '#text') {
-                if ($include && !in_array($child->nodeName, $include)) {
+                $shortName = explode(':', $child->nodeName);
+                $shortName = count($shortName) === 2 ? $shortName[1] : $shortName[0];
+                if ($include && !in_array($shortName, $include)) {
                     continue;
                 }
-                if ($exclude && in_array($child->nodeName, $exclude)) {
+                if ($exclude && in_array($shortName, $exclude)) {
                     continue;
                 }
             }
