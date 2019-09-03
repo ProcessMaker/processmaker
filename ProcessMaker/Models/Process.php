@@ -872,4 +872,60 @@ class Process extends Model implements HasMedia
 
         return $processRequest->user_id;
     }
+
+    public function convertFromExternalBPM()
+    {
+        $document = new BpmnDocument();
+        $document->loadXML($this->bpmn);
+        $subProcesses = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'subProcess');
+        while($subProcess = $subProcesses->item(0)) {
+            $callActivity = $this->createCallActivityFrom($subProcess);
+            $subProcess->parentNode->replaceChild($callActivity, $subProcess);
+        }
+        $this->bpmn = $document->saveXml();
+        $this->bpmnDefinitions = null;
+    }
+
+    private function createCallActivityFrom($subProcess)
+    {
+        $element = $this->changeName($subProcess, 'callActivity', ['bpmn:outgoing', 'bpmn:incoming']);
+
+        $definitions = $subProcess->ownerDocument->firstChild->cloneNode(false);
+        $subProcessClone = $this->changeName($subProcess, 'process', [], ['bpmn:outgoing', 'bpmn:incoming']);
+        $definitions->appendChild($subProcessClone);
+
+        $subProcessBpmn = $subProcessClone->ownerDocument->saveXml($definitions);
+
+        $process = new Process([
+            'name' => $subProcessClone->getAttribute('name'),
+            'bpmn' => $subProcessBpmn,
+            'description' => $subProcessClone->getAttribute('name'),
+        ]);
+        $process->user_id = $this->user_id;
+        $process->save();
+        $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
+        $element->setAttribute('callable', $bpmnProcess->getAttribute('id') . '-' . $process->id);
+        return $element;
+    }
+
+    function changeName($node, $name, $include=[], $exclude=[]) {
+        $newnode = $node->ownerDocument->createElementNS(BpmnDocument::BPMN_MODEL, $name);
+        foreach ($node->childNodes as $child){
+            if ($child->nodeName !== '#text') {
+                if ($include && !in_array($child->nodeName, $include)) {
+                    continue;
+                }
+                if ($exclude && in_array($child->nodeName, $exclude)) {
+                    continue;
+                }
+            }
+            $child = $child->cloneNode(true);//$node->ownerDocument->importNode($child, true);
+            $newnode->appendChild($child);
+        }
+        foreach ($node->attributes as $attrName => $attrNode) {
+            $newnode->setAttribute($attrName, $attrNode->nodeValue);
+        }
+        //$newnode->ownerDocument->replaceChild($newnode, $node);
+        return $newnode;
+    }
 }
