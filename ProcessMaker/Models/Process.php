@@ -925,7 +925,7 @@ class Process extends Model implements HasMedia
         $element = $this->cloneNodeAs($subProcess, 'callActivity', ['outgoing', 'incoming']);
 
         $definitions = $subProcess->ownerDocument->firstChild->cloneNode(false);
-        $diagram = $subProcess->ownerDocument->getElementsByTagName('BPMNDiagram')->item(0);
+        $diagram = $subProcess->ownerDocument->getElementsByTagName('BPMNDiagram')->item(0)->cloneNode(true);
         $subProcessClone = $this->cloneNodeAs($subProcess, 'process', [], ['outgoing', 'incoming']);
         $definitions->appendChild($subProcessClone);
         $definitions->appendChild($diagram);
@@ -950,8 +950,7 @@ class Process extends Model implements HasMedia
         $process->process_category_id = $this->process_category_id;
         $process->save();
         $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
-        $firstStartEvent = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'startEvent')->item(0);
-        $element->setAttribute('callable', ($firstStartEvent ?? $bpmnProcess)->getAttribute('id') . '-' . $process->id);
+        $element->setAttribute('calledElement', $bpmnProcess->getAttribute('id') . '-' . $process->id);
         return $element;
     }
 
