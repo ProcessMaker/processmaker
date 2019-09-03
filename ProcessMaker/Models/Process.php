@@ -138,6 +138,7 @@ class Process extends Model implements HasMedia
         'created_at',
         'updated_at',
         'has_timer_start_events',
+        'warnings'
     ];
 
     /**
@@ -197,6 +198,7 @@ class Process extends Model implements HasMedia
 
     protected $casts = [
         'start_events' => 'array',
+        'warnings' => 'array'
     ];
 
     /**
