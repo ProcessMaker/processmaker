@@ -15,7 +15,7 @@ class AddWarningsToProcessVersionsTable extends Migration
     {
         Schema::table('process_versions', function (Blueprint $table) {
             $table->text('warnings')->nullable();
-            $table->mediumText('bpmn')->change();
+            DB::statement('ALTER TABLE process_versions CHANGE bpmn bpmn MEDIUMTEXT');
         });
     }
 
@@ -27,7 +27,7 @@ class AddWarningsToProcessVersionsTable extends Migration
     public function down()
     {
         Schema::table('process_versions', function (Blueprint $table) {
-            $table->text('bpmn')->change();
+            DB::statement('ALTER TABLE process_versions CHANGE bpmn bpmn TEXT');
             $table->dropColumn('warnings');
         });
     }
