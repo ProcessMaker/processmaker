@@ -182,6 +182,11 @@ class ProcessController extends Controller
         } else {
             $process->bpmn = Process::getProcessTemplate('OnlyStartElement.bpmn');
         }
+        // TODO: $process->warnings needs to be in the format:
+        // [{
+        // title: 'Warning title',
+        // text: 'Some warning message.'
+        // }]
         try {
             $process->saveOrFail();
         } catch (ElementNotFoundException $error) {
