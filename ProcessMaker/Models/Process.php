@@ -922,11 +922,11 @@ class Process extends Model implements HasMedia
      */
     private function createCallActivityFrom($subProcess)
     {
-        $element = $this->cloneNodeAs($subProcess, 'callActivity', ['outgoing', 'incoming']);
+        $element = $this->cloneNodeAs($subProcess, 'callActivity', ['outgoing', 'incoming'], [], ['triggeredByEvent']);
 
         $definitions = $subProcess->ownerDocument->firstChild->cloneNode(false);
         $diagram = $subProcess->ownerDocument->getElementsByTagName('BPMNDiagram')->item(0)->cloneNode(true);
-        $subProcessClone = $this->cloneNodeAs($subProcess, 'process', [], ['outgoing', 'incoming']);
+        $subProcessClone = $this->cloneNodeAs($subProcess, 'process', [], ['outgoing', 'incoming'], ['triggeredByEvent']);
         $definitions->appendChild($subProcessClone);
         $definitions->appendChild($diagram);
 
@@ -961,10 +961,11 @@ class Process extends Model implements HasMedia
      * @param string $newNodeName
      * @param array $include
      * @param array $exclude
+     * @param array $excludeAttributes
      *
      * @return BPMNElement
      */
-    public function cloneNodeAs($node, $newNodeName, $include = [], $exclude = [])
+    public function cloneNodeAs($node, $newNodeName, $include = [], $exclude = [], $excludeAttributes = [])
     {
         $newnode = $node->ownerDocument->createElementNS(BpmnDocument::BPMN_MODEL, $newNodeName);
         foreach ($node->childNodes as $child) {
@@ -982,7 +983,9 @@ class Process extends Model implements HasMedia
             $newnode->appendChild($child);
         }
         foreach ($node->attributes as $attrName => $attrNode) {
-            $newnode->setAttribute($attrName, $attrNode->nodeValue);
+            if (!in_array($attrName, $excludeAttributes)) {
+                $newnode->setAttribute($attrName, $attrNode->nodeValue);
+            }
         }
         return $newnode;
     }

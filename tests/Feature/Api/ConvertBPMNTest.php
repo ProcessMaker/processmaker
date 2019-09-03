@@ -8,6 +8,7 @@ use ProcessMaker\Models\Process;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -45,5 +46,9 @@ class ConvertBPMNTest extends TestCase
             'bpmn' => file_get_contents(__DIR__ . '/processes/adonis.bpmn'),
         ]);
         $this->assertNotContains('sendTask', $process->bpmn);
+
+        $document = new BpmnDocument();
+        $document->loadXML($process->bpmn);
+        $validation = $document->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
     }
 }
