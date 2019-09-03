@@ -14,7 +14,7 @@ class AddWarningsToProcesses extends Migration
     public function up()
     {
         Schema::table('processes', function (Blueprint $table) {
-            $table->text('warnings');
+            $table->text('warnings')->nullable();
         });
     }
 
