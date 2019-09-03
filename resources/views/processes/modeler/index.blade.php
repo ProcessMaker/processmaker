@@ -64,8 +64,12 @@ ol.breadcrumb {
     process: @json($process),
     xml: @json($process->bpmn)
   }
-  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML }) => {
+  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings }) => {
     loadXML(window.ProcessMaker.modeler.xml);
+    addWarnings([{
+      title: 'Warning title',
+      text: 'Some warning message.'
+    }])
   });
   </script>
     @foreach($manager->getScripts() as $script)
