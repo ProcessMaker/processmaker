@@ -240,11 +240,14 @@ class ProcessController extends Controller
 
         //bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
-            return response(
-                ['message' => __('The bpm definition is not valid'),
-                    'errors' => ['bpmn' => $schemaErrors]],
-                422
-            );
+            $warnings = [];
+            foreach ($schemaErrors as $error) {
+                $text = str_replace('DOMDocument::schemaValidate(): ', '', $error);
+                $warnings[] = ['title' => __('Schema Validation'), 'text' => $text];
+            }
+            $process->warnings = $warnings;
+        } else {
+            $process->warnings = null;
         }
 
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
@@ -476,6 +479,7 @@ class ProcessController extends Controller
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
             ->where('category.status', 'ACTIVE')
+            ->whereNull('warnings')
             ->where($where);
 
         // Add the order by columns
