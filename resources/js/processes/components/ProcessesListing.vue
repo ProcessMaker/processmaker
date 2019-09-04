@@ -20,7 +20,7 @@
               pagination-path="meta"
               :noDataTemplate="$t('No Data Available')"
       >
-        <template slot="name" slot-scope="props">{{props.rowData.name}}</template>
+        <template slot="name" slot-scope="props">{{props.rowData.name}} <i v-if="props.rowData.warnings" class="text-warning fa fa-exclamation-triangle"></i></template>
 
         <template slot="owner" slot-scope="props">
           <avatar-image
