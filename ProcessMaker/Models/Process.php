@@ -422,7 +422,21 @@ class Process extends Model implements HasMedia
                 //Load the collaborations if exists
                 $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
                 foreach ($collaborations as $collaboration) {
-                    $collaboration->getBpmnElementInstance();
+                    try {
+                        $collaboration->getBpmnElementInstance();
+                    } catch(\ProcessMaker\Nayra\Exceptions\ElementNotFoundException $e) {
+                        if (is_array($this->warnings)) {
+                            $warnings = $this->warnings;
+                        } else {
+                            $warnings = [];
+                        }
+
+                        $warnings[] = [
+                            'title' => __('Element Not Found'),
+                            'text' => $e->getMessage()
+                        ];
+                        $this->warnings = $warnings;
+                    }
                 }
             }
         }
