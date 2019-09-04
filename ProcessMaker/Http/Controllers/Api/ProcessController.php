@@ -476,6 +476,7 @@ class ProcessController extends Controller
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->where('processes.status', 'ACTIVE')
             ->where('category.status', 'ACTIVE')
+            ->whereNull('warnings')
             ->where($where);
 
         // Add the order by columns
