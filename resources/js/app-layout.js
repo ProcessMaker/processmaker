@@ -12,6 +12,7 @@ import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from 'vue-multiselect/src/Multiselect';
 import SelectUser from './components/SelectUser';
+import SelectFromApi from './components/SelectFromApi';
 
 /******
  * Global adjustment parameters for moment.js.
@@ -36,6 +37,7 @@ window.moment = moment;
 Vue.component('multiselect', Multiselect);
 Vue.component('Sidebaricon', Sidebaricon);
 Vue.component('select-user', SelectUser);
+Vue.component('select-from-api', SelectFromApi);
 
 //Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
