@@ -167,6 +167,7 @@ jobs:
             MSSQL_PASSWORD: 'P4ssW0rd1!'
             PROCESSMAKER_SCRIPTS_HOME: '/opt/executor'
             PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
+            TELESCOPE_ENABLED: 'false'
       - run:
           name: 'Jest'
           command: 'npm run test'

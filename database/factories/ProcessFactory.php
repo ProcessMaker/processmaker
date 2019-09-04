@@ -22,6 +22,6 @@ $factory->define(Process::class, function (Faker $faker) {
         'process_category_id' => function () {
             return factory(ProcessCategory::class)->create()->getKey();
         },
-        'warnings' => []
+        'warnings' => null
     ];
 });
