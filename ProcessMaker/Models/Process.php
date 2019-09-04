@@ -424,7 +424,7 @@ class Process extends Model implements HasMedia
                 foreach ($collaborations as $collaboration) {
                     try {
                         $collaboration->getBpmnElementInstance();
-                    } catch(\ProcessMaker\Nayra\Exceptions\ElementNotFoundException $e) {
+                    } catch (\ProcessMaker\Nayra\Exceptions\ElementNotFoundException $e) {
                         if (is_array($this->warnings)) {
                             $warnings = $this->warnings;
                         } else {
@@ -896,35 +896,41 @@ class Process extends Model implements HasMedia
      */
     public function convertFromExternalBPM()
     {
+        if (!$this->bpmn) {
+            return;
+        }
         $warnings = $this->warnings;
         $document = new BpmnDocument();
         $document->loadXML($this->bpmn);
+        $conversions = 0;
         // Replace subProcess by callActivity
         $subProcesses = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'subProcess');
         while ($subProcess = $subProcesses->item(0)) {
-            $id = $subProcess->getAttribute('id');
+            $conversions++;
             $name = $subProcess->getAttribute('name');
             $callActivity = $this->createCallActivityFrom($subProcess);
             $subProcess->parentNode->replaceChild($callActivity, $subProcess);
             $warnings[] = [
-                'title' => __("Element conversion"),
+                'title' => __('Element conversion'),
                 'text' => __('SubProcess Conversion', ['name' => $name]),
             ];
         }
         // Replace sendTask to scriptTask
         $sendTasks = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'sendTask');
         while ($sendTask = $sendTasks->item(0)) {
-            $id = $sendTask->getAttribute('id');
+            $conversions++;
             $name = $sendTask->getAttribute('name');
             $scriptTask = $this->cloneNodeAs($sendTask, 'scriptTask');
             $sendTask->parentNode->replaceChild($scriptTask, $sendTask);
             $warnings[] = [
-                'title' => __("Element conversion"),
+                'title' => __('Element conversion'),
                 'text' => __('SendTask Conversion', ['name' => $name]),
             ];
         }
-        $this->bpmn = $document->saveXml();
-        $this->bpmnDefinitions = null;
+        if ($conversions) {
+            $this->bpmn = $document->saveXml();
+            $this->bpmnDefinitions = null;
+        }
         $this->warnings = $warnings;
     }
 
