@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout', ['content_margin'=>''])
 
 @section('title')
     {{__('Edit Screen')}}
@@ -30,13 +30,4 @@
         <script src="{{$script}}"></script>
     @endforeach
     <script src="{{mix('js/processes/screen-builder/main.js')}}"></script>
-@endsection
-
-@section('css')
-    <style>
-        ol.breadcrumb {
-            margin-bottom: 0;
-            border-bottom: 0;
-        }
-    </style>
 @endsection

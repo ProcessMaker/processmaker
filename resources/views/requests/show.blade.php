@@ -12,11 +12,13 @@
     <meta name="request-id" content="{{ $request->id }}">
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Requests') => route('requests.index'),
         $request->name . ' #'. $request->getKey() => null,
     ]])
+@endsection
+@section('content')
     <div id="request" class="container">
         <div class="row">
             <div class="col-md-8">

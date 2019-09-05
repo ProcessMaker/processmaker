@@ -8,12 +8,14 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Screens') => route('screens.index'),
         $screen->title => null,
     ]])
+@endsection
+@section('content')
     <div class="container" id="editGroup">
         <div class="row">
             <div class="col">
@@ -32,13 +34,15 @@
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
                         <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                     </div>
-                    <div class="form-group">
+                    {{--<div class="form-group">
                         {!! Form::label('category', __('Category')) !!}
                         {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
                         <small class="form-text text-muted" v-if="! errors.category">{{__('The screen name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
-                    </div>                  
+                    </div>--}}
+                    <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
+                    </category-select>
                     <br>
                     <div class="text-right">
                         {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
@@ -52,6 +56,7 @@
 @endsection
 
 @section('js')
+    <script src="{{mix('js/processes/screens/edit.js')}}"></script>
     <script>
         new Vue({
             el: '#editGroup',

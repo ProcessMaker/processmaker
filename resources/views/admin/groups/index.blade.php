@@ -8,11 +8,13 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
         __('Groups') => null,
     ]])
+@endsection
+@section('content')
     <div class="px-3 page-content" id="listGroups">
         <div class="row">
             <div class="col">
@@ -53,7 +55,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!! Form::label('name', __('Name')) !!}
+                            {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
                             {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
                             'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
                             <small id="emailHelp"

@@ -116,6 +116,8 @@ class ClientController extends PassportClientController
         if (is_array($request->types) && in_array('authorization_code_grant', $request->types)) {
             $rules['redirect'] = 'required|url|max:2000';
         }
-        $this->validation->make($request->all(), $rules)->validate();
+        $this->validation->make($request->all(), $rules, [
+            'min' => __('The Auth-Client must have at least :min item chosen.'),
+        ])->validate();
     }
 }

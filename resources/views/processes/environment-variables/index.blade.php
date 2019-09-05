@@ -8,11 +8,13 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Environment Variables') => null,
     ]])
+@endsection
+@section('content')
     <div class="px-3 page-content" id="process-variables-listing">
         <div class="row">
             <div class="col">

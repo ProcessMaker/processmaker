@@ -24,9 +24,9 @@ $factory->define(ProcessRequestToken::class, function (Faker $faker) {
         'user_id' => function () {
             return factory(User::class)->create()->getKey();
         },
-        'completed_at' => $faker->dateTime,
-        'due_at' => $faker->dateTime,
-        'initiated_at' => $faker->dateTime,
-        'riskchanges_at' => $faker->dateTime,
+        'completed_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now'),
+        'due_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now'),
+        'initiated_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now'),
+        'riskchanges_at' => $faker->dateTimeBetween($startDate = '-15 years', $endDate = 'now')
     ];
 });

@@ -8,11 +8,13 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
         __('Auth Clients') => null,
     ]])
+@endsection
+@section('content')
     <div id="authClients">
         <div class="modal" role="dialog" ref="createEditAuthClient" id="createEditAuthClient">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -25,7 +27,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('name', __('Name'))!!}
+                            {!!Form::label('name', __('Name'))!!}<small class="ml-1">*</small>
                             {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'authClient.name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                             <small class="form-text text-muted">{{ __('Name must be distinct') }}</small>
@@ -142,7 +144,7 @@
             });
           },
           resetValues() {
-            this.title = this.$t('Create An Auth-Client');
+            this.title = this.$t('Create An Auth-Client')
             this.authClient = {
               id: null,
               name: "",

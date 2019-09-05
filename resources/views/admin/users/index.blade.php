@@ -8,12 +8,13 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
         __('Users') => null,
     ]])
-
+@endsection
+@section('content')
     <div class="px-3 page-content" id="users-listing">
         <div class="row">
             <div class="col">
@@ -54,19 +55,19 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('username', __('Username'))!!}
+                            {!!Form::label('username', __('Username'))!!}<small class="ml-1">*</small>
                             {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class'
                             => '{\'form-control\':true, \'is-invalid\':addError.username}', 'autocomplete' => 'off']) !!}
                             <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('firstname', __('First Name'))!!}
+                            {!!Form::label('firstname', __('First Name'))!!}<small class="ml-1">*</small>
                             {!!Form::text('firstname', null, ['class'=> 'form-control', 'v-model'=> 'firstname', 'v-bind:class'
                             => '{\'form-control\':true, \'is-invalid\':addError.firstname}'])!!}
                             <div class="invalid-feedback" v-for="firstname in addError.firstname">@{{firstname}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('lastname', __('Last Name'))!!}
+                            {!!Form::label('lastname', __('Last Name'))!!}<small class="ml-1">*</small>
                             {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'lastname', 'v-bind:class'
                             => '{\'form-control\':true, \'is-invalid\':addError.lastname}'])!!}
                             <div class="invalid-feedback" v-for="lastname in addError.lastname">@{{lastname}}</div>
@@ -78,7 +79,7 @@
                             <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('status', __('Status'));!!}
+                            {!!Form::label('status', __('Status'));!!}<small class="ml-1">*</small>
                             {!!Form::select('size',[null => __('Select')]+['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], 'Active',
                             [
                             'class'=> 'form-control', 'v-model'=> 'status',
@@ -86,13 +87,13 @@
                             <div class="invalid-feedback" v-for="status in addError.status">@{{status}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('email', __('Email'))!!}
+                            {!!Form::label('email', __('Email'))!!}<small class="ml-1">*</small>
                             {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
                             '{\'form-control\':true, \'is-invalid\':addError.email}', 'autocomplete' => 'off'])!!}
                             <div class="invalid-feedback" v-for="email in addError.email">@{{email}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('password', __('Password'))!!}
+                            {!!Form::label('password', __('Password'))!!}<small class="ml-1">*</small>
                             <vue-password v-model="password" :disable-toggle=true ref="passwordStrength">
                                 <div slot="password-input" slot-scope="props">
                                     {!!Form::password('password', ['class'=> 'form-control', 'v-model'=> 'password',
@@ -102,7 +103,7 @@
                             </vue-password>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('confpassword', __('Confirm Password'))!!}
+                            {!!Form::label('confpassword', __('Confirm Password'))!!}<small class="ml-1">*</small>
                             {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'confpassword',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':addError.password}', 'autocomplete' => 'new-password'])!!}
                             <div class="invalid-feedback" v-for="password in addError.password">@{{password}}</div>

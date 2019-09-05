@@ -2,28 +2,29 @@
 
 namespace ProcessMaker\Models;
 
+use DOMElement;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
-use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
+use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use ProcessMaker\Query\Traits\PMQL;
-use ProcessMaker\Traits\HideSystemResources;
-use DOMElement;
 
 /**
  * Represents a business process definition.
@@ -57,6 +58,7 @@ use DOMElement;
  *       @OA\Schema(
  *           @OA\Property(property="user_id", type="string", format="id"),
  *           @OA\Property(property="id", type="string", format="id"),
+ *           @OA\Property(property="deleted_at", type="string", format="date-time"),
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
  *       )
@@ -137,6 +139,7 @@ class Process extends Model implements HasMedia
         'created_at',
         'updated_at',
         'has_timer_start_events',
+        'warnings'
     ];
 
     /**
@@ -196,6 +199,7 @@ class Process extends Model implements HasMedia
 
     protected $casts = [
         'start_events' => 'array',
+        'warnings' => 'array'
     ];
 
     /**
@@ -418,7 +422,21 @@ class Process extends Model implements HasMedia
                 //Load the collaborations if exists
                 $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
                 foreach ($collaborations as $collaboration) {
-                    $collaboration->getBpmnElementInstance();
+                    try {
+                        $collaboration->getBpmnElementInstance();
+                    } catch (\ProcessMaker\Nayra\Exceptions\ElementNotFoundException $e) {
+                        if (is_array($this->warnings)) {
+                            $warnings = $this->warnings;
+                        } else {
+                            $warnings = [];
+                        }
+
+                        $warnings[] = [
+                            'title' => __('Element Not Found'),
+                            'text' => $e->getMessage()
+                        ];
+                        $this->warnings = $warnings;
+                    }
                 }
             }
         }
@@ -572,6 +590,14 @@ class Process extends Model implements HasMedia
         }
         if (empty($users)) {
             throw new TaskDoesNotHaveUsersException($processTaskUuid);
+        }
+        sort($users);
+        if ($last) {
+            foreach ($users as $user) {
+                if ($user > $last->user_id) {
+                    return $user;
+                }
+            }
         }
         return $users[0];
     }
@@ -862,5 +888,125 @@ class Process extends Model implements HasMedia
         }
 
         return $processRequest->user_id;
+    }
+
+    /**
+     * Check the BPMN and convert not supported or extended features
+     *
+     */
+    public function convertFromExternalBPM()
+    {
+        if (!$this->bpmn) {
+            return;
+        }
+        $warnings = $this->warnings;
+        $document = new BpmnDocument();
+        $document->loadXML($this->bpmn);
+        $conversions = 0;
+        // Replace subProcess by callActivity
+        $subProcesses = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'subProcess');
+        while ($subProcess = $subProcesses->item(0)) {
+            $conversions++;
+            $name = $subProcess->getAttribute('name');
+            $callActivity = $this->createCallActivityFrom($subProcess);
+            $subProcess->parentNode->replaceChild($callActivity, $subProcess);
+            $warnings[] = [
+                'title' => __('Element conversion'),
+                'text' => __('SubProcess Conversion', ['name' => $name]),
+            ];
+        }
+        // Replace sendTask to scriptTask
+        $sendTasks = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'sendTask');
+        while ($sendTask = $sendTasks->item(0)) {
+            $conversions++;
+            $name = $sendTask->getAttribute('name');
+            $scriptTask = $this->cloneNodeAs($sendTask, 'scriptTask');
+            $sendTask->parentNode->replaceChild($scriptTask, $sendTask);
+            $warnings[] = [
+                'title' => __('Element conversion'),
+                'text' => __('SendTask Conversion', ['name' => $name]),
+            ];
+        }
+        if ($conversions) {
+            $this->bpmn = $document->saveXml();
+            $this->bpmnDefinitions = null;
+        }
+        $this->warnings = $warnings;
+    }
+
+    /**
+     * Convert a subProcess into a callActivity
+     *
+     * @param BPMNElement $subProcess
+     * @return void
+     */
+    private function createCallActivityFrom($subProcess)
+    {
+        $element = $this->cloneNodeAs($subProcess, 'callActivity', ['outgoing', 'incoming'], [], ['triggeredByEvent']);
+
+        $definitions = $subProcess->ownerDocument->firstChild->cloneNode(false);
+        $diagram = $subProcess->ownerDocument->getElementsByTagName('BPMNDiagram')->item(0)->cloneNode(true);
+        $subProcessClone = $this->cloneNodeAs($subProcess, 'process', [], ['outgoing', 'incoming'], ['triggeredByEvent']);
+        $definitions->appendChild($subProcessClone);
+        $definitions->appendChild($diagram);
+
+        $subProcessBpmn = $subProcessClone->ownerDocument->saveXml($definitions);
+
+        $name = $subProcessClone->getAttribute('name');
+        $duplicated = Process::where('name', 'like', $name . '%')
+            ->orderBy(DB::raw('LENGTH(name), name'))
+            ->get();
+        if ($duplicated->count()) {
+            $duplicated = $duplicated->last();
+            $number = intval(substr($duplicated->name, strlen($name))) + 1;
+            $name = $name . ' (' . $number . ')';
+        }
+        $process = new Process([
+            'name' => $name,
+            'bpmn' => $subProcessBpmn,
+            'description' => $subProcessClone->getAttribute('name'),
+        ]);
+        $process->user_id = $this->user_id;
+        $process->process_category_id = $this->process_category_id;
+        $process->save();
+        $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
+        $element->setAttribute('calledElement', $bpmnProcess->getAttribute('id') . '-' . $process->id);
+        return $element;
+    }
+
+    /**
+     * Create a clone of a BPMNElement with a different nodeName
+     *
+     * @param BPMNElement $node
+     * @param string $newNodeName
+     * @param array $include
+     * @param array $exclude
+     * @param array $excludeAttributes
+     *
+     * @return BPMNElement
+     */
+    public function cloneNodeAs($node, $newNodeName, $include = [], $exclude = [], $excludeAttributes = [])
+    {
+        $newnode = $node->ownerDocument->createElementNS(BpmnDocument::BPMN_MODEL, $newNodeName);
+        foreach ($node->childNodes as $child) {
+            if ($child->nodeName !== '#text') {
+                $shortName = explode(':', $child->nodeName);
+                $shortName = count($shortName) === 2 ? $shortName[1] : $shortName[0];
+                if ($include && !in_array($shortName, $include)) {
+                    continue;
+                }
+                if ($exclude && in_array($shortName, $exclude)) {
+                    continue;
+                }
+            }
+            $child = $child->cloneNode(true);
+            $newnode->appendChild($child);
+        }
+        foreach ($node->attributes as $attrName => $attrNode) {
+            if (!in_array($attrName, $excludeAttributes)) {
+                $newnode->setAttribute($attrName, $attrNode->nodeValue);
+            }
+        }
+        return $newnode;
     }
 }

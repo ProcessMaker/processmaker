@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -22,7 +23,6 @@ class ScriptsTest extends TestCase
         'title',
         'language',
         'code',
-        'category',
         'script_category_id',
         'description'
     ];
@@ -52,6 +52,7 @@ class ScriptsTest extends TestCase
     {
         $faker = Faker::create();
         $user = factory(User::class)->create(['is_administrator' => true]);
+        $category = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
 
         //Post saved correctly
         $url = self::API_TEST_SCRIPT;
@@ -59,9 +60,8 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
             'language' => 'php',
             'code' => '123',
-            'category' => 'Category',
             'description' => 'Description',
-            'script_category_id' => null,
+            'script_category_id' => $category->getkey(),
             'run_as_user_id' => $user->id
         ]);
         //validating the answer is correct.
@@ -83,7 +83,6 @@ class ScriptsTest extends TestCase
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
-            'category' => 'Category',
             'language' => 'php',
             'code' => $faker->sentence($faker->randomDigitNotNull)
         ]);
@@ -104,7 +103,6 @@ class ScriptsTest extends TestCase
             'title' => 'Script Title',
             'key' => 'some-key',
             'code' => '123',
-            'category' => 'Category',
             'language' => 'php',
         ]);
         $response->assertStatus(422);
@@ -234,7 +232,6 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url, [
             'title' => '',
             'language' => 'php',
-            'category' => $faker->word(),
             'code' => $faker->sentence(3),
         ]);
 
@@ -263,7 +260,6 @@ class ScriptsTest extends TestCase
             'title' => $script->title,
             'language' => 'lua',
             'description' => 'jdbsdfkj',
-            'category' => 'Category',
             'code' => $faker->sentence(3),
             'run_as_user_id' => $user->id
         ]);
@@ -317,7 +313,6 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => 'TITLE',
             'language' => 'php',
-            'category' => 'Category',
             'description' => $faker->sentence(5),
             'run_as_user_id' => $user->id
         ]);
@@ -413,7 +408,6 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => "TITLE",
             'language' => 'php',
-            'category' => 'Category',
             'description' => $faker->sentence(5),
         ]);
         $response->assertStatus(422);

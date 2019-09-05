@@ -8,12 +8,14 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Screens') => route('screens.index'),
         __('Export'.' '.$screen->title) => null,
     ]])
+@endsection
+@section('content')
     <div class="container" id="exportScreen">
         <div class="row">
             <div class="col">

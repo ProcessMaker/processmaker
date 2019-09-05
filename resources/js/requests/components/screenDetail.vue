@@ -48,7 +48,9 @@
       },
     },
     mounted() {
-      this.print();
+      if (this.canPrint) {
+        this.print();
+      }
     },
     methods: {
       /**
