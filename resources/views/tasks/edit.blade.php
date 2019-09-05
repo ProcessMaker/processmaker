@@ -12,7 +12,7 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_task')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Tasks') => route('tasks.index'),
         function() use ($task) {
@@ -25,7 +25,8 @@
             Auth::user()->can('view', $task->processRequest) ? route('requests.show', ['id' => $task->processRequest->id]) : null,
         $task->element_name => null,
     ]])
-
+@endsection
+@section('content')
     <div id="task" class="container">
         <div class="row">
             <div class="col-md-8">

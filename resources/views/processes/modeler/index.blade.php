@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout', ['content_margin'=>''])
 
 @section('title')
   {{__('Edit Process')}}
@@ -38,11 +38,6 @@ div.main {
   max-width: 100%;
   height: 100%;
   max-height: 100%;
-}
-
-ol.breadcrumb {
-  margin-bottom: 0;
-  border-bottom: 0;
 }
 
 [aria-label="breadcrumb"] {

@@ -8,10 +8,12 @@
 @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_notifications')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
 @include('shared.breadcrumbs', ['routes' => [
   $title => null,
 ]])
+@endsection
+@section('content')
 <div class="px-3 page-content" id="notifications">
   <div class="row">
     <div class="col">

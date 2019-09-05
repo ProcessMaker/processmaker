@@ -4,11 +4,13 @@
 Menu::get('sidebar_admin')])
 @endsection
  
-@section('content')
+@section('breadcrumbs')
 @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
         __('Queue Management') => null,
 ]])
+@endsection
+@section('content')
 <div style="height: 0; width: 0; position: absolute; display: none;">
 {!! file_get_contents(public_path('/vendor/horizon/img/sprite.svg')) !!}
 </div>

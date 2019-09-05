@@ -8,11 +8,13 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
         __('Auth Clients') => null,
     ]])
+@endsection
+@section('content')
     <div id="authClients">
         <div class="modal" role="dialog" ref="createEditAuthClient" id="createEditAuthClient">
             <div class="modal-dialog modal-dialog-centered" role="document">

@@ -8,12 +8,13 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Admin') => route('admin.index'),
         __('Users') => null,
     ]])
-
+@endsection
+@section('content')
     <div class="px-3 page-content" id="users-listing">
         <div class="row">
             <div class="col">
