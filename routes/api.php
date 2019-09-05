@@ -160,7 +160,12 @@ Route::group(
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
 
     // Data Sources
-    Route::apiResource('datasources', 'DataSourceController');
+    Route::get('datasources', 'DataSourceController@index')->name('datasources.index')->middleware('can:view-datasources');
+    Route::post('datasources', 'DataSourceController@store')->name('datasources.store')->middleware('can:create-datasources');
+    Route::get('datasources/{datasource}', 'DataSourceController@show')->name('datasources.show')->middleware('can:view-datasources');
+    Route::put('datasources/{datasource}', 'DataSourceController@update')->name('datasources.update')->middleware('can:edit-datasources');
+    Route::delete('datasources/{datasource}', 'DataSourceController@destroy')->name('datasources.destroy')->middleware('can:delete-datasources');
+    Route::post('datasources/{datasource}/request/{processRequest}', 'DataSourceController@request');
 
     // Returns a json error message instead of HTML
     Route::fallback(function(){
