@@ -57,7 +57,7 @@ export default {
       window.ProcessMaker.apiClient
         .get(this.api + (typeof filter === "string" ? "?filter=" + filter : ""))
         .then(response => {
-          this.options = response.data.data;
+          this.options = response.data.data || [];
         });
     }
   }

@@ -399,8 +399,20 @@ class ProcessRequestController extends Controller
         return response([]);
     }
 
+    /**
+     * Execute a datasource endpoint
+     *
+     * @param ProcessRequest $request
+     * @param DataSource $datasource
+     * @param Request $httpRequest
+     *
+     * @return Response
+     */
     public function executeDataSource(ProcessRequest $request, DataSource $datasource, Request $httpRequest)
     {
+        $httpRequest->validate([
+            'config' => 'required',
+        ]);
         $response = $datasource->request($request->data, $httpRequest->json('config', []));
 
         return response($response, 200);

@@ -19,9 +19,10 @@ trait MakeHttpRequests
      *
      * @return void
      */
-    public function request($endpoint, array $data = [], array $config = [])
+    public function request(array $data = [], array $config = [])
     {
         $mustache = new Mustache_Engine();
+        $endpoint = $this->endpoints[$config['endpoint']];
         $method = $mustache->render($endpoint->method, $data);
         $url = $mustache->render($endpoint->url, $data);
         $headers = json_decode($mustache->render($endpoint->headers, $data), true);
