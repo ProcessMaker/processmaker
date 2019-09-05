@@ -161,6 +161,7 @@ Route::group(
 
     // Data Sources
     Route::apiResource('datasources', 'DataSourceController');
+    Route::post('/requests/{request}/datasources/{datasource}', 'ProcessRequestController@executeDataSource');
 
     // Returns a json error message instead of HTML
     Route::fallback(function(){

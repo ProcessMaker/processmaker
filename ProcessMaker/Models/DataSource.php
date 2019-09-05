@@ -2,14 +2,16 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\Encryptable;
+use ProcessMaker\Traits\MakeHttpRequests;
 
 class DataSource extends Model
 {
 
     use Encryptable;
+    use MakeHttpRequests;
 
     protected $connection = 'processmaker';
 
