@@ -13,6 +13,8 @@ trait Encryptable
         if (in_array($key, $this->encryptable)) {
             $value = Crypt::decrypt($value);
         }
+
+        return $value;
     }
 
     public function setAttribute($key, $value)

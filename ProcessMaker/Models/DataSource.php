@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\Encryptable;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
  * Class DataSource
@@ -48,10 +49,23 @@ class DataSource extends Model
 
     use Encryptable;
 
+    //use SerializeToIso8601;
+
     protected $connection = 'processmaker';
 
     protected $encryptable = [
         'credentials'
+    ];
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'id',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -63,7 +77,7 @@ class DataSource extends Model
      */
     public static function rules($existing = null)
     {
-        $unique = Rule::unique('data_source')->ignore($existing);
+        $unique = Rule::unique('data_sources')->ignore($existing);
 
         return [
             'name' => ['required', $unique],

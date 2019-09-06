@@ -78,7 +78,7 @@ class DataSourceController extends Controller
     /**
      * Get a single DataSource.
      *
-     * @param DataSource $dataSource
+     * @param DataSource $datasource
      *
      * @return ApiResource
      *
@@ -103,9 +103,9 @@ class DataSourceController extends Controller
      *     ),
      * )
      */
-    public function show(DataSource $dataSource)
+    public function show(DataSource $datasource)
     {
-        return new ApiResource($dataSource);
+        return new ApiResource($datasource);
     }
 
     /**
@@ -136,16 +136,16 @@ class DataSourceController extends Controller
     {
         $request->validate(DataSource::rules());
 
-        $dataSource = new DataSource;
-        $dataSource->fill($request->input());
-        $dataSource->saveOrFail();
-        return new ApiResource($dataSource);
+        $datasource = new DataSource;
+        $datasource->fill($request->input());
+        $datasource->saveOrFail();
+        return new ApiResource($datasource);
     }
 
     /**
      * Update a DataSource.
      *
-     * @param DataSource $dataSource
+     * @param DataSource $datasource
      * @param Request $request
      *
      * @return ResponseFactory|Response
@@ -177,11 +177,11 @@ class DataSourceController extends Controller
      *     ),
      * )
      */
-    public function update(DataSource $dataSource, Request $request)
+    public function update(DataSource $datasource, Request $request)
     {
-        $request->validate(DataSource::rules($dataSource));
-        $dataSource->fill($request->input());
-        $dataSource->saveOrFail();
+        $request->validate(DataSource::rules($datasource));
+        $datasource->fill($request->input());
+        $datasource->saveOrFail();
 
         return response([], 204);
     }
@@ -189,7 +189,7 @@ class DataSourceController extends Controller
     /**
      * Delete a DataSource.
      *
-     * @param DataSource $dataSource
+     * @param DataSource $datasource
      *
      * @return ResponseFactory|Response
      *
@@ -216,10 +216,10 @@ class DataSourceController extends Controller
      *     ),
      * )
      */
-    public function destroy(DataSource $dataSource)
+    public function destroy(DataSource $datasource)
     {
         //TODO Check if there are processes that use it.
-        $dataSource->delete();
+        $datasource->delete();
         return response([], 204);
     }
 

@@ -35,6 +35,10 @@ $factory->define(DataSource::class, function (Faker $faker) {
         'authtype' => $auth,
         'data_source_category_id' => function () {
             return factory(DataSourceCategory::class)->create()->getKey();
-        }
+        },
+        'mappings' =>'[
+                    {"name_test": "' . $faker->word . '"}
+                    ]'
+
     ];
 });
