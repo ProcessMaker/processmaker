@@ -26,7 +26,7 @@ use Throwable;
  * @property string $participant_id
  * @property string $name
  * @property string $status
- * @property string $data
+ * @property array $data
  * @property \Carbon\Carbon $initiated_at
  * @property \Carbon\Carbon $completed_at
  * @property \Carbon\Carbon $updated_at

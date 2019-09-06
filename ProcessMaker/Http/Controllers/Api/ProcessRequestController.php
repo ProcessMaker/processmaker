@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Jobs\CancelRequest;
+use ProcessMaker\Models\DataSource;
 
 class ProcessRequestController extends Controller
 {
@@ -396,6 +397,25 @@ class ProcessRequestController extends Controller
         // Trigger the catch event
         WorkflowManager::completeCatchEvent($process, $request, $token, $data);
         return response([]);
+    }
+
+    /**
+     * Execute a datasource endpoint
+     *
+     * @param ProcessRequest $request
+     * @param DataSource $datasource
+     * @param Request $httpRequest
+     *
+     * @return Response
+     */
+    public function executeDataSource(ProcessRequest $request, DataSource $datasource, Request $httpRequest)
+    {
+        $httpRequest->validate([
+            'config' => 'required',
+        ]);
+        $response = $datasource->request($request->data, $httpRequest->json('config', []));
+
+        return response($response, 200);
     }
 
     /**

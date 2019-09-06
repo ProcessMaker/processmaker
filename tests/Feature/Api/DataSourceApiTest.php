@@ -327,7 +327,7 @@ class DataSourceApiTest extends TestCase
     /*
     + Test validate name is unique in update
      */
-    public function testValidateUpdatenameUnique()
+    public function testValidateUpdateNameUnique()
     {
         $name = 'Some name';
         factory(DataSource::class)->create(['name' => $name]);

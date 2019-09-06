@@ -2,9 +2,10 @@
 
 namespace ProcessMaker\Models;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\Encryptable;
+use ProcessMaker\Traits\MakeHttpRequests;
 use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
@@ -48,8 +49,8 @@ class DataSource extends Model
 {
 
     use Encryptable;
-
-    //use SerializeToIso8601;
+    use MakeHttpRequests;
+    use SerializeToIso8601;
 
     protected $connection = 'processmaker';
 

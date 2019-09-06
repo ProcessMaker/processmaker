@@ -33,6 +33,7 @@ import TaskDueIn from './components/inspector/TaskDueIn';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
+import processmakerNodeTypes from './components/nodes';
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('GroupSelect', GroupSelect);
@@ -64,6 +65,7 @@ let nodeTypes = [
   eventBasedGateway,
   intermediateMessageCatchEvent
 ];
+nodeTypes.push(...processmakerNodeTypes);
 
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);

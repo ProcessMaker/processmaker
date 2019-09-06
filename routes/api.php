@@ -165,7 +165,8 @@ Route::group(
     Route::get('datasources/{datasource}', 'DataSourceController@show')->name('datasources.show')->middleware('can:view-datasources');
     Route::put('datasources/{datasource}', 'DataSourceController@update')->name('datasources.update')->middleware('can:edit-datasources');
     Route::delete('datasources/{datasource}', 'DataSourceController@destroy')->name('datasources.destroy')->middleware('can:delete-datasources');
-    Route::post('datasources/{datasource}/request/{processRequest}', 'DataSourceController@request');
+
+    Route::post('/requests/{request}/datasources/{datasource}', 'ProcessRequestController@executeDataSource');
 
     // Returns a json error message instead of HTML
     Route::fallback(function(){
