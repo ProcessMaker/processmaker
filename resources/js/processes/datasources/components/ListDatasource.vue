@@ -34,6 +34,15 @@
               </b-btn>
               <b-btn
                 variant="link"
+                @click="configure(props.rowData)"
+                v-b-tooltip.hover
+                :title="$t('Configure')"
+                v-if="permission.includes('edit-datasources')"
+              >
+                <i class="fas fa-cog fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
                 @click="doDelete(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Remove')"
@@ -133,6 +142,9 @@
       },
       edit(row) {
         window.location.href  = "/designer/datasources/" + row.id + '/edit'
+      },
+      configure(row) {
+        window.location.href  = "/designer/datasources-configuration/" + row.id + '/edit'
       },
       doDelete(item) {
         ProcessMaker.confirmModal(

@@ -32,4 +32,16 @@ class DatasourceController extends Controller
     {
         return view('processes.datasource.edit', compact('datasource'));
     }
+
+    /**
+     * Get page edit configuration
+     *
+     * @param Datasource $datasource
+     *
+     * @return Factory|View
+     */
+    public function configuration(Datasource $datasource)
+    {
+        return view('processes.datasource.config', compact('datasource'));
+    }
 }
