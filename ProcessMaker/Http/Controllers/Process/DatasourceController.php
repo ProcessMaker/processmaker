@@ -5,7 +5,7 @@ namespace ProcessMaker\Http\Controllers\Process;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\DataSource;
+use ProcessMaker\Models\DataSource as Datasource;
 use ProcessMaker\Models\DataSourceCategory;
 
 class DatasourceController extends Controller
@@ -24,11 +24,11 @@ class DatasourceController extends Controller
     /**
      * Get page edit
      *
-     * @param DataSource $datasource
+     * @param Datasource $datasource
      *
      * @return Factory|View
      */
-    public function edit(DataSource $datasource)
+    public function edit(Datasource $datasource)
     {
         return view('processes.datasource.edit', compact('datasource'));
     }

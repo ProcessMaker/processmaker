@@ -132,7 +132,7 @@
           });
       },
       edit(row) {
-        window.location = "/designer/datasources/" + row.id + '/edit'
+        window.location.href  = "/designer/datasources/" + row.id + '/edit'
       },
       doDelete(item) {
         ProcessMaker.confirmModal(

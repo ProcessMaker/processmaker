@@ -77,9 +77,11 @@
                                 {!! Form::label('type', __('Authentication Type')) !!}
                                 <multiselect
                                         :class="{'border border-danger':errors.authtype}"
-                                        v-model="formData.authtype"
+                                        v-model="selectedAuthType"
                                         :placeholder="$t('Select Authentication Type')"
-                                        :options="['NONE', 'BASIC', 'BEARER']"
+                                        :options="authtypeOptions"
+                                        track-by="value"
+                                        label="content"
                                         :allow-empty="false"
                                         :show-labels="false">
                                 </multiselect>
@@ -128,12 +130,34 @@
             data() {
               return {
                 formData: {},
+                selectedAuthType: '',
+                authtypeOptions: [
+                  {
+                    'value': 'NONE',
+                    'content': __('No Auth')
+                  },
+                  {
+                    'value': 'BASIC',
+                    'content': __('Basic auth')
+                  },
+                  {
+                    'value': 'BEARER',
+                    'content': __('Bearer Token')
+                  }
+                ],
                 errors: {
                   'name': null,
                   'description': null,
                   'category': null,
                 },
                 disabled: false,
+              }
+            },
+            watch: {
+              selectedAuthType: {
+                handler(item) {
+                  this.formData.authtype = item.value;
+                }
               }
             },
             mounted() {
@@ -164,10 +188,11 @@
                   return
                 }
                 this.disabled = true;
-                ProcessMaker.apiClient.post('datasources', this.formData)
+                ProcessMaker.apiClient
+                  .post('datasources', this.formData)
                   .then(response => {
                     ProcessMaker.alert('{{ __('The datasource was created.') }}', 'success');
-                    window.location = '/designer/datasource/' + response.data.id + '/edit';
+                    window.location = '/designer/datasources/' + response.data.id + '/edit';
                   })
                   .catch(error => {
                     this.disabled = false;
