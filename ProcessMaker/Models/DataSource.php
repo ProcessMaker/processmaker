@@ -69,6 +69,10 @@ class DataSource extends Model
         'updated_at',
     ];
 
+    protected $casts = [
+        'endpoints' => 'array',
+    ];
+
     /**
      * Validation rules
      *

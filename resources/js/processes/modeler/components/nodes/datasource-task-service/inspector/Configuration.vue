@@ -8,6 +8,7 @@
     <div class="form-group">
       <label>Data Source</label>
       <select-from-api
+        ref="dataSource"
         v-model="config.dataSource"
         api="datasources"
         :placeholder="$t('Select a datasource')"
@@ -20,14 +21,14 @@
       <label>Endpoint</label>
       <multiselect
         v-model="config.endpoint"
-        placeholder="$t('Select an endpoint')"
+        :placeholder="$t('Select an endpoint')"
         :options="endpoints"
         :multiple="false"
-        track-by="id"
         :show-labels="false"
         :searchable="true"
         :internal-search="false"
-        label="name"
+        @search-change="loadEndpoints"
+        @open="loadEndpoints"
       >
         <template slot="noResult">
           <slot name="noResult">{{ $t('Not found') }}</slot>
@@ -47,23 +48,26 @@ import ModelerInspector from "../../../../mixins/ModelerInspector";
 
 export default {
   mixins: [ModelerInspector],
-  computed: {
-    endpoints() {
-      const endpoints =
-        dataSources.find(dataSource => dataSource.id == this.config.dataSource)
-          .endpoints || {};
-      const array = [];
-      for (let name in endpoints) {
-        array.push({ id: name, name });
-      }
-      return array;
-    }
-  },
+  computed: {},
   data() {
     return {
       dataSources: [],
+      endpoints: [],
       config: { dataSource: "", endpoint: "create" }
     };
+  },
+  methods: {
+    loadEndpoints() {
+      const dataSource = this.$refs.dataSource
+        ? this.$refs.dataSource.selectedOption
+        : null;
+      const endpoints =
+        dataSource && dataSource.endpoints ? dataSource.endpoints : {};
+      this.endpoints.splice(0);
+      for (let name in endpoints) {
+        this.endpoints.push(name);
+      }
+    }
   }
 };
 </script>
