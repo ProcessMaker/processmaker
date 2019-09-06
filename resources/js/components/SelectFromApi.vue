@@ -1,6 +1,6 @@
 <template>
   <multiselect
-    :value="value"
+    :value="selectedOption"
     @input="change"
     :placeholder="placeholder"
     :options="options"
@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { get } from "lodash";
+
 export default {
   props: {
     value: null,
@@ -42,22 +44,45 @@ export default {
     multiple: {
       type: Boolean,
       default: false
+    },
+    storeId: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
-      options: []
+      options: [],
+      selectedOption: null
     };
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(value) {
+        this.selectedOption = this.storeId
+          ? this.options.find(option => get(option, this.trackBy) == value)
+          : value;
+        value && !this.selectedOption ? this.loadSelected(value) : null;
+      }
+    }
   },
   methods: {
     change(value) {
-      this.$emit("input", value);
+      this.$emit("input", this.storeId ? get(value, this.trackBy) : value);
     },
     loadOptions(filter) {
       window.ProcessMaker.apiClient
         .get(this.api + (typeof filter === "string" ? "?filter=" + filter : ""))
         .then(response => {
           this.options = response.data.data || [];
+        });
+    },
+    loadSelected(value) {
+      window.ProcessMaker.apiClient
+        .get(this.api + "/" + value)
+        .then(response => {
+          this.selectedOption = response.data;
         });
     }
   }
