@@ -54,7 +54,20 @@ class DataSourceController extends Controller
      */
     public function index(Request $request)
     {
-        $query = DataSource::query();
+        $query = DataSource::nonSystem();
+        $include = $request->input('include', '');
+
+        if ($include) {
+            $include = explode(',', $include);
+            $count = array_search('categoryCount', $include);
+            if ($count !== false) {
+                unset($include[$count]);
+                $query->withCount('category');
+            }
+            if ($include) {
+                $query->with($include);
+            }
+        }
 
         $filter = $request->input('filter', '');
 
