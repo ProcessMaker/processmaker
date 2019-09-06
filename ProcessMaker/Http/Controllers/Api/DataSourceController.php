@@ -35,7 +35,7 @@ class DataSourceController extends Controller
      *
      *     @OA\Response(
      *         response=200,
-     *         description="list of Data Sources,
+     *         description="list of Data Sources",
      *         @OA\JsonContent(
      *             type="object",
      *             @OA\Property(

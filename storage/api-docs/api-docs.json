@@ -89,6 +89,418 @@
                 }
             }
         },
+        "/datasources": {
+            "get": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Returns all Data Sources that the user has access to",
+                "operationId": "getDataSources",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Data Sources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Get the list of records of a dataSource",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/dataSource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Get the list of records of a dataSource",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Save a new Data Source",
+                "operationId": "createDataSource",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/datasources/datasource_id": {
+            "get": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Get single Data Source by ID",
+                "operationId": "getDataSourceById",
+                "parameters": [
+                    {
+                        "name": "datasource_id",
+                        "in": "path",
+                        "description": "ID of Data Source to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Data Source",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Update a Data Source",
+                "operationId": "updateDataSource",
+                "parameters": [
+                    {
+                        "name": "datasource_id",
+                        "in": "path",
+                        "description": "ID of Data Source to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Delete a Data Source",
+                "operationId": "deleteDataSource",
+                "parameters": [
+                    {
+                        "name": "datasource_id",
+                        "in": "path",
+                        "description": "ID of Data Source to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/datasources/datasource_id/send": {
+            "put": {
+                "tags": [
+                    "DataSources"
+                ],
+                "summary": "Send a Data Source request",
+                "operationId": "sendDataSource",
+                "parameters": [
+                    {
+                        "name": "datasource_id",
+                        "in": "path",
+                        "description": "ID of Data Source to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/dataSourceEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/dataSource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/datasource_categories": {
+            "get": {
+                "tags": [
+                    "Datasource Categories"
+                ],
+                "summary": "Returns all datasources categories that the user has access to",
+                "operationId": "getDatasourceCategories",
+                "parameters": [
+                    {
+                        "parameter": "filter",
+                        "name": "filter",
+                        "in": "query",
+                        "description": "Filter results by string. Searches Name, Description, and Status. All fields must match exactly.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of datasources categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Display a listing of the Datasource Categories.",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/DatasourceCategory"
+                                            }
+                                        },
+                                        "meta": {
+                                            "description": "Display a listing of the Datasource Categories.",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Datasource Categories"
+                ],
+                "summary": "Save a new Datasource Category",
+                "operationId": "createDatasourceCategory",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatasourceCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/datasource_categories/{datasource_category_id}": {
+            "get": {
+                "tags": [
+                    "Datasource Categories"
+                ],
+                "summary": "Get single datasource category by ID",
+                "operationId": "getDatasourceCategoryById",
+                "parameters": [
+                    {
+                        "name": "datasource_category_id",
+                        "in": "path",
+                        "description": "ID of datasource category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the datasource",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Datasource Categories"
+                ],
+                "summary": "Update a datasource Category",
+                "operationId": "updateDatasourceCategory",
+                "parameters": [
+                    {
+                        "name": "datasource_category_id",
+                        "in": "path",
+                        "description": "ID of datasource category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DatasourceCategoryEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatasourceCategory"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Datasource Categories"
+                ],
+                "summary": "Delete a datasource category",
+                "operationId": "deleteDatasourceCategory",
+                "parameters": [
+                    {
+                        "name": "datasource_category_id",
+                        "in": "path",
+                        "description": "ID of datasource category to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
         "/environment_variables": {
             "get": {
                 "tags": [
@@ -3749,6 +4161,110 @@
                     }
                 ]
             },
+            "dataSourceEditable": {
+                "properties": {
+                    "id": {
+                        "description": "Class DataSource",
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "name": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "endpoints": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "mappings": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "authtype": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "credentials": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "data_source_category_id": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "dataSource": {
+                "properties": {
+                    "created_at": {
+                        "description": "Class DataSource",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Class DataSource",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/dataSourceEditable"
+                    }
+                ]
+            },
+            "DatasourceCategoryEditable": {
+                "properties": {
+                    "name": {
+                        "description": "Represents a business datasource category definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Represents a business datasource category definition.",
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "DatasourceCategory": {
+                "properties": {
+                    "id": {
+                        "description": "Represents a business datasource category definition.",
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "created_at": {
+                        "description": "Represents a business datasource category definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Represents a business datasource category definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/DatasourceCategoryEditable"
+                    }
+                ]
+            },
             "environment_variablesEditable": {
                 "properties": {
                     "name": {
@@ -4203,6 +4719,11 @@
                                 "description": "Represents a business process definition.",
                                 "type": "string",
                                 "format": "id"
+                            },
+                            "deleted_at": {
+                                "description": "Represents a business process definition.",
+                                "type": "string",
+                                "format": "date-time"
                             },
                             "created_at": {
                                 "description": "Represents a business process definition.",
