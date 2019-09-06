@@ -18,7 +18,7 @@ class CreateDataSources extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->json('endpoints')->nullable(); // create, read, update, delete, list
-            $table->json('mappings')->nullable(); // one to one key mapping with required flags {'apikey'=>'variable','required'=>true/false}            
+            $table->json('mappings')->nullable(); // one to one key mapping with required flags {'apikey'=>'variable','required'=>true/false}
             $table->enum('authtype', ['NONE', 'BASIC', 'BEARER'])->default('NONE');
             $table->text('credentials')->nullable(); // encrypted JSON
             $table->enum('status', ['ACTIVE', 'INACTIVE'])->default('ACTIVE');
@@ -40,6 +40,6 @@ class CreateDataSources extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('data_stores');
+        Schema::dropIfExists('data_sources');
     }
 }

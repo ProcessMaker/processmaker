@@ -90,6 +90,14 @@ class PermissionSeeder extends Seeder
             'edit-auth_clients',
             'delete-auth_clients',
         ],
+        'Datasources' => [
+            'create-datasources',
+            'delete-datasources',
+            'edit-datasources',
+            'view-datasources',
+            'export-datasources',
+            'import-datasources',
+        ],
     ];
 
     public function run($seedUser = null)

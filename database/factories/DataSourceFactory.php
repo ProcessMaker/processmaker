@@ -34,7 +34,7 @@ $factory->define(DataSource::class, function (Faker $faker) {
         'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
         'authtype' => $auth,
         'data_source_category_id' => function () {
-            return factory(DataSourceCategory::class)->create()->getKey();
+            return factory(DataSourceCategory::class)->create(['is_system' => false])->getKey();
         },
         'mappings' =>'[
                     {"name_test": "' . $faker->word . '"}

@@ -168,11 +168,25 @@ class GenerateMenus
                     'id' => 'process-environment'
                 ]);
             }
+            if (\Auth::check() && \Auth::user()->can('view-datasources')) {
+                $submenu->add(__('Datasources'), [
+                    'route' => 'datasources.index',
+                    'icon' => 'fa-database',
+                    'id' => 'process-datasources'
+                ]);
+            }
+            if (\Auth::check() && \Auth::user()->can('view-categories')) {
+                $submenu->add(__('Datasource Categories'), [
+                    'route' => 'datasource-categories.index',
+                    'icon' => 'fa-sitemap',
+                    'id' => 'datasource-categories'
+                ]);
+            }
         });
 
         Menu::make('sidebar_designer', function ($menu) { });
 
-        Menu::make('sidebar_about', function ($menu) { 
+        Menu::make('sidebar_about', function ($menu) {
             $submenu = $menu->add(__('About'));
             $submenu->add(__('Profile'), [
                 'route' => 'profile.edit',
