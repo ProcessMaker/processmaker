@@ -6,7 +6,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\DatasourceCategory;
+use ProcessMaker\Models\DataSourceCategory;
 
 class DatasourceCategoryController extends Controller
 {
@@ -42,7 +42,7 @@ class DatasourceCategoryController extends Controller
      *
      * @return Factory|View
      */
-    public function edit(DatasourceCategory $datasourceCategory)
+    public function edit(DataSourceCategory $datasourceCategory)
     {
         $category = $datasourceCategory;
         $titleMenu = __('Categories');

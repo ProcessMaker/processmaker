@@ -171,14 +171,14 @@ class GenerateMenus
             if (\Auth::check() && \Auth::user()->can('view-datasources')) {
                 $submenu->add(__('Datasources'), [
                     'route' => 'datasources.index',
-                    'icon' => 'fa-file-alt',
+                    'icon' => 'fa-database',
                     'id' => 'process-datasources'
                 ]);
             }
             if (\Auth::check() && \Auth::user()->can('view-categories')) {
                 $submenu->add(__('Datasource Categories'), [
                     'route' => 'datasource-categories.index',
-                    'icon' => 'fa-database',
+                    'icon' => 'fa-sitemap',
                     'id' => 'datasource-categories'
                 ]);
             }

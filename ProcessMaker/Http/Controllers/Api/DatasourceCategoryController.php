@@ -7,9 +7,9 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\DatasourceCategory;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\DataSourceCategory;
 use Throwable;
 
 class DatasourceCategoryController extends Controller
@@ -56,7 +56,7 @@ class DatasourceCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = DatasourceCategory::nonSystem();
+        $query = DataSourceCategory::nonSystem();
         $include = $request->input('include', '');
 
         if ($include) {
