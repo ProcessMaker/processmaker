@@ -165,8 +165,14 @@ Route::group(
     Route::get('datasources/{datasource}', 'DataSourceController@show')->name('datasources.show')->middleware('can:view-datasources');
     Route::put('datasources/{datasource}', 'DataSourceController@update')->name('datasources.update')->middleware('can:edit-datasources');
     Route::delete('datasources/{datasource}', 'DataSourceController@destroy')->name('datasources.destroy')->middleware('can:delete-datasources');
-
     Route::post('/requests/{request}/datasources/{datasource}', 'ProcessRequestController@executeDataSource');
+
+    // Screen Categories
+    Route::get('datasource_categories', 'DatasourceCategoryController@index')->name('datasource_categories.index')->middleware('can:view-datasources');
+    Route::get('datasource_categories/{datasource_category}', 'DatasourceCategoryController@show')->name('datasource_categories.show')->middleware('can:view-datasources');
+    Route::post('datasource_categories', 'DatasourceCategoryController@store')->name('datasource_categories.store')->middleware('can:edit-datasources');
+    Route::put('datasource_categories/{datasource_category}', 'DatasourceCategoryController@update')->name('datasource_categories.update')->middleware('can:edit-datasources');
+    Route::delete('datasource_categories/{datasource_category}', 'DatasourceCategoryController@destroy')->name('datasource_categories.destroy')->middleware('can:edit-datasources');
 
     // Returns a json error message instead of HTML
     Route::fallback(function(){

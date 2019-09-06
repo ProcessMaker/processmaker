@@ -20,7 +20,7 @@ class DatasourceCategoryTest extends TestCase
     use ResourceAssertionsTrait;
     use RequestHelper;
 
-    protected $resource = 'api.datasource_category';
+    protected $resource = 'api.datasource_categories';
     protected $structure = [
         'id',
         'name',
@@ -88,7 +88,7 @@ class DatasourceCategoryTest extends TestCase
         $initialCount = DataSourceCategory::count();
         // Create some datasources
         $countDataSources = 20;
-        factory(DataSourceCategory::class, $countDataSources)->create();
+        $data = factory(DataSourceCategory::class, $countDataSources)->create(['status' => 'ACTIVE', 'is_system' => false]);
         //Get a page of datasources
         $page = 2;
         $perPage = 10;
@@ -132,8 +132,8 @@ class DatasourceCategoryTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE'
         ];
-        factory(DataSourceCategory::class, $datasourceActive['num'])->create(['status' => $datasourceActive['status']]);
-        factory(DataSourceCategory::class, $datasourceInactive['num'])->create(['status' => $datasourceInactive['status']]);
+        factory(DataSourceCategory::class, $datasourceActive['num'])->create(['status' => $datasourceActive['status'], 'is_system' => false]);
+        factory(DataSourceCategory::class, $datasourceInactive['num'])->create(['status' => $datasourceInactive['status'], 'is_system' => false]);
 
         //Get active datasources
         $route = route($this->resource . '.index');
@@ -190,8 +190,8 @@ class DatasourceCategoryTest extends TestCase
             'status' => 'INACTIVE'
         ];
 
-        factory(DataSourceCategory::class, $datasourceActive['num'])->create(['status' => $datasourceActive['status']]);
-        factory(DataSourceCategory::class, $datasourceInactive['num'])->create(['status' => $datasourceInactive['status']]);
+        factory(DataSourceCategory::class, $datasourceActive['num'])->create(['status' => $datasourceActive['status'], 'is_system' => false]);
+        factory(DataSourceCategory::class, $datasourceInactive['num'])->create(['status' => $datasourceInactive['status'], 'is_system' => false]);
 
         //Get active datasources
         $route = route($this->resource . '.index');
@@ -219,10 +219,12 @@ class DatasourceCategoryTest extends TestCase
     {
         // Create some datasources
         factory(DataSourceCategory::class)->create([
-            'name' => 'aaaaaa'
+            'name' => 'aaaaaa',
+            'is_system' => false
         ]);
         factory(DataSourceCategory::class)->create([
-            'name' => 'zzzzz'
+            'name' => 'zzzzz',
+            'is_system' => false
         ]);
 
         //Test the list sorted by name returns as first row {"name": "aaaaaa"}
@@ -275,7 +277,7 @@ class DatasourceCategoryTest extends TestCase
         $rowsToAdd = 7;
 
         // Now we create the specified number of datasources
-        factory(DataSourceCategory::class, $rowsToAdd)->create();
+        factory(DataSourceCategory::class, $rowsToAdd)->create(['status' => 'ACTIVE', 'is_system' => false]);
 
         // The first page should have 5 items;
         $response = $this->apiCall('GET', route($this->resource . '.index', ['per_page' => 5, 'page' => 1]));
@@ -294,7 +296,7 @@ class DatasourceCategoryTest extends TestCase
     public function testShowDataSourceCategory()
     {
         //Create a new datasource category
-        $category = factory(DataSourceCategory::class)->create();
+        $category = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE', 'is_system' => false]);
 
         //Test that is correctly displayed
         $route = route($this->resource . '.show', [$category->id]);
@@ -308,7 +310,7 @@ class DatasourceCategoryTest extends TestCase
      */
     public function testUpdateDataSource()
     {
-        $item = factory(DataSourceCategory::class)->create();
+        $item = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE', 'is_system' => false]);
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -329,7 +331,7 @@ class DatasourceCategoryTest extends TestCase
      */
     public function testChangeStatus()
     {
-        $item = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE']);
+        $item = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE', 'is_system' => false]);
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -350,7 +352,7 @@ class DatasourceCategoryTest extends TestCase
      */
     public function testValidateNameNotNull()
     {
-        $item = factory(DataSourceCategory::class)->create();
+        $item = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE', 'is_system' => false]);
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -371,15 +373,12 @@ class DatasourceCategoryTest extends TestCase
     public function testValidateNameUnique()
     {
         $name = 'Some name';
-        factory(DataSourceCategory::class)->create(['name' => $name]);
-        $item = factory(DataSourceCategory::class)->create();
+        factory(DataSourceCategory::class)->create(['name' => $name, 'is_system' => false]);
+        $item = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE', 'is_system' => false]);
 
         $route = route($this->resource . '.update', [$item->id]);
-        $fields = [
-            'name' => $name,
-            'status' => 'ACTIVE',
-        ];
-        $response = $this->apiCall('PUT', $route, $fields);
+        $item->name = $name;
+        $response = $this->apiCall('PUT', $route, $item->toArray());
         //validate status
         $this->assertStatus(422, $response);
         //validate structure
@@ -391,7 +390,7 @@ class DatasourceCategoryTest extends TestCase
      */
     public function testValidateStatus()
     {
-        $item = factory(DataSourceCategory::class)->create();
+        $item = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE', 'is_system' => false]);
 
         $route = route($this->resource . '.update', [$item->id]);
         $fields = [
@@ -409,7 +408,7 @@ class DatasourceCategoryTest extends TestCase
      */
     public function testDeleteDataSourceCategory()
     {
-        $datasourceCategory = factory(DataSourceCategory::class)->create();
+        $datasourceCategory = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE', 'is_system' => false]);
         $route = route($this->resource . '.destroy', [$datasourceCategory->id]);
         $response = $this->apiCall('DELETE', $route);
         //validate status
@@ -422,8 +421,9 @@ class DatasourceCategoryTest extends TestCase
      */
     public function testDeleteFailDataSourceCategory()
     {
-        $datasource = factory(DataSource::class)->create();
-        $route = route($this->resource . '.destroy', [$datasource->screen_category_id]);
+        $datasourceCategory = factory(DataSourceCategory::class)->create(['status' => 'ACTIVE', 'is_system' => false]);
+        $datasource = factory(DataSource::class)->create(['data_source_category_id' => $datasourceCategory->id]);
+        $route = route($this->resource . '.destroy', [$datasource->data_source_category_id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);
         $response->assertJsonStructure($this->errorStructure);
