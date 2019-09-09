@@ -90,6 +90,7 @@
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../components/AvatarImage";
+import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
 
 Vue.component("avatar-image", AvatarImage);
@@ -314,13 +315,24 @@ export default {
       }
     },
 
-    fetch() {
+    fetch(query) {
       if (this.cancelToken) {
         this.cancelToken();
         this.cancelToken = null;
       }
       const CancelToken = ProcessMaker.apiClient.CancelToken;
-
+      
+      let pmql = this.$parent.pmql;
+      let filter = this.filter;
+      
+      if (query && query.length) {
+        if (query.isPMQL()) {
+          pmql = `(${pmql}) and (${query})`;
+        } else {
+          filter = query;
+        }
+      }
+      
       // Load from our api client
       ProcessMaker.apiClient
         .get(
@@ -328,13 +340,13 @@ export default {
             this.page +
             "&include=process,processRequest,processRequest.user,user,data" +
             "&pmql=" +
-            encodeURIComponent(this.$parent.pmql) +
+            encodeURIComponent(pmql) +
             "&per_page=" +
             this.perPage +
             "&user_id=" +
             window.ProcessMaker.user.id +
             "&filter=" +
-            this.filter +
+            filter +
             "&statusfilter=ACTIVE,CLOSED" +
             this.getSortParam(),
           {
