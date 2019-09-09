@@ -156,7 +156,12 @@ class TaskController extends Controller
         $response = $response->filter(function($processRequestToken) {
             return Auth::user()->can('view', $processRequestToken);
         })->values();
-
+        
+        //Map each item through its resource
+        $response = $response->map(function ($processRequestToken) use ($request) {
+            return new Resource($processRequestToken);
+        });
+        
         $response->inOverdue = $inOverdue;
 
         return new TaskCollection($response);
