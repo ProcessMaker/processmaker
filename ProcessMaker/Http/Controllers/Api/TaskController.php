@@ -83,7 +83,6 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $query = ProcessRequestToken::with(['processRequest', 'user']);
-//                ->leftJoin('process_requests', 'process_requests.id', '=', 'process_request_tokens.process_request_id');
 
         $query->select('process_request_tokens.*');
 
@@ -111,7 +110,6 @@ class TaskController extends Controller
                 $query->where(is_string($key) ? $key : $column, 'like', $filter);
             }
         }
-
 
         //list only display elements type task
         $query->where('element_type', '=', 'task');
