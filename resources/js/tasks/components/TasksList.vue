@@ -18,6 +18,7 @@
         :data="data"
         data-path="data"
         pagination-path="meta"
+        ref="vuetable"
       >
         <template slot="ids" slot-scope="props">
           <b-link @click="onAction('edit', props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
