@@ -326,7 +326,7 @@ export default {
         .get(
           "tasks?page=" +
             this.page +
-            "&include=process,processRequest,processRequest.user,user" +
+            "&include=process,processRequest,processRequest.user,user,data" +
             "&pmql=" +
             encodeURIComponent(this.$parent.pmql) +
             "&per_page=" +
