@@ -88,6 +88,11 @@ class TaskController extends Controller
         $query->select('process_request_tokens.*');
 
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
+        
+        if (in_array('data', $include)) {
+            unset($include[array_search('data', $include)]);
+        }
+        
         $query->with($include);
 
         $filter = $request->input('filter', '');
