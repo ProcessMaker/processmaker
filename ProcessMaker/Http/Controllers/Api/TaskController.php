@@ -97,13 +97,10 @@ class TaskController extends Controller
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+            $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('element_name', 'like', $filter)
-                    ->orWhere('process_request_tokens.status', 'like', $filter)
-                    ->orWhere('request.name', 'like', $filter)
-                    ->orWhere('user.firstname', 'like', $filter)
-                    ->orWhere('user.lastname', 'like', $filter);
+                $query->Where(DB::raw('LOWER(element_name)'), 'like', $filter)
+                      ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
             });
         }
         $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
