@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <data-loading
-      :for="/tasks\?page/"
+      :for=/tasks\?page/
       v-show="shouldShowLoader"
       :empty="$t('Congratulations')"
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
