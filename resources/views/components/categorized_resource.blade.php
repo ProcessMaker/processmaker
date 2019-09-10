@@ -80,45 +80,95 @@
 </div>
 
 @can($permissions['create-category'] ?? 'create-category')
-<div class="modal" id="createCategory" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{$labels['create-category'] ?? __('Create Category')}}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <div class="form-group">
-                    {!!Form::label('name', __('Category Name'))!!}
-                    {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' =>
-                    '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                    <small class="form-text text-muted" v-if="! errors.name">
-                        {{ __('The category name must be distinct.') }}
-                    </small>
-                    <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+    <div class="modal" id="createCategory" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{$labels['create-category'] ?? __('Create Category')}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="form-group">
-                    {!! Form::label('status', __('Status')) !!}
-                    {!! Form::select('status', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')], null, ['id' =>
-                    'status',
-                    'class' => 'form-control', 'v-model' => 'status', 'v-bind:class' => '{"form-control":true,
-                    "is-invalid":errors.status}']) !!}
-                    <div class="invalid-feedback" v-for="status in errors.status">@{{status}}</div>
-                </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
-                    {{ __('Cancel') }}
-                </button>
-                <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
-                    {{ __('Save') }}
-                </button>
+                <div class="modal-body">
+                    <div class="form-group">
+                        {!!Form::label('name', __('Category Name'))!!}
+                        {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'v-bind:class' =>
+                        '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
+                        <small class="form-text text-muted" v-if="! errors.name">
+                            {{ __('The category name must be distinct.') }}
+                        </small>
+                        <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('status', __('Status')) !!}
+                        {!! Form::select('status', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')], null, ['id' =>
+                        'status',
+                        'class' => 'form-control', 'v-model' => 'status', 'v-bind:class' => '{"form-control":true,
+                        "is-invalid":errors.status}']) !!}
+                        <div class="invalid-feedback" v-for="status in errors.status">@{{status}}</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
+                        {{ __('Save') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endcan
+
+@section('js')
+
+    @can('create-category')
+        <script id="marquino">
+            new Vue({
+                el: '#createCategory',
+                data: {
+                    errors: {},
+                    name: '',
+                    status: 'ACTIVE',
+                    disabled: false,
+                    route: @json($categories['api'][0]),
+                    location: @json($categories['location']),
+                },
+                methods: {
+                    onClose() {
+                        this.name = '';
+                        this.status = 'ACTIVE';
+                        this.errors = {};
+                    },
+                    onSubmit() {
+                        this.errors = {};
+                        //single click
+                        if (this.disabled) {
+                            return
+                        }
+                        this.disabled = true;
+                        ProcessMaker.apiClient.post(this.route, {
+                            name: this.name,
+                            status: this.status
+                        })
+                            .then(response => {
+                                ProcessMaker.alert('{{__('The category was created.')}}', 'success');
+                                window.location = this.location;
+                            })
+                            .catch(error => {
+                                this.disabled = false;
+                                if (error.response.status === 422) {
+                                    this.errors = error.response.data.errors
+                                }
+                            });
+                    }
+                }
+            })
+        </script>
+    @endcan
+
+
+@endsection
