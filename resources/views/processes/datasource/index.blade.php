@@ -42,7 +42,7 @@
     @endcomponent
 
     @can('create-datasources')
-        <div class="modal" id="createDatasource" tabindex="-1" role="dialog" aria-hidden="true" ref="createDatasource">
+        <div class="modal" id="createDatasource" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -176,7 +176,7 @@
                 });
               },
               onClose() {
-                this.$refs.createDatasource.hidden =true;
+                $("#createDatasource").modal("hide");
                 this.resetFormData();
                 this.resetErrors();
               },

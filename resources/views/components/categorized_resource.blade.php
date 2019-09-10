@@ -124,7 +124,7 @@
 @endcan
 
 @section('js')
-@parent
+    @parent
     @can('create-category')
         <script>
             new Vue({
