@@ -1,9 +1,15 @@
 <template>
   <div class="card">
     <div class="card-body">
-      <div class="form-inline">
+      <div class="form-group col-12">
+        <label for="purpose"> {{ $t('Purpose') }}</label>
+        <b-form-input name="purpose" class="w-100" v-model="rowData.purpose"></b-form-input>
+      </div>
+      <div class="form-inline mb-2">
         <div class="form-group col-4">
+          <label for="method">{{ $t('Method') }}</label>
           <multi-select
+            name="method"
             v-model="rowData.method"
             :placeholder="$t('Select')"
             :show-labels="false"
@@ -13,7 +19,8 @@
           </multi-select>
         </div>
         <div class="form-group col-8">
-          <b-form-input class="w-100" v-model="rowData.url" :placeholder="$t('Enter Url')"></b-form-input>
+          <label for="url"> {{ $t('Url') }}</label>
+          <b-form-input name="url" class="w-100" v-model="rowData.url"></b-form-input>
         </div>
       </div>
       <div class="form-group">

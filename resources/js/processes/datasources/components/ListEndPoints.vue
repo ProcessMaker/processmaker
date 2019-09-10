@@ -63,6 +63,11 @@
         ],
         fields: [
           {
+            title: () => this.$t("Purpose"),
+            name: "purpose",
+            sortField: "purpose"
+          },
+          {
             title: () => this.$t("Method"),
             name: "method",
             sortField: "method"
@@ -73,36 +78,24 @@
             sortField: "url"
           },
           {
-            title: () => this.$t("Description"),
-            name: "description",
-            sortField: "description"
-          },
-          {
             name: "__slot:actions",
             title: ""
           }
         ]
       };
     },
-    watch: {
-      info: {
-        handler() {
-          console.log('info data');
-          this.data = this.info;
-        }
-      }
-    },
     methods: {
       fetch() {
-        console.log('fetch data');
-        //
-      },
-      edit(row) {
-        //
+          let index = 0;
+          this.data = this.info.map(item => {
+              item.view = false;
+              item.id = index;
+              index++;
+              return item;
+          });
       },
       detail(data) {
         data.view = !data.view;
-        console.log(data);
         this.$refs.endpoints.toggleDetailRow(data.id);
       },
       doDelete(item) {

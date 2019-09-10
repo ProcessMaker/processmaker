@@ -31,12 +31,6 @@
                     {{ __('Access Points') }}
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-mapping-tab" data-toggle="tab" href="#nav-mapping"
-                   role="tab" aria-controls="nav-header" aria-selected="true">
-                    {{ __('Mappings') }}
-                </a>
-            </li>
         </ul>
 
         <div class="container mt-3">
@@ -126,20 +120,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade show" id="nav-mapping" role="tabpanel" aria-labelledby="nav-mapping-tab">
-                    <div class="row">
-                        <div class="card card-body">
-                            <h5>{{ __('Mapping') }}</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade show" id="nav-test" role="tabpanel" aria-labelledby="nav-test-tab">
-                    <div class="row">
-                        <div class="card card-body">
-                            <h5>{{ __('Test') }}</h5>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -158,7 +138,6 @@
 @section('js')
     <script src="{{mix('js/processes/datasources/edit.js')}}"></script>
     <script>
-        const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
         const authorizations = [
             {
                 "value": "NONE",
@@ -178,7 +157,6 @@
             data () {
                 return {
                     selectedAuthType: "",
-                    methodOptions: methods,
                     authOptions: authorizations,
                     disabled: false,
                     credentials: {
@@ -203,24 +181,11 @@
                         this.formData.credentials = data;
                     }
                 },
-                headers: {
-                    handler (data) {
-                        this.formData.credentials = JSON.stringify(data);
-                    }
-                },
-                formData: {
-                    immediately: true,
-                    deep: true,
-                    handler (data) {
-                        console.log("handler data");
-                        console.log(data);
-                    }
-                }
             },
             computed: {},
             methods: {
                 onClose () {
-                    console.log("close...");
+                    window.location = '/designer/datasources'
                 },
                 getMethod () {
                     return this.formData.id ? "PUT" : "POST";
@@ -229,7 +194,6 @@
                     return this.formData.id ? "datasources/" + this.formData.id : "datasources";
                 },
                 onSubmit () {
-                    console.log("save...");
                     this.submitted = true;
                     if (this.disabled) {
                         return;
@@ -240,13 +204,11 @@
                         url: this.getUrl(),
                         data: this.formData,
                     })
-                        .then(function (response) {
-                            console.log("success");
+                        .then(response => {
                             ProcessMaker.alert('{{__('The DataSource was saved.')}}', "success");
-                            //window.location = '/designer/datasources';
+                            this.onClose();
                         })
                         .catch(error => {
-                            console.log("fail..");
                             this.errors = error.response.data.errors;
                             this.disabled = false;
                         });
@@ -263,18 +225,12 @@
                         body: ""
                     };
                     this.formData.endpoints.push(endpoint);
+                    this.$refs.endpointsListing.fetch();
                     this.$refs.endpointsListing.detail(endpoint);
                 },
             },
-            created () {
-                console.log("created...");
-                console.log(this.formData);
-            },
             mounted () {
-                console.log("mounted...");
-                console.log(this.formData);
                 this.selectedAuthType = this.authOptions.filter(item => {
-                    console.log(item);
                     if (item.value === this.formData.authtype) {
                         return item;
                     }
