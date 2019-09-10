@@ -18,15 +18,15 @@
       </div>
       <div class="form-group">
         <div class="col">
+          <label>{{$t('Description')}}</label>
           <b-form-textarea v-model="rowData.description" :placeholder="$t('Enter description')">
-
           </b-form-textarea>
         </div>
       </div>
       <div class="form-group">
         <div class="col">
-          <b-form-textarea v-model="rowData.description" :placeholder="$t('Enter description')">
-
+        <label>{{$t('Body')}}</label>
+          <b-form-textarea v-model="rowData.body">
           </b-form-textarea>
         </div>
       </div>

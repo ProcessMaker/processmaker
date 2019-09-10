@@ -23,10 +23,13 @@ trait MakeHttpRequests
     {
         $mustache = new Mustache_Engine();
         $endpoint = $this->endpoints[$config['endpoint']];
-        $method = $mustache->render($endpoint->method, $data);
-        $url = $mustache->render($endpoint->url, $data);
-        $headers = json_decode($mustache->render($endpoint->headers, $data), true);
-        $body = $mustache->render($endpoint->body, $data);
+        $method = $mustache->render($endpoint['method'], $data);
+        $url = $mustache->render($endpoint['url'], $data);
+        $headers = [];
+        foreach($endpoint['headers'] as $key => $value) {
+            $headers[$mustache->render($key, $data)] = $mustache->render($value, $data);
+        }
+        $body = $mustache->render($endpoint['body'], $data);
 
         return $this->response($this->call($method, $url, $headers, $body), $data, $config, $mustache);
     }
@@ -55,9 +58,12 @@ trait MakeHttpRequests
                 throw new Exception("Status code: $status\n" . $response->getBody()->getContents());
         }
         $mapped = [];
+        \Log::info(json_encode($response->getBody()->getContents()));
+        $merged = array_merge($data, $return);
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
-                $value = $mustache->render($map['value'], array_merge($data, $return));
+                //$value = $mustache->render($map['value'], $merged);
+                $value = Arr::get($merged, $map['value'], '');
                 Arr::set($mapped, $map['key'], $value);
             }
         }
