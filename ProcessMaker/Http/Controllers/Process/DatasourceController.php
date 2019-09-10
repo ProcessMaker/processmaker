@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\DataSource as Datasource;
@@ -18,7 +19,16 @@ class DatasourceController extends Controller
     public function index()
     {
         $datasourceCategories = DataSourceCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        return view('processes.datasource.index', compact('datasourceCategories'));
+
+        $permissions = Auth::user()->hasPermissionsFor('categories');
+        $route = 'datasource_categories';
+        $location = '/designer/datasources';
+        $createCategories = 'create-categories';
+        $include = 'datasourcesCount';
+        $labelCount = __('# Datasources');
+        $count = 'datasources_count';
+
+        return view('processes.datasource.index', compact('datasourceCategories', 'route', 'permissions', 'location', 'createCategories', 'include', 'labelCount', 'count'));
     }
 
     /**

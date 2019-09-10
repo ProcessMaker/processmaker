@@ -71,7 +71,7 @@
 @endsection
 
 @section('js')
-    <script src="{{mix('js/processes/screens/edit.js')}}"></script>
+    <script src="{{mix('js/processes/datasources/config.js')}}"></script>
     <script>
       new Vue({
         el: '#configDatasource',

@@ -28,13 +28,13 @@
             <li class="nav-item">
                 <a class="nav-item nav-link" id="nav-header-tab" data-toggle="tab" href="#nav-header"
                    role="tab" aria-controls="nav-header" aria-selected="true">
-                    {{ __('Headers') }}
+                    {{ __('End Points') }}
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-body-tab" data-toggle="tab" href="#nav-body"
-                   role="tab" aria-controls="nav-body" aria-selected="true">
-                    {{ __('Body') }}
+                <a class="nav-item nav-link" id="nav-mapping-tab" data-toggle="tab" href="#nav-mapping"
+                   role="tab" aria-controls="nav-header" aria-selected="true">
+                    {{ __('Mappings') }}
                 </a>
             </li>
             <li class="nav-item">
@@ -89,14 +89,28 @@
                 <div class="tab-pane fade show" id="nav-header" role="tabpanel" aria-labelledby="nav-header-tab">
                     <div class="row">
                         <div class="card card-body">
-                            <h5>{{ __('Headers') }}</h5>
+                            <div class="row">
+                                <div class="col">
+                                </div>
+                                <div class="col-8" align="right">
+                                    <button type="button" href="#" @click="addEndpoint" id="add_endpoing"
+                                            class="btn btn-secondary">
+                                        <i class="fas fa-plus"></i> {{__('Add')}}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <end-point-list
+                                ref="endpointsListing"
+                                :info="formData.endpoints">
+                            </end-point-list>
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade show" id="nav-body" role="tabpanel" aria-labelledby="nav-body-tab">
+                <div class="tab-pane fade show" id="nav-mapping" role="tabpanel" aria-labelledby="nav-mapping-tab">
                     <div class="row">
                         <div class="card card-body">
-                            <h5>{{ __('Body') }}</h5>
+                            <h5>{{ __('Mapping') }}</h5>
                         </div>
                     </div>
                 </div>
@@ -118,11 +132,41 @@
                 @endcan
             </div>
         </div>
+
+        {{--<b-modal
+            ref="modalParameter"
+            :title="$t('Header')"
+            :ok-title="$t('Save')"
+            :cancel-title="$t('Cancel')"
+            cancel-variant="outline-secondary"
+            ok-variant="secondary"
+            @ok="addParameter"
+        >
+            <div class="form-group">
+                {!! Form::label('key', __('Key')) !!}
+                {!! Form::text('key', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'parameter.key', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.key}']) !!}
+                <div class="invalid-feedback" v-for="key in errors.key">@{{key}}</div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('value', __('Value')) !!}
+                {!! Form::textarea('value', null, ['id' => 'value', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'parameter.value', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.value}']) !!}
+                <div class="invalid-feedback" v-for="value in errors.value">@{{value}}
+                </div>
+            </div>
+            <div class="form-group">
+                {!! Form::label('description', __('Description')) !!}
+                {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'parameter.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
+                <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
+                </div>
+            </div>
+        </b-modal>--}}
+
     </div>
 
 @endsection
 
 @section('js')
+    <script src="{{mix('js/processes/datasources/edit.js')}}"></script>
     <script>
       const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
       const authorizations = [
@@ -152,7 +196,14 @@
               user: '',
               password: ''
             },
+            headers: [],
             errors: {},
+            parameter: {
+              key: '',
+              value: '',
+              description: '',
+              type: ''
+            },
             formData: @json($datasource)
           };
         },
@@ -165,6 +216,11 @@
             }
           },
           credentials: {
+            handler(data) {
+              this.formData.credentials = JSON.stringify(data);
+            }
+          },
+          headers: {
             handler(data) {
               this.formData.credentials = JSON.stringify(data);
             }
@@ -211,7 +267,21 @@
                 this.errors = error.response.data.errors;
                 this.disabled = false;
               });
-          }
+          },
+          addEndpoint() {
+            this.formData.endpoints = this.formData.endpoints ? this.formData.endpoints: [];
+            let endpoint = {
+              id: this.formData.endpoints.length > 0 ? this.formData.endpoints.length - 1: 0,
+              view: false,
+              method: '',
+              url: '',
+              header: [],
+              body_type: '',
+              body: ''
+            };
+            this.formData.endpoints.push(endpoint);
+            this.$refs.endpointsListing.detail(endpoint);
+          },
         },
         created() {
           console.log('created...');
