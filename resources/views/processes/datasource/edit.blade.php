@@ -22,25 +22,19 @@
             <li class="nav-item">
                 <a class="nav-item nav-link active" id="nav-auth-tab" data-toggle="tab" href="#nav-auth"
                    role="tab" aria-controls="nav-auth" aria-selected="true">
-                    {{ __('Authentication') }}
+                    {{ __('Details') }}
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-item nav-link" id="nav-header-tab" data-toggle="tab" href="#nav-header"
                    role="tab" aria-controls="nav-header" aria-selected="true">
-                    {{ __('End Points') }}
+                    {{ __('Access Points') }}
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-item nav-link" id="nav-mapping-tab" data-toggle="tab" href="#nav-mapping"
                    role="tab" aria-controls="nav-header" aria-selected="true">
                     {{ __('Mappings') }}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-test-tab" data-toggle="tab" href="#nav-test"
-                   role="tab" aria-controls="nav-test" aria-selected="true">
-                    {{ __('Test') }}
                 </a>
             </li>
         </ul>
@@ -50,8 +44,33 @@
                 <div class="tab-pane fade show active" id="nav-auth" role="tabpanel" aria-labelledby="nav-auth-tab">
                     <div class="row">
                         <div class="card card-body">
+
                             <div class="form-group">
-                                {!! Form::label('auth', __('Authentication Method')) !!}
+                                {!! Form::label('name', __('Name')) !!}
+                                {!! Form::text('name', null, ['id' => 'name', 'class'=> 'form-control', 'v-model'=> 'formData.name', 'rows' => 4, 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                                <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                {!! Form::label('description', __('Description')) !!}
+                                {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control', 'v-model'=> 'formData.description', 'rows' => 4, 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
+                                <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}
+                                </div>
+                            </div>
+
+                            <category-select
+                                    :label="$t('Category')"
+                                    :allow-empty="false"
+                                    api-get="datasource_categories"
+                                    api-list="datasource_categories"
+                                    v-model="formData.data_source_category_id"
+                                    :errors="errors.data_source_category_id">
+                            </category-select>
+                            <h5 class="card-title">{{ __('Authentication') }}</h5>
+
+                            <div class="form-group">
+                                {!! Form::label('auth', __('Method')) !!}
                                 <multiselect
                                         v-model="selectedAuthType"
                                         :options="authOptions"
@@ -92,17 +111,17 @@
                             <div class="row">
                                 <div class="col">
                                 </div>
-                                <div class="col-8" align="right">
+                                <div class="col-8">
                                     <button type="button" href="#" @click="addEndpoint" id="add_endpoing"
-                                            class="btn btn-secondary">
+                                            class="btn btn-secondary float-right">
                                         <i class="fas fa-plus"></i> {{__('Add')}}
                                     </button>
                                 </div>
                             </div>
 
                             <end-point-list
-                                ref="endpointsListing"
-                                :info="formData.endpoints">
+                                    ref="endpointsListing"
+                                    :info="formData.endpoints">
                             </end-point-list>
                         </div>
                     </div>
@@ -132,35 +151,6 @@
                 @endcan
             </div>
         </div>
-
-        {{--<b-modal
-            ref="modalParameter"
-            :title="$t('Header')"
-            :ok-title="$t('Save')"
-            :cancel-title="$t('Cancel')"
-            cancel-variant="outline-secondary"
-            ok-variant="secondary"
-            @ok="addParameter"
-        >
-            <div class="form-group">
-                {!! Form::label('key', __('Key')) !!}
-                {!! Form::text('key', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'parameter.key', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.key}']) !!}
-                <div class="invalid-feedback" v-for="key in errors.key">@{{key}}</div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('value', __('Value')) !!}
-                {!! Form::textarea('value', null, ['id' => 'value', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'parameter.value', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.value}']) !!}
-                <div class="invalid-feedback" v-for="value in errors.value">@{{value}}
-                </div>
-            </div>
-            <div class="form-group">
-                {!! Form::label('description', __('Description')) !!}
-                {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control', 'v-model' => 'parameter.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
-                <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
-                </div>
-            </div>
-        </b-modal>--}}
-
     </div>
 
 @endsection
@@ -168,135 +158,128 @@
 @section('js')
     <script src="{{mix('js/processes/datasources/edit.js')}}"></script>
     <script>
-      const methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-      const authorizations = [
-        {
-          'value': 'NONE',
-          'content': __('No Auth')
-        },
-        {
-          'value': 'BASIC',
-          'content': __('Basic auth')
-        },
-        {
-          'value': 'BEARER',
-          'content': __('Bearer Token')
-        }
-      ];
-      new Vue({
-        el: '#formDataSource',
-        data() {
-          return {
-            selectedAuthType: '',
-            methodOptions: methods,
-            authOptions: authorizations,
-            disabled: false,
-            credentials: {
-              token: '',
-              user: '',
-              password: ''
+        const methods = ["GET", "POST", "PUT", "PATCH", "DELETE"];
+        const authorizations = [
+            {
+                "value": "NONE",
+                "content": __("No Auth")
             },
-            headers: [],
-            errors: {},
-            parameter: {
-              key: '',
-              value: '',
-              description: '',
-              type: ''
+            {
+                "value": "BASIC",
+                "content": __("Basic auth")
             },
-            formData: @json($datasource)
-          };
-        },
-        watch: {
-          selectedAuthType: {
-            handler(item) {
-              if (item.value) {
-                this.formData.authtype = item.value;
-              }
+            {
+                "value": "BEARER",
+                "content": __("Bearer Token")
             }
-          },
-          credentials: {
-            handler(data) {
-              this.formData.credentials = JSON.stringify(data);
-            }
-          },
-          headers: {
-            handler(data) {
-              this.formData.credentials = JSON.stringify(data);
-            }
-          },
-          formData: {
-            immediately: true,
-            deep: true,
-            handler(data) {
-              console.log('handler data');
-              console.log(data);
-            }
-          }
-        },
-        computed: {},
-        methods: {
-          onClose() {
-            console.log('close...');
-          },
-          getMethod() {
-            return this.formData.id ? 'PUT' : 'POST';
-          },
-          getUrl() {
-            return this.formData.id ? 'datasources/' + this.formData.id : 'datasources';
-          },
-          onSubmit() {
-            console.log('save...');
-            this.submitted = true;
-            if (this.disabled) {
-              return
-            }
-            this.disabled = true;
-            ProcessMaker.apiClient({
-              method: this.getMethod(),
-              url: this.getUrl(),
-              data: this.formData,
-            })
-              .then(function (response) {
-                console.log('success');
-                ProcessMaker.alert('{{__('The DataSource was saved.')}}', 'success');
-                //window.location = '/designer/datasources';
-              })
-              .catch(error => {
-                console.log('fail..');
-                this.errors = error.response.data.errors;
-                this.disabled = false;
-              });
-          },
-          addEndpoint() {
-            this.formData.endpoints = this.formData.endpoints ? this.formData.endpoints: [];
-            let endpoint = {
-              id: this.formData.endpoints.length > 0 ? this.formData.endpoints.length - 1: 0,
-              view: false,
-              method: '',
-              url: '',
-              header: [],
-              body_type: '',
-              body: ''
-            };
-            this.formData.endpoints.push(endpoint);
-            this.$refs.endpointsListing.detail(endpoint);
-          },
-        },
-        created() {
-          console.log('created...');
-          console.log(this.formData);
-        },
-        mounted() {
-          console.log('mounted...');
-          console.log(this.formData);
-          this.selectedAuthType = this.authOptions.filter(item => {
-            console.log(item);
-            if (item.value === this.formData.authtype) {
-              return item;
-            }
-          })
-        },
-      });
+        ];
+        new Vue({
+            el: "#formDataSource",
+            data () {
+                return {
+                    selectedAuthType: "",
+                    methodOptions: methods,
+                    authOptions: authorizations,
+                    disabled: false,
+                    credentials: {
+                        token: "",
+                        user: "",
+                        password: ""
+                    },
+                    errors: {},
+                    formData: @json($datasource)
+                };
+            },
+            watch: {
+                selectedAuthType: {
+                    handler (item) {
+                        if (item.value) {
+                            this.formData.authtype = item.value;
+                        }
+                    }
+                },
+                credentials: {
+                    handler (data) {
+                        this.formData.credentials = data;
+                    }
+                },
+                headers: {
+                    handler (data) {
+                        this.formData.credentials = JSON.stringify(data);
+                    }
+                },
+                formData: {
+                    immediately: true,
+                    deep: true,
+                    handler (data) {
+                        console.log("handler data");
+                        console.log(data);
+                    }
+                }
+            },
+            computed: {},
+            methods: {
+                onClose () {
+                    console.log("close...");
+                },
+                getMethod () {
+                    return this.formData.id ? "PUT" : "POST";
+                },
+                getUrl () {
+                    return this.formData.id ? "datasources/" + this.formData.id : "datasources";
+                },
+                onSubmit () {
+                    console.log("save...");
+                    this.submitted = true;
+                    if (this.disabled) {
+                        return;
+                    }
+                    this.disabled = true;
+                    ProcessMaker.apiClient({
+                        method: this.getMethod(),
+                        url: this.getUrl(),
+                        data: this.formData,
+                    })
+                        .then(function (response) {
+                            console.log("success");
+                            ProcessMaker.alert('{{__('The DataSource was saved.')}}', "success");
+                            //window.location = '/designer/datasources';
+                        })
+                        .catch(error => {
+                            console.log("fail..");
+                            this.errors = error.response.data.errors;
+                            this.disabled = false;
+                        });
+                },
+                addEndpoint () {
+                    this.formData.endpoints = this.formData.endpoints ? this.formData.endpoints : [];
+                    let endpoint = {
+                        id: this.formData.endpoints.length > 0 ? this.formData.endpoints.length - 1 : 0,
+                        view: false,
+                        method: "",
+                        url: "",
+                        header: [],
+                        body_type: "",
+                        body: ""
+                    };
+                    this.formData.endpoints.push(endpoint);
+                    this.$refs.endpointsListing.detail(endpoint);
+                },
+            },
+            created () {
+                console.log("created...");
+                console.log(this.formData);
+            },
+            mounted () {
+                console.log("mounted...");
+                console.log(this.formData);
+                this.selectedAuthType = this.authOptions.filter(item => {
+                    console.log(item);
+                    if (item.value === this.formData.authtype) {
+                        return item;
+                    }
+                });
+            },
+        });
     </script>
 @endsection
