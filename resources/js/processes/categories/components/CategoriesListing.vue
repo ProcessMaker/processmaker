@@ -130,12 +130,8 @@ export default {
             "&include=" + this.include
         )
         .then(response => {
-          if (response.data.data.length === 0) {
-            $("#createCategory").modal("show");
-          } else {
-            this.data = this.transform(response.data);
-            this.loading = false;
-          }
+          this.data = this.transform(response.data);
+          this.loading = false;
         });
     },
     onAction(action, data, index) {
