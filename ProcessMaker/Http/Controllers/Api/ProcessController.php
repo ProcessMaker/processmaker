@@ -387,6 +387,25 @@ class ProcessController extends Controller
                 $schemaErrors = $document->getValidationErrors();
                 $schemaErrors[] = $e->getMessage();
             }
+            $schemaErrors = $this->validateOnlyOneDiagram($document, $schemaErrors);
+        }
+        return $schemaErrors;
+    }
+
+    /**
+     * Validate the bpmn has only one BPMNDiagram
+     *
+     * @param BpmnDocument $document
+     * @param array $schemaErrors
+     *
+     * @return array
+     */
+    private function validateOnlyOneDiagram(BpmnDocument $document, array $schemaErrors = null)
+    {
+        $diagrams = $document->getElementsByTagNameNS('http://www.omg.org/spec/BPMN/20100524/DI', 'BPMNDiagram');
+        if ($diagrams->length > 1) {
+            $schemaErrors = $schemaErrors ?? [];
+            $schemaErrors[] = __('Multiple diagrams are not supported');
         }
         return $schemaErrors;
     }
