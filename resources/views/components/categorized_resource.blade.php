@@ -124,9 +124,9 @@
 @endcan
 
 @section('js')
-
+@parent
     @can('create-category')
-        <script id="marquino">
+        <script>
             new Vue({
                 el: '#createCategory',
                 data: {
