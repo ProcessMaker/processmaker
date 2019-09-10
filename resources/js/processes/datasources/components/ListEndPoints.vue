@@ -101,12 +101,17 @@
       doDelete(item) {
         ProcessMaker.confirmModal(
           this.$t("Caution!"),
-          this.$t("Are you sure you want to delete Data Source") + ' ' +
-          item.name +
+          this.$t("Are you sure you want to delete Access Point") + ' ' +
+          item.purpose +
           this.$t("?"),
           "",
           () => {
-            //TODO remove item
+              for( let i = 0; i < this.info.length; i++){
+                  if ( this.info[i].id === item.id) {
+                      this.info.splice(i, 1);
+                  }
+              }
+              this.fetch();
           }
         );
       }
