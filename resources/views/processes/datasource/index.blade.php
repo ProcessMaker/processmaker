@@ -42,7 +42,7 @@
     @endcomponent
 
     @can('create-datasources')
-        <div class="modal" id="createDatasource" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal" id="createDatasource" tabindex="-1" role="dialog" aria-hidden="true" ref="createDatasource">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -94,10 +94,10 @@
                     @else
                         <div class="modal-body">
                             <div>{{__('Categories are required to create a datasource')}}</div>
-                            <a href="{{ url('designer/datasources/categories') }}"
-                               class="btn btn-primary container mt-2">
-                                {{__('Add Category')}}
-                            </a>
+                            <button type="button" id="create_category" class="btn btn-primary w-100" @click="onClose"
+                                    data-toggle="modal" data-target="#createCategory">
+                                <i class="fas fa-plus"></i> {{__('Add Category')}}
+                            </button>
                         </div>
                     @endif
                     <div class="modal-footer">
@@ -176,6 +176,7 @@
                 });
               },
               onClose() {
+                this.$refs.createDatasource.hidden =true;
                 this.resetFormData();
                 this.resetErrors();
               },
