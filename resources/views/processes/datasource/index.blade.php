@@ -191,7 +191,7 @@
                   .post('datasources', this.formData)
                   .then(response => {
                     ProcessMaker.alert('{{ __('The datasource was created.') }}', 'success');
-                    window.location = '/designer/datasources/' + response.data.id + '/edit';
+                    window.location = '/designer/datasources';
                   })
                   .catch(error => {
                     this.disabled = false;
