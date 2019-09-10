@@ -36,52 +36,10 @@
         'labels' => [
             'resource' => __('Data Source'),
             'category' => __('Category'),
+            'create-category' => __('Create Datasource Category'),
         ],
     ])
     @endcomponent
-
-    @can('create-category')
-        <div class="modal" id="createCategory" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{__('Create Datasource Category')}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="form-group">
-                            {!!Form::label('name', __('Category Name'))!!}
-                            {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
-                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                            <small class="form-text text-muted" v-if="! errors.name">
-                                {{ __('The category name must be distinct.') }}
-                            </small>
-                            <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
-                        </div>
-                        <div class="form-group">
-                            {!! Form::label('status', __('Status')) !!}
-                            {!! Form::select('status', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')], null, ['id' => 'status',
-                            'class' => 'form-control', 'v-model' => 'status', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.status}']) !!}
-                            <div class="invalid-feedback" v-for="status in errors.status">@{{status}}</div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
-                            {{ __('Cancel') }}
-                        </button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
-                            {{ __('Save') }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    @endcan
 
     @can('create-datasources')
         <div class="modal" id="createDatasource" tabindex="-1" role="dialog" aria-hidden="true">
