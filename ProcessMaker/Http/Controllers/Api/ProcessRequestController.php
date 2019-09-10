@@ -7,6 +7,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Notification;
 use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Query\SyntaxError;
@@ -61,6 +62,7 @@ class ProcessRequestController extends Controller
      *         required=false,
      *         @OA\Schema(type="string", enum={"all", "in_progress", "completed"}),
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -111,6 +113,15 @@ class ProcessRequestController extends Controller
                 $query->get();
                 break;
         }
+        
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . mb_strtolower($filter) . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->where(DB::raw('LOWER(name)'), 'like', $filter)
+                      ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
+            });
+        }        
 
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {

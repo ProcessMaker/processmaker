@@ -45,7 +45,7 @@ new Vue({
           if (! advanced) {
             this.buildPmql();
           }
-          this.$refs.requestList.fetch(true);
+          this.$refs.requestList.fetch(null, true);
         },
         buildPmql() {          
           let clauses = [];

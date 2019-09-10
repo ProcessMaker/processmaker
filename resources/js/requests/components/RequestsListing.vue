@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for="/requests\?page/"
+            :for=/requests\?page/
             v-show="shouldShowLoader"
             :empty="$t('No Data Available')"
             :empty-desc="$t('')"
@@ -18,6 +18,7 @@
         :data="data"
         data-path="data"
         pagination-path="meta"
+        ref="vuetable"
       >
         <template slot="ids" slot-scope="props">
           <b-link @click="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
@@ -63,12 +64,14 @@
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
 import AvatarImage from "../../components/AvatarImage";
+import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
 
 Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
+  props: ["filter", "columns"],
   data() {
     return {
       orderBy: "id",
@@ -81,42 +84,7 @@ export default {
           direction: "desc"
         }
       ],
-      fields: [
-        {
-          name: "__slot:ids",
-          title: "#",
-          field: "id",
-          sortField: "id"
-        },
-        {
-          title: () => this.$t("Name"),
-          name: "name",
-          sortField: "name"
-        },
-        {
-          title: () => this.$t("Status"),
-          name: "status",
-          sortField: "status"
-        },
-        {
-          title: () => this.$t("Participants"),
-          name: "__slot:participants"
-        },
-        {
-          title: () => this.$t("Started"),
-          name: "initiated_at",
-          sortField: "initiated_at"
-        },
-        {
-          title: () => this.$t("Completed"),
-          name: "completed_at",
-          sortField: "completed_at"
-        },
-        {
-          name: "__slot:actions",
-          title: ""
-        }
-      ]
+      fields: []
     };
   },
   beforeCreate() {
@@ -144,7 +112,95 @@ export default {
 
     this.$parent.buildPmql();
   },
+  mounted() {
+    this.setupColumns();
+  },
   methods: {
+    setupColumns() {
+      let columns = this.getColumns();
+      
+      columns.forEach(column => {
+        let field = {
+          title: this.$t(column.label)
+        };
+        
+        switch (column.field) {
+          case 'id':
+            field.name = '__slot:ids';
+            field.title = '#';
+            break;
+          case 'participants':
+            field.name = '__slot:participants';
+            break;
+          default:
+            field.name = column.field;
+        }
+        
+        if (!field.field) {
+          field.field = column.field;
+        }
+        
+        if (column.sortable && ! field.sortField) {
+          field.sortField = column.field;
+        }
+        
+        this.fields.push(field);
+      });
+      
+      this.fields.push({
+        name: "__slot:actions",
+        title: ""
+      });
+
+      // this is needed because fields in vuetable2 are not reactive
+      this.$nextTick(()=>{
+        this.$refs.vuetable.normalizeFields();
+      });
+    },
+    getColumns() {
+      if (this.$props.columns) {
+        return this.$props.columns;
+      } else {
+        return [
+          {
+            "label": "#",
+            "field": "id",
+            "sortable": true,
+            "default": true
+          },
+          {
+            "label": "Name",
+            "field": "name",
+            "sortable": true,
+            "default": true
+          },
+          {
+            "label": "Status",
+            "field": "status",
+            "sortable": true,
+            "default": true
+          },
+          {
+            "label": "Participants",
+            "field": "participants",
+            "sortable": true,
+            "default": true
+          },
+          {
+            "label": "Started",
+            "field": "initiated_at",
+            "sortable": true,
+            "default": true
+          },
+          {
+            "label": "Completed",
+            "field": "completed_at",
+            "sortable": true,
+            "default": true
+          }          
+        ];
+      }
+    },
     onAction(action, data, index) {
       switch (action) {
         case "edit-designer":
@@ -202,9 +258,20 @@ export default {
       }
       return data;
     },
-    fetch(resetPagination) {
+    fetch(query, resetPagination) {
       if (resetPagination) {
         this.page = 1;
+      }
+      
+      let pmql = this.$parent.pmql;
+      let filter = this.filter;
+      
+      if (query && query.length) {
+        if (query.isPMQL()) {
+          pmql = `(${pmql}) and (${query})`;
+        } else {
+          filter = query;
+        }
       }
 
       // Load from our api client
@@ -214,9 +281,11 @@ export default {
             this.page +
             "&per_page=" +
             this.perPage +
-            "&include=process,participants" +
+            "&include=process,participants,data" +
             "&pmql=" +
-            encodeURIComponent(this.$parent.pmql) +
+            encodeURIComponent(pmql) +
+            "&filter=" +
+            filter +
             "&order_by=" +
             (this.orderBy === "__slot:ids" ? "id" : this.orderBy) +
             "&order_direction=" +
