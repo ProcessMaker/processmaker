@@ -78,7 +78,7 @@
                                 </div>
                             </div>
                             <div class="col-8">
-                                @can($createCategories)
+                                @can('create-category')
                                     <button type="button" id="create_category" class="btn btn-secondary float-right" data-toggle="modal"
                                             data-target="#createCategory">
                                         <i class="fas fa-plus"></i> {{ __('Category') }}
@@ -104,7 +104,7 @@
 
     </div>
 
-    @can('create-owner')
+    @can('create-owner1')
         <div class="modal fade" id="createCategory" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -308,7 +308,7 @@
         </script>
     @endcan
 
-    @can($createCategories)
+    @can('create-category')
         <script>
             new Vue({
                 el: '#createCategory',
