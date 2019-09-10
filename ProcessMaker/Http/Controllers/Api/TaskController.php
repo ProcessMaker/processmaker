@@ -98,7 +98,7 @@ class TaskController extends Controller
         if (!empty($filter)) {
             $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where(DB::raw('LOWER(element_name)'), 'like', $filter)
+                $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
                       ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
             });
         }
