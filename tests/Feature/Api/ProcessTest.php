@@ -813,4 +813,24 @@ class ProcessTest extends TestCase
         // Assertion: Process::has_timer_start_events should return false
         $this->assertFalse($process->has_timer_start_events);
     }
+
+    /**
+     * Test the creation of processes with BPMN definition
+     */
+    public function testCreateProcessWithMultipleBPMNDiagrams()
+    {
+        $route = route('api.' . $this->resource . '.store');
+        $base = factory(Process::class)->make([
+            'user_id' => static::$DO_NOT_SEND,
+            'process_category_id' => static::$DO_NOT_SEND,
+        ]);
+        $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
+        //Add a bpmn content
+        $array['bpmn'] = file_get_contents(__DIR__.'/processes/C.4.0-export.bpmn');
+        $response = $this->apiCall('POST', $route, $array);
+        $response->assertStatus(422);
+        $error = $response->json();
+        $this->assertArrayHasKey('errors', $error);
+        $this->assertTrue(in_array('Multiple diagrams are not supported', $error['errors']['bpmn']));
+    }
 }
