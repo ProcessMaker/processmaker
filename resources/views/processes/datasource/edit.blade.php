@@ -115,7 +115,7 @@
 
                             <end-point-list
                                     ref="endpointsListing"
-                                    :info="formData.endpoints || []">
+                                    :endpoints="formData.endpoints || []">
                             </end-point-list>
                         </div>
                     </div>
@@ -218,18 +218,16 @@
               });
           },
           addEndpoint () {
-            this.formData.endpoints = this.formData.endpoints ? this.formData.endpoints : [];
             let endpoint = {
-              id: this.formData.endpoints.length > 0 ? this.formData.endpoints.length - 1 : 0,
+              id: this.$refs.endpointsListing.endpoints.length,
               view: false,
               method: "",
               url: "",
-              header: [],
+              headers: [],
               body_type: "",
               body: ""
             };
-            console.log("add new endpoint");
-            this.$refs.endpointsListing.info.push(endpoint);
+            this.$refs.endpointsListing.endpoints.push(endpoint);
             this.$refs.endpointsListing.fetch();
             this.$refs.endpointsListing.detail(endpoint);
           },

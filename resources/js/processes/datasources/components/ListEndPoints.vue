@@ -55,7 +55,7 @@
         type: String,
         default: ""
       },
-      info: {
+      endpoints: {
         type: Array,
         default: []
       }
@@ -96,9 +96,9 @@
     methods: {
       fetch () {
         this.data = [];
-        if (this.info) {
+        if (this.endpoints) {
           let index = 0;
-          this.data = this.info.map(item => {
+          this.data = this.endpoints.map(item => {
             item.view = false;
             item.id = index;
             index++;
@@ -120,9 +120,9 @@
           "</b>",
           "",
           () => {
-            for (let i = 0; i < this.info.length; i++) {
-              if (this.info[i].id === item.id) {
-                this.info.splice(i, 1);
+            for (let i = 0; i < this.endpoints.length; i++) {
+              if (this.endpoints[i].id === item.id) {
+                this.endpoints.splice(i, 1);
               }
             }
             this.fetch();
