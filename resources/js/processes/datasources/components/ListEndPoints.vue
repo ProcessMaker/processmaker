@@ -86,13 +86,17 @@
     },
     methods: {
       fetch() {
-          let index = 0;
-          this.data = this.info.map(item => {
+          if (this.info) {
+            let index = 0;
+            this.data = this.info.map(item => {
               item.view = false;
               item.id = index;
               index++;
               return item;
-          });
+            });
+          } else {
+            this.data = [];
+          }
       },
       detail(data) {
         data.view = !data.view;
