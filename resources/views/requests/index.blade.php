@@ -8,11 +8,13 @@
 @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_request')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
 @include('shared.breadcrumbs', ['routes' => [
     __('Requests') => route('requests.index'),
     function() use ($title) { return [__($title), null]; }
 ]])
+@endsection
+@section('content')
 <div class="px-3 page-content mt-2" id="requests-listing">
     <div class="row">
         <div class="col-sm-12">

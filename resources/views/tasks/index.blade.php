@@ -8,11 +8,13 @@
     @include('layouts.sidebar', ['sidebar' => Menu::get('sidebar_task')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Tasks') => route('tasks.index'),
         __($title) => null,
     ]])
+@endsection
+@section('content')
     <div class="px-3 page-content" id="tasks">
         <div class="row">
             <div class="col" align="right">

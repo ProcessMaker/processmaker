@@ -60,9 +60,9 @@
 
   <div class="d-flex flex-grow-1 flex-column" style="overflow: hidden;">
     @include('layouts.navbar')
-    @yield('breadcrumbs')
     <div class="flex-grow-1 d-flex flex-column overflow-hidden h-100" id="mainbody">
-      <div class="main flex-grow-1 h-100">
+      @yield('breadcrumbs')
+      <div class="main flex-grow-1 h-100 overflow-auto {{$content_margin ?? 'py-3'}}">
         @yield('content')
       </div>
     </div>

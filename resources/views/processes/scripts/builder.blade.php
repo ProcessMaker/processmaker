@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout', ['content_margin' => ''])
 
 @section('title')
   {{__('Edit Script')}}
@@ -34,11 +34,6 @@ div.main {
   height: 100%;
   max-height: 100%;
   overflow: hidden;
-}
-
-ol.breadcrumb {
-  margin-bottom: 0;
-  border-bottom: 0;
 }
 </style>
 @endsection

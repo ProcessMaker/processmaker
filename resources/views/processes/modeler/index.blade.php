@@ -1,4 +1,4 @@
-@extends('layouts.layout')
+@extends('layouts.layout', ['content_margin'=>''])
 
 @section('title')
   {{__('Edit Process')}}
@@ -40,11 +40,6 @@ div.main {
   max-height: 100%;
 }
 
-ol.breadcrumb {
-  margin-bottom: 0;
-  border-bottom: 0;
-}
-
 [aria-label="breadcrumb"] {
   position: relative;
 }
@@ -64,8 +59,10 @@ ol.breadcrumb {
     process: @json($process),
     xml: @json($process->bpmn)
   }
-  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML }) => {
+  const warnings = @json($process->warnings);
+  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings }) => {
     loadXML(window.ProcessMaker.modeler.xml);
+    addWarnings(warnings || []);
   });
   </script>
     @foreach($manager->getScripts() as $script)

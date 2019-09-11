@@ -8,12 +8,14 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
-@section('content')
+@section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
         __('Environment Variable') => route('environment-variables.index'),
         __('Edit') . " " . $environmentVariable->name => null,
     ]])
+@endsection
+@section('content')
     <div class="container" id="editEnvironmentVariable">
         <div class="row">
             <div class="col">

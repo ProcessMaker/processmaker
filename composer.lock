@@ -2922,28 +2922,28 @@
             "authors": [
                 {
                     "name": "Jim Wigginton",
-                    "email": "terrafrost@php.net",
-                    "role": "Lead Developer"
+                    "role": "Lead Developer",
+                    "email": "terrafrost@php.net"
                 },
                 {
                     "name": "Patrick Monnerat",
-                    "email": "pm@datasphere.ch",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "pm@datasphere.ch"
                 },
                 {
                     "name": "Andreas Fischer",
-                    "email": "bantu@phpbb.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "bantu@phpbb.com"
                 },
                 {
                     "name": "Hans-Jürgen Petrich",
-                    "email": "petrich@tronic-media.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "petrich@tronic-media.com"
                 },
                 {
                     "name": "Graham Campbell",
-                    "email": "graham@alt-three.com",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "email": "graham@alt-three.com"
                 }
             ],
             "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
@@ -3020,7 +3020,7 @@
                 }
             ],
             "description": "Service for chunked upload with several js providers",
-            "time": "2019-03-05T12:48:11+00:00"
+            "time": "2018-11-28T19:48:49+00:00"
         },
         {
             "name": "predis/predis",
@@ -3129,12 +3129,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "7ba8273f94570fdfbee63bada478f05787ef59ae"
+                "reference": "dfe7baf10d8c8425ddea83098aa77efcc53e46d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/7ba8273f94570fdfbee63bada478f05787ef59ae",
-                "reference": "7ba8273f94570fdfbee63bada478f05787ef59ae",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/dfe7baf10d8c8425ddea83098aa77efcc53e46d5",
+                "reference": "dfe7baf10d8c8425ddea83098aa77efcc53e46d5",
                 "shasum": ""
             },
             "require-dev": {
@@ -3151,7 +3151,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2019-08-16T20:10:03+00:00"
+            "time": "2019-09-03T19:23:42+00:00"
         },
         {
             "name": "processmaker/pmql",

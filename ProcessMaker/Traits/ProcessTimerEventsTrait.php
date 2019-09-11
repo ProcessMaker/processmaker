@@ -23,11 +23,17 @@ trait ProcessTimerEventsTrait
     public static function bootProcessTimerEventsTrait()
     {
         static::saved([static::class, 'saveStartEvents']);
+        static::saving([static::class, 'convertBPMN']);
     }
 
     public static function saveStartEvents(Process $process)
     {
         $manager = new TaskSchedulerManager();
         $manager->registerTimerEvents($process);
+    }
+
+    public static function convertBPMN(Process $process)
+    {
+        $process->convertFromExternalBPM();
     }
 }

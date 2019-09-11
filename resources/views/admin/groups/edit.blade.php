@@ -8,12 +8,14 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
 @endsection
 
+@section('breadcrumbs')
+  @include('shared.breadcrumbs', ['routes' => [
+    __('Admin') => route('admin.index'),
+    __('Groups') => route('groups.index'),
+    __('Edit') . " " . $group->name => null,
+  ]])
+@endsection
 @section('content')
-    @include('shared.breadcrumbs', ['routes' => [
-        __('Admin') => route('admin.index'),
-        __('Groups') => route('groups.index'),
-        __('Edit') . " " . $group->name => null,
-    ]])
     <div class="container" id="editGroup">
         <div class="row">
             <div class="col-12">
