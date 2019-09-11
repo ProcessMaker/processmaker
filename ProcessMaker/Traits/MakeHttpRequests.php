@@ -7,9 +7,15 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Crypt;
 
 trait MakeHttpRequests
 {
+    private $authTypes = [
+        'BASIC' => 'basicAuthorization',
+        'BEARER' => 'bearerAuthorization',
+    ];
+
     /**
      * Send a HTTP request based on the datasource, configuration
      * and the process request data.
@@ -26,12 +32,66 @@ trait MakeHttpRequests
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
         $headers = [];
-        foreach($endpoint['headers'] as $key => $value) {
-            $headers[$mustache->render($key, $data)] = $mustache->render($value, $data);
+        if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
+            foreach ($endpoint['headers'] as $key => $value) {
+                $headers[$mustache->render($key, $data)] = $mustache->render($value, $data);
+            }
         }
         $body = $mustache->render($endpoint['body'], $data);
+        $config = [$method, $url, $headers, $body];
 
-        return $this->response($this->call($method, $url, $headers, $body), $data, $config, $mustache);
+        $config = $this->addAuthorizationHeaders(...$config);
+        return $this->response($this->call(...$config), $data, $config, $mustache);
+    }
+
+    /**
+     * Add authorization paramaters
+     *
+     * @param array ...$config
+     *
+     * @return array
+     */
+    private function addAuthorizationHeaders(...$config)
+    {
+        if (isset($this->authTypes[$this->authtype])) {
+            $callable = [$this, $this->authTypes[$this->authtype]];
+            return call_user_func_array($callable, $config);
+        }
+        return $config;
+    }
+
+    /**
+     * Add basic authorization to header
+     *
+     * @param string $method
+     * @param string $url
+     * @param array $headers
+     * @param string $body
+     *
+     * @return array
+     */
+    private function basicAuthorization($method, $url, $headers, $body)
+    {
+        $credentials = json_decode(Crypt::decryptString($this->credentials), true);
+        $headers['Authorization'] = 'Basic ' . $credentials['username'] . ':' . $credentials['password'];
+        return [$method, $url, $headers, $body];
+    }
+
+    /**
+     * Add bearer authorization to header
+     *
+     * @param string $method
+     * @param string $url
+     * @param array $headers
+     * @param string $body
+     *
+     * @return array
+     */
+    private function bearerAuthorization($method, $url, $headers, $body)
+    {
+        $credentials = json_decode(Crypt::decryptString($this->credentials), true);
+        $headers['Authorization'] = 'Bearer ' . $credentials['token'];
+        return [$method, $url, $headers, $body];
     }
 
     /**

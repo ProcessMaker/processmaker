@@ -177,6 +177,7 @@
                     }
                 },
                 credentials: {
+                    deep: true,
                     handler (data) {
                         this.formData.credentials = data;
                     }
@@ -199,6 +200,9 @@
                         return;
                     }
                     this.disabled = true;
+                    if (typeof this.formData.credentials !== 'object') {
+                        delete this.formData.credentials;
+                    }
                     ProcessMaker.apiClient({
                         method: this.getMethod(),
                         url: this.getUrl(),
