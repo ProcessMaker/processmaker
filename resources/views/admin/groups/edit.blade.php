@@ -32,7 +32,6 @@
                 <div class="tab-content mt-3" id="nav-tabContent">
                     <div class="card card-body tab-pane fade show active" id="nav-home" role="tabpanel"
                          aria-labelledby="nav-home-tab">
-                        {!! Form::open() !!}
                         <div class="form-group">
                             {!! Form::label('name', __('Name')) !!}
                             {!! Form::text('name', null, [
@@ -68,7 +67,6 @@
                             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                             {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                         </div>
-                        {!! Form::close() !!}
                     </div>
                     <div class="tab-pane fade" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <div class="row">

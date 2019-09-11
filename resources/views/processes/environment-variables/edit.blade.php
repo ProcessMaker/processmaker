@@ -18,7 +18,6 @@
         <div class="row">
             <div class="col">
                 <div class="card card-body">
-                    {!! Form::open() !!}
                     <div class="form-group">
                         {!!Form::label('name', __('Name'))!!}
                         {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'formData.name',
@@ -44,7 +43,6 @@
                         {!! Form::button('Cancel', ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                         {!! Form::button('Save', ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                     </div>
-                    {!! Form::close() !!}
                 </div>
             </div>
         </div>
