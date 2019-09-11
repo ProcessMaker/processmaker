@@ -12,7 +12,6 @@ use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ProcessRequestsCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
 use ProcessMaker\Jobs\TerminateRequest;
@@ -24,6 +23,7 @@ use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Facades\WorkflowManager;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Exception\DataSourceResponseException;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Models\DataSource;
@@ -314,7 +314,7 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      * @param string $event
      * @return void
-     * 
+     *
      * @OA\Post(
      *     path="/requests/{process_request_id}/events/{event_id}",
      *     summary="Update a process request event",
@@ -413,9 +413,14 @@ class ProcessRequestController extends Controller
         $httpRequest->validate([
             'config' => 'required',
         ]);
-        $response = $datasource->request($request->data, $httpRequest->json('config', []));
 
-        return response($response, 200);
+        try {
+            $response = $datasource->request($request->data, $httpRequest->json('config', []));
+
+            return response($response, 200);
+        } catch (DataSourceResponseException $exception) {
+            return response($exception->body, $exception->status);
+        }
     }
 
     /**

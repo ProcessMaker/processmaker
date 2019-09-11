@@ -4,10 +4,11 @@ namespace ProcessMaker\Traits;
 
 use Mustache_Engine;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Crypt;
+use ProcessMaker\Exception\DataSourceResponseException;
 
 trait MakeHttpRequests
 {
@@ -24,6 +25,7 @@ trait MakeHttpRequests
      * @param array $config
      *
      * @return void
+     * @throws DataSourceResponseException
      */
     public function request(array $data = [], array $config = [])
     {
@@ -31,7 +33,8 @@ trait MakeHttpRequests
         $endpoint = $this->endpoints[$config['endpoint']];
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
-        $headers = [];
+        // Datasource works with json responses
+        $headers = ['Accept' => 'application/json'];
         if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
             foreach ($endpoint['headers'] as $key => $value) {
                 $headers[$mustache->render($key, $data)] = $mustache->render($value, $data);
@@ -41,7 +44,11 @@ trait MakeHttpRequests
         $config = [$method, $url, $headers, $body];
 
         $config = $this->addAuthorizationHeaders(...$config);
-        return $this->response($this->call(...$config), $data, $config, $mustache);
+        try {
+            return $this->response($this->call(...$config), $data, $config, $mustache);
+        } catch (ClientException $exception) {
+            throw new DataSourceResponseException($exception->getResponse());
+        }
     }
 
     /**
@@ -55,6 +62,7 @@ trait MakeHttpRequests
     {
         if (isset($this->authTypes[$this->authtype])) {
             $callable = [$this, $this->authTypes[$this->authtype]];
+            \Log::info(json_encode([$callable, $config]));
             return call_user_func_array($callable, $config);
         }
         return $config;
@@ -72,8 +80,9 @@ trait MakeHttpRequests
      */
     private function basicAuthorization($method, $url, $headers, $body)
     {
-        $credentials = json_decode(Crypt::decryptString($this->credentials), true);
-        $headers['Authorization'] = 'Basic ' . $credentials['username'] . ':' . $credentials['password'];
+        if (isset($this->credentials) && is_array($this->credentials)) {
+            $headers['Authorization'] = 'Basic ' . $this->credentials['username'] . ':' . $this->credentials['password'];
+        }
         return [$method, $url, $headers, $body];
     }
 
@@ -89,8 +98,9 @@ trait MakeHttpRequests
      */
     private function bearerAuthorization($method, $url, $headers, $body)
     {
-        $credentials = json_decode(Crypt::decryptString($this->credentials), true);
-        $headers['Authorization'] = 'Bearer ' . $credentials['token'];
+        if (isset($this->credentials) && is_array($this->credentials)) {
+            $headers['Authorization'] = 'Bearer ' . $this->credentials['token'];
+        }
         return [$method, $url, $headers, $body];
     }
 
@@ -103,6 +113,7 @@ trait MakeHttpRequests
      * @param Mustache_Engine $mustache
      *
      * @return array
+     * @throws DataSourceResponseException
      */
     private function response($response, array $data = [], array $config = [], Mustache_Engine $mustache)
     {
@@ -115,11 +126,13 @@ trait MakeHttpRequests
                 $return = [];
             break;
             default:
-                throw new Exception("Status code: $status\n" . $response->getBody()->getContents());
+                $exception = new DataSourceResponseException($response);
+                throw $exception;
         }
         $mapped = [];
+        \Log::info($response->getStatusCode());
         \Log::info(json_encode($response->getBody()->getContents()));
-        $merged = array_merge($data, $return);
+        !is_array($return) ?: $merged = array_merge($data, $return);
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
                 //$value = $mustache->render($map['value'], $merged);

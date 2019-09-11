@@ -7,7 +7,7 @@
                       :data="errors"
                       data-path="data">
                 <template slot="message" slot-scope="props">
-                    <h5>{{props.rowData.message}}</h5>
+                    <b>{{props.rowData.message}}</b>
                     <p class="error-body">{{props.rowData.body}}</p>
                 </template>
                 <template slot="datetime" slot-scope="props">
@@ -63,7 +63,7 @@
 
 <style lang="scss" scoped>
     p.error-body {
-        white-space: pre;
+        white-space: pre-line;
     }
     .error-element {
         white-space: pre;
