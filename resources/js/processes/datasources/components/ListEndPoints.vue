@@ -46,12 +46,21 @@
   import datatableMixin from "../../../components/common/mixins/datatable";
   import DetailEndPoint from "../components/DetailEndPoint";
 
-  Vue.component('detail-end-point', DetailEndPoint);
+  Vue.component("detail-end-point", DetailEndPoint);
 
   export default {
     mixins: [datatableMixin],
-    props: ['filter', 'info'],
-    data() {
+    props: {
+      filter: {
+        type: String,
+        default: ""
+      },
+      info: {
+        type: Array,
+        default: []
+      }
+    },
+    data () {
       return {
         orderBy: "method",
         sortOrder: [
@@ -85,37 +94,38 @@
       };
     },
     methods: {
-      fetch() {
-          if (this.info) {
-            let index = 0;
-            this.data = this.info.map(item => {
-              item.view = false;
-              item.id = index;
-              index++;
-              return item;
-            });
-          } else {
-            this.data = [];
-          }
+      fetch () {
+        this.data = [];
+        if (this.info) {
+          let index = 0;
+          this.data = this.info.map(item => {
+            item.view = false;
+            item.id = index;
+            index++;
+            return item;
+          });
+        }
       },
-      detail(data) {
+      detail (data) {
         data.view = !data.view;
         this.$refs.endpoints.toggleDetailRow(data.id);
       },
-      doDelete(item) {
+      doDelete (item) {
         ProcessMaker.confirmModal(
           this.$t("Caution!"),
-          this.$t("Are you sure you want to delete Access Point") + ' ' +
-          item.purpose +
-          this.$t("?"),
+          "<b>" +
+          this.$t("Are you sure you want to delete {{item}}?", {
+            item: item.purpose
+          }) +
+          "</b>",
           "",
           () => {
-              for( let i = 0; i < this.info.length; i++){
-                  if ( this.info[i].id === item.id) {
-                      this.info.splice(i, 1);
-                  }
+            for (let i = 0; i < this.info.length; i++) {
+              if (this.info[i].id === item.id) {
+                this.info.splice(i, 1);
               }
-              this.fetch();
+            }
+            this.fetch();
           }
         );
       }
