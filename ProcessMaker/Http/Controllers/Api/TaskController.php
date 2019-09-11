@@ -28,7 +28,8 @@ class TaskController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        'data' // this will be sanitized on a field-by-field basis
+        'data',
+        'pmql',
     ];
 
     private $statusMap = [
