@@ -10,17 +10,20 @@
         :data="data"
         data-path="data"
         :noDataTemplate="$t('No Data Available')"
+        detail-row-component="detail-header"
+        @vuetable:cell-clicked="detail"
+        ref="headers"
       >
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
               <b-btn
                 variant="link"
-                @click="edit(props.rowData)"
+                @click="detail(props.rowData)"
                 v-b-tooltip.hover
-                :title="$t('Edit')"
-              >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
+                :title="$t('Details')">
+                <i v-if="!props.rowData.view" class="fas fa-search-plus fa-lg fa-fw"></i>
+                <i v-else class="fas fa-search-minus fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -39,12 +42,25 @@
 </template>
 
 <script>
+  import Vue from "vue";
   import datatableMixin from "../../../components/common/mixins/datatable";
+  import DetailHeader from "../components/DetailHeader";
+
+  Vue.component("detail-header", DetailHeader);
 
   export default {
     mixins: [datatableMixin],
-    props: ['filter', 'info'],
-    data() {
+    props: {
+      filter: {
+        type: String,
+        default: ""
+      },
+      headers: {
+        type: Array,
+        default: []
+      }
+    },
+    data () {
       return {
         orderBy: "key",
         sortOrder: [
@@ -66,47 +82,45 @@
             sortField: "value"
           },
           {
-            title: () => this.$t("Description"),
-            name: "description",
-            sortField: "description"
-          },
-          {
             name: "__slot:actions",
             title: ""
           }
         ]
       };
     },
-    watch: {
-      info: {
-        handler() {
-          console.log('info data');
-          this.data = this.info;
-        }
-      }
-    },
     methods: {
-      fetch() {
-        console.log('fetch data');
-        //
+      fetch () {
+        this.data = [];
+        if (this.headers) {
+          let index = 0;
+          this.data = this.headers.map(item => {
+            item.view = false;
+            item.id = index;
+            index++;
+            return item;
+          });
+        }
       },
-      edit(row) {
-        //
+      detail (data) {
+        data.view = !data.view;
+        this.$refs.headers.toggleDetailRow(data.id);
       },
-      doDelete(item) {
+      doDelete (item) {
         ProcessMaker.confirmModal(
           this.$t("Caution!"),
-          this.$t("Are you sure you want to delete Data Source") + ' ' +
-          item.name +
-          this.$t("?"),
+          "<b>" +
+          this.$t("Are you sure you want to delete {{item}}?", {
+            item: item.key
+          }) +
+          "</b>",
           "",
           () => {
-            ProcessMaker.apiClient
-              .delete("datasources/" + item.id)
-              .then(() => {
-                ProcessMaker.alert(this.$t('The Data Source was deleted.'), 'success');
-                this.fetch();
-              });
+            for (let i = 0; i < this.headers.length; i++) {
+              if (this.headers[i].id === item.id) {
+                this.headers.splice(i, 1);
+              }
+            }
+            this.fetch();
           }
         );
       }

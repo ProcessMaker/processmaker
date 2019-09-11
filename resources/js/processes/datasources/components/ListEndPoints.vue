@@ -46,12 +46,21 @@
   import datatableMixin from "../../../components/common/mixins/datatable";
   import DetailEndPoint from "../components/DetailEndPoint";
 
-  Vue.component('detail-end-point', DetailEndPoint);
+  Vue.component("detail-end-point", DetailEndPoint);
 
   export default {
     mixins: [datatableMixin],
-    props: ['filter', 'info'],
-    data() {
+    props: {
+      filter: {
+        type: String,
+        default: ""
+      },
+      endpoints: {
+        type: Array,
+        default: []
+      }
+    },
+    data () {
       return {
         orderBy: "method",
         sortOrder: [
@@ -85,32 +94,38 @@
       };
     },
     methods: {
-      fetch() {
-          if (this.info) {
-            let index = 0;
-            this.data = this.info.map(item => {
-              item.view = false;
-              item.id = index;
-              index++;
-              return item;
-            });
-          } else {
-            this.data = [];
-          }
+      fetch () {
+        this.data = [];
+        if (this.endpoints) {
+          let index = 0;
+          this.data = this.endpoints.map(item => {
+            item.view = false;
+            item.id = index;
+            index++;
+            return item;
+          });
+        }
       },
-      detail(data) {
+      detail (data) {
         data.view = !data.view;
         this.$refs.endpoints.toggleDetailRow(data.id);
       },
-      doDelete(item) {
+      doDelete (item) {
         ProcessMaker.confirmModal(
           this.$t("Caution!"),
-          this.$t("Are you sure you want to delete Data Source") + ' ' +
-          item.name +
-          this.$t("?"),
+          "<b>" +
+          this.$t("Are you sure you want to delete {{item}}?", {
+            item: item.purpose
+          }) +
+          "</b>",
           "",
           () => {
-            //TODO remove item
+            for (let i = 0; i < this.endpoints.length; i++) {
+              if (this.endpoints[i].id === item.id) {
+                this.endpoints.splice(i, 1);
+              }
+            }
+            this.fetch();
           }
         );
       }

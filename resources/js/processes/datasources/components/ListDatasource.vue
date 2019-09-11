@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <data-loading
-      :for="/datasources\\?page/"
+      :for="/datasources\?page/"
       v-show="shouldShowLoader"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
@@ -31,15 +31,6 @@
                 v-if="permission.includes('edit-datasources')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="configure(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Configure')"
-                v-if="permission.includes('edit-datasources')"
-              >
-                <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
               <b-btn
                 variant="link"
@@ -142,9 +133,6 @@
       },
       edit(row) {
         window.location.href  = "/designer/datasources/" + row.id + '/edit'
-      },
-      configure(row) {
-        window.location.href  = "/designer/datasources-configuration/" + row.id + '/edit'
       },
       doDelete(item) {
         ProcessMaker.confirmModal(

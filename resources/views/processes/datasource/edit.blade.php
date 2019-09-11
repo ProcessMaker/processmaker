@@ -115,7 +115,7 @@
 
                             <end-point-list
                                     ref="endpointsListing"
-                                    :info="formData.endpoints">
+                                    :endpoints="formData.endpoints || []">
                             </end-point-list>
                         </div>
                     </div>
@@ -138,108 +138,107 @@
 @section('js')
     <script src="{{mix('js/processes/datasources/edit.js')}}"></script>
     <script>
-        const authorizations = [
-            {
-                "value": "NONE",
-                "content": __("No Auth")
+      const authorizations = [
+        {
+          "value": "NONE",
+          "content": __("No Auth")
+        },
+        {
+          "value": "BASIC",
+          "content": __("Basic auth")
+        },
+        {
+          "value": "BEARER",
+          "content": __("Bearer Token")
+        }
+      ];
+      new Vue({
+        el: "#formDataSource",
+        data () {
+          return {
+            selectedAuthType: "",
+            authOptions: authorizations,
+            disabled: false,
+            credentials: {
+              token: "",
+              user: "",
+              password: ""
             },
-            {
-                "value": "BASIC",
-                "content": __("Basic auth")
-            },
-            {
-                "value": "BEARER",
-                "content": __("Bearer Token")
+            errors: {},
+            formData: @json($datasource)
+          };
+        },
+        watch: {
+          selectedAuthType: {
+            handler (item) {
+              if (item.value) {
+                this.formData.authtype = item.value;
+              }
             }
-        ];
-        new Vue({
-            el: "#formDataSource",
-            data () {
-                return {
-                    selectedAuthType: "",
-                    authOptions: authorizations,
-                    disabled: false,
-                    credentials: {
-                        token: "",
-                        user: "",
-                        password: ""
-                    },
-                    errors: {},
-                    formData: @json($datasource)
-                };
-            },
-            watch: {
-                selectedAuthType: {
-                    handler (item) {
-                        if (item.value) {
-                            this.formData.authtype = item.value;
-                        }
-                    }
-                },
-                credentials: {
-                    deep: true,
-                    handler (data) {
-                        this.formData.credentials = data;
-                    }
-                },
-            },
-            computed: {},
-            methods: {
-                onClose () {
-                    window.location = '/designer/datasources'
-                },
-                getMethod () {
-                    return this.formData.id ? "PUT" : "POST";
-                },
-                getUrl () {
-                    return this.formData.id ? "datasources/" + this.formData.id : "datasources";
-                },
-                onSubmit () {
-                    this.submitted = true;
-                    if (this.disabled) {
-                        return;
-                    }
-                    this.disabled = true;
-                    if (typeof this.formData.credentials !== 'object') {
-                        delete this.formData.credentials;
-                    }
-                    ProcessMaker.apiClient({
-                        method: this.getMethod(),
-                        url: this.getUrl(),
-                        data: this.formData,
-                    })
-                        .then(response => {
-                            ProcessMaker.alert('{{__('The DataSource was saved.')}}', "success");
-                            this.onClose();
-                        })
-                        .catch(error => {
-                            this.errors = error.response.data.errors;
-                            this.disabled = false;
-                        });
-                },
-                addEndpoint () {
-                    this.formData.endpoints = this.formData.endpoints ? this.formData.endpoints : [];
-                    let endpoint = {
-                        id: this.formData.endpoints.length > 0 ? this.formData.endpoints.length - 1 : 0,
-                        view: false,
-                        method: "",
-                        url: "",
-                        header: [],
-                        body_type: "",
-                        body: ""
-                    };
-                    this.formData.endpoints.push(endpoint);
-                    this.$refs.endpointsListing.fetch();
-                    this.$refs.endpointsListing.detail(endpoint);
-                },
-            },
-            mounted () {
-                this.selectedAuthType = this.authOptions.filter(item => {
-                    if (item.value === this.formData.authtype) {
-                        return item;
-                    }
-                });
-            },
-        });
+          },
+          credentials: {
+            deep: true,
+            handler (data) {
+              this.formData.credentials = data;
+            }
+          },
+        },
+        computed: {},
+        methods: {
+          onClose () {
+            window.location = "/designer/datasources";
+          },
+          getMethod () {
+            return this.formData.id ? "PUT" : "POST";
+          },
+          getUrl () {
+            return this.formData.id ? "datasources/" + this.formData.id : "datasources";
+          },
+          onSubmit () {
+            this.submitted = true;
+            if (this.disabled) {
+              return;
+            }
+            this.disabled = true;
+            if (typeof this.formData.credentials !== "object") {
+              delete this.formData.credentials;
+            }
+            ProcessMaker.apiClient({
+              method: this.getMethod(),
+              url: this.getUrl(),
+              data: this.formData,
+            })
+              .then(response => {
+                ProcessMaker.alert('{{__('The DataSource was saved.')}}', "success");
+                this.onClose();
+              })
+              .catch(error => {
+                this.errors = error.response.data.errors;
+                this.disabled = false;
+              });
+          },
+          addEndpoint () {
+            let endpoint = {
+              id: this.$refs.endpointsListing.endpoints.length,
+              view: false,
+              method: "",
+              url: "",
+              headers: [],
+              body_type: "",
+              body: ""
+            };
+            this.$refs.endpointsListing.endpoints.push(endpoint);
+            this.$refs.endpointsListing.fetch();
+            this.$refs.endpointsListing.detail(endpoint);
+          },
+        },
+        mounted () {
+          this.selectedAuthType = this.authOptions.filter(item => {
+            if (item.value === this.formData.authtype) {
+              return item;
+            }
+          });
+        },
+      });
     </script>
 @endsection
