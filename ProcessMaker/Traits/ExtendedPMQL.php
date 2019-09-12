@@ -50,37 +50,39 @@ trait ExtendedPMQL
         $field = $expression->field->field();
         $model = $builder->getModel();
         
-        // Check the type of our value; set as string if possible
-        if (is_a($expression->value, 'ProcessMaker\\Query\\LiteralValue')) {
-            $value = $expression->value->value();
-        } else {
-            $value = $expression->value;
-        }
-        
-        // Title case our field name so we can suffix it to our method names
-        $fieldMethodName = ucfirst(strtolower($field));
+        if (is_string($field)) {
+            // Check the type of our value; set as string if possible
+            if (is_a($expression->value, 'ProcessMaker\\Query\\LiteralValue')) {
+                $value = $expression->value->value();
+            } else {
+                $value = $expression->value;
+            }
+            
+            // Title case our field name so we can suffix it to our method names
+            $fieldMethodName = ucfirst(strtolower($field));
 
-        // A field alias specifies that a field name used in a PMQL query
-        // translates to a different field name in our database.
-        $method = "fieldAlias{$fieldMethodName}";
-        if (method_exists($model, $method)) {
-            return $expression->field->setField($model->{$method}());
-        }
+            // A field alias specifies that a field name used in a PMQL query
+            // translates to a different field name in our database.
+            $method = "fieldAlias{$fieldMethodName}";
+            if (method_exists($model, $method)) {
+                return $expression->field->setField($model->{$method}());
+            }
 
-        // A value alias specifies that a value must be parsed by a callback
-        // function if its field name matches a specific word.
-        $method = "valueAlias{$fieldMethodName}";
-        if (method_exists($model, $method)) {
-            return $model->{$method}($value, $expression, $builder);
-        }
+            // A value alias specifies that a value must be parsed by a callback
+            // function if its field name matches a specific word.
+            $method = "valueAlias{$fieldMethodName}";
+            if (method_exists($model, $method)) {
+                return $model->{$method}($value, $expression, $builder);
+            }
 
-        // A field wildcard passes any fields not caught by a field or value
-        // alias to a callback function for any needed processing. If the
-        // callback returns void, the PMQL is parsed as if there is
-        // no callback.
-        $method = "fieldWildcard";
-        if (method_exists($model, $method)) {
-            return $model->{$method}($value, $expression, $builder);
+            // A field wildcard passes any fields not caught by a field or value
+            // alias to a callback function for any needed processing. If the
+            // callback returns void, the PMQL is parsed as if there is
+            // no callback.
+            $method = "fieldWildcard";
+            if (method_exists($model, $method)) {
+                return $model->{$method}($value, $expression, $builder);
+            }    
         }
     }
 }
