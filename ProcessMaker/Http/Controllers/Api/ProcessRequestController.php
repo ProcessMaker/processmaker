@@ -38,7 +38,8 @@ class ProcessRequestController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        'data'
+        'data',
+        'pmql',
     ];
 
     /**
