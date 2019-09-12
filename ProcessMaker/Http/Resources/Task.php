@@ -19,6 +19,9 @@ class Task extends ApiResource
     {
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
+        if (in_array('data', $include)) {
+            $array['data'] = $this->data;
+        }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
         }
