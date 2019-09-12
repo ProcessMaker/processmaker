@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ed9c450700d63db52792e403b42ccc4",
+    "content-hash": "ce7810a019d6578e22a713fe4315b230",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -3155,16 +3155,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "3c95a6ac059b08481b4503e72a6126804de81345"
+                "reference": "f3ff2e428b4ec88dd208791c0aa88b9f47661dcc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/3c95a6ac059b08481b4503e72a6126804de81345",
-                "reference": "3c95a6ac059b08481b4503e72a6126804de81345",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/f3ff2e428b4ec88dd208791c0aa88b9f47661dcc",
+                "reference": "f3ff2e428b4ec88dd208791c0aa88b9f47661dcc",
                 "shasum": ""
             },
             "require": {
@@ -3185,7 +3185,11 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "ProcessMaker\\Query\\Tests\\": "tests/"
+                }
+            },
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -3193,7 +3197,9 @@
                 }
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
-            "time": "2019-07-25T21:02:10+00:00"
+            "transport-options": {
+                "symlink": true
+            }
         },
         {
             "name": "psr/cache",
