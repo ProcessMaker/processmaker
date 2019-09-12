@@ -3156,10 +3156,16 @@
         {
             "name": "processmaker/pmql",
             "version": "1.1.1",
-            "dist": {
-                "type": "path",
-                "url": "/home/vagrant/processmaker-plugins/pmql",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/pmql.git",
                 "reference": "f3ff2e428b4ec88dd208791c0aa88b9f47661dcc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/f3ff2e428b4ec88dd208791c0aa88b9f47661dcc",
+                "reference": "f3ff2e428b4ec88dd208791c0aa88b9f47661dcc",
+                "shasum": ""
             },
             "require": {
                 "laravel/framework": "~5.7.0|~5.8.0"
