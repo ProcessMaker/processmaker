@@ -1,6 +1,6 @@
 <template>
     <div v-cloak>
-        <button id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal">
+        <button type="button" id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal">
             <i class="fas fa-plus"></i>
             {{$t('Request')}}
         </button>
