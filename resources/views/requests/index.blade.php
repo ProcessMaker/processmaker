@@ -169,7 +169,7 @@
                                 </div>
                             </div>
                             <div id="search-manual" v-if="advanced">
-                                <input ref="search_input" type="text" class="form-control" placeholder="PMQL" v-model="pmql">
+                                <input ref="search_input" type="text" class="form-control" placeholder="PMQL" v-model="pmql" @keyup.enter="runSearch(true)">
                             </div>
                         </div>
                         <div class="flex-shrink-0">
@@ -187,7 +187,7 @@
                     </div>
                 </div>
             </template>
-            <requests-listing ref="requestList"></requests-listing>
+            <requests-listing ref="requestList" filter=""></requests-listing>
         </div>
     </div>
 </div>
