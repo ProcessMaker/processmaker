@@ -4,6 +4,7 @@
       <b-card-header class="text-right">
         <b-button title="Save Script" @click="save" size="sm">
           <i class="fas fa-save" />
+          {{ $t('Save') }}
         </b-button>
       </b-card-header>
 
