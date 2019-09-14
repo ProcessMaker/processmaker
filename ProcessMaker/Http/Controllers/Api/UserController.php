@@ -312,5 +312,16 @@ class UserController extends Controller
         }
     }
 
-
+    public function restore(Request $request) {
+        $email = $request->input('email');
+        $username = $request->input('username');
+        if ($email) {
+            User::withTrashed()->where('email', $email)->firstOrFail()->restore();
+        }
+        if ($username) {
+            User::withTrashed()->where('username', $username)->firstOrFail()->restore();
+        }
+        return response([], 200);
+        
+    }
 }
