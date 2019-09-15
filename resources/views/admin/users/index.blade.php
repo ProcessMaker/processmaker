@@ -58,7 +58,11 @@
                             {!!Form::label('username', __('Username'))!!}<small class="ml-1">*</small>
                             {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'username', 'v-bind:class'
                             => '{\'form-control\':true, \'is-invalid\':addError.username}', 'autocomplete' => 'off']) !!}
-                            <div class="invalid-feedback" v-for="username in addError.username">@{{username}}</div>
+                            <div class="invalid-feedback" v-for="username in addError.username">
+                                <div v-if="username !== 'userExists'"> 
+                                    @{{username}} 
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             {!!Form::label('firstname', __('First Name'))!!}<small class="ml-1">*</small>
@@ -90,7 +94,11 @@
                             {!!Form::label('email', __('Email'))!!}<small class="ml-1">*</small>
                             {!!Form::email('email', null, ['class'=> 'form-control', 'v-model'=> 'email', 'v-bind:class' =>
                             '{\'form-control\':true, \'is-invalid\':addError.email}', 'autocomplete' => 'off'])!!}
-                            <div class="invalid-feedback" v-for="email in addError.email">@{{email}}</div>
+                            <div class="invalid-feedback" v-for="email in addError.email">
+                                <div v-if="email !== 'userExists'">
+                                    @{{email}}
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             {!!Form::label('password', __('Password'))!!}<small class="ml-1">*</small>
@@ -120,6 +128,30 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal" tabindex="-10" role="dialog" id="restoreUser">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{__('Deleted User Found')}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>{{ __('An existing user has been found with the ')}} @{{ restoreAttribute + ' "' + restoreValue + '"' }} {{__(' would you like to save and reactivate their account?') }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" @click="onCancelRestore">
+                            {{__('Cancel')}}
+                        </button>
+                        <button class="btn btn-secondary ml-2" @click="onSaveRestore">
+                            {{__('Save')}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endcan
 @endsection
 
@@ -128,7 +160,7 @@
 
     @can('create-users')
         <script>
-          new Vue({
+        var addUserModal = new Vue({
             el: '#addUser',
             data: {
               username: '',
@@ -196,6 +228,17 @@
                   }).catch(error => {
                     this.addError = error.response.data.errors;
                     this.disabled = false;
+                    if (!Object.values(this.addError).some(field => field.includes('userExists'))) {
+                        if (this.addError.email) {
+                            restoreUserModal.emailToRestore = restoreUserModal.restoreValue = this.email;
+                            restoreUserModal.restoreAttribute = 'email address';
+                        } else if (this.addError.username) {
+                            restoreUserModal.usernameToRestore = restoreUserModal.restoreValue= this.username;
+                            restoreUserModal.restoreAttribute = 'username';
+                        }
+                        $('#addUser').modal('hide');
+                        $('#restoreUser').modal('show');
+                    }
                   });
                 }
               }
@@ -205,7 +248,47 @@
                 this.onClose();
               });
             }
-          })
+        });
+
+        var restoreUserModal = new Vue({
+            el: '#restoreUser',
+            data(){
+                return {
+                    restoreValue: '',
+                    restoreAttribute: '',
+                    emailToRestore: '',
+                    usernameToRestore: ''
+                }
+            },
+            methods: {
+                onCancelRestore() {
+                    $('#restoreUser').modal('hide');
+                },
+                onSaveRestore() {
+                    let data = [];
+                    if (this.emailToRestore !== '') {
+                        this.data = {
+                            email: this.emailToRestore
+                        };
+                    }
+
+                    if (this.usernameToRestore !== '') {
+                        this.data = {
+                            username: this.usernameToRestore
+                        };
+                    }
+                    ProcessMaker.apiClient.put('/users/restore', this.data)
+                    .then(response => {
+                        $('#restoreUser').modal('hide');
+                        ProcessMaker.alert(this.$t("The user was restored."), "success");
+                        location.reload();
+                    })
+                    .catch(error => {
+                        ProcessMaker.alert(error, "danger");
+                    });
+                }
+            },
+        });
         </script>
     @endcan
 @endsection
