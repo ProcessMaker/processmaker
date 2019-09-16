@@ -165,7 +165,7 @@ export default {
         {
           title: this.$t("Category"),
           name: "category.name",
-          sortField: "category.name"
+          sortField: "screen_category_id"
         },
         {
           title: this.$t("Type"),
