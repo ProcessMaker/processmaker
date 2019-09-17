@@ -64,40 +64,21 @@ class ScriptController extends Controller
      */
     public function index(Request $request)
     {
+        
+        $where   = $this->getRequestFilterBy($request, ['scripts.title']);
+        $orderBy = $this->getRequestSortBy($request, 'title');
+        $include = $this->getRequestInclude($request);
+        
         // Do not return results when a key is set. Those are for connectors.
-        $query = Script::nonSystem()->where('key', null);
-        $include = $request->input('include', '');
+        $scripts = Script::nonSystem()->where('key', null)->with($include);
+        
+        $scripts = $scripts->select('scripts.*')
+            ->leftJoin('script_categories as category', 'scripts.script_category_id', '=', 'category.id')
+            ->orderBy(...$orderBy)
+            ->where($where)
+            ->get();
 
-        if ($include) {
-            $include = explode(',', $include);
-            $count = array_search('categoryCount', $include);
-            if ($count !== false) {
-                unset($include[$count]);
-                $query->withCount('category');
-            }
-            if ($include) {
-                $query->with($include);
-            }
-        }
-
-        $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->Where('title', 'like', $filter)
-                    ->orWhere('description', 'like', $filter)
-                    ->orWhere('language', 'like', $filter);
-            });
-        }
-
-        $response =
-            $query->orderBy(
-                $request->input('order_by', 'title'),
-                $request->input('order_direction', 'ASC')
-            )
-            ->paginate($request->input('per_page', 10));
-
-        return new ApiCollection($response);
+        return new ApiCollection($scripts);
     }
 
     /**
@@ -351,5 +332,60 @@ class ScriptController extends Controller
     {
         $script->delete();
         return response([], 204);
+    }
+
+
+     /**
+     * Get the where array to filter the resources.
+     *
+     * @param Request $request
+     * @param array $searchableColumns
+     *
+     * @return array
+     */
+    protected function getRequestFilterBy(Request $request, array $searchableColumns)
+    {
+        $where = [];
+        $filter = $request->input('filter');
+        if ($filter) {
+            foreach ($searchableColumns as $column) {
+                // for other columns, it can match a substring
+                $sub_search = '%';
+                if (array_search('status', explode('.', $column), true) !== false) {
+                    // filtering by status must match the entire string
+                    $sub_search = '';
+                }
+                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
+            }
+        }
+        return $where;
+    }
+
+
+     /**
+     * Get the selected order by.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestSortBy(Request $request, $default)
+    {
+        $column = $request->input('order_by', $default);
+        $direction = $request->input('order_direction', 'asc');
+        return [$column, $direction];
+    }
+
+       /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestInclude(Request $request)
+    {
+        $include = $request->input('include');
+        return $include ? explode(',', $include) : [];
     }
 }
