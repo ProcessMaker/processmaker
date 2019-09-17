@@ -1,4 +1,4 @@
-<div class="px-3 page-content" id="{{$id}}">
+<div class="px-3 page-content">
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-item nav-link active" id="nav-sources-tab" data-toggle="tab" href="#nav-sources" role="tab"
@@ -17,7 +17,7 @@
     <div class="mt-3">
         <div class="tab-content">
             <div class="tab-pane fade show active" id="nav-sources" role="tabpanel" aria-labelledby="nav-sources-tab">
-                <div class="card card-body">
+                <div class="card card-body" id="{{$id}}">
                     <div class="row">
                         <div class="col">
                             <div class="input-group">
@@ -45,7 +45,7 @@
                 </div>
             </div>
             <div class="tab-pane fade show" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
-                <div class="card card-body">
+                <div class="card card-body" id="categories-listing">
                     <div class="row">
                         <div class="col">
                             <div class="input-group">
@@ -67,7 +67,7 @@
 
                         </div>
                     </div>
-                    <categories-listing ref="list" :filter="filter" api-route="{{$categories['api'][0]}}"
+                    <categories-listing ref="list" :filter="filter" api-route="{{$categories['api'][0]}}" @delete="deleteCategory"
                         :permission="{{\Auth::user()->hasPermissionsFor($permissions['categories'])}}"
                         location="{{$categories['location']}}"
                         include="{{isset($categories['api'][1]) ? $categories['api'][1]['include'] : ''}}"
@@ -126,6 +126,12 @@
 @section('js')
     @parent
     @can('create-category')
+        <script>
+          //Data needed for default search
+          window.ProcessMaker.route = '{{ $categories['api'][0] }}';
+          console.log(window.ProcessMaker.route);
+        </script>
+        <script src="{{mix('js/processes/categories/index.js')}}" id="marquito"></script>
         <script>
             new Vue({
                 el: '#createCategory',

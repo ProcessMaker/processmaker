@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use ProcessMaker\Exception\DataSourceResponseException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -241,10 +242,12 @@ class DataSourceController extends Controller
      *
      * @param DataSource $datasource
      * @param ProcessRequest $processRequest
-     *
      * @param Request $request
      *
      * @return ResponseFactory|Response
+     *
+     * @throws DataSourceResponseException
+     *
      *
      * @OA\Put(
      *     path="/datasources/datasource_id/send",

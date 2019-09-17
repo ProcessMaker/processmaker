@@ -5,27 +5,27 @@ new Vue({
   el: "#categories-listing",
   data: {
     filter: "",
-    formData: null
+    formData: null,
   },
   components: {
     CategoriesListing
   },
   methods: {
-    editCategory(data) {
+    editCategory (data) {
       this.formData = Object.assign({}, data);
       this.showModal();
     },
-    showModal() {
+    showModal () {
       this.$refs.addEdit.$refs.modal.show();
     },
-    deleteCategory(data) {
-      ProcessMaker.apiClient.delete(`${window.Processmaker.route}/${data.id}`)
+    deleteCategory (data) {
+      ProcessMaker.apiClient.delete(`${window.ProcessMaker.route}/${data.id}`)
         .then((response) => {
           ProcessMaker.alert("The category was deleted.", "success");
           this.reload();
         });
     },
-    reload() {
+    reload () {
       this.$refs.list.dataManager([
         {
           field: "updated_at",
