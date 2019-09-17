@@ -56,7 +56,7 @@
                                                  :screen="{{json_encode($task->getScreen()->config)}}"
                                                  :computed="{{json_encode($task->getScreen()->computed)}}"
                                                  :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
-                                                 :data="{{json_encode($task->processRequest->data, JSON_FORCE_OBJECT)}}">
+                                                 :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
                                   </task-screen>
                                   @else
                                   <task-screen ref="taskScreen"
@@ -64,7 +64,7 @@
                                                  instance-id="{{$task->processRequest->getKey()}}"
                                                  token-id="{{$task->getKey()}}"
                                                  :screen="[{items:[]}]"
-                                                 :data="{{json_encode($task->processRequest->data, JSON_FORCE_OBJECT)}}">
+                                                 :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
                                   </task-screen>
                                   @endif
                                 </div>
