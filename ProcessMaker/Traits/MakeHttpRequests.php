@@ -41,11 +41,11 @@ trait MakeHttpRequests
             }
         }
         $body = $mustache->render($endpoint['body'], $data);
-        $config = [$method, $url, $headers, $body];
+        $request = [$method, $url, $headers, $body];
 
-        $config = $this->addAuthorizationHeaders(...$config);
+        $request = $this->addAuthorizationHeaders(...$request);
         try {
-            return $this->response($this->call(...$config), $data, $config, $mustache);
+            return $this->response($this->call(...$request), $data, $config, $mustache);
         } catch (ClientException $exception) {
             throw new DataSourceResponseException($exception->getResponse());
         }
@@ -130,8 +130,6 @@ trait MakeHttpRequests
                 throw $exception;
         }
         $mapped = [];
-        \Log::info($response->getStatusCode());
-        \Log::info(json_encode($response->getBody()->getContents()));
         !is_array($return) ?: $merged = array_merge($data, $return);
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
