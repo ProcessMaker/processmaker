@@ -148,6 +148,43 @@ class TasksTest extends TestCase
     }
 
     /**
+     * Test that we filter only for human tasks
+     */
+    public function testFilteringGetOnlyHumanTasks()
+    {
+        $request = factory(ProcessRequest::class)->create();
+
+        // Create some startEvent tokens
+        factory(ProcessRequestToken::class, 5)->create([
+            'element_type' => 'startEvent',
+            'process_request_id' => $request->id,
+        ]);
+
+        // Create some scriptTask tokens
+        factory(ProcessRequestToken::class, 5)->create([
+            'element_type' => 'scriptTask',
+            'process_request_id' => $request->id,
+        ]);
+
+        // Create some task tokens
+        factory(ProcessRequestToken::class, 5)->create([
+            'element_type' => 'task',
+            'process_request_id' => $request->id,
+        ]);
+
+        //Get tasks
+        $route = route('api.' . $this->resource . '.index', ['per_page' => 100]);
+        $response = $this->apiCall('GET', $route);
+        
+        //Verify the status
+        $response->assertStatus(200);
+        
+        //Verify the element types
+        $types = collect($response->json()['data'])->pluck('element_type')->unique()->toArray();        
+        $this->assertEquals($types, ['task']);
+    }
+
+    /**
      * Test list of tokens sorting by completed_at
      */
     public function testSorting()

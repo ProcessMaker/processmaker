@@ -25,7 +25,7 @@
                         <div class="input-group">
                             <input type="text" name="fileLogin" class="form-control" v-model="fileLogin.selectedFile"
                                    placeholder="{{__('Choose a login logo image')}}">
-                            <button @click="browseLogin" class="btn btn-secondary"><i class="fas fa-upload"></i>
+                            <button type="button" @click="browseLogin" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                 {{__('Upload file')}}
                             </button>
                             <input type="file" class="custom-file-input" :class="{'is-invalid': errors.logo}"
@@ -40,7 +40,7 @@
                         <div class="input-group">
                             <input type="text" name="fileLogo" class="form-control" v-model="fileLogo.selectedFile"
                                    placeholder="{{__('Choose logo image')}}">
-                            <button @click="browseLogo" class="btn btn-secondary"><i class="fas fa-upload"></i>
+                            <button type="button" @click="browseLogo" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                 {{__('Upload file')}}
                             </button>
                             <input type="file" class="custom-file-input" :class="{'is-invalid': errors.logo}"
@@ -55,7 +55,7 @@
                         <div class="input-group">
                             <input type="text" name="fileIcon" class="form-control" v-model="fileIcon.selectedFile"
                                    placeholder="{{__('Choose icon image')}}">
-                            <button @click="browseIcon" class="btn btn-secondary"><i class="fas fa-upload"></i>
+                            <button type="button" @click="browseIcon" class="btn btn-secondary"><i class="fas fa-upload"></i>
                                 {{__('Upload file')}}
                             </button>
                             <input type="file" class="custom-file-input" :class="{'is-invalid': errors.icon}"

@@ -28,7 +28,8 @@ class TaskController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-        'data' // this will be sanitized on a field-by-field basis
+        'data',
+        'pmql',
     ];
 
     private $statusMap = [
@@ -83,22 +84,23 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $query = ProcessRequestToken::with(['processRequest', 'user']);
-//                ->leftJoin('process_requests', 'process_requests.id', '=', 'process_request_tokens.process_request_id');
 
         $query->select('process_request_tokens.*');
 
         $include  = $request->input('include') ? explode(',',$request->input('include')) : [];
+        
+        if (in_array('data', $include)) {
+            unset($include[array_search('data', $include)]);
+        }
+        
         $query->with($include);
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
+            $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
-                $query->Where('element_name', 'like', $filter)
-                    ->orWhere('process_request_tokens.status', 'like', $filter)
-                    ->orWhere('request.name', 'like', $filter)
-                    ->orWhere('user.firstname', 'like', $filter)
-                    ->orWhere('user.lastname', 'like', $filter);
+                $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
+                      ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
             });
         }
         $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
@@ -109,7 +111,6 @@ class TaskController extends Controller
                 $query->where(is_string($key) ? $key : $column, 'like', $filter);
             }
         }
-
 
         //list only display elements type task
         $query->where('element_type', '=', 'task');
@@ -130,14 +131,10 @@ class TaskController extends Controller
 
         $statusFilter = $request->input('statusfilter', '');
         if ($statusFilter) {
-            $statusFilter = explode(',', $statusFilter);
-            foreach ($statusFilter as $key => $status) {
-                if ($key == 0) {
-                    $query->where('process_request_tokens.status', trim(mb_strtoupper($status)));
-                } else {
-                    $query->orWhere('process_request_tokens.status', trim(mb_strtoupper($status)));
-                }
-            }
+            $statusFilter = array_map(function($value) {
+                return mb_strtoupper(trim($value));
+            }, explode(',', $statusFilter));
+            $query->whereIn('status', $statusFilter);
         }
 
         $pmql = $request->input('pmql', '');
@@ -156,7 +153,12 @@ class TaskController extends Controller
         $response = $response->filter(function($processRequestToken) {
             return Auth::user()->can('view', $processRequestToken);
         })->values();
-
+        
+        //Map each item through its resource
+        $response = $response->map(function ($processRequestToken) use ($request) {
+            return new Resource($processRequestToken);
+        });
+        
         $response->inOverdue = $inOverdue;
 
         return new TaskCollection($response);

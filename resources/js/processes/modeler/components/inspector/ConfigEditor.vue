@@ -2,7 +2,7 @@
     <div class="form-group">
         <div>
             <label>{{$t(label)}}</label>
-            <button @click="expandEditor" class="btn-sm float-right"><i class="fas fa-expand"></i></button>
+            <button type="button" @click="expandEditor" class="btn-sm float-right"><i class="fas fa-expand"></i></button>
         </div>
         <div class="small-editor-container">
             <monaco-editor :options="monacoOptions" v-model="code"
