@@ -227,16 +227,26 @@
               });
           },
           addEndpoint () {
+            const suggestions = [
+              "list", "create", "update", "delete"
+            ];
+            let index = 0, purpose = suggestions[index], suffix = 0;
+            while(this.$refs.endpointsListing.endpoints[purpose]) {
+              index++;
+              index >= suggestions.length ? (index = 0, suffix++) : null;
+              purpose = suggestions[index] + (suffix ? '_' + suffix : '');
+            }
             let endpoint = {
               id: this.$refs.endpointsListing.endpoints.length,
               view: false,
+              purpose,
               method: "",
               url: "",
               headers: [],
               body_type: "",
               body: ""
             };
-            this.$refs.endpointsListing.endpoints.push(endpoint);
+            this.$refs.endpointsListing.endpoints[purpose] = endpoint;
             this.$refs.endpointsListing.fetch();
             this.$refs.endpointsListing.detail(endpoint);
           },
