@@ -61,41 +61,19 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Screen::nonSystem();
-        $include = $request->input('include', '');
+        $where   = $this->getRequestFilterBy($request, ['screens.title']);
+        $orderBy = $this->getRequestSortBy($request, 'title');
+        $include = $this->getRequestInclude($request);
 
-        if ($include) {
-            $include = explode(',', $include);
-            $count = array_search('categoryCount', $include);
-            if ($count !== false) {
-                unset($include[$count]);
-                $query->withCount('category');
-            }
-            if ($include) {
-                $query->with($include);
-            }
-        }
-
-
-        $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->where('title', 'like', $filter)
-                    ->orWhere('description', 'like', $filter)
-                    ->orWhere('type', 'like', $filter)
-                    ->orWhere('config', 'like', $filter);
-            });
-        }
-        if ($request->input('type')) {
-            $query->where('type', $request->input('type'));
-        }
-        $response =
-            $query->orderBy(
-                $request->input('order_by', 'title'),
-                $request->input('order_direction', 'ASC')
-            )->paginate($request->input('per_page', 10));
-        return new ApiCollection($response);
+        $screens = Screen::nonSystem()->with($include);
+       
+        $screens = $screens->select('screens.*')
+            ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id')
+            ->orderBy(...$orderBy)
+            ->where($where)
+            ->get();
+        
+        return new ApiCollection($screens);
     }
 
     /**
@@ -377,5 +355,60 @@ class ScreenController extends Controller
     {
         $success = ImportScreen::dispatchNow($request->file('file')->get());
         return ['status' => $success];
+    }
+
+
+     /**
+     * Get the where array to filter the resources.
+     *
+     * @param Request $request
+     * @param array $searchableColumns
+     *
+     * @return array
+     */
+    protected function getRequestFilterBy(Request $request, array $searchableColumns)
+    {
+        $where = [];
+        $filter = $request->input('filter');
+        if ($filter) {
+            foreach ($searchableColumns as $column) {
+                // for other columns, it can match a substring
+                $sub_search = '%';
+                if (array_search('status', explode('.', $column), true) !== false) {
+                    // filtering by status must match the entire string
+                    $sub_search = '';
+                }
+                $where[] = [$column, 'like', $sub_search . $filter . $sub_search, 'or'];
+            }
+        }
+        return $where;
+    }
+
+
+     /**
+     * Get the selected order by.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestSortBy(Request $request, $default)
+    {
+        $column = $request->input('order_by', $default);
+        $direction = $request->input('order_direction', 'asc');
+        return [$column, $direction];
+    }
+
+     /**
+     * Get included relationships.
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    protected function getRequestInclude(Request $request)
+    {
+        $include = $request->input('include');
+        return $include ? explode(',', $include) : [];
     }
 }
