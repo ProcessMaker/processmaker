@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Cache;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -45,6 +46,47 @@ class ProcessController extends Controller
                 "processCategories" => $processCategories,
                 "status" => $status
             ]);
+    }
+
+    /**
+     * Get the list of procesess
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index2(Request $request)
+    {
+        $redirect = $this->checkAuth();
+        if ($redirect !== false) {
+            return redirect()->route($redirect);
+        }
+
+        $status = $request->input('status');
+        $processes = Process::all(); //what will be in the database = Model
+        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+
+
+
+        $title = __('Process Categories');
+        $btnCreate = __('Category');
+        $titleMenu = __('Processes');
+        $routeMenu = 'processes.index';
+        $titleModal = __('Create Category');
+        $fieldName = __('Category Name');
+        $distinctName = __('The category name must be distinct.');
+        $permissions = Auth::user()->hasPermissionsFor('categories');
+        $route = 'process_categories';
+        $location = '/designer/processes/categories';
+        $create = 'create-categories';
+        $include = 'processesCount';
+        $labelCount = __('# Processes');
+        $count = 'processes_count';
+
+        return view('processes.index2', compact ('processes', 'processCategories', 'status',
+            'title', 'btnCreate', 'titleMenu',
+            'routeMenu', 'permissions', 'titleModal',
+            'fieldName', 'distinctName', 'route',
+            'location', 'create', 'include', 'labelCount',
+            'count'));
     }
 
     /**
