@@ -87,7 +87,9 @@ class Install extends Command
         }
         $this->info(__("This application installs a new version of ProcessMaker."));
         $this->info(__("You must have your database credentials available in order to continue."));
-        $this->confirm(__("Are you ready to begin?"));
+        if (!$this->confirm(__("Are you ready to begin?"))) {
+            return;
+        }
         $this->checkDependencies();
         do {
             $this->fetchDatabaseCredentials();
@@ -123,6 +125,10 @@ class Install extends Command
             FILTER_VALIDATE_URL
         )
             || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/')));
+
+        // Set telescope enabled
+        $this->env['TELESCOPE_ENABLED'] = $this->choice('Enable Telescope Debugging', ['true', 'false'], 'false');
+
         // Set broadcaster url
         $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
 
