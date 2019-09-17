@@ -12,7 +12,7 @@ export default {
     },
     computed: {
         shouldShowLoader() {
-            return this.apiDataLoading || this.apiNoResults
+            return this.apiDataLoading
         }
     },
     mounted() {
