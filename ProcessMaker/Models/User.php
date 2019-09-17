@@ -134,8 +134,8 @@ class User extends Authenticatable implements HasMedia
     {
         $unique = Rule::unique('users')->ignore($existing);
 
-        $checkUserIsDeleted = function($attribute, $value, $fail) {
-            if (User::where($attribute, $value)->exists()) {
+        $checkUserIsDeleted = function($attribute, $value, $fail) use ($existing) {
+            if (!$existing && User::where($attribute, $value)->exists()) {
                 $fail('userExists');
             }
         };
