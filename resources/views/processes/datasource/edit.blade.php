@@ -77,7 +77,7 @@
 
                             <div class="form-group" v-show="formData.authtype === 'BEARER'">
                                 {!! Form::label('token', __('Token')) !!}
-                                {!! Form::textarea('token', null, ['id' => 'token', 'rows' => 4, 'class'=> 'form-control', 'v-model'=> 'credentials.token', 'rows' => 4, 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.token}']) !!}
+                                {!! Form::textarea('token', null, ['id' => 'token', 'rows' => 4, 'class'=> 'form-control', 'v-model'=> 'credentials.token', 'placeholder' => empty($datasource->credentials['token']) ? '': '********' , 'rows' => 4, 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.token}']) !!}
                                 <div class="invalid-feedback" v-if="errors.token">@{{errors.token[0]}}
                                 </div>
                             </div>
@@ -115,7 +115,7 @@
 
                             <end-point-list
                                     ref="endpointsListing"
-                                    :endpoints="formData.endpoints || []">
+                                    :endpoints="formData.endpoints">
                             </end-point-list>
                         </div>
                     </div>
@@ -155,6 +155,15 @@
       new Vue({
         el: "#formDataSource",
         data () {
+          const formData = @json($datasource);
+          formData.endpoints = formData.endpoints ? formData.endpoints : {};
+          if (formData.endpoints instanceof Array) {
+            const endpoints = {};
+            formData.endpoints.forEach((item) => {
+              endpoints[item.purpose] = item;
+            });
+            formData.endpoints = endpoints;
+          }
           return {
             selectedAuthType: "",
             authOptions: authorizations,
@@ -165,7 +174,7 @@
               password: ""
             },
             errors: {},
-            formData: @json($datasource)
+            formData
           };
         },
         watch: {

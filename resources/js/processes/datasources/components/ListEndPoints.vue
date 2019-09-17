@@ -56,9 +56,28 @@
         default: ""
       },
       endpoints: {
-        type: Array,
-        default: []
+        type: Object,
+        default: {}
       }
+    },
+    watch: {
+      endpoints: {
+        deep: true,
+        handler() {
+          const endpoints = {};
+          Object.keys(this.endpoints).forEach((name) => {
+            endpoints[this.endpoints[name].purpose] = this.endpoints[name];
+          });
+          if (Object.keys(endpoints).join(",") !== Object.keys(this.endpoints).join(",")) {
+            Object.keys(this.endpoints).forEach(name => {
+              delete this.endpoints[name];
+            });
+            Object.keys(endpoints).forEach(name => {
+              this.endpoints[name] = endpoints[name];
+            });
+          }
+        },
+      },
     },
     data () {
       return {
@@ -98,12 +117,13 @@
         this.data = [];
         if (this.endpoints) {
           let index = 0;
-          this.data = this.endpoints.map(item => {
+          for(let name in this.endpoints) {
+            let item = this.endpoints[name];
             item.view = false;
             item.id = index;
             index++;
-            return item;
-          });
+            this.data.push(item);
+          }
         }
       },
       detail (data) {
@@ -120,11 +140,7 @@
           "</b>",
           "",
           () => {
-            for (let i = 0; i < this.endpoints.length; i++) {
-              if (this.endpoints[i].id === item.id) {
-                this.endpoints.splice(i, 1);
-              }
-            }
+            delete this.endpoints[item.purpose];
             this.fetch();
           }
         );
