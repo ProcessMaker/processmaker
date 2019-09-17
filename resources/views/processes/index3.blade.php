@@ -129,6 +129,9 @@
                   processCategories: @json($processCategories),
                   disabled: false
                 },
+                mounted() {
+                  console.log('processos montadododododod');
+                },
                 methods: {
                   browse() {
                     this.$refs.customFile.click();
@@ -196,4 +199,4 @@
         @endcan
 
 
-    @endsection
+    @append

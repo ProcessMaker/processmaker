@@ -64,55 +64,60 @@
         </div>
     @endcan
 
-@section('js')
-    <script>
-      //Data needed for default search
-      window.Processmaker.route = '{{ $route }}';
-    </script>
-    <script src="{{mix('js/processes/categories/index.js')}}"></script>
-
-    @can($create)
+    @section('js')
         <script>
-          new Vue({
-            el: '#createCategory',
-            data: {
-              errors: {},
-              name: '',
-              status: 'ACTIVE',
-              disabled: false,
-              route: @json($route),
-              location: @json($location),
-            },
-            methods: {
-              onClose() {
-                this.name = '';
-                this.status = 'ACTIVE';
-                this.errors = {};
-              },
-              onSubmit() {
-                this.errors = {};
-                //single click
-                if (this.disabled) {
-                  return
-                }
-                this.disabled = true;
-                ProcessMaker.apiClient.post(this.route, {
-                  name: this.name,
-                  status: this.status
-                })
-                  .then(response => {
-                    ProcessMaker.alert('{{__('The category was created.')}}', 'success', 5, true);
-                    window.location = this.location;
-                  })
-                  .catch(error => {
-                    this.disabled = false;
-                    if (error.response.status === 422) {
-                      this.errors = error.response.data.errors
-                    }
-                  });
-              }
-            }
-          })
+          //Data needed for default search
+          window.Processmaker.route = '{{ $route }}';
         </script>
-    @endcan
-@endsection
+        <script src="{{mix('js/processes/categories/index.js')}}"></script>
+
+        @can($create)
+            <script>
+              new Vue({
+                el: '#createCategory',
+                data: {
+                  errors: {},
+                  name: '',
+                  status: 'ACTIVE',
+                  disabled: false,
+                  route: @json($route),
+                  location: @json($location),
+                },
+                mounted() {
+                  console.log('categorías montadododododod');
+                },
+                methods: {
+                  onClose() {
+                    this.name = '';
+                    this.status = 'ACTIVE';
+                    this.errors = {};
+                  },
+                  onSubmit() {
+                    console.log('on submit');
+                    this.errors = {};
+                    //single click
+                    if (this.disabled) {
+                      return
+                    }
+                    this.disabled = true;
+                    ProcessMaker.apiClient.post(this.route, {
+                      name: this.name,
+                      status: this.status
+                    })
+                        .then(response => {
+                          ProcessMaker.alert('{{__('The category was created.')}}', 'success', 5, true);
+                          window.location = this.location;
+                        })
+                        .catch(error => {
+                          this.disabled = false;
+                          if (error.response.status === 422) {
+                            this.errors = error.response.data.errors
+                          }
+                        });
+                  }
+                }
+              })
+            </script>
+        @endcan
+    @append
+
