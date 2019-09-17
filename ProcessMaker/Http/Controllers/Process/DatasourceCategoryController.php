@@ -48,7 +48,7 @@ class DatasourceCategoryController extends Controller
         $titleMenu = __('Categories');
         $routeMenu = 'datasource-categories.index';
         $route = 'datasource_categories';
-        $location = '/designer/datasources/categories';
+        $location = '/designer/datasources';
         return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
     }
 }

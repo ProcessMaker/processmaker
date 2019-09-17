@@ -137,7 +137,7 @@ export default {
     onAction(action, data, index) {
       switch (action) {
         case "edit-item":
-          window.location = this.location + "/" + data.id + "/edit";
+          window.location = this.location + "/categories/" + data.id + "/edit";
           break;
         case "remove-item":
           ProcessMaker.confirmModal(
