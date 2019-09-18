@@ -27,7 +27,8 @@
             'tabs' => [
             __('Processes'),
             __('Categories'),
-        ]
+        ],
+        'countCategories' => $countCategories
     ])
         @slot('itemList')
             @include('processes.index3')

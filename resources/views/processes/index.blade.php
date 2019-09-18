@@ -72,7 +72,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @if ($processCategories !== 0)
+                    @if ($countCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
                                 {!! Form::label('name', __('Name')) !!}
@@ -125,7 +125,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                                 @click="onClose">{{__('Cancel')}}</button>
-                        @if ($processCategories !== 0)
+                        @if ($countCategories !== 0)
                             <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
                                 {{__('Save')}}
                             </button>
@@ -152,7 +152,7 @@
               addError: {},
               status: '',
               bpmn: '',
-              processCategories: @json($processCategories),
+              countCategories: @json($countCategories),
               disabled: false
             },
             methods: {

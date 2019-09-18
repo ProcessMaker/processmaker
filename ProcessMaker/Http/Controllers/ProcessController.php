@@ -62,7 +62,7 @@ class ProcessController extends Controller
 
         $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
-        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        $countCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
 
 
@@ -81,7 +81,7 @@ class ProcessController extends Controller
         $labelCount = __('# Processes');
         $count = 'processes_count';
 
-        return view('processes.index2', compact ('processes', 'processCategories', 'status',
+        return view('processes.index2', compact ('processes', 'countCategories', 'status',
             'title', 'btnCreate', 'titleMenu',
             'routeMenu', 'permissions', 'titleModal',
             'fieldName', 'distinctName', 'route',
