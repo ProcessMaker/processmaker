@@ -109,14 +109,8 @@
           </select>
         </div>
         <div class="form-group">
-          <category-select 
-          :label="$t('Category')" 
-          api-get="screen_categories" 
-          api-list="screen_categories" 
-          v-model="dupScreen.screen_category_id"
-          :errors="errors.screen_category_id"
-          @update:duplicateScreenCategory="updateCategory">
-          </category-select>
+          <label for="description">{{$t('Category')}}</label>
+          <input type="text" class="form-control" id="category" v-model="dupScreen.category" />
         </div>
         <div class="form-group">
           <label for="description">{{$t('Description')}}</label>
@@ -144,8 +138,7 @@ export default {
       dupScreen: {
         title: "",
         type: "",
-        category: {},
-        screen_category_id: "",
+        category: "",
         description: ""
       },
       errors: [],
@@ -237,7 +230,6 @@ export default {
           this.dupScreen.title = data.title + " Copy";
           this.dupScreen.type = data.type;
           this.dupScreen.category = data.category;
-          this.dupScreen.screen_category_id = data.category.id;
           this.dupScreen.description = data.description;
           this.dupScreen.id = data.id;
           this.showModal();
@@ -293,10 +285,6 @@ export default {
           this.data = this.transform(response.data);
           this.loading = false;
         });
-    },
-    updateCategory(value) {
-      this.dupScreen.category = value;
-      this.dupScreen.screen_category_id = this.dupScreen.category.id;
     }
   },
 
