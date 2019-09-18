@@ -91,6 +91,7 @@ abstract class Base
         $returnCode = $response['returnCode'];
         $stdOutput = $response['output'];
         $output = $response['outputs']['response'];
+        \Log::debug("Docker returned: " . json_encode($response));
         if ($returnCode || $stdOutput) {
             // Has an error code
             throw new RuntimeException(implode("\n", $stdOutput));
