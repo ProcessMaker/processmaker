@@ -19,8 +19,7 @@
         </li>
         <li class="nav-item">
             <a class="{{$secondTab}}" id="nav-categories-tab" data-toggle="tab" href="#nav-categories"
-               role="tab"
-               aria-controls="nav-categories" aria-selected="true">
+               role="tab" onclick="loadCategory()" aria-controls="nav-categories" aria-selected="true">
                 {{ $tabs[1] ?? __('Categories') }}
             </a>
         </li>
@@ -41,3 +40,14 @@
         </div>
     </div>
 </div>
+
+@section('js')
+<script>
+    function loadCategory () {
+      ProcessMaker.EventBus.$emit('api-data-category', true)
+    }
+    if ({{$countCategories}} === 0) {
+      loadCategory();
+    }
+</script>
+@append
