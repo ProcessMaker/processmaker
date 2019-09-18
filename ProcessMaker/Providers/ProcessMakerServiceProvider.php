@@ -95,6 +95,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
             }
         });
 
+        // Log notifications
+        Event::listen(\Illuminate\Notifications\Events\NotificationSent::class, function($event) {
+            \Log::debug("Sent Notification to " . get_class($event->notifiable) . " #" . $event->notifiable->id . ": " . get_class($event->notification));
+        });
+
         //Enable
         Horizon::auth(function ($request) {
             return !empty(Auth::user());
