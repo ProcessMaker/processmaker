@@ -42,12 +42,10 @@
 </div>
 
 @section('js')
-<script>
-    function loadCategory () {
-      ProcessMaker.EventBus.$emit('api-data-category', true)
-    }
-    if ({{$countCategories}} === 0) {
-      loadCategory();
-    }
-</script>
+    <script>
+      loadCategory = function () {
+        ProcessMaker.EventBus.$emit("api-data-category", true);
+      };
+      if ({{$countCategories}} === 0) loadCategory();
+    </script>
 @append
