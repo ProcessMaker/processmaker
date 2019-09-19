@@ -5,15 +5,12 @@ namespace ProcessMaker\Http\Controllers;
 use Cache;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
-use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ProcessController extends Controller
@@ -63,7 +60,8 @@ class ProcessController extends Controller
         $include = 'processesCount';
         $labelCount = __('# Processes');
         $count = 'processes_count';
-        $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
+        $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0 ? true :
+        false;
 
         return view('processes.index', compact ('processes', 'countCategories', 'status', 'showCategoriesTab',
             'title', 'btnCreate', 'titleMenu',

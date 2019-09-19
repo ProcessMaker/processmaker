@@ -1,14 +1,7 @@
 @extends('layouts.layout')
 
 @section('title')
-    @php
-        $title = __('Processes');
-        $status = request()->get('status');
-        if( $status === 'inactive'){
-            $title = __('Archived Processes');
-        }
-    @endphp
-    {{$title}}
+    {{__('Screens')}}
 @endsection
 
 @section('sidebar')
@@ -18,21 +11,21 @@
 @section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
-        __('Processes') => route('processes.index'),
-        $title => null,
+        __('Screens') => null,
     ]])
 @endsection
+
 @section('content')
     @component('components.categorized_resource', [
             'tabs' => [
-            __('Processes'),
+            __('Screens'),
             __('Categories'),
         ],
         'countCategories' => $countCategories,
         'showCategoriesTab' => $showCategoriesTab
     ])
         @slot('itemList')
-            @include('processes.list')
+            @include('processes.screens.list')
         @endslot
 
         @slot('categoryList')

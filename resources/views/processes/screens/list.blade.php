@@ -1,20 +1,3 @@
-@extends('layouts.layout')
-
-@section('title')
-    {{__('Screens')}}
-@endsection
-
-@section('sidebar')
-    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
-@endsection
-
-@section('breadcrumbs')
-    @include('shared.breadcrumbs', ['routes' => [
-        __('Designer') => route('processes.index'),
-        __('Screens') => null,
-    ]])
-@endsection
-@section('content')
     <div class="px-3 page-content" id="screenIndex">
         <div class="row">
             <div class="col">
@@ -58,7 +41,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @if ($screenCategories !== 0)
+                    @if ($countCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
                                 {!! Form::label('title', __('Name')) !!}
@@ -97,7 +80,7 @@
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
                             {{__('Cancel')}}
                         </button>
-                        @if ($screenCategories !== 0)
+                        @if ($countCategories !== 0)
                             <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
                                 {{__('Save')}}
                             </button>
@@ -107,7 +90,6 @@
             </div>
         </div>
     @endcan
-@endsection
 
 @section('js')
     <script src="{{mix('js/processes/screens/index.js')}}"></script>
@@ -174,4 +156,4 @@
           });
         </script>
     @endcan
-@endsection
+@append
