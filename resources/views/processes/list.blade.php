@@ -1,30 +1,29 @@
     <div class="px-3 page-content" id="processIndex">
-        <div class="row">
-            <div class="col">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-					<span class="input-group-text" id="basic-addon1">
-						<i class="fas fa-search"></i>
-					</span>
+        <div id="search-bar" class="search mt-2 bg-light p-2" vcloak>
+            <div class="d-flex">
+                <div class="flex-grow-1">
+                    <div id="search" class="pr-2">
+                        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                     </div>
-                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                 </div>
-
-            </div>
-            <div class="col-8" align="right">
-                @can('import-processes')
-                    <a href="#" id="import_process" class="btn btn-outline-secondary" @click="goToImport">
-                        <i class="fas fa-file-import"></i>
-                        {{__('Import')}}</a>
-                @endcan
-                @can('create-processes')
-                    <a href="#" id="create_process" class="btn btn-secondary" data-toggle="modal"
-                       data-target="#addProcess">
-                        <i class="fas fa-plus"></i>
-                        {{__('Process')}}</a>
-                @endcan
+                <div class="flex-shrink-0">
+                    <button title="" type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                        @can('import-processes')
+                            <a href="#" id="import_process" class="btn btn-outline-secondary" @click="goToImport">
+                                <i class="fas fa-file-import"></i>
+                                {{__('Import')}}</a>
+                        @endcan
+                        @can('create-processes')
+                            <a href="#" id="create_process" class="btn btn-secondary" data-toggle="modal"
+                               data-target="#addProcess">
+                                <i class="fas fa-plus"></i>
+                                {{__('Process')}}</a>
+                        @endcan
+                </div>
             </div>
         </div>
+
+
         <div class="container-fluid">
             <processes-listing
                     ref="processListing"

@@ -22,13 +22,6 @@ class ScreenController extends Controller
      */
     public function index()
     {
-//        $types = [];
-//        foreach(ScreenType::pluck('name')->toArray() as $type) {
-//            $types[$type] = __(ucwords(strtolower($type)));
-//        }
-//        $screenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-//        return view('processes.screens.index', compact('types', 'screenCategories'));
-
         $types = [];
         foreach(ScreenType::pluck('name')->toArray() as $type) {
             $types[$type] = __(ucwords(strtolower($type)));
