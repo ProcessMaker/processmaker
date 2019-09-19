@@ -156,7 +156,7 @@
       onAction (action, data, index) {
         switch (action) {
           case "edit-item":
-            window.location =  "/designer/processes/categories/" + data.id + "/edit";
+            window.location =  this.location + "/" + data.id + "/edit";
             break;
           case "remove-item":
             ProcessMaker.confirmModal(
