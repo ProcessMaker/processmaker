@@ -129,9 +129,6 @@
                   countCategories: @json($countCategories),
                   disabled: false
                 },
-                mounted() {
-                  console.log('processos montadododododod');
-                },
                 methods: {
                   browse() {
                     this.$refs.customFile.click();

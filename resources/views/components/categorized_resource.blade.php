@@ -2,7 +2,7 @@
     @php
         $firstTab = $secondTab = 'nav-item nav-link';
         $firstContent = $secondContent = 'tab-pane fade show';
-        if ($countCategories === 0) {
+        if ($showCategoriesTab) {
             $secondTab.=' active';
             $secondContent.=' active';
         } else {

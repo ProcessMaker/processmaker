@@ -30,6 +30,11 @@ class ProcessController extends Controller
         'bpmn',
     ];
 
+    /**
+     * Get the list of procesess
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index(Request $request)
     {
         $redirect = $this->checkAuth();
@@ -37,28 +42,6 @@ class ProcessController extends Controller
             return redirect()->route($redirect);
         }
 
-        $status = $request->input('status');
-        $processes = Process::all(); //what will be in the database = Model
-        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        return view('processes.index',
-            [
-                "processes" => $processes,
-                "processCategories" => $processCategories,
-                "status" => $status
-            ]);
-    }
-
-    /**
-     * Get the list of procesess
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function index2(Request $request)
-    {
-        $redirect = $this->checkAuth();
-        if ($redirect !== false) {
-            return redirect()->route($redirect);
-        }
 
         $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
@@ -80,8 +63,9 @@ class ProcessController extends Controller
         $include = 'processesCount';
         $labelCount = __('# Processes');
         $count = 'processes_count';
+        $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
 
-        return view('processes.index2', compact ('processes', 'countCategories', 'status',
+        return view('processes.index', compact ('processes', 'countCategories', 'status', 'showCategoriesTab',
             'title', 'btnCreate', 'titleMenu',
             'routeMenu', 'permissions', 'titleModal',
             'fieldName', 'distinctName', 'route',

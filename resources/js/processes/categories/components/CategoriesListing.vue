@@ -63,10 +63,10 @@
 
   export default {
     mixins: [datatableMixin, dataLoadingMixin],
-    props: ["filter", "permission", "apiRoute", "location", "include", "labelCount", "count"],
+    props: ["filter", "permission", "apiRoute", "location", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
-        loadOnStart: false,
+        localLoadOnStart: this.loadOnStart,
         orderBy: "name",
         sortOrder: [
           {
@@ -113,7 +113,7 @@
     },
     created () {
       ProcessMaker.EventBus.$on("api-data-category", (val) => {
-        this.loadOnStart = val;
+        this.localLoadOnStart = val;
         this.fetch();
         this.apiDataLoading = false;
         this.apiNoResults = false;
@@ -121,7 +121,7 @@
     },
     methods: {
       fetch () {
-        if (!this.loadOnStart) {
+        if (!this.localLoadOnStart) {
           this.data = [];
           return;
         }
@@ -155,7 +155,7 @@
       onAction (action, data, index) {
         switch (action) {
           case "edit-item":
-            window.location = this.location + "/" + data.id + "/edit";
+            window.location =  "/designer/processes/categories/" + data.id + "/edit";
             break;
           case "remove-item":
             ProcessMaker.confirmModal(

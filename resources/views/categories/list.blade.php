@@ -19,7 +19,17 @@
                 @endcan
             </div>
         </div>
-        <categories-listing ref="list" @edit="editCategory" @delete="deleteCategory" :filter="filter" api-route="{{$route}}" :permission="{{$permissions}}" location="{{$location}}" include="{{$include}}" label-count="{{$labelCount}}" count="{{$count}}">
+        <categories-listing ref="list"
+                            @edit="editCategory"
+                            @delete="deleteCategory"
+                            :filter="filter"
+                            api-route="{{$route}}"
+                            :permission="{{$permissions}}"
+                            load-on-start="{{$showCategoriesTab}}"
+                            location="{{$location}}"
+                            include="{{$include}}"
+                            label-count="{{$labelCount}}"
+                            count="{{$count}}">
         </categories-listing>
     </div>
 
@@ -83,9 +93,6 @@
                   route: @json($route),
                   location: @json($location),
                 },
-                mounted() {
-                  console.log('categorías montadododododod');
-                },
                 methods: {
                   onClose() {
                     this.name = '';
@@ -93,7 +100,6 @@
                     this.errors = {};
                   },
                   onSubmit() {
-                    console.log('on submit');
                     this.errors = {};
                     //single click
                     if (this.disabled) {
