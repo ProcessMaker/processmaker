@@ -24,7 +24,7 @@ new Vue({
             this.processModal = true;
         },
         goToImport() {
-            window.location = "processes/import"
+            window.location = "/processes/import"
         },
         reload() {
             this.$refs.processListing.dataManager([{
