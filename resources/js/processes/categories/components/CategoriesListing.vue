@@ -66,7 +66,7 @@
     props: ["filter", "permission", "apiRoute", "location", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
-        localLoadOnStart: this.loadOnStart,
+        localLoadOnStart: this.loadOnStart ? true : false,
         orderBy: "name",
         sortOrder: [
           {
@@ -149,6 +149,7 @@
             } else {
               this.data = this.transform(response.data);
               this.loading = false;
+              this.apiNoResults = false;
             }
           });
       },
