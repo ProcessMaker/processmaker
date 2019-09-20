@@ -15,7 +15,7 @@ trait Encryptable
         }
 
         if (in_array($key, $this->encryptable)) {
-            $value = Crypt::decrypt($value);
+            $value = $value ? Crypt::decrypt($value) : $value;
         }
 
         return $value;

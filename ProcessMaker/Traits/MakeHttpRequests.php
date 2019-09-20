@@ -36,8 +36,8 @@ trait MakeHttpRequests
         // Datasource works with json responses
         $headers = ['Accept' => 'application/json'];
         if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
-            foreach ($endpoint['headers'] as $key => $value) {
-                $headers[$mustache->render($key, $data)] = $mustache->render($value, $data);
+            foreach ($endpoint['headers'] as $header) {
+                $headers[$mustache->render($header['key'], $data)] = $mustache->render($header['value'], $data);
             }
         }
         $body = $mustache->render($endpoint['body'], $data);
