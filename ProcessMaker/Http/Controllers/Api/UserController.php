@@ -62,7 +62,6 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        \Log::debug('hello');
         $query = User::query();
 
         $filter = $request->input('filter', '');
