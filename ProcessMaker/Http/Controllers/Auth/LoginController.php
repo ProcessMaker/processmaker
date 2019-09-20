@@ -52,7 +52,6 @@ class LoginController extends Controller
             // Getting intended deletes it, so put in back
             $request->session()->put('url.intended', $intended);
         }
-        \Log::info("INTENDED FROM POST ----- $intended");
         return $this->login($request);
     }
 

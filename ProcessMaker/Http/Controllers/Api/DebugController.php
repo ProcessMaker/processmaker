@@ -11,8 +11,8 @@ class DebugController extends Controller
     public function store(Request $request)
     {
         \Log::debug(
-            "Unhandled Javascript API Error: " . 
-            Str::limit($request->getContent(), 100000)
+            $request->input('name') . ": " . 
+            Str::limit($request->input('message'), 100000)
         );
         return response('', 204);
     }
