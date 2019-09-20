@@ -95,9 +95,20 @@ class ProcessMakerServiceProvider extends ServiceProvider
             }
         });
 
-        // Log notifications
+        // Log Notifications
         Event::listen(\Illuminate\Notifications\Events\NotificationSent::class, function($event) {
-            \Log::debug("Sent Notification to " . get_class($event->notifiable) . " #" . $event->notifiable->id . ": " . get_class($event->notification));
+            \Log::debug(
+                "Sent Notification to " . 
+                get_class($event->notifiable) . 
+                " #" . $event->notifiable->id . 
+                ": " . get_class($event->notification)
+            );
+        });
+        
+        // Log Broadcasts (messages sent to laravel-echo-server and redis) 
+        Event::listen(\Illuminate\Notifications\Events\BroadcastNotificationCreated::class, function($event) {
+            $channels = implode(", ", $event->broadcastOn());
+            \Log::debug("Broadcasting Notification " . $event->broadcastType() . "on channel(s) " . $channels);
         });
 
         //Enable
