@@ -22,8 +22,7 @@
 
     <categories-listing
         ref="list"
-        @edit="editCategory"
-        @delete="deleteCategory"
+        @reload="reload"
         :filter="filter"
         api-route="{{$route}}"
         :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}"
@@ -77,10 +76,6 @@
 @endcan
 
 @section('js')
-    <script>
-      //Data needed for default search
-      window.Processmaker.route = '{{ $route }}';
-    </script>
     <script src="{{mix('js/processes/categories/index.js')}}"></script>
 
     @can('create-categories')
@@ -113,7 +108,7 @@
                   status: this.status
                 })
                   .then(response => {
-                    ProcessMaker.alert('{{__('The category was created.')}}', "success", 5, true);
+                    ProcessMaker.alert('{{__('The category was created.')}}', "success");
                     window.location = this.location;
                   })
                   .catch(error => {

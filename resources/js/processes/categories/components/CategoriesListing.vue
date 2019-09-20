@@ -168,7 +168,12 @@
               "</b>",
               "",
               () => {
-                this.$emit("delete", data);
+                ProcessMaker.apiClient.delete(`${this.apiRoute}/${data.id}`)
+                  .then((response) => {
+                    ProcessMaker.alert("The category was deleted.", "success");
+                    this.$emit("reload");
+                  });
+
               }
             );
             break;

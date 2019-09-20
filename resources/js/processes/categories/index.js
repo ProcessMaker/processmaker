@@ -11,27 +11,8 @@ new Vue({
     CategoriesListing
   },
   methods: {
-    editCategory (data) {
-      this.formData = Object.assign({}, data);
-      this.showModal();
-    },
-    showModal () {
-      this.$refs.addEdit.$refs.modal.show();
-    },
-    deleteCategory (data) {
-      ProcessMaker.apiClient.delete(`${window.ProcessMaker.route}/${data.id}`)
-        .then((response) => {
-          ProcessMaker.alert("The category was deleted.", "success");
-          this.reload();
-        });
-    },
     reload () {
-      this.$refs.list.dataManager([
-        {
-          field: "updated_at",
-          direction: "desc"
-        }
-      ]);
+      this.$refs.list.fetch();
     }
   }
 });
