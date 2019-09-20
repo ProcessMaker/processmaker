@@ -22,6 +22,8 @@ class ProcessCategoryController extends Controller
         $location = '/designer/processes/categories';
         $titleMenu = __('Categories');
         $routeMenu = 'categories.index';
-        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
+        $itemsRoute = 'processes.index';
+        $itemsTitle = __('Processes');
+        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu', 'itemsRoute', 'itemsTitle'));
     }
 }

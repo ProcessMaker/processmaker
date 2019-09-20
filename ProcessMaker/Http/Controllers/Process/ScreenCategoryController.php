@@ -22,6 +22,8 @@ class ScreenCategoryController extends Controller
         $routeMenu = 'screen-categories.index';
         $route = 'screen_categories';
         $location = '/designer/screens/categories';
-        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
+        $itemsRoute = 'screens.index';
+        $itemsTitle = __('Screens');
+        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu', 'itemsRoute', 'itemsTitle'));
     }
 }

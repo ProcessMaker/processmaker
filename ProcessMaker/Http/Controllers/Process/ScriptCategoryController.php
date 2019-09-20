@@ -23,6 +23,8 @@ class ScriptCategoryController extends Controller
         $routeMenu = 'script-categories.index';
         $route = 'script_categories';
         $location = '/designer/scripts/categories';
-        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
+        $itemsRoute = 'scripts.index';
+        $itemsTitle = __('Scripts');
+        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu', 'itemsRoute', 'itemsTitle'));
     }
 }
