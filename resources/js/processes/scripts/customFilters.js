@@ -33,12 +33,13 @@ Vue.filter('javascript', function(value) {
     } else {
       line = line.replace('{dataVariable}',  `$data`);
       line = line.replace('{configVariable}',  `$config`);
+      line = line.replace('{apiExample}',  `getUserById(id, (error, data, response) => {})`);
       format = ' * ' + line;
     }
     content.push(format);
   });
 
-  return content.join("\n") + `\n\n\ return [];`;
+  return content.join("\n") + `\n\n\ return {};`;
 });
 
 Vue.filter('lua', function(value) {
@@ -54,6 +55,7 @@ Vue.filter('lua', function(value) {
     } else {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
+      line = line.replace('{apiExample}',  `users_api:get_users(filter, order_by, order_direction, per_page, include)`);
       format = '  ' + line;
     }
     content.push(format);
