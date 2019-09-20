@@ -1,5 +1,5 @@
 <div class="px-3 page-content" id="categories-listing">
-    <div id="search-bar" class="search mt-2 bg-light p-2" vcloak>
+    <div id="search-bar" class="search mt-2 bg-light" vcloak>
         <div class="d-flex">
             <div class="flex-grow-1">
                 <div id="search" class="pr-2">
@@ -7,8 +7,10 @@
                 </div>
             </div>
             <div class="flex-shrink-0">
-                <button title="" type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
-                @can($create)
+                <button title="" type="button" class="btn btn-primary" data-original-title="Search">
+                    <i class="fas fa-search"></i>
+                </button>
+                @can('create-categories')
                     <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createCategory">
                         <i class="fas fa-plus"></i> {{ $btnCreate ?? __('Category') }}
@@ -17,13 +19,14 @@
             </div>
         </div>
     </div>
+
     <categories-listing
         ref="list"
         @edit="editCategory"
         @delete="deleteCategory"
         :filter="filter"
         api-route="{{$route}}"
-        :permission="{{$permissions}}"
+        :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}"
         load-on-start="{{$showCategoriesTab ?? true}}"
         location="{{$location}}"
         include="{{$include}}"
@@ -32,7 +35,7 @@
     </categories-listing>
 </div>
 
-@can($create)
+@can('create-categories')
     <div class="modal" tabindex="-1" role="dialog" id="createCategory">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -80,7 +83,7 @@
     </script>
     <script src="{{mix('js/processes/categories/index.js')}}"></script>
 
-    @can($create)
+    @can('create-categories')
         <script>
           new Vue({
             el: "#createCategory",
