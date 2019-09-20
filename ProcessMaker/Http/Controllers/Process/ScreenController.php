@@ -22,11 +22,17 @@ class ScreenController extends Controller
     public function index()
     {
         $types = [];
-        foreach(ScreenType::pluck('name')->toArray() as $type) {
+        foreach (ScreenType::pluck('name')->toArray() as $type) {
             $types[$type] = __(ucwords(strtolower($type)));
         }
-        $screenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        return view('processes.screens.index', compact('types', 'screenCategories'));
+        $countCategories = $screenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        $showCategoriesTab = $countCategories === 0;
+        $route = 'screen_categories';
+        $location = '/designer/screens/categories';
+        $include = 'screensCount';
+        $labelCount = __('# Screens');
+        $count = 'screens_count';
+        return view('processes.screens.index', compact('types', 'screenCategories', 'countCategories', 'showCategoriesTab', 'route', 'location', 'include', 'labelCount', 'count'));
     }
 
     /**
@@ -79,7 +85,7 @@ class ScreenController extends Controller
         $fileName = snake_case($screen->title) . '.json';
         $fileContents = Cache::get($key);
 
-        if (! $fileContents) {
+        if (!$fileContents) {
             return abort(404);
         } else {
             return response()->streamDownload(function () use ($fileContents) {
