@@ -165,6 +165,7 @@ Route::group(
     Route::get('datasources/{datasource}', 'DataSourceController@show')->name('datasources.show')->middleware('can:view-datasources');
     Route::put('datasources/{datasource}', 'DataSourceController@update')->name('datasources.update')->middleware('can:edit-datasources');
     Route::delete('datasources/{datasource}', 'DataSourceController@destroy')->name('datasources.destroy')->middleware('can:delete-datasources');
+    Route::post('datasources/{datasource}/test', 'DataSourceController@test')->name('datasources.test')->middleware('can:view-datasources');
     Route::post('/requests/{request}/datasources/{datasource}', 'ProcessRequestController@executeDataSource');
 
     // Screen Categories
