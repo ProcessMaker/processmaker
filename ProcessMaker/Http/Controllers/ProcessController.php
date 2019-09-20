@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Cache;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
@@ -29,6 +30,11 @@ class ProcessController extends Controller
         'bpmn',
     ];
 
+    /**
+     * Get the list of procesess
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index(Request $request)
     {
         $redirect = $this->checkAuth();
@@ -36,15 +42,35 @@ class ProcessController extends Controller
             return redirect()->route($redirect);
         }
 
+
         $status = $request->input('status');
         $processes = Process::all(); //what will be in the database = Model
-        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        return view('processes.index',
-            [
-                "processes" => $processes,
-                "processCategories" => $processCategories,
-                "status" => $status
-            ]);
+        $countCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+
+
+
+        $title = __('Process Categories');
+        $btnCreate = __('Category');
+        $titleMenu = __('Processes');
+        $routeMenu = 'processes.index';
+        $titleModal = __('Create Category');
+        $fieldName = __('Category Name');
+        $distinctName = __('The category name must be distinct.');
+        $permissions = Auth::user()->hasPermissionsFor('categories');
+        $route = 'process_categories';
+        $location = '/designer/processes/categories';
+        $create = 'create-categories';
+        $include = 'processesCount';
+        $labelCount = __('# Processes');
+        $count = 'processes_count';
+        $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
+
+        return view('processes.index', compact ('processes', 'countCategories', 'status', 'showCategoriesTab',
+            'title', 'btnCreate', 'titleMenu',
+            'routeMenu', 'permissions', 'titleModal',
+            'fieldName', 'distinctName', 'route',
+            'location', 'create', 'include', 'labelCount',
+            'count'));
     }
 
     /**

@@ -17,22 +17,18 @@ class DatasourceCategoryController extends Controller
      */
     public function index()
     {
-        $title = __('Datasource Categories');
-        $btnCreate = __('Category');
-        $titleMenu = __('Datasources');
-        $routeMenu = 'datasources.index';
-        $titleModal = __('Create Datasource Category');
-        $fieldName = __('Category Datasource Name');
-        $distinctName = __('The category name must be distinct.');
+        $countCategories = DataSourceCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'datasource_categories';
         $location = '/designer/datasources/categories';
-        $create = 'create-categories';
+        $createCategories = 'create-categories';
         $include = 'datasourcesCount';
         $labelCount = __('# Datasources');
         $count = 'datasources_count';
+        $showCategoriesTab = true;
 
-        return view('categories.index', compact('title', 'btnCreate', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count'));
+        return view('processes.datasource.index', compact('countCategories', 'route', 'permissions', 'location', 'createCategories', 'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 
     /**
@@ -48,7 +44,7 @@ class DatasourceCategoryController extends Controller
         $titleMenu = __('Categories');
         $routeMenu = 'datasource-categories.index';
         $route = 'datasource_categories';
-        $location = '/designer/datasources';
+        $location = '/designer/datasources/categories';
         return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu'));
     }
 }

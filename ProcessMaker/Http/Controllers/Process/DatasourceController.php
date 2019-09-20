@@ -18,17 +18,18 @@ class DatasourceController extends Controller
      */
     public function index()
     {
-        $datasourceCategories = DataSourceCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        $countCategories = DataSourceCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'datasource_categories';
-        $location = '/designer/datasources';
+        $location = '/designer/datasources/categories';
         $createCategories = 'create-categories';
         $include = 'datasourcesCount';
         $labelCount = __('# Datasources');
         $count = 'datasources_count';
+        $showCategoriesTab = $countCategories === 0;
 
-        return view('processes.datasource.index', compact('datasourceCategories', 'route', 'permissions', 'location', 'createCategories', 'include', 'labelCount', 'count'));
+        return view('processes.datasource.index', compact('countCategories', 'route', 'permissions', 'location', 'createCategories', 'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 
     /**

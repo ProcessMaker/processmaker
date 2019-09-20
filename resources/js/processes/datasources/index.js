@@ -8,18 +8,18 @@ Vue.component("category-select", CategorySelect);
 Vue.component("categories-listing", CategoriesListing);
 
 new Vue({
-    el: "#datasourceIndex",
-    data: {
-        filter: "",
-        processModal: false,
-        dataSourceId: null
-    },
-    methods: {
-        reload () {
-            this.$refs.datasourceList.dataManager([{
-                field: "updated_at",
-                direction: "desc"
-            }]);
-        }
+  el: "#datasourceIndex",
+  data: {
+    filter: "",
+    processModal: false,
+    dataSourceId: null
+  },
+  methods: {
+    reload () {
+      this.$refs.datasourceList.dataManager([{
+        field: "updated_at",
+        direction: "desc"
+      }]);
     }
+  }
 });

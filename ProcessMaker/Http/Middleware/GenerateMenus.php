@@ -175,13 +175,6 @@ class GenerateMenus
                     'id' => 'process-datasources'
                 ]);
             }
-            if (\Auth::check() && \Auth::user()->can('view-categories')) {
-                $submenu->add(__('Datasource Categories'), [
-                    'route' => 'datasource-categories.index',
-                    'icon' => 'fa-sitemap',
-                    'id' => 'datasource-categories'
-                ]);
-            }
         });
 
         Menu::make('sidebar_designer', function ($menu) { });

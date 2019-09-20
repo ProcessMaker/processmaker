@@ -29,7 +29,7 @@ class ProcessCategoryController extends Controller
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
-     *     @OA\Parameter(ref="#/components/parameters/per_page"), 
+     *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *
      *     @OA\Response(
      *         response=200,
@@ -69,6 +69,7 @@ class ProcessCategoryController extends Controller
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
             $query->where(function ($query) use ($filter) {
                 $query->Where('name', 'like', $filter)
                     ->orWhere('status', 'like', $filter);
