@@ -88,7 +88,7 @@ class DataSource extends Model
 
         return [
             'name' => ['required', $unique],
-            'authtype' => 'required',
+            'authtype' => 'required|in:NONE,BASIC,BEARER,PASSWORD',
             'status' => 'in:ACTIVE,INACTIVE',
             'data_source_category_id' => 'required',
         ];

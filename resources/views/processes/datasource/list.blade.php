@@ -69,14 +69,14 @@
                                 :allow-empty="false"
                                 :show-labels="false">
                             </multiselect>
-                            <div class="invalid-feedback" v-for="type in errors.authtype">@{{authtype}}</div>
+                            <div class="invalid-feedback d-block" v-for="type in errors.authtype">@{{type}}</div>
                         </div>
                         <category-select
                             :label="$t('Category')"
                             api-get="datasource_categories"
                             api-list="datasource_categories"
                             v-model="formData.data_source_category_id"
-                            :errors="errors.datasource_category_id">
+                            :errors="errors.data_source_category_id">
                         </category-select>
                     </div>
                 @else

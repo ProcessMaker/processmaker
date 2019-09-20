@@ -32,12 +32,12 @@
                 </a>
             </li>
             <li class="nav-item">
-              <a class="nav-item nav-link" id="nav-test-tab" data-toggle="tab" href="#nav-test"
-                 role="tab" aria-controls="nav-header" aria-selected="true">
-                  {{ __('Test') }}
-              </a>
-          </li>
-      </ul>
+                <a class="nav-item nav-link" id="nav-test-tab" data-toggle="tab" href="#nav-test"
+                   role="tab" aria-controls="nav-header" aria-selected="true">
+                    {{ __('Test') }}
+                </a>
+            </li>
+        </ul>
 
         <div class="container mt-3">
             <div class="tab-content" id="nav-tabContent">
@@ -60,25 +60,27 @@
                             </div>
 
                             <category-select
-                                    :label="$t('Category')"
-                                    :allow-empty="false"
-                                    api-get="datasource_categories"
-                                    api-list="datasource_categories"
-                                    v-model="formData.data_source_category_id"
-                                    :errors="errors.data_source_category_id">
+                                :label="$t('Category')"
+                                :allow-empty="false"
+                                api-get="datasource_categories"
+                                api-list="datasource_categories"
+                                v-model="formData.data_source_category_id"
+                                :errors="errors.data_source_category_id">
                             </category-select>
                             <h5 class="card-title">{{ __('Authentication') }}</h5>
 
                             <div class="form-group">
                                 {!! Form::label('auth', __('Method')) !!}
                                 <multiselect
-                                        v-model="selectedAuthType"
-                                        :options="authOptions"
-                                        track-by="value"
-                                        label="content"
-                                        :allow-empty="false"
-                                        :show-labels="false">
+                                    v-model="selectedAuthType"
+                                    :class="{'border border-danger':errors.authtype}"
+                                    :options="authOptions"
+                                    track-by="value"
+                                    label="content"
+                                    :allow-empty="false"
+                                    :show-labels="false">
                                 </multiselect>
+                                <div class="invalid-feedback d-block" v-if="errors.authtype">@{{errors.authtype[0]}}</div>
                             </div>
 
                             <div class="form-group" v-show="formData.authtype === 'BEARER'">
@@ -88,14 +90,35 @@
                                 </div>
                             </div>
 
-                            <div class="form-group" v-show="formData.authtype === 'BASIC'">
+                            <div class="form-group" v-show="formData.authtype === 'PASSWORD'">
+                                {!! Form::label('url', __('Url Token')) !!}
+                                {!! Form::text('url', null, ['id' => 'url', 'class'=> 'form-control', 'v-model'=> 'credentials.url', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.url}']) !!}
+                                <div class="invalid-feedback" v-if="errors.url">@{{errors.url[0]}}
+                                </div>
+                            </div>
+
+                            <div class="form-group" v-show="formData.authtype === 'PASSWORD'">
+                                {!! Form::label('clientId', __('Client ID')) !!}
+                                {!! Form::text('clientId', null, ['id' => 'clientId', 'class'=> 'form-control', 'v-model'=> 'credentials.clientId', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.clientId}']) !!}
+                                <div class="invalid-feedback" v-if="errors.clientId">@{{errors.clientId[0]}}
+                                </div>
+                            </div>
+
+                            <div class="form-group" v-show="formData.authtype === 'PASSWORD'">
+                                {!! Form::label('clientSecret', __('Client Secret')) !!}
+                                {!! Form::text('clientSecret', null, ['id' => 'clientSecret', 'class'=> 'form-control', 'v-model'=> 'credentials.clientSecret', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.clientSecret}']) !!}
+                                <div class="invalid-feedback" v-if="errors.clientSecret">@{{errors.clientSecret[0]}}
+                                </div>
+                            </div>
+
+                            <div class="form-group" v-show="formData.authtype === 'BASIC' || formData.authtype === 'PASSWORD'">
                                 {!! Form::label('user', __('User')) !!}
-                                {!! Form::text('user', null, ['id' => 'user', 'class'=> 'form-control', 'v-model'=> 'credentials.user', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.email}']) !!}
+                                {!! Form::text('user', null, ['id' => 'user', 'class'=> 'form-control', 'v-model'=> 'credentials.user', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.user}']) !!}
                                 <div class="invalid-feedback" v-if="errors.user">@{{errors.user[0]}}
                                 </div>
                             </div>
 
-                            <div class="form-group" v-show="formData.authtype === 'BASIC'">
+                            <div class="form-group" v-show="formData.authtype === 'BASIC' || formData.authtype === 'PASSWORD'">
                                 {!! Form::label('password', __('Password')) !!}
                                 {!! Form::text('password', null, ['id' => 'password', 'class'=> 'form-control', 'v-model'=> 'credentials.password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
                                 <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}
@@ -120,25 +143,25 @@
                             </div>
 
                             <end-point-list
-                                    ref="endpointsListing"
-                                    :endpoints="formData.endpoints"
-                                    :datasource="formData">
+                                ref="endpointsListing"
+                                :endpoints="formData.endpoints"
+                                :datasource="formData">
                             </end-point-list>
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane fade show" id="nav-test" role="tabpanel" aria-labelledby="nav-header-tab">
-                  <div class="row">
-                      <div class="card card-body">
-                          <test-end-points
-                                  ref="endpointsListing"
-                                  :endpoints="formData.endpoints"
-                                  :datasource="formData">
-                          </test-end-points>
-                      </div>
-                  </div>
-              </div>
-          </div>
+                    <div class="row">
+                        <div class="card card-body">
+                            <test-end-points
+                                ref="endpointsListing"
+                                :endpoints="formData.endpoints"
+                                :datasource="formData">
+                            </test-end-points>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="card card-body">
@@ -168,12 +191,16 @@
         {
           "value": "BEARER",
           "content": __("Bearer Token")
+        },
+        {
+          "value": "PASSWORD",
+          "content": __("Password")
         }
       ];
       new Vue({
         el: "#formDataSource",
         data () {
-          const formData = @json($datasource);
+          let formData = @json($datasource);
           formData.endpoints = formData.endpoints ? formData.endpoints : {};
           if (formData.endpoints instanceof Array) {
             const endpoints = {};
@@ -189,7 +216,10 @@
             credentials: {
               token: "",
               user: "",
-              password: ""
+              password: "",
+              clientId: "",
+              clientSecret: "",
+              url:''
             },
             errors: {},
             formData
@@ -248,11 +278,13 @@
             const suggestions = [
               "list", "create", "update", "delete"
             ];
-            let index = 0, purpose = suggestions[index], suffix = 0;
-            while(this.$refs.endpointsListing.endpoints[purpose]) {
+            let index = 0,
+              purpose = suggestions[index],
+              suffix = 0;
+            while (this.$refs.endpointsListing.endpoints[purpose]) {
               index++;
               index >= suggestions.length ? (index = 0, suffix++) : null;
-              purpose = suggestions[index] + (suffix ? '_' + suffix : '');
+              purpose = suggestions[index] + (suffix ? "_" + suffix : "");
             }
             let endpoint = {
               id: this.$refs.endpointsListing.endpoints.length,
