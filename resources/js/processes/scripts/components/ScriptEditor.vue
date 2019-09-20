@@ -250,7 +250,14 @@ export default {
         case 'javascript':
           this.code = Vue.filter('javascript')(this.boilerPlateTemplate);
           break;
+        case 'csharp':
+          this.code = Vue.filter('csharp')(this.boilerPlateTemplate);
+          break;
+        case 'java':
+          this.code = Vue.filter('java')(this.boilerPlateTemplate);
+          break;
         }
+
       }
     }
   }
