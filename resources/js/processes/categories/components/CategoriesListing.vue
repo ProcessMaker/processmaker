@@ -66,7 +66,7 @@
     props: ["filter", "permission", "apiRoute", "location", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
-        localLoadOnStart: this.loadOnStart ? true : false,
+        localLoadOnStart: !!this.loadOnStart,
         orderBy: "name",
         sortOrder: [
           {
@@ -156,7 +156,7 @@
       onAction (action, data, index) {
         switch (action) {
           case "edit-item":
-            window.location =  this.location + "/" + data.id + "/edit";
+            window.location = this.location + "/" + data.id + "/edit";
             break;
           case "remove-item":
             ProcessMaker.confirmModal(
@@ -168,7 +168,12 @@
               "</b>",
               "",
               () => {
-                this.$emit("delete", data);
+                ProcessMaker.apiClient.delete(`${this.apiRoute}/${data.id}`)
+                  .then(() => {
+                    ProcessMaker.alert("The category was deleted.", "success");
+                    this.$emit("reload");
+                  });
+
               }
             );
             break;
@@ -185,16 +190,11 @@
 
 <style lang="scss" scoped>
     /deep/ i.fa-circle {
-
-    &
-    .active {
-        color: green;
-    }
-
-    &
-    .inactive {
-        color: red;
-    }
-
+    &.active {
+         color: green;
+     }
+    &.inactive {
+         color: red;
+     }
     }
 </style>
