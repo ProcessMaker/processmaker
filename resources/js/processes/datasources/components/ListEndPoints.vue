@@ -27,6 +27,14 @@
               </b-btn>
               <b-btn
                 variant="link"
+                @click="test(props.rowData)"
+                v-b-tooltip.hover
+                :title="$t('Test')"
+              >
+                <i class="fas fa-play fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                variant="link"
                 @click="doDelete(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Remove')"
@@ -58,6 +66,10 @@
       endpoints: {
         type: Object,
         default: {}
+      },
+      datasource: {
+        type: Object,
+        default: {}
       }
     },
     watch: {
@@ -70,10 +82,10 @@
           });
           if (Object.keys(endpoints).join(",") !== Object.keys(this.endpoints).join(",")) {
             Object.keys(this.endpoints).forEach(name => {
-              delete this.endpoints[name];
+              this.$delete(this.endpoints, name);
             });
             Object.keys(endpoints).forEach(name => {
-              this.endpoints[name] = endpoints[name];
+              this.$set(this.endpoints, name, endpoints[name]);
             });
           }
         },
@@ -113,6 +125,17 @@
       };
     },
     methods: {
+      test(data, requester) {
+        data.view = true;
+        window.ProcessMaker.apiClient.post(
+          `/datasources/${this.datasource.id}/test`,
+          {
+            data
+          }
+        ).then((response) => {
+          //requester.response = response.data;
+        });
+      },
       fetch () {
         this.data = [];
         if (this.endpoints) {
@@ -127,7 +150,9 @@
         }
       },
       detail (data) {
+        console.log(data.view);
         data.view = !data.view;
+        console.log(data.view);
         this.$refs.endpoints.toggleDetailRow(data.id);
       },
       doDelete (item) {

@@ -33,14 +33,13 @@
 
 
       <div class="form-group col-12">
-        <div class="card card-body">
           <div class="row">
             <div class="col">
               <label>{{ $t('Headers') }}</label>
             </div>
             <div class="col-8">
               <button type="button" href="#" @click="addHeader" id="add_header"
-                      class="btn btn-secondary float-right">
+                      class="btn btn-secondary btn-sm float-right">
                 <i class="fas fa-plus"></i> {{ $t('Add') }}
               </button>
             </div>
@@ -50,7 +49,6 @@
             ref="headersListing"
             :headers="rowData.headers || []">
           </list-headers>
-        </div>
       </div>
 
       <div class="form-group">
@@ -65,6 +63,25 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <div class="col">
+          <label>{{ $t('Sample Data') }}</label>
+        </div>
+        <b-col cols="12" style="height:12em">
+          <monaco-editor :options="monacoOptions" v-model="testData" language="json" class="h-100 border" />
+        </b-col>
+        <small v-if="testError" class="text-danger">{{ testError }}</small>
+      </div>
+
+      <div class="form-group">
+        <div class="col">
+          <label>{{ $t('Response') }}</label>
+        </div>
+        <b-col cols="12" style="height:12em" class="overflow-auto">
+          <code class="border">{{ testResponse }}</code>
+        </b-col>
+      </div>
+
     </div>
   </div>
 </template>
@@ -73,6 +90,7 @@
   import Vue from "vue";
   import MultiSelect from "vue-multiselect"
   import ListHeaders from "./ListHeaders";
+  import CanTestEndPoint from "./CanTestEndPoint";
 
   Vue.component('multi-select', MultiSelect);
   Vue.component('list-headers', ListHeaders);
@@ -81,6 +99,7 @@
 
   export default {
     inheritAttrs: false,
+    mixins: [CanTestEndPoint],
     props: {
       rowData: {
         type: Object,

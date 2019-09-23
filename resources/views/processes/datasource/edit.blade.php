@@ -31,12 +31,6 @@
                     {{ __('Access Points') }}
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-item nav-link" id="nav-test-tab" data-toggle="tab" href="#nav-test"
-                   role="tab" aria-controls="nav-header" aria-selected="true">
-                    {{ __('Test') }}
-                </a>
-            </li>
         </ul>
 
         <div class="container mt-3">
@@ -147,17 +141,6 @@
                                 :endpoints="formData.endpoints"
                                 :datasource="formData">
                             </end-point-list>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade show" id="nav-test" role="tabpanel" aria-labelledby="nav-header-tab">
-                    <div class="row">
-                        <div class="card card-body">
-                            <test-end-points
-                                ref="testEndPoints"
-                                :endpoints="formData.endpoints"
-                                :datasource="formData">
-                            </test-end-points>
                         </div>
                     </div>
                 </div>
@@ -298,7 +281,7 @@
               testData: {},
               testConfig: {}
             };
-            this.$refs.endpointsListing.endpoints[purpose] = endpoint;
+            this.$set(this.$refs.endpointsListing.endpoints, purpose, endpoint);
             this.$refs.endpointsListing.fetch();
             this.$refs.endpointsListing.detail(endpoint);
           },
