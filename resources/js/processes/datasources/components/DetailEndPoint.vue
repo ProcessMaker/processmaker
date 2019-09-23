@@ -52,10 +52,14 @@
       </div>
 
       <div class="form-group">
-        <div class="col">
+        <div class="col" style="height:12em">
           <label>{{ $t('Body') }}</label>
-          <b-form-textarea v-model="rowData.body">
-          </b-form-textarea>
+          <monaco-editor
+            :options="monacoOptions"
+            v-model="rowData.body"
+            language="json"
+            class="h-100"
+          />
         </div>
       </div>
 
@@ -111,6 +115,9 @@
     },
     data() {
       return {
+        monacoOptions: {
+          automaticLayout: true
+        },
         methodOptions: methods,
       };
     },
