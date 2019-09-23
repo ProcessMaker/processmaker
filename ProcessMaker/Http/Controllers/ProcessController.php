@@ -47,8 +47,6 @@ class ProcessController extends Controller
         $titleMenu = __('Processes');
         $routeMenu = 'processes.index';
         $titleModal = __('Create Category');
-        $fieldName = __('Category Name');
-        $distinctName = __('The category name must be distinct.');
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'process_categories';
         $location = '/designer/processes/categories';
@@ -58,7 +56,7 @@ class ProcessController extends Controller
         $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
 
         return view('processes.index', compact ('processes', 'countCategories', 'status', 'showCategoriesTab',
-            'title', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route',
+            'title', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'route',
             'location', 'include', 'labelCount', 'count'));
     }
 

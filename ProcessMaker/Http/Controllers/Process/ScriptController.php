@@ -23,8 +23,6 @@ class ScriptController extends Controller
         $titleMenu = __('Scripts');
         $routeMenu = 'scripts.index';
         $titleModal = __('Create Category');
-        $fieldName = __('Category Name');
-        $distinctName = __('The category name must be distinct.');
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'script_categories';
         $location = '/designer/scripts/categories';
@@ -34,7 +32,7 @@ class ScriptController extends Controller
         $showCategoriesTab = 'script-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
 
         return view('processes.scripts.index', compact('scriptFormats', 'countCategories', 'title', 'titleMenu', 'routeMenu',
-            'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'include', 'labelCount', 'count', 'showCategoriesTab'));
+            'permissions', 'titleModal', 'route', 'location', 'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 
     public function edit(Script $script, User $users)

@@ -29,12 +29,9 @@ class ScreenController extends Controller
         $countCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         $title = __('Screen Categories');
-        $btnCreate = __('Category');
         $titleMenu = __('Screens');
         $routeMenu = 'screens.index';
         $titleModal = __('Create Screen Category');
-        $fieldName = __('Category Screen Name');
-        $distinctName = __('The category name must be distinct.');
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'screen_categories';
         $location = '/designer/screens/categories';
@@ -43,8 +40,8 @@ class ScreenController extends Controller
         $count = 'screens_count';
         $showCategoriesTab = 'screen-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
 
-        return view('processes.screens.index', compact('types', 'countCategories', 'title', 'btnCreate', 'titleMenu',
-            'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location',
+        return view('processes.screens.index', compact('types', 'countCategories', 'title',  'titleMenu',
+            'routeMenu', 'permissions', 'titleModal', 'route', 'location',
             'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 

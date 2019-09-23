@@ -46,11 +46,11 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        {!!Form::label('name', $fieldName ?? __('Category Name'))!!}
+                        {!!Form::label('name', __('Category Name'))!!}
                         {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                         <small class="form-text text-muted" v-if="! errors.name">
-                            {{ $distinctName ?? __('The category name must be distinct.') }}
+                            {{ __('The category name must be distinct.') }}
                         </small>
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
