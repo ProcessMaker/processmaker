@@ -26,23 +26,29 @@ class ScreenController extends Controller
         foreach(ScreenType::pluck('name')->toArray() as $type) {
             $types[$type] = __(ucwords(strtolower($type)));
         }
-        $countCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
-        $title = __('Screen Categories');
-        $titleMenu = __('Screens');
-        $routeMenu = 'screens.index';
-        $titleModal = __('Create Screen Category');
-        $permissions = Auth::user()->hasPermissionsFor('categories');
-        $route = 'screen_categories';
-        $location = '/designer/screens/categories';
-        $include = 'screensCount';
-        $labelCount = __('# Screens');
-        $count = 'screens_count';
-        $showCategoriesTab = 'screen-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
+        $catConfig = (object) [
+            'labels' => (object) [
+                'titleMenu' => __('Screens'),
+                'titleModal' => __('Create Screen Category'),
+                'countColumn' => __('# Screens'),
+            ],
+            'routes' => (object) [
+                'routeMenu' => 'screens.index',
+                'route' => 'screen_categories',
+                'location' => '/designer/screens/categories',
+            ],
+            'countField' => 'screens_count',
+            'apiListInclude' => 'screensCount',
+            'permissions' => Auth::user()->hasPermissionsFor('categories')
+        ];
 
-        return view('processes.screens.index', compact('types', 'countCategories', 'title',  'titleMenu',
-            'routeMenu', 'permissions', 'titleModal', 'route', 'location',
-            'include', 'labelCount', 'count', 'showCategoriesTab'));
+        $listConfig = (object) [
+            'types' => $types,
+            'countCategories' => ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count()
+        ];
+
+        return view('processes.screens.index', compact ('listConfig', 'catConfig'));
     }
 
     /**

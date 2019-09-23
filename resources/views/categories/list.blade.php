@@ -24,13 +24,13 @@
         ref="list"
         @reload="reload"
         :filter="filter"
-        api-route="{{$route}}"
         :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}"
-        load-on-start="{{$showCategoriesTab ?? true}}"
-        location="{{$location}}"
-        include="{{$include}}"
-        label-count="{{$labelCount}}"
-        count="{{$count}}">
+        api-route="{{$config->routes->route}}"
+        load-on-start="{{$config->showCategoriesTab ?? true}}"
+        location="{{$config->routes->location}}"
+        include="{{$config->apiListInclude}}"
+        label-count="{{$config->labels->countColumn}}"
+        count="{{$config->countField}}">
     </categories-listing>
 </div>
 
@@ -39,7 +39,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">{{ $titleModal ?? __('Create Category')}}</h5>
+                    <h5 class="modal-title">{{ $config->labels->titleModal ?? __('Create Category')}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -87,8 +87,8 @@
               name: "",
               status: "ACTIVE",
               disabled: false,
-              route: @json($route),
-              location: @json($location),
+              route: @json($config->routes->route),
+              location: @json($config->routes->location),
             },
             methods: {
               onClose () {

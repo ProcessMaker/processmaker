@@ -39,25 +39,29 @@ class ProcessController extends Controller
             return redirect()->route($redirect);
         }
 
-        $status = $request->input('status');
-        $processes = Process::all(); //what will be in the database = Model
-        $countCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        $catConfig = (object) [
+            'labels' => (object) [
+                'titleMenu' => __('Processes'),
+                'titleModal' => __('Create Process Category'),
+                'countColumn' => __('# Processes'),
+            ],
+            'routes' => (object) [
+                'routeMenu' => 'processes.index',
+                'route' => 'process_categories',
+                'location' => '/designer/processes/categories',
+            ],
+            'countField' => 'processes_count',
+            'apiListInclude' => 'processesCount',
+            'permissions' => Auth::user()->hasPermissionsFor('categories')
+        ];
 
-        $title = __('Process Categories');
-        $titleMenu = __('Processes');
-        $routeMenu = 'processes.index';
-        $titleModal = __('Create Category');
-        $permissions = Auth::user()->hasPermissionsFor('categories');
-        $route = 'process_categories';
-        $location = '/designer/processes/categories';
-        $include = 'processesCount';
-        $labelCount = __('# Processes');
-        $count = 'processes_count';
-        $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
+        $listConfig = (object) [
+            'processes' => Process::all(),
+            'countCategories' => ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
+            'status' => $request->input('status')
+        ];
 
-        return view('processes.index', compact ('processes', 'countCategories', 'status', 'showCategoriesTab',
-            'title', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'route',
-            'location', 'include', 'labelCount', 'count'));
+        return view('processes.index', compact ('listConfig', 'catConfig'));
     }
 
     /**

@@ -17,22 +17,44 @@ class ScriptController extends Controller
      */
     public function index()
     {
-        $scriptFormats = Script::scriptFormatList();
-        $countCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        $title = __('Script Categories');
-        $titleMenu = __('Scripts');
-        $routeMenu = 'scripts.index';
-        $titleModal = __('Create Category');
-        $permissions = Auth::user()->hasPermissionsFor('categories');
-        $route = 'script_categories';
-        $location = '/designer/scripts/categories';
-        $include = 'scriptsCount';
-        $labelCount = __('# Scripts');
-        $count = 'scripts_count';
-        $showCategoriesTab = 'script-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
+        $catConfig = (object) [
+            'labels' => (object) [
+                'titleMenu' => __('Scripts'),
+                'titleModal' => __('Create Script Category'),
+                'countColumn' => __('# Scripts'),
+            ],
+            'routes' => (object) [
+                'routeMenu' => 'scripts.index',
+                'route' => 'script_categories',
+                'location' => '/designer/scripts/categories',
+            ],
+            'countField' => 'scripts_count',
+            'apiListInclude' => 'scriptsCount',
+            'permissions' => Auth::user()->hasPermissionsFor('categories')
+        ];
 
-        return view('processes.scripts.index', compact('scriptFormats', 'countCategories', 'title', 'titleMenu', 'routeMenu',
-            'permissions', 'titleModal', 'route', 'location', 'include', 'labelCount', 'count', 'showCategoriesTab'));
+        $listConfig = (object) [
+            'scriptFormats' => Script::scriptFormatList(),
+            'countCategories' => ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count()
+        ];
+
+        return view('processes.scripts.index', compact ('listConfig', 'catConfig'));
+
+//        $scriptFormats = Script::scriptFormatList();
+//        $countCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+//        $titleMenu = __('Scripts');
+//        $routeMenu = 'scripts.index';
+//        $titleModal = __('Create Category');
+//        $permissions = Auth::user()->hasPermissionsFor('categories');
+//        $route = 'script_categories';
+//        $location = '/designer/scripts/categories';
+//        $include = 'scriptsCount';
+//        $labelCount = __('# Scripts');
+//        $count = 'scripts_count';
+//        $showCategoriesTab = 'script-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
+//
+//        return view('processes.scripts.index', compact('scriptFormats', 'countCategories', 'titleMenu', 'routeMenu',
+//            'permissions', 'titleModal', 'route', 'location', 'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 
     public function edit(Script $script, User $users)

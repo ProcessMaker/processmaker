@@ -20,15 +20,16 @@
             __('Scripts'),
             __('Categories'),
         ],
-        'countCategories' => $countCategories,
-        'showCategoriesTab' => $showCategoriesTab
+        'countCategories' => $listConfig->countCategories
     ])
         @slot('itemList')
-            @include('processes.scripts.list')
+            @component('processes.scripts.list', ['config' => $listConfig])
+            @endcomponent
         @endslot
 
         @slot('categoryList')
-            @include('categories.list')
+            @component('categories.list', ['config' => $catConfig])
+            @endcomponent
         @endslot
 
     @endcomponent

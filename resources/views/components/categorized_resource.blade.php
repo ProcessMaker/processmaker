@@ -2,6 +2,10 @@
     @php
         $firstTab = $secondTab = 'nav-item nav-link';
         $firstContent = $secondContent = 'tab-pane fade show';
+        $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0
+                            ? true
+                            : false;
+
         if ($showCategoriesTab) {
             $secondTab.=' active';
             $secondContent.=' active';

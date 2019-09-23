@@ -21,17 +21,17 @@
             __('Screens'),
             __('Categories'),
         ],
-        'countCategories' => $countCategories,
-        'showCategoriesTab' => $showCategoriesTab
+        'countCategories' => $listConfig->countCategories,
     ])
         @slot('itemList')
-            @include('processes.screens.list')
+            @component('processes.screens.list', ['config' => $listConfig])
+            @endcomponent
         @endslot
 
         @slot('categoryList')
-            @include('categories.list')
+            @component('categories.list', ['config' => $catConfig])
+            @endcomponent
         @endslot
-
     @endcomponent
 @endsection
 

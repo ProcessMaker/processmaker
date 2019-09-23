@@ -20,7 +20,7 @@
 
         <div class="container-fluid">
             <script-listing :filter="filter"
-                            :script-formats='@json($scriptFormats)'
+                            :script-formats='@json($config->scriptFormats)'
                             :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}"
                             ref="listScript"
                             @delete="deleteScript">
@@ -38,7 +38,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @if ($countCategories !== 0)
+                    @if ($config->countCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
                                 {!!Form::label('title', __('Name'))!!}
@@ -62,7 +62,7 @@
                             </category-select>
                             <div class="form-group">
                                 {!!Form::label('language', __('Language'))!!}
-                                {!!Form::select('language', [''=>__('Select')] + $scriptFormats, null, ['class'=>
+                                {!!Form::select('language', [''=>__('Select')] + $config->scriptFormats, null, ['class'=>
                                 'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true,
                                 \'is-invalid\':addError.language}']);!!}
                                 <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
@@ -105,7 +105,7 @@
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
                             {{__('Cancel')}}
                         </button>
-                        @if ($countCategories !== 0)
+                        @if ($config->countCategories !== 0)
                             <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
                                 {{__('Save')}}
                             </button>

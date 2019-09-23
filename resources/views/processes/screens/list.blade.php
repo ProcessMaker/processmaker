@@ -39,7 +39,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @if ($countCategories !== 0)
+                    @if ($config->countCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
                                 {!! Form::label('title', __('Name')) !!}
@@ -52,7 +52,7 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('type', __('Type')) !!}
-                                {!! Form::select('type', [null => __('Select')] + $types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                                {!! Form::select('type', [null => __('Select')] + $config->types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
                                 'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
                                 <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
                             </div>
@@ -78,7 +78,7 @@
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
                             {{__('Cancel')}}
                         </button>
-                        @if ($countCategories !== 0)
+                        @if ($config->countCategories !== 0)
                             <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
                                 {{__('Save')}}
                             </button>
