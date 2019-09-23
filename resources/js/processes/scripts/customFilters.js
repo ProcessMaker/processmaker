@@ -1,3 +1,4 @@
+// PHP
 Vue.filter('php', function(value) {
   value = value.split("\r");
   let format = '';
@@ -20,6 +21,7 @@ Vue.filter('php', function(value) {
   return content.join("\n") + `\n\n\ return [];`;
 });
 
+// JAVASCRIPT
 Vue.filter('javascript', function(value) {
   value = value.split("\r");
   let format = '';
@@ -42,6 +44,7 @@ Vue.filter('javascript', function(value) {
   return content.join("\n") + `\n\n\ return {};`;
 });
 
+// LUA
 Vue.filter('lua', function(value) {
   value = value.split("\r");
   let format = '';
@@ -64,6 +67,7 @@ Vue.filter('lua', function(value) {
   return content.join("\n") + `\n\n\ return {};`;
 });
 
+// C#
 Vue.filter('csharp', function(value) {
   value = value.split("\r");
   let format = '';
@@ -77,7 +81,7 @@ Vue.filter('csharp', function(value) {
     } else {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
-      line = line.replace('{apiExample}',  ``);
+      line = line.replace('{apiExample}',  `apiInstance.GetUserById(id)`);
       format = line;
     }
     content.push(format);
@@ -86,6 +90,7 @@ Vue.filter('csharp', function(value) {
   return content.join("\n") + `\n\n\ return {};`;
 });
 
+// JAVA
 Vue.filter('java', function(value) {
   value = value.split("\r");
   let format = '';
@@ -99,7 +104,7 @@ Vue.filter('java', function(value) {
     } else {
       line = line.replace('{dataVariable}',  `data`);
       line = line.replace('{configVariable}',  `config`);
-      line = line.replace('{apiExample}',  ``);
+      line = line.replace('{apiExample}',  `apiInstance.getUserByID(id);`);
       format = ' * ' + line;
     }
     content.push(format);
