@@ -154,7 +154,7 @@
                     <div class="row">
                         <div class="card card-body">
                             <test-end-points
-                                ref="endpointsListing"
+                                ref="testEndPoints"
                                 :endpoints="formData.endpoints"
                                 :datasource="formData">
                             </test-end-points>
