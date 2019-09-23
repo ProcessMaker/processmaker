@@ -294,7 +294,9 @@
               url: "",
               headers: [],
               body_type: "",
-              body: ""
+              body: "",
+              testData: {},
+              testConfig: {}
             };
             this.$refs.endpointsListing.endpoints[purpose] = endpoint;
             this.$refs.endpointsListing.fetch();
