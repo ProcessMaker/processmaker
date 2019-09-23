@@ -7,6 +7,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\DataSource as dataSourceModel;
 use ProcessMaker\Exception\DataSourceResponseException;
 use ProcessMaker\Models\User;
@@ -92,6 +93,10 @@ class DataSource implements ShouldQueue
      */
     private function sendResponse($status, array $response)
     {
-        $this->user->notify(new DatasourceResponseNotification($status, $response));
+        Log::info('Info send response...................');
+        Log::debug($status);
+        Log::debug(json_encode($response['status']));
+        Log::debug(json_encode($response['response']));
+        $this->user->notify(new DatasourceResponseNotification($response['status'], $response['response']));
     }
 }

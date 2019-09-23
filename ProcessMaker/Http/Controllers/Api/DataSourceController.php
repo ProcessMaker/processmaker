@@ -279,14 +279,18 @@ class DataSourceController extends Controller
         $data['config'] = [];
 
         if ($request->has('data')) {
-            $newData = json_decode($request->get('data'), true) ?: [];
-            $data['data'] = $newData['data'] ?? [];
-            $data['config'] = $newData['config'] ?? [] ;
+            $newData = $request->get('data') ?: [];
+            $data['data'] = $newData['testData'] ?? [];
+            $data['config'] = $newData['testConfig'] ?? [] ;
+            $data['config']['endpoint'] = $newData['purpose'];
+            $datasource->endpoints = [
+                $newData['purpose'] => $newData
+            ];
         }
         Log::alert('test-----------------');
         Log::alert($request->user());
         Log::info(json_encode($datasource));
-        dispatch(new DataSourceJob($datasource, $data['data'], $data['config']));
+        dispatch(new DataSourceJob($datasource, $request->user(), $data['data'], $data['config']));
 
         return response([], 204);
     }
