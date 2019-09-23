@@ -38,14 +38,13 @@ class ScreenController extends Controller
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'screen_categories';
         $location = '/designer/screens/categories';
-        $create = 'create-categories';
         $include = 'screensCount';
         $labelCount = __('# Screens');
         $count = 'screens_count';
         $showCategoriesTab = 'screen-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
 
         return view('processes.screens.index', compact('types', 'countCategories', 'title', 'btnCreate', 'titleMenu',
-            'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create',
+            'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location',
             'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 

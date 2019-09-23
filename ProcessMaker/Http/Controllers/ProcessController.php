@@ -53,7 +53,7 @@ class ProcessController extends Controller
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'process_categories';
         $location = '/designer/processes/categories';
-        $create = 'create-categories';
+        //$create = 'create-categories';
         $include = 'processesCount';
         $labelCount = __('# Processes');
         $count = 'processes_count';
@@ -63,7 +63,7 @@ class ProcessController extends Controller
             'title', 'btnCreate', 'titleMenu',
             'routeMenu', 'permissions', 'titleModal',
             'fieldName', 'distinctName', 'route',
-            'location', 'create', 'include', 'labelCount',
+            'location', 'include', 'labelCount',
             'count'));
     }
 

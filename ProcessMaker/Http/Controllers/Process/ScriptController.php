@@ -29,14 +29,13 @@ class ScriptController extends Controller
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'script_categories';
         $location = '/designer/scripts/categories';
-        $create = 'create-categories';
         $include = 'scriptsCount';
         $labelCount = __('# Scripts');
         $count = 'scripts_count';
         $showCategoriesTab = 'script-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
 
         return view('processes.scripts.index', compact('scriptFormats', 'countCategories', 'title', 'btnCreate', 'titleMenu', 'routeMenu',
-            'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'create', 'include', 'labelCount', 'count', 'showCategoriesTab'));
+            'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 
     public function edit(Script $script, User $users)
