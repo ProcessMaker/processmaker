@@ -6,10 +6,12 @@ use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\DataSourceResponseException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Jobs\DataSource as DataSourceJob;
 use ProcessMaker\Models\DataSource;
 use ProcessMaker\Models\ProcessRequest;
 use Throwable;
@@ -241,16 +243,12 @@ class DataSourceController extends Controller
      * Send a DataSource request.
      *
      * @param DataSource $datasource
-     * @param ProcessRequest $processRequest
      * @param Request $request
      *
      * @return ResponseFactory|Response
      *
-     * @throws DataSourceResponseException
-     *
-     *
-     * @OA\Put(
-     *     path="/datasources/datasource_id/send",
+     * @OA\Post(
+     *     path="/datasources/datasource_id/test",
      *     summary="Send a Data Source request",
      *     operationId="sendDataSource",
      *     tags={"DataSources"},
@@ -274,10 +272,22 @@ class DataSourceController extends Controller
      *     ),
      * )
      */
-    public function request(DataSource $datasource, ProcessRequest $processRequest, Request $request)
+    public function test(DataSource $datasource, Request $request)
     {
-        $response = $datasource->request($processRequest->data, $request->json('config', []));
+        $data = [];
+        $data['data'] = [];
+        $data['config'] = [];
 
-        return response($response, 200);
+        if ($request->has('data')) {
+            $newData = json_decode($request->get('data'), true) ?: [];
+            $data['data'] = $newData['data'] ?? [];
+            $data['config'] = $newData['config'] ?? [] ;
+        }
+        Log::alert('test-----------------');
+        Log::alert($request->user());
+        Log::info(json_encode($datasource));
+        dispatch(new DataSourceJob($datasource, $data['data'], $data['config']));
+
+        return response([], 204);
     }
 }

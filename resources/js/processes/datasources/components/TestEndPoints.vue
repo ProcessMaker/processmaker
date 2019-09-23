@@ -102,7 +102,7 @@ export default {
   methods: {
     test(data) {
       window.ProcessMaker.apiClient.post(
-        "/datasources/${this.datasource.id}/test"
+        `/datasources/${this.datasource.id}/test`
       );
     },
     fetch() {

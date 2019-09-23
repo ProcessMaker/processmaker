@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -30,6 +31,8 @@ trait MakeHttpRequests
     public function request(array $data = [], array $config = [])
     {
         $mustache = new Mustache_Engine();
+        Log::notice('make http request....................');
+        Log::debug($this);
         $endpoint = $this->endpoints[$config['endpoint']];
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
@@ -118,9 +121,10 @@ trait MakeHttpRequests
     private function response($response, array $data = [], array $config = [], Mustache_Engine $mustache)
     {
         $status = $response->getStatusCode();
+        $content = $response->getBody()->getContents();
         switch (true) {
             case $status == 200:
-                $return = json_decode($response->getBody()->getContents(), true);
+                $return = json_decode($content, true);
             break;
             case $status > 200 && $status < 300:
                 $return = [];
@@ -131,6 +135,9 @@ trait MakeHttpRequests
         }
         $mapped = [];
         !is_array($return) ?: $merged = array_merge($data, $return);
+        $mapped['status'] = $status;
+        $mapped['response'] = $return;
+
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
                 //$value = $mustache->render($map['value'], $merged);
