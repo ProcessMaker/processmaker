@@ -20,7 +20,6 @@ class ScriptController extends Controller
         $scriptFormats = Script::scriptFormatList();
         $countCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
         $title = __('Script Categories');
-        $btnCreate = __('Category');
         $titleMenu = __('Scripts');
         $routeMenu = 'scripts.index';
         $titleModal = __('Create Category');
@@ -34,7 +33,7 @@ class ScriptController extends Controller
         $count = 'scripts_count';
         $showCategoriesTab = 'script-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
 
-        return view('processes.scripts.index', compact('scriptFormats', 'countCategories', 'title', 'btnCreate', 'titleMenu', 'routeMenu',
+        return view('processes.scripts.index', compact('scriptFormats', 'countCategories', 'title', 'titleMenu', 'routeMenu',
             'permissions', 'titleModal', 'fieldName', 'distinctName', 'route', 'location', 'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 

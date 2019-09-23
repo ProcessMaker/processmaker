@@ -13,7 +13,7 @@
                 @can('create-categories')
                     <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createCategory">
-                        <i class="fas fa-plus"></i> {{ $btnCreate ?? __('Category') }}
+                        <i class="fas fa-plus"></i> {{ __('Category') }}
                     </button>
                 @endcan
             </div>

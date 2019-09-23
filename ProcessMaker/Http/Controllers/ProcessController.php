@@ -44,7 +44,6 @@ class ProcessController extends Controller
         $countCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
 
         $title = __('Process Categories');
-        $btnCreate = __('Category');
         $titleMenu = __('Processes');
         $routeMenu = 'processes.index';
         $titleModal = __('Create Category');
@@ -53,18 +52,14 @@ class ProcessController extends Controller
         $permissions = Auth::user()->hasPermissionsFor('categories');
         $route = 'process_categories';
         $location = '/designer/processes/categories';
-        //$create = 'create-categories';
         $include = 'processesCount';
         $labelCount = __('# Processes');
         $count = 'processes_count';
         $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
 
         return view('processes.index', compact ('processes', 'countCategories', 'status', 'showCategoriesTab',
-            'title', 'btnCreate', 'titleMenu',
-            'routeMenu', 'permissions', 'titleModal',
-            'fieldName', 'distinctName', 'route',
-            'location', 'include', 'labelCount',
-            'count'));
+            'title', 'titleMenu', 'routeMenu', 'permissions', 'titleModal', 'fieldName', 'distinctName', 'route',
+            'location', 'include', 'labelCount', 'count'));
     }
 
     /**
