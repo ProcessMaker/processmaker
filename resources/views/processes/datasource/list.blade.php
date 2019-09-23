@@ -128,6 +128,10 @@
                   {
                     "value": "BEARER",
                     "content": __("Bearer Token")
+                  },
+                  {
+                    "value": "PASSWORD",
+                    "content": __("Password")
                   }
                 ],
                 errors: {

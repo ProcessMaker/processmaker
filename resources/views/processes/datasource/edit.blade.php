@@ -80,7 +80,7 @@
                                     :allow-empty="false"
                                     :show-labels="false">
                                 </multiselect>
-                                <div class="invalid-feedback d-block" v-if="errors.authtype">@{{errors.authtype[0]}}</div>
+                                <div class="invalid-feedback" :class="{'d-block': errors.authtype}" v-if="errors.authtype">@{{errors.authtype[0]}}</div>
                             </div>
 
                             <div class="form-group" v-show="formData.authtype === 'BEARER'">
