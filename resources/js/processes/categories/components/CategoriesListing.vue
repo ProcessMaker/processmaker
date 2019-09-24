@@ -66,7 +66,7 @@
     props: ["filter", "permission", "apiRoute", "location", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
-        localLoadOnStart: this.loadOnStart ? true : false,
+        localLoadOnStart: !!this.loadOnStart,
         orderBy: "name",
         sortOrder: [
           {
@@ -169,7 +169,7 @@
               "",
               () => {
                 ProcessMaker.apiClient.delete(`${this.apiRoute}/${data.id}`)
-                  .then((response) => {
+                  .then(() => {
                     ProcessMaker.alert("The category was deleted.", "success");
                     this.$emit("reload");
                   });

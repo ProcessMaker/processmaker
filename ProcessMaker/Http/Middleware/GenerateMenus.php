@@ -119,13 +119,6 @@ class GenerateMenus
                     'id' => 'processes'
                 ]);
             }
-            if (\Auth::check() && \Auth::user()->can('view-categories')) {
-                $submenu->add(__('Process Categories'), [
-                    'route' => 'categories.index',
-                    'icon' => 'fa-sitemap',
-                    'id' => 'process-categories'
-                ]);
-            }
             if (\Auth::check() && \Auth::user()->can('archive-processes')) {
                 $submenu->add(__('Archived Processes'), [
                     'route' => ['processes.index', 'status' => 'inactive'],
@@ -140,25 +133,11 @@ class GenerateMenus
                     'id' => 'process-scripts'
                 ]);
             }
-            if (\Auth::check() && \Auth::user()->can('view-categories')) {
-                $submenu->add(__('Script Categories'), [
-                    'route' => 'script-categories.index',
-                    'icon' => 'fa-sitemap',
-                    'id' => 'script-categories'
-                ]);
-            }
             if (\Auth::check() && \Auth::user()->can('view-screens')) {
                 $submenu->add(__('Screens'), [
                     'route' => 'screens.index',
                     'icon' => 'fa-file-alt',
                     'id' => 'process-screens'
-                ]);
-            }
-            if (\Auth::check() && \Auth::user()->can('view-categories')) {
-                $submenu->add(__('Screen Categories'), [
-                    'route' => 'screen-categories.index',
-                    'icon' => 'fa-sitemap',
-                    'id' => 'screen-categories'
                 ]);
             }
             if (\Auth::check() && \Auth::user()->can('view-environment_variables')) {

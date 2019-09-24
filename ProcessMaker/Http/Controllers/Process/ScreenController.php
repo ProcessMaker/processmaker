@@ -5,12 +5,11 @@ namespace ProcessMaker\Http\Controllers\Process;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
-use ProcessMaker\Models\Script;
 
 class ScreenController extends Controller
 {
@@ -25,14 +24,28 @@ class ScreenController extends Controller
         foreach (ScreenType::pluck('name')->toArray() as $type) {
             $types[$type] = __(ucwords(strtolower($type)));
         }
-        $countCategories = $screenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        $showCategoriesTab = $countCategories === 0;
-        $route = 'screen_categories';
-        $location = '/designer/screens/categories';
-        $include = 'screensCount';
-        $labelCount = __('# Screens');
-        $count = 'screens_count';
-        return view('processes.screens.index', compact('types', 'screenCategories', 'countCategories', 'showCategoriesTab', 'route', 'location', 'include', 'labelCount', 'count'));
+
+
+        $catConfig = (object) [
+            'labels' => (object) [
+                'newCategoryTitle' => __('Create Screen Category'),
+                'countColumn' => __('# Screens'),
+            ],
+            'routes' => (object) [
+                'itemsIndexWeb' => 'screens.index',
+                'editCategoryWeb' => 'screen-categories.edit',
+                'categoryListApi' => 'api.screen_categories.index',
+            ],
+            'countField' => 'screens_count',
+            'apiListInclude' => 'screensCount',
+        ];
+
+        $listConfig = (object) [
+            'types' => $types,
+            'countCategories' => ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count()
+        ];
+
+        return view('processes.screens.index', compact ('listConfig', 'catConfig'));
     }
 
     /**
@@ -87,12 +100,12 @@ class ScreenController extends Controller
 
         if (!$fileContents) {
             return abort(404);
-        } else {
-            return response()->streamDownload(function () use ($fileContents) {
-                echo $fileContents;
-            }, $fileName, [
-                'Content-type' => 'application/json',
-            ]);
         }
+
+        return response()->streamDownload(function () use ($fileContents) {
+            echo $fileContents;
+        }, $fileName, [
+            'Content-type' => 'application/json',
+        ]);
     }
 }

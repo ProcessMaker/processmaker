@@ -5,15 +5,12 @@ namespace ProcessMaker\Http\Controllers;
 use Cache;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
-use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ProcessController extends Controller
@@ -42,35 +39,27 @@ class ProcessController extends Controller
             return redirect()->route($redirect);
         }
 
+        $catConfig = (object) [
+            'labels' => (object) [
+                'newCategoryTitle' => __('Create Process Category'),
+                'countColumn' => __('# Processes'),
+            ],
+            'routes' => (object) [
+                'itemsIndexWeb' => 'processes.index',
+                'editCategoryWeb' => 'process-categories.edit',
+                'categoryListApi' => 'api.process_categories.index',
+            ],
+            'countField' => 'processes_count',
+            'apiListInclude' => 'processesCount',
+        ];
 
-        $status = $request->input('status');
-        $processes = Process::all(); //what will be in the database = Model
-        $countCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        $listConfig = (object) [
+            'processes' => Process::all(),
+            'countCategories' => ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
+            'status' => $request->input('status')
+        ];
 
-
-
-        $title = __('Process Categories');
-        $btnCreate = __('Category');
-        $titleMenu = __('Processes');
-        $routeMenu = 'processes.index';
-        $titleModal = __('Create Category');
-        $fieldName = __('Category Name');
-        $distinctName = __('The category name must be distinct.');
-        $permissions = Auth::user()->hasPermissionsFor('categories');
-        $route = 'process_categories';
-        $location = '/designer/processes/categories';
-        $create = 'create-categories';
-        $include = 'processesCount';
-        $labelCount = __('# Processes');
-        $count = 'processes_count';
-        $showCategoriesTab = 'categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
-
-        return view('processes.index', compact ('processes', 'countCategories', 'status', 'showCategoriesTab',
-            'title', 'btnCreate', 'titleMenu',
-            'routeMenu', 'permissions', 'titleModal',
-            'fieldName', 'distinctName', 'route',
-            'location', 'create', 'include', 'labelCount',
-            'count'));
+        return view('processes.index', compact ('listConfig', 'catConfig'));
     }
 
     /**

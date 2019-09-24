@@ -1,3 +1,7 @@
+@php
+    $url = app('router')->getRoutes()->getByName($config->routes->editCategoryWeb)->uri;
+    $editCatBaseUrl = '/' . explode('categories', $url)[0]  . 'categories';
+@endphp
 <div class="px-3 page-content" id="categories-listing">
     <div id="search-bar" class="search mt-2 bg-light" vcloak>
         <div class="d-flex">
@@ -13,7 +17,7 @@
                 @can('create-categories')
                     <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createCategory">
-                        <i class="fas fa-plus"></i> {{ $btnCreate ?? __('Category') }}
+                        <i class="fas fa-plus"></i> {{ __('Category') }}
                     </button>
                 @endcan
             </div>
@@ -24,13 +28,13 @@
         ref="list"
         @reload="reload"
         :filter="filter"
-        api-route="{{$route}}"
         :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}"
-        load-on-start="{{$showCategoriesTab ?? true}}"
-        location="{{$location}}"
-        include="{{$include}}"
-        label-count="{{$labelCount}}"
-        count="{{$count}}">
+        api-route="{{route($config->routes->categoryListApi)}}"
+        load-on-start="{{$config->showCategoriesTab ?? true}}"
+        location="{{$editCatBaseUrl}}"
+        include="{{$config->apiListInclude}}"
+        label-count="{{$config->labels->countColumn}}"
+        count="{{$config->countField}}">
     </categories-listing>
 </div>
 
@@ -39,18 +43,18 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">{{ $titleModal ?? __('Create Category')}}</h5>
+                    <h5 class="modal-title">{{ $config->labels->newCategoryTitle ?? __('Create Category')}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        {!!Form::label('name', $fieldName ?? __('Category Name'))!!}
+                        {!!Form::label('name', __('Category Name'))!!}
                         {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                         <small class="form-text text-muted" v-if="! errors.name">
-                            {{ $distinctName ?? __('The category name must be distinct.') }}
+                            {{ __('The category name must be distinct.') }}
                         </small>
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
@@ -87,8 +91,8 @@
               name: "",
               status: "ACTIVE",
               disabled: false,
-              route: @json($route),
-              location: @json($location),
+              route: @json(route($config->routes->categoryListApi)),
+              location: @json($editCatBaseUrl),
             },
             methods: {
               onClose () {

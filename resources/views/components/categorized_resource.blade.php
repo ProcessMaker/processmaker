@@ -2,6 +2,12 @@
     @php
         $firstTab = $secondTab = 'nav-item nav-link';
         $firstContent = $secondContent = 'tab-pane fade show';
+
+        $catListWebRoute = str_replace_last('.edit', '.index', $catConfig->routes->editCategoryWeb);
+        $showCategoriesTab = $catListWebRoute === \Request::route()->getName() || $listConfig->countCategories === 0
+                            ? true
+                            : false;
+
         if ($showCategoriesTab) {
             $secondTab.=' active';
             $secondContent.=' active';
@@ -46,6 +52,6 @@
       loadCategory = function () {
         ProcessMaker.EventBus.$emit("api-data-category", true);
       };
-      if ({{$countCategories}} === 0) loadCategory();
+      if ({{$listConfig->countCategories}} === 0) loadCategory();
     </script>
 @append

@@ -161,7 +161,7 @@ class PerformanceTest extends TestCase
         ['screens.index', []],
         ['screens.import', []],
         ['scripts.index', []],
-        ['categories.index', []],
+        ['process-categories.index', []],
         ['processes.index', []],
         ['processes.import', []],
         ['processes.create', []],

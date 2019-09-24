@@ -1,43 +1,24 @@
-@extends('layouts.layout')
-
-@section('title')
-    {{__('Screens')}}
-@endsection
-
-@section('sidebar')
-    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
-@endsection
-
-@section('breadcrumbs')
-    @include('shared.breadcrumbs', ['routes' => [
-        __('Designer') => route('processes.index'),
-        __('Screens') => null,
-    ]])
-@endsection
-@section('content')
     <div class="px-3 page-content" id="screenIndex">
-        <div class="row">
-            <div class="col">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">
-                      <i class="fas fa-search"></i>
-                      </span>
+        <div id="search-bar" class="search mt-2 bg-light p-2" vcloak>
+            <div class="d-flex">
+                <div class="flex-grow-1">
+                    <div id="search" class="pr-2">
+                        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                     </div>
-                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                 </div>
-            </div>
-            <div class="col-8" align="right">
-                @can('import-screen')
-                    <a href="#" class="btn btn-outline-secondary" @click="goToImport"><i class="fas fa-file-import"></i>
-                        {{__('Import')}}</a>
-                @endcan
-                @can('create-screens')
-                    <button type="button" href="#" id="create_screen" class="btn btn-secondary" data-toggle="modal"
-                            data-target="#createScreen">
-                        <i class="fas fa-plus"></i> {{__('Screen')}}
-                    </button>
-                @endcan
+                <div class="flex-shrink-0">
+                    <button title="" type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                    @can('import-screen')
+                        <a href="#" class="btn btn-outline-secondary" @click="goToImport"><i class="fas fa-file-import"></i>
+                            {{__('Import')}}</a>
+                    @endcan
+                    @can('create-screens')
+                        <button type="button" href="#" id="create_screen" class="btn btn-secondary" data-toggle="modal"
+                                data-target="#createScreen">
+                            <i class="fas fa-plus"></i> {{__('Screen')}}
+                        </button>
+                    @endcan
+                </div>
             </div>
         </div>
 
@@ -58,7 +39,7 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    @if ($screenCategories !== 0)
+                    @if ($config->countCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
                                 {!! Form::label('title', __('Name')) !!}
@@ -71,7 +52,7 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('type', __('Type')) !!}
-                                {!! Form::select('type', [null => __('Select')] + $types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
+                                {!! Form::select('type', [null => __('Select')] + $config->types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
                                 'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
                                 <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
                             </div>
@@ -97,7 +78,7 @@
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
                             {{__('Cancel')}}
                         </button>
-                        @if ($screenCategories !== 0)
+                        @if ($config->countCategories !== 0)
                             <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
                                 {{__('Save')}}
                             </button>
@@ -107,7 +88,6 @@
             </div>
         </div>
     @endcan
-@endsection
 
 @section('js')
     <script src="{{mix('js/processes/screens/index.js')}}"></script>
@@ -174,4 +154,4 @@
           });
         </script>
     @endcan
-@endsection
+@append

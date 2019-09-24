@@ -7,6 +7,7 @@
         if( $status === 'inactive'){
             $title = __('Archived Processes');
         }
+
     @endphp
     {{$title}}
 @endsection
@@ -28,17 +29,18 @@
             __('Processes'),
             __('Categories'),
         ],
-        'countCategories' => $countCategories,
-        'showCategoriesTab' => $showCategoriesTab
+        'listConfig' => $listConfig,
+        'catConfig' => $catConfig,
     ])
         @slot('itemList')
-            @include('processes.list')
+            @component('processes.list', ['config' => $listConfig])
+            @endcomponent
         @endslot
 
         @slot('categoryList')
-            @include('categories.list')
+            @component('categories.list', ['config' => $catConfig])
+            @endcomponent
         @endslot
-
     @endcomponent
 @endsection
 

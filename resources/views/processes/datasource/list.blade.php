@@ -39,7 +39,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                @if ($countCategories !== 0)
+                @if ($config->countCategories !== 0)
                     <div class="modal-body">
                         <div class="form-group">
                             {!! Form::label('name', __('Name')) !!}
@@ -92,7 +92,7 @@
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
                         {{__('Cancel')}}
                     </button>
-                    @if ($countCategories !== 0)
+                    @if ($config->countCategories !== 0)
                         <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
                             {{__('Save')}}
                         </button>

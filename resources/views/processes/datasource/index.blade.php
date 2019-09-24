@@ -21,15 +21,15 @@
             __('Sources'),
             __('Categories'),
         ],
-        'countCategories' => $countCategories,
-        'showCategoriesTab' => $showCategoriesTab
+        'listConfig' => $listConfig,
+        'catConfig' => $catConfig
     ])
         @slot('itemList')
-            @include('processes.datasource.list')
+            @include('processes.datasource.list', ['config' => $listConfig])
         @endslot
 
         @slot('categoryList')
-            @include('categories.list')
+            @include('categories.list', ['config' => $catConfig])
         @endslot
 
     @endcomponent
