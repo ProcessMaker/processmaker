@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Traits;
 
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -9,6 +11,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
 use ProcessMaker\Exception\DataSourceResponseException;
+use Psr\Http\Message\ResponseInterface;
 
 trait MakeHttpRequests
 {
@@ -30,6 +33,8 @@ trait MakeHttpRequests
     public function request(array $data = [], array $config = [])
     {
         $mustache = new Mustache_Engine();
+        Log::notice('make http request....................');
+        Log::debug($this);
         $endpoint = $this->endpoints[$config['endpoint']];
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
@@ -118,19 +123,23 @@ trait MakeHttpRequests
     private function response($response, array $data = [], array $config = [], Mustache_Engine $mustache)
     {
         $status = $response->getStatusCode();
+        $content = [];
         switch (true) {
             case $status == 200:
-                $return = json_decode($response->getBody()->getContents(), true);
+                $content = json_decode($response->getBody()->getContents(), true);
             break;
             case $status > 200 && $status < 300:
-                $return = [];
+                $content = [];
             break;
             default:
                 $exception = new DataSourceResponseException($response);
                 throw $exception;
         }
         $mapped = [];
-        !is_array($return) ?: $merged = array_merge($data, $return);
+        !is_array($content) ?: $merged = array_merge($data, $content);
+        $mapped['status'] = $status;
+        $mapped['response'] = $content;
+
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
                 //$value = $mustache->render($map['value'], $merged);
@@ -147,9 +156,9 @@ trait MakeHttpRequests
      * @param string $method
      * @param string $url
      * @param array $headers
-     * @param string $body
-     *
-     * @return Response
+     * @param $body
+     * @return mixed|ResponseInterface
+     * @throws GuzzleException
      */
     private function call($method, $url, array $headers, $body)
     {

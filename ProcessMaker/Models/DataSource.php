@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\Encryptable;
@@ -23,8 +24,8 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * @property string credentials
  * @property string status
  * @property integer data_source_category_id
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $created_at
  *
  * @OA\Schema(
  *   schema="dataSourceEditable",

@@ -86,6 +86,7 @@
           <label>{{ $t('Response') }}</label>
         </div>
         <b-col cols="12" style="height:12em" class="overflow-auto">
+          <!--<monaco-editor :options="monacoOptions" v-model="testResponse" language="json" class="h-100 border"/>-->
           <code class="border">{{ testResponse }}</code>
         </b-col>
       </div>
@@ -116,10 +117,6 @@
       rowIndex: {
         type: Number
       },
-      canPrint: {
-        type: Boolean,
-        default: false
-      },
     },
     data() {
       return {
@@ -143,7 +140,18 @@
         this.$refs.headersListing.detail(header);
         this.$set(this.rowData, 'headers', this.$refs.headersListing.headers);
       }
-    }
+    },
+    mounted() {
+      window.addEventListener("resize", this.handleResize);
+      let userID = document.head.querySelector('meta[name="user-id"]');
+      window.Echo.private(
+          `ProcessMaker.Models.User.${userID.content}`
+      ).notification(response => {
+        console.log('response message........');
+        console.log(response);
+        this.testResponse = response.response;
+      });
+    },
   }
 
 </script>
