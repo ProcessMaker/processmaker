@@ -276,8 +276,8 @@
                 }
             }
         },
-        "/datasources/datasource_id/send": {
-            "put": {
+        "/datasources/datasource_id/test": {
+            "post": {
                 "tags": [
                     "DataSources"
                 ],
@@ -2394,6 +2394,9 @@
                                 "completed"
                             ]
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/filter"
                     },
                     {
                         "$ref": "#/components/parameters/order_by"
