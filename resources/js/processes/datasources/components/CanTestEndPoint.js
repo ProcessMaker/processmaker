@@ -14,6 +14,11 @@ export default {
       testResponse: ""
     };
   },
+  methods: {
+    testEndpoint () {
+      this.$parent.$parent.test(this.rowData);
+    }
+  },
   watch: {
     testData: {
       deep: true,

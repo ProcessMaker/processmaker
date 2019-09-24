@@ -64,8 +64,16 @@
       </div>
 
       <div class="form-group">
-        <div class="col">
-          <label>{{ $t('Sample Data') }}</label>
+        <div class="row">
+          <div class="col">
+            <label>{{ $t('Sample Data') }}</label>
+          </div>
+          <div class="col-8">
+            <button type="button" href="#" @click="testEndpoint"
+                    class="btn btn-secondary btn-sm float-right">
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
         </div>
         <b-col cols="12" style="height:12em">
           <monaco-editor :options="monacoOptions" v-model="testData" language="json" class="h-100 border" />
