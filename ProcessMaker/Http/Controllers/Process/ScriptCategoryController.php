@@ -19,12 +19,12 @@ class ScriptCategoryController extends Controller
     public function edit(ScriptCategory $scriptCategory)
     {
         $category = $scriptCategory;
-        $titleMenu = __('Categories');
-        $routeMenu = 'script-categories.index';
+        $categoriesLabel = __('Categories');
+        $itemsLabel = __('Scripts');
+        $categoriesRoute = 'script-categories.index';
         $route = 'script_categories';
         $location = '/designer/scripts/categories';
         $itemsRoute = 'scripts.index';
-        $itemsTitle = __('Scripts');
-        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu', 'itemsRoute', 'itemsTitle'));
+        return view('categories.edit', compact('category', 'route', 'location', 'categoriesLabel', 'categoriesRoute', 'itemsRoute', 'itemsLabel'));
     }
 }

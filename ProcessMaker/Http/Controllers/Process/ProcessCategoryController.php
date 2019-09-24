@@ -20,10 +20,10 @@ class ProcessCategoryController extends Controller
         $category = $processCategory;
         $route = 'process_categories';
         $location = '/designer/processes/categories';
-        $titleMenu = __('Categories');
-        $routeMenu = 'categories.index';
+        $categoriesLabel = __('Categories');
+        $itemsLabel = __('Processes');
+        $categoriesRoute = 'process-categories.index';
         $itemsRoute = 'processes.index';
-        $itemsTitle = __('Processes');
-        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu', 'itemsRoute', 'itemsTitle'));
+        return view('categories.edit', compact('category', 'route', 'location', 'categoriesLabel', 'categoriesRoute', 'itemsRoute', 'itemsLabel'));
     }
 }

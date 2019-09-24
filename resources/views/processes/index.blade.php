@@ -29,7 +29,8 @@
             __('Processes'),
             __('Categories'),
         ],
-        'countCategories' => $listConfig->countCategories,
+        'listConfig' => $listConfig,
+        'catConfig' => $catConfig,
     ])
         @slot('itemList')
             @component('processes.list', ['config' => $listConfig])

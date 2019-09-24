@@ -18,12 +18,12 @@ class ScreenCategoryController extends Controller
     public function edit(ScreenCategory $screenCategory)
     {
         $category = $screenCategory;
-        $titleMenu = __('Categories');
-        $routeMenu = 'screen-categories.index';
+        $categoriesLabel = __('Categories');
+        $itemsLabel = __('Screens');
+        $categoriesRoute = 'screen-categories.index';
         $route = 'screen_categories';
         $location = '/designer/screens/categories';
         $itemsRoute = 'screens.index';
-        $itemsTitle = __('Screens');
-        return view('categories.edit', compact('category', 'route', 'location', 'titleMenu', 'routeMenu', 'itemsRoute', 'itemsTitle'));
+        return view('categories.edit', compact('category', 'route', 'location', 'categoriesLabel', 'categoriesRoute', 'itemsRoute', 'itemsLabel'));
     }
 }

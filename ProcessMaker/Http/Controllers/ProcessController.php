@@ -41,18 +41,16 @@ class ProcessController extends Controller
 
         $catConfig = (object) [
             'labels' => (object) [
-                'titleMenu' => __('Processes'),
-                'titleModal' => __('Create Process Category'),
+                'newCategoryTitle' => __('Create Process Category'),
                 'countColumn' => __('# Processes'),
             ],
             'routes' => (object) [
-                'routeMenu' => 'processes.index',
-                'route' => 'process_categories',
-                'location' => '/designer/processes/categories',
+                'itemsIndexWeb' => 'processes.index',
+                'editCategoryWeb' => 'process-categories.edit',
+                'categoryListApi' => 'api.process_categories.index',
             ],
             'countField' => 'processes_count',
             'apiListInclude' => 'processesCount',
-            'permissions' => Auth::user()->hasPermissionsFor('categories')
         ];
 
         $listConfig = (object) [

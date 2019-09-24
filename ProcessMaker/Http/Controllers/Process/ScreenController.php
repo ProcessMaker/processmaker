@@ -29,18 +29,16 @@ class ScreenController extends Controller
 
         $catConfig = (object) [
             'labels' => (object) [
-                'titleMenu' => __('Screens'),
-                'titleModal' => __('Create Screen Category'),
+                'newCategoryTitle' => __('Create Screen Category'),
                 'countColumn' => __('# Screens'),
             ],
             'routes' => (object) [
-                'routeMenu' => 'screens.index',
-                'route' => 'screen_categories',
-                'location' => '/designer/screens/categories',
+                'itemsIndexWeb' => 'screens.index',
+                'editCategoryWeb' => 'screen-categories.edit',
+                'categoryListApi' => 'api.screen_categories.index',
             ],
             'countField' => 'screens_count',
             'apiListInclude' => 'screensCount',
-            'permissions' => Auth::user()->hasPermissionsFor('categories')
         ];
 
         $listConfig = (object) [

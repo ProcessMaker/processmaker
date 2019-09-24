@@ -20,7 +20,8 @@
             __('Scripts'),
             __('Categories'),
         ],
-        'countCategories' => $listConfig->countCategories
+        'listConfig' => $listConfig,
+        'catConfig' => $catConfig
     ])
         @slot('itemList')
             @component('processes.scripts.list', ['config' => $listConfig])

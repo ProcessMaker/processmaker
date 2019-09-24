@@ -19,18 +19,16 @@ class ScriptController extends Controller
     {
         $catConfig = (object) [
             'labels' => (object) [
-                'titleMenu' => __('Scripts'),
-                'titleModal' => __('Create Script Category'),
+                'newCategoryTitle' => __('Create Script Category'),
                 'countColumn' => __('# Scripts'),
             ],
             'routes' => (object) [
-                'routeMenu' => 'scripts.index',
-                'route' => 'script_categories',
-                'location' => '/designer/scripts/categories',
+                'itemsIndexWeb' => 'scripts.index',
+                'editCategoryWeb' => 'script-categories.edit',
+                'categoryListApi' => 'api.script_categories.index',
             ],
             'countField' => 'scripts_count',
             'apiListInclude' => 'scriptsCount',
-            'permissions' => Auth::user()->hasPermissionsFor('categories')
         ];
 
         $listConfig = (object) [
@@ -39,22 +37,6 @@ class ScriptController extends Controller
         ];
 
         return view('processes.scripts.index', compact ('listConfig', 'catConfig'));
-
-//        $scriptFormats = Script::scriptFormatList();
-//        $countCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-//        $titleMenu = __('Scripts');
-//        $routeMenu = 'scripts.index';
-//        $titleModal = __('Create Category');
-//        $permissions = Auth::user()->hasPermissionsFor('categories');
-//        $route = 'script_categories';
-//        $location = '/designer/scripts/categories';
-//        $include = 'scriptsCount';
-//        $labelCount = __('# Scripts');
-//        $count = 'scripts_count';
-//        $showCategoriesTab = 'script-categories.index' === \Request::route()->getName() || $countCategories === 0 ? true : false;
-//
-//        return view('processes.scripts.index', compact('scriptFormats', 'countCategories', 'titleMenu', 'routeMenu',
-//            'permissions', 'titleModal', 'route', 'location', 'include', 'labelCount', 'count', 'showCategoriesTab'));
     }
 
     public function edit(Script $script, User $users)

@@ -1,3 +1,7 @@
+@php
+    $url = app('router')->getRoutes()->getByName($config->routes->editCategoryWeb)->uri;
+    $editCatBaseUrl = '/' . explode('categories', $url)[0]  . 'categories';
+@endphp
 <div class="px-3 page-content" id="categories-listing">
     <div id="search-bar" class="search mt-2 bg-light" vcloak>
         <div class="d-flex">
@@ -25,9 +29,9 @@
         @reload="reload"
         :filter="filter"
         :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}"
-        api-route="{{$config->routes->route}}"
+        api-route="{{route($config->routes->categoryListApi)}}"
         load-on-start="{{$config->showCategoriesTab ?? true}}"
-        location="{{$config->routes->location}}"
+        location="{{$editCatBaseUrl}}"
         include="{{$config->apiListInclude}}"
         label-count="{{$config->labels->countColumn}}"
         count="{{$config->countField}}">
@@ -39,7 +43,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">{{ $config->labels->titleModal ?? __('Create Category')}}</h5>
+                    <h5 class="modal-title">{{ $config->labels->newCategoryTitle ?? __('Create Category')}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -87,8 +91,8 @@
               name: "",
               status: "ACTIVE",
               disabled: false,
-              route: @json($config->routes->route),
-              location: @json($config->routes->location),
+              route: @json(route($config->routes->categoryListApi)),
+              location: @json($editCatBaseUrl),
             },
             methods: {
               onClose () {
