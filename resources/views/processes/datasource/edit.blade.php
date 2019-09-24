@@ -107,14 +107,14 @@
 
                             <div class="form-group" v-show="formData.authtype === 'BASIC' || formData.authtype === 'PASSWORD'">
                                 {!! Form::label('user', __('User')) !!}
-                                {!! Form::text('user', null, ['id' => 'user', 'class'=> 'form-control', 'v-model'=> 'credentials.user', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.user}']) !!}
+                                {!! Form::text('user', null, ['id' => 'user', 'v-model'=> 'credentials.user', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.user}']) !!}
                                 <div class="invalid-feedback" v-if="errors.user">@{{errors.user[0]}}
                                 </div>
                             </div>
 
                             <div class="form-group" v-show="formData.authtype === 'BASIC' || formData.authtype === 'PASSWORD'">
                                 {!! Form::label('password', __('Password')) !!}
-                                {!! Form::text('password', null, ['id' => 'password', 'class'=> 'form-control', 'v-model'=> 'credentials.password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
+                                {{ Form::password('password', ['id' => 'password', 'class'=> 'form-control', 'v-model'=> 'credentials.password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) }}
                                 <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}
                                 </div>
                             </div>

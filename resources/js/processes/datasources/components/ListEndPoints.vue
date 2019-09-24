@@ -1,52 +1,52 @@
 <template>
-  <div class="data-table">
-    <div class="card card-body table-card">
-      <vuetable
-        :dataManager="dataManager"
-        :sortOrder="sortOrder"
-        :css="css"
-        :api-mode="false"
-        :fields="fields"
-        :data="data"
-        data-path="data"
-        :noDataTemplate="$t('No Data Available')"
-        detail-row-component="detail-end-point"
-        @vuetable:cell-clicked="detail"
-        ref="endpoints"
-      >
-        <template slot="actions" slot-scope="props">
-          <div class="actions">
-            <div class="popout">
-              <b-btn
-                variant="link"
-                @click="detail(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Details')">
-                <i v-if="!props.rowData.view" class="fas fa-search-plus fa-lg fa-fw"></i>
-                <i v-else class="fas fa-search-minus fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="test(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Test')"
-              >
-                <i class="fas fa-play fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="doDelete(props.rowData)"
-                v-b-tooltip.hover
-                :title="$t('Remove')"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
-              </b-btn>
-            </div>
-          </div>
-        </template>
-      </vuetable>
+    <div class="data-table">
+        <div class="card card-body table-card">
+            <vuetable
+                :dataManager="dataManager"
+                :sortOrder="sortOrder"
+                :css="css"
+                :api-mode="false"
+                :fields="fields"
+                :data="data"
+                data-path="data"
+                :noDataTemplate="$t('No Data Available')"
+                detail-row-component="detail-end-point"
+                @vuetable:cell-clicked="detail"
+                ref="endpoints"
+            >
+                <template slot="actions" slot-scope="props">
+                    <div class="actions">
+                        <div class="popout">
+                            <b-btn
+                                variant="link"
+                                @click="detail(props.rowData)"
+                                v-b-tooltip.hover
+                                :title="$t('Details')">
+                                <i v-if="!props.rowData.view" class="fas fa-search-plus fa-lg fa-fw"></i>
+                                <i v-else class="fas fa-search-minus fa-lg fa-fw"></i>
+                            </b-btn>
+                            <b-btn
+                                variant="link"
+                                @click="test(props.rowData)"
+                                v-b-tooltip.hover
+                                :title="$t('Test')"
+                            >
+                                <i class="fas fa-play fa-lg fa-fw"></i>
+                            </b-btn>
+                            <b-btn
+                                variant="link"
+                                @click="doDelete(props.rowData)"
+                                v-b-tooltip.hover
+                                :title="$t('Remove')"
+                            >
+                                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+                            </b-btn>
+                        </div>
+                    </div>
+                </template>
+            </vuetable>
+        </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -75,18 +75,23 @@
     watch: {
       endpoints: {
         deep: true,
-        handler() {
+        handler () {
           const endpoints = {};
-          Object.keys(this.endpoints).forEach((name) => {
-            endpoints[this.endpoints[name].purpose] = this.endpoints[name];
-          });
-          if (Object.keys(endpoints).join(",") !== Object.keys(this.endpoints).join(",")) {
-            Object.keys(this.endpoints).forEach(name => {
-              this.$delete(this.endpoints, name);
+          Object.keys(this.endpoints)
+            .forEach((name) => {
+              endpoints[this.endpoints[name].purpose] = this.endpoints[name];
             });
-            Object.keys(endpoints).forEach(name => {
-              this.$set(this.endpoints, name, endpoints[name]);
-            });
+          if (Object.keys(endpoints)
+            .join(",") !== Object.keys(this.endpoints)
+            .join(",")) {
+            Object.keys(this.endpoints)
+              .forEach(name => {
+                this.$delete(this.endpoints, name);
+              });
+            Object.keys(endpoints)
+              .forEach(name => {
+                this.$set(this.endpoints, name, endpoints[name]);
+              });
           }
         },
       },
@@ -125,22 +130,25 @@
       };
     },
     methods: {
-      test(data, requester) {
+      test (data, requester) {
         data.view = true;
-        window.ProcessMaker.apiClient.post(
-          `/datasources/${this.datasource.id}/test`,
-          {
-            data
-          }
-        ).then((response) => {
-          //requester.response = response.data;
-        });
+        window.ProcessMaker.apiClient
+          .post(
+            `/datasources/${this.datasource.id}/test`,
+            {
+              data
+            }
+          )
+          .then((response) => {
+            //requester.response = response.data;
+
+          });
       },
       fetch () {
         this.data = [];
         if (this.endpoints) {
           let index = 0;
-          for(let name in this.endpoints) {
+          for (let name in this.endpoints) {
             let item = this.endpoints[name];
             item.view = false;
             item.id = index;
