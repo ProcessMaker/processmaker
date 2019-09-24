@@ -38,6 +38,8 @@ class DataSource implements ShouldQueue
      */
     private $config;
 
+    private $index;
+
 
     /**
      * Create a new job instance.
@@ -46,13 +48,15 @@ class DataSource implements ShouldQueue
      * @param User $user
      * @param array $data
      * @param array $config
+     * @param $index
      */
-    public function __construct(dataSourceModel $dataSource, User $user, array $data, array $config)
+    public function __construct(dataSourceModel $dataSource, User $user, array $data, array $config, $index)
     {
         $this->user = $user;
         $this->datasource = $dataSource;
         $this->data = $data;
         $this->config = $config;
+        $this->index = $index;
     }
 
     /**
@@ -97,6 +101,6 @@ class DataSource implements ShouldQueue
         Log::debug($status);
         Log::debug(json_encode($response['status']));
         Log::debug(json_encode($response['response']));
-        $this->user->notify(new DatasourceResponseNotification($response['status'], $response['response']));
+        $this->user->notify(new DatasourceResponseNotification($response['status'], $response['response'], $this->index));
     }
 }

@@ -178,6 +178,26 @@
           }
         );
       }
-    }
+    },
+    mounted () {
+      let userID = document.head.querySelector("meta[name=\"user-id\"]");
+      window.Echo.private(
+        `ProcessMaker.Models.User.${userID.content}`
+      )
+        .notification(response => {
+          console.log(this.visibleDetailRows);
+          if (response.type === 'ProcessMaker\\Notifications\\DatasourceResponseNotification') {
+            console.log("response message ........");
+            console.log(response);
+            //this.$refs.endpoints.$children[response.index].testResponse = response.response;
+
+            this.$refs.endpoints.$children.forEach(item => {
+              if (item.rowIndex == response.index) {
+                item.testReponse = response.response;
+              }
+            })
+          }
+        });
+    },
   };
 </script>

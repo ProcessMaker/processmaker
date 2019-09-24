@@ -277,12 +277,14 @@ class DataSourceController extends Controller
         $data = [];
         $data['data'] = [];
         $data['config'] = [];
+        $index = 0;
 
         if ($request->has('data')) {
             $newData = $request->get('data') ?: [];
             $data['data'] = $newData['testData'] ?? [];
             $data['config'] = $newData['testConfig'] ?? [] ;
             $data['config']['endpoint'] = $newData['purpose'];
+            $index = $newData['id'];
             $datasource->endpoints = [
                 $newData['purpose'] => $newData
             ];
@@ -290,7 +292,7 @@ class DataSourceController extends Controller
         Log::alert('test-----------------');
         Log::alert($request->user());
         Log::info(json_encode($datasource));
-        dispatch(new DataSourceJob($datasource, $request->user(), $data['data'], $data['config']));
+        dispatch(new DataSourceJob($datasource, $request->user(), $data['data'], $data['config'], $index));
 
         return response([], 204);
     }
