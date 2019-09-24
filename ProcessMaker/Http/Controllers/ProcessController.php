@@ -39,12 +39,12 @@ class ProcessController extends Controller
             return redirect()->route($redirect);
         }
 
-        $catConfig = (object) [
-            'labels' => (object) [
+        $catConfig = (object)[
+            'labels' => (object)[
                 'newCategoryTitle' => __('Create Process Category'),
                 'countColumn' => __('# Processes'),
             ],
-            'routes' => (object) [
+            'routes' => (object)[
                 'itemsIndexWeb' => 'processes.index',
                 'editCategoryWeb' => 'process-categories.edit',
                 'categoryListApi' => 'api.process_categories.index',
@@ -53,13 +53,13 @@ class ProcessController extends Controller
             'apiListInclude' => 'processesCount',
         ];
 
-        $listConfig = (object) [
+        $listConfig = (object)[
             'processes' => Process::all(),
             'countCategories' => ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
             'status' => $request->input('status')
         ];
 
-        return view('processes.index', compact ('listConfig', 'catConfig'));
+        return view('processes.index', compact('listConfig', 'catConfig'));
     }
 
     /**
@@ -195,7 +195,7 @@ class ProcessController extends Controller
         $fileName = snake_case($process->name) . '.json';
         $fileContents = Cache::get($key);
 
-        if (! $fileContents) {
+        if (!$fileContents) {
             return abort(404);
         } else {
             return response()->streamDownload(function () use ($fileContents) {
@@ -227,7 +227,7 @@ class ProcessController extends Controller
             case 'view-processes':
                 return false; // already on index, continue with it
             case 'view-categories':
-                return 'categories.index';
+                return 'process-categories.index';
             case 'view-scripts':
                 return 'scripts.index';
             case 'view-screens':
