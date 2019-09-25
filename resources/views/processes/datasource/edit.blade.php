@@ -77,13 +77,21 @@
                                 <div class="invalid-feedback" :class="{'d-block': errors.authtype}" v-if="errors.authtype">@{{errors.authtype[0]}}</div>
                             </div>
 
-                            <div class="form-group" v-show="formData.authtype === 'BEARER'">
-                                {!! Form::label('token', __('Token')) !!}
-                                {!! Form::textarea('token', null, ['id' => 'token', 'rows' => 4, 'class'=> 'form-control', 'v-model'=> 'credentials.token', 'placeholder' => empty($datasource->credentials['token']) ? '': '********' , 'rows' => 4, 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.token}']) !!}
-                                <div class="invalid-feedback" v-if="errors.token">@{{errors.token[0]}}
+                            <template  v-if="formData.authtype === 'BEARER'">
+                                <div class="form-group">
+                                    {!! Form::label('token', __('Token')) !!}
+                                    {!! Form::textarea('token', null, ['id' => 'token', 'rows' => 4, 'class'=> 'form-control', 'v-model'=> 'credentials.token', 'placeholder' => empty($datasource->credentials['token']) ? '': '********' , 'rows' => 4, 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.token}']) !!}
+                                    <div class="invalid-feedback" v-if="errors.token">@{{errors.token[0]}}
+                                    </div>
                                 </div>
-                            </div>
-
+                                <div class="form-group">
+                                    <button type="button" @click="openGetAccessToken"
+                                    class="btn btn-secondary float-right">
+                                      <i class="fas fa-cog"></i> {{__('Get Access Token')}}
+                                    </button>
+                                </div>
+                            </template>
+  
                             <div class="form-group" v-show="formData.authtype === 'PASSWORD'">
                                 {!! Form::label('url', __('Url Token')) !!}
                                 {!! Form::text('url', null, ['id' => 'url', 'class'=> 'form-control', 'v-model'=> 'credentials.url', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.url}']) !!}
@@ -117,6 +125,13 @@
                                 {{ Form::password('password', ['id' => 'password', 'class'=> 'form-control', 'v-model'=> 'credentials.password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) }}
                                 <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}
                                 </div>
+                            </div>
+
+                            <div class="form-group" v-show="formData.authtype === 'BASIC' || formData.authtype === 'PASSWORD'">
+                              <button type="button" @click="getAccessToken"
+                              class="btn btn-secondary float-right">
+                                <i class="fas fa-cog"></i> {{__('Test')}}
+                              </button>
                             </div>
 
                         </div>
@@ -155,12 +170,19 @@
                 @endcan
             </div>
         </div>
-    </div>
+        @foreach ($getAccessTokensMethods as $include)
+            @include($include, ['section' => 'template'])
+        @endforeach
+  </div>
 
 @endsection
 
 @section('js')
     <script src="{{mix('js/processes/datasources/edit.js')}}"></script>
+    <script>const mixins = [];</script>
+    @foreach ($getAccessTokensMethods as $include)
+        @include($include, ['section' => 'script'])
+    @endforeach
     <script>
       const authorizations = [
         {
@@ -177,11 +199,12 @@
         },
         {
           "value": "PASSWORD",
-          "content": __("Password")
+          "content": __("OAuth 2.0 Password")
         }
       ];
       new Vue({
         el: "#formDataSource",
+        mixins,
         data () {
           let formData = @json($datasource);
           formData.endpoints = formData.endpoints ? formData.endpoints : {};
@@ -198,11 +221,14 @@
             disabled: false,
             credentials: {
               token: "",
-              user: "",
+              grant_type: "",
+              username: "",
               password: "",
-              clientId: "",
-              clientSecret: "",
-              url:''
+              client_id: "",
+              client_secret: "",
+              scope: "",
+              url: "",
+              method: "post",
             },
             errors: {},
             formData

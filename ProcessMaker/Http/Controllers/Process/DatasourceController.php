@@ -11,6 +11,10 @@ use ProcessMaker\Models\DataSourceCategory;
 
 class DatasourceController extends Controller
 {
+    static $getAccessTokensMethods = [
+        'processes.datasource.oauth2.password_grant',
+    ];
+
     /**
      * Get the list of datasource
      *
@@ -48,6 +52,7 @@ class DatasourceController extends Controller
      */
     public function edit(Datasource $datasource)
     {
-        return view('processes.datasource.edit', compact('datasource'));
+        $getAccessTokensMethods = self::$getAccessTokensMethods;
+        return view('processes.datasource.edit', compact('datasource', 'getAccessTokensMethods'));
     }
 }
