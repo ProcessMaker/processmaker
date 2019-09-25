@@ -9,7 +9,7 @@ export default {
       monacoOptions: {
         automaticLayout: true
       },
-      testData: "",
+      testData: null,
       testError: "",
       testResponse: ""
     };

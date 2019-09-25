@@ -12,16 +12,20 @@ class DatasourceResponseNotification extends Notification
 {
     use Queueable;
 
+    protected $index;
     protected $status;
     protected $response;
 
     /**
-     * Create a new notification instance.
+     * DatasourceResponseNotification constructor.
      *
-     * @return void
+     * @param $status
+     * @param array $response
+     * @param $index
      */
-    public function __construct($status, array $response)
+    public function __construct($status, array $response, $index)
     {
+        $this->index = $index;
         $this->status = $status;
         $this->response = $response;
     }
@@ -59,6 +63,7 @@ class DatasourceResponseNotification extends Notification
     {
         $date = new Carbon();
         return [
+            'index' => $this->index,
             'type' => 'DATASOURCE_RESPONSE',
             'name' => __('Data Source Executed'),
             'dateTime' => $date->toIso8601String(),

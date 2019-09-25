@@ -132,35 +132,31 @@
     methods: {
       test (data, requester) {
         data.view = true;
+        this.$refs.endpoints.toggleDetailRow(data.id);
         window.ProcessMaker.apiClient
           .post(
             `/datasources/${this.datasource.id}/test`,
             {
               data
             }
-          )
-          .then((response) => {
-            //requester.response = response.data;
-
-          });
+          );
       },
       fetch () {
         this.data = [];
-        if (this.endpoints) {
-          let index = 0;
-          for (let name in this.endpoints) {
-            let item = this.endpoints[name];
-            item.view = false;
-            item.id = index;
-            index++;
-            this.data.push(item);
-          }
+        if (!this.endpoints) {
+          return;
+        }
+        let index = 0;
+        for (let name in this.endpoints) {
+          let item = this.endpoints[name];
+          item.view = false;
+          item.id = index;
+          index++;
+          this.data.push(item);
         }
       },
       detail (data) {
-        console.log(data.view);
         data.view = !data.view;
-        console.log(data.view);
         this.$refs.endpoints.toggleDetailRow(data.id);
       },
       doDelete (item) {
@@ -178,6 +174,21 @@
           }
         );
       }
-    }
+    },
+    mounted () {
+      let userID = document.head.querySelector("meta[name=\"user-id\"]");
+      window.Echo.private(
+        `ProcessMaker.Models.User.${userID.content}`
+      )
+        .notification(response => {
+          if (response.type === 'ProcessMaker\\Notifications\\DatasourceResponseNotification') {
+            this.$refs.endpoints.$children.forEach(item => {
+              if (item.rowIndex === response.index) {
+                item.testResponse = response.response;
+              }
+            })
+          }
+        });
+    },
   };
 </script>

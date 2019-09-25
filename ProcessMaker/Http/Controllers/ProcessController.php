@@ -227,7 +227,7 @@ class ProcessController extends Controller
             case 'view-processes':
                 return false; // already on index, continue with it
             case 'view-categories':
-                return 'categories.index';
+                return 'process-categories.index';
             case 'view-scripts':
                 return 'scripts.index';
             case 'view-screens':
