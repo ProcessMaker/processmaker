@@ -11,8 +11,8 @@
 @section('breadcrumbs')
     @include('shared.breadcrumbs', ['routes' => [
         __('Designer') => route('processes.index'),
-        __('Processes') => route('processes.index'),
-        $titleMenu => route($routeMenu),
+        $itemsLabel => route($itemsRoute),
+        $categoriesLabel => route($categoriesRoute),
         __('Edit') . " " . $category->name => null,
     ]])
 @endsection

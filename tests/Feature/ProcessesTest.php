@@ -23,7 +23,7 @@ class ProcessesTest extends TestCase
 
         // Seed the permissions table.
         Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
-        
+
         // Reboot our AuthServiceProvider. This is necessary so that it can
         // pick up the new permissions and setup gates for each of them.
         $asp = new AuthServiceProvider(app());
@@ -38,7 +38,7 @@ class ProcessesTest extends TestCase
         // Set the URL & permission to test.
         $url = '/processes';
         $permission = 'view-processes';
-        
+
         // Our user has no permissions, so this should return 403.
         $response = $this->webCall('GET', $url);
         $response->assertStatus(403);
@@ -64,7 +64,7 @@ class ProcessesTest extends TestCase
         // Set the URL & permission to test.
         $url = 'processes/' . $process->id . '/edit';
         $permission = 'edit-processes';
-        
+
         // Our user has no permissions, so this should return 403.
         $response = $this->webCall('GET', $url);
         $response->assertStatus(403);
@@ -90,7 +90,7 @@ class ProcessesTest extends TestCase
         // Set the URL & permission to test.
         $url = 'processes/create';
         $permission = 'create-processes';
-        
+
         // Our user has no permissions, so this should return 403.
         $response = $this->webCall('GET', $url);
         $response->assertStatus(403);
@@ -104,7 +104,7 @@ class ProcessesTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('processes.create');
     }
-    
+
     public function testStore()
     {
         $process = factory(Process::class)->create(['name' => 'Test Edit']);
@@ -120,7 +120,7 @@ class ProcessesTest extends TestCase
             'description' => 'My description',
             'status' => 'ACTIVE'
         ];
-        
+
         // Our user has no permissions, so this should return 403.
         $response = $this->webCall('POST', $url, $data);
         $response->assertStatus(403);
@@ -134,7 +134,7 @@ class ProcessesTest extends TestCase
         $response->assertStatus(302);
         $this->assertDatabaseHas('processes', ['name' => 'Stored new process']);
     }
-    
+
     public function testUpdate()
     {
         $process = factory(Process::class)->create(['name' => 'Test Update']);
@@ -149,7 +149,7 @@ class ProcessesTest extends TestCase
             'name' => 'Updated Name',
             'description' => 'My description',
         ];
-        
+
         // Our user has no permissions, so this should return 403.
         $response = $this->webCall('PUT', $url, $data);
         $response->assertStatus(403);
@@ -188,7 +188,7 @@ class ProcessesTest extends TestCase
         $response->assertRedirect('/processes');
         $this->assertDatabaseMissing('processes', ['id' => $process->id, 'deleted_at' => null]);
     }
-    
+
     public function testIndexPermissionRedirect()
     {
         $this->user = factory(User::class)->create();
@@ -212,7 +212,7 @@ class ProcessesTest extends TestCase
             $response = $this->webCall('GET', '/processes');
             $response->assertRedirect(route($nextRoute));
         };
-        $checkNextAuth('view-processes', 'categories.index');
+        $checkNextAuth('view-processes', 'process-categories.index');
         $checkNextAuth('view-categories', 'scripts.index');
         $checkNextAuth('view-scripts', 'screens.index');
         $checkNextAuth('view-screens', 'environment-variables.index');
