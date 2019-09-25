@@ -33,12 +33,11 @@ class DataSource implements ShouldQueue
      */
     private $data;
 
-    /**
-     * @var array
-     */
-    private $config;
-
     private $index;
+    /**
+     * @var bool
+     */
+    private $immediate;
 
 
     /**
@@ -47,16 +46,16 @@ class DataSource implements ShouldQueue
      * @param dataSourceModel $dataSource
      * @param User $user
      * @param array $data
-     * @param array $config
      * @param $index
+     * @param bool $immediate
      */
-    public function __construct(dataSourceModel $dataSource, User $user, array $data, array $config, $index)
+    public function __construct(dataSourceModel $dataSource, User $user, array $data, $index, $immediate = false)
     {
         $this->user = $user;
         $this->datasource = $dataSource;
         $this->data = $data;
-        $this->config = $config;
         $this->index = $index;
+        $this->immediate = $immediate;
     }
 
     /**
@@ -78,8 +77,14 @@ class DataSource implements ShouldQueue
     public function handle()
     {
         try {
-            $this->sendResponse(200,
-                $this->datasource->request($this->data, $this->config)
+            $this->datasource->endpoints = [
+                $this->data['purpose'] => $this->data
+            ];
+            if ($this->immediate) {
+                return $this->datasource->request($this->data['data'], $this->data['config']);
+            }
+            return $this->sendResponse(200,
+                $this->datasource->request($this->data['data'], $this->data['config'])
             );
         } catch (Throwable $exception) {
             $this->sendResponse(500, [
@@ -97,10 +102,6 @@ class DataSource implements ShouldQueue
      */
     private function sendResponse($status, array $response)
     {
-        Log::info('Info send response...................');
-        Log::debug($status);
-        Log::debug(json_encode($response['status']));
-        Log::debug(json_encode($response['response']));
         $this->user->notify(new DatasourceResponseNotification($response['status'], $response['response'], $this->index));
     }
 }

@@ -274,25 +274,22 @@ class DataSourceController extends Controller
      */
     public function test(DataSource $datasource, Request $request)
     {
-        $data = [];
-        $data['data'] = [];
-        $data['config'] = [];
-        $index = 0;
-
-        if ($request->has('data')) {
-            $newData = $request->get('data') ?: [];
-            $data['data'] = $newData['testData'] ?? [];
-            $data['config'] = $newData['testConfig'] ?? [] ;
-            $data['config']['endpoint'] = $newData['purpose'];
-            $index = $newData['id'];
-            $datasource->endpoints = [
-                $newData['purpose'] => $newData
-            ];
+        if (!$request->has('data')) {
+            return response([], 204);
         }
-        Log::alert('test-----------------');
-        Log::alert($request->user());
-        Log::info(json_encode($datasource));
-        dispatch(new DataSourceJob($datasource, $request->user(), $data['data'], $data['config'], $index));
+
+        $data = $request->get('data') ?: [];
+        $data['data'] = $data['testData'] ?? [];
+        $data['config'] = $data['testConfig'] ?? [];
+        $data['config']['endpoint'] = $data['purpose'];
+        $index = $data['id'];
+
+        if ($request->has('immediate') && $request->get('immediate')) {
+            $response = DataSourceJob::dispatchNow($datasource, $request->user(), $data, $index, true);
+            return response($response['response'], $response['status']);
+        }
+
+        dispatch(new DataSourceJob($datasource, $request->user(), $data, $index));
 
         return response([], 204);
     }

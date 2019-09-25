@@ -33,8 +33,6 @@ trait MakeHttpRequests
     public function request(array $data = [], array $config = [])
     {
         $mustache = new Mustache_Engine();
-        Log::notice('make http request....................');
-        Log::debug($this);
         $endpoint = $this->endpoints[$config['endpoint']];
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);

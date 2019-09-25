@@ -132,7 +132,7 @@
     methods: {
       test (data, requester) {
         data.view = true;
-        this.$refs.endpoints.toggleDetailRow(data.id);
+        this.$refs.endpoints.showDetailRow(data.id);
         window.ProcessMaker.apiClient
           .post(
             `/datasources/${this.datasource.id}/test`,
