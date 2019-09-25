@@ -87,10 +87,15 @@ class DataSource implements ShouldQueue
                 $this->datasource->request($this->data['data'], $this->data['config'])
             );
         } catch (Throwable $exception) {
-            $this->sendResponse(500, [
-                'exception' => get_class($exception),
-                'message' => $exception->getMessage(),
-            ]);
+            if ($this->immediate) {
+                throw $exception;
+                return ['response' => $exception->getMessage(), 'status' => 422];
+            } else {
+                $this->sendResponse(500, [
+                    'exception' => get_class($exception),
+                    'message' => $exception->getMessage(),
+                ]);
+            }
         }
     }
 

@@ -3,7 +3,6 @@
 namespace ProcessMaker\Traits;
 
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -44,7 +43,8 @@ trait MakeHttpRequests
             }
         }
         $body = $mustache->render($endpoint['body'], $data);
-        $request = [$method, $url, $headers, $body];
+        $bodyType = $mustache->render($endpoint['body_type'], $data);
+        $request = [$method, $url, $headers, $body, $bodyType];
 
         $request = $this->addAuthorizationHeaders(...$request);
         try {
@@ -65,7 +65,6 @@ trait MakeHttpRequests
     {
         if (isset($this->authTypes[$this->authtype])) {
             $callable = [$this, $this->authTypes[$this->authtype]];
-            \Log::info(json_encode([$callable, $config]));
             return call_user_func_array($callable, $config);
         }
         return $config;
@@ -81,12 +80,12 @@ trait MakeHttpRequests
      *
      * @return array
      */
-    private function basicAuthorization($method, $url, $headers, $body)
+    private function basicAuthorization($method, $url, $headers, $body, $bodyType)
     {
         if (isset($this->credentials) && is_array($this->credentials)) {
             $headers['Authorization'] = 'Basic ' . $this->credentials['username'] . ':' . $this->credentials['password'];
         }
-        return [$method, $url, $headers, $body];
+        return [$method, $url, $headers, $body, $bodyType];
     }
 
     /**
@@ -99,12 +98,12 @@ trait MakeHttpRequests
      *
      * @return array
      */
-    private function bearerAuthorization($method, $url, $headers, $body)
+    private function bearerAuthorization($method, $url, $headers, $body, $bodyType)
     {
         if (isset($this->credentials) && is_array($this->credentials)) {
             $headers['Authorization'] = 'Bearer ' . $this->credentials['token'];
         }
-        return [$method, $url, $headers, $body];
+        return [$method, $url, $headers, $body, $bodyType];
     }
 
     /**
@@ -158,10 +157,14 @@ trait MakeHttpRequests
      * @return mixed|ResponseInterface
      * @throws GuzzleException
      */
-    private function call($method, $url, array $headers, $body)
+    private function call($method, $url, array $headers, $body, $bodyType)
     {
         $client = new Client([]);
+        $options = [];
+        if ($bodyType === 'form-data') {
+            $options['form_params'] = json_decode($body, true);
+        }
         $request = new Request($method, $url, $headers, $body);
-        return $client->send($request);
+        return $client->send($request, $options);
     }
 }

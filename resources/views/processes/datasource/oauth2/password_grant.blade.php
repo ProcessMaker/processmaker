@@ -3,7 +3,7 @@
   <div class="editor-container">
     <div class="form-group">
       {!! Form::label('url', __('Url Token')) !!}
-      {!! Form::text('url', null, ['id' => 'url', 'class'=> 'form-control', 'v-model'=> 'credentials.url',
+      {!! Form::text('url', null, ['class'=> 'form-control', 'v-model'=> 'credentials.url',
       'v-bind:class'
       => '{\'form-control\':true, \'is-invalid\':errors.url}']) !!}
       <div class="invalid-feedback" v-if="errors.url">@{{errors.url[0]}}
@@ -12,8 +12,8 @@
 
     <div class="form-group">
       {!! Form::label('clientId', __('Client ID')) !!}
-      {!! Form::text('clientId', null, ['id' => 'clientId', 'class'=> 'form-control', 'v-model'=>
-      'credentials.clientId',
+      {!! Form::text('clientId', null, ['class'=> 'form-control', 'v-model'=>
+      'credentials.client_id',
       'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.clientId}']) !!}
       <div class="invalid-feedback" v-if="errors.clientId">@{{errors.clientId[0]}}
       </div>
@@ -21,15 +21,15 @@
 
     <div class="form-group">
       {!! Form::label('clientSecret', __('Client Secret')) !!}
-      {!! Form::text('clientSecret', null, ['id' => 'clientSecret', 'class'=> 'form-control', 'v-model'=>
-      'credentials.clientSecret', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.clientSecret}']) !!}
+      {!! Form::text('clientSecret', null, ['class'=> 'form-control', 'v-model'=>
+      'credentials.client_secret', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.clientSecret}']) !!}
       <div class="invalid-feedback" v-if="errors.clientSecret">@{{errors.clientSecret[0]}}
       </div>
     </div>
 
     <div class="form-group">
       {!! Form::label('user', __('User')) !!}
-      {!! Form::text('user', null, ['id' => 'user', 'v-model'=> 'credentials.user', 'v-bind:class' =>
+      {!! Form::text('user', null, ['v-model'=> 'credentials.username', 'v-bind:class' =>
       '{\'form-control\':true, \'is-invalid\':errors.user}']) !!}
       <div class="invalid-feedback" v-if="errors.user">@{{errors.user[0]}}
       </div>
@@ -37,7 +37,7 @@
 
     <div class="form-group">
       {!! Form::label('password', __('Password')) !!}
-      {{ Form::password('password', ['id' => 'password', 'class'=> 'form-control', 'v-model'=> 'credentials.password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) }}
+      {{ Form::password('password', ['class'=> 'form-control', 'v-model'=> 'credentials.password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) }}
       <div class="invalid-feedback" v-if="errors.password">@{{errors.password[0]}}
       </div>
     </div>
@@ -77,6 +77,7 @@
       getAccessToken() {
         this.accessTokenPopup.show = true;
         this.accessTokenPopup.progress = 0;
+        this.credentials.grant_type = "password";
         window.ProcessMaker.apiClient.post(`datasources/${this.formData.id}/test`, {
           immediate: true,
           data: {
@@ -84,17 +85,18 @@
             url: this.credentials.url,
             method: this.credentials.method,
             body_type: "form-data",
-            body: {
+            body: JSON.stringify({
               "username": this.credentials.username,
               "password": this.credentials.password,
               "grant_type": this.credentials.grant_type,
               "client_id": this.credentials.client_id,
               "client_secret": this.credentials.client_secret,
-            },
+            }),
           }
         }).then((response) => {
           this.accessTokenPopup.progress = 100;
           this.credentials.token = response.data.access_token;
+          this.accessTokenPopup.show = false;
         });
       },
     },

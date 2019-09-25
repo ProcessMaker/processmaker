@@ -282,7 +282,7 @@ class DataSourceController extends Controller
         $data['data'] = $data['testData'] ?? [];
         $data['config'] = $data['testConfig'] ?? [];
         $data['config']['endpoint'] = $data['purpose'];
-        $index = $data['id'];
+        $index = $data['id'] ?? -1;
 
         if ($request->has('immediate') && $request->get('immediate')) {
             $response = DataSourceJob::dispatchNow($datasource, $request->user(), $data, $index, true);
