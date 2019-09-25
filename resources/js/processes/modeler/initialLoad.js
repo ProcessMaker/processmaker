@@ -54,6 +54,7 @@ let nodeTypes = [
   callActivity,
   exclusiveGateway,
   inclusiveGateway,
+  eventBasedGateway,
   parallelGateway,
   sequenceFlow,
   association,
@@ -62,7 +63,6 @@ let nodeTypes = [
   messageFlow,
   serviceTask,
   textAnnotation,
-  eventBasedGateway,
 ];
 
 ProcessMaker.nodeTypes.push(startEvent);
