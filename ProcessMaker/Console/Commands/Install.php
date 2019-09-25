@@ -150,6 +150,10 @@ class Install extends Command
         // Now store it
         Storage::disk('install')->put('.env', $contents);
 
+        $this->call('config:cache');
+        $this->call('config:clear');
+        $this->call('cache:clear');
+
         // Install migrations
         $this->callSilent('migrate:fresh', [
             '--seed' => true,
