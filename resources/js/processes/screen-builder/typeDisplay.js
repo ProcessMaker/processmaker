@@ -108,6 +108,7 @@ RichTextControl,
         label: "File Download",
         component: "FileDownload",
         "editor-component": "FormText",
+        "editor-control": "FormText",
         config: {
             label: "Download File",
             icon: "fas fa-file-download"
@@ -143,6 +144,7 @@ TableControl,
         label: "Record List",
         component: "FormRecordList",
         "editor-component": "FormText",
+        "editor-control": "FormText",
         config: {
             name: "",
             label: "New Record List",

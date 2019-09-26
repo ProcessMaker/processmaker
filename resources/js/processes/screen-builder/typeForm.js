@@ -21,6 +21,7 @@ initialControls.push({
         label: "File Upload",
         component: "FileUpload",
         "editor-component": "FileUpload",
+        "editor-control": "FileUpload",
         config: {
             label: "New File Upload",
             icon: "fas fa-file-upload"
@@ -53,6 +54,7 @@ initialControls.push({
         label: "File Download",
         component: "FileDownload",
         "editor-component": "FormText",
+        "editor-config": "FormText",
         config: {
             label: "New File Download",
             icon: "fas fa-file-download"
