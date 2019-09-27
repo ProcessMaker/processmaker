@@ -9,7 +9,12 @@ const {
 
 const TableControl = FormBuilderControls.find(control => control.rendererBinding === "FormMultiColumn");
 const RichTextControl = FormBuilderControls.find(control => control.rendererBinding === "FormHtmlEditor");
-const FormRecordList = FormBuilderControls.find(control => control.rendererBinding === "FormRecordList");
+let FormRecordList = FormBuilderControls.find(control => control.rendererBinding === "FormRecordList");
+
+// Remove editable inspector props
+FormRecordList.control.inspector = FormRecordList.control.inspector.filter(prop => {
+    return prop.field !== 'editable' && prop.field !== 'form';
+});
 
 //-- change
 const bgcolorProperty = {
