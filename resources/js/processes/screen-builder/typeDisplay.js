@@ -170,7 +170,7 @@ TableControl,
             }
         },
         {
-            type: "OptionsList",
+            type: "ColumnSetup",
             field: "fields",
             config: {
                 label: "Fields List",
