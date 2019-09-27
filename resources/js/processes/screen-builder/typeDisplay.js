@@ -159,9 +159,7 @@ TableControl,
       },
       bgcolorProperty,
       colorProperty
-      ]
     }
-  }
 ];
 
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
