@@ -16,7 +16,7 @@ new Vue({
     },
     methods: {
         goToImport() {
-          window.location = 'screens/import';
+          window.location = '/designer/screens/import';
         },
         show() {
             this.screenId = null;
