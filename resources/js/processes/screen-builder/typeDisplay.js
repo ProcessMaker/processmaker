@@ -112,24 +112,46 @@ let controlsDisplay = [
     rendererComponent: FileDownload,
     rendererBinding: "FileDownload",
     control: {
-      label: "File Download",
-      component: "FileDownload",
-      "editor-component": "FormText",
-      config: {
-        label: "Download File",
-        icon: "fas fa-file-download"
-      },
-      inspector: [{
-        type: "FormInput",
-        field: "label",
+        label: "File Download",
+        component: "FileDownload",
+        "editor-component": "FormText",
+        "editor-control": "FormText",
         config: {
-          label: "Text Label",
-          helper: "The text to display"
-        }
-      },
-      {
-        type: "FormInput",
-        field: "name",
+            label: "Download File",
+            icon: "fas fa-file-download"
+        },
+        inspector: [{
+            type: "FormInput",
+            field: "label",
+            config: {
+                label: "Text Label",
+                helper: "The text to display"
+            }
+        },
+        {
+            type: "FormInput",
+            field: "name",
+            config: {
+                label: "Download Name",
+                helper: "The name of the Download"
+            }
+        },
+        bgcolorProperty,
+        colorProperty
+        ]
+    }
+},
+TableControl,
+{
+    editorComponent: FormText,
+    editorBinding: "FormText",
+    rendererComponent: FormRecordList,
+    rendererBinding: "FormRecordList",
+    control: {
+        label: "Record List",
+        component: "FormRecordList",
+        "editor-component": "FormText",
+        "editor-control": "FormText",
         config: {
           label: "Download Name",
           helper: "The name of the Download"
