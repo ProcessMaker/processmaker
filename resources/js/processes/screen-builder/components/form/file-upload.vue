@@ -51,7 +51,6 @@ export default {
       }
       const prefix = recordList.name + "." + index.toString() + ".";
       this.options.query.data_name = prefix + this.name;
-      console.log("SET PREFIX ", this.options.query.data_name);
 
       // Trigger re-render
       this.reRenderKey++;
