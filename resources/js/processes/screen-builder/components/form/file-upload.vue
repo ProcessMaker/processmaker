@@ -3,6 +3,7 @@
     <label v-uni-for="name">{{ label }}</label>
 
     <uploader
+      :key="reRenderKey"
       :options="options"
       ref="uploader"
       @complete="complete"
@@ -40,12 +41,23 @@ export default {
     this.getFileType();
   },
   mounted() {
-    // we need to be able to remove the classes from the npm package
-    document
-      .querySelectorAll("[id='submitFile'],[id='uploaderMain']")
-      .forEach(element => {
-        element.classList.remove("uploader-btn", "uploader-drop");
-      });
+    this.removeDefaultClasses();
+    
+    // If we're in a record list, this will fire to give us the prefix
+    this.$root.$on('set-upload-data-name', (recordList, index) => {
+      if (!index) {
+        // Adding new record
+        index = recordList.value ? recordList.value.length : 0;
+      }
+      const prefix = recordList.name + "." + index.toString() + ".";
+      this.options.query.data_name = prefix + this.name;
+      console.log("SET PREFIX ", this.options.query.data_name);
+
+      // Trigger re-render
+      this.reRenderKey++;
+      this.$nextTick(() => this.removeDefaultClasses());
+    })
+
   },
   computed: {
     classList() {
@@ -82,9 +94,18 @@ export default {
         },
         singleFile: true
       },
+      reRenderKey: 0,
     };
   },
   methods: {
+    removeDefaultClasses() {
+      // we need to be able to remove the classes from the npm package
+      document
+        .querySelectorAll("[id='submitFile'],[id='uploaderMain']")
+        .forEach(element => {
+          element.classList.remove("uploader-btn", "uploader-drop");
+        });
+    },
     getFileType() {
       if (document.head.querySelector('meta[name="request-id"]')) {
         this.fileType = 'request';
