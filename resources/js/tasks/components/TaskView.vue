@@ -21,7 +21,7 @@
         </dl>
       </div>
     </div>
-    <vue-form-renderer v-model="formData" v-bind:config="json"/>
+    <vue-form-renderer v-model="formData" v-bind:config="json" @update="onUpdate" />
     <a class="btn btn-primary" :href="statusURL">Back</a>
   </div>
 </template>
@@ -116,6 +116,9 @@
           this.disableForm(json.items);
         }
         return json;
+      },
+      onUpdate(data) {
+        ProcessMaker.EventBus.$emit('form-data-updated', data);
       },
       fetch() {
         this.loading = true;

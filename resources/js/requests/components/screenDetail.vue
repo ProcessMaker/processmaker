@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-body" style="pointer-events:none;">
-      <vue-form-renderer ref="print" v-model="formData" :config="json"/>
+      <vue-form-renderer ref="print" v-model="formData" @update="onUpdate" :config="json"/>
     </div>
     <div class="card-footer d-print-none" v-if="canPrint">
       <button type="button" class="btn btn-secondary float-right" @click="print">
@@ -78,6 +78,9 @@
           this.disableForm(json.items);
         }
         return json;
+      },
+      onUpdate(data) {
+        ProcessMaker.EventBus.$emit('form-data-updated', data);
       },
       print() {
         window.print();

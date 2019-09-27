@@ -55,6 +55,7 @@
               v-model="previewData"
               class="p-3"
               @submit="previewSubmit"
+              @update="onUpdate"
               :mode="mode"
               :config="config"
               :computed="computed"
@@ -280,6 +281,9 @@ import formTypes from "./formTypes";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
+      onUpdate(data) {
+        ProcessMaker.EventBus.$emit('form-data-updated', data);
+      },
       getValidationErrorsForItems(items, page) {
         const validationErrors = [];
 
