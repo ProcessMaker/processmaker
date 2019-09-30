@@ -1,5 +1,5 @@
 <template>
-  <vue-form-renderer @submit="submit" v-model="formData" :config="screen" :computed="computed" :custom-css="customCss" />
+  <vue-form-renderer @submit="submit" v-model="formData" :config="screen" :computed="computed" :custom-css="customCss" @update="onUpdate" />
 </template>
 
 <script>
@@ -42,6 +42,9 @@ export default {
           ProcessMaker.alert(error.response.data.message, 'danger');
           ProcessMaker.alert(message, 'danger');
         });
+    },
+    onUpdate(data) {
+      ProcessMaker.EventBus.$emit('form-data-updated', data);
     },
     update(data) {
       this.formData = data;

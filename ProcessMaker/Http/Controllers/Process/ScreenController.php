@@ -3,20 +3,21 @@
 namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
-use ProcessMaker\Models\Script;
 
 class ScreenController extends Controller
 {
     /**
      * Get the list of screens
      *
+     * @param Request $request
      * @return Factory|View
      */
     public function index()
@@ -25,8 +26,27 @@ class ScreenController extends Controller
         foreach(ScreenType::pluck('name')->toArray() as $type) {
             $types[$type] = __(ucwords(strtolower($type)));
         }
-        $screenCategories = ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        return view('processes.screens.index', compact('types', 'screenCategories'));
+
+        $catConfig = (object) [
+            'labels' => (object) [
+                'newCategoryTitle' => __('Create Screen Category'),
+                'countColumn' => __('# Screens'),
+            ],
+            'routes' => (object) [
+                'itemsIndexWeb' => 'screens.index',
+                'editCategoryWeb' => 'screen-categories.edit',
+                'categoryListApi' => 'api.screen_categories.index',
+            ],
+            'countField' => 'screens_count',
+            'apiListInclude' => 'screensCount',
+        ];
+
+        $listConfig = (object) [
+            'types' => $types,
+            'countCategories' => ScreenCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count()
+        ];
+
+        return view('processes.screens.index', compact ('listConfig', 'catConfig'));
     }
 
     /**
