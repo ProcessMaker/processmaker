@@ -65,7 +65,11 @@ class ScriptController extends Controller
     public function index(Request $request)
     {
         // Do not return results when a key is set. Those are for connectors.
-        $query = Script::nonSystem()->where('key', null);
+        $query = Script::nonSystem()
+                    ->select('scripts.*')
+                    ->where('key', null)
+                    ->leftJoin('script_categories as category', 'scripts.script_category_id', '=', 'category.id');
+
         $include = $request->input('include', '');
 
         if ($include) {
@@ -89,6 +93,7 @@ class ScriptController extends Controller
                     ->orWhere('language', 'like', $filter);
             });
         }
+
 
         $response =
             $query->orderBy(
