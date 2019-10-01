@@ -13,10 +13,6 @@
     {
       "type": "vcs",
       "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/package-data-sources"
     }
   ],
   "require": {
@@ -40,7 +36,6 @@
     "predis/predis": "^1.1",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "dev-master",
-    "processmaker/package-data-sources": "^1.0",
     "processmaker/pmql": "1.1.1",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
