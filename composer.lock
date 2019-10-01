@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce7810a019d6578e22a713fe4315b230",
+    "content-hash": "976af5b5257b4041ff0ea84deeed3c09",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -3154,6 +3154,54 @@
             "time": "2019-09-03T19:23:42+00:00"
         },
         {
+            "name": "processmaker/package-data-sources",
+            "version": "1.0.1",
+            "dist": {
+                "type": "path",
+                "url": "/opt/github/package-data-sources",
+                "reference": "477795c3fd20a44591687aa632f51cce0da7e2d9"
+            },
+            "require": {
+                "mustache/mustache": "^2.12.0",
+                "spatie/server-side-rendering": "^0.2.5"
+            },
+            "require-dev": {
+                "processmaker/processmaker": "4.0.*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Packages\\Connectors\\DataSources\\PluginServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Packages\\Connectors\\DataSources\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": []
+            },
+            "authors": [
+                {
+                    "name": "David Callizaya",
+                    "email": "david.callizaya@processmaker.com"
+                },
+                {
+                    "name": "Marco Antonio Nina Mena",
+                    "email": "marco.antonio.nina@processmaker.com"
+                }
+            ],
+            "description": "ProcessMaker BPM Connectors that provide package-data-sources service"
+        },
+        {
             "name": "processmaker/pmql",
             "version": "1.1.1",
             "source": {
@@ -3986,6 +4034,54 @@
                 "spatie"
             ],
             "time": "2016-12-14T15:37:00+00:00"
+        },
+        {
+            "name": "spatie/server-side-rendering",
+            "version": "0.2.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/server-side-rendering.git",
+                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/server-side-rendering/zipball/fb646f07be18e83324d7e32773c19ccf06a78530",
+                "reference": "fb646f07be18e83324d7e32773c19ccf06a78530",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0",
+                "symfony/process": "^3.0|^4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\Ssr\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian De Deyne",
+                    "email": "sebastian@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Server side rendering JavaScript in your PHP application",
+            "homepage": "https://github.com/spatie/server-side-rendering",
+            "keywords": [
+                "SSR",
+                "server-side-rendering",
+                "spatie"
+            ],
+            "time": "2018-08-10T08:07:00+00:00"
         },
         {
             "name": "spatie/temporary-directory",
