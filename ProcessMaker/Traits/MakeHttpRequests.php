@@ -9,7 +9,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
-use ProcessMaker\Exception\DataSourceResponseException;
+use ProcessMaker\Exception\HttpResponseException;
 use Psr\Http\Message\ResponseInterface;
 
 trait MakeHttpRequests
@@ -50,7 +50,7 @@ trait MakeHttpRequests
         try {
             return $this->response($this->call(...$request), $data, $config, $mustache);
         } catch (ClientException $exception) {
-            throw new DataSourceResponseException($exception->getResponse());
+            throw new HttpResponseException($exception->getResponse());
         }
     }
 
@@ -115,7 +115,7 @@ trait MakeHttpRequests
      * @param Mustache_Engine $mustache
      *
      * @return array
-     * @throws DataSourceResponseException
+     * @throws HttpResponseException
      */
     private function response($response, array $data = [], array $config = [], Mustache_Engine $mustache)
     {
@@ -129,7 +129,7 @@ trait MakeHttpRequests
                 $content = [];
                 break;
             default:
-                $exception = new DataSourceResponseException($response);
+                $exception = new HttpResponseException($response);
                 throw $exception;
         }
         $mapped = [];
