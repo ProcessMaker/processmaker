@@ -3,6 +3,7 @@
 namespace ProcessMaker\Traits;
 
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
 use Mustache_Engine;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -17,6 +18,7 @@ trait MakeHttpRequests
     private $authTypes = [
         'BASIC' => 'basicAuthorization',
         'BEARER' => 'bearerAuthorization',
+        'PASSWORD' => 'passwordAuthorization',
     ];
 
     /**
@@ -29,6 +31,7 @@ trait MakeHttpRequests
      * @return array
      *
      * @throws GuzzleException
+     * @throws HttpResponseException
      */
     public function request(array $data = [], array $config = [])
     {
@@ -77,6 +80,7 @@ trait MakeHttpRequests
      * @param string $url
      * @param array $headers
      * @param string $body
+     * @param $bodyType
      *
      * @return array
      */
@@ -95,6 +99,7 @@ trait MakeHttpRequests
      * @param string $url
      * @param array $headers
      * @param string $body
+     * @param $bodyType
      *
      * @return array
      */
@@ -102,6 +107,35 @@ trait MakeHttpRequests
     {
         if (isset($this->credentials) && is_array($this->credentials)) {
             $headers['Authorization'] = 'Bearer ' . $this->credentials['token'];
+        }
+        return [$method, $url, $headers, $body, $bodyType];
+    }
+
+    /**
+     * Get token with credentials
+     *
+     * @param string $method
+     * @param string $url
+     * @param array $headers
+     * @param string $body
+     * @param $bodyType
+     *
+     * @return array
+     */
+    private function passwordAuthorization($method, $url, $headers, $body, $bodyType)
+    {
+        if (isset($this->credentials) && is_array($this->credentials)) {
+            //todo enable mustache
+            $config = [
+                'username' => $this->credentials['username'],
+                'password' => $this->credentials['password'],
+                'grant_type' => 'password',
+                'client_id' => $this->credentials['client_id'],
+                'client_secret' => $this->credentials['client_secret'],
+            ];
+
+            $token = $this->response($this->call('POST', $this->credentials['url'], $headers, json_encode($config), 'form-data'), [], ['dataMapping' => []], new Mustache_Engine());
+            $headers['Authorization'] = 'Bearer ' . $token['response']['access_token'];
         }
         return [$method, $url, $headers, $body, $bodyType];
     }
@@ -120,7 +154,6 @@ trait MakeHttpRequests
     private function response($response, array $data = [], array $config = [], Mustache_Engine $mustache)
     {
         $status = $response->getStatusCode();
-        $content = [];
         switch (true) {
             case $status == 200:
                 $content = json_decode($response->getBody()->getContents(), true);
@@ -129,13 +162,13 @@ trait MakeHttpRequests
                 $content = [];
                 break;
             default:
-                $exception = new HttpResponseException($response);
-                throw $exception;
+                throw new HttpResponseException($response);
         }
         $mapped = [];
         !is_array($content) ?: $merged = array_merge($data, $content);
         $mapped['status'] = $status;
         $mapped['response'] = $content;
+
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
                 //$value = $mustache->render($map['value'], $merged);
@@ -153,7 +186,10 @@ trait MakeHttpRequests
      * @param string $url
      * @param array $headers
      * @param $body
+     * @param string $bodyType
+     *
      * @return mixed|ResponseInterface
+     *
      * @throws GuzzleException
      */
     private function call($method, $url, array $headers, $body, $bodyType)
