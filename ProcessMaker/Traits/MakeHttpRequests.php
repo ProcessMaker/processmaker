@@ -87,7 +87,7 @@ trait MakeHttpRequests
     private function basicAuthorization($method, $url, $headers, $body, $bodyType)
     {
         if (isset($this->credentials) && is_array($this->credentials)) {
-            $headers['Authorization'] = 'Basic ' . $this->credentials['username'] . ':' . $this->credentials['password'];
+            $headers['Authorization'] = 'Basic ' . base64_encode($this->credentials['username'] . ':' . $this->credentials['password']);
         }
         return [$method, $url, $headers, $body, $bodyType];
     }
