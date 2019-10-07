@@ -53,6 +53,7 @@
       content: {
         handler() {
           this.$emit("input", this.content.id);
+          this.$emit("update:duplicateScreenCategory", this.content);
         }
       },
       value: {
