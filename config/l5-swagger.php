@@ -82,6 +82,7 @@ return [
             base_path('ProcessMaker/Models'),
             base_path('ProcessMaker/Http/Controllers/Api'),
             base_path('ProcessMaker/Http/Resources'),
+            base_path('vendor/processmaker'),
         ],
 
         /*
