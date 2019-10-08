@@ -1,7 +1,8 @@
 const {
-  mix
+  mix,
 } = require('laravel-mix');
 const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
+const path = require('path');
 
 /*
  |--------------------------------------------------------------------------
@@ -16,29 +17,40 @@ const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 
 mix.webpackConfig({
   plugins: [
-    new MonacoEditorPlugin()
+    new MonacoEditorPlugin(),
   ],
   resolve: {
     modules: [
       path.resolve(__dirname, 'node_modules'),
-      'node_modules'
+      'node_modules',
     ],
     symlinks: false,
     alias: {
       // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
-      Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/')
-    }
+      Horizon: path.resolve(__dirname, 'vendor/laravel/horizon/resources/assets/js/'),
+    },
   },
   resolveLoader: {
     modules: [
       path.resolve(__dirname, 'node_modules'),
-      'node_modules'
+      'node_modules',
     ],
   },
-  node: {fs: 'empty'}
+  node: {fs: 'empty'},
 });
 
-mix.extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', 'bootstrap'])
+mix.extract([
+  'vue',
+  'jquery',
+  'bootstrap-vue',
+  'axios',
+  'popper.js',
+  'lodash',
+  'bootstrap',
+  'jointjs',
+  'luxon',
+  'bpmn-moddle',
+])
   .copy('resources/img/*', 'public/img')
   .copy('node_modules/snapsvg/dist/snap.svg.js', 'public/js')
   .copy('resources/js/components/CustomActions.vue', 'public/js')
@@ -48,8 +60,7 @@ mix.extract(['vue', 'jquery', 'bootstrap-vue', 'axios', 'popper.js', 'lodash', '
   .copy('resources/js/timeout.js', 'public/js')
   // Copy files necessary for images for the designer/modeler to it's own img directory
   .copy('node_modules/@processmaker/modeler/dist/img', 'public/js/processes/modeler/img')
-  .copy('node_modules/@processmaker/vue-form-elements/dist', 'public/js')
-
+  .copy('node_modules/@processmaker/vue-form-elements/dist', 'public/js');
 
 mix.js('resources/js/app-layout.js', 'public/js')
   .js('resources/js/processes/modeler/index.js', 'public/js/processes/modeler')
@@ -84,13 +95,9 @@ mix.js('resources/js/app-layout.js', 'public/js')
 
   .js('resources/js/notifications/index.js', 'public/js/notifications/index.js')
 
-
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js('resources/js/app.js', 'public/js');
-
-
-
 
 mix.sass('resources/sass/sidebar/sidebar.scss', 'public/css')
   .sass('resources/sass/app.scss', 'public/css')
