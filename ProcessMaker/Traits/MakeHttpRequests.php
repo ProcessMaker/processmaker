@@ -194,7 +194,7 @@ trait MakeHttpRequests
      */
     private function call($method, $url, array $headers, $body, $bodyType)
     {
-        $client = new Client([]);
+        $client = new Client(['verify' => config('app.api_ssl_verify')]);
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
