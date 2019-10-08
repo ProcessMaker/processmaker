@@ -134,7 +134,7 @@ trait MakeHttpRequests
                 'client_secret' => $this->credentials['client_secret'],
             ];
 
-            $token = $this->response($this->call('POST', $this->credentials['url'], $headers, json_encode($config), 'form-data'), [], ['dataMapping' => []], new Mustache_Engine());
+            $token = $this->response($this->call('POST', $this->credentials['url'], ['Accept' => 'application/json'], json_encode($config), 'form-data'), [], ['dataMapping' => []], new Mustache_Engine());
             $headers['Authorization'] = 'Bearer ' . $token['response']['access_token'];
         }
         return [$method, $url, $headers, $body, $bodyType];
