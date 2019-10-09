@@ -36,6 +36,11 @@ class ProcessRequestPolicy
         if ($processRequest->user_id == $user->id) {
             return true;
         }
+        if ($processRequest->hasUserParticipated($user)) {
+            if ($processRequest->status !== 'COMPLETED') {
+                return true;
+            }
+        }
         if($user->can('view-all_requests')){
             return true;
         }

@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 use ProcessMaker\Models\Permission;
@@ -501,5 +502,32 @@ class ProcessRequestsTest extends TestCase
 
         // Verify that a file with the fake file is downloaded
         $this->assertEquals($testFileName, $response->getFile()->getFileName());
+    }
+
+    public function testParticipantPermissionsToView()
+    {
+        $participant = factory(User::class)->create();
+        $otherUser = factory(User::class)->create();
+
+        $request = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
+        $token = factory(ProcessRequestToken::class)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $participant->id
+        ]);
+        
+        $url = route('api.requests.show', $request);
+        $this->user = $otherUser;
+
+        $response = $this->apiCall('get', $url);
+        $response->assertStatus(403);
+        
+        $this->user = $participant;
+
+        $response = $this->apiCall('get', $url);
+        $response->assertStatus(200);
+
+        $request->update(['status' => 'COMPLETED']);
+        $response = $this->apiCall('get', $url);
+        $response->assertStatus(403);
     }
 }
