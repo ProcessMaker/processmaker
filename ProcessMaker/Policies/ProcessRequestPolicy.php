@@ -36,7 +36,20 @@ class ProcessRequestPolicy
         if ($processRequest->user_id == $user->id) {
             return true;
         }
-        if($user->can('view-all_requests')){
+
+        if ($processRequest->hasUserParticipated($user)) {
+            return true;
+        }
+
+        if ($user->hasPermission('edit-request_data')) {
+                return true;
+        }
+
+        if ($processRequest->process->usersCanEditData->where('id', $user->id)->count() > 0) {
+            return true;
+        }
+
+        if ($user->can('view-all_requests')) {
             return true;
         }
     }
@@ -54,6 +67,7 @@ class ProcessRequestPolicy
             return true;
         }
         return $user->can('cancel', $processRequest->process)
+            || $user->hasPermission('edit-request_data')
             || $user->can('editData', $processRequest->process);
     }    
 

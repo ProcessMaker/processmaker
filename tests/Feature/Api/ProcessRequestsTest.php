@@ -8,6 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 use ProcessMaker\Models\Permission;
@@ -501,5 +502,71 @@ class ProcessRequestsTest extends TestCase
 
         // Verify that a file with the fake file is downloaded
         $this->assertEquals($testFileName, $response->getFile()->getFileName());
+    }
+
+    public function testParticipantPermissionsToView()
+    {
+        $participant = factory(User::class)->create();
+        $otherUser = factory(User::class)->create();
+
+        $request = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
+        $token = factory(ProcessRequestToken::class)->create([
+            'process_request_id' => $request->id,
+            'user_id' => $participant->id
+        ]);
+        
+        $url = route('api.requests.show', $request);
+        $this->user = $otherUser;
+
+        $response = $this->apiCall('get', $url);
+        $response->assertStatus(403);
+        
+        $this->user = $participant;
+
+        $response = $this->apiCall('get', $url);
+        $response->assertStatus(200);
+
+        // Participant can still see the data when completed
+        $request->update(['status' => 'COMPLETED']);
+        $response = $this->apiCall('get', $url);
+        $response->assertStatus(200);
+    }
+
+    public function testUserCanEditCompletedData() {
+        $user = factory(User::class)->create();
+        $this->user = $user;
+
+        $process = factory(Process::class)->create();
+        $request = factory(ProcessRequest::class)->create([
+            'status' => 'COMPLETED',
+            'data' => ['foo' => 'bar'],
+            'process_id' => $process->id,
+        ]);
+        
+        $url = route('api.requests.update', $request);
+
+        $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
+        $response->assertStatus(403);
+
+        $editAllRequestsData = Permission::where('name', 'edit-request_data')->first();
+        $user->permissions()->attach($editAllRequestsData);
+        $user->refresh();
+        session()->forget('permissions');
+
+        $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
+        $response->assertStatus(204); 
+        
+        $user->permissions()->detach($editAllRequestsData);
+        $user->refresh();
+        session()->forget('permissions');
+
+        $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
+        $response->assertStatus(403);
+
+        // Add process level permission
+        $process->usersCanEditData()->sync([$user->id => ['method' => 'EDIT_DATA']]);
+        
+        $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
+        $response->assertStatus(204);
     }
 }
