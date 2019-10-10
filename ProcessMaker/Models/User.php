@@ -134,11 +134,17 @@ class User extends Authenticatable implements HasMedia
     {
         $unique = Rule::unique('users')->ignore($existing);
 
+        $checkUserIsDeleted = function($attribute, $value, $fail) use ($existing) {
+            if (!$existing && User::where($attribute, $value)->exists()) {
+                $fail('userExists');
+            }
+        };
+
         return [
-            'username' => ['required', 'alpha_dash', 'min:4', 'max:255' , $unique],
+            'username' => ['required', 'alpha_dash', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
             'firstname' => 'required',
             'lastname' => 'required',
-            'email' => ['required', 'email', $unique],
+            'email' => ['required', 'email', $unique, $checkUserIsDeleted],
             'status' => ['required', 'in:ACTIVE,INACTIVE'],
             'password' => 'required|sometimes|min:6'
         ];

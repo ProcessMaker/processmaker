@@ -443,4 +443,58 @@ class UsersTest extends TestCase
         $this->assertFileExists('public' . $path);
     }
 
+    /**
+    * Tests the archiving and restoration of a process
+    */
+    public function testRestoreSoftDeletedUser()
+    {
+        // create an user 
+        $user = factory(User::class)->create([
+            'email' => 'test@email.com',
+            'username' => 'mytestusername'
+        ]);
+        $id = $user->id;
+        
+        // Assert that the user is listed
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertJsonFragment(['id' => $id]);
+
+        // Soft delete the user
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/'. $id);
+        $response->assertStatus(204);
+
+        // Assert that the user is not listed on the main index
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertJsonMissing(['id' => $id]);
+
+        // Restore the user by email
+        $response = $this->apiCall('PUT', self::API_TEST_URL .'/restore', [
+            'email' => $user->email
+        ]);
+        $response->assertStatus(200);
+
+        // Assert that the user is listed
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertJsonFragment(['id' => $id]);
+
+        // Soft delete the user
+        $response = $this->apiCall('DELETE', self::API_TEST_URL . '/'. $id);
+        $response->assertStatus(204);
+
+        // Assert that the user is not listed on the main index
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertJsonMissing(['id' => $id]);
+
+        // Restore the user by username
+        $response = $this->apiCall('PUT', self::API_TEST_URL .'/restore', [
+            'username' => $user->username
+        ]);
+        $response->assertStatus(200);
+
+        // Assert that the user is listed
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertJsonFragment(['id' => $id]);
+    }
+    
+
 }
