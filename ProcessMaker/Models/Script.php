@@ -9,6 +9,7 @@ use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 
 /**
