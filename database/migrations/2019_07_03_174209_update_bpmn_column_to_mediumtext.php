@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use ProcessMaker\Models\Process;
 
 class UpdateBpmnColumnToMediumtext extends Migration
 {
@@ -20,7 +21,8 @@ class UpdateBpmnColumnToMediumtext extends Migration
      */
     public function up()
     {
-        Schema::table('processes', function (Blueprint $table) {
+        $model = new Process;
+        Schema::connection($model->getConnectionName())->table('processes', function (Blueprint $table) {
             // A comment change is required
             // https://github.com/doctrine/dbal/issues/2566#issuecomment-480217999
             $table->mediumText('bpmn')->comment('up to 16M')->change();
@@ -34,7 +36,8 @@ class UpdateBpmnColumnToMediumtext extends Migration
      */
     public function down()
     {
-        Schema::table('processes', function (Blueprint $table) {
+        $model = new Process;
+        Schema::connection($model->getConnectionName())->table('processes', function (Blueprint $table) {
             $table->text('bpmn')->comment('')->change();
         });
     }

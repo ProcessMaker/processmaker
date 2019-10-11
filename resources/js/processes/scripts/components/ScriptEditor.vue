@@ -139,6 +139,7 @@
 <script>
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
+import customFilters from "../customFilters";
 
 export default {
   props: ["process", "script", "scriptFormat"],
@@ -157,7 +158,8 @@ export default {
         success: false,
         failure: false
       },
-      outputOpen: true
+      outputOpen: true,
+      boilerPlateTemplate: this.$t(` \r Welcome to ProcessMaker 4 Script Editor \r To access Environment Variables use get_env("ENV_VAR_NAME") \r To access Request Data use {dataVariable} \r To access Configuration Data use {configVariable} \r To preview your script, click the Run button using the provided input and config data \r Return an array and it will be merged with the processes data \r Example API to retrieve user email by their ID {apiExample} \r `),
     };
   },
   watch: {
@@ -178,6 +180,7 @@ export default {
     ).notification(response => {
       this.outputResponse(response);
     });
+    this.loadBoilerplateTemplate();
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
@@ -234,6 +237,28 @@ export default {
         .then(response => {
           ProcessMaker.alert(this.$t("The script was saved."), "success");
         });
+    },
+    loadBoilerplateTemplate() {
+      if (this.script.code === `[]`) {
+      switch(this.script.language) {
+        case 'php':
+          this.code = Vue.filter('php')(this.boilerPlateTemplate);
+          break;
+        case 'lua':
+          this.code = Vue.filter('lua')(this.boilerPlateTemplate);
+          break; 
+        case 'javascript':
+          this.code = Vue.filter('javascript')(this.boilerPlateTemplate);
+          break;
+        case 'csharp':
+          this.code = Vue.filter('csharp')(this.boilerPlateTemplate);
+          break;
+        case 'java':
+          this.code = Vue.filter('java')(this.boilerPlateTemplate);
+          break;
+        }
+
+      }
     }
   }
 };

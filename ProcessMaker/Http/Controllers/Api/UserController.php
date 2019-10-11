@@ -312,5 +312,46 @@ class UserController extends Controller
         }
     }
 
+    /**
+    * Reverses the soft delete of a user
+    *
+    * @param User $user
+    *
+    * @OA\Put(
+    *     path="/users/restore",
+    *     summary="Restore a soft deleted user",
+    *     operationId="restoreUser",
+    *     tags={"Users"},
+    *     @OA\Parameter(
+    *         description="ID of user to return",
+    *         in="path",
+    *         name="user_id",
+    *         required=true,
+    *         @OA\Schema(
+    *           type="string",
+    *         )
+    *     ),
+    *     @OA\RequestBody(
+    *       required=true,
+    *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
+    *     ),
+    *     @OA\Response(
+    *         response=200,
+    *         description="success",
+    *         @OA\JsonContent(ref="#/components/schemas/users")
+    *     ),
+    * )
+    */
 
+    public function restore(Request $request) {
+        $email = $request->input('email');
+        $username = $request->input('username');
+        if ($email) {
+            User::withTrashed()->where('email', $email)->firstOrFail()->restore();
+        }
+        if ($username) {
+            User::withTrashed()->where('username', $username)->firstOrFail()->restore();
+        }
+        return response([], 200);  
+    }
 }

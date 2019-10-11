@@ -148,7 +148,7 @@ class ProcessCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset([
-            'total' => $initialActiveCount + $processActive['num'],
+            'total' => $initialActiveCount + $processActive['num'] + $processInactive['num'],
             'count' => $perPage,
             'per_page' => $perPage,
         ], $meta);

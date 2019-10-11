@@ -61,7 +61,10 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Screen::nonSystem();
+        $query = Screen::nonSystem()
+                    ->select('screens.*')
+                    ->where('key', null)
+                    ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id');
         $include = $request->input('include', '');
 
         if ($include) {
@@ -261,6 +264,10 @@ class ScreenController extends Controller
         if ($request->has('description')) {
             $newScreen->description = $request->input('description');
         }
+
+        if( $request->has('screen_category_id')) {
+            $newScreen->screen_category_id = $request->input('screen_category_id');
+        } 
 
         $newScreen->saveOrFail();
         return new ApiResource($newScreen);

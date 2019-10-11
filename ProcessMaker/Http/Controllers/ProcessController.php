@@ -3,16 +3,14 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Cache;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
-use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class ProcessController extends Controller
@@ -29,6 +27,11 @@ class ProcessController extends Controller
         'bpmn',
     ];
 
+    /**
+     * Get the list of procesess
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index(Request $request)
     {
         $redirect = $this->checkAuth();
@@ -36,15 +39,27 @@ class ProcessController extends Controller
             return redirect()->route($redirect);
         }
 
-        $status = $request->input('status');
-        $processes = Process::all(); //what will be in the database = Model
-        $processCategories = ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
-        return view('processes.index',
-            [
-                "processes" => $processes,
-                "processCategories" => $processCategories,
-                "status" => $status
-            ]);
+        $catConfig = (object)[
+            'labels' => (object)[
+                'newCategoryTitle' => __('Create Process Category'),
+                'countColumn' => __('# Processes'),
+            ],
+            'routes' => (object)[
+                'itemsIndexWeb' => 'processes.index',
+                'editCategoryWeb' => 'process-categories.edit',
+                'categoryListApi' => 'api.process_categories.index',
+            ],
+            'countField' => 'processes_count',
+            'apiListInclude' => 'processesCount',
+        ];
+
+        $listConfig = (object)[
+            'processes' => Process::all(),
+            'countCategories' => ProcessCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count(),
+            'status' => $request->input('status')
+        ];
+
+        return view('processes.index', compact('listConfig', 'catConfig'));
     }
 
     /**
@@ -180,7 +195,7 @@ class ProcessController extends Controller
         $fileName = snake_case($process->name) . '.json';
         $fileContents = Cache::get($key);
 
-        if (! $fileContents) {
+        if (!$fileContents) {
             return abort(404);
         } else {
             return response()->streamDownload(function () use ($fileContents) {
@@ -212,7 +227,7 @@ class ProcessController extends Controller
             case 'view-processes':
                 return false; // already on index, continue with it
             case 'view-categories':
-                return 'categories.index';
+                return 'process-categories.index';
             case 'view-scripts':
                 return 'scripts.index';
             case 'view-screens':

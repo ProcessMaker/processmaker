@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Process;
 
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
@@ -16,10 +17,26 @@ class ScriptController extends Controller
      */
     public function index()
     {
-        $scriptFormats = Script::scriptFormatList();
-        $scriptCategories = ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count();
+        $catConfig = (object) [
+            'labels' => (object) [
+                'newCategoryTitle' => __('Create Script Category'),
+                'countColumn' => __('# Scripts'),
+            ],
+            'routes' => (object) [
+                'itemsIndexWeb' => 'scripts.index',
+                'editCategoryWeb' => 'script-categories.edit',
+                'categoryListApi' => 'api.script_categories.index',
+            ],
+            'countField' => 'scripts_count',
+            'apiListInclude' => 'scriptsCount',
+        ];
 
-        return view('processes.scripts.index', compact('scriptFormats', 'scriptCategories'));
+        $listConfig = (object) [
+            'scriptFormats' => Script::scriptFormatList(),
+            'countCategories' => ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count()
+        ];
+
+        return view('processes.scripts.index', compact ('listConfig', 'catConfig'));
     }
 
     public function edit(Script $script, User $users)
