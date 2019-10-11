@@ -52,6 +52,9 @@ class Script extends Model
 {
     use SerializeToIso8601;
     use HideSystemResources;
+    use HasCategories;
+
+    const categoryClass = ScriptCategory::class;
 
     protected $connection = 'processmaker';
 

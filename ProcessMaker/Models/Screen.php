@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
 
@@ -54,6 +55,9 @@ class Screen extends Model
 {
     use SerializeToIso8601;
     use HideSystemResources;
+    use HasCategories;
+
+    const categoryClass = ScreenCategory::class;
 
     protected $connection = 'processmaker';
 
