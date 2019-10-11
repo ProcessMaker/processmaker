@@ -21,7 +21,9 @@ trait HasCategories
     public static function bootHasCategories()
     {
         static::saved(function ($model) {
-            $model->categories()->syncWithoutDetaching([$model->category->getKey()]);
+            if ($model->category) {
+                $model->categories()->syncWithoutDetaching([$model->category->getKey()]);
+            }
         });
     }
 }
