@@ -61,11 +61,10 @@
         handler(value) {
           if (value) {
             const content = [];
-            const selected = value.split(',');
-            let loading = selected.length;
-            this.loading = true;
+            const selected = String(value).split(',');
+            this.loading = selected.length;
             selected.forEach(category => {
-              loading = this.getOptionData(category, loading, content);
+              this.getOptionData(category, content);
             });
           } else {
             this.content.splice(0);
@@ -79,29 +78,27 @@
         this.content.splice(0);
         this.content.push(...content);
       },
-      getOptionData(id, loading, content) {
+      getOptionData(id, content) {
         const option = this.options.find(item => item.id == id);
         if (option) {
-          loading--;
+          this.loading--;
           content.push(option);
-          (!loading) ? this.completeSelectedLoading(content) : null;
-          return loading;
+          (!this.loading) ? this.completeSelectedLoading(content) : null;
         }
         ProcessMaker.apiClient
-          .get(this.apiGet + "/" + category)
+          .get(this.apiGet + "/" + id)
           .then(response => {
-            loading--;
+            this.loading--;
             content.push(response.data);
-            (!loading) ? this.completeSelectedLoading(content) : null;
+            (!this.loading) ? this.completeSelectedLoading(content) : null;
           })
           .catch(error => {
-            loading--;
+            this.loading--;
             if (error.response.status === 404) {
               this.error = this.$t('Selected not found');
             }
-            (!loading) ? this.completeSelectedLoading(content) : null;
+            (!this.loading) ? this.completeSelectedLoading(content) : null;
           });
-        return loading;
       },
       load(filter) {
         ProcessMaker.apiClient

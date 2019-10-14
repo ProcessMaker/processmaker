@@ -110,4 +110,24 @@ class Screen extends Model
     {
         return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
     }
+
+    /**
+     * Set multiple|single categories to the screen
+     *
+     * @param string $value
+     */
+    public function setScreenCategoryIdAttribute($value)
+    {
+        return $this->setMultipleCategories($value, 'screen_category_id');
+    }
+
+    /**
+     * Get multiple|single categories of the screen
+     *
+     * @param string $value
+     */
+    public function getScreenCategoryIdAttribute($value)
+    {
+        return implode(',', $this->categories()->pluck('category_id')->toArray());
+    }
 }

@@ -21,4 +21,27 @@ trait HasCategories
         $categories->withPivotValue('assignable_type', static::class);
         return $categories->using(CategoryAssignment::class);
     }
+
+    /**
+     * Set multiple|single categories to the assignable
+     *
+     * @param string $value
+     */
+    private function setMultipleCategories($value, $singleColumn)
+    {
+        if ($value) {
+            $value = explode(',', $value);
+            $this->attributes[$singleColumn] = $value[0];
+            if ($this->getKey()) {
+                $this->categories()->sync($value);
+            } else {
+                self::created(function($model) use($value) {
+                    if ($model->getKey() === $this->getKey()) {
+                        $this->categories()->sync($value);
+                    }
+                });
+            }
+        }
+        return $this;
+    }
 }
