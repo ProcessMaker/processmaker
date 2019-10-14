@@ -1013,4 +1013,21 @@ class Process extends Model implements HasMedia
         }
         return $newnode;
     }
+
+    public function setProcessCategoryIdAttribute($value)
+    {
+        if ($value) {
+            $value = explode(',', $value);
+            $this->attributes['process_category_id'] = $value[0];
+            if ($this->getKey()) {
+                $this->categories()->sync($value);
+            } else {
+                self::created(function($model) use($value) {
+                    if ($model->getKey() === $this->getKey()) {
+                        $this->categories()->sync($value);
+                    }
+                });
+            }
+        }
+    }
 }

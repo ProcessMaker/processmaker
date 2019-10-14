@@ -29,12 +29,9 @@ trait HideSystemResources
         if (substr(static::class, -8) === 'Category') {
             return $query->where('is_system', false);
         } else {
-            $prefix = Str::singular($query->getModel()->getTable());
-            return $query
-                ->where($prefix . '_category_id', null)
-                ->orWhereHas('category', function($q){
-                    $q->where('is_system', false);
-                });
+            return $query->whereDoesntHave('categories', function ($query) {
+                $query->where('is_system', true);
+            });
         }
     }
 }

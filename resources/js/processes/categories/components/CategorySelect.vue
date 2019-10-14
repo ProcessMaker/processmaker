@@ -5,10 +5,10 @@
                  track-by="id"
                  label="name"
                  :class="{'border border-danger':error}"
-                 :loading="loading"
+                 :loading="!!loading"
                  :placeholder="$t('type here to search')"
                  :options="options"
-                 :multiple="false"
+                 :multiple="true"
                  :show-labels="false"
                  :searchable="true"
                  :internal-search="false"
@@ -40,7 +40,7 @@
     },
     data() {
       return {
-        content: "",
+        content: [],
         loading: false,
         options: [],
         error: ''
@@ -51,38 +51,58 @@
     },
     watch: {
       content: {
-        handler() {
-          this.$emit("input", this.content.id);
+        handler(value) {
+          this.$emit("input", this.content instanceof Array ? this.content.map(item => item.id).join(',') : (this.content ? this.content.id : ''));
           this.$emit("update:duplicateScreenCategory", this.content);
         }
       },
       value: {
         immediate: true,
-        handler() {
-          // Load selected item.
-          if (this.value) {
+        handler(value) {
+          if (value) {
+            const content = [];
+            const selected = value.split(',');
+            let loading = selected.length;
             this.loading = true;
-            ProcessMaker.apiClient
-              .get(this.apiGet + "/" + this.value)
-              .then(response => {
-                this.loading = false;
-                this.content = response.data;
-              })
-              .catch(error => {
-                this.loading = false;
-                if (error.response.status === 404) {
-                  this.content = '';
-                  this.error = this.$t('Selected not found');
-                }
-              });
+            selected.forEach(category => {
+              loading = this.getOptionData(category, loading, content);
+            });
           } else {
-            this.content = '';
-            this.error = '';
+            this.content.splice(0);
           }
         },
       }
     },
     methods: {
+      completeSelectedLoading(content) {
+        this.loading = false;
+        this.content.splice(0);
+        this.content.push(...content);
+      },
+      getOptionData(id, loading, content) {
+        const option = this.options.find(item => item.id == id);
+        if (option) {
+          loading--;
+          content.push(option);
+          (!loading) ? this.completeSelectedLoading(content) : null;
+          return loading;
+        }
+        ProcessMaker.apiClient
+          .get(this.apiGet + "/" + category)
+          .then(response => {
+            loading--;
+            content.push(response.data);
+            (!loading) ? this.completeSelectedLoading(content) : null;
+          })
+          .catch(error => {
+            loading--;
+            if (error.response.status === 404) {
+              this.error = this.$t('Selected not found');
+            }
+            (!loading) ? this.completeSelectedLoading(content) : null;
+          });
+        return loading;
+      },
       load(filter) {
         ProcessMaker.apiClient
           .get(this.apiList + "?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
