@@ -41,6 +41,8 @@ trait HasCategories
                     }
                 });
             }
+        } else {
+            $this->attributes[$singleColumn] = $value;
         }
         return $this;
     }

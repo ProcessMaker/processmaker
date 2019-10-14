@@ -128,6 +128,6 @@ class Screen extends Model
      */
     public function getScreenCategoryIdAttribute($value)
     {
-        return implode(',', $this->categories()->pluck('category_id')->toArray());
+        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
     }
 }

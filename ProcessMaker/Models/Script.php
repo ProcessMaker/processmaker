@@ -257,6 +257,6 @@ class Script extends Model
      */
     public function getScriptCategoryIdAttribute($value)
     {
-        return implode(',', $this->categories()->pluck('category_id')->toArray());
+        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
     }
 }
