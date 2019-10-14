@@ -173,17 +173,20 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
   window.ProcessMaker.EventBus.$emit("api-client-done", response);
   return response;
 }, (error) => {
-  window.ProcessMaker.EventBus.$emit("api-client-error", error);
-  if (error.response && error.response.status && error.response.status === 401) {
-    window.location = "/login";
-  } else if (!error.config.url.match("/debug")) {
-    window.ProcessMaker.apiClient.post("/debug", {
-      message: error.message,
-      code: error.code,
-      config: error.config
-    });
-  }
-  return Promise.reject(error);
+    window.ProcessMaker.EventBus.$emit("api-client-error", error);
+    if (error.response && error.response.status && error.response.status === 401) {
+        window.location = "/login";
+    } else if (!error.config.url.match('/debug')) {
+        window.ProcessMaker.apiClient.post('/debug', {
+            name: 'Javascript ProcessMaker.apiClient Error',
+            message: JSON.stringify({
+                message: error.message,
+                code: error.code,
+                config: error.config
+            })
+        });
+    }
+    return Promise.reject(error);
 });
 
 // Display any uncaught promise rejections from axios in the Process Maker alert box
