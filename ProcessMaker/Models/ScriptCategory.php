@@ -60,6 +60,6 @@ class ScriptCategory extends Model
      */
     public function scripts()
     {
-        return $this->morphedByMany(Script::class, 'assignable', 'category_assignments', 'assignable_id', null);
+        return $this->morphedByMany(Script::class, 'assignable', 'category_assignments', 'category_id');
     }
 }
