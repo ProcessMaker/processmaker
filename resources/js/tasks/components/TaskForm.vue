@@ -7,18 +7,26 @@ import { VueFormRenderer } from '@processmaker/screen-builder';
 import '@processmaker/screen-builder/dist/vue-form-builder.css';
 import FileUpload from "../../processes/screen-builder/components/form/file-upload";
 import FileDownload from "../../processes/screen-builder/components/file-download";
+import ProcessRequestChannel from './ProcessRequestChannel';
 
 export default {
   components: {
     VueFormRenderer
   },
-  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss"],
+  mixins: [ProcessRequestChannel],
+  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "waitScreen"],
   data() {
     return {
       formData: this.data
     };
   },
-  mounted() {},
+  mounted() {
+    if (this.waitScreen) {
+      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, 'ProcessMaker.Events.ActivityActivated', () => {
+        
+      });
+    }
+  },
   methods: {
     displayErrors(errors) {
       const messages = [];
