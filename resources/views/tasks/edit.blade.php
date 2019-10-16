@@ -50,6 +50,7 @@
                                 <div class="card card-body">
                                   @if ($task->getScreen())
                                   <task-screen ref="taskScreen"
+                                                 :wait-screen="true"
                                                  process-id="{{$task->processRequest->process->getKey()}}"
                                                  instance-id="{{$task->processRequest->getKey()}}"
                                                  token-id="{{$task->getKey()}}"
@@ -60,6 +61,7 @@
                                   </task-screen>
                                   @else
                                   <task-screen ref="taskScreen"
+                                                 :wait-screen="true"
                                                  process-id="{{$task->processRequest->process->getKey()}}"
                                                  instance-id="{{$task->processRequest->getKey()}}"
                                                  token-id="{{$task->getKey()}}"

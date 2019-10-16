@@ -23,7 +23,7 @@ export default {
   mounted() {
     if (this.waitScreen) {
       this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, 'ProcessMaker.Events.ActivityActivated', () => {
-        
+        console.log(arguments);
       });
     }
   },
