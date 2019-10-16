@@ -22,9 +22,8 @@ export default {
   },
   mounted() {
     if (this.waitScreen) {
-      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, 'ProcessMaker.Events.ActivityActivated', () => {
-        console.log(arguments);
-        document.location.href = `tasks/${this.instanceId}/edit`;
+      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ActivityActivated', (data) => {
+        this.$emit('process_updated', data);
       });
     }
   },

@@ -18,5 +18,5 @@ Broadcast::channel('ProcessMaker.Models.User.{id}', function ($user, $id) {
 
 Broadcast::channel('ProcessMaker.Models.ProcessRequest.{id}', function ($user, $id) {
     $request = ProcessRequest::find($id);
-    return $request->participants()->contains($user->getKey());
+    return !empty($request->participants()->where('users.id', $user->getKey())->first());
 });

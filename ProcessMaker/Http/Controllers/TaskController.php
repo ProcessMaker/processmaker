@@ -50,7 +50,7 @@ class TaskController extends Controller
         $allowInterstitial = false;
 
         if (array_key_exists('allowInterstitial', $definition)) {
-            $allowInterstitial = $definition['allowInterstitial'];
+            $allowInterstitial = !!json_decode($definition['allowInterstitial']);
             if (array_key_exists('interstitialScreenRef', $definition) && $definition['interstitialScreenRef']) {
                 $screenInterstitial = Screen::find($definition['interstitialScreenRef']);
             } else {

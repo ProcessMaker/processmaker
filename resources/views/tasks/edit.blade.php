@@ -52,6 +52,7 @@
                                     @if ($task->getScreen())
                                         <task-screen
                                             ref="taskScreen"
+                                            :wait-screen="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
@@ -63,6 +64,7 @@
                                     @else
                                         <task-screen
                                             ref="taskScreen"
+                                            :wait-screen="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
@@ -88,8 +90,9 @@
                                     :screen="{{json_encode($screenInterstitial->config)}}"
                                     :computed="{{json_encode($screenInterstitial->computed)}}"
                                     :custom-css="{{json_encode(strval($screenInterstitial->custom_css))}}"
-                                    :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
-                                </task-screen>
+                                    :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
+                                    @process_updated="redirectToNextAssignedTask"
+                                ></task-screen>
                                 <div v-else class="card card-body text-center" v-cloak>
                                     <h1>{{ __('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
                                 </div>
@@ -285,6 +288,14 @@
           }
         },
         methods: {
+          redirectToNextAssignedTask() {
+            window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.assigned.id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
+              if (response.data.data.length > 0) {
+                const firstNextAssignedTask = response.data.data[0].id);
+                window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+              }
+            });
+          },
           /**
            * Submit the task screen
            */
@@ -380,6 +391,9 @@
           this.userRequested = this.requested;
           this.updateRequestData = debounce(this.updateRequestData, 1000);
           this.editJsonData();
+          if (this.allowInterstitial) {
+            this.redirectToNextAssignedTask();
+          }
         }
       });
     </script>
