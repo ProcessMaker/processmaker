@@ -47,17 +47,4 @@ class ActivityActivated implements ShouldBroadcastNow
     {
         return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->token->processRequest->getKey());
     }
-
-    /**
-     * Get the data to broadcast.
-     *
-     * @return array
-     */
-    public function broadcastWith()
-    {
-        return [
-            'token_id' => $this->token->getKey(),
-            'user_id' => $this->token->user->getKey(),
-        ];
-    }
 }

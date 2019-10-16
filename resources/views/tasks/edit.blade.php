@@ -289,12 +289,14 @@
         },
         methods: {
           redirectToNextAssignedTask() {
-            window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.assigned.id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
-              if (response.data.data.length > 0) {
-                const firstNextAssignedTask = response.data.data[0].id);
-                window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
-              }
-            });
+            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
+              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.assigned.id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
+                if (response.data.data.length > 0) {
+                  const firstNextAssignedTask = response.data.data[0].id;
+                  window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+                }
+              });
+            }
           },
           /**
            * Submit the task screen
