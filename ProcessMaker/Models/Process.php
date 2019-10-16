@@ -883,7 +883,7 @@ class Process extends Model implements HasMedia
             }
         }
 
-        if (!$processRequest->user_id && $canBeAnonymous) {
+        if (!$processRequest->user_id && !$canBeAnonymous) {
             throw new TaskDoesNotHaveRequesterException();
         }
 
