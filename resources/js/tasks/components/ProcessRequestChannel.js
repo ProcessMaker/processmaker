@@ -21,4 +21,4 @@ export default {
       window.Echo.private(element.channel).stopListening(element.event);
     });
   }
-}
+};

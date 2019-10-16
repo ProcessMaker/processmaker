@@ -24,6 +24,7 @@ export default {
     if (this.waitScreen) {
       this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, 'ProcessMaker.Events.ActivityActivated', () => {
         console.log(arguments);
+        document.location.href = `tasks/${this.instanceId}/edit`;
       });
     }
   },
@@ -41,9 +42,13 @@ export default {
       let message = this.$t('Task Completed Successfully');
       ProcessMaker.apiClient
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
-        .then(function() {
+        .then(() => {
           window.ProcessMaker.alert(message, 'success', 5, true);
-          document.location.href = "/tasks";
+          if (!this.waitScreen) {
+            document.location.href = "/tasks";
+          } else {
+            document.location.reload();
+          }
         })
         .catch(error => {
           let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;

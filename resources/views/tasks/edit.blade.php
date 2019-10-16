@@ -39,7 +39,8 @@
                                                         aria-controls="tab-form" aria-selected="true"
                                                         class="nav-link active">{{__('Form')}}</a></li>
                                 <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
-                                                        aria-controls="tab-data" aria-selected="false" @click="resizeMonaco"
+                                                        aria-controls="tab-data" aria-selected="false"
+                                                        @click="resizeMonaco"
                                                         class="nav-link">{{__('Data')}}</a></li>
                             </ul>
                         @endcan
@@ -48,36 +49,49 @@
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                             @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
                                 <div class="card card-body">
-                                  @if ($task->getScreen())
-                                  <task-screen ref="taskScreen"
-                                                 :wait-screen="true"
-                                                 process-id="{{$task->processRequest->process->getKey()}}"
-                                                 instance-id="{{$task->processRequest->getKey()}}"
-                                                 token-id="{{$task->getKey()}}"
-                                                 :screen="{{json_encode($task->getScreen()->config)}}"
-                                                 :computed="{{json_encode($task->getScreen()->computed)}}"
-                                                 :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
-                                                 :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
-                                  </task-screen>
-                                  @else
-                                  <task-screen ref="taskScreen"
-                                                 :wait-screen="true"
-                                                 process-id="{{$task->processRequest->process->getKey()}}"
-                                                 instance-id="{{$task->processRequest->getKey()}}"
-                                                 token-id="{{$task->getKey()}}"
-                                                 :screen="[{items:[]}]"
-                                                 :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
-                                  </task-screen>
-                                  @endif
+                                    @if ($task->getScreen())
+                                        <task-screen
+                                            ref="taskScreen"
+                                            process-id="{{$task->processRequest->process->getKey()}}"
+                                            instance-id="{{$task->processRequest->getKey()}}"
+                                            token-id="{{$task->getKey()}}"
+                                            :screen="{{json_encode($task->getScreen()->config)}}"
+                                            :computed="{{json_encode($task->getScreen()->computed)}}"
+                                            :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
+                                            :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
+                                        </task-screen>
+                                    @else
+                                        <task-screen
+                                            ref="taskScreen"
+                                            process-id="{{$task->processRequest->process->getKey()}}"
+                                            instance-id="{{$task->processRequest->getKey()}}"
+                                            token-id="{{$task->getKey()}}"
+                                            :screen="[{items:[]}]"
+                                            :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
+                                        </task-screen>
+                                    @endif
                                 </div>
                                 @if ($task->getBpmnDefinition()->localName==='manualTask' || !$task->getScreen())
-                                <div class="card-footer">
-                                    <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
-                                </div>
+                                    <div class="card-footer">
+                                        <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
+                                    </div>
                                 @endif
                             @elseif ($task->advanceStatus==='completed')
-                                <div class="card card-body" align="center">
-                                    <h1>Task Completed <i class="fas fa-clipboard-check"></i></h1>
+
+                                <task-screen
+                                    ref="taskWaitScreen"
+                                    v-if="allowInterstitial"
+                                    :wait-screen="allowInterstitial"
+                                    process-id="{{$task->processRequest->process->getKey()}}"
+                                    instance-id="{{$task->processRequest->getKey()}}"
+                                    token-id="{{$task->getKey()}}"
+                                    :screen="{{json_encode($screenInterstitial->config)}}"
+                                    :computed="{{json_encode($screenInterstitial->computed)}}"
+                                    :custom-css="{{json_encode(strval($screenInterstitial->custom_css))}}"
+                                    :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
+                                </task-screen>
+                                <div v-else class="card card-body text-center" v-cloak>
+                                    <h1>{{ __('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
                                 </div>
                             @endif
                         </div>
@@ -124,11 +138,13 @@
                                         <br>
                                         <span>
                                 @if ($task->advanceStatus === 'open')
-                                <button type="button" class="btn btn-outline-secondary btn-block" @click="show">
+                                                <button type="button" class="btn btn-outline-secondary btn-block"
+                                                        @click="show">
                                     <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                 </button>
-                                @endif
-                                <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}" @hide="cancelReassign"
+                                            @endif
+                                <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
+                                         @hide="cancelReassign"
                                          v-cloak>
                                     <div class="form-group">
                                         {!!Form::label('user', __('User'))!!}
@@ -215,7 +231,7 @@
     <script src="{{mix('js/tasks/show.js')}}"></script>
     <script>
       new Vue({
-        el: '#task',
+        el: "#task",
         data: {
           //Edit data
           fieldsToUpdate: [],
@@ -236,47 +252,47 @@
           assigned: @json($task->user),
           requested: @json($task->processRequest->user),
           data: @json($task->processRequest->data),
-          statusCard: 'card-header text-capitalize text-white bg-success',
+          statusCard: "card-header text-capitalize text-white bg-success",
           userAssigned: [],
           userRequested: [],
-          selectedUser: []
+          selectedUser: [],
+          allowInterstitial: @json($allowInterstitial)
         },
         watch: {
-          showReassignment(show) {
+          showReassignment (show) {
             show ? this.loadUsers() : null;
           }
         },
         computed: {
-          dateDueAt() {
+          dateDueAt () {
             return this.task.due_at;
           },
-          createdAt() {
+          createdAt () {
             return this.task.created_at;
           },
-          completedAt() {
+          completedAt () {
             return this.task.completed_at;
           },
-          showDueAtDates() {
-            return this.task.status !== 'CLOSED';
+          showDueAtDates () {
+            return this.task.status !== "CLOSED";
           },
-          disabled() {
+          disabled () {
             return this.selectedUser ? this.selectedUser.length === 0 : true;
           },
-          styleDataMonaco()
-          {
+          styleDataMonaco () {
             let height = window.innerHeight * 0.55;
-            return "height: " + height+ "px; border:1px solid gray;";
+            return "height: " + height + "px; border:1px solid gray;";
           }
         },
         methods: {
           /**
            * Submit the task screen
            */
-          submitTaskScreen() {
+          submitTaskScreen () {
             this.$refs.taskScreen.submit();
           },
           // Data editor
-          updateRequestData() {
+          updateRequestData () {
             const data = JSON.parse(this.jsonData);
             ProcessMaker.apiClient
               .put("requests/" + this.task.process_request_id, {
@@ -288,7 +304,7 @@
                 ProcessMaker.alert("{{__('The request data was saved.')}}", "success");
               });
           },
-          saveJsonData() {
+          saveJsonData () {
             try {
               const value = JSON.parse(this.jsonData);
               this.updateRequestData();
@@ -296,18 +312,18 @@
               // Invalid data
             }
           },
-          editJsonData() {
+          editJsonData () {
             this.jsonData = JSON.stringify(this.data, null, 4);
           },
           // Reassign methods
-          show() {
+          show () {
             this.showReassignment = true;
           },
-          cancelReassign() {
+          cancelReassign () {
             this.showReassignment = false;
             this.selectedUser = [];
           },
-          reassignUser() {
+          reassignUser () {
             if (this.selectedUser) {
               ProcessMaker.apiClient
                 .put("tasks/" + this.task.id, {
@@ -321,8 +337,8 @@
                 });
             }
           },
-          loadUsers(filter) {
-            filter = typeof filter === 'string' ? '?filter=' + filter + '&' : '?';
+          loadUsers (filter) {
+            filter = typeof filter === "string" ? "?filter=" + filter + "&" : "?";
             ProcessMaker.apiClient
               .get(
                 "tasks/" + this.task.id + filter, {
@@ -335,31 +351,30 @@
                 this.usersList = response.data.assignableUsers;
               });
           },
-          classHeaderCard(status) {
-            let header = 'bg-success';
+          classHeaderCard (status) {
+            let header = "bg-success";
             switch (status) {
-              case 'completed':
-                header = 'bg-secondary';
+              case "completed":
+                header = "bg-secondary";
                 break;
-              case 'overdue':
-                header = 'bg-danger';
+              case "overdue":
+                header = "bg-danger";
                 break;
             }
-            return 'card-header text-capitalize text-white ' + header;
+            return "card-header text-capitalize text-white " + header;
           },
-          assignedUserAvatar(user) {
+          assignedUserAvatar (user) {
             return [{
               src: user.avatar,
               name: user.fullname
             }];
           },
-          resizeMonaco()
-          {
+          resizeMonaco () {
             let editor = this.$refs.monaco.getMonaco();
-            editor.layout({height:window.innerHeight*0.65});
+            editor.layout({height: window.innerHeight * 0.65});
           }
         },
-        mounted() {
+        mounted () {
           this.statusCard = this.classHeaderCard(this.task.advanceStatus);
           this.userAssigned = this.assigned;
           this.userRequested = this.requested;
