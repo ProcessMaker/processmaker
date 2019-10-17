@@ -18,7 +18,7 @@
 
 @section('content')
 <div id="script-container">
-    <script-editor :script="{{$script}}" :script-format="'{{$scriptFormat}}'"></script-editor>
+    <script-editor :script="{{$script}}" :script-format="'{{$scriptFormat}}'" test-data="{{ json_encode($testData, JSON_PRETTY_PRINT) }}"></script-editor>
 </div>
 @endsection
 
