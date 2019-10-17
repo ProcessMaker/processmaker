@@ -16,7 +16,8 @@ self.start = function (data) {
   clearInterval(self.interval);
   self.interval = setInterval(function () {
     self.time--;
-    if (self.time < 55 && self.time > 0) {
+    
+    if (self.time < data.warnSeconds && self.time > 0) {
       self.postMessage({ method: 'countdown', data: { time: self.time } });
     }
 

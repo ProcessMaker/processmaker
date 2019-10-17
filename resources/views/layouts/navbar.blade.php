@@ -12,7 +12,7 @@
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
-        <session-modal id="sessionModal" v-show='sessionShow' :title="sessionTitle" :message="sessionMessage" :time="sessionTime"
+        <session-modal id="sessionModal" v-show='sessionShow' :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds"
                 @close="sessionShow=false">
         </session-modal>
         <div v-if="alerts.length > 0" class="alert-wrapper">
