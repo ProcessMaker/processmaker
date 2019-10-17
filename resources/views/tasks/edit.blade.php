@@ -52,7 +52,7 @@
                                     @if ($task->getScreen())
                                         <task-screen
                                             ref="taskScreen"
-                                            :wait-screen="allowInterstitial"
+                                            :listen-process-events="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
@@ -64,7 +64,7 @@
                                     @else
                                         <task-screen
                                             ref="taskScreen"
-                                            :wait-screen="allowInterstitial"
+                                            :listen-process-events="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
@@ -83,7 +83,7 @@
                                 <task-screen
                                     ref="taskWaitScreen"
                                     v-if="allowInterstitial"
-                                    :wait-screen="allowInterstitial"
+                                    :listen-process-events="allowInterstitial"
                                     process-id="{{$task->processRequest->process->getKey()}}"
                                     instance-id="{{$task->processRequest->getKey()}}"
                                     token-id="{{$task->getKey()}}"
@@ -91,7 +91,9 @@
                                     :computed="{{json_encode($screenInterstitial->computed)}}"
                                     :custom-css="{{json_encode(strval($screenInterstitial->custom_css))}}"
                                     :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
-                                    @process_updated="redirectToNextAssignedTask"
+                                    @activity-assigned="redirectToNextAssignedTask"
+                                    @process-completed="redirectWhenProcessCompleted"
+                                    @process-updated="refreshWhenProcessUpdated"
                                 ></task-screen>
                                 <div v-else class="card card-body text-center" v-cloak>
                                     <h1>{{ __('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
@@ -288,6 +290,12 @@
           }
         },
         methods: {
+          redirectWhenProcessCompleted() {
+            window.location.href = `/requests/${this.task.process_request_id}`;
+          },
+          redirectWhenProcessUpdated() {
+            window.location.reload();
+          },
           redirectToNextAssignedTask() {
             if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
               window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.assigned.id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {

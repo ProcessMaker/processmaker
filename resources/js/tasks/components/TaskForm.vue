@@ -14,16 +14,22 @@ export default {
     VueFormRenderer
   },
   mixins: [ProcessRequestChannel],
-  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "waitScreen"],
+  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "listenProcessEvents"],
   data() {
     return {
       formData: this.data
     };
   },
   mounted() {
-    if (this.waitScreen) {
+    if (this.listenProcessEvents) {
       this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ActivityAssigned', (data) => {
-        this.$emit('process_updated', data);
+        this.$emit('activity-assigned', data);
+      });
+      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ProcessCompleted', (data) => {
+        this.$emit('process-completed', data);
+      });
+      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ProcessUpdated', (data) => {
+        this.$emit('process-updated', data);
       });
     }
   },
@@ -43,7 +49,7 @@ export default {
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(() => {
           window.ProcessMaker.alert(message, 'success', 5, true);
-          if (!this.waitScreen) {
+          if (!this.listenProcessEvents) {
             document.location.href = "/tasks";
           } else {
             document.location.reload();

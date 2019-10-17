@@ -11,6 +11,7 @@ use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCreatedEvent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
@@ -43,6 +44,7 @@ class BpmnSubscriber
 
         $notifiables = $event->instance->getNotifiables('completed');
         Notification::send($notifiables, new ProcessCompletedNotification($event->instance));
+        event(new ProcessCompleted($event->instance));
     }
 
     /**
