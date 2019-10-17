@@ -29,24 +29,33 @@ abstract class DuskTestCase extends BaseTestCase
      */
     protected function driver()
     {
-        $options = (new ChromeOptions)->addArguments([
-            '--disable-gpu',
-            '--headless',
-            '--no-sandbox',
-            '--ignore-ssl-errors',
-            '--window-size=1200,720',
-            '--whitelisted-ips=""'
-        ]);
-
-        if (!env('SAUCELABS_BROWSER_TESTING', false)) {
+        /**
+         * 
+         * Run in a real browser. You can tunnel through vagrant by running
+         * ssh vagrant@192.168.10.10 -N -R 4444:localhost:4444
+         * Then start selenium standalone server on your host machine
+         * (Install it with `brew install selenium-server-standalone`)
+         * 
+         */
+        if (env('SELENIUM_SERVER')) {
+            $options = (new ChromeOptions)->addArguments([
+                '--ignore-ssl-errors',
+                '--window-size=1200,720',
+            ]);
+            
             return RemoteWebDriver::create(
-                'http://localhost:9515',
+                env('SELENIUM_SERVER'), // 'http://localhost:4444/wd/hub/',
                 DesiredCapabilities::chrome()
                     ->setCapability(ChromeOptions::CAPABILITY, $options)
                     ->setCapability('acceptInsecureCerts', true)
             );
-        } else {
-            // We currently support SauceLabs based cloud testing
+        
+        /**
+         * 
+         * Run in Saucelabs. This is only use for CircleCI
+         * 
+         */
+        } elseif (env('SAUCELABS_BROWSER_TESTING')) {
             return RemoteWebDriver::create(
                 "https://" . env('SAUCELABS_USERNAME') . ":" . env('SAUCELABS_ACCESS_KEY') . "@ondemand.saucelabs.com:443/wd/hub",
                 [
@@ -55,6 +64,29 @@ abstract class DuskTestCase extends BaseTestCase
                     "version" => env('SAUCELABS_BROWSER_VERSION', "73")
                 ]
             );
+
+        /**
+         * 
+         * Run with default headless mode in the vagrant machine
+         * 
+         */
+        } else {
+            $options = (new ChromeOptions)->addArguments([
+                '--disable-gpu',
+                '--headless',
+                '--no-sandbox',
+                '--ignore-ssl-errors',
+                '--window-size=1200,720',
+                '--whitelisted-ips=""'
+            ]);
+            
+            return RemoteWebDriver::create(
+                'http://localhost:9515',
+                DesiredCapabilities::chrome()
+                    ->setCapability(ChromeOptions::CAPABILITY, $options)
+                    ->setCapability('acceptInsecureCerts', true)
+            );
+
         }
     }
 }
