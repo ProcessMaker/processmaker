@@ -22,7 +22,7 @@ export default {
   },
   mounted() {
     if (this.waitScreen) {
-      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ActivityActivated', (data) => {
+      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ActivityAssigned', (data) => {
         this.$emit('process_updated', data);
       });
     }

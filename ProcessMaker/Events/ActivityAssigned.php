@@ -9,7 +9,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use ProcessMaker\Models\ProcessRequestToken;
 
-class ActivityActivated implements ShouldBroadcastNow
+class ActivityAssigned implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -35,7 +35,7 @@ class ActivityActivated implements ShouldBroadcastNow
      */
     public function broadcastAs()
     {
-        return 'ActivityActivated';
+        return 'ActivityAssigned';
     }
 
     /**

@@ -10,7 +10,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCreatedEvent;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use ProcessMaker\Events\ActivityActivated;
+use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
@@ -70,7 +70,7 @@ class BpmnSubscriber
 
         $notifiables = $token->getNotifiables('assigned');
         Notification::send($notifiables, new ActivityActivatedNotification($token));
-        event(new ActivityActivated($event->token));
+        event(new ActivityAssigned($event->token));
     }
 
     /**
