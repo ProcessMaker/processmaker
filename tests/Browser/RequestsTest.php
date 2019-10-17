@@ -9,7 +9,6 @@ use Tests\Browser\Pages\LoginPage;
 use ProcessMaker\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tests\Browser\Pages\RequestsPage;
-use DatabaseSeeder;
 
 class RequestsTest extends DuskTestCase
 {
