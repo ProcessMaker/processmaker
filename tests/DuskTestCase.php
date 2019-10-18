@@ -89,4 +89,30 @@ abstract class DuskTestCase extends BaseTestCase
 
         }
     }
+    
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $sqlFile = sys_get_temp_dir() . "/testDB.sql";
+        $arg = [
+            env('DB_HOSTNAME'),
+            env('DB_PORT'),
+            env('DB_USERNAME'),
+            env('DB_PASSWORD'),
+            env('DB_DATABASE'),
+            $sqlFile
+        ];
+
+        if (!file_exists($sqlFile) || env("CLEAN_DB", false) === true) {
+            $this->artisan('migrate:fresh', [
+                '--seed' => true,
+                '--force' => true
+            ]);
+            $cmd = base_path('tests/Browser/mysql_backup.sh') . ' ' . implode(" ", $arg);
+            exec($cmd, $out, $ret);
+        } else {
+            $cmd = base_path('tests/Browser/mysql_restore.sh') . ' '  . implode(" ", $arg) . " 2>&1";
+            exec($cmd, $out, $ret);
+        }
+    }
 }

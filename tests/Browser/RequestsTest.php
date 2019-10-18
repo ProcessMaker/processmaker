@@ -13,8 +13,6 @@ use Tests\Browser\Pages\RequestsPage;
 class RequestsTest extends DuskTestCase
 {
 
-    use DatabaseMigrations;
-
     private function setuser()
     {
 
