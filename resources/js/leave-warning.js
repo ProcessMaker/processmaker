@@ -5,7 +5,7 @@ if (window.ProcessMaker) {
     const {AccountTimeoutWorker, EventBus} = window.ProcessMaker;
 
     AccountTimeoutWorker && AccountTimeoutWorker.addEventListener("message", (event) => {
-        if (event.data.method === "timedOut") {
+        if (event.data.method === "countdown" && event.data.data.time < 3) {
             isTimedOut = true;
         }
     });
@@ -16,10 +16,10 @@ if (window.ProcessMaker) {
 
 window.addEventListener("beforeunload", (event) => {
     if (isTimedOut || noUnsavedChanges) {
-        event.preventDefault();
         return;
     }
-
+    
+    event.preventDefault();
     let confirmationMessage = __("Are you sure you want to leave?");
     event.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
 

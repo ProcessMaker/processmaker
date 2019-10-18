@@ -76,7 +76,8 @@ window.ProcessMaker.navbar = new Vue({
       sessionShow: false,
       sessionTitle: "",
       sessionMessage: "",
-      sessionTime: ""
+      sessionTime: "",
+      sessionWarnSeconds: ""
     };
   },
   methods: {
@@ -141,10 +142,11 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
 };
 
 // Setup our login modal
-window.ProcessMaker.sessionModal = function (title, message, time) {
+window.ProcessMaker.sessionModal = function (title, message, time, warnSeconds) {
   ProcessMaker.navbar.sessionTitle = title || __("Session Warning");
   ProcessMaker.navbar.sessionMessage = message || __("Your session is about to expire.");
   ProcessMaker.navbar.sessionTime = time;
+  ProcessMaker.navbar.sessionWarnSeconds = warnSeconds;
   ProcessMaker.navbar.sessionShow = true;
 };
 
