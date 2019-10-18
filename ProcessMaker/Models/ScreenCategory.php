@@ -60,6 +60,6 @@ class ScreenCategory extends Model
      */
     public function screens()
     {
-        return $this->hasMany(Screen::class);
+        return $this->morphedByMany(Screen::class, 'assignable', 'category_assignments', 'category_id');
     }
 }

@@ -18,6 +18,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
@@ -125,6 +126,9 @@ class Process extends Model implements HasMedia
     use ProcessStartEventAssignmentsTrait;
     use HideSystemResources;
     use PMQL;
+    use HasCategories;
+
+    const categoryClass = ProcessCategory::class;
 
     protected $connection = 'processmaker';
 
@@ -1008,5 +1012,25 @@ class Process extends Model implements HasMedia
             }
         }
         return $newnode;
+    }
+
+    /**
+     * Set multiple|single categories to the process
+     *
+     * @param string $value
+     */
+    public function setProcessCategoryIdAttribute($value)
+    {
+        return $this->setMultipleCategories($value, 'process_category_id');
+    }
+
+    /**
+     * Get multiple|single categories of the process
+     *
+     * @param string $value
+     */
+    public function getProcessCategoryIdAttribute($value)
+    {
+        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
     }
 }
