@@ -224,12 +224,6 @@ if (userID) {
     window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: window.ProcessMaker.AccountTimeoutLength } });
 }
 
-window.Echo = new Echo({
-    broadcaster: broadcaster.content,
-    key: key.content,
-    host: host.content
-});
-
 if (userID) {
     window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
         .notification((token) => {
