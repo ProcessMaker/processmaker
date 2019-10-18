@@ -148,10 +148,7 @@ class ProcessRequestController extends Controller
             }
             return response(['message' => $message], 400);
         }
-        $response = $query->orderBy(
-            str_ireplace('.', '->', $request->input('order_by', 'name')),
-            $request->input('order_direction', 'ASC')
-        )->get();
+        
         if (isset($response)) {
             //Filter by permission
             $response = $response->filter(function ($processRequest) {

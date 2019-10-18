@@ -30,7 +30,7 @@ class RequestsSearchTest extends DuskTestCase
                 ->click("button[data-original-title='Advanced Search']")
                 ->waitFor('@pmql')
 
-                ->type('@pmql', 'foo = "bar"')
+                ->value('@pmql', '')->type('@pmql', 'foo = "bar"')
                 ->click('@search-button')
                 ->waitFor('.alert-wrapper div')
                 ->assertSeeIn('.alert-wrapper div', "Unknown column 'foo'")
@@ -39,7 +39,7 @@ class RequestsSearchTest extends DuskTestCase
                 ->click('@search-button')
                 ->waitForText('No Data Available')
 
-                ->type('@pmql', 'name like "some%"') // In Progress
+                ->value('@pmql', '')->type('@pmql', 'name like "some%"')
                 ->click('@search-button')
                 ->waitFor('@vuetable td')
                 ->assertSeeIn("@vuetable", "In Progress")
