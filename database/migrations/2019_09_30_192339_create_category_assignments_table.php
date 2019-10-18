@@ -28,22 +28,13 @@ class CreateCategoryAssignmentsTable extends Migration
 
         // Transition existing assignments
         foreach (Process::all() as $process) {
-            $process->categories()->save([
-                'category_type' => ProcessCategory::class,
-                'category_id' => $process->category_id,
-            ]);
+            $process->categories()->sync([$process->process_category_id]);
         }
         foreach (Screen::all() as $screen) {
-            $screen->categories()->save([
-                'category_type' => ScreenCategory::class,
-                'category_id' => $process->category_id,
-            ]);
+            $screen->categories()->sync([$screen->screen_category_id]);
         }
         foreach (Script::all() as $script) {
-            $script->categories()->save([
-                'category_type' => ScriptCategory::class,
-                'category_id' => $process->category_id,
-            ]);
+            $script->categories()->sync([$script->script_category_id]);
         }
     }
 
