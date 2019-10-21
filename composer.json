@@ -19,6 +19,7 @@
     "php": ">=7.2.0",
     "darkaonline/l5-swagger": "5.8.*",
     "doctrine/dbal": "^2.9",
+    "fedeisas/laravel-mail-css-inliner": "^2.3",
     "fideloper/proxy": "^4.0",
     "fzaninotto/faker": "^1.4",
     "igaster/laravel-theme": "2.0.*",
