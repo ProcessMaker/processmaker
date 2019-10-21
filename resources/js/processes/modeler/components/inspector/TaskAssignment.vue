@@ -1,61 +1,48 @@
 <template>
     <div>
         <div class="form-group">
-            <label>{{ $t('Task Assignment') }}</label>
-            <select ref="assignmentsDropDownList"
-                    class="form-control"
-                    :value="assignmentGetter"
-                    @input="assignmentSetter">
-                <option value="requester">{{ $t('Requester') }}</option>
-                <option value="user">{{ $t('User') }}</option>
-                <option value="group">{{ $t('Group') }}</option>
-                <option value="previous_task_assignee">{{ $t('Previous Task Assignee') }}</option>
+            <label>{{ $t("Task Assignment") }}</label>
+            <select
+                ref="assignmentsDropDownList"
+                class="form-control"
+                :value="assignmentGetter"
+                @input="assignmentSetter">
+                <option value="requester">{{ $t("Requester") }}</option>
+                <option value="user">{{ $t("User") }}</option>
+                <option value="group">{{ $t("Group") }}</option>
+                <option value="previous_task_assignee">{{ $t("Previous Task Assignee") }}</option>
             </select>
         </div>
 
-        <div class="form-group" v-if="showAssignOneUser || showAssignGroup">
-            <label class="text-capitalize" v-if="showAssignOneUser">{{ $t('Assigned User')}}</label>
-            <label class="text-capitalize" v-if="showAssignGroup">{{ $t('Assigned Group')}}</label>
-            <div v-if="loading">{{ $t('Loading...') }}</div>
-            <div v-else>
-                <multiselect v-model="content"
-                             track-by="id"
-                             label="name"
-                             :placeholder="$t('type here to search')"
-                             :class="{'border border-danger':error}"
-                             :options="options"
-                             :multiple="false"
-                             :show-labels="false"
-                             :searchable="true"
-                             :internal-search="false"
-                             :helper="helper"
-                             @search-change="load($event, 'assignment')">
-                    <template slot="noResult" >
-                        {{ $t('No elements found. Consider changing the search query.') }}
-                    </template>
-                    <template slot="noOptions" >
-                        {{ $t('No Data Available') }}
-                    </template>
-                </multiselect>
-                <small v-if="error" class="text-danger">{{ error }}</small>
-                <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
-            </div>
-        </div>
+        <user-select
+            v-if="showAssignOneUser"
+            :label="$t('Assigned User')"
+            v-model="assigned"
+        >
+        </user-select>
 
-        <form-checkbox :label="$t('Allow Reassignment')"
-                       :checked="allowReassignmentGetter"
-                       @change="allowReassignmentSetter">
+        <group-select
+            v-if="showAssignGroup"
+            :label="$t('Assigned Group')"
+            v-model="assigned"
+        >
+        </group-select>
+
+        <form-checkbox
+            :label="$t('Allow Reassignment')"
+            :checked="allowReassignmentGetter"
+            @change="allowReassignmentSetter">
         </form-checkbox>
 
         <div class="form-group">
 
             <div class="form-group special-assignment-header">
-                <label>{{ $t('Assign by Expression') }}</label>
+                <label>{{ $t("Assign by Expression") }}</label>
                 <button type="button"
                         @click="addingSpecialAssignment = true"
                         class="float-right btn-special-assignment-action btn btn-secondary btn-sm"
                         :class="{inactive: addingSpecialAssignment}">
-                    <i class="fa fa-plus"></i> {{ $t('Rule') }}
+                    <i class="fa fa-plus"></i> {{ $t("Rule") }}
                 </button>
             </div>
 
@@ -63,62 +50,52 @@
                 <div class="special-assignment-form">
 
                     <div class="form-group">
-                        <label>{{ $t('Expression') }}</label>
+                        <label>{{ $t("Expression") }}</label>
                         <input class="form-control" ref="specialAssignmentsInput" type="text"
                                v-model="assignmentExpression">
                     </div>
 
                     <div class="form-group">
-                        <label>{{ $t('Task Assignment') }}</label>
-                        <select ref="specialAssignmentsDropDownList"
-                                class="form-control"
-                                v-model="typeAssignmentExpression">
+                        <label>{{ $t("Task Assignment") }}</label>
+                        <select
+                            ref="specialAssignmentsDropDownList"
+                            class="form-control"
+                            v-model="typeAssignmentExpression">
                             <option value=""></option>
-                            <option value="requester">{{ $t('Requester') }}</option>
-                            <option value="user">{{ $t('User') }}</option>
-                            <option value="group">{{ $t('Group') }}</option>
+                            <option value="requester">{{ $t("Requester") }}</option>
+                            <option value="user">{{ $t("User") }}</option>
+                            <option value="group">{{ $t("Group") }}</option>
                         </select>
                     </div>
 
-                    <div class="form-group" v-if="showSpecialAssignOneUser || showSpecialAssignGroup">
-                        <label class="text-capitalize" v-if="showSpecialAssignOneUser">{{ $t('Assigned User')}}</label>
-                        <label class="text-capitalize" v-if="showSpecialAssignGroup">{{ $t('Assigned Group')}}</label>
-                        <div v-if="loading">{{ $t('Loading...') }}</div>
-                        <div v-else>
-                            <multiselect v-model="contentExpression"
-                                         track-by="id"
-                                         label="name"
-                                         :placeholder="$t('type here to search')"
-                                         :class="{'border border-danger':error}"
-                                         :options="optionsExpression"
-                                         :multiple="false"
-                                         :show-labels="false"
-                                         :searchable="true"
-                                         :internal-search="false"
-                                         :helper="helper"
-                                         @search-change="load($event, 'expression')">
-                                <template slot="noResult" >
-                                    {{ $t('No elements found. Consider changing the search query.') }}
-                                </template>
-                                <template slot="noOptions" >
-                                    {{ $t('No Data Available') }}
-                                </template>
-                            </multiselect>
-                            <small v-if="error" class="text-danger">{{ error }}</small>
-                            <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
-                        </div>
-                    </div>
+                    <user-select
+                        ref="userAssignedSpecial"
+                        v-if="showSpecialAssignOneUser"
+                        :label="$t('Assigned User')"
+                        v-model="assignedExpression"
+                    >
+                    </user-select>
+
+                    <group-select
+                        ref="groupAssignedSpecial"
+                        v-if="showSpecialAssignGroup"
+                        :label="$t('Assigned Group')"
+                        v-model="assignedExpression"
+                    >
+                    </group-select>
 
                     <div class="form-group form-group-actions">
-                        <button type="button"
-                                @click="addingSpecialAssignment = false"
-                                class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm">
-                            {{ $t('Cancel') }}
+                        <button
+                            type="button"
+                            @click="addingSpecialAssignment = false"
+                            class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm">
+                            {{ $t("Cancel") }}
                         </button>
-                        <button type="button"
-                                @click="saveSpecialAssignment"
-                                class="btn-special-assignment-action btn btn-secondary btn-sm">
-                            {{ $t('Save') }}
+                        <button
+                            type="button"
+                            @click="saveSpecialAssignment"
+                            class="btn-special-assignment-action btn btn-secondary btn-sm">
+                            {{ $t("Save") }}
                         </button>
                     </div>
 
@@ -131,13 +108,13 @@
                 <template>
                     <div class="special-assignment-section">
                         <div class="special-assignment-value" :title="row.expression">
-                            <strong>{{$t(row.expression)}}</strong></div>
-                        <div class="btn-special-assignment-delete" @click="removeSpecialAssignment(row)"><i
-                                class="fa fa-trash"></i>
+                            <strong>{{ $t(row.expression) }}</strong></div>
+                        <div class="btn-special-assignment-delete" @click="removeSpecialAssignment(row)">
+                            <i class="fa fa-trash"></i>
                         </div>
                     </div>
                     <div class="special-assignment-section">
-                        <div class="special-assignment-value">{{ $t('Assigned to') }}
+                        <div class="special-assignment-value">{{ $t("Assigned to") }}
                             <strong v-if="row.type == 'requester'">{{$t(row.type)}}</strong>
                             <strong v-else>{{$t(row.assignmentName)}}</strong>
                         </div>
@@ -151,225 +128,100 @@
 <script>
   export default {
     props: ["value", "label", "helper", "property"],
-    data() {
+    data () {
       return {
-        users: [],
-        groups: [],
         specialAssignments: [],
-        loadingUsers: true,
-        loadingGroups: true,
         addingSpecialAssignment: false,
+        assignment: null,
         assignmentExpression: "",
-        userNameAssignmentExpression: "",
         typeAssignmentExpression: "",
-
-        content: null,
-        options: [],
-        optionsExpression: [],
-        loading: false,
-        loadingAssign: false,
-        contentExpression: null,
         specialAssignmentsData: [],
-        error: '',
+
+        assigned: "",
+        assignedExpression: null,
+        error: "",
       };
     },
     computed: {
-      /**
-       * Get the value of the edited property
-       */
-      allowReassignmentGetter() {
-        const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-        const value = _.get(node, "allowReassignment");
-        return value;
+      node () {
+        return this.$parent.$parent.$parent.$parent.highlightedNode.definition;
       },
       /**
        * Get owner process.
        *
        * @returns {object}
        */
-      process() {
+      process () {
         return this.$parent.$parent.$parent.process;
       },
-      assignedUserGetter() {
-        const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-        const value = _.get(node, "assignedUsers");
+      /**
+       * Get the value of the edited property
+       */
+      allowReassignmentGetter () {
+        return _.get(this.node, "allowReassignment");
+      },
+      assignedUserGetter () {
+        return _.get(this.node, "assignedUsers");
+      },
+      assignedGroupGetter () {
+        return _.get(this.node, "assignedGroups");
+      },
+      assignmentGetter () {
+        this.assigned = null;
+        this.loadSpecialAssignments();
+        const value = _.get(this.node, "assignment");
+        this.assignment = value;
         return value;
       },
-      assignedGroupGetter() {
-        const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-        const value = _.get(node, "assignedGroups");
-        return value;
+      showAssignOneUser () {
+        return this.assignment === "user";
       },
-      assignmentGetter() {
-        const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-        const value = _.get(node, "assignment");
-        return value;
+      showAssignGroup () {
+        return this.assignment === "group";
       },
-      node() {
-        return this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-      },
-      showAssignOneUser() {
-        return this.assignmentGetter === "user";
-      },
-      showAssignGroup() {
-        return this.assignmentGetter === "group";
-      },
-
-      showSpecialAssignOneUser() {
-        if (this.typeAssignmentExpression === "user") {
-          this.load('', 'expression');
-        }
+      showSpecialAssignOneUser () {
         return this.typeAssignmentExpression === "user";
       },
-      showSpecialAssignGroup() {
-        if (this.typeAssignmentExpression === "group") {
-          this.load('', 'expression');
-        }
+      showSpecialAssignGroup () {
         return this.typeAssignmentExpression === "group";
       },
-      specialAssignmentsListGetter() {
-        const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-        const value = _.get(node, "assignmentRules");
-        return value;
-      }
+      specialAssignmentsListGetter () {
+        const value = _.get(this.node, "assignmentRules");
+        return JSON.parse(value) || [];
+      },
     },
     methods: {
       /**
        * Update allowReassignment property
        */
-      allowReassignmentSetter(value) {
+      allowReassignmentSetter (value) {
         this.$set(this.node, "allowReassignment", value);
-        this.$emit("input", this.value);
-      },
-      load(filter, type) {
-        if (type === 'assignment') {
-          this.options = [];
-          if (this.assignmentGetter === 'user') {
-            this.loadUsers(filter, 'options');
-          } else if (this.assignmentGetter === 'group') {
-            this.loadGroups(filter, 'options');
-          }
-        }
-
-        if (type === 'expression') {
-          this.optionsExpression = [];
-          if (this.typeAssignmentExpression === 'user') {
-            this.loadUsers(filter, 'optionsExpression');
-          } else if (this.typeAssignmentExpression === 'group') {
-            this.loadGroups(filter, 'optionsExpression');
-          }
-        }
-      },
-      loadUsers(filter, container) {
-        ProcessMaker.apiClient
-          .get("users?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
-          .then(response => {
-            this.loading = false;
-            let data = response.data.data.map(item => {
-              return {
-                id: item.id,
-                name: item.fullname
-              }
-            });
-            if (container === 'options') {
-              this.options = data;
-            } else {
-              this.optionsExpression = data;
-            }
-          })
-          .catch(err => {
-            this.loading = false;
-          });
-      },
-      loadGroups(filter, container) {
-        ProcessMaker.apiClient
-          .get("groups?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
-          .then(response => {
-            this.loading = false;
-            let data = response.data.data.map(item => {
-              return {
-                id: item.id,
-                name: item.name
-              }
-            });
-            if (container === 'options') {
-              this.options = data;
-            } else {
-              this.optionsExpression = data;
-            }
-          })
-          .catch(err => {
-            this.loading = false;
-          });
-      },
-
-      loadAssigned() {
-        const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-        if (this.assignmentGetter === 'user') {
-          const value = _.get(node, "assignedUsers");
-          ProcessMaker.apiClient
-            .get("users/" + value)
-            .then(response => {
-              this.loading = false;
-              this.content = {
-                id: response.data.id,
-                name: response.data.fullname
-              };
-            })
-            .catch(err => {
-              this.loading = false;
-            });
-        } else if (this.assignmentGetter === 'group') {
-          const value = _.get(node, "assignedGroups");
-          ProcessMaker.apiClient
-            .get("groups/" + value)
-            .then(response => {
-              this.loading = false;
-              this.content = {
-                id: response.data.id,
-                name: response.data.name
-              };
-            })
-            .catch(err => {
-              this.loading = false;
-            });
-        }
       },
       /**
        * Update the event of the editer property
        */
-      assignedUserSetter(id) {
-        /*this.$set(this.node, "assignedUsers", event.target.value);
-        this.$emit("input", this.value);*/
-
-        let node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-        //let value = _.get(node, "assignedUsers");
+      assignedUserSetter (id) {
+        let node = this.node;
         this.$set(node, "assignedUsers", id);
-        //value = _.get(node, "assignedGroups");
-
-        this.$set(node, "assignedGroups", '');
+        this.$set(node, "assignedGroups", "");
       },
-      assignedGroupSetter(id) {
-        /*this.$set(this.node, "assignedGroups", event.target.value);
-        this.$emit("input", this.value);*/
-
-        let node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
-        //let value = _.get(node, "assignedUsers");
-        this.$set(node, "assignedUsers", '');
-        //value = _.get(node, "assignedGroups");
+      assignedGroupSetter (id) {
+        let node = this.node;
+        this.$set(node, "assignedUsers", "");
         this.$set(node, "assignedGroups", id);
       },
       /**
        * Update the event of the editer property
        */
-      assignmentSetter(event) {
+      assignmentSetter (event) {
+        this.assignment = event.target.value;
+        this.assigned = "";
         this.$set(this.node, "assignment", event.target.value);
-        this.$emit("input", this.value);
-        this.content = [];
-        this.load('', 'assignment');
       },
-
-      removeSpecialAssignment(assignment) {
+      assignmentRulesSetter () {
+        this.$set(this.node, "assignmentRules", JSON.stringify(this.specialAssignments));
+      },
+      removeSpecialAssignment (assignment) {
         this.specialAssignments = this.specialAssignments.filter(function (obj) {
           return (
             obj.type !== assignment.type ||
@@ -386,73 +238,62 @@
           );
         });
 
-        this.$set(
-          this.node,
-          "assignmentRules",
-          JSON.stringify(this.specialAssignments)
-        );
+        this.assignmentRulesSetter();
       },
 
-      transitionEnded(event) {
+      transitionEnded (event) {
         if (this.addingSpecialAssignment) {
-          if (event.propertyName == 'height') {
+          if (event.propertyName == "height") {
             this.$refs.specialAssignmentsInput.focus();
-            this.$refs.specialAssignmentWrapper.style.height = 'auto';
+            this.$refs.specialAssignmentWrapper.style.height = "auto";
           }
         } else {
           this.assignmentExpression = "";
           this.typeAssignmentExpression = "";
-          this.contentExpression = null;
+          this.assignedExpression = null;
         }
       },
 
-      saveSpecialAssignment() {
+      saveSpecialAssignment () {
 
         let byExpression = {
           type: this.typeAssignmentExpression,
-          assignee: this.contentExpression ? this.contentExpression.id : '',
+          assignee: this.assignedExpression || "",
           expression: this.assignmentExpression
         };
 
         if (byExpression.type && byExpression.expression) {
           this.specialAssignments.push(byExpression);
-          this.$set(
-            this.node,
-            "assignmentRules",
-            JSON.stringify(this.specialAssignments)
-          );
+          this.assignmentRulesSetter();
 
           this.specialAssignmentsData.push({
             type: this.typeAssignmentExpression,
-            assignee: this.contentExpression ? this.contentExpression.id : '',
+            assignee: this.assignedExpression || "",
             expression: this.assignmentExpression,
-            assignmentName: this.contentExpression ? this.contentExpression.name : '',
+            assignmentName: this.typeAssignmentExpression === "user" ? this.$refs.userAssignedSpecial.content.fullname : this.$refs.groupAssignedSpecial.content.name,
           });
 
           this.assignmentExpression = "";
           this.typeAssignmentExpression = "";
-          this.contentExpression = null;
+          this.assignedExpression = null;
         }
 
         this.addingSpecialAssignment = false;
       },
 
-      loadSpecialAssignments() {
-        this.specialAssignments = this.specialAssignmentsListGetter
-          ? JSON.parse(this.specialAssignmentsListGetter)
-          : [];
+      loadSpecialAssignments () {
+        this.specialAssignmentsData = [];
+        const items = this.specialAssignmentsListGetter;
+        this.specialAssignments = items;
 
-        this.specialAssignmentsData.splice(0);
-        this.specialAssignments.forEach(item => {
-          if (item.type === 'requester') {
+        items.forEach(item => {
+          if (item.type === "requester") {
             this.specialAssignmentsData.push({
               type: item.type,
               assignee: item.assignee,
               expression: item.expression
             });
-            return;
-          }
-          if (item.type === "user") {
+          } else if (item.type === "user") {
             ProcessMaker.apiClient
               .get("users/" + item.assignee)
               .then(response => {
@@ -463,13 +304,11 @@
                   assignmentName: response.data.fullname
                 });
               })
-              .catch(err => {
-                item.assignmentName = '';
+              .catch(() => {
+                item.assignmentName = "";
                 this.specialAssignmentsData.push(item);
-                return "";
               });
-          }
-          if (item.type === "group") {
+          } else if (item.type === "group") {
             ProcessMaker.apiClient
               .get("groups/" + item.assignee)
               .then(response => {
@@ -480,43 +319,47 @@
                   assignmentName: response.data.name
                 });
               })
-              .catch(err => {
-                item.assignmentName = '';
+              .catch(() => {
+                item.assignmentName = "";
                 this.specialAssignmentsData.push(item);
-                return "";
               });
           }
         });
       },
     },
-    mounted() {
-      this.loadAssigned();
-      this.loadSpecialAssignments();
-    },
     watch: {
-      content: {
-        handler() {
-          if (this.assignmentGetter === 'user' && this.content) {
-            this.assignedUserSetter(this.content.id)
-          } else if (this.assignmentGetter === 'group' && this.content) {
-            this.assignedGroupSetter(this.content.id)
+      assigned: {
+        handler (value) {
+          if (this.assignment === "user" && value) {
+            this.assignedUserSetter(value);
+          } else if (this.assignment === "group" && value) {
+            this.assignedGroupSetter(value);
           }
         }
       },
-      value() {
-        this.loadSpecialAssignments();
+      assignment: {
+        handler (assigned) {
+          let value = "";
+          if (assigned === "user") {
+            value = this.assignedUserGetter;
+          } else if (assigned === "group") {
+            value = this.assignedGroupGetter;
+          }
+          this.assigned = value;
+        }
+
       },
-      addingSpecialAssignment(value) {
+      addingSpecialAssignment (value) {
         let wrapper = this.$refs.specialAssignmentWrapper;
         let height = wrapper.scrollHeight;
 
         if (value === true) {
-          wrapper.style.height = height + 'px';
+          wrapper.style.height = height + "px";
           wrapper.style.opacity = 1;
         }
 
         if (value === false) {
-          wrapper.style.height = height + 'px';
+          wrapper.style.height = height + "px";
           setTimeout(() => {
             wrapper.style.height = 0;
             wrapper.style.opacity = 0;
@@ -528,8 +371,6 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "~vue-multiselect/dist/vue-multiselect.min.css";
-
     $transition: .25s;
 
     .list-users-groups {
@@ -545,9 +386,9 @@
     }
 
     .special-assignment-header {
-        label {
-            padding-top: 4px;
-        }
+    label {
+        padding-top: 4px;
+    }
     }
 
     .special-assignment-wrapper {
@@ -575,7 +416,6 @@
         font-weight: bold;
         padding: 2px 4px;
         transition: opacity $transition;
-
     &.inactive {
          opacity: 0;
      }
@@ -631,6 +471,6 @@
     }
 
     .form-group {
-      padding: 0px;
+        padding: 0px;
     }
 </style>
