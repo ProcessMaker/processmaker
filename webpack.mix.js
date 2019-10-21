@@ -106,5 +106,6 @@ mix.js("resources/js/app-layout.js", "public/js")
 
 mix.sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
+  .sass("resources/sass/abeColors.scss", "public/css")
   .sass("resources/sass/admin/queues.scss", "public/css/admin")
   .version();
