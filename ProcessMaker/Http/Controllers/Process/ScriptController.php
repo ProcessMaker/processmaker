@@ -52,7 +52,6 @@ class ScriptController extends Controller
     {
         $scriptFormat = $script->language_name;
         $testData = [
-            '_user' => Auth::user()->toArray(),
             '_request' => factory(ProcessRequest::class)->raw([
                 'callable_id' => 'process_1',
                 'user_id' => Auth::id(),
