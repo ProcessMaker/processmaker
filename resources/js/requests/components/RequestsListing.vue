@@ -294,6 +294,12 @@ export default {
         )
         .then(response => {
           this.data = this.transform(response.data);
+        }).catch(error => {
+          if (_.has(error, 'response.data.message')) {
+            ProcessMaker.alert(error.response.data.message, 'danger');
+          } else {
+            throw error;
+          }
         });
     }
   }

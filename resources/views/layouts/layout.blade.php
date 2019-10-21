@@ -16,6 +16,7 @@
     @endif
     <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
     <meta name="timeout-length" content="{{ config('session.lifetime') }}">
+    <meta name="timeout-warn-seconds" content="60">
     @if(Session::has('_alert'))
       <meta name="alert" content="show">
       @php

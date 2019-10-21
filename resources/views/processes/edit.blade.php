@@ -64,17 +64,11 @@
                                 !!}
                                 <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                             </div>
-                            <div class="form-group p-0">
-                                {!! Form::label('category', __('Category')) !!}
-                                {!! Form::select('category', $categories, null,
-                                    ['id' => 'process_category_id',
-                                        'class' => 'form-control',
-                                        'v-model' => 'formData.process_category_id',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.category}'
-                                    ])
-                                !!}
-                                <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
-                            </div>
+                            <category-select :label="$t('Category')" api-get="process_categories"
+                                api-list="process_categories" v-model="formData.process_category_id"
+                                :errors="errors.category"
+                                >
+                            </category-select>
                             <div class="form-group p-0">
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
                                 <multiselect v-model="canCancel"
@@ -244,6 +238,7 @@
 @endsection
 
 @section('js')
+    <script src="{{mix('js/processes/edit.js')}}"></script>
     <script>
       var addons = [];
     </script>

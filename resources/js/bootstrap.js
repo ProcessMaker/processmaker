@@ -210,17 +210,29 @@ if (userID) {
     // Session timeout
     let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
     window.ProcessMaker.AccountTimeoutLength = parseInt(document.head.querySelector("meta[name=\"timeout-length\"]").content);
+    window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
     window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
     window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
         if (e.data.method === 'countdown') {
-            window.ProcessMaker.sessionModal('Session Warning', '<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>', e.data.data.time);
+            window.ProcessMaker.sessionModal(
+                'Session Warning',
+                '<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>',
+                e.data.data.time,
+                window.ProcessMaker.AccountTimeoutWarnSeconds
+            );
         }
         if (e.data.method === 'timedOut') {
             window.location = '/logout';
         }
     });
 
-    window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: window.ProcessMaker.AccountTimeoutLength } });
+    window.ProcessMaker.AccountTimeoutWorker.postMessage({
+        method: 'start',
+        data: {
+            timeout: window.ProcessMaker.AccountTimeoutLength,
+            warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds
+        }
+    });
 }
 
 if (userID) {
@@ -230,7 +242,13 @@ if (userID) {
         })
         .listen('.SessionStarted', (e) => {
             let lifetime = parseInt(e.lifetime);
-            window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: lifetime } });
+            window.ProcessMaker.AccountTimeoutWorker.postMessage({
+                method: 'start',
+                data: {
+                    timeout: lifetime,
+                    warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds
+                }
+            });
             window.ProcessMaker.closeSessionModal();
         });
 }

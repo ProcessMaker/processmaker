@@ -146,8 +146,11 @@ export default {
         },
         {
           title: () => this.$t("Category"),
-          name: "category.name",
-          sortField: "category.name"
+          name: "categories",
+          sortField: "category.name",
+          callback(categories) {
+            return categories.map(item => item.name).join(', ');
+          }
         },
         {
           title: () => this.$t("Language"),
@@ -255,7 +258,7 @@ export default {
             this.orderBy +
             "&order_direction=" +
             this.orderDirection +
-            "&include=category"
+            "&include=categories,category"
         )
         .then(response => {
           this.data = this.transform(response.data);

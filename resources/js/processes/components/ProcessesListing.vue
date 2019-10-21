@@ -141,8 +141,11 @@
           },
           {
             title: () => this.$t("Category"),
-            name: "category.name",
-            sortField: "category.name"
+            name: "categories",
+            sortField: "category.name",
+            callback(categories) {
+              return categories.map(item => item.name).join(', ');
+            }
           },
           {
             title: () => this.$t("Owner"),
@@ -315,7 +318,7 @@
                 this.orderBy +
                 "&order_direction=" +
                 this.orderDirection +
-                "&include=category,user"
+                "&include=categories,category,user"
             )
             .then(response => {
               this.data = this.transform(response.data);

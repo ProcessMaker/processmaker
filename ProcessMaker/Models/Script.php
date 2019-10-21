@@ -9,6 +9,7 @@ use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
 
 /**
@@ -52,6 +53,9 @@ class Script extends Model
 {
     use SerializeToIso8601;
     use HideSystemResources;
+    use HasCategories;
+
+    const categoryClass = ScriptCategory::class;
 
     protected $connection = 'processmaker';
 
@@ -234,5 +238,25 @@ class Script extends Model
     public function category()
     {
         return $this->belongsTo(ScriptCategory::class, 'script_category_id');
+    }
+
+    /**
+     * Set multiple|single categories to the script
+     *
+     * @param string $value
+     */
+    public function setScriptCategoryIdAttribute($value)
+    {
+        return $this->setMultipleCategories($value, 'script_category_id');
+    }
+
+    /**
+     * Get multiple|single categories of the script
+     *
+     * @param string $value
+     */
+    public function getScriptCategoryIdAttribute($value)
+    {
+        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
     }
 }
