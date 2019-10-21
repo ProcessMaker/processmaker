@@ -16,14 +16,10 @@ import {
   textAnnotation,
   messageFlow,
   serviceTask,
-  startTimerEvent,
-  intermediateTimerEvent,
   callActivity,
   eventBasedGateway,
   intermediateMessageCatchEvent,
-  boundaryTimerEvent,
 } from '@processmaker/modeler';
-import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
 import GroupSelect from './components/inspector/GroupSelect';
@@ -34,6 +30,7 @@ import TaskDueIn from './components/inspector/TaskDueIn';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
+import {registerNodes} from "@processmaker/modeler";
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('GroupSelect', GroupSelect);
@@ -96,41 +93,11 @@ task.definition = function definition(moddle) {
     assignment: 'requester'
   });
 };
-
-const timerEventNodes = [
-  [startTimerEvent, 'bpmn:StartEvent', 'bpmn:TimerEventDefinition'],
-  [intermediateTimerEvent, 'bpmn:IntermediateCatchEvent', 'bpmn:TimerEventDefinition'],
-  [intermediateMessageCatchEvent, 'bpmn:IntermediateCatchEvent', 'bpmn:MessageEventDefinition'],
-  [boundaryTimerEvent, 'bpmn:BoundaryEvent', 'bpmn:TimerEventDefinition'],
-];
-
-const customParserFactory = (nodeType, primaryIdentifier, secondaryIdentifier) => (definition) => {
-  const definitions = definition.get('eventDefinitions');
-  const validDefinition = definition.$type === primaryIdentifier
-      && definitions
-      && definitions.length
-      && definitions[0].$type === secondaryIdentifier;
-  if (validDefinition) {
-    return nodeType.id;
-  }
-};
+ProcessMaker.EventBus.$on('modeler-init', registerNodes);
 
 ProcessMaker.EventBus.$on(
   'modeler-init',
-  ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
-    registerNode(startEvent);
-    timerEventNodes.forEach(([nodeType, primaryIdentifier, secondaryIdentifier]) => {
-      registerNode(nodeType, customParserFactory(nodeType, primaryIdentifier, secondaryIdentifier));
-    });
-
-    /* Register basic node types */
-    for (const node of nodeTypes) {
-      registerNode(node);
-    }
-
-    /* Add a BPMN extension */
-    registerBpmnExtension('pm', bpmnExtension);
-
+  ({registerInspectorExtension}) => {
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {
       component: 'FormAccordion',
