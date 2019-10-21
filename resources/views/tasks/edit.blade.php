@@ -293,7 +293,7 @@
           redirectWhenProcessCompleted() {
             window.location.href = `/requests/${this.task.process_request_id}`;
           },
-          redirectWhenProcessUpdated() {
+          refreshWhenProcessUpdated() {
             window.location.reload();
           },
           redirectToNextAssignedTask() {
