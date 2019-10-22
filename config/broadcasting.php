@@ -1,9 +1,5 @@
 <?php
 return [
-    'broadcaster' => 'socket.io',
-    'host' => env('BROADCASTER_HOST', ''),
-    'key' => env('BROADCASTER_KEY', ''),
-
     /*
     |--------------------------------------------------------------------------
     | Default Broadcaster
@@ -34,12 +30,16 @@ return [
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
             'options' => [
-                //
+                'cluster' => env('PUSHER_CLUSTER'),
+                'debug' => env('PUSHER_DEBUG', false),
+                'use_tls' => env('PUSHER_TLS', true),
             ],
         ],
         'redis' => [
             'driver' => 'redis',
             'connection' => 'default',
+            'host' => env('BROADCASTER_HOST'),
+            'key' => env('BROADCASTER_KEY'),
         ],
         'log' => [
             'driver' => 'log',

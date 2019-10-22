@@ -195,16 +195,15 @@ if (userID) {
     });
 }
 
-let broadcaster = document.head.querySelector("meta[name=\"broadcaster\"]");
-let key = document.head.querySelector("meta[name=\"broadcasting-key\"]");
-let host = document.head.querySelector("meta[name=\"broadcasting-host\"]");
-
-if (broadcaster) {
-    window.Echo = new Echo({
-        broadcaster: broadcaster.content,
-        key: key.content,
-        host: host.content
-    });
+if (window.Processmaker && window.Processmaker.broadcasting) {
+    let config = window.Processmaker.broadcasting;
+    
+    if (config.broadcaster == 'pusher') {
+      window.Pusher = require('pusher-js');
+      window.Pusher.logToConsole = config.debug;
+    }
+    
+    window.Echo = new Echo(config);
 }
 
 if (userID) {
@@ -235,12 +234,6 @@ if (userID) {
         }
     });
 }
-
-window.Echo = new Echo({
-    broadcaster: broadcaster.content,
-    key: key.content,
-    host: host.content
-});
 
 if (userID) {
     window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
