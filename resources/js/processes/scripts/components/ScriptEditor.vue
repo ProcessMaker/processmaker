@@ -142,7 +142,7 @@ import _ from "lodash";
 import customFilters from "../customFilters";
 
 export default {
-  props: ["process", "script", "scriptFormat"],
+  props: ["process", "script", "scriptFormat", "testData"],
   data() {
     return {
       resizing: false,
@@ -152,7 +152,7 @@ export default {
       code: this.script.code,
       preview: {
         executing: false,
-        data: "{}",
+        data: this.testData ? this.testData : "{}",
         config: "{}",
         output: "",
         success: false,
