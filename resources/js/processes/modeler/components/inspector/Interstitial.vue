@@ -44,33 +44,20 @@
        */
       allowInterstitialGetter () {
         const node = this.node;
-        console.log('allowInterstitialGetter');
 
         const value = _.get(node, "allowInterstitial");
 
-        console.log(value);
         this.screen = _.get(node, "interstitialScreenRef");
         return value;
       },
 
       node () {
-        console.log('node....................');
-        console.log(this.$parent.$parent.$parent.$parent.highlightedNode.definition);
         return this.$parent.$parent.$parent.$parent.highlightedNode.definition;
       }
     },
     watch: {
-      value: {
-        immediate: true,
-        handler(value) {
-          console.log('handler value');
-          console.log(value);
-        }
-      },
       screen: {
         handler(value) {
-          console.log('handler interstitialScreenRef');
-          console.log(value);
           this.$set(this.node, "interstitialScreenRef", value);
         }
       }
@@ -80,10 +67,7 @@
        * Update allowInterstitial property
        */
       allowInterstitialSetter (value) {
-        console.log('allowInterstitialSetter');
-        console.log(value);
         this.$set(this.node, "allowInterstitial", value);
-
       },
     }
   };

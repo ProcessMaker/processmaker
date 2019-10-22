@@ -195,40 +195,45 @@ if (userID) {
     });
 }
 
-let broadcaster = document.head.querySelector("meta[name=\"broadcaster\"]");
-let key = document.head.querySelector("meta[name=\"broadcasting-key\"]");
-let host = document.head.querySelector("meta[name=\"broadcasting-host\"]");
-
-if (broadcaster) {
-    window.Echo = new Echo({
-        broadcaster: broadcaster.content,
-        key: key.content,
-        host: host.content
-    });
+if (window.Processmaker && window.Processmaker.broadcasting) {
+    let config = window.Processmaker.broadcasting;
+    
+    if (config.broadcaster == 'pusher') {
+      window.Pusher = require('pusher-js');
+      window.Pusher.logToConsole = config.debug;
+    }
+    
+    window.Echo = new Echo(config);
 }
 
 if (userID) {
     // Session timeout
     let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
     window.ProcessMaker.AccountTimeoutLength = parseInt(document.head.querySelector("meta[name=\"timeout-length\"]").content);
+    window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
     window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
     window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
         if (e.data.method === 'countdown') {
-            window.ProcessMaker.sessionModal('Session Warning', '<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>', e.data.data.time);
+            window.ProcessMaker.sessionModal(
+                'Session Warning',
+                '<p>Your user session is expiring. If your session expires, all of your unsaved data will be lost.</p><p>Would you like to stay connected?</p>',
+                e.data.data.time,
+                window.ProcessMaker.AccountTimeoutWarnSeconds
+            );
         }
         if (e.data.method === 'timedOut') {
             window.location = '/logout';
         }
     });
 
-    window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: window.ProcessMaker.AccountTimeoutLength } });
+    window.ProcessMaker.AccountTimeoutWorker.postMessage({
+        method: 'start',
+        data: {
+            timeout: window.ProcessMaker.AccountTimeoutLength,
+            warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds
+        }
+    });
 }
-
-window.Echo = new Echo({
-    broadcaster: broadcaster.content,
-    key: key.content,
-    host: host.content
-});
 
 if (userID) {
     window.Echo.private(`ProcessMaker.Models.User.${userID.content}`)
@@ -237,7 +242,13 @@ if (userID) {
         })
         .listen('.SessionStarted', (e) => {
             let lifetime = parseInt(e.lifetime);
-            window.ProcessMaker.AccountTimeoutWorker.postMessage({ method: 'start', data: { timeout: lifetime } });
+            window.ProcessMaker.AccountTimeoutWorker.postMessage({
+                method: 'start',
+                data: {
+                    timeout: lifetime,
+                    warnSeconds: window.ProcessMaker.AccountTimeoutWarnSeconds
+                }
+            });
             window.ProcessMaker.closeSessionModal();
         });
 }

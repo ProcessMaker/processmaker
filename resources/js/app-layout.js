@@ -76,7 +76,8 @@ window.ProcessMaker.navbar = new Vue({
       sessionShow: false,
       sessionTitle: "",
       sessionMessage: "",
-      sessionTime: ""
+      sessionTime: "",
+      sessionWarnSeconds: ""
     };
   },
   methods: {
@@ -141,10 +142,11 @@ window.ProcessMaker.alert = function (msg, variant, showValue = 5, stayNextScree
 };
 
 // Setup our login modal
-window.ProcessMaker.sessionModal = function (title, message, time) {
+window.ProcessMaker.sessionModal = function (title, message, time, warnSeconds) {
   ProcessMaker.navbar.sessionTitle = title || __("Session Warning");
   ProcessMaker.navbar.sessionMessage = message || __("Your session is about to expire.");
   ProcessMaker.navbar.sessionTime = time;
+  ProcessMaker.navbar.sessionWarnSeconds = warnSeconds;
   ProcessMaker.navbar.sessionShow = true;
 };
 
@@ -176,7 +178,8 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     window.ProcessMaker.EventBus.$emit("api-client-error", error);
     if (error.response && error.response.status && error.response.status === 401) {
         window.location = "/login";
-    } else if (!error.config.url.match('/debug')) {
+    } else {
+      if (!error.config.url.match('/debug')) {
         window.ProcessMaker.apiClient.post('/debug', {
             name: 'Javascript ProcessMaker.apiClient Error',
             message: JSON.stringify({
@@ -185,8 +188,9 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
                 config: error.config
             })
         });
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
 });
 
 // Display any uncaught promise rejections from axios in the Process Maker alert box

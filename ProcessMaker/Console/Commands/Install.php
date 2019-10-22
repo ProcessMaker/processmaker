@@ -61,7 +61,17 @@ class Install extends Command
             'APP_ENV' => 'production',
             'APP_KEY' => $this->key,
             'BROADCAST_DRIVER' => 'redis',
+            'BROADCASTER_HOST' => null,
             'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10',
+            'LARAVEL_ECHO_SERVER_AUTH_HOST' => null,
+            'LARAVEL_ECHO_SERVER_PORT' => null,
+            'LARAVEL_ECHO_SERVER_DEBUG' => null,
+            'PUSHER_APP_ID' => null,
+            'PUSHER_APP_KEY' => null,
+            'PUSHER_APP_SECRET' => null,
+            'PUSHER_CLUSTER' => null,
+            'PUSHER_TLS' => 'TRUE',
+            'PUSHER_DEBUG' => 'FALSE',
             'APP_TIMEZONE' => 'UTC',
             'DATE_FORMAT' => '"m/d/Y H:i"',
             'MAIN_LOGO_PATH' => '"/img/processmaker_logo.png"',
@@ -135,7 +145,7 @@ class Install extends Command
         // Set laravel echo server settings
         $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->env['APP_URL'];
         $this->env['LARAVEL_ECHO_SERVER_PORT'] = '6001';
-        $this->env['LARAVEL_ECHO_SERVER_DEBUG'] = 'false';
+        $this->env['LARAVEL_ECHO_SERVER_DEBUG'] = 'FALSE';
 
         // Set it as our url in our config
         config(['app.url' => $this->env['APP_URL']]);

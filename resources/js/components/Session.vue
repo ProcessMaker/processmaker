@@ -9,7 +9,7 @@
               <div class="modal-body mb-1">
                 <span v-html="message"></span>
                  <div class="progress">
-                <div class="progress-bar progress-bar-striped" role="progressbar" :style="{width: time + '%'}"><span align="left" class="pl-2">{{moment().startOf('day').seconds(time).format('mm:ss')}}</span></div>
+                <div class="progress-bar progress-bar-striped" role="progressbar" :style="{width: percentage + '%'}"><span align="left" class="pl-2">{{moment().startOf('day').seconds(time).format('mm:ss')}}</span></div>
               </div>
               </div>
 
@@ -26,11 +26,19 @@
 <script>
 
     export default {
-        props: ["title", "message", "time"],
+        props: ["title", "message", "time", "warnSeconds"],
         data() {
             return {
               errors: {},
               disabled: false
+            }
+        },
+        computed: {
+            percentage() {
+                if (this.time === "" || this.warnSeconds === "") {
+                    return 0;
+                }
+                return Math.round((this.time / this.warnSeconds) * 100);
             }
         },
         methods: {
@@ -43,7 +51,13 @@
                   .post("/keep-alive", {}, {baseURL: ''})
                   .then(() => {
                     this.disabled = false;
-                    ProcessMaker.AccountTimeoutWorker.postMessage({method: 'start', data: {timeout: ProcessMaker.AccountTimeoutLength}});
+                    ProcessMaker.AccountTimeoutWorker.postMessage({
+                        method: 'start',
+                        data: {
+                            timeout: ProcessMaker.AccountTimeoutLength,
+                            warnSeconds: ProcessMaker.AccountTimeoutWarnSeconds,
+                        }
+                    });
                     this.onClose();
                   })
                   .catch(error => {

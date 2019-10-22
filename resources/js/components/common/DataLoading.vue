@@ -71,7 +71,6 @@
                 }
             })
             ProcessMaker.EventBus.$on('api-client-error', (error) => {
-                ProcessMaker.alert(error, "danger");
                 this.noResults = false
                 this.error = true
             })

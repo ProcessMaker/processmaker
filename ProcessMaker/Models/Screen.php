@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\ScreenVersion;
+use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
 
@@ -54,6 +55,9 @@ class Screen extends Model
 {
     use SerializeToIso8601;
     use HideSystemResources;
+    use HasCategories;
+
+    const categoryClass = ScreenCategory::class;
 
     protected $connection = 'processmaker';
 
@@ -105,5 +109,25 @@ class Screen extends Model
     public function category()
     {
         return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
+    }
+
+    /**
+     * Set multiple|single categories to the screen
+     *
+     * @param string $value
+     */
+    public function setScreenCategoryIdAttribute($value)
+    {
+        return $this->setMultipleCategories($value, 'screen_category_id');
+    }
+
+    /**
+     * Get multiple|single categories of the screen
+     *
+     * @param string $value
+     */
+    public function getScreenCategoryIdAttribute($value)
+    {
+        return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
     }
 }

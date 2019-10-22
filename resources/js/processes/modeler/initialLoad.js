@@ -16,37 +16,33 @@ import {
   textAnnotation,
   messageFlow,
   serviceTask,
-  startTimerEvent,
-  intermediateTimerEvent,
   callActivity,
   eventBasedGateway,
   intermediateMessageCatchEvent,
-  boundaryTimerEvent
-} from "@processmaker/modeler";
-import bpmnExtension from "@processmaker/processmaker-bpmn-moddle/resources/processmaker.json";
-import ModelerScreenSelect from "./components/inspector/ScreenSelect";
-import UserSelect from "./components/inspector/UserSelect";
-import GroupSelect from "./components/inspector/GroupSelect";
-import TaskNotifications from "./components/inspector/TaskNotifications";
-import ExpressionEditor from "./components/inspector/ExpressionEditor";
-import TaskAssignment from "./components/inspector/TaskAssignment";
-import TaskDueIn from "./components/inspector/TaskDueIn";
-import ConfigEditor from "./components/inspector/ConfigEditor";
-import ScriptSelect from "./components/inspector/ScriptSelect";
-import StartPermission from "./components/inspector/StartPermission";
+} from '@processmaker/modeler';
+import ModelerScreenSelect from './components/inspector/ScreenSelect';
+import UserSelect from './components/inspector/UserSelect';
+import GroupSelect from './components/inspector/GroupSelect';
+import TaskNotifications from './components/inspector/TaskNotifications';
+import ExpressionEditor from './components/inspector/ExpressionEditor';
+import TaskAssignment from './components/inspector/TaskAssignment';
+import TaskDueIn from './components/inspector/TaskDueIn';
+import ConfigEditor from './components/inspector/ConfigEditor';
+import ScriptSelect from './components/inspector/ScriptSelect';
+import StartPermission from './components/inspector/StartPermission';
+import {registerNodes} from "@processmaker/modeler";
 import Interstitial from "./components/inspector/Interstitial";
 
-Vue.component("UserSelect", UserSelect);
-Vue.component("GroupSelect", GroupSelect);
-Vue.component("ModelerScreenSelect", ModelerScreenSelect);
-Vue.component("TaskNotifications", TaskNotifications);
-Vue.component("ExpressionEditor", ExpressionEditor);
-Vue.component("TaskAssignment", TaskAssignment);
-Vue.component("TaskDueIn", TaskDueIn);
-Vue.component("ConfigEditor", ConfigEditor);
-Vue.component("ScriptSelect", ScriptSelect);
-Vue.component("StartPermission", StartPermission);
-Vue.component("ModelerScreenSelect", ModelerScreenSelect);
+Vue.component('UserSelect', UserSelect);
+Vue.component('GroupSelect', GroupSelect);
+Vue.component('ModelerScreenSelect', ModelerScreenSelect);
+Vue.component('TaskNotifications', TaskNotifications);
+Vue.component('ExpressionEditor', ExpressionEditor);
+Vue.component('TaskAssignment', TaskAssignment);
+Vue.component('TaskDueIn', TaskDueIn);
+Vue.component('ConfigEditor', ConfigEditor);
+Vue.component('ScriptSelect', ScriptSelect);
+Vue.component('StartPermission', StartPermission);
 Vue.component("Interstitial", Interstitial);
 
 let nodeTypes = [
@@ -65,7 +61,7 @@ let nodeTypes = [
   poolLane,
   messageFlow,
   serviceTask,
-  textAnnotation
+  textAnnotation,
 ];
 
 ProcessMaker.nodeTypes.push(startEvent);
@@ -73,145 +69,114 @@ ProcessMaker.nodeTypes.push(...nodeTypes);
 
 // Implement user list and group list for intermediate catch event
 // eslint-disable-next-line func-names
-(function () {
+(function() {
   intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[3] = {
-    component: "UserSelect",
+    component: 'UserSelect',
     config: {
-      label: "Allowed User",
-      helper: "Select allowed user",
-      name: "allowedUsers"
+      label: 'Allowed User',
+      helper: 'Select allowed user',
+      name: 'allowedUsers'
     }
   };
   intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[4] = {
-    component: "GroupSelect",
+    component: 'GroupSelect',
     config: {
-      label: "Allowed Group",
-      helper: "Select allowed group",
-      name: "allowedGroups"
+      label: 'Allowed Group',
+      helper: 'Select allowed group',
+      name: 'allowedGroups'
     }
   };
 })();
 
 // Set default properties for task
-task.definition = function definition (moddle) {
-  return moddle.create("bpmn:Task", {
-    name: window.ProcessMaker.events.$t("New Task"),
-    assignment: "requester"
+task.definition = function definition(moddle) {
+  return moddle.create('bpmn:Task', {
+    name: window.ProcessMaker.events.$t('New Task'),
+    assignment: 'requester'
   });
 };
-
-const timerEventNodes = [
-  [startTimerEvent, "bpmn:StartEvent", "bpmn:TimerEventDefinition"],
-  [intermediateTimerEvent, "bpmn:IntermediateCatchEvent", "bpmn:TimerEventDefinition"],
-  [intermediateMessageCatchEvent, "bpmn:IntermediateCatchEvent", "bpmn:MessageEventDefinition"],
-  [boundaryTimerEvent, "bpmn:BoundaryEvent", "bpmn:TimerEventDefinition"]
-];
-
-const customParserFactory = (nodeType, primaryIdentifier, secondaryIdentifier) => (definition) => {
-  const definitions = definition.get("eventDefinitions");
-  const validDefinition = definition.$type === primaryIdentifier &&
-      definitions &&
-      definitions.length &&
-      definitions[0].$type === secondaryIdentifier;
-  if (validDefinition) {
-    return nodeType.id;
-  }
-};
+ProcessMaker.EventBus.$on('modeler-init', registerNodes);
 
 ProcessMaker.EventBus.$on(
-  "modeler-init",
-  ({registerNode, registerBpmnExtension, registerInspectorExtension}) => {
-    registerNode(startEvent);
-    timerEventNodes.forEach(([nodeType, primaryIdentifier, secondaryIdentifier]) => {
-      registerNode(nodeType, customParserFactory(nodeType, primaryIdentifier, secondaryIdentifier));
-    });
-
-    /* Register basic node types */
-    for (const node of nodeTypes) {
-      registerNode(node);
-    }
-
-    /* Add a BPMN extension */
-    registerBpmnExtension("pm", bpmnExtension);
-
+  'modeler-init',
+  ({registerInspectorExtension}) => {
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {
-      component: "FormAccordion",
+      component: 'FormAccordion',
       container: true,
       config: {
         initiallyOpen: false,
-        label: "Start Permissions",
-        icon: "user-shield",
-        name: "startPermissions"
+        label: 'Start Permissions',
+        icon: 'user-shield',
+        name: 'startPermissions',
       },
       items: [
         {
-          component: "StartPermission",
+          component: 'StartPermission',
           config: {
-            label: "Permission To Start",
-            helper: "",
-            name: "startPermission"
+            label: 'Permission To Start',
+            helper: '',
+            name: 'startPermission'
           }
-        }
-      ]
+        },
+      ],
     });
 
     /* Register the inspector extensions for tasks */
     registerInspectorExtension(task, {
-      component: "ModelerScreenSelect",
+      component: 'ModelerScreenSelect',
       config: {
-        label: "Screen For Input",
-        helper: "What Screen Should Be Used For Rendering This Task",
-        name: "screenRef",
-        type: "FORM"
-      }
-    });
-
-    registerInspectorExtension(task, {
-      component: "TaskDueIn",
-      config: {
-        label: "Due In",
-        helper: "Time when the task will be due",
-        name: "taskDueIn"
+        label: 'Screen For Input',
+        helper: 'What Screen Should Be Used For Rendering This Task',
+        name: 'screenRef',
+        type: 'FORM'
       }
     });
     registerInspectorExtension(task, {
-      component: "FormAccordion",
-      container: true,
+      component: 'TaskDueIn',
       config: {
-        initiallyOpen: false,
-        label: "Assignment Rules",
-        icon: "users",
-        name: "assignmentRules"
-      },
-      items: [
-        {
-          component: "TaskAssignment",
-          config: {
-            label: "Task Assignment",
-            helper: "",
-            name: "taskAssignment"
-          }
-        }
-      ]
+        label: 'Due In',
+        helper: 'Time when the task will be due',
+        name: 'taskDueIn',
+      }
     });
     registerInspectorExtension(task, {
-      component: "FormAccordion",
+      component: 'FormAccordion',
       container: true,
       config: {
         initiallyOpen: false,
-        label: "Notifications",
-        icon: "bell",
-        name: "notifications"
+        label: 'Assignment Rules',
+        icon: 'users',
+        name: 'assignmentRules',
       },
       items: [
         {
-          component: "TaskNotifications",
+          component: 'TaskAssignment',
           config: {
-            helper: "Users that should be notified about task events"
+            label: 'Task Assignment',
+            helper: '',
+            name: 'taskAssignment'
           }
-        }
-      ]
+        },
+      ],
+    });
+    registerInspectorExtension(task, {
+      component: 'FormAccordion',
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: 'Notifications',
+        icon: 'bell',
+        name: 'notifications',
+      },
+      items: [
+        {
+          component: 'TaskNotifications',
+          config: {
+            helper: 'Users that should be notified about task events'
+          }
+        },
+      ],
     });
 
     registerInspectorExtension(task, {
@@ -225,88 +190,88 @@ ProcessMaker.EventBus.$on(
 
     /* Register the inspector extensions for script tasks */
     registerInspectorExtension(scriptTask, {
-      component: "ScriptSelect",
+      component: 'ScriptSelect',
       config: {
-        label: "Script",
-        helper: "Script that will be executed by the task",
-        name: "scriptRef"
+        label: 'Script',
+        helper: 'Script that will be executed by the task',
+        name: 'scriptRef'
       }
     });
 
     registerInspectorExtension(scriptTask, {
-      component: "ConfigEditor",
+      component: 'ConfigEditor',
       config: {
-        label: "Script Configuration",
-        helper: "Configuration JSON for the script task",
-        name: "scriptConfiguration",
-        property: "config"
+        label: 'Script Configuration',
+        helper: 'Configuration JSON for the script task',
+        name: 'scriptConfiguration',
+        property: 'config'
       }
     });
     registerInspectorExtension(endEvent, {
-      component: "ModelerScreenSelect",
+      component: 'ModelerScreenSelect',
       config: {
-        label: "Summary screen",
+        label: 'Summary screen',
         helper:
-          "Summary screen that will be displayed when process finish with this End event.",
-        name: "screenRef",
-        params: {type: "DISPLAY"}
+          'Summary screen that will be displayed when process finish with this End event.',
+        name: 'screenRef',
+        params: { type: 'DISPLAY' }
       }
     });
     registerInspectorExtension(manualTask, {
-      component: "ModelerScreenSelect",
+      component: 'ModelerScreenSelect',
       config: {
-        label: "Summary screen",
+        label: 'Summary screen',
         helper:
-          "Summary screen that will be displayed when process finish with this End event.",
-        name: "screenRef",
-        params: {type: "DISPLAY"}
+          'Summary screen that will be displayed when process finish with this End event.',
+        name: 'screenRef',
+        params: { type: 'DISPLAY' }
       }
     });
     registerInspectorExtension(manualTask, {
-      component: "TaskDueIn",
+      component: 'TaskDueIn',
       config: {
-        label: "Due In",
-        helper: "Time when the task will be due",
-        name: "taskDueIn"
+        label: 'Due In',
+        helper: 'Time when the task will be due',
+        name: 'taskDueIn',
       }
     });
     registerInspectorExtension(manualTask, {
-      component: "FormAccordion",
+      component: 'FormAccordion',
       container: true,
       config: {
         initiallyOpen: false,
-        label: "Assignment Rules",
-        icon: "users",
-        name: "assignmentRules"
+        label: 'Assignment Rules',
+        icon: 'users',
+        name: 'assignmentRules',
       },
       items: [
         {
-          component: "TaskAssignment",
+          component: 'TaskAssignment',
           config: {
-            label: "Task Assignment",
-            helper: "",
-            name: "taskAssignment"
+            label: 'Task Assignment',
+            helper: '',
+            name: 'taskAssignment'
           }
-        }
-      ]
+        },
+      ],
     });
     registerInspectorExtension(manualTask, {
-      component: "FormAccordion",
+      component: 'FormAccordion',
       container: true,
       config: {
         initiallyOpen: false,
-        label: "Notifications",
-        icon: "bell",
-        name: "notifications"
+        label: 'Notifications',
+        icon: 'bell',
+        name: 'notifications',
       },
       items: [
         {
-          component: "TaskNotifications",
+          component: 'TaskNotifications',
           config: {
-            helper: "Users that should be notified about task events"
+            helper: 'Users that should be notified about task events'
           }
-        }
-      ]
+        },
+      ],
     });
   }
 );

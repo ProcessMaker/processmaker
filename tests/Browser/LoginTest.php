@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Hash;
 class LoginTest extends DuskTestCase
 {
 
-    use DatabaseMigrations;
-
     public function test_login_page_loads()
     {
         $this->browse(function (Browser $browser) {

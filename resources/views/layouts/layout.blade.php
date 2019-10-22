@@ -14,13 +14,9 @@
     <meta name="timezone" content="{{ Auth::user()->timezone ?: config('app.timezone') }}">
     @yield('meta')
     @endif
-    @if(config('broadcasting.broadcaster') == 'socket.io')
-    <meta name="broadcaster" content="{{config('broadcasting.broadcaster')}}">
-    <meta name="broadcasting-host" content="{{config('broadcasting.host')}}">
-    <meta name="broadcasting-key" content="{{config('broadcasting.key')}}">
     <meta name="timeout-worker" content="{{ mix('js/timeout.js') }}">
     <meta name="timeout-length" content="{{ config('session.lifetime') }}">
-    @endif
+    <meta name="timeout-warn-seconds" content="60">
     @if(Session::has('_alert'))
       <meta name="alert" content="show">
       @php
@@ -38,16 +34,27 @@
     @yield('css')
     <script type="text/javascript">
     @if(Auth::user())
-    window.Processmaker = {
-      csrfToken: "{{csrf_token()}}",
-      userId: "{{\Auth::user()->id}}",
-      messages: @json(\Auth::user()->activeNotifications()),
-      broadcasting: {
-        broadcaster: "{{config('broadcasting.broadcaster')}}",
-        host: "{{config('broadcasting.host')}}",
-        key: "{{config('broadcasting.key')}}"
-      }
-    }
+      window.Processmaker = {
+        csrfToken: "{{csrf_token()}}",
+        userId: "{{\Auth::user()->id}}",
+        messages: @json(\Auth::user()->activeNotifications()),
+      };
+      @if(config('broadcasting.default') == 'redis')
+        window.Processmaker.broadcasting = {
+          broadcaster: "socket.io",
+          host: "{{config('broadcasting.connections.redis.host')}}",
+          key: "{{config('broadcasting.connections.redis.key')}}"
+        };
+      @endif
+      @if(config('broadcasting.default') == 'pusher')
+        window.Processmaker.broadcasting = {
+          broadcaster: "pusher",
+          key: "{{config('broadcasting.connections.pusher.key')}}",
+          cluster: "{{config('broadcasting.connections.pusher.options.cluster')}}",
+          forceTLS: {{config('broadcasting.connections.pusher.options.use_tls') ? 'true' : 'false'}},
+          debug: {{config('broadcasting.connections.pusher.options.debug') ? 'true' : 'false'}}
+        };
+      @endif
     @endif
   </script>
 </head>
@@ -76,8 +83,8 @@
   </div>
 </div>
 <!-- Scripts -->
-@if(config('broadcasting.broadcaster') == 'socket.io')
-<script src="{{config('broadcasting.host')}}/socket.io/socket.io.js"></script>
+@if(config('broadcasting.default') == 'redis')
+<script src="{{config('broadcasting.connections.redis.host')}}/socket.io/socket.io.js"></script>
 @endif
 <script src="{{ mix('js/manifest.js') }}"></script>
 <script src="{{ mix('js/vendor.js') }}"></script>
