@@ -4,6 +4,7 @@ namespace Tests\Model;
 use Tests\TestCase;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Screen;
@@ -52,20 +53,78 @@ class HideSystemCategoriesTest extends TestCase
         $hiddenInstance = factory($model)->create([
             $prefix . '_category_id' => $hiddenCategory->id
         ]);
+        $noCategoryInstance = factory($model)->create([
+            $prefix . '_category_id' => null
+        ]);
 
         $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.index'));
         $json = $response->json();
         $ids = array_map(function($d) { return $d['id']; }, $json['data']);
 
-        $this->assertCount(1, $ids);
+        $this->assertCount(2, $ids);
         $this->assertNotContains($hiddenInstance->id, $ids);
         $this->assertContains($instance->id, $ids);
+        
+        $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.show', $instance->id));
+        $response->assertStatus(200);
+        
+        $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.show', $hiddenInstance->id));
+        $response->assertStatus(404);
+        
+        $response = $this->apiCall('GET', route('api.' . Str::plural($prefix) . '.show', $noCategoryInstance->id));
+        $response->assertStatus(200);
     }
     
     public function testResourceInCategoryFiltered() {
         $this->resourceInCategoryFiltered(Process::class);
         $this->resourceInCategoryFiltered(Script::class);
         $this->resourceInCategoryFiltered(Screen::class);
+    }
+
+    public function testRequestInCategoryFiltered() {
+        $category = factory(ProcessCategory::class)->create([
+            'is_system' => false,
+        ]);
+        $process = factory(Process::class)->create([
+            'process_category_id' => $category->id
+        ]);
+        $request = factory(ProcessRequest::class)->create([
+            'process_id' => $process->id
+        ]);
+
+        $hiddenCategory = factory(ProcessCategory::class)->create([
+            'is_system' => true,
+        ]);
+        $hiddenProcess = factory(Process::class)->create([
+            'process_category_id' => $hiddenCategory->id
+        ]);
+        $hiddenRequest = factory(ProcessRequest::class)->create([
+            'process_id' => $hiddenProcess->id
+        ]);
+        
+        $noCategoryProcess = factory(Process::class)->create([
+            'process_category_id' => null
+        ]);
+        $noCategoryRequest = factory(ProcessRequest::class)->create([
+            'process_id' => $noCategoryProcess->id
+        ]);
+
+        $response = $this->apiCall('GET', route('api.requests.index'));
+        $json = $response->json();
+        $ids = array_map(function($d) { return $d['id']; }, $json['data']);
+
+        $this->assertCount(2, $ids);
+        $this->assertNotContains($hiddenRequest->id, $ids);
+        $this->assertContains($request->id, $ids);
+        
+        $response = $this->apiCall('GET', route('api.requests.show', $request->id));
+        $response->assertStatus(200);
+        
+        $response = $this->apiCall('GET', route('api.requests.show', $hiddenRequest->id));
+        $response->assertStatus(404);
+        
+        $response = $this->apiCall('GET', route('api.requests.show', $noCategoryRequest->id));
+        $response->assertStatus(200);
     }
     
     private function resourceWithoutCategoryNotFiltered($model) {

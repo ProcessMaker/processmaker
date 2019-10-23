@@ -14,6 +14,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\HideSystemResources;
 use Throwable;
 
 /**
@@ -67,6 +68,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use HasMediaTrait;
     use ExtendedPMQL;
     use SqlsrvSupportTrait;
+    use HideSystemResources;
 
     protected $connection = 'data';
 
