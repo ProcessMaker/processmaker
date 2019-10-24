@@ -6,8 +6,6 @@ use ProcessMaker\Models\ProcessRequest;
 
 trait HideSystemResources
 {
-    private $_isSystemResource = null;
-
     public function resolveRouteBinding($value)
     {
         $item = parent::resolveRouteBinding($value);
@@ -21,11 +19,19 @@ trait HideSystemResources
 
     public function isSystemResource()
     {
-        if (isset($this->_isSystemResource)) {
-            return $this->_isSystemResource;
+        return cache()->remember(static::cacheKey($this), 10080, function() {
+            return $this->isSystemResourceReal();
+        });
+    }
+
+    private static function cacheKey($model)
+    {
+        if ($model->id) {
+            $id = $model->id;
+        } else {
+            $id = spl_object_hash($model);
         }
-        $this->_isSystemResource = $this->isSystemResourceReal();
-        return $this->_isSystemResource;
+        return "isSystemResource:" . __CLASS__ . ":" . $id;
     }
 
     private function isSystemResourceReal()
