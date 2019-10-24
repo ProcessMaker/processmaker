@@ -302,6 +302,10 @@
                 if (response.data.data.length > 0) {
                   const firstNextAssignedTask = response.data.data[0].id;
                   window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+                } else if (this.task.process_request.status === 'COMPLETED') {
+                  setTimeout(() => {
+                    window.location.href = `/requests/${this.task.process_request_id}`;
+                  }, 500);
                 }
               });
             }
