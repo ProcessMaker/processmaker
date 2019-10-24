@@ -29,7 +29,7 @@ trait ProcessTimerEventsTrait
     public static function saveStartEvents(Process $process)
     {
         $manager = new TaskSchedulerManager();
-        $manager->registerTimerEvents($process);
+        $manager->registerTimerEvents($process->refresh());
     }
 
     public static function convertBPMN(Process $process)

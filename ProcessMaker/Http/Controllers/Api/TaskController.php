@@ -83,7 +83,7 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ProcessRequestToken::with(['processRequest', 'user']);
+        $query = ProcessRequestToken::nonSystem()->with(['processRequest', 'user']);
 
         $query->select('process_request_tokens.*');
 

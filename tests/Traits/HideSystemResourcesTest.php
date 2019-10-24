@@ -5,6 +5,7 @@ use Tests\TestCase;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Screen;
@@ -81,7 +82,7 @@ class HideSystemCategoriesTest extends TestCase
         $this->resourceInCategoryFiltered(Screen::class);
     }
 
-    public function testRequestInCategoryFiltered() {
+    public function testRequestAndTasksInCategoryFiltered() {
         $category = factory(ProcessCategory::class)->create([
             'is_system' => false,
         ]);
@@ -90,6 +91,10 @@ class HideSystemCategoriesTest extends TestCase
         ]);
         $request = factory(ProcessRequest::class)->create([
             'process_id' => $process->id
+        ]);
+        $task = factory(ProcessRequestToken::class)->create([
+            'process_id' => $process->id,
+            'process_request_id' => $request->id
         ]);
 
         $hiddenCategory = factory(ProcessCategory::class)->create([
@@ -101,6 +106,10 @@ class HideSystemCategoriesTest extends TestCase
         $hiddenRequest = factory(ProcessRequest::class)->create([
             'process_id' => $hiddenProcess->id
         ]);
+        $hiddenTask = factory(ProcessRequestToken::class)->create([
+            'process_id' => $hiddenProcess->id,
+            'process_request_id' => $hiddenRequest->id
+        ]);
         
         $noCategoryProcess = factory(Process::class)->create([
             'process_category_id' => null
@@ -108,7 +117,12 @@ class HideSystemCategoriesTest extends TestCase
         $noCategoryRequest = factory(ProcessRequest::class)->create([
             'process_id' => $noCategoryProcess->id
         ]);
+        $noCategoryTask = factory(ProcessRequestToken::class)->create([
+            'process_id' => $noCategoryProcess->id,
+            'process_request_id' => $noCategoryRequest->id
+        ]);
 
+        // Check Requests
         $response = $this->apiCall('GET', route('api.requests.index'));
         $json = $response->json();
         $ids = array_map(function($d) { return $d['id']; }, $json['data']);
@@ -116,6 +130,7 @@ class HideSystemCategoriesTest extends TestCase
         $this->assertCount(2, $ids);
         $this->assertNotContains($hiddenRequest->id, $ids);
         $this->assertContains($request->id, $ids);
+        $this->assertContains($noCategoryRequest->id, $ids);
         
         $response = $this->apiCall('GET', route('api.requests.show', $request->id));
         $response->assertStatus(200);
@@ -124,6 +139,25 @@ class HideSystemCategoriesTest extends TestCase
         $response->assertStatus(404);
         
         $response = $this->apiCall('GET', route('api.requests.show', $noCategoryRequest->id));
+        $response->assertStatus(200);
+
+        // Check Tasks
+        $response = $this->apiCall('GET', route('api.tasks.index'));
+        $json = $response->json();
+        $ids = array_map(function($d) { return $d['id']; }, $json['data']);
+
+        $this->assertCount(2, $ids);
+        $this->assertNotContains($hiddenTask->id, $ids);
+        $this->assertContains($task->id, $ids);
+        $this->assertContains($noCategoryTask->id, $ids);
+        
+        $response = $this->apiCall('GET', route('api.tasks.show', $task->id));
+        $response->assertStatus(200);
+        
+        $response = $this->apiCall('GET', route('api.tasks.show', $hiddenTask->id));
+        $response->assertStatus(404);
+        
+        $response = $this->apiCall('GET', route('api.tasks.show', $noCategoryTask->id));
         $response->assertStatus(200);
     }
     

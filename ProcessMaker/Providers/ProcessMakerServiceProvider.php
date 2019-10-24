@@ -22,6 +22,7 @@ use ProcessMaker\Observers\ProcessRequestObserver;
 use ProcessMaker\Observers\UserObserver;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Observers\ProcessRequestTokenObserver;
+use ProcessMaker\SystemResourceEncryption;
 
 /**
  * Provide our ProcessMaker specific services
@@ -37,11 +38,17 @@ class ProcessMakerServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // This must run before model events
+        SystemResourceEncryption::addRetrievedObservers();
+
         User::observe(UserObserver::class);
         Process::observe(ProcessObserver::class);
         ProcessRequest::observe(ProcessRequestObserver::class);
         ProcessRequestToken::observe(ProcessRequestTokenObserver::class);
         ProcessCollaboration::observe(ProcessCollaborationObserver::class);
+
+        // This must run after all other mutating model events
+        SystemResourceEncryption::addSavingObservers();
 
         // Laravy Menu
         Blade::directive('lavaryMenuJson', function ($menu) {

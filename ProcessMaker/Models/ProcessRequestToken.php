@@ -11,6 +11,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\SerializeToIso8601;
 use \Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -65,6 +66,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     use ExtendedPMQL;
     use TokenTrait;
     use SerializeToIso8601;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 
