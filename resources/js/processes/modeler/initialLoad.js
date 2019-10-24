@@ -31,6 +31,7 @@ import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
 import {registerNodes} from "@processmaker/modeler";
+import Interstitial from "./components/inspector/Interstitial";
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('GroupSelect', GroupSelect);
@@ -42,6 +43,7 @@ Vue.component('TaskDueIn', TaskDueIn);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
+Vue.component("Interstitial", Interstitial);
 
 let nodeTypes = [
   endEvent,
@@ -175,6 +177,15 @@ ProcessMaker.EventBus.$on(
           }
         },
       ],
+    });
+
+    registerInspectorExtension(task, {
+      component: "Interstitial",
+      config: {
+        label: "Enable Interstitial",
+        helper: "redirected to my next assigned task",
+        name: "interstitial"
+      }
     });
 
     /* Register the inspector extensions for script tasks */

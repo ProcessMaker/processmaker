@@ -8,6 +8,7 @@ use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class TaskController extends Controller
@@ -24,7 +25,7 @@ class TaskController extends Controller
     {
         $title = 'To Do Tasks';
 
-        if(Request::input('status') == 'CLOSED'){
+        if (Request::input('status') == 'CLOSED') {
             $title = 'Completed Tasks';
         }
 
@@ -44,10 +45,23 @@ class TaskController extends Controller
             ->whereNotNull('read_at')
             ->update(['read_at' => Carbon::now()]);
 
+        $definition = $task->getDefinition();
+        $screenInterstitial = new Screen();
+        $allowInterstitial = false;
+
+        if (array_key_exists('allowInterstitial', $definition)) {
+            $allowInterstitial = !!json_decode($definition['allowInterstitial']);
+            if (array_key_exists('interstitialScreenRef', $definition) && $definition['interstitialScreenRef']) {
+                $screenInterstitial = Screen::find($definition['interstitialScreenRef']);
+            } else {
+                $screenInterstitial = Screen::where('key', 'interstitial')->first();
+            }
+
+        }
 
         $manager = new ScreenBuilderManager();
-        event(new ScreenBuilderStarting($manager, $task->getScreen() ? $task->getScreen()->type : "FORM"));
+        event(new ScreenBuilderStarting($manager, $task->getScreen() ? $task->getScreen()->type : 'FORM'));
 
-        return view('tasks.edit', ['task' => $task, 'dueLabels' => self::$dueLabels, 'manager' => $manager]);
+        return view('tasks.edit', ['task' => $task, 'dueLabels' => self::$dueLabels, 'manager' => $manager, 'allowInterstitial' => $allowInterstitial, 'screenInterstitial' => $screenInterstitial]);
     }
 }
