@@ -38,6 +38,7 @@ trait HideSystemResources
     {
         if (method_exists($this, 'process')) {
             if (
+                $this->process()->count() > 0 &&
                 $this->process()->first()->category()->count() > 0 &&
                 $this->process()->first()->category()->first()->is_system
             ) {
