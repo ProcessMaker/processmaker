@@ -40,6 +40,9 @@ class SystemResourceEncryption
     {
         foreach(self::FIELDS_TO_ENCRYPT as $class => $fields) {
             $class::saving(function ($model) use ($fields) {
+                if (!$model->isDirty($fields)) {
+                    return;
+                }
                 if (!$model->isSystemResource()) {
                     return;
                 }
