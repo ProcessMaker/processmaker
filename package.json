@@ -51,7 +51,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.1",
     "@panter/vue-i18next": "^0.15.0",
     "@processmaker/modeler": "^0.17.2",
-    "@processmaker/processmaker-bpmn-moddle": "^0.4.4",
+    "@processmaker/processmaker-bpmn-moddle": "^0.4.5",
     "@processmaker/screen-builder": "^0.20.4",
     "@processmaker/vue-form-elements": "^0.12.3",
     "babel-eslint": "^10.0.1",
