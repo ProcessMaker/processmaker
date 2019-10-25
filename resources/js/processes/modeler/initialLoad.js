@@ -17,8 +17,7 @@ import {
   messageFlow,
   serviceTask,
   callActivity,
-  eventBasedGateway,
-  intermediateMessageCatchEvent,
+  eventBasedGateway
 } from '@processmaker/modeler';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -66,27 +65,6 @@ let nodeTypes = [
 
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
-
-// Implement user list and group list for intermediate catch event
-// eslint-disable-next-line func-names
-(function() {
-  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[3] = {
-    component: 'UserSelect',
-    config: {
-      label: 'Allowed User',
-      helper: 'Select allowed user',
-      name: 'allowedUsers'
-    }
-  };
-  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[4] = {
-    component: 'GroupSelect',
-    config: {
-      label: 'Allowed Group',
-      helper: 'Select allowed group',
-      name: 'allowedGroups'
-    }
-  };
-})();
 
 // Set default properties for task
 task.definition = function definition(moddle) {
