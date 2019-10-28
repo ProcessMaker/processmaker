@@ -18,6 +18,7 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\SanitizeHelper;
 use Illuminate\Support\Str;
+use ProcessMaker\Events\ActivityAssigned;
 
 class TaskController extends Controller
 {
@@ -257,6 +258,7 @@ class TaskController extends Controller
             // Send a notification to the user
             $notification = new TaskReassignmentNotification($task);
             $task->user->notify($notification);
+            event(new ActivityAssigned($task));
             return new Resource($task->refresh());
         } else {
             return abort(422);

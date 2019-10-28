@@ -17,8 +17,7 @@ import {
   messageFlow,
   serviceTask,
   callActivity,
-  eventBasedGateway,
-  intermediateMessageCatchEvent,
+  eventBasedGateway
 } from '@processmaker/modeler';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -31,6 +30,7 @@ import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
 import {registerNodes} from "@processmaker/modeler";
+import Interstitial from "./components/inspector/Interstitial";
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('GroupSelect', GroupSelect);
@@ -42,6 +42,7 @@ Vue.component('TaskDueIn', TaskDueIn);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
+Vue.component("Interstitial", Interstitial);
 
 let nodeTypes = [
   endEvent,
@@ -64,27 +65,6 @@ let nodeTypes = [
 
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
-
-// Implement user list and group list for intermediate catch event
-// eslint-disable-next-line func-names
-(function() {
-  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[3] = {
-    component: 'UserSelect',
-    config: {
-      label: 'Allowed User',
-      helper: 'Select allowed user',
-      name: 'allowedUsers'
-    }
-  };
-  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[4] = {
-    component: 'GroupSelect',
-    config: {
-      label: 'Allowed Group',
-      helper: 'Select allowed group',
-      name: 'allowedGroups'
-    }
-  };
-})();
 
 // Set default properties for task
 task.definition = function definition(moddle) {
@@ -175,6 +155,15 @@ ProcessMaker.EventBus.$on(
           }
         },
       ],
+    });
+
+    registerInspectorExtension(task, {
+      component: "Interstitial",
+      config: {
+        label: "Enable Interstitial",
+        helper: "redirected to my next assigned task",
+        name: "interstitial"
+      }
     });
 
     /* Register the inspector extensions for script tasks */

@@ -7,18 +7,32 @@ import { VueFormRenderer } from '@processmaker/screen-builder';
 import '@processmaker/screen-builder/dist/vue-form-builder.css';
 import FileUpload from "../../processes/screen-builder/components/form/file-upload";
 import FileDownload from "../../processes/screen-builder/components/file-download";
+import ProcessRequestChannel from './ProcessRequestChannel';
 
 export default {
   components: {
     VueFormRenderer
   },
-  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss"],
+  mixins: [ProcessRequestChannel],
+  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "listenProcessEvents"],
   data() {
     return {
       formData: this.data
     };
   },
-  mounted() {},
+  mounted() {
+    if (this.listenProcessEvents) {
+      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ActivityAssigned', (data) => {
+        this.$emit('activity-assigned', data);
+      });
+      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ProcessCompleted', (data) => {
+        this.$emit('process-completed', data);
+      });
+      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ProcessUpdated', (data) => {
+        this.$emit('process-updated', data);
+      });
+    }
+  },
   methods: {
     displayErrors(errors) {
       const messages = [];
@@ -33,9 +47,13 @@ export default {
       let message = this.$t('Task Completed Successfully');
       ProcessMaker.apiClient
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
-        .then(function() {
+        .then(() => {
           window.ProcessMaker.alert(message, 'success', 5, true);
-          document.location.href = "/tasks";
+          if (!this.listenProcessEvents) {
+            document.location.href = "/tasks";
+          } else {
+            document.location.reload();
+          }
         })
         .catch(error => {
           let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;

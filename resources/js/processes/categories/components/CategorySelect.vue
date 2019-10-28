@@ -60,6 +60,7 @@
         immediate: true,
         handler(value) {
           if (value) {
+            console.log(value);
             const content = [];
             const selected = String(value).split(',');
             this.loading = selected.length;
@@ -79,11 +80,12 @@
         this.content.push(...content);
       },
       getOptionData(id, content) {
-        const option = this.options.find(item => item.id == id);
+        const option = this.options.concat(this.content).find(item => item.id == id);
         if (option) {
           this.loading--;
           content.push(option);
           (!this.loading) ? this.completeSelectedLoading(content) : null;
+          return;
         }
         ProcessMaker.apiClient
           .get(this.apiGet + "/" + id)
