@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 
-class ScreenSystemSeeder extends Seeder
+class InterstitialScreenSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -22,10 +22,7 @@ class ScreenSystemSeeder extends Seeder
                 'type' => 'DISPLAY',
                 'config' => $json,
                 'key' => 'interstitial',
-                'screen_category_id' => factory(ScreenCategory::class)->create([
-                    'name' => 'System',
-                    'is_system' => true
-                ])->getKey()
+                'screen_category_id' => ScreenCategory::where('is_system', true)->firstOrFail()->id
             ]);
         }
 

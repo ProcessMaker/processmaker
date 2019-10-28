@@ -18,10 +18,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             PermissionSeeder::class,
-            ProcessSystemCategorySeeder::class,
+            SystemCategorySeeder::class,
             GroupSeeder::class,
             ScreenTypeSeeder::class,
-            ScreenSystemSeeder::class
+            InterstitialScreenSeeder::class
         ]);
         $this->callPluginSeeders();
     }
