@@ -186,8 +186,8 @@
         return this.typeAssignmentExpression === "group";
       },
       specialAssignmentsListGetter () {
-        const value = _.get(this.node, "assignmentRules", '[]');
-        return JSON.parse(value) || [];
+        const value = this.node.get('assignmentRules') || '[]';
+        return JSON.parse(value);
       },
     },
     methods: {
