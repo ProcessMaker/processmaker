@@ -128,17 +128,27 @@ class ProcessRequestController extends Controller
         if (!empty($pmql)) {
             try {
                 $query->pmql($pmql);
-            } catch (QueryException $e) {
-                return response(['message' => __('Your PMQL search could not be completed.')], 400);
             } catch (SyntaxError $e) {
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
 
-        $response = $query->orderBy(
-            str_ireplace('.', '->', $request->input('order_by', 'name')),
-            $request->input('order_direction', 'ASC')
-        )->get();
+        try {
+            $response = $query->orderBy(
+                str_ireplace('.', '->', $request->input('order_by', 'name')),
+                $request->input('order_direction', 'ASC')
+            )->get();
+
+        } catch(QueryException $e) {
+            $rawMessage = $e->getMessage();
+            if (preg_match("/Column not found: 1054 (.*) in 'where clause'/", $rawMessage, $matches)) {
+                $message = $matches[1];
+            } else {
+                $message = $rawMessage;
+            }
+            return response(['message' => $message], 400);
+        }
+        
         if (isset($response)) {
             //Filter by permission
             $response = $response->filter(function ($processRequest) {

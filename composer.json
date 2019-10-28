@@ -38,6 +38,7 @@
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "dev-master",
     "processmaker/pmql": "1.1.1",
+    "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",

@@ -16,14 +16,9 @@ import {
   textAnnotation,
   messageFlow,
   serviceTask,
-  startTimerEvent,
-  intermediateTimerEvent,
   callActivity,
-  eventBasedGateway,
-  intermediateMessageCatchEvent,
-  boundaryTimerEvent,
+  eventBasedGateway
 } from '@processmaker/modeler';
-import bpmnExtension from '@processmaker/processmaker-bpmn-moddle/resources/processmaker.json';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
 import GroupSelect from './components/inspector/GroupSelect';
@@ -34,6 +29,8 @@ import TaskDueIn from './components/inspector/TaskDueIn';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
+import {registerNodes} from "@processmaker/modeler";
+import Interstitial from "./components/inspector/Interstitial";
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('GroupSelect', GroupSelect);
@@ -45,6 +42,7 @@ Vue.component('TaskDueIn', TaskDueIn);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
+Vue.component("Interstitial", Interstitial);
 
 let nodeTypes = [
   endEvent,
@@ -68,27 +66,6 @@ let nodeTypes = [
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
 
-// Implement user list and group list for intermediate catch event
-// eslint-disable-next-line func-names
-(function() {
-  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[3] = {
-    component: 'UserSelect',
-    config: {
-      label: 'Allowed User',
-      helper: 'Select allowed user',
-      name: 'allowedUsers'
-    }
-  };
-  intermediateMessageCatchEvent.inspectorConfig[0].items[0].items[4] = {
-    component: 'GroupSelect',
-    config: {
-      label: 'Allowed Group',
-      helper: 'Select allowed group',
-      name: 'allowedGroups'
-    }
-  };
-})();
-
 // Set default properties for task
 task.definition = function definition(moddle) {
   return moddle.create('bpmn:Task', {
@@ -96,41 +73,11 @@ task.definition = function definition(moddle) {
     assignment: 'requester'
   });
 };
-
-const timerEventNodes = [
-  [startTimerEvent, 'bpmn:StartEvent', 'bpmn:TimerEventDefinition'],
-  [intermediateTimerEvent, 'bpmn:IntermediateCatchEvent', 'bpmn:TimerEventDefinition'],
-  [intermediateMessageCatchEvent, 'bpmn:IntermediateCatchEvent', 'bpmn:MessageEventDefinition'],
-  [boundaryTimerEvent, 'bpmn:BoundaryEvent', 'bpmn:TimerEventDefinition'],
-];
-
-const customParserFactory = (nodeType, primaryIdentifier, secondaryIdentifier) => (definition) => {
-  const definitions = definition.get('eventDefinitions');
-  const validDefinition = definition.$type === primaryIdentifier
-      && definitions
-      && definitions.length
-      && definitions[0].$type === secondaryIdentifier;
-  if (validDefinition) {
-    return nodeType.id;
-  }
-};
+ProcessMaker.EventBus.$on('modeler-init', registerNodes);
 
 ProcessMaker.EventBus.$on(
   'modeler-init',
-  ({ registerNode, registerBpmnExtension, registerInspectorExtension }) => {
-    registerNode(startEvent);
-    timerEventNodes.forEach(([nodeType, primaryIdentifier, secondaryIdentifier]) => {
-      registerNode(nodeType, customParserFactory(nodeType, primaryIdentifier, secondaryIdentifier));
-    });
-
-    /* Register basic node types */
-    for (const node of nodeTypes) {
-      registerNode(node);
-    }
-
-    /* Add a BPMN extension */
-    registerBpmnExtension('pm', bpmnExtension);
-
+  ({registerInspectorExtension}) => {
     /* Register extension for start permission */
     registerInspectorExtension(startEvent, {
       component: 'FormAccordion',
@@ -208,6 +155,15 @@ ProcessMaker.EventBus.$on(
           }
         },
       ],
+    });
+
+    registerInspectorExtension(task, {
+      component: "Interstitial",
+      config: {
+        label: "Enable Interstitial",
+        helper: "redirected to my next assigned task",
+        name: "interstitial"
+      }
     });
 
     /* Register the inspector extensions for script tasks */
