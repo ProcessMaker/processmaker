@@ -10,12 +10,13 @@
       @upload-start="start"
       @file-removed="removed"
       @file-success="fileUploaded"
+      @file-added="addFile"
     >
       <uploader-unsupport></uploader-unsupport>
 
       <uploader-drop id="uploaderMain" class="form-control-file">
-        <p>{{$t('Drop a file here to upload or')}}</p>
-        <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{$t('select file')}}</uploader-btn>
+        <p>{{ $t('Drop a file here to upload or') }}</p>
+        <uploader-btn id="submitFile" class="btn btn-secondary text-white" :attrs="attrs">{{ $t('select file') }}</uploader-btn>
       </uploader-drop>
 
       <uploader-list></uploader-list>
@@ -36,13 +37,13 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint"],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint",'type'],
   beforeMount() {
     this.getFileType();
   },
   mounted() {
     this.removeDefaultClasses();
-    
+
     // If we're in a record list, this will fire to give us the prefix
     this.$root.$on('set-upload-data-name', (recordList, index) => {
       if (!index) {
@@ -93,10 +94,21 @@ export default {
         },
         singleFile: true
       },
+      attrs: {
+        accept: this.type
+      },
       reRenderKey: 0,
     };
   },
   methods: {
+    addFile(file, event) {
+      if (this.type && file.fileType.search(this.type) === -1) {
+        file.ignored = true;
+        return false
+      }
+      file.ignored = false;
+      return true;
+    },
     removeDefaultClasses() {
       // we need to be able to remove the classes from the npm package
       document
@@ -109,7 +121,7 @@ export default {
       if (document.head.querySelector('meta[name="request-id"]')) {
         this.fileType = 'request';
       }
-      
+
       if (document.head.querySelector('meta[name="collection-id"]')) {
         this.fileType = 'collection';
       }
@@ -118,7 +130,7 @@ export default {
       if (this.fileType == 'request') {
         this.$emit("input", file.name);
       }
-      
+
       if (this.fileType == 'collection') {
         message = JSON.parse(message);
         this.$emit("input", {
@@ -148,15 +160,15 @@ export default {
       if (this.endpoint) {
         return this.endpoint;
       }
-      
+
       if (this.fileType == 'request') {
         const requestIDNode = document.head.querySelector('meta[name="request-id"]');
 
         return requestIDNode
           ? `/api/1.0/requests/${requestIDNode.content}/files`
-          : null;  
+          : null;
       }
-      
+
       if (this.fileType == 'collection') {
         const collectionIdNode = document.head.querySelector('meta[name="collection-id"]');
 
@@ -168,7 +180,7 @@ export default {
             collectionIdNode.content +
             '&collection=' +
             'collection'
-          : null;  
+          : null;
       }
     }
   }
