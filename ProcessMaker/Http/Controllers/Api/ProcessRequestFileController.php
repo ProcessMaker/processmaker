@@ -33,9 +33,9 @@ class ProcessRequestFileController extends Controller
      * @var array
      */
     public $doNotSanitize = [
-       'custom_properties',
-       'manipulations',
-       'responsive_images'
+        'custom_properties',
+        'manipulations',
+        'responsive_images'
     ];
 
     use HasMediaTrait;
@@ -86,26 +86,26 @@ class ProcessRequestFileController extends Controller
      * )
      */
     public function index(Request $laravel_request, ProcessRequest $request)
-     {
-		//Retrieve media from ProcessRequest
-		$media = $request->getMedia();
+    {
+        //Retrieve media from ProcessRequest
+        $media = $request->getMedia();
 
-		//Retrieve input variable 'name'
-		$name = $laravel_request->get('name');
+        //Retrieve input variable 'name'
+        $name = $laravel_request->get('name');
 
-		//If no name, retern entire collection; otherwise, filter collection
-		if (! $name) {
-			return new ResourceCollection($media);
-		} else {
-			$filtered = $media->reject(function ($item, $key) use ($name) {
-				if ($item->custom_properties['data_name'] != $name) {
-					return true;
-				}
-			});
+        //If no name, return entire collection; otherwise, filter collection
+        if (!$name) {
+            return new ResourceCollection($media);
+        } else {
+            $filtered = $media->reject(function ($item, $key) use ($name) {
+                if ($item->custom_properties['data_name'] != $name) {
+                    return true;
+                }
+            });
 
-	        return new ResourceCollection($filtered);
-		}
-     }
+            return new ResourceCollection($filtered);
+        }
+    }
 
     /**
      * Display the specified resource.
@@ -158,46 +158,57 @@ class ProcessRequestFileController extends Controller
      */
     private function chunk(FileReceiver $receiver, ProcessRequest $request, Request $laravel_request)
     {
-            // Perform a chunk upload
-            if ($receiver->isUploaded() === false) {
-                throw new UploadMissingFileException();
-            }
-            // receive the file
-            $save = $receiver->receive();
+        // Perform a chunk upload
+        if ($receiver->isUploaded() === false) {
+            throw new UploadMissingFileException();
+        }
+        // receive the file
+        $save = $receiver->receive();
 
-            // This needs to be the unique uploader name
-            $data_name = $laravel_request->input('data_name');
+        // This needs to be the unique uploader name
+        $data_name = $laravel_request->input('data_name');
 
-            // check if the upload has finished (in chunk mode it will send smaller files)
-            if ($save->isFinished()) {
+        // check if the upload has finished (in chunk mode it will send smaller files)
+        if ($save->isFinished()) {
 
-                foreach($request->getMedia() as $mediaItem) {
-                    if($mediaItem->getCustomProperty('data_name') == $data_name) {
+            //delete files if property multiple is false
+            if (!$laravel_request->input('multiple')) {
+                foreach ($request->getMedia() as $mediaItem) {
+                    if ($mediaItem->getCustomProperty('data_name') == $data_name) {
                         $mediaItem->delete();
                     }
                 }
-
-                // save the file and return any response you need
-                $file = $request
-                    ->addMedia($save->getFile())
-                    ->withCustomProperties(['data_name' => $data_name]) // photo_1
-                    ->toMediaCollection();
-                // $identifier = ['_type' => 'file', 'id' => $file->id];
-                return new JsonResponse(['message' => 'The file was uploaded.','fileUploadId' => $file->id], 200);
             }
-            // we are in chunk mode, lets send the current progress
-            /** @var AbstractHandler $handler */
-            $handler = $save->handler();
-            return response()->json([
-                "done" => $handler->getPercentageDone()
-            ]);
+
+            // save the file and return any response you need
+            $file = $request
+                ->addMedia($save->getFile())
+                ->withCustomProperties(['data_name' => $data_name]) // photo_1
+                ->toMediaCollection();
+            // $identifier = ['_type' => 'file', 'id' => $file->id];
+            return new JsonResponse(['message' => 'The file was uploaded.', 'fileUploadId' => $file->id], 200);
+        }
+        // we are in chunk mode, lets send the current progress
+        /** @var AbstractHandler $handler */
+        $handler = $save->handler();
+        return response()->json([
+            "done" => $handler->getPercentageDone()
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $laravel_request
+     * @param FileReceiver $receiver
+     * @param ProcessRequest $request
+     *
+     * @return JsonResponse
+     *
+     * @throws UploadMissingFileException
+     * @throws \Spatie\MediaLibrary\Exceptions\FileCannotBeAdded\DiskDoesNotExist
+     * @throws \Spatie\MediaLibrary\Exceptions\FileCannotBeAdded\FileDoesNotExist
+     * @throws \Spatie\MediaLibrary\Exceptions\FileCannotBeAdded\FileIsTooBig
      *
      * @OA\Post(
      *     path="/requests/{request_id}/files",
@@ -258,7 +269,7 @@ class ProcessRequestFileController extends Controller
     public function store(Request $laravel_request, FileReceiver $receiver, ProcessRequest $request)
     {
         //delete it and upload the new one
-        if($laravel_request->input('chunk')) {
+        if ($laravel_request->input('chunk')) {
             // Perform a chunk upload
             return $this->chunk($receiver, $request, $laravel_request);
         } else {
@@ -270,7 +281,7 @@ class ProcessRequestFileController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @param Media $file
      *
      * @return \Illuminate\Http\Response

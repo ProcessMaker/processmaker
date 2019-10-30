@@ -36,13 +36,13 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint"],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", 'multiFiles'],
   beforeMount() {
     this.getFileType();
   },
   mounted() {
     this.removeDefaultClasses();
-    
+
     // If we're in a record list, this will fire to give us the prefix
     this.$root.$on('set-upload-data-name', (recordList, index) => {
       if (!index) {
@@ -83,6 +83,7 @@ export default {
         simultaneousUploads: 1,
         query: {
           chunk: true,
+          multiple: this.multiFiles,
           data_name: this.name
         },
         testChunks: false,
@@ -91,7 +92,7 @@ export default {
           "X-Requested-With": "XMLHttpRequest",
           "X-CSRF-TOKEN": window.ProcessMaker.apiClient.defaults.headers.common["X-CSRF-TOKEN"]
         },
-        singleFile: true
+        singleFile: !this.multiFiles
       },
       reRenderKey: 0,
     };
@@ -109,7 +110,7 @@ export default {
       if (document.head.querySelector('meta[name="request-id"]')) {
         this.fileType = 'request';
       }
-      
+
       if (document.head.querySelector('meta[name="collection-id"]')) {
         this.fileType = 'collection';
       }
@@ -118,7 +119,7 @@ export default {
       if (this.fileType == 'request') {
         this.$emit("input", file.name);
       }
-      
+
       if (this.fileType == 'collection') {
         message = JSON.parse(message);
         this.$emit("input", {
@@ -148,15 +149,15 @@ export default {
       if (this.endpoint) {
         return this.endpoint;
       }
-      
+
       if (this.fileType == 'request') {
         const requestIDNode = document.head.querySelector('meta[name="request-id"]');
 
         return requestIDNode
           ? `/api/1.0/requests/${requestIDNode.content}/files`
-          : null;  
+          : null;
       }
-      
+
       if (this.fileType == 'collection') {
         const collectionIdNode = document.head.querySelector('meta[name="collection-id"]');
 
@@ -168,7 +169,7 @@ export default {
             collectionIdNode.content +
             '&collection=' +
             'collection'
-          : null;  
+          : null;
       }
     }
   }
