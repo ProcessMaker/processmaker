@@ -101,9 +101,15 @@ export default {
     };
   },
   methods: {
-    addFile(file, event) {
-      if (this.type && file.fileType.search(this.type) === -1) {
-        file.ignored = true;
+    addFile(file) {
+      if (this.type) {
+        let ignored = true;
+        (this.type.split(',')).forEach(item => {
+          if (item.trim().search(file.fileType) !== -1) {
+            ignored = false;
+          }
+        });
+        file.ignored = ignored;
         return false
       }
       file.ignored = false;
