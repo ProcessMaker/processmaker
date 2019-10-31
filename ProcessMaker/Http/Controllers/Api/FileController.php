@@ -9,7 +9,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
+use Illuminate\Support\Facades\Log;
 class FileController extends Controller
 {
     /**
@@ -135,6 +135,14 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
+        if($request->hasFile('file')){
+            Log::debug('FILE FOUND');
+        } else {
+            Log::debug('NO FILE, CHUCK TESTA');
+        }
+
+        // Log::debug($request->file());
         // Get the ID of the model this should be attached to
         $modelId = $request->query('model_id', null);
 
@@ -169,7 +177,11 @@ class FileController extends Controller
         
         $mediaCollection = $request->input('collection', 'local');
 
-        $addedMedia = $model->addMediaFromRequest('file')->toMediaCollection($mediaCollection);
+        $customProps = $request->input('custom_properties','');
+
+        $addedMedia = $model->addMediaFromRequest('file')
+            ->withCustomProperties(['data_name' => $request->input('data_name','')])
+            ->toMediaCollection($mediaCollection);
 
         return response([
             'id' => $addedMedia->id,
