@@ -135,14 +135,6 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
-        if($request->hasFile('file')){
-            Log::debug('FILE FOUND');
-        } else {
-            Log::debug('NO FILE, CHUCK TESTA');
-        }
-
-        // Log::debug($request->file());
         // Get the ID of the model this should be attached to
         $modelId = $request->query('model_id', null);
 
