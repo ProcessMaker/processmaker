@@ -35,7 +35,9 @@
             <li class="list-group-item">
                 <h6><i class="fas fa-puzzle-piece mr-2"></i>{{ ucfirst(trans($package->name)) }}</h6>
                 <small>
-                  <div>{{ $package->description }}</div>
+                  @if (isset($package->description))
+                    <div>{{ $package->description }}</div>
+                  @endif
                   @if (isset($package->version))
                     <div><strong>Version:</strong> {{ $package->version }}</div>
                   @endif
