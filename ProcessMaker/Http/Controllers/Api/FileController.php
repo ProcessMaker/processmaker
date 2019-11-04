@@ -105,6 +105,13 @@ class FileController extends Controller
      *         required=false,
      *         @OA\Schema(type="string"),
      *     ),
+     *      @OA\Parameter(
+     *         name="data_name",
+     *         in="query",
+     *         description="Name of the variable used in a request",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),     
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\MediaType(
@@ -167,8 +174,6 @@ class FileController extends Controller
         }
         
         $mediaCollection = $request->input('collection', 'local');
-
-        $customProps = $request->input('custom_properties','');
 
         $addedMedia = $model->addMediaFromRequest('file')
             ->withCustomProperties(['data_name' => $request->input('data_name','')])
