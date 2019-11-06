@@ -17,8 +17,8 @@ trait MakeHttpRequests
 {
     private $authTypes = [
         'BASIC' => 'basicAuthorization',
-        'BEARER' => 'bearerAuthorization',
-        'PASSWORD' => 'passwordAuthorization',
+        'OAUTH2_BEARER' => 'bearerAuthorization',
+        'OAUTH2_PASSWORD' => 'passwordAuthorization',
     ];
 
     /**
@@ -37,6 +37,8 @@ trait MakeHttpRequests
     {
         $mustache = new Mustache_Engine();
         $endpoint = $this->endpoints[$config['endpoint']];
+        Log::info('request........');
+        Log::debug($endpoint);
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
         // Datasource works with json responses
