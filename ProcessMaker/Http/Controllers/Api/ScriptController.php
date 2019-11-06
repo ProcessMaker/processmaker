@@ -153,6 +153,53 @@ class ScriptController extends Controller
     }
 
     /**
+     * Executes a script, with sample data/config data
+     *
+     *     @OA\Post(
+     *     path="/scripts/{script_id}/preview",
+     *     summary="Test script code without saving it",
+     *     operationId="getScriptsPreview",
+     *     tags={"Scripts"},
+     *         @OA\Parameter(
+     *             name="script_id",
+     *             in="path",
+     *             @OA\Schema(type="integer"),
+     *         ),
+     *         @OA\Parameter(
+     *             name="data",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             name="config",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             name="code",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="success if the script was queued",
+     *         @OA\JsonContent(ref="#/components/schemas/scriptsPreview")
+     *         ),
+     *     ),
+     * )
+     */
+    public function execute(Request $request, Script $script)
+    {
+        $data = json_decode($request->get('data'), true) ?: [];
+        $config = json_decode($request->get('config'), true) ?: [];
+        $code = $script->code;
+
+        TestScript::dispatch($script, $request->user(), $code, $data, $config);
+        return ['status' => 'success'];
+    }
+
+    /**
      * Get a single script in a process.
      *
      * @param Script $script
