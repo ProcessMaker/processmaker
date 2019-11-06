@@ -156,8 +156,8 @@ class ScriptController extends Controller
      * Executes a script, with sample data/config data
      *
      *     @OA\Post(
-     *     path="/scripts/{script_id}/preview",
-     *     summary="Test script code without saving it",
+     *     path="/scripts/{script_id}/execute",
+     *     summary="Execute script",
      *     operationId="getScriptsPreview",
      *     tags={"Scripts"},
      *         @OA\Parameter(
@@ -172,11 +172,6 @@ class ScriptController extends Controller
      *         ),
      *         @OA\Parameter(
      *             name="config",
-     *             in="query",
-     *             @OA\Schema(type="string"),
-     *         ),
-     *         @OA\Parameter(
-     *             name="code",
      *             in="query",
      *             @OA\Schema(type="string"),
      *         ),
