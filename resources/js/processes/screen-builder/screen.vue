@@ -21,9 +21,13 @@
                 <i class="fas fa-flask"></i>
                 {{ $t('Calcs') }}
               </button>
-              <button type="button" class="btn btn-secondary mr-2 text-capitalize" :title="$t('Custom CSS')" @click="openCustomCSS">
+              <button type="button" class="btn btn-secondary text-capitalize" :title="$t('Custom CSS')" @click="openCustomCSS">
                 <i class="fab fa-css3"></i>
                 {{ $t('CSS') }}
+              </button>
+              <button type="button" class="btn btn-secondary mr-2 text-capitalize" :title="$t('Watchers')" @click="openWatchersPopup">
+                <i class="fas fa-mask"></i>
+                {{ $t('Watchers') }}
               </button>
             </div>
 
@@ -142,11 +146,13 @@
     <!-- Modals -->
     <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
     <custom-CSS v-model="customCSS" ref="customCSS" :cssErrors="cssErrors"/>
+    <watchers-popup v-model="watchers" ref="watchersPopup"/>
   </div>
 </template>
 
 <script>
   import {VueFormBuilder, VueFormRenderer} from "@processmaker/screen-builder";
+  import WatchersPopup from '@processmaker/screen-builder/src/components/watchers-popup.vue';
   import ComputedProperties from "@processmaker/screen-builder/src/components/computed-properties";
   import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
   import "@processmaker/screen-builder/dist/vue-form-builder.css";
@@ -183,6 +189,7 @@ import formTypes from "./formTypes";
       return {
         watchers: {
           api: {
+            scripts: [],
             execute: null,
           },
         },
@@ -213,6 +220,7 @@ import formTypes from "./formTypes";
       VueJsonPretty,
       ComputedProperties,
       CustomCSS,
+      WatchersPopup,
       MonacoEditor
     },
     watch: {
@@ -350,6 +358,9 @@ import formTypes from "./formTypes";
         }
 
         this.$refs.builder.focusInspector(validate);
+      },
+      openWatchersPopup() {
+        this.$refs.watchersPopup.show();
       },
       openComputedProperties() {
         this.$refs.computedProperties.show();
