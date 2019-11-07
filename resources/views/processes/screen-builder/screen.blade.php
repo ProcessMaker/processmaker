@@ -52,7 +52,7 @@
               .then(response => {
                 let dataSource = response.data.data.map(item => {
                   item.id = "data_source-" + item.id;
-                  item.title = "script-" + item.id;
+                  item.title = item.name;
                   return item;
                 });
                 if (dataSource) {
