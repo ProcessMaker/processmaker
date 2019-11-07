@@ -25,6 +25,17 @@
 @endsection
 
 @section('js')
+    <script>
+        window.ProcessMaker.EventBus.$on("screen-builder-init", (builder) => {
+            // Registrar el EP para script, datasource y execute
+            if (builder.watchers) {
+                builder.watchers.api.scriptsIndex = @json(route('api.scripts.index'));
+                builder.watchers.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
+            } else {
+                console.warn('Screen builder version does not have watchers');
+            }
+        });
+    </script>
     <script src="{{mix('js/leave-warning.js')}}"></script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>

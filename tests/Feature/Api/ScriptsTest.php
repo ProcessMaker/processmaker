@@ -332,11 +332,11 @@ class ScriptsTest extends TestCase
             );
         }
 
-        $url = route('api.script.preview', $this->getScript('lua')->id);
+        $url = route('api.scripts.preview', $this->getScript('lua')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);
         $response->assertStatus(200);
 
-        $url = route('api.script.preview', $this->getScript('php')->id);
+        $url = route('api.scripts.preview', $this->getScript('php')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => '<?php return ["response"=>1];']);
         $response->assertStatus(200);
 
@@ -357,7 +357,7 @@ class ScriptsTest extends TestCase
     public function testPreviewScriptFail()
     {
         Notification::fake();
-        $url = route('api.script.preview', $this->getScript('foo')->id);
+        $url = route('api.scripts.preview', $this->getScript('foo')->id);
         $response = $this->apiCall('POST', $url, ['data' => 'foo', 'config' => 'foo', 'code' => 'foo']);
 
         // Assertion: An exception is notified to usr through broadcast channel

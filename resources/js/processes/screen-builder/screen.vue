@@ -181,6 +181,11 @@ import formTypes from "./formTypes";
       }];
 
       return {
+        watchers: {
+          api: {
+            execute: null,
+          },
+        },
         type: formTypes.form,
         mode: "editor",
         // Computed properties
