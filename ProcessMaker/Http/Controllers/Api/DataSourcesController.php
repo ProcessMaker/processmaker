@@ -42,7 +42,7 @@ class DataSourcesController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/dataSource"),
+     *                 @OA\Items(@OA\JsonContent()),
      *             ),
      *             @OA\Property(
      *                 property="meta",
@@ -116,7 +116,17 @@ class DataSourcesController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the Data Source",
-     *         @OA\JsonContent(ref="#/components/schemas/dataSource")
+     *         @OA\JsonContent(
+     *          @OA\Property(property="id", type="string", format="id"),
+     *          @OA\Property(property="name", type="string"),
+     *          @OA\Property(property="description", type="string"),
+     *          @OA\Property(property="endpoints", type="string"),
+     *          @OA\Property(property="mappings", type="string"),
+     *          @OA\Property(property="authtype", type="string"),
+     *          @OA\Property(property="credentials", type="string"),
+     *          @OA\Property(property="status", type="string"),
+     *          @OA\Property(property="data_source_category_id", type="string"),
+     *          )
      *     ),
      * )
      */
@@ -135,6 +145,11 @@ class DataSourcesController extends Controller
      * @param Request $httpRequest
      *
      * @return Response
+     *
+     * @OA\Schema(
+     *   schema="DataSourceCallParameters",
+     *   @OA\Property(property="endpoint", type="string")
+     * ),
      *
      * @OA\Post(
      *     path="request/{request_id}/data_source/{data_source_id}",
@@ -161,12 +176,14 @@ class DataSourcesController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent()
+     *       @OA\JsonContent(
+     *          @OA\Property(property="config", ref="#/components/schemas/DataSourceCallParameters")
+     *       )
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/dataSource")
+     *         @OA\JsonContent()
      *     ),
      * )
      */
