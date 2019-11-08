@@ -64,6 +64,7 @@
               :config="config"
               :computed="computed"
               :custom-css="customCSS"
+              :watchers="watchers"
               v-on:css-errors="cssErrors = $event"
               :mock-magic-variables="mockMagicVariables"
             />

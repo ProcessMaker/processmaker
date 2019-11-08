@@ -231,9 +231,9 @@
 
 @section('js')
   <script>
-    window.ProcessMaker.EventBus.$on("screen-builder-init", (builder) => {
-      if (builder.watchers) {
-        builder.watchers.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
+    window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
+      if (screen.watchers) {
+        screen.watchers.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
       } else {
         console.warn('Screen builder version does not have watchers');
       }

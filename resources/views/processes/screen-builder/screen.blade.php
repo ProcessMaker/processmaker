@@ -68,6 +68,14 @@
           console.warn("Screen builder version does not have watchers");
         }
       });
+      window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
+        console.log("on screen-renderer-init");
+        if (screen.watchers) {
+            screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
+        } else {
+          console.warn("Screen builder version does not have watchers");
+        }
+      });
     </script>
     <script src="{{mix('js/leave-warning.js')}}"></script>
     @foreach($manager->getScripts() as $script)
