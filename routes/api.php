@@ -154,6 +154,13 @@ Route::group(
     Route::put('comments/{comment}', 'CommentController@update')->name('comments.update')->middleware('can:edit-comments');
     Route::delete('comments/{comment}', 'CommentController@destroy')->name('comments.destroy')->middleware('can:delete-comments');
 
+
+    //DataSources
+    Route::get('data_sources', 'DataSourcesController@index')->name('data-sources.index')->middleware('can:view-data-sources');
+    Route::get('data_sources/{data_source}', 'DataSourcesController@show')->name('data-sources.show')->middleware('can:view-data-sources');
+    Route::post('requests/{request}/data_sources/{data_source}', 'DataSourcesController@executeDataSource');
+
+
     //UI customization
     Route::post('customize-ui', 'CssOverrideController@store')->name('customize-ui.store');
 
