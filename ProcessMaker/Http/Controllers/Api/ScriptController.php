@@ -8,6 +8,7 @@ use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
+use ProcessMaker\Jobs\ExecuteScript;
 use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -188,9 +189,10 @@ class ScriptController extends Controller
     {
         $data = json_decode($request->get('data'), true) ?: [];
         $config = json_decode($request->get('config'), true) ?: [];
+        $watcher = json_decode($request->get('watcher'), true) ?: [];
         $code = $script->code;
 
-        TestScript::dispatch($script, $request->user(), $code, $data, $config);
+        ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config);
         return ['status' => 'success'];
     }
 
