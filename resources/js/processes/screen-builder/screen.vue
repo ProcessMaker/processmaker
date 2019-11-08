@@ -187,7 +187,7 @@ import formTypes from "./formTypes";
       }];
 
       return {
-        watchers: {
+        watchers_config: {
           api: {
             scripts: [],
             execute: null,
@@ -197,6 +197,8 @@ import formTypes from "./formTypes";
         mode: "editor",
         // Computed properties
         computed: [],
+        // Watchers
+        watchers: [],
         config: this.screen.config || defaultConfig,
         previewData: {},
         previewInput: '{}',
@@ -419,7 +421,8 @@ import formTypes from "./formTypes";
               type: this.screen.type,
               config: this.config,
               computed: this.computed,
-              custom_css: this.customCSS
+              custom_css: this.customCSS,
+              watchers: this.watchers
             })
             .then(response => {
               if (exportScreen) {
