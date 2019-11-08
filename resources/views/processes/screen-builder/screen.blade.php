@@ -53,6 +53,7 @@
                 let dataSource = response.data.data.map(item => {
                   item.id = "data_source-" + item.id;
                   item.title = item.name;
+                  item.key = 'package-data-sources/data-source-task-service';
                   return item;
                 });
                 if (dataSource) {
