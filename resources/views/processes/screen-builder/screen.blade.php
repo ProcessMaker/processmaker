@@ -26,44 +26,52 @@
 
 @section('js')
     <script>
+      console.log('watchers.............');
       window.ProcessMaker.EventBus.$on("screen-builder-init", (builder) => {
         // Registrar el EP para script, datasource y execute
         if (builder.watchers) {
-          builder.watchers_config.api.scripts.push((data, filter) => {
-            ProcessMaker.apiClient
-              .get(@json(route('api.scripts.index' )) +(typeof filter === "string" ? "?filter=" + filter : ""))
-              .then(response => {
-                let scripts = response.data.data.map(item => {
-                  item.id = "script-" + item.id;
-                  return item;
-                });
-                if (scripts) {
-                  data.push({
-                    "type": @json(__('Scripts')),
-                    "items": scripts,
+          console.log('watchers.............');
+
+          if (@json(route::has('api.scripts.index'))) {
+            builder.watchers_config.api.scripts.push((data, filter) => {
+              ProcessMaker.apiClient
+                .get(@json(route('api.scripts.index' )) + (typeof filter === "string" ? "?filter=" + filter : ""))
+                .then(response => {
+                  let scripts = response.data.data.map(item => {
+                    item.id = "script-" + item.id;
+                    return item;
                   });
-                }
-              });
-          });
-          /*change route to  {{--@json(route('api.data-sources.index' ))--}}*/
-          builder.watchers_config.api.scripts.push((data, filter) => {
-            ProcessMaker.apiClient
-              .get('data_sources' +(typeof filter === "string" ? "?filter=" + filter : ""))
-              .then(response => {
-                let dataSource = response.data.data.map(item => {
-                  item.id = "data_source-" + item.id;
-                  item.title = item.name;
-                  item.key = 'package-data-sources/data-source-task-service';
-                  return item;
+                  if (scripts) {
+                    data.push({
+                      "type": @json(__('Scripts')),
+                      "items": scripts,
+                    });
+                  }
                 });
-                if (dataSource) {
-                  data.push({
-                    "type": @json(__('Data Source')),
-                    "items": dataSource,
+            });
+          }
+
+          if (@json(route::has('api.data-sources.index'))) {
+            builder.watchers_config.api.scripts.push((data, filter) => {
+              ProcessMaker.apiClient
+                .get('api.data-sources' + (typeof filter === "string" ? "?filter=" + filter : ""))
+                .then(response => {
+                  let dataSource = response.data.data.map(item => {
+                    item.id = "data_source-" + item.id;
+                    item.title = item.name;
+                    item.key = 'package-data-sources/data-source-task-service';
+                    return item;
                   });
-                }
-              });
-          });
+                  if (dataSource) {
+                    data.push({
+                      "type": @json(__('Data Source')),
+                      "items": dataSource,
+                    });
+                  }
+                });
+            });
+          }
+          
           builder.watchers_config.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
         } else {
           console.warn("Screen builder version does not have watchers");
