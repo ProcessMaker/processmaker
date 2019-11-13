@@ -28,6 +28,7 @@ class TaskController extends Controller
         if (Request::input('status') == 'CLOSED') {
             $title = 'Completed Tasks';
         }
+        
 
         return view('tasks.index', compact('title'));
     }
@@ -48,6 +49,7 @@ class TaskController extends Controller
         $definition = $task->getDefinition();
         $screenInterstitial = new Screen();
         $allowInterstitial = false;
+        dd($definition);
 
         if (array_key_exists('allowInterstitial', $definition)) {
             $allowInterstitial = !!json_decode($definition['allowInterstitial']);

@@ -29,9 +29,18 @@
         </group-select>
 
         <form-checkbox
+            :label="$t('Lock task assignment to user')"
+            :checked="assignmentLockGetter"
+            toggle="true"
+            @change="assignmentLockSetter">
+        </form-checkbox>
+
+        <form-checkbox
             :label="$t('Allow Reassignment')"
             :checked="allowReassignmentGetter"
-            @change="allowReassignmentSetter">
+            toggle="true"
+            @change="assignmentLockSetter"
+            :disabled="assignmentLockGetter">
         </form-checkbox>
 
         <div class="form-group">
@@ -136,7 +145,7 @@
         assignmentExpression: "",
         typeAssignmentExpression: "",
         specialAssignmentsData: [],
-
+        
         assigned: "",
         assignedExpression: null,
         error: "",
@@ -144,6 +153,7 @@
     },
     computed: {
       node () {
+        console.log(this.$parent.$parent.$parent.$parent.highlightedNode.definition);
         return this.$parent.$parent.$parent.$parent.highlightedNode.definition;
       },
       /**
@@ -157,7 +167,12 @@
       /**
        * Get the value of the edited property
        */
+      assignmentLockGetter () {
+        console.log('get', _.get(this.node, 'assignmentLock'));
+        return _.get(this.node, 'assignmentLock');
+      },
       allowReassignmentGetter () {
+        console.log('get', _.get(this.node, 'allowReassignment'));
         return _.get(this.node, "allowReassignment");
       },
       assignedUserGetter () {
@@ -191,6 +206,12 @@
       },
     },
     methods: {
+      /**
+       * Update assignmentLock property
+       */
+      assignmentLockSetter (value) {
+        this.$set(this.node, "assignmentLock", value);
+      },
       /**
        * Update allowReassignment property
        */
