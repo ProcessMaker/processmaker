@@ -99,6 +99,7 @@
                 this.name = "";
                 this.status = "ACTIVE";
                 this.errors = {};
+                this.disabled = false;
               },
               onSubmit () {
                 this.errors = {};
@@ -113,7 +114,10 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The category was created.')}}', "success");
-                    window.location = this.location;
+                    ProcessMaker.CategoriesIndex.reload();
+                    $('#createCategory').modal('hide');
+                    $('#nav-sources-tab').tab('show');
+                    this.onClose();
                   })
                   .catch(error => {
                     this.disabled = false;
