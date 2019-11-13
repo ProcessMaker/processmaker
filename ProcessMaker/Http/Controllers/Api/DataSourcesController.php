@@ -197,4 +197,169 @@ class DataSourcesController extends Controller
             return response($exception->body, $exception->status);
         }
     }
+
+    /**
+     * Create a new Data Source.
+     *
+     * @param Request $request
+     *
+     * @return ApiResource
+     *
+     * @throws Throwable
+     *
+     * @OA\Post(
+     *     path="/data_sources",
+     *     summary="Save a new Data Source",
+     *     operationId="createDataSource",
+     *     tags={"Data Sources"},
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent()
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="success",
+     *         @OA\JsonContent()
+     *     ),
+     * )
+     */
+    public function store(Request $request)
+    {
+        $request->validate(DataSource::rules());
+        $dataSource = new DataSource;
+        $dataSource->fill($request->input());
+        $dataSource->saveOrFail();
+        return new ApiResource($dataSource);
+    }
+
+    /**
+     * Update a Data Source.
+     *
+     * @param DataSource $dataSource
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     * @throws Throwable
+     *
+     * @OA\Put(
+     *     path="/data_sources/data_source_id",
+     *     summary="Update a Data Source",
+     *     operationId="updateDataSource",
+     *     tags={"Data Sources"},
+     *     @OA\Parameter(
+     *         description="ID of Data Source to return",
+     *         in="path",
+     *         name="data_source_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent()
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent()
+     *     ),
+     * )
+     */
+    public function update(DataSource $dataSource, Request $request)
+    {
+        $request->validate(DataSource::rules($dataSource));
+        $dataSource->fill($request->input());
+        $dataSource->saveOrFail();
+        return response([], 204);
+    }
+    /**
+     * Delete a Data Source.
+     *
+     * @param DataSource $dataSource
+     *
+     * @return ResponseFactory|Response
+     *
+     * @throws Exception
+     *
+     * @OA\Delete(
+     *     path="/data_sources/data_source_id",
+     *     summary="Delete a Data Source",
+     *     operationId="deleteDataSource",
+     *     tags={"Data Sources"},
+     *     @OA\Parameter(
+     *         description="ID of Data Source to return",
+     *         in="path",
+     *         name="data_source_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent()
+     *     ),
+     * )
+     */
+    public function destroy(DataSource $dataSource)
+    {
+        //TODO Check if there are processes that use it.
+        $dataSource->delete();
+        return response([], 204);
+    }
+    /**
+     * Send a Data Source request.
+     *
+     * @param DataSource $dataSource
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     * @OA\Post(
+     *     path="/data_sources/data_source_id/test",
+     *     summary="Send a Data Source request",
+     *     operationId="sendDataSource",
+     *     tags={"Data Sources"},
+     *     @OA\Parameter(
+     *         description="ID of Data Source to return",
+     *         in="path",
+     *         name="data_source_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent()
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="success",
+     *         @OA\JsonContent()
+     *     ),
+     * )
+     */
+    public function test(DataSource $dataSource, Request $request)
+    {
+        if (!$request->has('data')) {
+            return response([], 204);
+        }
+        $data = $request->get('data') ?: [];
+        $data['data'] = $data['testData'] ?? [];
+        $data['config'] = $data['testConfig'] ?? [];
+        $data['config']['body'] = $data['body'] ?? [];
+        $data['config']['endpoint'] = $data['purpose'];
+        $credentials = $data['credentials'] ?? [];
+        $credentials= is_string($credentials) ? [] : $credentials;
+        if ($request->has('immediate') && $request->get('immediate')) {
+            $response = DataSourceJob::dispatchNow($dataSource, $request->user(), $data, $credentials, true);
+            return response($response['response'], $response['status']);
+        }
+        dispatch(new DataSourceJob($dataSource, $request->user(), $data, $credentials));
+        return response([], 204);
+    }
 }
