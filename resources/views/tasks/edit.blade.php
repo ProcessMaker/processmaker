@@ -400,6 +400,7 @@
           }
         },
         mounted () {
+          console.log(this.task);
           this.statusCard = this.classHeaderCard(this.task.advanceStatus);
           this.userAssigned = this.assigned;
           this.userRequested = this.requested;
