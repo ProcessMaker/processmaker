@@ -292,6 +292,7 @@ import formTypes from "./formTypes";
       ProcessMaker.EventBus.$emit("screen-builder-init", this);
       this.computed = this.screen.computed ? this.screen.computed : [];
       this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
+      this.watchers = this.screen.watchers ? this.screen.watchers : [];
       this.updatePreview(new Object());
       this.previewInput = "{}";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);

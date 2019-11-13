@@ -26,7 +26,6 @@
 
 @section('js')
     <script>
-      console.log('watchers.............');
       window.ProcessMaker.EventBus.$on("screen-builder-init", (builder) => {
         // Registrar el EP para script, datasource y execute
         if (builder.watchers) {
@@ -52,7 +51,7 @@
           if (@json(route::has('api.data-sources.index'))) {
             builder.watchers_config.api.scripts.push((data, filter) => {
               ProcessMaker.apiClient
-                .get('data-sources' + (typeof filter === "string" ? "?filter=" + filter : ""))
+                .get('data_sources' + (typeof filter === "string" ? "?filter=" + filter : ""))
                 .then(response => {
                   let dataSource = response.data.data.map(item => {
                     item.id = "data_source-" + item.id;
