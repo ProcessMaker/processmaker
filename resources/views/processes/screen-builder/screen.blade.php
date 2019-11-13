@@ -30,8 +30,6 @@
       window.ProcessMaker.EventBus.$on("screen-builder-init", (builder) => {
         // Registrar el EP para script, datasource y execute
         if (builder.watchers) {
-          console.log('watchers.............');
-
           if (@json(route::has('api.scripts.index'))) {
             builder.watchers_config.api.scripts.push((data, filter) => {
               ProcessMaker.apiClient
@@ -54,7 +52,7 @@
           if (@json(route::has('api.data-sources.index'))) {
             builder.watchers_config.api.scripts.push((data, filter) => {
               ProcessMaker.apiClient
-                .get('api.data-sources' + (typeof filter === "string" ? "?filter=" + filter : ""))
+                .get('data-sources' + (typeof filter === "string" ? "?filter=" + filter : ""))
                 .then(response => {
                   let dataSource = response.data.data.map(item => {
                     item.id = "data_source-" + item.id;
@@ -71,7 +69,7 @@
                 });
             });
           }
-          
+
           builder.watchers_config.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
         } else {
           console.warn("Screen builder version does not have watchers");
