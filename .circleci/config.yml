@@ -148,7 +148,7 @@ jobs:
       # run tests!
       - run:
           name: 'PHPUnit'
-          command: './vendor/bin/phpunit -v -d memory_limit=-1'
+          command: 'sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && ./vendor/bin/phpunit -v -d memory_limit=-1'
           environment:
             DB_DATABASE: 'circle_test'
             DB_PASSWORD: 'P4ssW0rd1!'
