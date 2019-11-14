@@ -16,12 +16,10 @@ class PermissionSeeder extends Seeder
             'export-processes',
             'import-processes',
             'view-processes',
-        ],
-        'Categories' => [
-            'create-categories',
-            'delete-categories',
-            'edit-categories',
-            'view-categories',
+            'create-process-categories',
+            'delete-process-categories',
+            'edit-process-categories',
+            'view-process-categories',
         ],
         'Comments' => [
             'create-comments',

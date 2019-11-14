@@ -14,7 +14,7 @@
                 <button title="" type="button" class="btn btn-primary" data-original-title="Search">
                     <i class="fas fa-search"></i>
                 </button>
-                @can('create-categories')
+                @can('create-process-categories')
                     <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createCategory">
                         <i class="fas fa-plus"></i> {{ __('Category') }}
@@ -38,7 +38,7 @@
     </categories-listing>
 </div>
 
-@can('create-categories')
+@can('create-process-categories')
     <div class="modal" tabindex="-1" role="dialog" id="createCategory">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -82,7 +82,7 @@
 @section('js')
     <script src="{{mix('js/processes/categories/index.js')}}"></script>
 
-    @can('create-categories')
+    @can('create-process-categories')
         <script>
           new Vue({
             el: "#createCategory",
