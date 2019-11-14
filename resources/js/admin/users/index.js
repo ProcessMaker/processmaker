@@ -22,8 +22,7 @@ new Vue({
             addError: {},
             submitted: false,
             disabled: false
-        },
-        configCopy: '',
+        }
     },
     methods: {
         reload() {
@@ -52,7 +51,6 @@ new Vue({
             return true
         },
         showModal() {
-            this.configCopy = _.cloneDeep(this.config);
             this.$refs['addUserModal'].showAddUserModal();
         },
         hideModal() {
@@ -65,10 +63,6 @@ new Vue({
         },
     },
     mounted() {
-        this.$root.$on('bv::modal::hide', () => {
-            this.config = this.configCopy;
-        });
-
         this.$root.$on('updateErrors', (val) => {
             this.config.addError = val;
         });
