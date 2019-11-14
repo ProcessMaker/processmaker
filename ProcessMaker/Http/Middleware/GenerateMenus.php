@@ -26,7 +26,7 @@ class GenerateMenus
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
                 $request_items->add(__('Tasks'), ['route' => 'tasks.index'])->active('tasks/*');
             });
-            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-categories|view-scripts|view-screens|view-environment_variables')) {
+            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables')) {
                 $menu->group(['prefix' => 'processes'], function ($request_items) {
                     $request_items->add(__('Designer'), ['route' => 'processes.index'])->active('processes/*');
                 });
