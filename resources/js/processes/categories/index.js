@@ -12,7 +12,6 @@ new Vue({
       status: "ACTIVE",
       disabled: false,
     },
-    componentKey: 0,
   },
   components: {
     CategoriesListing
