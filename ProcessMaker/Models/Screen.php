@@ -9,7 +9,6 @@ use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
-use ProcessMaker\Validation\CategoryRule;
 
 /**
  * Class Screen
@@ -92,8 +91,7 @@ class Screen extends Model
         return [
             'title' => ['required', $unique],
             'description' => 'required',
-            'type' => 'required',
-            'screen_category_id' => ['required', new CategoryRule]
+            'type' => 'required'
         ];
     }
 

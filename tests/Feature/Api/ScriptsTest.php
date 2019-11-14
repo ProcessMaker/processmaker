@@ -69,42 +69,6 @@ class ScriptsTest extends TestCase
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
-    public function testCreateCategoryRequired()
-    {
-        $url = route('api.scripts.store');
-        $params = [
-            'title' => 'Title',
-            'language' => 'php',
-            'code' => '123',
-            'description' => 'Description',
-            'run_as_user_id' => $this->user->id,
-        ];
-
-        $err = function($response) {
-            return $response->json()['errors']['script_category_id'][0]; 
-        };
-
-        $params['script_category_id'] = '';
-        $response = $this->apiCall('POST', $url, $params);
-        $this->assertEquals('The script category id field is required.', $err($response));
-
-        $category1 = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
-        $category2 = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
-
-        $params['script_category_id'] = $category1->id . ',foo';
-        $response = $this->apiCall('POST', $url, $params);
-        $this->assertEquals('Invalid category', $err($response));
-
-        $params['script_category_id'] = $category1->id . ',' . $category2->id;
-        $response = $this->apiCall('POST', $url, $params);
-        $response->assertStatus(201);
-        
-        $params['script_category_id'] = $category1->id;
-        $params['title'] = 'other title';
-        $response = $this->apiCall('POST', $url, $params);
-        $response->assertStatus(201);
-    }
-
     /**
      * Can not create a script with an existing title
      */
@@ -297,8 +261,7 @@ class ScriptsTest extends TestCase
             'language' => 'lua',
             'description' => 'jdbsdfkj',
             'code' => $faker->sentence(3),
-            'run_as_user_id' => $user->id,
-            'script_category_id' => $script->script_category_id
+            'run_as_user_id' => $user->id
         ]);
 
         //Validate the answer is correct
@@ -344,16 +307,14 @@ class ScriptsTest extends TestCase
         $user = factory(User::class)->create(['is_administrator' => true]);
 
         $code = '{"foo":"bar"}';
-        $script = factory(Script::class)->create([
+        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
             'code' => $code
-        ]);
-        $url = self::API_TEST_SCRIPT . '/' . $script->id;
+        ])->id;
         $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => 'TITLE',
             'language' => 'php',
             'description' => $faker->sentence(5),
-            'run_as_user_id' => $user->id,
-            'script_category_id' => $script->script_category_id
+            'run_as_user_id' => $user->id
         ]);
         $new_script = Script::find($response->json()['id']);
         $this->assertEquals($code, $new_script->code);
