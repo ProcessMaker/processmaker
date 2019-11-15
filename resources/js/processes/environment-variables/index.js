@@ -1,11 +1,16 @@
 import Vue from "vue";
 import VariablesListing from "./components/VariablesListing";
 
-// Bootstrap our Variables listing
 new Vue({
     el: "#process-variables-listing",
     data: {
-        filter: ""
+        filter: "",
+        addEnvVariable: {
+            errors: {},
+            name: '',
+            description: '',
+            value: '',
+        }
     },
     components: {
         VariablesListing
@@ -28,6 +33,31 @@ new Vue({
                     direction: "desc"
                 }
             ]);
+        },
+        onClose() {
+            this.addEnvVariable.name = '';
+            this.addEnvVariable.description = '';
+            this.addEnvVariable.value = '';
+            this.addEnvVariable.errors = {};
+        },
+        onSubmit(bvModalEvt) {
+            bvModalEvt.preventDefault();
+            this.addEnvVariable.errors = {};
+            ProcessMaker.apiClient.post('environment_variables', {
+              name: this.addEnvVariable.name,
+              description: this.addEnvVariable.description,
+              value: this.addEnvVariable.value
+            })
+            .then(response => {
+                ProcessMaker.alert(this.$t('The environment variable was created.'), 'success');
+                this.reload();
+                this.$refs.createEnvironmentVariable.hide();
+            })
+            .catch(error => {
+                if (error.response.status === 422) {
+                  this.addEnvVariable.errors = error.response.data.errors
+                }
+            });
         }
     }
 });
