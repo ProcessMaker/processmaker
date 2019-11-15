@@ -40,7 +40,8 @@
         <b-modal hidden 
                 ref="createCategory" 
                 title="{{ __('Create Category') }}" 
-                ok-title="{{ __('Save') }}" 
+                ok-title="{{ __('Save') }}"
+                centered
                 @ok="onSubmit" 
                 @hidden="onClose"
         >
