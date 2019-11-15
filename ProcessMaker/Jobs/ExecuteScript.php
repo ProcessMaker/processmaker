@@ -42,6 +42,7 @@ class ExecuteScript implements ShouldQueue
         $this->current_user = $current_user;
         $this->code = $code;
         $this->data = $data;
+        $this->configuration = $configuration;
         $this->watcher = $watcher;
     }
 

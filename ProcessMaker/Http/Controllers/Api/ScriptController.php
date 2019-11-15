@@ -185,11 +185,12 @@ class ScriptController extends Controller
      *     ),
      * )
      */
-    public function execute(Request $request, Script $script)
+    public function execute(Request $request, $script)
     {
+        $script = is_numeric($script) ? Script::find($script) : Script::where('key', $script)->first();
         $data = json_decode($request->get('data'), true) ?: [];
         $config = json_decode($request->get('config'), true) ?: [];
-        $watcher = json_decode($request->get('watcher'), true) ?: [];
+        $watcher = $request->get('watcher');
         $code = $script->code;
 
         ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config);
