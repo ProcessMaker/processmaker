@@ -36,13 +36,14 @@ class ExecuteScript implements ShouldQueue
      * @param $watcher
      * @param array $configuration
      */
-    public function __construct(Script $script, User $current_user, $code, array $data, $watcher, array $configuration)
+    public function __construct(Script $script, User $current_user, $code, array $data, $watcher, array $configuration = [])
     {
         $this->script = $script;
         $this->current_user = $current_user;
         $this->code = $code;
         $this->data = $data;
         $this->watcher = $watcher;
+        $this->configuration = $configuration;
     }
 
     /**
