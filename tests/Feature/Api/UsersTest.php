@@ -75,6 +75,39 @@ class UsersTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function testCreatePreviouslyDeletedUser()
+    {
+        $url = self::API_TEST_URL;
+        $deletedUser = factory(User::class)->create([
+            'deleted_at' => '2019-01-01',
+            'status' => 'ACTIVE'
+        ]);
+
+        $params = [
+            'username' => $deletedUser->username,
+            'firstname' => 'foo',
+            'lastname' => 'bar',
+            'email' => 'test@test.com',
+            'status' => 'ACTIVE',
+            'password' => 'password123'
+        ];
+
+        $response = $this->apiCall('POST', $url, $params);
+        $this->assertEquals(
+            "A user with the username {$deletedUser->username} and email {$deletedUser->email} was previously deleted.",
+            $response->json()['errors']['username'][1]
+        );
+
+        $params['username'] = 'foobar';
+        $params['email'] = $deletedUser->email;
+        
+        $response = $this->apiCall('POST', $url, $params);
+        $this->assertEquals(
+            "A user with the username {$deletedUser->username} and email {$deletedUser->email} was previously deleted.",
+            $response->json()['errors']['email'][1]
+        );
+    }
+
     public function testDefaultValuesOfUser()
     {
         putenv('APP_TIMEZONE=America/Los_Angeles');
