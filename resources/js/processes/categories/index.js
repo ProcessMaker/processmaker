@@ -25,19 +25,22 @@ new Vue({
       this.addCategory.status = "ACTIVE";
       this.addCategory.errors = {};
     },
-    onSubmit () {
+    onSubmit (bvModalEvt) {
+      bvModalEvt.preventDefault();
       this.errors = {};
       //single click
       if (this.addCategory.disabled) {
         return;
       }
       this.disabled = true;
-      ProcessMaker.apiClient.post('/process_categories', { 
+      const route = this.$refs.createCategory.$attrs.apiroute;
+      ProcessMaker.apiClient.post(route, { 
         name: this.addCategory.name,
         status: this.addCategory.status
       })
       .then(response => {
         ProcessMaker.alert(this.$t('The category was created.'), 'success');
+        this.$refs.createCategory.hide();
         this.reload();
       })
       .catch(error => {

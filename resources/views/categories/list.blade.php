@@ -41,6 +41,7 @@
                 ref="createCategory" 
                 title="{{ __('Create Category') }}" 
                 ok-title="{{ __('Save') }}"
+                apiRoute="{{route($config->routes->categoryListApi)}}"
                 centered
                 @ok="onSubmit" 
                 @hidden="onClose"
