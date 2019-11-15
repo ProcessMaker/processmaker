@@ -59,6 +59,7 @@
                                             :screen="{{json_encode($task->getScreen()->config)}}"
                                             :computed="{{json_encode($task->getScreen()->computed)}}"
                                             :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
+                                            :watchers="{{json_encode($task->getScreen()->watchers)}}"
                                             :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
                                         </task-screen>
                                     @else
@@ -90,6 +91,7 @@
                                     :screen="{{json_encode($screenInterstitial->config)}}"
                                     :computed="{{json_encode($screenInterstitial->computed)}}"
                                     :custom-css="{{json_encode(strval($screenInterstitial->custom_css))}}"
+                                    :watchers="{{json_encode($screenInterstitial->watchers)}}"
                                     :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
                                     @activity-assigned="redirectToNextAssignedTask"
                                     @process-completed="redirectWhenProcessCompleted"
@@ -232,8 +234,8 @@
 @section('js')
   <script>
     window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
-      if (screen.watchers) {
-        screen.watchers.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
+      if (screen.watchers_config) {
+        screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
       } else {
         console.warn('Screen builder version does not have watchers');
       }
