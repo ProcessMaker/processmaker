@@ -153,7 +153,7 @@ class GenerateMenus
 
         Menu::make('sidebar_about', function ($menu) {
             $submenu = $menu->add(__('About'));
-            $submenu->add(__('Profile'), [
+            $submenu->add(__('Edit My Profile'), [
                 'route' => 'profile.edit',
                 'icon' => 'fa-user',
                 'id' => 'dropdownItem'
@@ -165,7 +165,7 @@ class GenerateMenus
                 'target' => '_blank'
             ]);
             $submenu->add(__('Report an issue'), [
-                'url' => 'https://docs.google.com/forms/d/e/1FAIpQLScnYje8uTACYwp3VxdRoA26OFkbfFs6kuXofqY-QXXsG-h9xA/viewform',
+                'url' => 'https://github.com/ProcessMaker/processmaker/issues/new',
                 'icon' => 'fa-bug',
                 'id' => 'dropdownItem',
                 'target' => '_blank'
