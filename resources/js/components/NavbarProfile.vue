@@ -16,13 +16,13 @@
           <li class="list-group-item px-1">
             <a :href="user_id">
               <i class="fas fa-user fa-fw fa-lg"></i>
-              View Profile
+              {{$t('View Profile')}}
             </a>
           </li>
           <li class="list-group-item px-1">
             <a href="/profile/edit">
               <i class="fas fa-user-cog fa-fw fa-lg"></i>
-              Profile Settings
+              {{$t('Profile Settings')}}
             </a>
           </li>
           <li class="list-group-item px-1">
