@@ -16,10 +16,10 @@
                 </b-col>
                 <b-col cols="4">
                     <b-input-group>
-                        <b-input-group-text slot="prepend">
-                            <i class="fas fa-search"></i>
-                        </b-input-group-text>
                         <b-form-input v-model="filter" :placeholder="$t('Search') + '...'"></b-form-input>
+                        <b-input-group-append>
+                            <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                        </b-input-group-append>
                     </b-input-group>
                 </b-col>
             </b-row>
