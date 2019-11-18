@@ -202,6 +202,18 @@ class DataSourcesController extends Controller
         }
     }
 
+    public function executeDataSourceTest(DataSource $dataSource, Request $httpRequest)
+    {
+        $config= $httpRequest->json()->get('config');
+        $data= $httpRequest->json()->get('data', []);
+        try {
+            $response = $dataSource->request($data, $config);
+            return response($response, 200);
+        } catch (HttpResponseException $exception) {
+            return response($exception->body, $exception->status);
+        }
+    }
+
     /**
      * Create a new Data Source.
      *
