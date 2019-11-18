@@ -14,9 +14,15 @@
       <template>
         <ul class="list-group list-group-flush m-1">
           <li class="list-group-item px-1">
-            <a href="/profile/edit">
+            <a :href="user_id">
               <i class="fas fa-user fa-fw fa-lg"></i>
-              {{fullName}}
+              View Profile
+            </a>
+          </li>
+          <li class="list-group-item px-1">
+            <a href="/profile/edit">
+              <i class="fas fa-user-cog fa-fw fa-lg"></i>
+              Profile Settings
             </a>
           </li>
           <li class="list-group-item px-1">
@@ -56,6 +62,7 @@ export default {
     return {
       sourceImage: false,
       fullName: null,
+      user_id: null,
       popoverShow: true,
       information: []
     };
@@ -76,6 +83,7 @@ export default {
         this.sourceImage = true;
       }
       this.fullName = user.fullname;
+      this.user_id = "/profile/" + user.id;
       this.information = [
         {
           src: user.avatar

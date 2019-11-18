@@ -153,7 +153,7 @@ class GenerateMenus
 
         Menu::make('sidebar_about', function ($menu) {
             $submenu = $menu->add(__('About'));
-            $submenu->add(__('Edit My Profile'), [
+            $submenu->add(__('Profile Settings'), [
                 'route' => 'profile.edit',
                 'icon' => 'fa-user',
                 'id' => 'dropdownItem'
