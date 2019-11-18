@@ -372,7 +372,9 @@ h1.page-title {
 #api-error {
   display: none;
 }
-
+.popover-body {
+  padding: 0 !important;
+}
 .error-content {
   text-align: center;
   color: #788793;
