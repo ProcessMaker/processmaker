@@ -1,47 +1,43 @@
 <template>
   <div id="userMenu">
-    
-    
-    <a
-      data-toggle="dropdown"
-      href="#"
-      aria-expanded="false"
-      id="profileMenu"
-    ><avatar-image
-      id="avatarMenu"
-      class-container="d-flex m-1"
-      size="40"
-      class-image="m-1"
-      :input-data="information"
-    ></avatar-image></a>
+    <a data-toggle="dropdown" href="#" aria-expanded="false" id="profileMenu">
+      <avatar-image
+        id="avatarMenu"
+        class-container="d-flex m-1"
+        size="40"
+        class-image="m-1"
+        :input-data="information"
+      ></avatar-image>
+    </a>
 
-    <b-popover
-      target="profileMenu"
-      triggers="click blur"
-      placement="bottomleft"
-      container="userMenu"
-      ref="popover"
-      @hidden="onHidden"
-    >
-      <template slot="title">
-        <div class="wrap-name">{{fullName}}</div>
-      </template>
+    <b-popover target="profileMenu" placement="bottomleft" triggers="click blur">
       <template>
-        <a
-          data-v-2eb90a9e
-          href="https://processmaker.gitbook.io/processmaker/"
-          class="dropdown-item item"
-          target="_blank"
-        >
-          <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg"></i>
-          {{$t('Help')}}
-        </a>
-        <template v-for="item in items">
-          <a class="dropdown-item item" :href="item.url">
-            <i :class="item.class"></i>
-            {{item.title}}
-          </a>
-        </template>
+        <ul class="list-group list-group-flush m-1">
+          <li class="list-group-item px-1">
+            <a href="/profile/edit">
+              <i class="fas fa-user fa-fw fa-lg"></i>
+              {{fullName}}
+            </a>
+          </li>
+          <li class="list-group-item px-1">
+            <a href="https://processmaker.gitbook.io/processmaker/" target="_blank">
+              <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg"></i>
+              {{$t('Documentation')}}
+            </a>
+          </li>
+          <li class="list-group-item px-1">
+            <a href="/about">
+              <i class="fas fa-info-circle fa-fw fa-lg"></i>
+              {{$t('About')}}
+            </a>
+          </li>
+          <li class="list-group-item px-1">
+            <a href="/logout">
+              <i class="fas fa-sign-out-alt fa-fw fa-lg"></i>
+              {{$t('Log Out')}}
+            </a>
+          </li>
+        </ul>
       </template>
     </b-popover>
   </div>
@@ -60,7 +56,7 @@ export default {
     return {
       sourceImage: false,
       fullName: null,
-      popoverShow: false,
+      popoverShow: true,
       information: []
     };
   },
@@ -82,7 +78,9 @@ export default {
       this.fullName = user.fullname;
       this.information = [
         {
-          src: user.avatar ? (user.avatar + '?' + new Date().getTime()) : user.avatar,
+          src: user.avatar
+            ? user.avatar + "?" + new Date().getTime()
+            : user.avatar,
           title: "",
           initials:
             user.firstname && user.lastname
@@ -107,13 +105,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ .popover-header {
-  background-color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333333;
-}
-
 .wrap-name {
   font-size: 16px;
   font-weight: 600;
