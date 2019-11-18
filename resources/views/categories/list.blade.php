@@ -16,7 +16,7 @@
                 </div>
             </div>
             @can('create-categories')
-                <div class="d-flex ml-md-3 flex-column flex-md-row">
+                <div class="d-flex ml-md-2 flex-column flex-md-row">
                     <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createCategory">
                         <i class="fas fa-plus"></i> {{ __('Category') }}
