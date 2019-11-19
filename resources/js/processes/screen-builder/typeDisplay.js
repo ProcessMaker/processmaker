@@ -12,6 +12,7 @@ const {
 const TableControl = FormBuilderControls.find(control => control.rendererBinding === "FormMultiColumn");
 const RichTextControl = FormBuilderControls.find(control => control.rendererBinding === "FormHtmlEditor");
 let FormRecordList = FormBuilderControls.find(control => control.rendererBinding === "FormRecordList");
+const FormImage = FormBuilderControls.find(control => control.rendererBinding === "FormImage");
 
 // Remove editable inspector props
 FormRecordList.control.inspector = FormRecordList.control.inspector.filter(prop => prop.field !== "editable" && prop.field !== "form");
@@ -19,7 +20,8 @@ FormRecordList.control.inspector = FormRecordList.control.inspector.filter(prop 
 let controlsDisplay = [
   RichTextControl,
   TableControl,
-  FormRecordList
+  FormRecordList,
+  FormImage
 ];
 
 controlsDisplay.push({
