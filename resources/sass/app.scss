@@ -37,6 +37,11 @@ html {
   }
 }
 
+.nav-tabs .nav-item.active {
+    background: white;
+    border-bottom: 0;
+}
+
 // .active {
 //   color: $primary;
 // }
