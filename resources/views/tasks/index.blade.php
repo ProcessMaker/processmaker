@@ -15,7 +15,7 @@
     ]])
 @endsection
 @section('content')
-    <div class="px-3 page-content" id="tasks">
+    <div class="px-3 page-content mb-0" id="tasks">
         <div class="row">
             <div class="col" align="right">
                 <b-alert class="align-middle" show variant="danger" v-cloak v-if="inOverdueMessage.length>0"
@@ -24,7 +24,7 @@
                 </b-alert>
             </div>
         </div>
-        <div id="search-bar" class="search mt-2 bg-light p-2" vcloak>
+        <div id="search-bar" class="search mb-3 bg-light p-2" vcloak>
             <div class="d-flex">
                 <div class="flex-grow-1">
                     <div id="search-dropdowns" v-if="! advanced" class="row">
