@@ -29,17 +29,18 @@ html {
   padding: 0;
 }
 
-.data-table {
-  margin-top: 16px;
-
-  th {
-    border: 0;
-  }
+.data-table th {
+  border: 0;
 }
 
-.nav-tabs .nav-item.active {
-    background: white;
-    border-bottom: 0;
+.nav-tabs {
+
+  .nav-link.active,
+  .nav-item.active {
+    background: $card-bg;
+    border-bottom: 1px solid $card-bg;
+  }
+
 }
 
 // .active {
