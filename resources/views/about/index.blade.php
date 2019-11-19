@@ -22,7 +22,7 @@
         <hr>
         <div>{{__('ProcessMaker 4')}} Beta 10 Release Candidate 2</div>
         <hr>
-        <a href="https://github.com/ProcessMaker/processmaker/issues/new" target="_blank">{{__('Report an issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
+        <a href="https://github.com/ProcessMaker/processmaker/issues/new" target="_blank">{{__('Report Issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
         <a href="https://processmaker.gitbook.io/processmaker/" target="_blank">{{__('Documentation')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>

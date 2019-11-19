@@ -22,7 +22,7 @@
           <li class="list-group-item px-1">
             <a href="/profile/edit">
               <i class="fas fa-user-cog fa-fw fa-lg"></i>
-              {{$t('Profile Settings')}}
+              {{$t('Edit Profile')}}
             </a>
           </li>
           <li class="list-group-item px-1">
