@@ -2,8 +2,8 @@
     $url = app('router')->getRoutes()->getByName($config->routes->editCategoryWeb)->uri;
     $editCatBaseUrl = '/' . explode('categories', $url)[0]  . 'categories';
 @endphp
-<div class="px-3 page-content" id="categories-listing">
-    <div id="search-bar" class="search mt-2 bg-light" vcloak>
+<div class="page-content mb-0" id="categories-listing">
+    <div id="search-bar" class="search" vcloak>
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
                 <div id="search" class="mb-3 mb-md-0">
