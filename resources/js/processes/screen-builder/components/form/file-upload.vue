@@ -37,7 +37,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint",'type'],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "type"],
   beforeMount() {
     this.getFileType();
   },
