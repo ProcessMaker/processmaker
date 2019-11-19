@@ -1,5 +1,5 @@
 <template>
-  <div v-if="comments.length > 0" class="row px-3 my-2 timeline">
+  <div v-if="comments.length > 0" class="row px-3 mb-2 timeline">
     <template>
       <div class="px-2 py-3" v-for="value in comments">
         <avatar-image v-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>

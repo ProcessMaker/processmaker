@@ -34,7 +34,7 @@
 
                     @if ($task->processRequest->status === 'ACTIVE')
                         @can('editData', $task->processRequest)
-                            <ul id="tabHeader" role="tablist" class="nav nav-tabs mb-3">
+                            <ul id="tabHeader" role="tablist" class="nav nav-tabs">
                                 <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
                                                         aria-controls="tab-form" aria-selected="true"
                                                         class="nav-link active">{{__('Form')}}</a></li>
@@ -48,7 +48,7 @@
                     <div id="tabContent" class="tab-content">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                             @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
-                                <div class="card card-body">
+                                <div class="card card-body border-top-0">
                                     @if ($task->getScreen())
                                         <task-screen
                                             ref="taskScreen"

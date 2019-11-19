@@ -75,129 +75,141 @@
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
-                        <div class="tab-pane" :class="{ active: activeErrors }" id="errors" role="tabpanel"
-                             aria-labelledby="errors-tab">
-                            <request-errors :errors="errorLogs"></request-errors>
-                        </div>
-                        <div class="tab-pane fade show" :class="{ active: activePending }" id="pending" role="tabpanel"
-                             aria-labelledby="pending-tab" v-if="!showSummary">
-                            <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
-                            </request-detail>
-                        </div>
-                        <div v-bind:class="{ 'tab-pane':true, active: showSummary }" id="summary"
-                             role="tabpanel" aria-labelledby="summary-tab">
-                            <template v-if="showSummary">
-                                <template v-if="showScreenSummary">
-                                    <div class="card mt-3">
-                                        <div class="card-body">
-                                            <task-screen ref="screen" :screen="screenSummary" :data="dataSummary"/>
-                                        </div>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <template v-if="summary.length > 0">
-                                        <div class="card mt-3">
-                                            <table class="vuetable table table-hover">
-                                                <thead>
-                                                <tr>
-                                                    <th scope="col">{{ __('Key') }}</th>
-                                                    <th scope="col">{{ __('Value') }}</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr v-for="item in summary">
-                                                    <td>@{{item.key}}</td>
-                                                    <td>@{{item.value}}</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
+
+
+
+
+
+
+                            <div class="tab-pane card card-body border-top-0" :class="{ active: activeErrors }" id="errors" role="tabpanel"
+                                 aria-labelledby="errors-tab">
+                                <request-errors :errors="errorLogs"></request-errors>
+                            </div>
+                            <div class="tab-pane fade show card card-body border-top-0 p-3" :class="{ active: activePending }" id="pending" role="tabpanel"
+                                 aria-labelledby="pending-tab" v-if="!showSummary">
+                                <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
+                                </request-detail>
+                            </div>
+                            <div class="card card-body border-top-0 p-3" v-bind:class="{ 'tab-pane':true, active: showSummary }" id="summary"
+                                 role="tabpanel" aria-labelledby="summary-tab">
+                                <template v-if="showSummary">
+                                    <template v-if="showScreenSummary">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <task-screen ref="screen" :screen="screenSummary" :data="dataSummary"/>
+                                            </div>
                                         </div>
                                     </template>
                                     <template v-else>
-                                        <div class="card mt-3">
+                                        <template v-if="summary.length > 0">
+                                            <div class="card">
+                                                <table class="vuetable table table-hover">
+                                                    <thead>
+                                                    <tr>
+                                                        <th scope="col">{{ __('Key') }}</th>
+                                                        <th scope="col">{{ __('Value') }}</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr v-for="item in summary">
+                                                        <td>@{{item.key}}</td>
+                                                        <td>@{{item.value}}</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5>
+                                                        {{ __('No Data Found') }}
+                                                    </h5>
+                                                </div>
+
+                                                <div class="card-body">
+                                                    <p class="card-text">
+                                                        {{ __("Sorry, this request doesn't contain any information.") }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </template>
+
+                                    </template>
+                                </template>
+                                <template v-else>
+                                    <template v-if="showScreenRequestDetail">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <task-screen ref="screenRequestDetail" :screen="screenRequestDetail" :data="dataSummary"/>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        <div class="card">
                                             <div class="card-header">
                                                 <h5>
-                                                    {{ __('No Data Found') }}
+                                                    {{ __('Request In Progress') }}
                                                 </h5>
                                             </div>
 
                                             <div class="card-body">
                                                 <p class="card-text">
-                                                    {{ __("Sorry, this request doesn't contain any information.") }}
+                                                    {{__('This Request is currently in progress.')}}
+                                                    {{__('This screen will be populated once the Request is completed.')}}
                                                 </p>
                                             </div>
                                         </div>
                                     </template>
-
                                 </template>
-                            </template>
-                            <template v-else>
-                                <template v-if="showScreenRequestDetail">
-                                    <div class="card mt-3">
-                                        <div class="card-body">
-                                            <task-screen ref="screenRequestDetail" :screen="screenRequestDetail" :data="dataSummary"/>
-                                        </div>
+                            </div>
+                            @if ($request->status === 'COMPLETED')
+                                @can('editData', $request)
+                                    <div id="editdata" role="tabpanel" aria-labelledby="editdata" class="tab-pane card card-body border-top-0 p-3">
+                                        @include('tasks.editdata')
                                     </div>
-                                </template>
-                                <template v-else>
-                                    <div class="card mt-3">
-                                        <div class="card-header">
-                                            <h5>
-                                                {{ __('Request In Progress') }}
-                                            </h5>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">
-                                                {{__('This Request is currently in progress.')}}
-                                                {{__('This screen will be populated once the Request is completed.')}}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </template>
-                            </template>
-                        </div>
-                        @if ($request->status === 'COMPLETED')
-                            @can('editData', $request)
-                                <div id="editdata" role="tabpanel" aria-labelledby="editdata" class="tab-pane">
-                                    @include('tasks.editdata')
-                                </div>
-                            @endcan
-                        @endif
-                        <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
-                            <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
-                            </request-detail>
-                        </div>
-                        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                            <div class="card mt-3">
-                                <div>
-                                    <table class="vuetable table table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th>{{__('File Name')}}</th>
-                                            <th>{{__('MIME Type')}}</th>
-                                            <th>{{__('Created At')}}</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        @foreach ($files as $file)
+                                @endcan
+                            @endif
+                            <div class="tab-pane fade card card-body border-top-0 p-3" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+                                <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
+                                </request-detail>
+                            </div>
+                            <div class="tab-pane fade card card-body border-top-0 p-3" id="files" role="tabpanel" aria-labelledby="files-tab">
+                                <div class="card">
+                                    <div>
+                                        <table class="vuetable table table-hover">
+                                            <thead>
                                             <tr>
-                                                <td>
-                                                    <a href="{{url('request/' .$request->id .'/files/' . $file->id)}}">{{$file->file_name}}</a>
-                                                </td>
-                                                <td>{{$file->mime_type}}</td>
-                                                <td>{{ $file->created_at->format('m/d/y h:i a')}}</td>
+                                                <th>{{__('File Name')}}</th>
+                                                <th>{{__('MIME Type')}}</th>
+                                                <th>{{__('Created At')}}</th>
                                             </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                            @foreach ($files as $file)
+                                                <tr>
+                                                    <td>
+                                                        <a href="{{url('request/' .$request->id .'/files/' . $file->id)}}">{{$file->file_name}}</a>
+                                                    </td>
+                                                    <td>{{$file->mime_type}}</td>
+                                                    <td>{{ $file->created_at->format('m/d/y h:i a')}}</td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="tab-pane fade" id="forms" role="tabpanel" aria-labelledby="forms-tab" v-show="canViewPrint">
-                            <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested" ref="forms">
-                            </request-screens>
-                        </div>
+                            <div class="tab-pane fade card card-body border-top-0 p-3" id="forms" role="tabpanel" aria-labelledby="forms-tab" v-show="canViewPrint">
+                                <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested" ref="forms">
+                                </request-screens>
+                            </div>
+                        
+                        
+                        
+                        
+                        
+                        
                     </div>
                 </div>
                 @if($canViewComments === true)
