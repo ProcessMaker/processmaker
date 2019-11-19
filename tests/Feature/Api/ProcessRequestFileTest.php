@@ -122,4 +122,54 @@ class ProcessRequestFileTest extends TestCase
             $response->headers->get('content-disposition')
         );
     }
+
+    /**
+     * Test allows you to upload multiples files by Process request
+     */
+    public function testFileUploadMultiple()
+    {
+        //create a request
+        $process_request = factory(ProcessRequest::class)->create();
+
+        //post photo id with the request
+        $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
+            'file' => File::image('photo1.jpg'),
+            'chunk' => false
+        ]);
+        $response->assertStatus(200);
+
+        $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
+            'file' => File::image('photo2.jpg'),
+            'chunk' => false
+        ]);
+        $response->assertStatus(200);
+
+        $this->assertEquals($process_request->getMedia()[0]->file_name, 'photo1.jpg');
+        $this->assertEquals($process_request->getMedia()[1]->file_name, 'photo2.jpg');
+    }
+
+    /**
+     * Test Upload only one file by Process Request
+     */
+    public function testFileUploadWithoutMultiple()
+    {
+        //create a request
+        $process_request = factory(ProcessRequest::class)->create();
+
+        //post photos id with the request
+        $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
+            'file' => File::image('photo1.jpg'),
+            'chunk' => true
+        ]);
+        $response->assertStatus(200);
+
+        $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
+            'file' => File::image('photo2.jpg'),
+            'chunk' => true
+        ]);
+        $response->assertStatus(200);
+
+        $this->assertNotEquals($process_request->getMedia()[0]->file_name, 'photo1.jpg');
+        $this->assertEquals($process_request->getMedia()[0]->file_name, 'photo2.jpg');
+    }
 }

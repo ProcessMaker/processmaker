@@ -82,8 +82,7 @@ export default {
         // We cannot increase this until laravel chunk uploader handles this gracefully
         simultaneousUploads: 1,
         query: {
-          chunk: true,
-          multiple: this.multiFiles,
+          chunk: this.multiFiles,
           data_name: this.name
         },
         testChunks: false,

@@ -171,12 +171,9 @@ class ProcessRequestFileController extends Controller
         // check if the upload has finished (in chunk mode it will send smaller files)
         if ($save->isFinished()) {
 
-            //delete files if property multiple is false
-            if (!$laravel_request->input('multiple')) {
-                foreach ($request->getMedia() as $mediaItem) {
-                    if ($mediaItem->getCustomProperty('data_name') == $data_name) {
-                        $mediaItem->delete();
-                    }
+            foreach ($request->getMedia() as $mediaItem) {
+                if ($mediaItem->getCustomProperty('data_name') == $data_name) {
+                    $mediaItem->delete();
                 }
             }
 
