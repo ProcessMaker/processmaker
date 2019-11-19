@@ -69,15 +69,14 @@
             });
           }
 
-          builder.watchers_config.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
+          builder.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
         } else {
           console.warn("Screen builder version does not have watchers");
         }
       });
       window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
-        console.log("on screen-renderer-init");
         if (screen.watchers) {
-            screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script' => 'script_id']));
+            screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
         } else {
           console.warn("Screen builder version does not have watchers");
         }

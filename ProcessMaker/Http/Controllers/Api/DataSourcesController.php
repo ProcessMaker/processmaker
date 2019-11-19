@@ -191,7 +191,7 @@ class DataSourcesController extends Controller
      *     ),
      * )
      */
-    public function executeDataSource(ProcessRequest $request, DataSource $dataSource, Request $httpRequest)
+    public function executeDataSource(ProcessRequest $request = null, DataSource $dataSource, Request $httpRequest)
     {
         $config= $httpRequest->json()->get('config');
         try {
