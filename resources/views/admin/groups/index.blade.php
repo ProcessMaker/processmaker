@@ -16,7 +16,7 @@
 @endsection
 @section('content')
     <div class="px-3 page-content" id="listGroups">
-        <div id="search-bar" class="search" vcloak>
+        <div id="search-bar" class="search mb-3" vcloak>
             <div class="d-flex flex-column flex-md-row">
                 <div class="flex-grow-1">
                     <div id="search" class="mb-3 mb-md-0">

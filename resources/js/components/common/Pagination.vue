@@ -1,6 +1,6 @@
 <template>
   <div class="row my-2 px-2" v-if="tablePagination && tablePagination.last_page > 1">
-    <div class="col-md-6 col-sm-12 pt-2 d-flex">
+    <div class="col-md-6 col-sm-12 pt-1 d-flex">
       <div
         v-if="tablePagination && tablePagination.last_page > 1"
         class="pagination"
