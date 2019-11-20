@@ -110,7 +110,7 @@ class ScriptsTest extends TestCase
      */
     public function testNotCreateScriptWithTitleExists()
     {
-        factory(Script::class)->create([
+        $script = factory(Script::class)->create([
             'title' => 'Script Title',
         ]);
 
@@ -120,7 +120,8 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'language' => 'php',
-            'code' => $faker->sentence($faker->randomDigitNotNull)
+            'code' => $faker->sentence($faker->randomDigitNotNull),
+            'script_category_id' => $script->script_category_id
         ]);
         $response->assertStatus(422);
         $response->assertSeeText('The name has already been taken');
@@ -131,7 +132,7 @@ class ScriptsTest extends TestCase
      */
     public function testNotCreateScriptWithKeyExists()
     {
-        factory(Script::class)->create([
+        $script = factory(Script::class)->create([
             'key' => 'some-key',
         ]);
 
@@ -140,6 +141,7 @@ class ScriptsTest extends TestCase
             'key' => 'some-key',
             'code' => '123',
             'language' => 'php',
+            'script_category_id' => $script->script_category_id
         ]);
         $response->assertStatus(422);
         $response->assertSeeText('The key has already been taken');

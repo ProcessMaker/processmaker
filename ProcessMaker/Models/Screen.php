@@ -93,7 +93,7 @@ class Screen extends Model
             'title' => ['required', $unique],
             'description' => 'required',
             'type' => 'required',
-            'screen_category_id' => ['required', new CategoryRule]
+            'screen_category_id' => [new CategoryRule($existing)]
         ];
     }
 

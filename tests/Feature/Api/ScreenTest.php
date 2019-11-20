@@ -347,6 +347,19 @@ class ScreenTest extends TestCase
         $response->assertStatus(405);
     }
 
+    public function testCategoryNotRequiredIfAlreadySavedInDatabase()
+    {
+        $screen = factory(Screen::class)->create();
+        $url = route('api.screens.update', $screen);
+        $params = [
+            'title' => 'Title Screen',
+            'type' => 'FORM',
+            'description' => 'Description.'
+        ];
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(204);
+    }
+
     public function testCreateCategoryRequired()
     {
         $url = route('api.screens.store');

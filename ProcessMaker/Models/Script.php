@@ -91,7 +91,7 @@ class Script extends Model
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
-            'script_category_id' => ['required', new CategoryRule]
+            'script_category_id' => [new CategoryRule($existing)]
         ];
     }
 
