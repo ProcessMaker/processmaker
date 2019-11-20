@@ -90,7 +90,8 @@ class ScriptController extends Controller
             $query->where(function ($query) use ($filter) {
                 $query->Where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
-                    ->orWhere('language', 'like', $filter);
+                    ->orWhere('language', 'like', $filter)
+                    ->orWhere('category.name', 'like', $filter);
             });
         }
 
