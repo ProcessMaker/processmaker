@@ -16,7 +16,7 @@
 
       <uploader-drop id="uploaderMain" class="form-control-file">
         <p>{{ $t('Drop a file here to upload or') }}</p>
-        <uploader-btn id="submitFile" class="btn btn-secondary text-white" :attrs="attrs">{{ $t('select file') }}</uploader-btn>
+        <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{ $t('select file') }}</uploader-btn>
       </uploader-drop>
 
       <uploader-list></uploader-list>
@@ -37,7 +37,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "type"],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept"],
   beforeMount() {
     this.getFileType();
   },
@@ -69,6 +69,14 @@ export default {
     inProgress() {
       return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
     },
+    filesAccept() {
+      let accept = [];
+
+      (this.accept.split(',')).forEach(item => {
+        accept.push(item.trim())
+      });
+      return accept;
+    }
   },
   data() {
     return {
@@ -95,21 +103,21 @@ export default {
         singleFile: true
       },
       attrs: {
-        accept: this.type
+        accept: this.accept
       },
       reRenderKey: 0,
     };
   },
   methods: {
     addFile(file) {
-      if (this.type) {
-        let ignored = true;
-        (this.type.split(',')).forEach(item => {
-          if (item.trim().search(file.fileType) !== -1) {
-            ignored = false;
-          }
-        });
-        file.ignored = ignored;
+      if (this.filesAccept) {
+        file.ignored = true;
+        if (this.filesAccept.indexOf(file.fileType) !== -1) {
+          file.ignored = false;
+        }
+        if (file.ignored) {
+          ProcessMaker.alert(this.$t("File not allowed."), "danger");
+        }
         return false
       }
       file.ignored = false;
