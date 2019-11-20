@@ -18,15 +18,18 @@ class CategorySystemSeeder extends Seeder
 
         factory(ScreenCategory::class)->create([
             'name' => __('Uncategorized'),
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
+            'is_system' => false
         ]);
         factory(ScriptCategory::class)->create([
             'name' => __('Uncategorized'),
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
+            'is_system' => false
         ]);
         factory(ProcessCategory::class)->create([
             'name' => __('Uncategorized'),
-            'status' => 'ACTIVE'
+            'status' => 'ACTIVE',
+            'is_system' => false
         ]);
     }
 }
