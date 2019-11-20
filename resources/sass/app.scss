@@ -61,14 +61,14 @@ html {
 }
 
 .nav-badge {
-  background: fade-out(darken($primary, 20%), .5);
-  border: 1px solid fade-out($light, .5);
+  background: fade-out(darken($primary, 20%), 0.5);
+  border: 1px solid fade-out($light, 0.5);
   border-radius: 3px;
   font-size: 0.85em;
   font-weight: bold;
   margin-top: -1px;
   padding: 2px 5px;
-  text-shadow: 1px 1px fade-out(darken($primary, 20%), .5);
+  text-shadow: 1px 1px fade-out(darken($primary, 20%), 0.5);
 }
 
 .actions .popout {
@@ -378,11 +378,9 @@ h1.page-title {
 #api-error {
   display: none;
 }
-
-.list-group {
-  width: 300px;
+.popover-body {
+  padding: 0 !important;
 }
-
 .error-content {
   text-align: center;
   color: #788793;
