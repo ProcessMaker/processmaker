@@ -1,5 +1,5 @@
 <template>
-  <div v-if="comments.length > 0" class="row px-3 mb-2 timeline">
+  <div v-if="comments.length > 0" class="px-3 mb-2 timeline">
     <template>
       <div class="px-2 py-3" v-for="value in comments">
         <avatar-image v-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
@@ -98,10 +98,10 @@ export default {
   background: linear-gradient(
     to right,
     transparent 0%,
-    transparent calc(5% - 0.81px),
-    rgb(230, 230, 230) calc(5% - 0.8px),
-    rgb(230, 230, 230) calc(5% + 0.8px),
-    transparent calc(5% + 0.81px),
+    transparent 38px,
+    rgb(230, 230, 230) 38px,
+    rgb(230, 230, 230) 40px,
+    transparent 40px,
     transparent 100%
   );
 }

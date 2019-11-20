@@ -1,11 +1,9 @@
 <!-- data edit -->
-<div class="card card-body border-top-0">
-    <div class="form-group">
-        <button type="button" class="btn btn-sm float-right btn-success" @click="updateRequestData()">
-            <i class="fas fa-save"></i>
-            {{__('Save')}}
-        </button>
-    </div>
-    <monaco-editor ref="monaco" :options="monacoLargeOptions" v-model="jsonData"
-        language="json" style="border:1px solid gray; min-height:400px"></monaco-editor>
+<monaco-editor ref="monaco" :options="monacoLargeOptions" v-model="jsonData"
+    language="json" style="border:1px solid gray; min-height:400px"></monaco-editor>
+
+<div class="text-right mt-3">
+    <button type="button" class="btn btn-secondary ml-2" @click="updateRequestData()">
+        {{__('Save')}}
+    </button>
 </div>
