@@ -465,4 +465,66 @@ class ScriptsTest extends TestCase
             'language' => $language,
         ]);
     }
+
+    /**
+     * Get a list of Screen filter by category
+     */
+    public function testFilterByCategory()
+    {
+        $name = 'Search title Category Screen';
+        $category = factory(ScriptCategory::class)->create([
+            'name' => $name,
+            'status' => 'active'
+        ]);
+ 
+
+        factory(Script::class)->create([
+            'script_category_id' => $category->getKey(),
+            'status' => 'active'
+        ]);
+
+        //List Screen with filter option
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCRIPT . $query;
+        $response = $this->apiCall('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        $json = $response->json();
+
+        //verify response in meta
+        $this->assertEquals(1, $json['meta']['total']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        $this->assertEquals($name, $json['meta']['filter']);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+
+        
+        //List Screen without peers
+        $name = 'Search category that does not exist';
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCRIPT . $query;
+        $response = $this->apiCall('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        $json = $response->json();
+
+        //verify response in meta
+        $this->assertEquals(0, $json['meta']['total']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        $this->assertEquals($name, $json['meta']['filter']);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+    }
 }
