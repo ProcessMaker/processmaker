@@ -15,17 +15,17 @@ class CategorySystemSeeder extends Seeder
     public function run()
     {
         factory(ScreenCategory::class)->create([
-            'name' => __('Uncategorized'),
+            'name' => 'Uncategorized',
             'status' => 'ACTIVE',
             'is_system' => false
         ]);
         factory(ScriptCategory::class)->create([
-            'name' => __('Uncategorized'),
+            'name' => 'Uncategorized',
             'status' => 'ACTIVE',
             'is_system' => false
         ]);
         factory(ProcessCategory::class)->create([
-            'name' => __('Uncategorized'),
+            'name' => 'Uncategorized',
             'status' => 'ACTIVE',
             'is_system' => false
         ]);
