@@ -68,7 +68,7 @@ export default {
                 this.disabled = false;
 
                 let deletedUserExists = false;
-                for (const key of ['username', 'email']) {
+                for (let key of ['username', 'email']) {
                     if (key in this.addError ) {
                         let message = this.addError[key].find(m => m.startsWith('A user with the'));
                         if (message) {
