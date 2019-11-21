@@ -14,8 +14,6 @@ class CategorySystemSeeder extends Seeder
      */
     public function run()
     {
-        $name = __('Uncategorized');
-
         factory(ScreenCategory::class)->create([
             'name' => __('Uncategorized'),
             'status' => 'ACTIVE',
