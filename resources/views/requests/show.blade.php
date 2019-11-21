@@ -256,11 +256,13 @@
                               @endforeach
                             </li>
                             @endif
+                            @if ($request->participants->count())
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="participants" hide-name="true"></avatar-image>
                             </li>
+                            @endif
                             <li class="list-group-item">
                                 <h5>@{{statusLabel}}</h5>
                                 <i class="far fa-calendar-alt"></i>
