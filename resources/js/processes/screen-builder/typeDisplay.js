@@ -1,11 +1,8 @@
 import Vue from "vue";
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
-import FileDownload from "./components/file-download.vue";
 import {renderer, FormBuilderControls} from "@processmaker/screen-builder";
 import formTypes from "./formTypes";
 import FileDownloadControl from "./components/file-download-control";
-
-Vue.component("FileDownload", FileDownload);
 
 const {
   FormText

@@ -1,15 +1,11 @@
 import Vue from "vue";
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
-import FileDownload from "./components/file-download";
-import FileUpload from "./components/form/file-upload";
 import VueFormElements from "@processmaker/vue-form-elements";
 import {FormBuilderControls as initialControls} from "@processmaker/screen-builder";
 import FileDownloadControl from "./components/file-download-control";
 import FileUploadControl from "./components/file-upload-control";
 
 Vue.use(VueFormElements);
-Vue.component("FileUpload", FileUpload);
-Vue.component("FileDownload", FileDownload);
 
 initialControls.push(FileUploadControl);
 initialControls.push(FileDownloadControl);
