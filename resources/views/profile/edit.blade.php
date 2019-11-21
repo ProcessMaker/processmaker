@@ -208,7 +208,7 @@
                         </button>
 
                         <button type="button" @click="saveAndEmit" class="btn btn-secondary ml-2">
-                            {{__('Continue')}}
+                            {{__('Save')}}
                         </button>
                     </div>
                 </div>
