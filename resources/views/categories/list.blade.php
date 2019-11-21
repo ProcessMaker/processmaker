@@ -41,7 +41,7 @@
 </div>
 
 @can('create-process-categories')
-    <div class="modal" tabindex="-1" role="dialog" id="createCategory">
+    <div class="modal" tabindex="-1" role="dialog" id="createCategory" data-backdrop="static">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
