@@ -2,25 +2,27 @@
     $url = app('router')->getRoutes()->getByName($config->routes->editCategoryWeb)->uri;
     $editCatBaseUrl = '/' . explode('categories', $url)[0]  . 'categories';
 @endphp
-<div class="px-3 page-content" id="categories-listing">
-    <div id="search-bar" class="search mt-2 bg-light" vcloak>
-        <div class="d-flex">
+<div class="page-content mb-0" id="categories-listing">
+    <div id="search-bar" class="search mb-3" vcloak>
+        <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
-                <div id="search" class="pr-2">
-                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+                <div id="search" class="mb-3 mb-md-0">
+                    <div class="input-group w-100">
+                        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                        <div class="input-group-append">
+                            <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="flex-shrink-0">
-                <button title="" type="button" class="btn btn-primary" data-original-title="Search">
-                    <i class="fas fa-search"></i>
-                </button>
-                @can('create-process-categories')
+            @can('create-categories')
+                <div class="d-flex ml-md-2 flex-column flex-md-row">
                     <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createCategory">
                         <i class="fas fa-plus"></i> {{ __('Category') }}
                     </button>
-                @endcan
-            </div>
+                </div>
+            @endcan
         </div>
     </div>
 

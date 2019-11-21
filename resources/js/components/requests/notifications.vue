@@ -12,8 +12,8 @@
       <b-badge pill variant="danger" v-if="totalMessages>9" id="info-large">9+</b-badge>
     </a>
     <b-popover :target="'exPopover1-bottom'" :placement="'bottomleft'" triggers="click blur">
-      <h3 class="popover-header bg-light">{{$t('Notifications')}}</h3>
-      <ul class="list-unstyled tasklist">
+      <h3 class="popover-header bg-light m-0 p-2">{{$t('Notifications')}}</h3>
+      <ul class="list-unstyled tasklist m-2">
         <li v-if="messages.length == 0">
           {{$t('No Notifications Found')}}
           <hr>

@@ -1,24 +1,35 @@
-    <div class="px-3 page-content" id="screenIndex">
-        <div id="search-bar" class="search mt-2 bg-light p-2" vcloak>
-            <div class="d-flex">
+    <div class="page-content mb-0" id="screenIndex">
+        <div id="search-bar" class="search mb-3" vcloak>
+            <div class="d-flex flex-column flex-md-row">
                 <div class="flex-grow-1">
-                    <div id="search" class="pr-2">
-                        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+                    <div id="search" class="mb-3 mb-md-0">
+                        <div class="input-group w-100">
+                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="flex-shrink-0">
-                    <button title="" type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
-                    @can('import-screen')
-                        <a href="#" class="btn btn-outline-secondary" @click="goToImport"><i class="fas fa-file-import"></i>
-                            {{__('Import')}}</a>
-                    @endcan
-                    @can('create-screens')
-                        <button type="button" href="#" id="create_screen" class="btn btn-secondary" data-toggle="modal"
-                                data-target="#createScreen">
-                            <i class="fas fa-plus"></i> {{__('Screen')}}
-                        </button>
-                    @endcan
-                </div>
+                @canany(['import-screens', 'create-screens'])
+                    <div class="d-flex ml-md-0 flex-column flex-md-row">
+                        @can('import-screens')
+                            <div class="mb-3 mb-md-0 ml-md-2">
+                                <a href="#" class="btn btn-outline-secondary w-100" @click="goToImport">
+                                    <i class="fas fa-file-import"></i> {{__('Import')}}
+                                </a>
+                            </div>
+                        @endcan
+                        @can('create-screens')
+                            <div class="mb-3 mb-md-0 ml-md-2">
+                                <button type="button" href="#" id="create_screen" class="btn btn-secondary w-100" data-toggle="modal"
+                                        data-target="#createScreen">
+                                    <i class="fas fa-plus"></i> {{__('Screen')}}
+                                </button>
+                            </div>
+                        @endcan
+                    </div>
+                @endcan
             </div>
         </div>
 
