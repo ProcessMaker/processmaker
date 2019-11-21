@@ -40,7 +40,7 @@
     </categories-listing>
 </div>
 
-@can('create-categories')
+@can('create-process-categories')
     <div class="modal" tabindex="-1" role="dialog" id="createCategory">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -84,7 +84,7 @@
 @section('js')
     <script src="{{mix('js/processes/categories/index.js')}}"></script>
 
-    @can('create-categories')
+    @can('create-process-categories')
         <script>
           new Vue({
             el: "#createCategory",
