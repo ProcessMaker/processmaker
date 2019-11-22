@@ -18,9 +18,15 @@
 
 @section('content')
     <div id="screen-container" style="display: contents !important">
+        @if($screen['type']==='FORM (ADVANCED)')
+        <advanced-screen-builder :screen="{{$screen}}"
+                        :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}">
+        </advanced-screen-builder>
+        @else
         <screen-builder :screen="{{$screen}}"
                         :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}">
         </screen-builder>
+        @endif
     </div>
 @endsection
 
