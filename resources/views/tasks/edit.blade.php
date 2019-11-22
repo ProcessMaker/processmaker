@@ -27,14 +27,13 @@
     ]])
 @endsection
 @section('content')
-    <div id="task" class="container">
-        <div class="row">
-            <div class="col-md-8">
+    <div id="task" class="container-fluid px-3">
+        <div class="d-flex flex-column flex-md-row">
+            <div class="flex-grow-1">
                 <div class="container-fluid">
-
                     @if ($task->processRequest->status === 'ACTIVE')
                         @can('editData', $task->processRequest)
-                            <ul id="tabHeader" role="tablist" class="nav nav-tabs mb-3">
+                            <ul id="tabHeader" role="tablist" class="nav nav-tabs">
                                 <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
                                                         aria-controls="tab-form" aria-selected="true"
                                                         class="nav-link active">{{__('Form')}}</a></li>
@@ -48,7 +47,7 @@
                     <div id="tabContent" class="tab-content">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
                             @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
-                                <div class="card card-body">
+                                <div class="card card-body border-top-0">
                                     @if ($task->getScreen())
                                         <task-screen
                                             ref="taskScreen"
@@ -104,7 +103,7 @@
                         </div>
                         @if ($task->processRequest->status === 'ACTIVE')
                             @can('editData', $task->processRequest)
-                                <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
+                                <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
                                     @include('tasks.editdata')
                                 </div>
                             @endcan
@@ -112,7 +111,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="dateDueAt">
                     <div class="card">
                         <div :class="statusCard">

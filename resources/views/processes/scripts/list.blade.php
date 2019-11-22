@@ -1,20 +1,24 @@
-    <div class="px-3 page-content" id="scriptIndex">
-        <div id="search-bar" class="search mt-2 bg-light p-2" vcloak>
-            <div class="d-flex">
+    <div class="page-content mb-0" id="scriptIndex">
+        <div id="search-bar" class="search mb-3" vcloak>
+            <div class="d-flex flex-column flex-md-row">
                 <div class="flex-grow-1">
-                    <div id="search" class="pr-2">
-                        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
+                    <div id="search" class="mb-3 mb-md-0">
+                        <div class="input-group w-100">
+                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="flex-shrink-0">
-                    <button title="" type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
-                    @can('create-scripts')
+                @can('create-scripts')
+                    <div class="d-flex ml-md-2 flex-column flex-md-row">
                         <a href="#" id="create_script" class="btn btn-secondary" data-toggle="modal"
                            data-target="#addScript"><i
                                     class="fas fa-plus"></i>
                             {{__('Script')}}</a>
-                    @endcan
-                </div>
+                    </div>
+                @endcan
             </div>
         </div>
 
@@ -29,7 +33,7 @@
     </div>
 
     @can('create-scripts')
-        <div class="modal" tabindex="-1" role="dialog" id="addScript">
+        <div class="modal" tabindex="-1" role="dialog" id="addScript" data-backdrop="static">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

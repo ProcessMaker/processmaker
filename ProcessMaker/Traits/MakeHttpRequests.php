@@ -17,8 +17,8 @@ trait MakeHttpRequests
 {
     private $authTypes = [
         'BASIC' => 'basicAuthorization',
-        'BEARER' => 'bearerAuthorization',
-        'PASSWORD' => 'passwordAuthorization',
+        'OAUTH2_BEARER' => 'bearerAuthorization',
+        'OAUTH2_PASSWORD' => 'passwordAuthorization',
     ];
 
     /**

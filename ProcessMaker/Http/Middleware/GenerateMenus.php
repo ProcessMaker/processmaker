@@ -26,7 +26,7 @@ class GenerateMenus
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
                 $request_items->add(__('Tasks'), ['route' => 'tasks.index'])->active('tasks/*');
             });
-            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-categories|view-scripts|view-screens|view-environment_variables')) {
+            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables')) {
                 $menu->group(['prefix' => 'processes'], function ($request_items) {
                     $request_items->add(__('Designer'), ['route' => 'processes.index'])->active('processes/*');
                 });
@@ -153,7 +153,7 @@ class GenerateMenus
 
         Menu::make('sidebar_about', function ($menu) {
             $submenu = $menu->add(__('About'));
-            $submenu->add(__('Profile'), [
+            $submenu->add(__('Edit Profile'), [
                 'route' => 'profile.edit',
                 'icon' => 'fa-user',
                 'id' => 'dropdownItem'
@@ -164,8 +164,8 @@ class GenerateMenus
                 'id' => 'dropdownItem',
                 'target' => '_blank'
             ]);
-            $submenu->add(__('Report an issue'), [
-                'url' => 'https://docs.google.com/forms/d/e/1FAIpQLScnYje8uTACYwp3VxdRoA26OFkbfFs6kuXofqY-QXXsG-h9xA/viewform',
+            $submenu->add(__('Report Issue'), [
+                'url' => 'https://github.com/ProcessMaker/processmaker/issues/new',
                 'icon' => 'fa-bug',
                 'id' => 'dropdownItem',
                 'target' => '_blank'

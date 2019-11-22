@@ -16,24 +16,25 @@
 @endsection
 @section('content')
     <div class="px-3 page-content" id="users-listing">
-        <div class="row">
-            <div class="col">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">
-                            <i class="fas fa-search"></i>
-                        </span>
+        <div id="search-bar" class="search mb-3" vcloak>
+            <div class="d-flex flex-column flex-md-row">
+                <div class="flex-grow-1">
+                    <div id="search" class="mb-3 mb-md-0">
+                        <div class="input-group w-100">
+                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                            </div>
+                        </div>
                     </div>
-                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                 </div>
-
-            </div>
-            <div class="col-8" align="right">
                 @can('create-users')
-                    <b-button @click="showModal()"> 
-                        <i class="fas fa-plus"></i>
-                        {{__('User')}}
-                    </b-button>
+                    <div class="d-flex ml-md-2 flex-column flex-md-row">
+                        <b-button @click="showModal()"> 
+                            <i class="fas fa-plus"></i>
+                            {{__('User')}}
+                        </b-button>
+                    </div>
                 @endcan
             </div>
         </div>
