@@ -17,25 +17,28 @@ new Vue({
     CategoriesListing
   },
   methods: {
+    emptyData () {
+      this.id = "";
+      this.name = "";
+      this.status = "ACTIVE";
+      this.disabled = false;
+      this.errors = {};
+    },
     getTitle () {
       return this.id ? this.$t("Edit Category") : this.$t("Create Category");
     },
     reload () {
-      this.disabled = false;
       this.$refs.list.fetch();
     },
     edit (value) {
-      this.disabled = false;
+      this.emptyData();
       this.id = value.id;
       this.name = value.name;
       this.status = value.status;
       $("#createCategory").modal("show");
     },
     onClose () {
-      this.disabled = false;
-      this.name = "";
-      this.status = "ACTIVE";
-      this.errors = {};
+      this.emptyData();
     },
     onSubmit () {
       this.errors = {};
@@ -62,12 +65,12 @@ new Vue({
       })
         .then((response) => {
           $("#createCategory").modal("hide");
-          this.loading = false;
           let message = "The category was created.";
           if (this.id) {
             message = "The category was saved.";
           }
           ProcessMaker.alert(this.$t(message), "success");
+          this.emptyData();
           this.reload();
         }).catch((error) => {
           this.disabled = false;
