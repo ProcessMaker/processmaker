@@ -258,6 +258,27 @@ class ProcessRequestToken extends Model implements TokenInterface
     }
 
     /**
+     * Get the script assigned to the task.
+     *
+     * @return Screen
+     */
+    public function getScript()
+    {
+        $definition = $this->getDefinition();
+        return empty($definition['scriptRef']) ? null : Script::find($definition['scriptRef']);
+    }
+
+    /**
+     * Get the form assigned to the task.
+     *
+     * @return Screen
+     */
+    public function getScreenVersion()
+    {
+        return ScreenVersion::find($this->version_id);
+    }
+
+    /**
      * Returns the state of the advance of the request token (open, completed, overdue)
      *
      * @return string
@@ -461,4 +482,20 @@ class ProcessRequestToken extends Model implements TokenInterface
             }
         }
     } 
+    /**
+     * Save version of the executable artifact (screen, script)
+     *
+     */
+    public function saveVersion()
+    {
+        $screen = $this->getScreen();
+        $script = $this->getScript();
+        if ($screen) {
+            $this->version_id = $screen->getLatestVersion()->getKey();
+            $this->version_type = ScreenVersion::class;
+        } elseif ($script) {
+            $this->version_id = $script->getLatestVersion()->getKey();
+            $this->version_type = ScriptVersion::class;
+        }
+    }
 }

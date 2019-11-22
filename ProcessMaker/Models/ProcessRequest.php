@@ -256,7 +256,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         foreach ($tokens as $token) {
             $definition = $token->getDefinition();
             if (array_key_exists('screenRef', $definition)) {
-                $screen = Screen::find($definition['screenRef']);
+                $screen = $token->getScreenVersion();
                 $screen->element_name = $token->element_name;
                 $screen->element_type = $token->element_type;
                 $screen->data = $token->data;
