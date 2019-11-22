@@ -49,6 +49,9 @@
                             @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
                                 <div class="card card-body border-top-0">
                                     @if ($task->getScreen())
+                                      @if ($task->getScreen()->type === 'FORM (ADVANCED)')
+                                        <advanced-screen-frame :config="{{json_encode($task->getScreen()->config)}}"></advanced-screen-frame>
+                                      @else
                                         <task-screen
                                             ref="taskScreen"
                                             :listen-process-events="allowInterstitial"
@@ -60,6 +63,7 @@
                                             :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
                                             :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
                                         </task-screen>
+                                      @endif
                                     @else
                                         <task-screen
                                             ref="taskScreen"
