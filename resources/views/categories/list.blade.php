@@ -1,7 +1,3 @@
-@php
-    $url = app('router')->getRoutes()->getByName($config->routes->editCategoryWeb)->uri;
-    $editCatBaseUrl = '/' . explode('categories', $url)[0]  . 'categories';
-@endphp
 <div class="page-content mb-0" id="categories-listing">
     <div id="search-bar" class="search mb-3" vcloak>
         <div class="d-flex flex-column flex-md-row">
@@ -33,7 +29,6 @@
         :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}"
         api-route="{{route($config->routes->categoryListApi)}}"
         load-on-start="{{$config->showCategoriesTab ?? true}}"
-        location="{{$editCatBaseUrl}}"
         include="{{$config->apiListInclude}}"
         label-count="{{$config->labels->countColumn}}"
         @edit="edit"

@@ -63,7 +63,7 @@
 
   export default {
     mixins: [datatableMixin, dataLoadingMixin],
-    props: ["filter", "permission", "apiRoute", "location", "include", "labelCount", "count", "loadOnStart"],
+    props: ["filter", "permission", "apiRoute", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
         localLoadOnStart: !!this.loadOnStart,
