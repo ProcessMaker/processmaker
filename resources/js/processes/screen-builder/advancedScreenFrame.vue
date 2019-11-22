@@ -10,9 +10,9 @@ export default {
   },
   methods: {
     loadIFrame() {
-      const html = this.config.html && this.config.html ? this.config.html : "";
-      const document = this.$el.contentDocument;
+      const document = this.$el ? this.$el.contentDocument : null;
       if (document) {
+        const html = this.config.html && this.config.html ? this.config.html : "";
         document.open("text/html", "replace");
         document.write(html);
         document.close();
