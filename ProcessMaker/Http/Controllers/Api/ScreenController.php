@@ -92,7 +92,8 @@ class ScreenController extends Controller
             });
         }
         if ($request->input('type')) {
-            $query->where('type', $request->input('type'));
+            $types = explode(',', $request->input('type'));
+            $query->whereIn('type', $types);
         }
         $response =
             $query->orderBy(
