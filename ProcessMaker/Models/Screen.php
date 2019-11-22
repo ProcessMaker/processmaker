@@ -45,7 +45,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- * 
+ *
  * * @OA\Schema(
  *   schema="screenExported",
  *   @OA\Property(property="url", type="string"),
@@ -131,5 +131,28 @@ class Screen extends Model
     public function getScreenCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    public static function defaultAdvancedTemplate()
+    {
+        return '<!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                      <meta charset="utf-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                      <title>Bare - Start Bootstrap Template</title>
+                      <!--Do Not Delete Below -->
+                     <link href="LINKTOOURBOOTSTRAPCSS" rel="stylesheet">
+                    <script type =”javascript”>
+                    Global Javascript object with VARIABLES HERE
+                    </script>
+                      <!--Do Not Delete Above -->
+                    </head>
+                    <body>
+                    <!-- 
+                    Basic usage sample using Axios and a CDN
+                    -->
+                    </body>
+                    </html>';
     }
 }

@@ -163,6 +163,9 @@ class ScreenController extends Controller
         $request->validate(Screen::rules());
         $screen = new Screen();
         $screen->fill($request->input());
+        if ($screen->type == 'FORM (ADVANCED)') {
+            $screen->config = json_encode(['html' => Screen::defaultAdvancedTemplate()]);
+        }
         $screen->saveOrFail();
         return new ApiResource($screen);
     }
@@ -268,7 +271,7 @@ class ScreenController extends Controller
 
         if( $request->has('screen_category_id')) {
             $newScreen->screen_category_id = $request->input('screen_category_id');
-        } 
+        }
 
         $newScreen->saveOrFail();
         return new ApiResource($newScreen);
