@@ -136,23 +136,30 @@ class Screen extends Model
     public static function defaultAdvancedTemplate()
     {
         return '<!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                      <meta charset="utf-8">
-                      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-                      <title>Bare - Start Bootstrap Template</title>
-                      <!--Do Not Delete Below -->
-                     <link href="LINKTOOURBOOTSTRAPCSS" rel="stylesheet">
-                    <script type =”javascript”>
-                    Global Javascript object with VARIABLES HERE
-                    </script>
-                      <!--Do Not Delete Above -->
-                    </head>
-                    <body>
-                    <!-- 
-                    Basic usage sample using Axios and a CDN
-                    -->
-                    </body>
-                    </html>';
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Bare - Start Bootstrap Template</title>
+    <!--Do Not Delete Below -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!--Do Not Delete Above -->
+</head>
+
+<body>
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+</body>
+
+</html>';
     }
 }
