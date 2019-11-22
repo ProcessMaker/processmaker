@@ -33,7 +33,7 @@
                     <h2 class="mt-2">{{__('Contact Information')}}</h2>
                     <div class="row">
                         <div class="form-group col">
-                            {!! Form::label('title', __('Title')) !!}
+                            {!! Form::label('title', __('Job Title')) !!}
                             {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.title}']) !!}
                             <div class="invalid-feedback" v-if="errors.title">@{{errors.title}}</div>
