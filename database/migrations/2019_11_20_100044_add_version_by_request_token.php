@@ -22,7 +22,7 @@ class AddVersionByRequestToken extends Migration
         Schema::connection($model->getConnectionName())->table('process_requests', function (Blueprint $table) {
             $table->dropColumn('versions');
         });
-        Schema::connection($model->getConnectionName())->table('process_request_tokens', function (Blueprint $table) {
+        Schema::table('process_request_tokens', function (Blueprint $table) {
             $table->integer('version_id')->nullable();
             $table->string('version_type')->nullable();
         });
@@ -52,7 +52,7 @@ class AddVersionByRequestToken extends Migration
     public function down()
     {
         $model = new ProcessRequest();
-        Schema::connection($model->getConnectionName())->table('process_request_tokens', function (Blueprint $table) {
+        Schema::table('process_request_tokens', function (Blueprint $table) {
             $table->dropColumn(['version_id', 'version_type']);
         });
         Schema::connection($model->getConnectionName())->table('process_requests', function (Blueprint $table) {
