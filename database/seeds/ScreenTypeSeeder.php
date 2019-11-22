@@ -18,5 +18,8 @@ class ScreenTypeSeeder extends Seeder
         factory(ScreenType::class)->create([
             'name' => 'DISPLAY',
         ]);
+        factory(ScreenType::class)->create([
+            'name' => 'FORM (ADVANCED)',
+        ]);
     }
 }
