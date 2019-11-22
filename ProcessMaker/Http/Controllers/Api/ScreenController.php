@@ -202,14 +202,8 @@ class ScreenController extends Controller
     public function update(Screen $screen, Request $request)
     {
         $request->validate(Screen::rules($screen));
-        $original_attributes = $screen->getAttributes();
         $screen->fill($request->input());
         $screen->saveOrFail();
-
-        unset($original_attributes['id'],
-        $original_attributes['updated_at']);
-        $screen->versions()->create($original_attributes);
-
         return response([], 204);
     }
 
