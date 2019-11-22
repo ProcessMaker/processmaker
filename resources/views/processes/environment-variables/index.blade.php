@@ -44,7 +44,7 @@
     </div>
 
     @can('create-environment_variables')
-        <div class="modal" tabindex="-1" role="dialog" id="createEnvironmentVariable">
+        <div class="modal" tabindex="-1" role="dialog" id="createEnvironmentVariable" data-backdrop="static">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
