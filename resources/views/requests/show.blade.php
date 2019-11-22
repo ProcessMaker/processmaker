@@ -87,7 +87,7 @@
                              role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <template v-if="showScreenSummary">
-                                    <task-screen ref="screen" :screen="screenSummary" :data="dataSummary"/>
+                                    <task-screen ref="screen" :screen="screenSummary.config" :data="dataSummary" :computed="screenSummary.computed" />
                                 </template>
                                 <template v-else>
                                     <template v-if="summary.length > 0">
@@ -375,7 +375,7 @@
            * Get Screen summary
            * */
           screenSummary() {
-            return this.request.summary_screen.config;
+            return this.request.summary_screen;
           },
           /**
            * prepare data screen
