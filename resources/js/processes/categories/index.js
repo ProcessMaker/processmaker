@@ -17,6 +17,9 @@ new Vue({
     CategoriesListing
   },
   methods: {
+    getTitle () {
+      return this.id ? this.$t("Edit Category") : this.$t("Create Category");
+    },
     reload () {
       this.disabled = false;
       this.$refs.list.fetch();
@@ -60,7 +63,11 @@ new Vue({
         .then((response) => {
           $("#createCategory").modal("hide");
           this.loading = false;
-          ProcessMaker.alert(this.$t("The category was saved."), "success");
+          let message = "The category was created.";
+          if (this.id) {
+            message = "The category was saved.";
+          }
+          ProcessMaker.alert(this.$t(message), "success");
           this.reload();
         }).catch((error) => {
           this.disabled = false;
