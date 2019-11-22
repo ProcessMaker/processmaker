@@ -50,7 +50,12 @@
                                 <div class="card card-body border-top-0">
                                     @if ($task->getScreen())
                                       @if ($task->getScreen()->type === 'FORM (ADVANCED)')
-                                        <advanced-screen-frame :config="{{json_encode($task->getScreen()->config)}}"></advanced-screen-frame>
+                                        <advanced-screen-frame
+                                          :config="{{json_encode($task->getScreen()->config)}}"
+                                          :token="'abc123'"
+                                          :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
+                                        >
+                                        </advanced-screen-frame>
                                       @else
                                         <task-screen
                                             ref="taskScreen"
