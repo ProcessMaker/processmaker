@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  props: ["config", "data", "token", "submiturl", "tokenId"],
+  props: ["config", "data", "token", "submiturl", "tokenId", "listenProcessEvents"],
   data() {
     return {
       iframeDocument: null

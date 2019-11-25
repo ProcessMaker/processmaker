@@ -51,6 +51,7 @@
                                     @if ($task->getScreen())
                                       @if ($task->getScreen()->type === 'FORM (ADVANCED)')
                                         <advanced-screen-frame
+                                          :listen-process-events="allowInterstitial"
                                           :config="{{json_encode($task->getScreen()->config)}}"
                                           :csrf-token="'{{ csrf_token() }}'"
                                           :submiturl="'{{$submitUrl}}'"
