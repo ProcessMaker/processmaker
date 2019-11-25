@@ -52,7 +52,7 @@
                                       @if ($task->getScreen()->type === 'FORM (ADVANCED)')
                                         <advanced-screen-frame
                                           :config="{{json_encode($task->getScreen()->config)}}"
-                                          :token="'abc123'"
+                                          :csrf-token="'{{ csrf_token() }}'"
                                           :submiturl="'{{$submitUrl}}'"
                                           :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
                                         >
