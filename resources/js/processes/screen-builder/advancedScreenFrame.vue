@@ -3,8 +3,10 @@
 </template>
 
 <script>
+import ProcessRequestChannel from '../../tasks/components/ProcessRequestChannel';
 export default {
-  props: ["config", "data", "token", "submiturl", "tokenId", "listenProcessEvents"],
+  props: ["config", "data", "token", "submiturl", "tokenId", "allowInterstitial"],
+  mixins: [ProcessRequestChannel],
   data() {
     return {
       iframeDocument: null
@@ -20,7 +22,7 @@ export default {
         })
         .then(() => {
           window.ProcessMaker.alert(message, "success", 5, true);
-          if (!this.listenProcessEvents) {
+          if (!this.allowInterstitial) {
             document.location.href = "/tasks";
           } else {
             document.location.reload();
@@ -80,6 +82,10 @@ export default {
     window.submitForm = data => {
       this.submit(data);
     };
+      
+    this.addSocketListener(`ProcessMaker.Models.ProcessRequestToken.${this.tokenId}`, '.ActivityCompleted', (data) => {
+      this.$emit('task-completed', data);
+    });
   },
   watch: {
     config: {

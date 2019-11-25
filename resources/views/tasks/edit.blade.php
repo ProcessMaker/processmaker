@@ -51,7 +51,8 @@
                                     @if ($task->getScreen())
                                       @if ($task->getScreen()->type === 'FORM (ADVANCED)')
                                         <advanced-screen-frame
-                                          :listen-process-events="allowInterstitial"
+                                          :allow-interstitial="allowInterstitial"
+                                          @task-completed="redirectWhenTaskCompleted"
                                           :config="{{json_encode($task->getScreen()->config)}}"
                                           :csrf-token="'{{ csrf_token() }}'"
                                           :submiturl="'{{$submitUrl}}'"
@@ -303,6 +304,13 @@
         methods: {
           redirectWhenProcessCompleted() {
             window.location.href = `/requests/${this.task.process_request_id}`;
+          },
+          redirectWhenTaskCompleted() {
+            if (!this.allowInterstitial) {
+              document.location.href = "/tasks";
+            } else {
+              document.location.reload();
+            }
           },
           refreshWhenProcessUpdated() {
             window.location.reload();
