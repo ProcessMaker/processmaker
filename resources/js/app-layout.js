@@ -1,6 +1,6 @@
 import requestModal from "./components/requests/modal";
 import notifications from "./components/requests/notifications";
-import {Navbar} from "bootstrap-vue/es/components";
+import {BNavbar} from "bootstrap-vue";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
@@ -52,7 +52,7 @@ window.ProcessMaker.nodeTypes.get = function (id) {
 window.ProcessMaker.navbar = new Vue({
   el: "#navbar",
   components: {
-    Navbar,
+    'b-navbar': BNavbar,
     requestModal,
     notifications,
     sessionModal,
