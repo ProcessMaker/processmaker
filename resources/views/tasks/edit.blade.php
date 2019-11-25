@@ -30,7 +30,7 @@
     <div id="task" class="container-fluid px-3">
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
-                <div class="container-fluid">
+                <div class="container-fluid h-100 d-flex flex-column">
                     @if ($task->processRequest->status === 'ACTIVE')
                         @can('editData', $task->processRequest)
                             <ul id="tabHeader" role="tablist" class="nav nav-tabs">
@@ -44,10 +44,10 @@
                             </ul>
                         @endcan
                     @endif
-                    <div id="tabContent" class="tab-content">
-                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
+                    <div id="tabContent" class="tab-content flex-grow-1">
+                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
                             @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
-                                <div class="card card-body border-top-0">
+                                <div class="card card-body border-top-0 h-100">
                                     @if ($task->getScreen())
                                       @if ($task->getScreen()->type === 'FORM (ADVANCED)')
                                         <advanced-screen-frame
