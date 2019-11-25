@@ -5,7 +5,7 @@
 <script>
 import ProcessRequestChannel from '../../tasks/components/ProcessRequestChannel';
 export default {
-  props: ["config", "data", "token", "submiturl", "tokenId", "allowInterstitial"],
+  props: ["config", "data", "token", "csrfToken", "submiturl", "tokenId", "allowInterstitial"],
   mixins: [ProcessRequestChannel],
   data() {
     return {
@@ -48,7 +48,7 @@ export default {
     },
     getContentWithDefaultVariables() {
       const variables = {
-        PM_API_TOKEN: this.token,
+        PM_CSRF_TOKEN: this.csrfToken,
         PM_SUBMIT_URL: this.submiturl,
         PM_REQUEST_DATA: this.data,
         PM_FN_COMPLETE_TASK: function(form) {
