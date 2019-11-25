@@ -1,5 +1,7 @@
 <template>
-  <iframe ref="iframe" class="border-0 w-100 h-100"></iframe>
+  <div class="embed-responsive embed-responsive-4by3">
+    <iframe ref="iframe" class="border-0 embed-responsive-item"></iframe>
+  </div>
 </template>
 
 <script>
