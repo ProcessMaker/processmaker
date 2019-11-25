@@ -29,7 +29,7 @@ export default {
           for (var pair of new FormData(form).entries()) {
             fields[pair[0]] = pair[1];
           }
-          console.log(fields);
+          console.log(fields, parent.submitForm(fields));
           return false;
         }
       };
@@ -52,6 +52,13 @@ export default {
   mounted() {
     this.iframeDocument = this.$refs.iframe.contentDocument;
     this.loadIFrame();
+    window.submitForm = (data) => {
+      // @todo: submit form
+      // this.value = data;
+      // this.$emit('submit');
+      console.log(data);
+      return "Hello from PM";
+    };
   },
   watch: {
     config: {
