@@ -4,13 +4,38 @@
 
 <script>
 export default {
-  props: ["config", "data", "token", "submiturl"],
+  props: ["config", "data", "token", "submiturl", "tokenId"],
   data() {
     return {
       iframeDocument: null
     };
   },
   methods: {
+    submit(data) {
+      let message = this.$t("Task Completed Successfully");
+      ProcessMaker.apiClient
+        .put("tasks/" + this.tokenId, {
+          status: "COMPLETED",
+          data: data
+        })
+        .then(() => {
+          window.ProcessMaker.alert(message, "success", 5, true);
+          if (!this.listenProcessEvents) {
+            document.location.href = "/tasks";
+          } else {
+            document.location.reload();
+          }
+        })
+        .catch(error => {
+          let message =
+            (error.response.data &&
+              error.response.data.errors &&
+              this.displayErrors(error.response.data.errors)) ||
+            (error && error.message);
+          ProcessMaker.alert(error.response.data.message, "danger");
+          ProcessMaker.alert(message, "danger");
+        });
+    },
     loadIFrame() {
       if (this.iframeDocument) {
         const content = this.getContentWithDefaultVariables();
@@ -29,7 +54,7 @@ export default {
           for (var pair of new FormData(form).entries()) {
             fields[pair[0]] = pair[1];
           }
-          console.log(fields, parent.submitForm(fields));
+          parent.submitForm(fields);
           return false;
         }
       };
@@ -47,17 +72,13 @@ export default {
         "/** LOAD_PM_VARIABLES **/",
         "let " + declareVariables.join(",") + ";"
       );
-    },
+    }
   },
   mounted() {
     this.iframeDocument = this.$refs.iframe.contentDocument;
     this.loadIFrame();
-    window.submitForm = (data) => {
-      // @todo: submit form
-      // this.value = data;
-      // this.$emit('submit');
-      console.log(data);
-      return "Hello from PM";
+    window.submitForm = data => {
+      this.submit(data);
     };
   },
   watch: {
