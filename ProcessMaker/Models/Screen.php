@@ -150,8 +150,9 @@ class Screen extends Model
     <script>
         ProcessMaker = {
             apiToken: \'PM_API_TOKEN\',
+            submitUrl: \'PM_SUBMIT_URL\',
             requestData: PM_REQUEST_DATA
-        }        
+        }
     </script>
     <!--Do Not Delete Above -->
 </head>

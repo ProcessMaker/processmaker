@@ -53,6 +53,7 @@
                                         <advanced-screen-frame
                                           :config="{{json_encode($task->getScreen()->config)}}"
                                           :token="'abc123'"
+                                          :submiturl="'{{$submitUrl}}'"
                                           :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
                                         >
                                         </advanced-screen-frame>

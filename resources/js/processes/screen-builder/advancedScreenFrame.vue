@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  props: ["config", "data", "token"],
+  props: ["config", "data", "token", 'submiturl'],
   data() {
     return {
       iframeDocument: null
@@ -27,7 +27,8 @@ export default {
 
     let content = this.config.html.replace('PM_REQUEST_DATA', JSON.stringify(this.data));
     content = content.replace('PM_API_TOKEN', this.token);
-    
+    content = content.replace('PM_SUBMIT_URL', this.submiturl);
+
     this.iframeDocument.open();
     this.iframeDocument.write(content);
     this.iframeDocument.close();
