@@ -1,6 +1,6 @@
 <template>
     <div class="data-table">
-        <div class="card card-body table-card">
+        <div>
             <vuetable :no-data-template="$t('No Data Available')"
                       :dataManager="dataManager"
                       :sortOrder="sortOrder"

@@ -69,12 +69,48 @@ class ScriptsTest extends TestCase
         $response->assertJsonStructure(self::STRUCTURE);
     }
 
+    public function testCreateCategoryRequired()
+    {
+        $url = route('api.scripts.store');
+        $params = [
+            'title' => 'Title',
+            'language' => 'php',
+            'code' => '123',
+            'description' => 'Description',
+            'run_as_user_id' => $this->user->id,
+        ];
+
+        $err = function($response) {
+            return $response->json()['errors']['script_category_id'][0]; 
+        };
+
+        $params['script_category_id'] = '';
+        $response = $this->apiCall('POST', $url, $params);
+        $this->assertEquals('The script category id field is required.', $err($response));
+
+        $category1 = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
+        $category2 = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
+
+        $params['script_category_id'] = $category1->id . ',foo';
+        $response = $this->apiCall('POST', $url, $params);
+        $this->assertEquals('Invalid category', $err($response));
+
+        $params['script_category_id'] = $category1->id . ',' . $category2->id;
+        $response = $this->apiCall('POST', $url, $params);
+        $response->assertStatus(201);
+        
+        $params['script_category_id'] = $category1->id;
+        $params['title'] = 'other title';
+        $response = $this->apiCall('POST', $url, $params);
+        $response->assertStatus(201);
+    }
+
     /**
      * Can not create a script with an existing title
      */
     public function testNotCreateScriptWithTitleExists()
     {
-        factory(Script::class)->create([
+        $script = factory(Script::class)->create([
             'title' => 'Script Title',
         ]);
 
@@ -84,7 +120,8 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'language' => 'php',
-            'code' => $faker->sentence($faker->randomDigitNotNull)
+            'code' => $faker->sentence($faker->randomDigitNotNull),
+            'script_category_id' => $script->script_category_id
         ]);
         $response->assertStatus(422);
         $response->assertSeeText('The name has already been taken');
@@ -95,7 +132,7 @@ class ScriptsTest extends TestCase
      */
     public function testNotCreateScriptWithKeyExists()
     {
-        factory(Script::class)->create([
+        $script = factory(Script::class)->create([
             'key' => 'some-key',
         ]);
 
@@ -104,6 +141,7 @@ class ScriptsTest extends TestCase
             'key' => 'some-key',
             'code' => '123',
             'language' => 'php',
+            'script_category_id' => $script->script_category_id
         ]);
         $response->assertStatus(422);
         $response->assertSeeText('The key has already been taken');
@@ -261,7 +299,8 @@ class ScriptsTest extends TestCase
             'language' => 'lua',
             'description' => 'jdbsdfkj',
             'code' => $faker->sentence(3),
-            'run_as_user_id' => $user->id
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id
         ]);
 
         //Validate the answer is correct
@@ -307,14 +346,16 @@ class ScriptsTest extends TestCase
         $user = factory(User::class)->create(['is_administrator' => true]);
 
         $code = '{"foo":"bar"}';
-        $url = self::API_TEST_SCRIPT . '/' . factory(Script::class)->create([
+        $script = factory(Script::class)->create([
             'code' => $code
-        ])->id;
+        ]);
+        $url = self::API_TEST_SCRIPT . '/' . $script->id;
         $response = $this->apiCall('PUT', $url . '/duplicate', [
             'title' => 'TITLE',
             'language' => 'php',
             'description' => $faker->sentence(5),
-            'run_as_user_id' => $user->id
+            'run_as_user_id' => $user->id,
+            'script_category_id' => $script->script_category_id
         ]);
         $new_script = Script::find($response->json()['id']);
         $this->assertEquals($code, $new_script->code);
@@ -425,5 +466,67 @@ class ScriptsTest extends TestCase
             'run_as_user_id' => $this->user->id,
             'language' => $language,
         ]);
+    }
+
+    /**
+     * Get a list of Screen filter by category
+     */
+    public function testFilterByCategory()
+    {
+        $name = 'Search title Category Screen';
+        $category = factory(ScriptCategory::class)->create([
+            'name' => $name,
+            'status' => 'active'
+        ]);
+ 
+
+        factory(Script::class)->create([
+            'script_category_id' => $category->getKey(),
+            'status' => 'active'
+        ]);
+
+        //List Screen with filter option
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCRIPT . $query;
+        $response = $this->apiCall('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        $json = $response->json();
+
+        //verify response in meta
+        $this->assertEquals(1, $json['meta']['total']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        $this->assertEquals($name, $json['meta']['filter']);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+
+        
+        //List Screen without peers
+        $name = 'Search category that does not exist';
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCRIPT . $query;
+        $response = $this->apiCall('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        $json = $response->json();
+
+        //verify response in meta
+        $this->assertEquals(0, $json['meta']['total']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        $this->assertEquals($name, $json['meta']['filter']);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
     }
 }

@@ -1,7 +1,7 @@
 import Vue from "vue";
 import CategoriesListing from "./components/CategoriesListing";
 
-new Vue({
+ProcessMaker.CategoriesIndex = new Vue({
   el: "#categories-listing",
   data: {
     filter: "",

@@ -196,7 +196,7 @@ class ProcessesTest extends TestCase
         $response->assertStatus(403);
 
         foreach(explode('|',
-            'view-processes|view-categories|view-scripts|view-screens|view-environment_variables'
+            'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables'
         ) as $perm) {
             $this->user->permissions()->attach(Permission::byName($perm));
         }
@@ -213,7 +213,7 @@ class ProcessesTest extends TestCase
             $response->assertRedirect(route($nextRoute));
         };
         $checkNextAuth('view-processes', 'process-categories.index');
-        $checkNextAuth('view-categories', 'scripts.index');
+        $checkNextAuth('view-process-categories', 'scripts.index');
         $checkNextAuth('view-scripts', 'screens.index');
         $checkNextAuth('view-screens', 'environment-variables.index');
     }

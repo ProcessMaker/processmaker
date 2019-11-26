@@ -87,7 +87,8 @@ class ScreenController extends Controller
                 $query->where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
                     ->orWhere('type', 'like', $filter)
-                    ->orWhere('config', 'like', $filter);
+                    ->orWhere('config', 'like', $filter)
+                    ->orWhere('category.name', 'like', $filter);
             });
         }
         if ($request->input('type')) {

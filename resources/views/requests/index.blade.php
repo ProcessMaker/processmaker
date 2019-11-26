@@ -15,7 +15,7 @@
 ]])
 @endsection
 @section('content')
-<div class="px-3 page-content mt-2" id="requests-listing">
+<div class="px-3 page-content mb-0" id="requests-listing">
     <div class="row">
         <div class="col-sm-12">
             <template v-if="title">
@@ -30,7 +30,7 @@
                         </a>
                     </b-card>
 
-                    <b-card header-class="d-flex align-items-center justify-content-center card-size-header border-0"
+                    <b-card header-class="d-flex border-0"
                         text-variant="white" class="bg-success mb-3 d-flex flex-row card-border border-0">
                         <i slot="header" class='fas fa-clipboard-list fa-2x'></i>
                         <a href="{{ route('requests_by_type', ['type' => 'in_progress']) }}" class="card-link text-light">
@@ -60,7 +60,7 @@
 
                 </b-card-group>
 
-                <div id="search-bar" class="search mt-2 bg-light p-2" >
+                <div id="search-bar" class="search mb-3 bg-light p-2">
                     <div class="d-flex">
                         <div class="flex-grow-1">
                             <div id="search-dropdowns" v-if="! advanced" class="row">

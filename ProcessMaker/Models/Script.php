@@ -11,6 +11,7 @@ use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Validation\CategoryRule;
 
 /**
  * Represents an Eloquent model of a Script
@@ -90,6 +91,7 @@ class Script extends Model
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
+            'script_category_id' => [new CategoryRule($existing)]
         ];
     }
 
