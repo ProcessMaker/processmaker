@@ -257,12 +257,14 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             $definition = $token->getDefinition();
             if (array_key_exists('screenRef', $definition)) {
                 $screen = $token->getScreenVersion();
-                $screen->element_name = $token->element_name;
-                $screen->element_type = $token->element_type;
-                $screen->data = $token->data;
-                $screen->screen_id = $screen->id;
-                $screen->id = $token->id;
-                $screens[] = $screen;
+                if ($screen) {
+                    $screen->element_name = $token->element_name;
+                    $screen->element_type = $token->element_type;
+                    $screen->data = $token->data;
+                    $screen->screen_id = $screen->id;
+                    $screen->id = $token->id;
+                    $screens[] = $screen;
+                }
             }
         }
         return $screens;

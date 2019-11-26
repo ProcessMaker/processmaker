@@ -31,10 +31,11 @@ trait HasVersioning
      */
     public function saveVersion()
     {
-        $attributes = $this->getAttributes();
+        $attributes = $this->attributesToArray();
         unset($attributes['id'],
         $attributes['updated_at'],
-        $attributes['created_at']);
+        $attributes['created_at'],
+        $attributes['has_timer_start_events']);
         $this->versions()->create($attributes);
     }
 
