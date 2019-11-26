@@ -93,18 +93,18 @@ class ProcessRequestFileController extends Controller
         //Retrieve input variable 'name'
         $name = $laravel_request->get('name');
 
-        //If no name, return entire collection; otherwise, filter collection
+        //If no name, return entire collection
         if (!$name) {
             return new ResourceCollection($media);
-        } else {
-            $filtered = $media->reject(function ($item, $key) use ($name) {
-                if ($item->custom_properties['data_name'] != $name) {
-                    return true;
-                }
-            });
+        } 
+        //return filter collection
+        $filtered = $media->reject(function ($item, $key) use ($name) {
+            if ($item->custom_properties['data_name'] != $name) {
+                return true;
+            }
+        });
 
-            return new ResourceCollection($filtered);
-        }
+        return new ResourceCollection($filtered);
     }
 
     /**
@@ -171,6 +171,7 @@ class ProcessRequestFileController extends Controller
         // check if the upload has finished (in chunk mode it will send smaller files)
         if ($save->isFinished()) {
 
+            //remove old files
             foreach ($request->getMedia() as $mediaItem) {
                 if ($mediaItem->getCustomProperty('data_name') == $data_name) {
                     $mediaItem->delete();
@@ -180,12 +181,12 @@ class ProcessRequestFileController extends Controller
             // save the file and return any response you need
             $file = $request
                 ->addMedia($save->getFile())
-                ->withCustomProperties(['data_name' => $data_name]) // photo_1
+                ->withCustomProperties(['data_name' => $data_name])
                 ->toMediaCollection();
-            // $identifier = ['_type' => 'file', 'id' => $file->id];
             return new JsonResponse(['message' => 'The file was uploaded.', 'fileUploadId' => $file->id], 200);
         }
-        // we are in chunk mode, lets send the current progress
+
+        // The Chunk FileReceiver, we are in chunk mode, lets send the current progress
         /** @var AbstractHandler $handler */
         $handler = $save->handler();
         return response()->json([
