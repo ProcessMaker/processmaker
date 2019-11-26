@@ -31,15 +31,15 @@
         </li>
     </ul>
 
-    <div class="mt-3">
+    <div>
         <div class="tab-content">
             <div class="{{$firstContent}}" id="nav-sources" role="tabpanel" aria-labelledby="nav-sources-tab">
-                <div class="card card-body">
+                <div class="card card-body p-3 border-top-0">
                     {{ $itemList }}
                 </div>
             </div>
             <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
-                <div class="card card-body">
+                <div class="card card-body p-3 border-top-0">
                     {{ $categoryList }}
                 </div>
             </div>

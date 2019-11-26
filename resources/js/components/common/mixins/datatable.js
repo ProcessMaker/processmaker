@@ -103,7 +103,7 @@ export default {
             // Cancel token which should be stored from axios if you want to cancel the current in progress request
             cancelToken: null,
             css: {
-                tableClass: "table table-hover table-responsive text-break",
+                tableClass: "table table-hover table-responsive text-break mb-0",
                 loadingClass: "loading",
                 detailRowClass: "vuetable-detail-row",
                 handleIcon: "grey sidebar icon",

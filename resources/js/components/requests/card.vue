@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { TooltipPlugin } from "bootstrap-vue/es/components";
+import { TooltipPlugin } from "bootstrap-vue";
 Vue.use(TooltipPlugin);
 export default {
   props: ["name", "description", "filter", "id", "process"],

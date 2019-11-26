@@ -10,6 +10,9 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScreenCategory;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Providers\AuthServiceProvider;
 use \PermissionSeeder;
@@ -97,5 +100,89 @@ class PermissionsTest extends TestCase
         //Assert that the permissions has been set
         $this->assertEquals($testUser->permissions->count(), 1);
         $this->assertEquals($testUser->permissions->first()->id, $testPermission->id);
+    }
+
+    public function testCategoryPermission()
+    {
+        $context = function($type, $class) {
+            $attrs = ['name' => 'Test Category', 'status' => 'ACTIVE'];
+            $url = route("api.{$type}_categories.store");
+            $response = $this->apiCall('POST', $url, $attrs);
+            $response->assertStatus(403);
+
+            // Now give the user permission via a group
+            $group = factory(Group::class)->create([
+                'name' => 'Test',
+            ]);
+            factory(GroupMember::class)->create([
+                'group_id' => $group->id,
+                'member_type' => User::class,
+                'member_id' => $this->user->id,
+            ]);
+
+            $permission = Permission::byName("create-{$type}-categories");
+            $group->permissions()->attach($permission);
+            $this->user->refresh();
+            $this->flushSession();
+            
+            // test create permission
+            $response = $this->apiCall('POST', $url, $attrs);
+            $response->assertStatus(201);
+
+            // test update permission
+            $id = $response->json()['id'];
+            $attrs = ['name' => 'Test Category Update', 'status' => 'ACTIVE'];
+            $url = route("api.{$type}_categories.update", $id); 
+            $response = $this->apiCall('PUT', $url, $attrs);
+            $response->assertStatus(403);
+            
+            $permission = Permission::byName("edit-{$type}-categories");
+            $group->permissions()->attach($permission);
+            $this->user->refresh();
+            $this->flushSession();
+
+            $response = $this->apiCall('PUT', $url, $attrs);
+            $this->assertEquals('Test Category Update', $class::find($id)->name);
+            
+            // test view permission
+            $url = route("api.{$type}_categories.index"); 
+            $response = $this->apiCall('GET', $url);
+            $response->assertStatus(403);
+            
+            $url = route("api.{$type}_categories.show", $id); 
+            $response = $this->apiCall('GET', $url);
+            $response->assertStatus(403);
+            
+            $permission = Permission::byName("view-{$type}-categories");
+            $group->permissions()->attach($permission);
+            $this->user->refresh();
+            $this->flushSession();
+            
+            $url = route("api.{$type}_categories.index"); 
+            $response = $this->apiCall('GET', $url);
+            $response->assertStatus(200);
+
+            $url = route("api.{$type}_categories.show", $id); 
+            $response = $this->apiCall('GET', $url);
+            $response->assertStatus(200);
+
+            // test delete permission
+            $url = route("api.{$type}_categories.destroy", $id); 
+            $response = $this->apiCall('DELETE', $url);
+            $response->assertStatus(403);
+
+            $permission = Permission::byName("view-{$type}-categories");
+            $group->permissions()->attach($permission);
+            $this->user->refresh();
+            $this->flushSession();
+            
+            $response = $this->apiCall('DELETE', $url);
+            $response->assertStatus(403);
+        };
+
+        $context('process', ProcessCategory::class);
+        $context('script', ScriptCategory::class);
+        $context('screen', ScreenCategory::class);
+
     }
 }

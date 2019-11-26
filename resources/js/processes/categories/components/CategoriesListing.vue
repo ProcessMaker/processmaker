@@ -28,7 +28,7 @@
                                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                 v-b-tooltip.hover
                                 :title="$t('Edit')"
-                                v-if="permission.includes('edit-categories')"
+                                v-if="permission.includes('edit-process-categories')"
                             >
                                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
                             </b-btn>
@@ -37,7 +37,7 @@
                                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                 v-b-tooltip.hover
                                 :title="$t('Remove')"
-                                v-if="permission.includes('delete-categories') && props.rowData[count] == 0"
+                                v-if="permission.includes('delete-process-categories') && props.rowData[count] == 0"
                             >
                                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
                             </b-btn>
