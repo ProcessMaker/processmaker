@@ -37,9 +37,9 @@ initialControls.push({
       },
       {
         type: "FormInput",
-        field: "type",
+        field: "accept",
         config: {
-          label: "Field Accepted",
+          label: "File Accepted",
           helper: "Common file types: application/msword, image/gif, image/jpeg, application/pdf, application/vnd.ms-powerpoint, application/vnd.ms-excel, text/plain"
         }
       },
