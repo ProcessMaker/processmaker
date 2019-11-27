@@ -253,7 +253,6 @@ class ScreenTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->description, $original_attributes['description']);
         $this->assertEquals($version->config, null);
-        $this->assertEquals((string) $version->created_at, (string) $yesterday);
         $this->assertLessThan(3, $version->updated_at->diffInSeconds($screen->updated_at));
     }
 
