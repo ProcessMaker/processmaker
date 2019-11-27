@@ -1,83 +1,14 @@
 import Vue from "vue";
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
-import FileDownload from "./components/file-download";
-import FileUpload from "./components/form/file-upload";
 import VueFormElements from "@processmaker/vue-form-elements";
-import {renderer, FormBuilderControls as initialControls} from "@processmaker/screen-builder";
+import {FormBuilderControls as initialControls} from "@processmaker/screen-builder";
+import FileDownloadControl from "./components/file-download-control";
+import FileUploadControl from "./components/file-upload-control";
 
 Vue.use(VueFormElements);
 
-const {FormText} = renderer;
-
-Vue.component("FileUpload", FileUpload);
-Vue.component("FileDownload", FileDownload);
-
-initialControls.push({
-    rendererComponent: FileUpload,
-    rendererBinding: "FileUpload",
-    builderComponent: FileUpload,
-    builderBinding: "FileUpload",
-    control: {
-        label: "File Upload",
-        component: "FileUpload",
-        "editor-component": "FileUpload",
-        "editor-control": "FileUpload",
-        config: {
-            label: "New File Upload",
-            icon: "fas fa-file-upload"
-        },
-        inspector: [{
-            type: "FormInput",
-            field: "label",
-            config: {
-                label: "Label",
-                helper: "The text to display"
-            }
-        },
-        {
-            type: "FormInput",
-            field: "name",
-            config: {
-                label: "Name",
-                helper: "The name of the upload"
-            }
-        }
-        ]
-    }
-});
-initialControls.push({
-    rendererComponent: FormText,
-    rendererBinding: "FormText",
-    builderComponent: FileDownload,
-    builderBinding: "FileDownload",
-    control: {
-        label: "File Download",
-        component: "FileDownload",
-        "editor-component": "FormText",
-        "editor-config": "FormText",
-        config: {
-            label: "New File Download",
-            icon: "fas fa-file-download"
-        },
-        inspector: [{
-            type: "FormInput",
-            field: "label",
-            config: {
-                label: "Label",
-                helper: "The text to display"
-            }
-        },
-        {
-            type: "FormInput",
-            field: "name",
-            config: {
-                label: "Name",
-                helper: "The name of the Download"
-            }
-        }
-        ]
-    }
-});
+initialControls.push(FileUploadControl);
+initialControls.push(FileDownloadControl);
 
 // The submit button has by default the 'submit' value
 let submitButton = initialControls.find(x => x.control.label === "Submit");
