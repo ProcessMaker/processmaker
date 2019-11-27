@@ -79,7 +79,6 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 
     Route::get('tasks/search', 'TaskController@search')->name('tasks.search');
     Route::get('tasks', 'TaskController@index')->name('tasks.index');
-    Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show');
     Route::get('tasks/{task}/edit', 'TaskController@edit')->name('tasks.edit');
 
     Route::get('notifications', 'NotificationController@index')->name('notifications.index');
