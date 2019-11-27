@@ -1,5 +1,5 @@
 <template>
-  <vue-form-renderer @submit="submit" v-model="formData" :config="screen" :computed="computed" :custom-css="customCss" @update="onUpdate" />
+  <vue-form-renderer @submit="submit" v-model="formData" :config="screen" :computed="computed" :custom-css="customCss" :watchers="watchers" @update="onUpdate" />
 </template>
 
 <script>
@@ -12,7 +12,7 @@ export default {
     VueFormRenderer
   },
   mixins: [ProcessRequestChannel],
-  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "listenProcessEvents"],
+  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "watchers", "listenProcessEvents"],
   data() {
     return {
       disabled: false,

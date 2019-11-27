@@ -64,7 +64,8 @@ class Screen extends Model
 
     protected $casts = [
         'config' => 'array',
-        'computed' => 'array'
+        'computed' => 'array',
+        'watchers' => 'array',
     ];
 
     /**

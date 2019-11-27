@@ -268,7 +268,7 @@ class ScreenController extends Controller
 
         if( $request->has('screen_category_id')) {
             $newScreen->screen_category_id = $request->input('screen_category_id');
-        } 
+        }
 
         $newScreen->saveOrFail();
         return new ApiResource($newScreen);
