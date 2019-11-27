@@ -9,7 +9,6 @@ use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -389,6 +388,14 @@ class ImportProcess implements ShouldQueue
                 $new->created_at = $this->formatDate($screen->created_at);
                 $new->save();
 
+                // save categories
+                if (isset($screen->categories)) {
+                    foreach ($screen->categories as $categoryDef) {
+                        $category = $this->saveCategory('screen', $categoryDef);
+                        $new->categories()->save($category);
+                    }
+                }
+
                 $this->updateScreenRefs($screen->id, $new->id, $process);
 
                 $this->new['screens'][] = $new;
@@ -456,6 +463,14 @@ class ImportProcess implements ShouldQueue
                 $new->code = $script->code;
                 $new->created_at = $this->formatDate($script->created_at);
                 $new->save();
+                
+                // save categories
+                if (isset($script->categories)) {
+                    foreach ($script->categories as $categoryDef) {
+                        $category = $this->saveCategory('script', $categoryDef);
+                        $new->categories()->save($category);
+                    }
+                }
 
                 $this->updateScriptRefs($script->id, $new->id);
 
@@ -477,25 +492,35 @@ class ImportProcess implements ShouldQueue
      *
      * @return void
      */
-    private function saveProcessCategory($processCategory)
+    private function saveCategory($type, $category)
     {
+        if (!array_key_exists($type . '_categories', $this->new)) {
+            $this->new[$type . '_categories'] = [];
+        };
+
+        // use ProcessMaker\Models\ProcessCategory;
+        $class = '\\ProcessMaker\\Models\\' . ucfirst($type) . 'Category';
+
         try {
-            $existing = ProcessCategory::where('name', $processCategory->name)->first();
-            $this->prepareStatus('process_category', true);
+            $existing = $class::where('name', $category->name)->first();
+            $this->prepareStatus($type . '_categories', true);
             if ($existing) {
-                $this->new['process_category'] = $existing;
+                $this->new[$type . '_categories'][] = $existing;
+                $new = $existing;
             } else {
-                $new = new ProcessCategory;
-                $new->name = $processCategory->name;
-                $new->status = $processCategory->status;
-                $new->created_at = $this->formatDate($processCategory->created_at);
+                $new = new $class;
+                $new->name = $category->name;
+                $new->status = $category->status;
+                $new->created_at = $this->formatDate($category->created_at);
                 $new->save();
 
-                $this->new['process_category'] = $new;
+                $this->new[$type . '_categories'][] = $new;
             }
-            $this->finishStatus('process_category');
+            $this->finishStatus($type . '_categories');
+            return $new;
         } catch (\Exception $e) {
-            $this->finishStatus('process_category', true);
+            $this->finishStatus($type . '_categories', true);
+            return null;
         }
     }
 
@@ -512,7 +537,7 @@ class ImportProcess implements ShouldQueue
         try {
             $this->prepareStatus('process', true);
             $new = new Process;
-            $new->process_category_id = $this->new['process_category']->id;
+            $new->process_category_id = array_shift($this->new['process_categories'])->id;
             $new->user_id = $this->currentUser()->id;
             $new->bpmn = $process->bpmn;
             $new->description = $process->description;
@@ -521,6 +546,8 @@ class ImportProcess implements ShouldQueue
             $new->created_at = $this->formatDate($process->created_at);
             $new->deleted_at = $this->formatDate($process->deleted_at);
             $new->save();
+
+            $new->categories()->saveMany($this->new['process_categories']);
 
             if (property_exists($process, 'notifications')) {
                 foreach ($process->notifications as $notifiable => $notificationTypes) {
@@ -641,7 +668,15 @@ class ImportProcess implements ShouldQueue
             ];
         }
 
-        $this->saveProcessCategory($this->file->process_category);
+        if (isset($this->file->process_category)) {
+            $this->saveCategory('process', $this->file->process_category);
+        }
+        if (isset($this->file->process_categories)) {
+            foreach($this->file->process_categories as $category) {
+                $this->saveCategory('process', $category);
+            }
+        }
+
         $this->saveProcess($this->file->process);
         $this->saveScripts($this->file->scripts);
         $this->saveScreens($this->file->screens, $this->file->process);
