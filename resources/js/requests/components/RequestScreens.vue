@@ -100,7 +100,6 @@
       },
       previewScreen(data) {
         data.view = !data.view;
-        console.log(data);
         this.$refs.screens.toggleDetailRow(data.id);
       },
       fetch() {

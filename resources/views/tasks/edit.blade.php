@@ -58,6 +58,7 @@
                                             :screen="{{json_encode($task->getScreen()->config)}}"
                                             :computed="{{json_encode($task->getScreen()->computed)}}"
                                             :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
+                                            :watchers="{{json_encode($task->getScreen()->watchers)}}"
                                             :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
                                         </task-screen>
                                     @else
@@ -89,6 +90,7 @@
                                     :screen="{{json_encode($screenInterstitial->config)}}"
                                     :computed="{{json_encode($screenInterstitial->computed)}}"
                                     :custom-css="{{json_encode(strval($screenInterstitial->custom_css))}}"
+                                    :watchers="{{json_encode($screenInterstitial->watchers)}}"
                                     :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
                                     @activity-assigned="redirectToNextAssignedTask"
                                     @process-completed="redirectWhenProcessCompleted"
@@ -229,6 +231,15 @@
 @endsection
 
 @section('js')
+  <script>
+    window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
+      if (screen.watchers_config) {
+        screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
+      } else {
+        console.warn('Screen builder version does not have watchers');
+      }
+    });
+  </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach

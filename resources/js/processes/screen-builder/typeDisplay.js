@@ -1,10 +1,9 @@
 import Vue from "vue";
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
-import FileDownload from "./components/file-download.vue";
 import {renderer, FormBuilderControls} from "@processmaker/screen-builder";
 import formTypes from "./formTypes";
+import FileDownloadControl from "./components/file-download-control";
 
-Vue.component("FileDownload", FileDownload);
 const {
   FormText
 } = renderer;
@@ -24,40 +23,7 @@ let controlsDisplay = [
   FormImage
 ];
 
-controlsDisplay.push({
-  rendererComponent: FormText,
-  rendererBinding: "FormText",
-  builderComponent: FileDownload,
-  builderBinding: "FileDownload",
-  control: {
-    label: "File Download",
-    component: "FileDownload",
-    "editor-component": "FormText",
-    "editor-config": "FormText",
-    config: {
-      label: "File Download",
-      icon: "fas fa-file-download"
-    },
-    inspector: [
-      {
-        type: "FormInput",
-        field: "label",
-        config: {
-          label: "Label",
-          helper: "The text to display"
-        }
-      },
-      {
-        type: "FormInput",
-        field: "name",
-        config: {
-          label: "Name",
-          helper: "The name of the Download"
-        }
-      }
-    ]
-  }
-});
+controlsDisplay.push(FileDownloadControl);
 
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   controlsDisplay.forEach((item) => {
