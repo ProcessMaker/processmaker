@@ -1,10 +1,10 @@
-# ProcessMaker 4.1 Community Edition Documentation
+# ProcessMaker 4 Community Edition Documentation
 
 ![](https://www.processmaker.com/assets/PartnerArea/new_logos/sample200_whitebg.png)
 
 [![CircleCI](https://circleci.com/gh/ProcessMaker/bpm/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/bpm/tree/develop)
 
-## ProcessMaker 4.1 Community Edition Documentation
+## ProcessMaker 4 Community Edition Documentation
 
 #### Overview
 
@@ -29,7 +29,7 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
 * Perform `composer install` to install required libraries. If you are on windows, you may need to run `composer install --ignore-platform-reqs` due to Horizon requiring the pcntl extension. You can safely ignore this as the application runs in the virtual machine which has the appropriate extensions installed.
 * Perform `npm install` in the project directory
 * Perform `npm run dev` to build the front-end assets
-* Modify your local `/etc/hosts` file to point `processmaker.local.processmaker.com` to `192.168.10.10`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
+* Modify your local `/etc/hosts` add `192.168.10.10 processmaker.local.processmaker.com`. On Windows, this file is located at `C:\Windows\System32\Drivers\etc\hosts`.
   * If you need to change the ip address to something else to avoid conflicts on your network, modify the `Homestead.yaml` file accordingly. Do not commit this change to the repository.
 * Execute `vagrant up` in the project directory to bring up the laravel homestead virtual machine
 * Execute `vagrant ssh` to ssh into the newly created virtual machine
