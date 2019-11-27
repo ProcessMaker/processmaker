@@ -20,7 +20,6 @@ class ScriptController extends Controller
     {
         $catConfig = (object) [
             'labels' => (object) [
-                'newCategoryTitle' => __('Create Script Category'),
                 'countColumn' => __('# Scripts'),
             ],
             'routes' => (object) [
