@@ -19,6 +19,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
@@ -127,6 +128,7 @@ class Process extends Model implements HasMedia
     use HideSystemResources;
     use PMQL;
     use HasCategories;
+    use HasVersioning;
 
     const categoryClass = ProcessCategory::class;
 
@@ -1032,5 +1034,14 @@ class Process extends Model implements HasMedia
     public function getProcessCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    /**
+     * Get the latest version of the process
+     *
+     */
+    public function getLatestVersion()
+    {
+        return $this->versions()->orderBy('id', 'desc')->first();
     }
 }
