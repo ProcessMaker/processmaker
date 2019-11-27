@@ -1,6 +1,6 @@
 import requestModal from "./components/requests/modal";
 import notifications from "./components/requests/notifications";
-import {Navbar} from "bootstrap-vue/es/components";
+import {BNavbar} from "bootstrap-vue";
 import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
@@ -9,6 +9,8 @@ import Multiselect from "vue-multiselect/src/Multiselect";
 import SelectUser from "./components/SelectUser";
 import CategorySelect from "./processes/categories/components/CategorySelect";
 import SelectFromApi from "./components/SelectFromApi";
+
+import { FileUpload, FileDownload } from './processes/screen-builder/components'
 
 /******
  * Global adjustment parameters for moment.js.
@@ -39,6 +41,8 @@ Vue.component("Sidebaricon", Sidebaricon);
 Vue.component("select-user", SelectUser);
 Vue.component("category-select", CategorySelect);
 Vue.component("select-from-api", SelectFromApi);
+Vue.component("FileUpload", FileUpload);
+Vue.component("FileDownload", FileDownload);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
@@ -52,7 +56,7 @@ window.ProcessMaker.nodeTypes.get = function (id) {
 window.ProcessMaker.navbar = new Vue({
   el: "#navbar",
   components: {
-    Navbar,
+    'b-navbar': BNavbar,
     requestModal,
     notifications,
     sessionModal,

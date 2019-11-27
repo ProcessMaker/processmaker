@@ -210,6 +210,7 @@
                             <h4 style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</h4>
                         </div>
                         <ul class="list-group list-group-flush w-100">
+                            @if($request->user_id)
                             <li class="list-group-item">
                                 <h5>{{__('Requested By')}}</h5>
                                 <avatar-image v-if="userRequested" size="32"
@@ -217,7 +218,7 @@
                                               :input-data="requestBy" display-name="true"></avatar-image>
                                 <span v-if="!userRequested">{{__('Web Entry')}}</span>
                             </li>
-
+                            @endif
                             @if($canCancel == true && $request->status === 'ACTIVE')
                                 <template>
                                     <li class="list-group-item">
@@ -256,11 +257,13 @@
                               @endforeach
                             </li>
                             @endif
+                            @if ($request->participants->count())
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="participants" hide-name="true"></avatar-image>
                             </li>
+                            @endif
                             <li class="list-group-item">
                                 <h5>@{{statusLabel}}</h5>
                                 <i class="far fa-calendar-alt"></i>
