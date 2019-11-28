@@ -23,8 +23,9 @@ class UserSeeder extends Seeder
 
         //Create admin user
         $user = factory(User::class)->create([
-            'username' => 'admin',
-            'password' => Hash::make('admin'),
+            'username' => env('INSTALLER_ADMIN_USERNAME', 'admin'),
+            'password' => Hash::make(env('INSTALLER_ADMIN_PASSWORD', 'admin')),
+            'email' => Hash::make(env('INSTALLER_ADMIN_EMAIL', 'admin@processmaker.com')),
             'firstname' => 'admin',
             'lastname' => 'admin',
             'timezone' => 'America/Los_Angeles',

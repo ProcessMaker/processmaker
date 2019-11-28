@@ -9,6 +9,7 @@ use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Helper\Table;
+use Validator;
 
 /**
  * Install command handles installing a fresh copy of ProcessMaker.
@@ -170,6 +171,9 @@ class Install extends Command
         $this->call('config:clear');
         $this->call('cache:clear');
 
+        // Set username, email, password
+        $this->fetchUserInformation();
+
         // Install migrations
         $this->callSilent('migrate:fresh', [
             '--seed' => true,
@@ -191,6 +195,56 @@ class Install extends Command
         $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
         $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
         return true;
+    }
+
+    /**
+     * Configure the username, email, password of the admin user
+     *
+     */
+    private function fetchUserInformation()
+    {
+        do {
+            $username = $this->anticipate(__('Enter your username'), ['admin'], 'admin');
+            $validator = $this->validateField('username', $username, ['required', 'alpha_dash', 'min:4', 'max:255']);
+        } while($validator->fails());
+        do {
+            $email = $this->ask(__('Enter your email'));
+            $validator = $this->validateField('email', $email, ['required', 'email']);
+        } while($validator->fails());
+        do {
+            $password = $this->secret(__('Enter your password'));
+            $validator = $this->validateField('password', $password, ['required', 'sometimes', 'min:6']);
+        } while($validator->fails());
+        do {
+            $confirmPassword = $this->secret(__('Confirm your password'));
+            $match = $password === $confirmPassword;
+            if (!$match) {
+                $this->error(__('Your password/confirm password fields do not match'));
+            }
+        } while(!$match);
+        putenv ("INSTALLER_ADMIN_USERNAME=$username");
+        putenv ("INSTALLER_ADMIN_EMAIL=$email");
+        putenv ("INSTALLER_ADMIN_PASSWORD=$password");
+    }
+
+    /**
+     * Validate a field value
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param array $rules
+     *
+     * @return Validator
+     */
+    private function validateField($name, $value, $rules)
+    {
+        $validator = Validator::make([$name => $value], [
+            $name => $rules,
+        ]);
+        foreach($validator->errors()->get($name) as $error) {
+            $this->error($error);
+        }
+        return $validator;
     }
 
     /**
