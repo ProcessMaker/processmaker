@@ -53,7 +53,7 @@ class ProcessCategory extends Model
         $unique = Rule::unique('process_categories')->ignore($existing);
 
         return [
-            'name' => ['required', 'string', 'max:100', $unique],
+            'name' => ['required', 'string', 'max:100', $unique, 'alpha_dash'],
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
     }

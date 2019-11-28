@@ -46,7 +46,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- * 
+ *
  * * @OA\Schema(
  *   schema="screenExported",
  *   @OA\Property(property="url", type="string"),
@@ -93,7 +93,7 @@ class Screen extends Model
         $unique = Rule::unique('screens')->ignore($existing);
 
         return [
-            'title' => ['required', $unique],
+            'title' => ['required', $unique, 'alpha_dash'],
             'description' => 'required',
             'type' => 'required',
             'screen_category_id' => [new CategoryRule($existing)]

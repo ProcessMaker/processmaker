@@ -53,7 +53,7 @@ class Group extends Model
         $unique = Rule::unique('groups')->ignore($existing);
 
         return [
-            'name' => ['required', 'string', 'max:255', $unique],
+            'name' => ['required', 'string', 'max:255', $unique, 'alpha_dash'],
             'status' => 'in:ACTIVE,INACTIVE'
         ];
     }

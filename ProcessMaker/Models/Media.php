@@ -87,7 +87,7 @@ class Media extends Model
             'model_id' => 'required',
             'model_type' => 'required',
             'collection_name' => 'required',
-            'name' => 'required',
+            'name' => 'required,alpha_dash',
             'file_name' => 'required',
             'mime_type' => 'required',
             'disk' => 'required',
