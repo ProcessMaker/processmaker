@@ -21,7 +21,7 @@ class ProfileController extends Controller
         $states = JsonData::states();
         $countries = JsonData::countries();
         $availableLangs = ['en'];
-        if (app()->getProvider(\ProcessMaker\Package\PackageTranslations\PackageServiceProvider::class)) {
+        if (app()->getProvider(\ProcessMaker\Package\Translations\PackageServiceProvider::class)) {
             $availableLangs = i18nHelper::availableLangs();
         }
         $timezones = array_reduce(JsonData::timezones(),
