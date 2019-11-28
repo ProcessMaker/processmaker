@@ -13,16 +13,18 @@ class ScriptResponseNotification extends Notification
 
     protected $status;
     protected $response;
+    protected $watcher;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($status, array $response)
+    public function __construct($status, array $response, $watcher = null)
     {
         $this->status = $status;
         $this->response = $response;
+        $this->watcher = $watcher;
     }
 
     /**
@@ -50,6 +52,7 @@ class ScriptResponseNotification extends Notification
             'name' => __('Script executed'),
             'dateTime' => $date->toIso8601String(),
             'status' => $this->status,
+            'watcher' => $this->watcher,
             'response' => $this->response,
         ];
     }

@@ -248,9 +248,9 @@
                       .then(response => {
                         ProcessMaker.alert(
                             this.$t("The process was archived."),
-                            "warning"
+                            "success"
                         );
-                        this.$emit("reload");
+                        this.$refs.pagination.loadPage(1);
                       });
                 }
             );

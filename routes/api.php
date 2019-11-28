@@ -68,7 +68,8 @@ Route::group(
     Route::put('scripts/{script}', 'ScriptController@update')->name('scripts.update')->middleware('can:edit-scripts');
     Route::put('scripts/{script}/duplicate', 'ScriptController@duplicate')->name('scripts.duplicate')->middleware('can:create-scripts');
     Route::delete('scripts/{script}', 'ScriptController@destroy')->name('scripts.destroy')->middleware('can:delete-scripts');
-    Route::post('scripts/{script}/preview', 'ScriptController@preview')->name('script.preview')->middleware('can:view-scripts');
+    Route::post('scripts/{script}/preview', 'ScriptController@preview')->name('scripts.preview')->middleware('can:view-scripts');
+    Route::post('scripts/execute/{script_id}/{script_key?}', 'ScriptController@execute')->name('scripts.execute')->middleware('can:view-scripts');
 
     // Script Categories
     Route::get('script_categories', 'ScriptCategoryController@index')->name('script_categories.index')->middleware('can:view-script-categories');
@@ -159,6 +160,7 @@ Route::group(
     Route::get('data_sources', 'DataSourcesController@index')->name('data-sources.index')->middleware('can:view-data-sources');
     Route::get('data_sources/{data_source}', 'DataSourcesController@show')->name('data-sources.show')->middleware('can:view-data-sources');
     Route::post('requests/{request}/data_sources/{data_source}', 'DataSourcesController@executeDataSource');
+    Route::post('requests//data_sources/{data_source}', 'DataSourcesController@executeDataSourceTest');
 
 
     //UI customization

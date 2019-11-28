@@ -183,7 +183,7 @@ export default {
           {
             "label": "Participants",
             "field": "participants",
-            "sortable": true,
+            "sortable": false,
             "default": true
           },
           {

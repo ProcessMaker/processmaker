@@ -112,7 +112,7 @@ class ExportProcess implements ShouldQueue
      */
     private function packageProcessCategory()
     {
-        $this->package['process_category'] = $this->process->category->toArray();
+        $this->package['process_categories'] = $this->process->categories->toArray();
     }
 
     /**
@@ -123,6 +123,7 @@ class ExportProcess implements ShouldQueue
     private function packageScreens()
     {
         $this->package['screens'] = [];
+        $this->package['screen_categories'] = [];
 
         $screenIds = [];
 
@@ -144,7 +145,9 @@ class ExportProcess implements ShouldQueue
             $screens = Screen::whereIn('id', $screenIds)->get();
 
             $screens->each(function ($screen) {
-                $this->package['screens'][] = $screen->toArray();
+                $screenArray = $screen->toArray();
+                $screenArray['categories'] = $screen->categories->toArray();
+                $this->package['screens'][] = $screenArray;
             });
         }
     }
@@ -169,8 +172,10 @@ class ExportProcess implements ShouldQueue
         if (count($scriptIds)) {
             $scripts = Script::whereIn('id', $scriptIds)->get();
 
-            $scripts->each(function ($scripts) {
-                $this->package['scripts'][] = $scripts->toArray();
+            $scripts->each(function ($script) {
+                $scriptArray = $script->toArray();
+                $scriptArray['categories'] = $script->categories->toArray();
+                $this->package['scripts'][] = $scriptArray;
             });
         }
     }

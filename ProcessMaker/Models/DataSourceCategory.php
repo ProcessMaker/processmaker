@@ -2,35 +2,36 @@
 
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Models\Screen;
-use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Traits\SerializeToIso8601;
 
 /**
- * Represents a business screen category definition.
+ * Represents a business data Source category definition.
  *
  * @property string $id
  * @property string $name
  * @property string $status
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $created_at
  *
  * @OA\Schema(
- *   schema="ScreenCategoryEditable",
+ *   schema="DataSourceCategoryEditable",
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
  * ),
  * @OA\Schema(
- *   schema="ScreenCategory",
- *   allOf={@OA\Schema(ref="#/components/schemas/ScreenCategoryEditable")},
+ *   schema="DataSourceCategory",
+ *   allOf={@OA\Schema(ref="#/components/schemas/DataSourceCategoryEditable")},
  *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
  */
-class ScreenCategory extends Model
+class DataSourceCategory extends Model
 {
     use SerializeToIso8601;
     use HideSystemResources;
@@ -45,7 +46,7 @@ class ScreenCategory extends Model
 
     public static function rules($existing = null)
     {
-        $unique = Rule::unique('screen_categories')->ignore($existing);
+        $unique = Rule::unique('data_source_categories')->ignore($existing);
 
         return [
             'name' => ['required', 'string', 'max:100', $unique],
@@ -54,12 +55,12 @@ class ScreenCategory extends Model
     }
 
     /**
-     * Get screens
+     * Get Data Source
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function screens()
+    public function dataSources()
     {
-        return $this->morphedByMany(Screen::class, 'assignable', 'category_assignments', 'category_id');
+        return $this->hasMany(DataSource::class);
     }
 }
