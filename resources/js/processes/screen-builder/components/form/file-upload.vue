@@ -132,9 +132,10 @@ export default {
         });
     },
     getFileType() {
-      this.fileType = 'request';
       if (document.head.querySelector('meta[name="collection-id"]')) {
         this.fileType = 'collection';
+      } else {
+        this.fileType = 'request';
       }
     },
     fileUploaded(rootFile, file, message) {
