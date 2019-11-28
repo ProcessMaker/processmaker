@@ -120,7 +120,6 @@ class ScriptCategoriesTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = ScriptCategory::where('status','ACTIVE')->count();
         $initialInactiveCount = ScriptCategory::where('status','INACTIVE')->count();
 
         factory(ScriptCategory::class, 3)->create(['is_system' => true, 'status' => 'ACTIVE']);
@@ -136,9 +135,12 @@ class ScriptCategoriesTest extends TestCase
         factory(ScriptCategory::class, $scriptActive['num'])->create(['status' => $scriptActive['status']]);
         factory(ScriptCategory::class, $scriptInactive['num'])->create(['status' => $scriptInactive['status']]);
 
+        $name = 'Script search';
+        factory(ScriptCategory::class)->create(['status' => 'ACTIVE', 'name' => $name]);
+
         //Get active script
         $route = route($this->resource . '.index');
-        $response = $this->apiCall('GET', $route . '?filter=ACTIVE&per_page=' . $perPage);
+        $response = $this->apiCall('GET', $route . '?filter=' . $name . '&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -147,8 +149,8 @@ class ScriptCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset( [
-            'total' => $initialActiveCount + $scriptActive['num'],
-            'count' => $perPage,
+            'total' => 1,
+            'count' => 1,
             'per_page' => $perPage,
         ], $meta);
         //Verify the data size

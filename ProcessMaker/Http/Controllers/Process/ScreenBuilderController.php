@@ -4,10 +4,11 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
-use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 
 class ScreenBuilderController extends Controller
 {
@@ -21,13 +22,16 @@ class ScreenBuilderController extends Controller
     public function edit(ScreenBuilderManager $manager, Screen $screen)
     {
         /**
-         * Emit the ModelerStarting event, passing in our ModelerManager instance. This will 
+         * Emit the ModelerStarting event, passing in our ModelerManager instance. This will
          * allow packages to add additional javascript for modeler initialization which
          * can customize the modeler controls list.
          */
         event(new ScreenBuilderStarting($manager, $screen->type));
 
-        return view('processes.screen-builder.screen', compact('screen', 'manager'));
+        //Get the script id for executing datasources
+        $dataSourceScript = Script::where('key', 'package-data-sources/data-source-task-service')->first();
+        $dataSourceScriptId = $dataSourceScript ? $dataSourceScript->id : null;
+        return view('processes.screen-builder.screen', compact('screen', 'manager', 'dataSourceScriptId'));
     }
 
 }
