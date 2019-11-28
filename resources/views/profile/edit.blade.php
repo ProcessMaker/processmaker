@@ -84,13 +84,13 @@
                         </div>
                         <div class="form-group col">
                             {!! Form::label('country', __('Country')) !!}
-                            {!! Form::select('state',
+                            {!! Form::select('country',
                                     $countries,
                                     'formData.country',
                                     ['id' => 'country',
                                         'class'=> 'form-control',
                                         'v-model' => 'formData.country',
-                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.state}'
+                                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.country}'
                                     ])
                              !!}
                             <div class="invalid-feedback" v-if="errors.country">@{{errors.country}}</div>
@@ -121,7 +121,7 @@
                                  ['id'=>'timezone',
                                     'class'=> 'form-control',
                                     'v-model'=> 'formData.timezone',
-                                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.datetimeFormat}'
+                                    'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.timezone}'
                                  ])
                              !!}
                             <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}</div>
