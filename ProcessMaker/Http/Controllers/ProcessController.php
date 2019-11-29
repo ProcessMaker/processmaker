@@ -191,7 +191,7 @@ class ProcessController extends Controller
      */
     public function download(Process $process, $key)
     {
-        $fileName = snake_case($process->name) . '.json';
+        $fileName = trim($process->name) . '.json';
         $fileContents = Cache::get($key);
 
         if (!$fileContents) {
