@@ -66,7 +66,7 @@ class EnvironmentVariable extends Model
         return [
             'description' => 'required',
             'value' => 'nullable',
-            'name' => ['required', 'alpha_spaces', $unique]
+            'name' => ['required', 'alpha_dash', $unique]
         ];
     }
 
