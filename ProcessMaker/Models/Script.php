@@ -85,7 +85,7 @@ class Script extends Model
 
         return [
             'key' => 'unique:scripts,key',
-            'title' => ['required', 'string', $unique, 'alpha_dash'],
+            'title' => ['required', 'string', $unique, 'alpha_spaces'],
             'language' => [
                 'required',
                 Rule::in(static::scriptFormatValues())

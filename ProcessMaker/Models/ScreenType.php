@@ -34,7 +34,7 @@ class ScreenType extends Model
     public static function rules()
     {
         return [
-            'name' => 'required|string|max:100|unique:screen_types,name,alpha_dash',
+            'name' => 'required|string|max:100|unique:screen_types,name,alpha_spaces',
         ];
     }
 

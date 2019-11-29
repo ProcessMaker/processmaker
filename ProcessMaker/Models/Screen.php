@@ -93,7 +93,7 @@ class Screen extends Model
         $unique = Rule::unique('screens')->ignore($existing);
 
         return [
-            'title' => ['required', $unique, 'alpha_dash'],
+            'title' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'type' => 'required',
             'screen_category_id' => [new CategoryRule($existing)]

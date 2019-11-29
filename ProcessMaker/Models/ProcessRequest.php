@@ -150,7 +150,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $unique = Rule::unique($self->getConnectionName() . '.process_requests')->ignore($existing);
 
         return [
-            'name' => ['required', 'string', 'max:100', $unique, 'alpha_dash'],
+            'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
             'data' => 'required',
             'status' => 'in:ACTIVE,COMPLETED,ERROR',
             'process_id' => 'required|exists:processes,id',

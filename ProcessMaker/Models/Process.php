@@ -313,7 +313,7 @@ class Process extends Model implements HasMedia
         $unique = Rule::unique('processes')->ignore($existing);
 
         return [
-            'name' => ['required', $unique, 'alpha_dash'],
+            'name' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
             'process_category_id' => 'exists:process_categories,id',

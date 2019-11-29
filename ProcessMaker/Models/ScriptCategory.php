@@ -48,7 +48,7 @@ class ScriptCategory extends Model
         $unique = Rule::unique('script_categories')->ignore($existing);
 
         return [
-            'name' => ['required', 'string', 'max:100', $unique, 'alpha_dash'],
+            'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
     }

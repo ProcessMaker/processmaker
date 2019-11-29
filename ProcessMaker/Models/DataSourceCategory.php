@@ -49,7 +49,7 @@ class DataSourceCategory extends Model
         $unique = Rule::unique('data_source_categories')->ignore($existing);
 
         return [
-            'name' => ['required', 'string', 'max:100', $unique, 'alpha_dash'],
+            'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
     }

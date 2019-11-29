@@ -23,10 +23,10 @@ use Illuminate\Validation\Rule;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- * 
- * 
+ *
+ *
 
- * 
+ *
  *
  */
 class EnvironmentVariable extends Model
@@ -66,7 +66,7 @@ class EnvironmentVariable extends Model
         return [
             'description' => 'required',
             'value' => 'nullable',
-            'name' => ['required', 'alpha_dash', $unique]
+            'name' => ['required', 'alpha_spaces', $unique]
         ];
     }
 
