@@ -51,7 +51,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         //Custom validator for process, scripts, etc names (just alphanumeric, space or dash characters)
         Validator::extend('alpha_spaces', function ($attr, $val) {
-            return preg_match('/^[\pL\s\-\_\d]+$/u', $val);
+            return preg_match('/^[\pL\s\-\_\d\.]+$/u', $val);
         });
 
 
