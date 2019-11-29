@@ -30,12 +30,12 @@ class ScriptVersion extends Model
     ];
 
     /**
-     * Set multiple|single categories to the screen
+     * Set multiple|single categories to the script
      *
      * @param string $value
      */
-    public function setScreenCategoryIdAttribute($value)
+    public function setScriptCategoryIdAttribute($value)
     {
-        return $this->setMultipleCategories($value, 'screen_category_id');
+        return $this->setMultipleCategories($value, 'script_category_id');
     }
 }
