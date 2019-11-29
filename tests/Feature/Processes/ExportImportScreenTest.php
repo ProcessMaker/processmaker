@@ -61,7 +61,7 @@ class ExportImportScreenTest extends TestCase
         // Test to ensure we can download the exported file
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=approve.json');
+        $response->assertHeader('content-disposition', 'attachment; filename=Approve.json');
 
         // Get our file contents (we have to do it this way because of
         // Symfony's weird response API)
