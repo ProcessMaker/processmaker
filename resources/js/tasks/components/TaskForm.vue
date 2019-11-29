@@ -5,8 +5,6 @@
 <script>
 import { VueFormRenderer } from '@processmaker/screen-builder';
 import '@processmaker/screen-builder/dist/vue-form-builder.css';
-import FileUpload from "../../processes/screen-builder/components/form/file-upload";
-import FileDownload from "../../processes/screen-builder/components/file-download";
 import ProcessRequestChannel from './ProcessRequestChannel';
 
 export default {
@@ -17,6 +15,7 @@ export default {
   props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "watchers", "listenProcessEvents"],
   data() {
     return {
+      disabled: false,
       formData: this.data
     };
   },
@@ -44,6 +43,11 @@ export default {
       return messages.join("\n");
     },
     submit() {
+      //single click
+      if (this.disabled) {
+        return;
+      }
+      this.disabled = true;
       let message = this.$t('Task Completed Successfully');
       ProcessMaker.apiClient
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
@@ -56,6 +60,7 @@ export default {
           }
         })
         .catch(error => {
+          this.disabled = false;
           let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;
           ProcessMaker.alert(error.response.data.message, 'danger');
           ProcessMaker.alert(message, 'danger');

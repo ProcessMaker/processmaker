@@ -106,6 +106,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         //Save the row
         $instance->callable_id = $process->getId();
         $instance->process_id = $definition->getKey();
+        $instance->process_version_id = $definition->getLatestVersion()->getKey();
         $instance->user_id = Auth::user() ? Auth::user()->getKey() : null;
         $instance->name = $definition->name;
         $instance->status = 'ACTIVE';
