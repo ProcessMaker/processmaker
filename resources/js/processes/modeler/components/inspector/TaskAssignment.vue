@@ -11,6 +11,7 @@
                 <option value="user">{{ $t("User") }}</option>
                 <option value="group">{{ $t("Group") }}</option>
                 <option value="previous_task_assignee">{{ $t("Previous Task Assignee") }}</option>
+                <option value="userById">{{ $t("By User ID") }}</option>
             </select>
         </div>
 
@@ -27,6 +28,12 @@
             v-model="assigned"
         >
         </group-select>
+
+        <user-by-id
+            v-if="showAssignUserById"
+            :label="$t('Variable Name of User ID Value')"
+            v-model="assigned"
+        ></user-by-id>
 
         <form-checkbox
             :label="$t('Allow Reassignment')"
@@ -161,7 +168,9 @@
         return _.get(this.node, "allowReassignment");
       },
       assignedUserGetter () {
-        return _.get(this.node, "assignedUsers");
+        let value = _.get(this.node, "assignedUsers");
+        value = this.unformatIfById(value);
+        return value;
       },
       assignedGroupGetter () {
         return _.get(this.node, "assignedGroups");
@@ -172,6 +181,9 @@
         const value = _.get(this.node, "assignment");
         this.assignment = value;
         return value;
+      },
+      showAssignUserById () {
+        return this.assignment === "userById";
       },
       showAssignOneUser () {
         return this.assignment === "user";
@@ -201,14 +213,26 @@
        * Update the event of the editer property
        */
       assignedUserSetter (id) {
-        let node = this.node;
-        this.$set(node, "assignedUsers", id);
-        this.$set(node, "assignedGroups", "");
+        let value = this.formatIfById(id);
+        this.$set(this.node, "assignedUsers", value);
+        this.$set(this.node, "assignedGroups", "");
       },
       assignedGroupSetter (id) {
         let node = this.node;
         this.$set(node, "assignedUsers", "");
         this.$set(node, "assignedGroups", id);
+      },
+      formatIfById(val) {
+        if (this.assignment === 'userById') {
+          return `{{ ${val} }}`;
+        }
+        return val;
+      },
+      unformatIfById(val) {
+        if (this.assignment === 'userById') {
+          return val.match(/^{{ (.*) }}$/)[1];
+        }
+        return val;
       },
       /**
        * Update the event of the editer property
@@ -330,7 +354,7 @@
     watch: {
       assigned: {
         handler (value) {
-          if (this.assignment === "user" && value) {
+          if ((this.assignment === "user" || this.assignment === 'userById') && value) {
             this.assignedUserSetter(value);
           } else if (this.assignment === "group" && value) {
             this.assignedGroupSetter(value);
@@ -340,7 +364,7 @@
       assignment: {
         handler (assigned) {
           let value = "";
-          if (assigned === "user") {
+          if (assigned === "user" || assigned === 'userById') {
             value = this.assignedUserGetter;
           } else if (assigned === "group") {
             value = this.assignedGroupGetter;
