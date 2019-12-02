@@ -517,11 +517,9 @@ class ImportProcess implements ShouldQueue
                 $this->new[$type . '_categories'][] = $new;
             }
             $this->finishStatus($type . '_categories');
-            $this->finishStatus($type . '_category');
             return $new;
         } catch (\Exception $e) {
             $this->finishStatus($type . '_categories', true);
-            $this->finishStatus($type . '_category', true);
             return null;
         }
     }
@@ -736,8 +734,8 @@ class ImportProcess implements ShouldQueue
     {
         $this->status = [];
 
-        $this->status['process_category'] = [
-            'label' => __('Process Category'),
+        $this->status['process_categories'] = [
+            'label' => __('Process Categories'),
             'success' => false,
             'message' => __('Starting')];
 
