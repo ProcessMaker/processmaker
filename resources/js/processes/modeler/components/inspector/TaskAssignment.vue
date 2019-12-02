@@ -39,8 +39,7 @@
             :label="$t('Allow Reassignment')"
             :checked="allowReassignmentGetter"
             toggle="true"
-            @change="assignmentLockSetter"
-            :disabled="assignmentLockGetter">
+            @change="allowReassignmentSetter">
         </form-checkbox>
 
         <div class="form-group">
@@ -172,7 +171,7 @@
         return _.get(this.node, 'assignmentLock');
       },
       allowReassignmentGetter () {
-        console.log('get', _.get(this.node, 'allowReassignment'));
+        console.log('get reassignment', _.get(this.node, 'allowReassignment'));
         return _.get(this.node, "allowReassignment");
       },
       assignedUserGetter () {

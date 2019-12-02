@@ -49,7 +49,6 @@ class TaskController extends Controller
         $definition = $task->getDefinition();
         $screenInterstitial = new Screen();
         $allowInterstitial = false;
-        dd($definition);
 
         if (array_key_exists('allowInterstitial', $definition)) {
             $allowInterstitial = !!json_decode($definition['allowInterstitial']);
