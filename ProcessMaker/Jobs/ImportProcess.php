@@ -463,7 +463,7 @@ class ImportProcess implements ShouldQueue
                 $new->code = $script->code;
                 $new->created_at = $this->formatDate($script->created_at);
                 $new->save();
-                
+
                 // save categories
                 if (isset($script->categories)) {
                     foreach ($script->categories as $categoryDef) {
@@ -517,9 +517,11 @@ class ImportProcess implements ShouldQueue
                 $this->new[$type . '_categories'][] = $new;
             }
             $this->finishStatus($type . '_categories');
+            $this->finishStatus($type . '_category');
             return $new;
         } catch (\Exception $e) {
             $this->finishStatus($type . '_categories', true);
+            $this->finishStatus($type . '_category', true);
             return null;
         }
     }
