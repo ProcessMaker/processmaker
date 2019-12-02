@@ -11,7 +11,7 @@
                 <option value="user">{{ $t("User") }}</option>
                 <option value="group">{{ $t("Group") }}</option>
                 <option value="previous_task_assignee">{{ $t("Previous Task Assignee") }}</option>
-                <option value="userById">{{ $t("By User ID") }}</option>
+                <option value="user_by_id">{{ $t("By User ID") }}</option>
             </select>
         </div>
 
@@ -183,7 +183,7 @@
         return value;
       },
       showAssignUserById () {
-        return this.assignment === "userById";
+        return this.assignment === "user_by_id";
       },
       showAssignOneUser () {
         return this.assignment === "user";
@@ -223,14 +223,18 @@
         this.$set(node, "assignedGroups", id);
       },
       formatIfById(val) {
-        if (this.assignment === 'userById') {
+        if (this.assignment === 'user_by_id') {
           return `{{ ${val} }}`;
         }
         return val;
       },
       unformatIfById(val) {
-        if (this.assignment === 'userById') {
-          return val.match(/^{{ (.*) }}$/)[1];
+        if (this.assignment === 'user_by_id') {
+          try {
+            return val.match(/^{{ (.*) }}$/)[1];
+          } catch(e) {
+            return "";
+          }
         }
         return val;
       },
@@ -354,7 +358,7 @@
     watch: {
       assigned: {
         handler (value) {
-          if ((this.assignment === "user" || this.assignment === 'userById') && value) {
+          if ((this.assignment === "user" || this.assignment === 'user_by_id') && value) {
             this.assignedUserSetter(value);
           } else if (this.assignment === "group" && value) {
             this.assignedGroupSetter(value);
@@ -364,7 +368,7 @@
       assignment: {
         handler (assigned) {
           let value = "";
-          if (assigned === "user" || assigned === 'userById') {
+          if (assigned === "user" || assigned === 'user_by_id') {
             value = this.assignedUserGetter;
           } else if (assigned === "group") {
             value = this.assignedGroupGetter;
