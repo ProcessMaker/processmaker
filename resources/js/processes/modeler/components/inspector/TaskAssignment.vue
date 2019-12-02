@@ -152,7 +152,6 @@
     },
     computed: {
       node () {
-        console.log(this.$parent.$parent.$parent.$parent.highlightedNode.definition);
         return this.$parent.$parent.$parent.$parent.highlightedNode.definition;
       },
       /**
@@ -167,11 +166,9 @@
        * Get the value of the edited property
        */
       assignmentLockGetter () {
-        console.log('get', _.get(this.node, 'assignmentLock'));
         return _.get(this.node, 'assignmentLock');
       },
       allowReassignmentGetter () {
-        console.log('get reassignment', _.get(this.node, 'allowReassignment'));
         return _.get(this.node, "allowReassignment");
       },
       assignedUserGetter () {
