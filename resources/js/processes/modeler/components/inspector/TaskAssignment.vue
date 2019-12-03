@@ -7,10 +7,7 @@
                 class="form-control"
                 :value="assignmentGetter"
                 @input="assignmentSetter">
-                <option value="requester">{{ $t("Requester") }}</option>
-                <option value="user">{{ $t("User") }}</option>
-                <option value="group">{{ $t("Group") }}</option>
-                <option value="previous_task_assignee">{{ $t("Previous Task Assignee") }}</option>
+                <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{ $t(type.label) }}</option>
             </select>
         </div>
 
@@ -62,9 +59,7 @@
                             class="form-control"
                             v-model="typeAssignmentExpression">
                             <option value=""></option>
-                            <option value="requester">{{ $t("Requester") }}</option>
-                            <option value="user">{{ $t("User") }}</option>
-                            <option value="group">{{ $t("Group") }}</option>
+                            <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{ $t(type.label) }}</option>
                         </select>
                     </div>
 
@@ -130,6 +125,13 @@
     props: ["value", "label", "helper", "property"],
     data () {
       return {
+        assignmentTypes: [
+          {value:"requester", label: "Requester"},
+          {value:"user", label: "User"},
+          {value:"group", label: "Group"},
+          {value:"previous_task_assignee", label: "Previous Task Assignee"},
+          {value:"self_service", label: "Self Service"},
+        ],
         specialAssignments: [],
         addingSpecialAssignment: false,
         assignment: null,
@@ -177,13 +179,13 @@
         return this.assignment === "user";
       },
       showAssignGroup () {
-        return this.assignment === "group";
+        return this.assignment === "group" || this.assignment === "self_service";
       },
       showSpecialAssignOneUser () {
         return this.typeAssignmentExpression === "user";
       },
       showSpecialAssignGroup () {
-        return this.typeAssignmentExpression === "group";
+        return this.typeAssignmentExpression === "group" || this.typeAssignmentExpression === "self_service";
       },
       specialAssignmentsListGetter () {
         const value = this.node.get('assignmentRules') || '[]';
@@ -270,7 +272,7 @@
             type: this.typeAssignmentExpression,
             assignee: this.assignedExpression || "",
             expression: this.assignmentExpression,
-            assignmentName: this.typeAssignmentExpression === "user" ? this.$refs.userAssignedSpecial.content.fullname : this.$refs.groupAssignedSpecial.content.name,
+            assignmentName: this.typeAssignmentExpression === "user" ? this.$refs.userAssignedSpecial.content.fullname : (this.$refs.groupAssignedSpecial ? this.$refs.groupAssignedSpecial.content.name : ""),
           });
 
           this.assignmentExpression = "";
@@ -308,7 +310,7 @@
                 item.assignmentName = "";
                 this.specialAssignmentsData.push(item);
               });
-          } else if (item.type === "group") {
+          } else if (item.type === "group" || item.type === "self_service") {
             ProcessMaker.apiClient
               .get("groups/" + item.assignee)
               .then(response => {
