@@ -129,7 +129,7 @@ class User extends Authenticatable implements HasMedia
         };
 
         return [
-            'username' => ['required', 'alpha_dash', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
+            'username' => ['required', 'alpha_spaces', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
