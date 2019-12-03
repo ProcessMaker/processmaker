@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Validation\CategoryRule;
 
 /**
  * Class Screen
@@ -56,6 +58,7 @@ class Screen extends Model
     use SerializeToIso8601;
     use HideSystemResources;
     use HasCategories;
+    use HasVersioning;
 
     const categoryClass = ScreenCategory::class;
 
@@ -63,7 +66,8 @@ class Screen extends Model
 
     protected $casts = [
         'config' => 'array',
-        'computed' => 'array'
+        'computed' => 'array',
+        'watchers' => 'array',
     ];
 
     /**
@@ -91,7 +95,8 @@ class Screen extends Model
         return [
             'title' => ['required', $unique],
             'description' => 'required',
-            'type' => 'required'
+            'type' => 'required',
+            'screen_category_id' => [new CategoryRule($existing)]
         ];
     }
 

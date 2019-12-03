@@ -33,11 +33,6 @@ class TaskController extends Controller
         return view('tasks.index', compact('title'));
     }
 
-    public function show()
-    {
-        return view('tasks.show');
-    }
-
     public function edit(ProcessRequestToken $task)
     {
         $this->authorize('update', $task);

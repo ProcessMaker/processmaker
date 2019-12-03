@@ -100,23 +100,11 @@ class User extends Authenticatable implements HasMedia
         'timezone',
         'datetime_format',
         'language',
-        'expires_at'
-
-    ];
-
-    protected $guarded = [
-        'id',
-        'created_at',
-        'updated_at',
     ];
 
     protected $appends = [
         'fullname',
         'avatar',
-    ];
-
-    protected $dates = [
-        'loggedin_at',
     ];
 
     protected $casts = [
@@ -142,11 +130,12 @@ class User extends Authenticatable implements HasMedia
 
         return [
             'username' => ['required', 'alpha_dash', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
-            'firstname' => 'required',
-            'lastname' => 'required',
+            'firstname' => ['required', 'max:50'],
+            'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
             'status' => ['required', 'in:ACTIVE,INACTIVE'],
-            'password' => 'required|sometimes|min:6'
+            'password' => 'required|sometimes|min:6',
+            'birthdate' => 'date'
         ];
     }
 

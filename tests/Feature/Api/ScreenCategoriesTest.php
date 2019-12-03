@@ -120,7 +120,6 @@ class ScreenCategoriesTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = ScreenCategory::where('status','ACTIVE')->count();
         $initialInactiveCount = ScreenCategory::where('status','INACTIVE')->count();
 
         factory(ScreenCategory::class, 3)->create(['is_system' => true, 'status' => 'ACTIVE']);
@@ -136,9 +135,12 @@ class ScreenCategoriesTest extends TestCase
         factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
         factory(ScreenCategory::class, $screenInactive['num'])->create(['status' => $screenInactive['status']]);
 
+        $name = 'Script search';
+        factory(ScreenCategory::class)->create(['status' => 'ACTIVE', 'name' => $name]);
+
         //Get active screens
         $route = route($this->resource . '.index');
-        $response = $this->apiCall('GET', $route . '?filter=ACTIVE&per_page=' . $perPage);
+        $response = $this->apiCall('GET', $route . '?filter=' . $name . '&per_page=' . $perPage);
         //Verify the status
         $response->assertStatus(200);
         //Verify the structure
@@ -147,8 +149,8 @@ class ScreenCategoriesTest extends TestCase
         $meta = $response->json('meta');
         // Verify the meta values
         $this->assertArraySubset( [
-            'total' => $initialActiveCount + $screenActive['num'],
-            'count' => $perPage,
+            'total' => 1,
+            'count' => 1,
             'per_page' => $perPage,
         ], $meta);
         //Verify the data size
@@ -190,7 +192,7 @@ class ScreenCategoriesTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE'
         ];
-        
+
         factory(ScreenCategory::class, $screenActive['num'])->create(['status' => $screenActive['status']]);
         factory(ScreenCategory::class, $screenInactive['num'])->create(['status' => $screenInactive['status']]);
 

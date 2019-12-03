@@ -29,7 +29,6 @@ class ScreenController extends Controller
 
         $catConfig = (object) [
             'labels' => (object) [
-                'newCategoryTitle' => __('Create Screen Category'),
                 'countColumn' => __('# Screens'),
             ],
             'routes' => (object) [

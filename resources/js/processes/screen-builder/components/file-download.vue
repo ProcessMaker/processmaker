@@ -32,11 +32,9 @@
         requestId: null,
         collectionId: null,
         recordId: null,
-        listEndpoint: null,
-        downloadEndpoint: null
       };
     },
-    props: ['name'],
+    props: ['name', 'endpoint', 'requestFiles'],
     beforeMount() {
       this.getFileType();
 
@@ -72,10 +70,18 @@
           this.downloadCollectionFile(file);
         }
       },
+      requestEndpoint(file) {
+        if (this.endpoint && this.requestFiles) {
+          const info = this.requestFiles[this.name];
+          const query = '?name=' + encodeURIComponent(this.name) + '&token=' + info.token;
+          return this.endpoint + query;
+        }
+        return "/request/" + this.requestId + "/files/" + file.id;
+      },
       downloadRequestFile(file) {
         ProcessMaker.apiClient({
           baseURL: "/",
-          url: "/request/" + this.requestId + "/files/" + file.id,
+          url: this.requestEndpoint(file),
           method: "GET",
           responseType: "blob" // important
         }).then(response => {
@@ -136,6 +142,11 @@
         this.recordId = recordNode.content;
       },
       getRequestFiles() {
+        if (this.requestFiles) {
+          this.loading = false;
+          this.files = { data: [this.requestFiles[this.name]] };
+          return;
+        }
         if (this.requestId === null) {
           this.loading = false;
           return;

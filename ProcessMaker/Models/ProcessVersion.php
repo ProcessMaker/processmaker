@@ -37,6 +37,11 @@ class ProcessVersion extends Model
         'updated_at',
     ];
 
+    protected $casts = [
+        'start_events' => 'array',
+        'warnings' => 'array',
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *

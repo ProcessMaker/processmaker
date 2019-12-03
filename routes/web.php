@@ -37,14 +37,11 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
         Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder')->middleware('can:edit-scripts,script');
     });
 
-    Route::get('designer/processes/categories', 'ProcessController@index')->name('process-categories.index') ->middleware ('can:view-categories');
-    Route::get('designer/processes/categories/{processCategory}/edit', 'Process\ProcessCategoryController@edit') ->name ('process-categories.edit')->middleware('can:edit-categories,processCategory');
+    Route::get('designer/processes/categories', 'ProcessController@index')->name('process-categories.index') ->middleware ('can:view-process-categories');
 
-    Route::get('designer/screens/categories', 'Process\ScreenController@index')->name('screen-categories.index')->middleware ('can:view-categories');
-    Route::get('designer/screens/categories/{screenCategory}/edit', 'Process\ScreenCategoryController@edit')->name('screen-categories.edit')->middleware('can:edit-categories,screenCategory');
+    Route::get('designer/screens/categories', 'Process\ScreenController@index')->name('screen-categories.index')->middleware ('can:view-process-categories');
 
-    Route::get('designer/scripts/categories', 'Process\ScriptController@index')->name('script-categories.index') ->middleware('can:view-categories');
-    Route::get('designer/scripts/categories/{scriptCategory}/edit', 'Process\ScriptCategoryController@edit')->name('script-categories.edit')->middleware('can:edit-categories,scriptCategory');
+    Route::get('designer/scripts/categories', 'Process\ScriptController@index')->name('script-categories.index') ->middleware('can:view-process-categories');
 
     Route::get('processes', 'ProcessController@index')->name('processes.index');
     Route::get('processes/{process}/edit', 'ProcessController@edit')->name('processes.edit')->middleware('can:edit-processes');
@@ -79,7 +76,6 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 
     Route::get('tasks/search', 'TaskController@search')->name('tasks.search');
     Route::get('tasks', 'TaskController@index')->name('tasks.index');
-    Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show');
     Route::get('tasks/{task}/edit', 'TaskController@edit')->name('tasks.edit');
 
     Route::get('notifications', 'NotificationController@index')->name('notifications.index');
