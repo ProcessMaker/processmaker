@@ -2,16 +2,18 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Laravel\Horizon\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\ProcessRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use ProcessMaker\Packages\Connectors\DataSources\Models\DataSource;
-use ProcessMaker\Packages\Connectors\DataSources\Jobs\DataSource as DataSourceJob;
+use ProcessMaker\Models\DataSource;
 use ProcessMaker\Exception\HttpResponseException;
-
+use Throwable;
 
 class DataSourcesController extends Controller
 {
@@ -146,6 +148,8 @@ class DataSourcesController extends Controller
      *
      * @return Response
      *
+     * @throws GuzzleException
+     *
      * @OA\Schema(
      *   schema="DataSourceCallParameters",
      *   @OA\Property(property="endpoint", type="string")
@@ -187,11 +191,23 @@ class DataSourcesController extends Controller
      *     ),
      * )
      */
-    public function executeDataSource(ProcessRequest $request, DataSource $dataSource, Request $httpRequest)
+    public function executeDataSource(ProcessRequest $request = null, DataSource $dataSource, Request $httpRequest)
     {
         $config= $httpRequest->json()->get('config');
         try {
             $response = $dataSource->request($request->data, $config);
+            return response($response, 200);
+        } catch (HttpResponseException $exception) {
+            return response($exception->body, $exception->status);
+        }
+    }
+
+    public function executeDataSourceTest(DataSource $dataSource, Request $httpRequest)
+    {
+        $config= $httpRequest->json()->get('config');
+        $data= $httpRequest->json()->get('data', []);
+        try {
+            $response = $dataSource->request($data, $config);
             return response($response, 200);
         } catch (HttpResponseException $exception) {
             return response($exception->body, $exception->status);
@@ -274,6 +290,7 @@ class DataSourcesController extends Controller
         $dataSource->saveOrFail();
         return response([], 204);
     }
+
     /**
      * Delete a Data Source.
      *
@@ -281,7 +298,7 @@ class DataSourcesController extends Controller
      *
      * @return ResponseFactory|Response
      *
-     * @throws Exception
+     * @throws \Exception
      *
      * @OA\Delete(
      *     path="/data_sources/data_source_id",
@@ -310,6 +327,7 @@ class DataSourcesController extends Controller
         $dataSource->delete();
         return response([], 204);
     }
+
     /**
      * Send a Data Source request.
      *
@@ -356,10 +374,10 @@ class DataSourcesController extends Controller
         $credentials = $data['credentials'] ?? [];
         $credentials= is_string($credentials) ? [] : $credentials;
         if ($request->has('immediate') && $request->get('immediate')) {
-            $response = DataSourceJob::dispatchNow($dataSource, $request->user(), $data, $credentials, true);
+            $response = \ProcessMaker\Packages\Connectors\DataSources\Jobs\DataSourceJob::dispatchNow($dataSource, $request->user(), $data, $credentials, true);
             return response($response['response'], $response['status']);
         }
-        dispatch(new DataSourceJob($dataSource, $request->user(), $data, $credentials));
+        dispatch(new \ProcessMaker\Packages\Connectors\DataSources\Jobs\DataSourceJob($dataSource, $request->user(), $data, $credentials));
         return response([], 204);
     }
 }

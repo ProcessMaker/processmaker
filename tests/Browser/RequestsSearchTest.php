@@ -27,7 +27,7 @@ class RequestsSearchTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
                 ->visit(new RequestsPage)
-                ->click("button[data-original-title='Advanced Search']")
+                ->click("@advanced-search-button") 
                 ->waitFor('@pmql')
 
                 ->value('@pmql', '')->type('@pmql', 'foo = "bar"')

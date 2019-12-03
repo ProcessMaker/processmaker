@@ -21,9 +21,13 @@
                 <i class="fas fa-flask"></i>
                 {{ $t('Calcs') }}
               </button>
-              <button type="button" class="btn btn-secondary mr-2 text-capitalize" :title="$t('Custom CSS')" @click="openCustomCSS">
+              <button type="button" class="btn btn-secondary text-capitalize" :title="$t('Custom CSS')" @click="openCustomCSS">
                 <i class="fab fa-css3"></i>
                 {{ $t('CSS') }}
+              </button>
+              <button type="button" class="btn btn-secondary mr-2 text-capitalize" :title="$t('Watchers')" @click="openWatchersPopup">
+                <i class="fas fa-mask"></i>
+                {{ $t('Watchers') }}
               </button>
             </div>
 
@@ -60,6 +64,7 @@
               :config="config"
               :computed="computed"
               :custom-css="customCSS"
+              :watchers="watchers"
               v-on:css-errors="cssErrors = $event"
               :mock-magic-variables="mockMagicVariables"
             />
@@ -142,11 +147,13 @@
     <!-- Modals -->
     <computed-properties v-model="computed" ref="computedProperties"></computed-properties>
     <custom-CSS v-model="customCSS" ref="customCSS" :cssErrors="cssErrors"/>
+    <watchers-popup v-model="watchers" ref="watchersPopup"/>
   </div>
 </template>
 
 <script>
   import {VueFormBuilder, VueFormRenderer} from "@processmaker/screen-builder";
+  import WatchersPopup from '@processmaker/screen-builder/src/components/watchers-popup.vue';
   import ComputedProperties from "@processmaker/screen-builder/src/components/computed-properties";
   import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
   import "@processmaker/screen-builder/dist/vue-form-builder.css";
@@ -181,10 +188,18 @@ import formTypes from "./formTypes";
       }];
 
       return {
+        watchers_config: {
+          api: {
+            scripts: [],
+            execute: null,
+          },
+        },
         type: formTypes.form,
         mode: "editor",
         // Computed properties
         computed: [],
+        // Watchers
+        watchers: [],
         config: this.screen.config || defaultConfig,
         previewData: {},
         previewInput: '{}',
@@ -208,6 +223,7 @@ import formTypes from "./formTypes";
       VueJsonPretty,
       ComputedProperties,
       CustomCSS,
+      WatchersPopup,
       MonacoEditor
     },
     watch: {
@@ -276,6 +292,7 @@ import formTypes from "./formTypes";
       ProcessMaker.EventBus.$emit("screen-builder-init", this);
       this.computed = this.screen.computed ? this.screen.computed : [];
       this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
+      this.watchers = this.screen.watchers ? this.screen.watchers : [];
       this.updatePreview(new Object());
       this.previewInput = "{}";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
@@ -346,6 +363,9 @@ import formTypes from "./formTypes";
 
         this.$refs.builder.focusInspector(validate);
       },
+      openWatchersPopup() {
+        this.$refs.watchersPopup.show();
+      },
       openComputedProperties() {
         this.$refs.computedProperties.show();
       },
@@ -403,7 +423,8 @@ import formTypes from "./formTypes";
               type: this.screen.type,
               config: this.config,
               computed: this.computed,
-              custom_css: this.customCSS
+              custom_css: this.customCSS,
+              watchers: this.watchers
             })
             .then(response => {
               if (exportScreen) {

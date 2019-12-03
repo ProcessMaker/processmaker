@@ -55,9 +55,9 @@
 
 <script>
 import moment from "moment";
-import { Popover } from "bootstrap-vue/es/components";
+import { PopoverPlugin } from "bootstrap-vue"
 
-Vue.use(Popover);
+Vue.use(PopoverPlugin);
 export default {
   props: {
     messages: Array

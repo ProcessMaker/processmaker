@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Validation\CategoryRule;
@@ -45,7 +46,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- * 
+ *
  * * @OA\Schema(
  *   schema="screenExported",
  *   @OA\Property(property="url", type="string"),
@@ -57,6 +58,7 @@ class Screen extends Model
     use SerializeToIso8601;
     use HideSystemResources;
     use HasCategories;
+    use HasVersioning;
 
     const categoryClass = ScreenCategory::class;
 
@@ -64,7 +66,8 @@ class Screen extends Model
 
     protected $casts = [
         'config' => 'array',
-        'computed' => 'array'
+        'computed' => 'array',
+        'watchers' => 'array',
     ];
 
     /**
@@ -90,7 +93,7 @@ class Screen extends Model
         $unique = Rule::unique('screens')->ignore($existing);
 
         return [
-            'title' => ['required', $unique],
+            'title' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'type' => 'required',
             'screen_category_id' => [new CategoryRule($existing)]

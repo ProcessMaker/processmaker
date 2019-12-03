@@ -33,7 +33,7 @@
     </div>
 
     @can('create-scripts')
-        <div class="modal" tabindex="-1" role="dialog" id="addScript">
+        <div class="modal" tabindex="-1" role="dialog" id="addScript" data-backdrop="static">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

@@ -41,7 +41,6 @@ class ProcessController extends Controller
 
         $catConfig = (object)[
             'labels' => (object)[
-                'newCategoryTitle' => __('Create Process Category'),
                 'countColumn' => __('# Processes'),
             ],
             'routes' => (object)[

@@ -63,7 +63,7 @@
 
   export default {
     mixins: [datatableMixin, dataLoadingMixin],
-    props: ["filter", "permission", "apiRoute", "location", "include", "labelCount", "count", "loadOnStart"],
+    props: ["filter", "permission", "apiRoute", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
         localLoadOnStart: !!this.loadOnStart,
@@ -156,7 +156,7 @@
       onAction (action, data, index) {
         switch (action) {
           case "edit-item":
-            window.location = this.location + "/" + data.id + "/edit";
+            this.$emit('edit', data);
             break;
           case "remove-item":
             ProcessMaker.confirmModal(
