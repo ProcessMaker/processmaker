@@ -96,7 +96,7 @@
 
     methods: {
       preview(data) {
-        window.open('/requests/' + this.id + '/screen/' + data.screen_id);
+        window.open('/requests/' + this.id + '/screen/' + data.id);
       },
       previewScreen(data) {
         data.view = !data.view;
