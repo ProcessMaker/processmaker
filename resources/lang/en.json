@@ -998,5 +998,8 @@
   "Reset To Default": "Reset To Default",
   "Translation": "Translation",
   "View Profile": "View Profile",
-  "Requests In Progress": "Requests In Progress"
+  "Requests In Progress": "Requests In Progress",
+  "The variable, :variable, which equals \":value\", is not a valid User ID in the system": "The variable, :variable, which equals \":value\", is not a valid User ID in the system",
+  "Variable Name of User ID Value": "Variable Name of User ID Value",
+  "By User ID": "By User ID"
 }
