@@ -522,7 +522,14 @@ class Process extends Model implements HasMedia
 
         $definitions = $token->getInstance()->process->getDefinitions();
         $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
-        $assignmentLock = array_key_exists('assignmentLock') ? $properties['assignmentLock'] : false;
+        $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock']  : false;
+
+        if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
+            $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
+            if ($user) {
+                return User::where('id', $user)->first();
+            }
+        }
 
         switch ($assignmentType) {
             case 'group':
@@ -610,6 +617,25 @@ class Process extends Model implements HasMedia
             }
         }
         return $users[0];
+    }
+
+    /**
+     *
+     *
+     * @param string $processTaskUuid
+     *
+     * @return binary
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function getLastUserAssignedToTask($processTaskUuid, $processRequestId)
+    {
+        $last = ProcessRequestToken::where('process_id', $this->id)
+            ->where('element_id', $processTaskUuid)
+            ->where('process_request_id', $processRequestId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $last ? $last->user_id : null;
     }
 
     /**
