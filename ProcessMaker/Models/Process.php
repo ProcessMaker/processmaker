@@ -520,6 +520,10 @@ class Process extends Model implements HasMedia
             return $userByRule;
         }
 
+        $definitions = $token->getInstance()->process->getDefinitions();
+        $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
+        $assignmentLock = array_key_exists('assignmentLock') ? $properties['assignmentLock'] : false;
+
         switch ($assignmentType) {
             case 'group':
                 $user = $this->getNextUserFromGroupAssignment($activity->getId());
