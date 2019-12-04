@@ -87,6 +87,11 @@ class GenerateMenus
                 'icon' => 'fa-check-square',
                 'id' => 'homeid'
             ]);
+            $submenu->add(__('Self Service'), [
+                'route' => ['tasks.index', 'status' => 'SELF_SERVICE'],
+                'icon' => 'fa-user',
+                'id' => 'homeid'
+            ]);
         });
         Menu::make('sidebar_request', function ($menu) {
             $submenu = $menu->add(__('Request'));

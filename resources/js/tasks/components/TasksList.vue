@@ -122,6 +122,9 @@ export default {
       case "CLOSED":
         status = "Completed";
         break;
+      case "SELF_SERVICE":
+        status = "Self Service";
+        break;
       default:
         status = "In Progress";
         break;

@@ -115,6 +115,7 @@ trait SearchAutocompleteTrait
     private function searchTaskStatus()
     {
         return [
+            ['name' => __('Self Service'), 'value' => 'Self Service'],
             ['name' => __('In Progress'), 'value' => 'In Progress'],
             ['name' => __('Completed'), 'value' => 'Completed'],
         ];
