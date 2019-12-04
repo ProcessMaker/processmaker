@@ -334,7 +334,7 @@
         handler (value) {
           if (this.assignment === "user" && value) {
             this.assignedUserSetter(value);
-          } else if (this.assignment === "group" && value) {
+          } else if ((this.assignment === "group" || this.assignment === "self_service") && value) {
             this.assignedGroupSetter(value);
           }
         }
@@ -344,7 +344,7 @@
           let value = "";
           if (assigned === "user") {
             value = this.assignedUserGetter;
-          } else if (assigned === "group") {
+          } else if (assigned === "group" || assigned === "self_service") {
             value = this.assignedGroupGetter;
           }
           this.assigned = value;

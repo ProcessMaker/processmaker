@@ -108,8 +108,20 @@ class TaskController extends Controller
         $parameters = $request->all();
         foreach ($parameters as $column => $filter) {
             if (in_array($column, $filterByFields)) {
-                $key = array_search($column, $filterByFields);
-                $query->where(is_string($key) ? $key : $column, 'like', $filter);
+                if ($column === 'user_id') {
+                    $key = array_search($column, $filterByFields);
+                    $query->where(function($query) use ($key, $column, $filter){
+                        $userColumn = is_string($key) ? $key : $column;
+                        $query->where($userColumn, $filter);
+                        $query->orWhere(function ($query) use($userColumn) {
+                            $query->whereNull($userColumn);
+                            $query->where('process_request_tokens.is_self_service', 1);
+                        });
+                    });
+                } else {
+                    $key = array_search($column, $filterByFields);
+                    $query->where(is_string($key) ? $key : $column, 'like', $filter);
+                }
             }
         }
 
