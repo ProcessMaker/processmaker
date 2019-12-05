@@ -5,7 +5,6 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -24,10 +23,11 @@ use ProcessMaker\Validation\CategoryRule;
  * @property array config
  * @property array computed
  * @property array custom_css
+ * @property array watchers
  * @property string label
  * @property Carbon type
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $created_at
  *
  * @OA\Schema(
  *   schema="screensEditable",
@@ -46,7 +46,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- * 
+ *
  * * @OA\Schema(
  *   schema="screenExported",
  *   @OA\Property(property="url", type="string"),
@@ -93,7 +93,7 @@ class Screen extends Model
         $unique = Rule::unique('screens')->ignore($existing);
 
         return [
-            'title' => ['required', $unique],
+            'title' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'type' => 'required',
             'screen_category_id' => [new CategoryRule($existing)]

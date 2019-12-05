@@ -92,7 +92,7 @@ class DataSource extends Model
         $unique = Rule::unique('data_sources')->ignore($existing);
 
         return [
-            'name' => ['required', $unique],
+            'name' => ['required', $unique, 'alpha_spaces'],
             'authtype' => 'required|in:NONE,BASIC,OAUTH2_BEARER,OAUTH2_PASSWORD',
             'status' => 'in:ACTIVE,INACTIVE',
             'data_source_category_id' => 'required',

@@ -21,12 +21,8 @@ class ImportScreen extends ImportProcess
             $this->prepareStatus('screens', true);
 
             $new = new Screen();
+            $new->fill((array)$screen);
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
-            $new->description = $screen->description;
-            $new->type = $screen->type;
-            $new->config = $screen->config;
-            $new->computed = $screen->computed;
-            $new->custom_css = $screen->custom_css;
             $new->created_at = $this->formatDate($screen->created_at);
             $new->save();
 

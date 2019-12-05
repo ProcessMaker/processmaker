@@ -48,7 +48,7 @@ class ScreenCategory extends Model
         $unique = Rule::unique('screen_categories')->ignore($existing);
 
         return [
-            'name' => ['required', 'string', 'max:100', $unique],
+            'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
             'status' => 'required|string|in:ACTIVE,INACTIVE'
         ];
     }
