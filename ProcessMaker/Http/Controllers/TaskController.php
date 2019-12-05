@@ -28,6 +28,7 @@ class TaskController extends Controller
         if (Request::input('status') == 'CLOSED') {
             $title = 'Completed Tasks';
         }
+        
 
         return view('tasks.index', compact('title'));
     }
