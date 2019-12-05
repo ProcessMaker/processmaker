@@ -20,7 +20,6 @@
                 <xsd:attribute name="assignedUsers" type="xsd:string"/>
                 <xsd:attribute name="assignedGroups" type="xsd:string"/>
                 <xsd:attribute name="assignmentRules" type="xsd:string"/>
-                <xsd:attribute name="assignmentLock" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="validations" type="xsd:string"/>
             </xsd:extension>
@@ -39,7 +38,6 @@
                 <xsd:attribute name="assignedUsers" type="xsd:string"/>
                 <xsd:attribute name="assignedGroups" type="xsd:string"/>
                 <xsd:attribute name="assignmentRules" type="xsd:string"/>
-                <xsd:attribute name="assignmentLock" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="validations" type="xsd:string"/>
             </xsd:extension>
