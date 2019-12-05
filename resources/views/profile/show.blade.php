@@ -66,7 +66,7 @@
             <div class="card card-body">
                 <div align="center">
                     <avatar-image size="150" :input-data="avatar"></avatar-image>
-                    <h1>{{$user->firstname}} {{$user->lastname}}</h1>
+                    <h1 style="font-weight:100">{{$user->firstname}} {{$user->lastname}}</h1>
                     <h4>{{$user->title}}</h4>
                     <hr>
                     <h5 class="mt-2">{{__('Current Local Time')}}</h5>
