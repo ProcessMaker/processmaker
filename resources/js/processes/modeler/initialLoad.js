@@ -190,7 +190,7 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(endEvent, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Summary screen',
+        label: 'Screen for Input',
         helper:
           'Summary screen that will be displayed when process finish with this End event.',
         name: 'screenRef',
@@ -200,7 +200,7 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(manualTask, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Summary screen',
+        label: 'Screen for Input',
         helper:
           'Summary screen that will be displayed when process finish with this End event.',
         name: 'screenRef',
