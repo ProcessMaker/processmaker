@@ -570,4 +570,14 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             $query->whereIn('id', $tokens->pluck('process_request_id'));
         };
     }
+
+    /**
+     * Get the process version used by this request
+     *
+     * @return ProcessVersion
+     */
+    public function processVersion()
+    {
+        return $this->belongsTo(ProcessVersion::class, 'process_version_id');
+    }
 }

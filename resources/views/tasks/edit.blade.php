@@ -400,7 +400,7 @@
                 }
               )
               .then(response => {
-                this.usersList = response.data.assignableUsers;
+                this.usersList = response.data.assignable_users;
               });
           },
           classHeaderCard (status) {

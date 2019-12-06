@@ -19,6 +19,7 @@ use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\SanitizeHelper;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Models\User;
 
 class TaskController extends Controller
 {
@@ -113,9 +114,15 @@ class TaskController extends Controller
                     $query->where(function($query) use ($key, $column, $filter){
                         $userColumn = is_string($key) ? $key : $column;
                         $query->where($userColumn, $filter);
-                        $query->orWhere(function ($query) use($userColumn) {
+                        $query->orWhere(function ($query) use($userColumn, $filter) {
                             $query->whereNull($userColumn);
                             $query->where('process_request_tokens.is_self_service', 1);
+                            $user = User::find($filter);
+                            $query->where(function ($query) use ($user) {
+                                foreach($user->groups as $group) {
+                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey()));
+                                }
+                            });
                         });
                     });
                 } else {

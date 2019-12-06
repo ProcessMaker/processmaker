@@ -131,6 +131,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     protected $casts = [
         'data' => 'array',
+        'self_service_groups' => 'array',
     ];
 
     /**
@@ -218,6 +219,16 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the creator/author of this request.
+     *
+     */
+    public function assignableUsers()
+    {
+        $query = $this->newQuery();
+        return new TokenAssignableUsers($query, $this);
     }
 
     /**

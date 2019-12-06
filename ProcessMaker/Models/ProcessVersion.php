@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Traits\HasSelfServiceTasks;
 
 /**
  * ProcessVersion is used to store the historical version of a process.
@@ -20,6 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProcessVersion extends Model
 {
+    use HasSelfServiceTasks;
+
     protected $connection = 'processmaker';
 
     /**
@@ -40,6 +43,7 @@ class ProcessVersion extends Model
     protected $casts = [
         'start_events' => 'array',
         'warnings' => 'array',
+        'self_service_tasks' => 'array',
     ];
 
     /**

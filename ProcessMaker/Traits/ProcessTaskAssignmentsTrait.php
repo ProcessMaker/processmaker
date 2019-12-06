@@ -70,7 +70,7 @@ trait ProcessTaskAssignmentsTrait
                 'assignment_type' => User::class,
             ];
 
-        } elseif ($assignment === 'group') {
+        } elseif ($assignment === 'group' || $assignment === 'self_service') {
             $group = $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedGroups');
             if (empty($group)) {
                 throw new TaskDoesNotHaveUsersException($node->getAttribute('id'));

@@ -32,6 +32,7 @@ class Task extends ApiResource
             $definition = $this->getDefinition();
             $assignment = isset($definition['assignment']) ? $definition['assignment'] : 'requester';
             switch ($assignment) {
+                case 'self_service':
                 case 'cyclical':
                 case 'group':
                     $ids = $this->process->getAssignableUsers($this->element_id);
@@ -44,7 +45,7 @@ class Task extends ApiResource
                 default:
                     $users = [];
             }
-            $array['assignableUsers'] = $users;
+            $array['assignable_users'] = $users;
         }
         return $array;
     }

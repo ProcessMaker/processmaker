@@ -15,6 +15,7 @@ class AddIsSelfServiceToProcessRequestTokens extends Migration
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
             $table->boolean('is_self_service')->default(false);
+            $table->json('self_service_groups')->nullable();
         });
     }
 
@@ -26,7 +27,7 @@ class AddIsSelfServiceToProcessRequestTokens extends Migration
     public function down()
     {
         Schema::table('process_request_tokens', function (Blueprint $table) {
-            $table->dropColumn(['is_self_service']);
+            $table->dropColumn(['is_self_service','self_service_groups']);
         });
     }
 }
