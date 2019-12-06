@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -94,5 +95,44 @@ class TaskAssignmentExecutionTest extends TestCase
 
         //Token 1: user of task
         $this->assertEquals($request->tokens[1]->user_id, $this->assigned->id);
+    }
+
+    public function testUserByIdAssignment()
+    {
+        $user = factory(User::class)->create();
+
+        $run = function($data) {
+            $process = factory(Process::class)->create([
+                'bpmn' => file_get_contents(__DIR__ . '/processes/ByUserIdAssignment.bpmn')
+            ]);
+
+            $route = route('api.process_events.trigger',
+                [$process->id, 'event' => 'node_1']);
+            return $this->apiCall('POST', $route, $data)->json();
+        };
+
+        $response = $run(['userIdInData' => $user->id]);
+        $requestId = $response['id'];
+
+        $task = ProcessRequestToken::where([
+            'process_request_id' => $requestId,
+            'status' => 'ACTIVE'
+        ])->firstOrFail();
+
+        $this->assertEquals($user->id, $task->user_id);
+
+        // Assert it throws exception when the variable is missing
+        $response = $run(['foo' => $user->id]);
+        $this->assertEquals(
+            $response['message'],
+            'The variable, {{ userIdInData }}, which equals "", is not a valid User ID in the system'
+        );
+
+        // Assert it throws exception when the variable is not a valid user id
+        $response = $run(['userIdInData' => 'foo']);
+        $this->assertEquals(
+            $response['message'],
+            'The variable, {{ userIdInData }}, which equals "foo", is not a valid User ID in the system'
+        );
     }
 }
