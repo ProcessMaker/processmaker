@@ -106,7 +106,7 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(task, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Screen For Input',
+        label: 'Screen for Input',
         helper: 'What Screen Should Be Used For Rendering This Task',
         name: 'screenRef',
         type: 'FORM'
