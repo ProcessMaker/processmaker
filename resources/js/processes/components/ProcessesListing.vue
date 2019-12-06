@@ -174,8 +174,6 @@
     created () {
       ProcessMaker.EventBus.$on("api-data-process", (val) => {
         this.fetch();
-        this.apiDataLoading = false;
-        this.apiNoResults = false;
       });
     },
     methods: {
@@ -328,6 +326,8 @@
             )
             .then(response => {
               this.data = this.transform(response.data);
+              this.apiDataLoading = false;
+              this.apiNoResults = false;
               this.loading = false;
             });
       }
