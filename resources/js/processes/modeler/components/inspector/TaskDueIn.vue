@@ -9,7 +9,7 @@
                    @input="dueInSetter"
                    min="0"
                    v-on:keydown="dueInValidate">
-            <small class="form-text text-muted">{{ $t('Hours until the task is due') }}</small>
+            <small class="form-text text-muted">{{ $t('Enter the hours until this Task is overdue') }}</small>
         </div>
     </div>
 </template>
