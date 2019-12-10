@@ -20,10 +20,14 @@ class ProfileController extends Controller
         $currentUser = \Auth::user();
         $states = JsonData::states();
         $countries = JsonData::countries();
-        $availableLangs = ['en'];
-        if (app()->getProvider(\ProcessMaker\Package\PackageTranslations\PackageServiceProvider::class)) {
-            $availableLangs = i18nHelper::availableLangs();
+
+        $langs = ['en'];
+        if (app()->getProvider(\ProcessMaker\Package\Translations\PackageServiceProvider::class)) {
+            $langs = i18nHelper::availableLangs();
         }
+        // Our form controls need attribute:value pairs sot we convert the langs array to and associative one
+        $availableLangs = array_combine($langs,$langs);
+
         $timezones = array_reduce(JsonData::timezones(),
             function ($result, $item) {
                 $result[$item] = $item;
