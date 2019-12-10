@@ -10,6 +10,7 @@ use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Models\Process;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
@@ -125,7 +126,7 @@ class RequestController extends Controller
         ));
     }
 
-    public function screenPreview(ProcessRequest $request, Screen $screen)
+    public function screenPreview(ProcessRequest $request, ScreenVersion $screen)
     {
         $this->authorize('view', $request);
         if (!$this->canUserPrintScreen($request)) {
