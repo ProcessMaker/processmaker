@@ -49,34 +49,24 @@
                             @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
                                 <div class="card card-body border-top-0 h-100">
                                     @if ($task->getScreen())
-                                      @if ($task->getScreen()->type === 'FORM (ADVANCED)')
-                                        <advanced-screen-frame
-                                          :allow-interstitial="allowInterstitial"
-                                          @task-completed="redirectWhenTaskCompleted"
-                                          :config="{{json_encode($task->getScreen()->config)}}"
-                                          :csrf-token="'{{ csrf_token() }}'"
-                                          :submiturl="'{{$submitUrl}}'"
-                                          token-id="{{$task->getKey()}}"
-                                          :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
-                                        >
-                                        </advanced-screen-frame>
-                                      @else
-                                        <task-screen
+                                        <component
+                                            :is="'{{ $task->getScreen()->renderComponent() }}'"
                                             ref="taskScreen"
-                                            :listen-process-events="allowInterstitial"
+                                            :allow-interstitial="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
                                             :screen="{{json_encode($task->getScreen()->config)}}"
+                                            :submitUrl="'{{ $submitUrl }}'"
+                                            :csrf-token="'{{ csrf_token() }}'"
                                             :computed="{{json_encode($task->getScreen()->computed)}}"
                                             :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
                                             :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
-                                        </task-screen>
-                                      @endif
+                                        </component>
                                     @else
                                         <task-screen
                                             ref="taskScreen"
-                                            :listen-process-events="allowInterstitial"
+                                            :allow-interstitial="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
@@ -95,7 +85,7 @@
                                 <task-screen
                                     ref="taskWaitScreen"
                                     v-if="allowInterstitial"
-                                    :listen-process-events="allowInterstitial"
+                                    :allow-interstitial="allowInterstitial"
                                     process-id="{{$task->processRequest->process->getKey()}}"
                                     instance-id="{{$task->processRequest->getKey()}}"
                                     token-id="{{$task->getKey()}}"
@@ -304,13 +294,6 @@
         methods: {
           redirectWhenProcessCompleted() {
             window.location.href = `/requests/${this.task.process_request_id}`;
-          },
-          redirectWhenTaskCompleted() {
-            if (!this.allowInterstitial) {
-              document.location.href = "/tasks";
-            } else {
-              document.location.reload();
-            }
           },
           refreshWhenProcessUpdated() {
             window.location.reload();

@@ -94,7 +94,7 @@
         if (this.params && this.params.type) {
           return this.params.type
         }
-        return 'FORM,FORM (ADVANCED)'
+        return 'FORM'
       },
       load(filter) {
         let params = Object.assign(

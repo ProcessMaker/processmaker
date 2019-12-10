@@ -14,14 +14,14 @@ export default {
     VueFormRenderer
   },
   mixins: [ProcessRequestChannel],
-  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "listenProcessEvents"],
+  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "allowInterstitial"],
   data() {
     return {
       formData: this.data
     };
   },
   mounted() {
-    if (this.listenProcessEvents) {
+    if (this.allowInterstitial) {
       this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ActivityAssigned', (data) => {
         this.$emit('activity-assigned', data);
       });
@@ -49,7 +49,7 @@ export default {
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(() => {
           window.ProcessMaker.alert(message, 'success', 5, true);
-          if (!this.listenProcessEvents) {
+          if (!this.allowInterstitial) {
             document.location.href = "/tasks";
           } else {
             document.location.reload();

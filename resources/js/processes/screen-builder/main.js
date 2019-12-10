@@ -1,6 +1,5 @@
 import Vue from 'vue';
-import screenBuilder from './screen';
-import advancedScreenBuilder from './advancedScreen';
+import ScreenBuilder from './screen';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Vuex from 'vuex';
 
@@ -11,5 +10,5 @@ const store = new Vuex.Store({ modules: {} });
 new Vue({
     store,
     el: '#screen-container',
-    components: { screenBuilder, advancedScreenBuilder }
+    components: { ScreenBuilder }
 });

@@ -133,13 +133,19 @@ class Screen extends Model
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
     }
 
-    /**
-     * Get the advanced template for the screen
-     *
-     * @return string
-     */
-    public function defaultAdvancedTemplate()
+    public function builderComponent()
     {
-        return view('processes.screens.advanced', ['screen' => $this])->render();
+        if (isset($this->config['builderComponent'])) {
+            return $this->config['builderComponent'];
+        }
+        return 'ScreenBuilder';
+    }
+    
+    public function renderComponent()
+    {
+        if (isset($this->config['renderComponent'])) {
+            return $this->config['renderComponent'];
+        }
+        return 'task-screen';
     }
 }

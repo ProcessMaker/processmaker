@@ -1,17 +1,16 @@
 <template>
   <div class="card h-100">
     <div class="card-body h-100" style="pointer-events:none;">
-      <advanced-screen-frame
-          v-if="advanced"
-          :config="json"
-          csrf-token=""
-          submiturl=""
-          token-id=""
-          data="formData"
-      >
-      </advanced-screen-frame>
-
-      <vue-form-renderer v-else ref="print" v-model="formData" @update="onUpdate" :config="json"/>
+      <component
+        :is="component"
+        v-model="formData"
+        :data="formData"
+        @update="onUpdate"
+        :config="json"
+        csrf-token=""
+        submiturl=""
+        token-id=""
+      />
     </div>
     <div class="card-footer d-print-none" v-if="canPrint">
       <button type="button" class="btn btn-secondary float-right" @click="print">
@@ -29,12 +28,10 @@
   import '@processmaker/screen-builder/dist/vue-form-builder.css';
   import FileUpload from "../../processes/screen-builder/components/form/file-upload";
   import FileDownload from "../../processes/screen-builder/components/file-download";
-  import AdvancedScreenFrame from "../../processes/screen-builder/advancedScreenFrame";
 
   Vue.component('vue-form-renderer', VueFormRenderer);
   Vue.component('FileUpload', FileUpload);
   Vue.component('FileDownload', FileDownload);
-  Vue.component('advanced-screen-frame', AdvancedScreenFrame);
 
   export default {
     inheritAttrs: false,
@@ -61,8 +58,11 @@
       formData() {
         return this.rowData.data ? this.rowData.data : {};
       },
-      advanced() {
-        return this.rowData.type === 'FORM (ADVANCED)';
+      component() {
+        if ('renderComponent' in this.rowData.config) {
+          return this.rowData.config.renderComponent;
+        }
+        return 'vue-form-renderer';
       }
     },
     mounted() {
