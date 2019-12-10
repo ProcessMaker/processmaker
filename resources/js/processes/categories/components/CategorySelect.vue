@@ -42,6 +42,7 @@
       return {
         content: [],
         loading: false,
+        firstSelect: true,
         options: [],
         error: ''
       };
@@ -59,8 +60,10 @@
       value: {
         immediate: true,
         handler(value) {
+          if (!value) {
+            this.load();
+          }
           if (value) {
-            console.log(value);
             const content = [];
             const selected = String(value).split(',');
             this.loading = selected.length;
@@ -107,6 +110,10 @@
           .get(this.apiList + "?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
           .then(response => {
             this.loading = false;
+            if (this.firstSelect && _.size(response.data.data) === 1) {
+              this.firstSelect = false;
+              this.content = response.data.data;
+            }
             this.options = response.data.data;
           })
           .catch(err => {

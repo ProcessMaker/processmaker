@@ -8,6 +8,7 @@ use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
+use ProcessMaker\Jobs\ExecuteScript;
 use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
@@ -154,6 +155,50 @@ class ScriptController extends Controller
     }
 
     /**
+     * Executes a script, with sample data/config data
+     *
+     *     @OA\Post(
+     *     path="/scripts/{script_id}/execute",
+     *     summary="Execute script",
+     *     operationId="getScriptsPreview",
+     *     tags={"Scripts"},
+     *         @OA\Parameter(
+     *             name="script_id",
+     *             in="path",
+     *             @OA\Schema(type="integer"),
+     *         ),
+     *         @OA\Parameter(
+     *             name="data",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *         @OA\Parameter(
+     *             name="config",
+     *             in="query",
+     *             @OA\Schema(type="string"),
+     *         ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="success if the script was queued",
+     *         @OA\JsonContent(ref="#/components/schemas/scriptsPreview")
+     *         ),
+     *     ),
+     * )
+     */
+    public function execute(Request $request, ...$scriptKey)
+    {
+        $script = count($scriptKey) === 1 && is_numeric($scriptKey[0]) ? Script::find($scriptKey[0]) : Script::where('key', implode('/', $scriptKey))->first();
+        $data = json_decode($request->get('data'), true) ?: [];
+        $config = json_decode($request->get('config'), true) ?: [];
+        $watcher = $request->get('watcher');
+        $code = $script->code;
+
+        ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config);
+        return ['status' => 'success'];
+    }
+
+    /**
      * Get a single script in a process.
      *
      * @param Script $script
@@ -256,15 +301,9 @@ class ScriptController extends Controller
     {
         $request->validate(Script::rules($script));
 
-        $original_attributes = $script->getAttributes();
-
         $script->fill($request->input());
 
         $script->saveOrFail();
-
-        unset($original_attributes['id'],
-        $original_attributes['updated_at']);
-        $script->versions()->create($original_attributes);
 
         return response($request, 204);
     }

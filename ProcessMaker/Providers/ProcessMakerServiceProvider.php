@@ -4,6 +4,7 @@ namespace ProcessMaker\Providers;
 
 use Blade;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\PackageManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -47,6 +48,12 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Blade::directive('lavaryMenuJson', function ($menu) {
             return "<?php echo htmlentities(lavaryMenuJson({$menu}), ENT_QUOTES); ?>";
         });
+
+        //Custom validator for process, scripts, etc names (just alphanumeric, space or dash characters)
+        Validator::extend('alpha_spaces', function ($attr, $val) {
+            return preg_match('/^[\pL\s\-\_\d\.]+$/u', $val);
+        });
+
 
         parent::boot();
     }
@@ -98,14 +105,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
         // Log Notifications
         Event::listen(\Illuminate\Notifications\Events\NotificationSent::class, function($event) {
             \Log::debug(
-                "Sent Notification to " . 
-                get_class($event->notifiable) . 
-                " #" . $event->notifiable->id . 
+                "Sent Notification to " .
+                get_class($event->notifiable) .
+                " #" . $event->notifiable->id .
                 ": " . get_class($event->notification)
             );
         });
-        
-        // Log Broadcasts (messages sent to laravel-echo-server and redis) 
+
+        // Log Broadcasts (messages sent to laravel-echo-server and redis)
         Event::listen(\Illuminate\Notifications\Events\BroadcastNotificationCreated::class, function($event) {
             $channels = implode(", ", $event->broadcastOn());
             \Log::debug("Broadcasting Notification " . $event->broadcastType() . "on channel(s) " . $channels);

@@ -5,12 +5,12 @@
             <select
                 ref="assignmentsDropDownList"
                 class="form-control"
-                :value="assignmentGetter"
-                @input="assignmentSetter">
+                v-model="assignment">
                 <option value="requester">{{ $t("Requester") }}</option>
                 <option value="user">{{ $t("User") }}</option>
                 <option value="group">{{ $t("Group") }}</option>
                 <option value="previous_task_assignee">{{ $t("Previous Task Assignee") }}</option>
+                <option value="user_by_id">{{ $t("By User ID") }}</option>
             </select>
         </div>
 
@@ -27,6 +27,12 @@
             v-model="assigned"
         >
         </group-select>
+
+        <user-by-id
+            v-if="showAssignUserById"
+            :label="$t('Variable Name of User ID Value')"
+            v-model="assigned"
+        ></user-by-id>
 
         <form-checkbox
             :label="$t('Allow Reassignment')"
@@ -132,15 +138,15 @@
       return {
         specialAssignments: [],
         addingSpecialAssignment: false,
-        assignment: null,
         assignmentExpression: "",
         typeAssignmentExpression: "",
         specialAssignmentsData: [],
-
-        assigned: "",
         assignedExpression: null,
         error: "",
       };
+    },
+    mounted() {
+      this.loadSpecialAssignments();
     },
     computed: {
       node () {
@@ -161,17 +167,43 @@
         return _.get(this.node, "allowReassignment");
       },
       assignedUserGetter () {
-        return _.get(this.node, "assignedUsers");
+        let value = _.get(this.node, "assignedUsers");
+        value = this.unformatIfById(value);
+        return value;
       },
       assignedGroupGetter () {
         return _.get(this.node, "assignedGroups");
       },
-      assignmentGetter () {
-        this.assigned = null;
-        this.loadSpecialAssignments();
-        const value = _.get(this.node, "assignment");
-        this.assignment = value;
-        return value;
+
+      assigned: {
+        get() {
+          let value = "";
+          if (this.assignment === "user" || this.assignment === 'user_by_id') {
+            value = this.assignedUserGetter;
+          } else if (this.assignment === "group") {
+            value = this.assignedGroupGetter;
+          }
+          return value;
+        },
+        set(value) {
+          if ((this.assignment === "user" || this.assignment === 'user_by_id') && value) {
+            this.assignedUserSetter(value);
+          } else if (this.assignment === "group" && value) {
+            this.assignedGroupSetter(value);
+          }
+        }
+      },
+      assignment: {
+        get() {
+          const value = _.get(this.node, "assignment");
+          return value;
+        },
+        set(value) {
+          this.$set(this.node, "assignment", value);
+        }
+      },
+      showAssignUserById () {
+        return this.assignment === "user_by_id";
       },
       showAssignOneUser () {
         return this.assignment === "user";
@@ -201,22 +233,30 @@
        * Update the event of the editer property
        */
       assignedUserSetter (id) {
-        let node = this.node;
-        this.$set(node, "assignedUsers", id);
-        this.$set(node, "assignedGroups", "");
+        let value = this.formatIfById(id);
+        this.$set(this.node, "assignedUsers", value);
+        this.$set(this.node, "assignedGroups", "");
       },
       assignedGroupSetter (id) {
         let node = this.node;
         this.$set(node, "assignedUsers", "");
         this.$set(node, "assignedGroups", id);
       },
-      /**
-       * Update the event of the editer property
-       */
-      assignmentSetter (event) {
-        this.assignment = event.target.value;
-        this.assigned = "";
-        this.$set(this.node, "assignment", event.target.value);
+      formatIfById(val) {
+        if (this.assignment === 'user_by_id') {
+          return `{{ ${val} }}`;
+        }
+        return val;
+      },
+      unformatIfById(val) {
+        if (this.assignment === 'user_by_id') {
+          try {
+            return val.match(/^{{ (.*) }}$/)[1];
+          } catch(e) {
+            return "";
+          }
+        }
+        return val;
       },
       assignmentRulesSetter () {
         this.$set(this.node, "assignmentRules", JSON.stringify(this.specialAssignments));
@@ -266,11 +306,20 @@
           this.specialAssignments.push(byExpression);
           this.assignmentRulesSetter();
 
+          let assignmentName = "";
+          if (this.typeAssignmentExpression === 'user') {
+            assignmentName = this.$refs.userAssignedSpecial.content.fullname;
+          } else if (this.typeAssignmentExpression === 'group') {
+            assignmentName = this.$refs.groupAssignedSpecial.content.name
+          } else {
+            assignmentName = this.$t('Requester');
+          }
+
           this.specialAssignmentsData.push({
             type: this.typeAssignmentExpression,
             assignee: this.assignedExpression || "",
             expression: this.assignmentExpression,
-            assignmentName: this.typeAssignmentExpression === "user" ? this.$refs.userAssignedSpecial.content.fullname : this.$refs.groupAssignedSpecial.content.name,
+            assignmentName,
           });
 
           this.assignmentExpression = "";
@@ -328,26 +377,8 @@
       },
     },
     watch: {
-      assigned: {
-        handler (value) {
-          if (this.assignment === "user" && value) {
-            this.assignedUserSetter(value);
-          } else if (this.assignment === "group" && value) {
-            this.assignedGroupSetter(value);
-          }
-        }
-      },
-      assignment: {
-        handler (assigned) {
-          let value = "";
-          if (assigned === "user") {
-            value = this.assignedUserGetter;
-          } else if (assigned === "group") {
-            value = this.assignedGroupGetter;
-          }
-          this.assigned = value;
-        }
-
+      assignment() {
+        this.assigned = "";
       },
       addingSpecialAssignment (value) {
         let wrapper = this.$refs.specialAssignmentWrapper;

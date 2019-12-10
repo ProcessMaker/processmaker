@@ -35,7 +35,7 @@ class SassCompiledNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['broadcast', 'database'];
+        return ['broadcast'];
     }
 
     /**

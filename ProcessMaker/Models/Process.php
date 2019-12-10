@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -19,6 +20,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
@@ -26,6 +28,7 @@ use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Mustache_Engine;
 
 /**
  * Represents a business process definition.
@@ -127,6 +130,7 @@ class Process extends Model implements HasMedia
     use HideSystemResources;
     use PMQL;
     use HasCategories;
+    use HasVersioning;
 
     const categoryClass = ProcessCategory::class;
 
@@ -311,7 +315,7 @@ class Process extends Model implements HasMedia
         $unique = Rule::unique('processes')->ignore($existing);
 
         return [
-            'name' => ['required', $unique],
+            'name' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
             'process_category_id' => 'exists:process_categories,id',
@@ -525,6 +529,9 @@ class Process extends Model implements HasMedia
             case 'user':
                 $user = $this->getNextUserAssignment($activity->getId());
                 break;
+            case 'user_by_id':
+                $user = $this->getNextUserFromVariable($activity, $token);
+                break;
             case 'requester':
                 $user = $this->getRequester($token);
                 break;
@@ -541,6 +548,30 @@ class Process extends Model implements HasMedia
                 $user = null;
         }
         return $user ? User::where('id', $user)->first() : null;
+    }
+
+    /**
+     * If the assignment type is user_by_id, we need to parse 
+     * mustache syntax with the current data to get the user
+     * that should be assigned
+     *
+     * @param ProcessRequestToken $token
+     * @return User $user
+     * @throws InvalidUserAssignmentException
+     */
+    private function getNextUserFromVariable($activity, $token)
+    {
+        $userExpression = $activity->getProperty('assignedUsers');
+        $instanceData = $token->getInstance()->getDataStore()->getData();
+
+        $mustache = new Mustache_Engine();
+        $userId = $mustache->render($userExpression, $instanceData);
+
+        $user = User::find($userId);
+        if (!$user) {
+            throw new InvalidUserAssignmentException($userExpression, $userId);
+        }
+        return $user->id;
     }
 
     /**
@@ -1032,5 +1063,14 @@ class Process extends Model implements HasMedia
     public function getProcessCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    /**
+     * Get the latest version of the process
+     *
+     */
+    public function getLatestVersion()
+    {
+        return $this->versions()->orderBy('id', 'desc')->first();
     }
 }

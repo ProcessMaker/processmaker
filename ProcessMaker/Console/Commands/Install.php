@@ -76,7 +76,10 @@ class Install extends Command
             'DATE_FORMAT' => '"m/d/Y H:i"',
             'MAIN_LOGO_PATH' => '"/img/processmaker_logo.png"',
             'ICON_PATH_PATH' => '"/img/processmaker_icon.png"',
-            'LOGIN_LOGO_PATH' => '"img/processmaker_login.png"'
+            'LOGIN_LOGO_PATH' => '"img/processmaker_login.png"',
+            'REDIS_CLIENT' => 'predis',
+            'REDIS_PREFIX' => null,
+            'HORIZON_PREFIX' => 'horizon:',
         ];
 
         // Configure the filesystem to be local

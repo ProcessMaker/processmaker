@@ -52,7 +52,7 @@ class TimeoutsTest extends TestCase
         $this->assertLogIsEmpty();
         
         $url = route(
-            'api.script.preview',
+            'api.scripts.preview',
             $this->getScript($data['language'], $data['timeout'])->id
         );
         
@@ -85,7 +85,7 @@ class TimeoutsTest extends TestCase
         Notification::fake();
         $this->benchmarkStart();
         $url = route(
-            'api.script.preview',
+            'api.scripts.preview',
             $this->getScript($data['language'], $data['timeout'])->id
         );
         $response = $this->apiCall('POST', $url, $data);

@@ -22,6 +22,7 @@ import {
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
 import GroupSelect from './components/inspector/GroupSelect';
+import UserById from './components/inspector/UserById';
 import TaskNotifications from './components/inspector/TaskNotifications';
 import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
@@ -33,6 +34,7 @@ import {registerNodes} from "@processmaker/modeler";
 import Interstitial from "./components/inspector/Interstitial";
 
 Vue.component('UserSelect', UserSelect);
+Vue.component('UserById', UserById);
 Vue.component('GroupSelect', GroupSelect);
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('TaskNotifications', TaskNotifications);
@@ -104,7 +106,7 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(task, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Screen For Input',
+        label: 'Screen for Input',
         helper: 'What Screen Should Be Used For Rendering This Task',
         name: 'screenRef',
         type: 'FORM'
@@ -188,7 +190,7 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(endEvent, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Summary screen',
+        label: 'Screen for Input',
         helper:
           'Summary screen that will be displayed when process finish with this End event.',
         name: 'screenRef',
@@ -198,7 +200,7 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(manualTask, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Summary screen',
+        label: 'Screen for Input',
         helper:
           'Summary screen that will be displayed when process finish with this End event.',
         name: 'screenRef',

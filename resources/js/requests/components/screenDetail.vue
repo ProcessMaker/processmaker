@@ -26,12 +26,8 @@
   import Vue from 'vue'
   import {VueFormRenderer} from '@processmaker/screen-builder';
   import '@processmaker/screen-builder/dist/vue-form-builder.css';
-  import FileUpload from "../../processes/screen-builder/components/form/file-upload";
-  import FileDownload from "../../processes/screen-builder/components/file-download";
 
   Vue.component('vue-form-renderer', VueFormRenderer);
-  Vue.component('FileUpload', FileUpload);
-  Vue.component('FileDownload', FileDownload);
 
   export default {
     inheritAttrs: false,

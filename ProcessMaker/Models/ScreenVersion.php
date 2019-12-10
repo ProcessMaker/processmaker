@@ -24,7 +24,9 @@ class ScreenVersion extends Model
     ];
 
     protected $casts = [
-        'config' => 'array'
+        'config' => 'array',
+        'computed' => 'array',
+        'watchers' => 'array',
     ];
 
 }
