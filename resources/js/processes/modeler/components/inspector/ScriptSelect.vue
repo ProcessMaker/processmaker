@@ -23,6 +23,14 @@
         </multiselect>
         <small v-if="error" class="text-danger">{{ error }}</small>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
+        <a
+                v-if="content.id"
+                :href="`/designer/scripts/${content.id}/builder`"
+                target="_blank"
+        >
+            Open Script
+            <i class="ml-1 fas fa-external-link-alt"/>
+        </a>
     </div>
 </template>
 
