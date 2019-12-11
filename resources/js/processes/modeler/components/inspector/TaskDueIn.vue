@@ -1,16 +1,14 @@
 <template>
-    <div>
-        <div class="form-group">
-            <label>{{ $t('Due In') }}</label>
-            <input class="form-control"
-                   type="number"
-                   :placeholder="$t('72 hours')"
-                   :value="dueInGetter"
-                   @input="dueInSetter"
-                   min="0"
-                   v-on:keydown="dueInValidate">
-            <small class="form-text text-muted">{{ $t('Enter the hours until this Task is overdue') }}</small>
-        </div>
+    <div class="form-group">
+        <label>{{ $t("Due In") }}</label>
+        <input class="form-control"
+               type="number"
+               :placeholder="$t('72 hours')"
+               :value="dueInGetter"
+               @input="dueInSetter"
+               min="0"
+               v-on:keydown="dueInValidate">
+        <small class="form-text text-muted">{{ $t("Enter the hours until this Task is overdue") }}</small>
     </div>
 </template>
 
