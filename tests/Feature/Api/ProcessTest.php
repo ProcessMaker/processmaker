@@ -4,7 +4,6 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -12,10 +11,10 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
+use ProcessMaker\Providers\WorkflowServiceProvider as PM;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use ProcessMaker\Providers\WorkflowServiceProvider as PM;
 
 /**
  * Tests routes related to processes / CRUD related methods
@@ -832,5 +831,18 @@ class ProcessTest extends TestCase
         $error = $response->json();
         $this->assertArrayHasKey('errors', $error);
         $this->assertTrue(in_array('Multiple diagrams are not supported', $error['errors']['bpmn']));
+    }
+
+    public function testUpdateScriptCategories()
+    {
+        $screen = factory(Process::class)->create();
+        $url = route('api.processes.update', $screen);
+        $params = [
+            'name' => 'name process',
+            'description' => 'Description.',
+            'process_category_id' => factory(ProcessCategory::class)->create()->getKey() . ',' . factory(ProcessCategory::class)->create()->getKey()
+        ];
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(200);
     }
 }
