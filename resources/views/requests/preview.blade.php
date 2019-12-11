@@ -31,6 +31,10 @@
 @endsection
 
 @section('js')
+    @foreach($manager->getScripts() as $script)
+        <script src="{{$script}}"></script>
+    @endforeach
+
     <script src="{{mix('js/requests/preview.js')}}"></script>
     <script>
       new Vue({

@@ -135,4 +135,20 @@ class Screen extends Model
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
     }
+
+    public function builderComponent()
+    {
+        if (isset($this->config['builderComponent'])) {
+            return $this->config['builderComponent'];
+        }
+        return 'ScreenBuilder';
+    }
+    
+    public function renderComponent()
+    {
+        if (isset($this->config['renderComponent'])) {
+            return $this->config['renderComponent'];
+        }
+        return 'task-screen';
+    }
 }
