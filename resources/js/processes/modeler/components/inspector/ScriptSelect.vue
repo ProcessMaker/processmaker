@@ -28,7 +28,7 @@
                 :href="`/designer/scripts/${content.id}/builder`"
                 target="_blank"
         >
-            Open Script
+            {{ $t('Open Script') }}
             <i class="ml-1 fas fa-external-link-alt"/>
         </a>
     </div>

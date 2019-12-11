@@ -25,10 +25,10 @@
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
         <a
                 v-if="content.id"
-                :href="`/designer/screens/${content.id}/edit`"
+                :href="`/designer/screen-builder/${content.id}/edit`"
                 target="_blank"
         >
-            Open Screen
+            {{ $t('Open Screen') }}
             <i class="ml-1 fas fa-external-link-alt"/>
         </a>
     </div>
