@@ -52,8 +52,8 @@
       },
       printablePages() {
         const pages = [0];
-        if (this.json instanceof Array) {
-          this.json.forEach(page => {
+        if (this.rowData.config instanceof Array) {
+          this.rowData.config.forEach(page => {
             this.findPagesInNavButtons(page, pages);
           });
         }
