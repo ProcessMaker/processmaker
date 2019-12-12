@@ -95,7 +95,7 @@ class ScreenController extends Controller
      */
     public function download(Screen $screen, $key)
     {
-        $fileName = snake_case($screen->title) . '.json';
+        $fileName = trim($screen->title) . '.json';
         $fileContents = Cache::get($key);
 
         if (! $fileContents) {
