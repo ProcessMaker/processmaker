@@ -5,8 +5,7 @@
             <select
                 ref="assignmentsDropDownList"
                 class="form-control"
-                :value="assignmentGetter"
-                @input="assignmentSetter">
+                v-model="assignment">
                 <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{ $t(type.label) }}</option>
             </select>
             <small class="form-text text-muted">{{$t("Select the Task assignee")}}</small>
@@ -186,7 +185,7 @@
           let value = "";
           if (this.assignment === "user" || this.assignment === 'user_by_id') {
             value = this.assignedUserGetter;
-          } else if (this.assignment === "group") {
+          } else if (this.assignment === "group" || this.assignment === "self_service") {
             value = this.assignedGroupGetter;
           }
           return value;
@@ -194,7 +193,7 @@
         set(value) {
           if ((this.assignment === "user" || this.assignment === 'user_by_id') && value) {
             this.assignedUserSetter(value);
-          } else if (this.assignment === "group" && value) {
+          } else if ((this.assignment === "group" || this.assignment === "self_service") && value) {
             this.assignedGroupSetter(value);
           }
         }
@@ -315,7 +314,7 @@
           let assignmentName = "";
           if (this.typeAssignmentExpression === 'user') {
             assignmentName = this.$refs.userAssignedSpecial.content.fullname;
-          } else if (this.typeAssignmentExpression === 'group') {
+          } else if (this.typeAssignmentExpression === 'group' || this.typeAssignmentExpression === 'self_service') {
             assignmentName = this.$refs.groupAssignedSpecial.content.name
           } else {
             assignmentName = "";
