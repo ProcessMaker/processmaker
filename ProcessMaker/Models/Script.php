@@ -44,7 +44,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * ),
- * 
+ *
  * @OA\Schema(
  *   schema="scriptsPreview",
  *   @OA\Property(property="status", type="string"),
@@ -85,7 +85,7 @@ class Script extends Model
 
         return [
             'key' => 'unique:scripts,key',
-            'title' => ['required', 'string', $unique],
+            'title' => ['required', 'string', $unique, 'alpha_spaces'],
             'language' => [
                 'required',
                 Rule::in(static::scriptFormatValues())

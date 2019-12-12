@@ -150,7 +150,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $unique = Rule::unique($self->getConnectionName() . '.process_requests')->ignore($existing);
 
         return [
-            'name' => ['required', 'string', 'max:100', $unique],
+            'name' => ['required', 'string', 'max:100', $unique, 'alpha_spaces'],
             'data' => 'required',
             'status' => 'in:ACTIVE,COMPLETED,ERROR',
             'process_id' => 'required|exists:processes,id',
@@ -459,27 +459,27 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * PMQL field alias (created = created_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasCreated()
     {
         return 'created_at';
     }
-    
+
     /**
      * PMQL field alias (modified = updated_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasModified()
     {
         return 'updated_at';
     }
-        
+
     /**
      * PMQL field alias (started = initiated_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasStarted()
     {
         return 'initiated_at';
@@ -489,7 +489,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * PMQL field alias (completed = completed_at)
      *
      * @return string
-     */    
+     */
     public function fieldAliasCompleted()
     {
         return 'completed_at';
@@ -514,9 +514,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * PMQL value alias for status field
      *
      * @param string $value
-     * 
+     *
      * @return callback
-     */        
+     */
     public function valueAliasStatus($value)
     {
         $statusMap = [
@@ -525,9 +525,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             'error' => 'ERROR',
             'canceled' => 'CANCELED',
         ];
-        
+
         $value = mb_strtolower($value);
-    
+
         return function($query) use ($value, $statusMap) {
             if (array_key_exists($value, $statusMap)) {
                 $query->where('status', $statusMap[$value]);
@@ -541,9 +541,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * PMQL value alias for requester field
      *
      * @param string $value
-     * 
+     *
      * @return callback
-     */    
+     */
     private function valueAliasRequester($value)
     {
         $user = User::where('username', $value)->get()->first();
@@ -558,7 +558,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      * PMQL value alias for participant field
      *
      * @param string $value
-     * 
+     *
      * @return callback
      */
     private function valueAliasParticipant($value)

@@ -1,13 +1,19 @@
 <template>
-  <div>
-    <div v-for="page in printablePages" :key="page" class="card">
-      <div class="card-body" style="pointer-events:none;">
-        <vue-form-renderer ref="print" v-model="formData" @update="onUpdate" :config="json" />
-      </div>
-      <div class="card-footer d-print-none" v-if="canPrint">
-        <button type="button" class="btn btn-secondary float-right" @click="print">
-          <i class="fas fa-print"></i> {{ $t('Print') }}
-        </button>
+  <div class="card h-100">
+      <div v-for="page in printablePages" :key="page" class="card">
+      <div class="card-body h-100" style="pointer-events:none;">
+        <component
+          ref="print"
+          :is="component"
+          v-model="formData"
+          :data="formData"
+          @update="onUpdate"
+          :config="json"
+          csrf-token=""
+          submiturl=""
+          token-id=""
+        />
+
       </div>
     </div>
   </div>
@@ -39,6 +45,7 @@
     computed: {
       json() {
         const json = JSON.parse(JSON.stringify(this.rowData.config));
+        console.log("JSON", json);
         return this.disableForm(json);
       },
       formData() {
@@ -46,13 +53,22 @@
       },
       printablePages() {
         const pages = [0];
-        if (this.rowData.config instanceof Array) {
-          this.rowData.config.forEach(page => {
+        if (this.json instanceof Array) {
+          console.log("Yup");
+          this.json.forEach(page => {
+            console.log("it", page);
             this.findPagesInNavButtons(page, pages);
           });
         }
+        console.log("printablePages", pages);
         return pages;
       },
+      component() {
+        if ('renderComponent' in this.rowData.config) {
+          return this.rowData.config.renderComponent;
+        }
+        return 'vue-form-renderer';
+      }
     },
     mounted() {
       if (this.canPrint) {
@@ -115,6 +131,7 @@
         handler() {
           this.$nextTick(() => {
             this.$refs.print.forEach((page, index) => {
+              console.log("SETTING CURRENT PAGE TO",this.printablePages[index]);
               page.currentPage = this.printablePages[index];
             });
           });
