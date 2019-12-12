@@ -730,8 +730,8 @@ class ImportProcess implements ShouldQueue
     {
         $this->status = [];
 
-        $this->status['process_category'] = [
-            'label' => __('Process Category'),
+        $this->status['process_categories'] = [
+            'label' => __('Process Categories'),
             'success' => false,
             'message' => __('Starting')];
 

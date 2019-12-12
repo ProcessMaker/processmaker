@@ -160,7 +160,7 @@ Route::group(
     Route::get('data_sources', 'DataSourcesController@index')->name('data-sources.index')->middleware('can:view-data-sources');
     Route::get('data_sources/{data_source}', 'DataSourcesController@show')->name('data-sources.show')->middleware('can:view-data-sources');
     Route::post('requests/{request}/data_sources/{data_source}', 'DataSourcesController@executeDataSource');
-    Route::post('requests//data_sources/{data_source}', 'DataSourcesController@executeDataSourceTest');
+    Route::post('requests/data_sources/{data_source}', 'DataSourcesController@executeDataSourceTest');
 
 
     //UI customization

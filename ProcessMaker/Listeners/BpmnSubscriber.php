@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ProcessCompleted;
+use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ProcessInstanceCompletedEvent;
@@ -88,6 +89,7 @@ class BpmnSubscriber
         if ($token->element_type == 'task') {
             $notifiables = $token->getNotifiables('completed');
             Notification::send($notifiables, new ActivityCompletedNotification($token));
+            event(new ActivityCompleted($token));
         }
     }
 

@@ -109,13 +109,12 @@
           </select>
         </div>
         <div class="form-group">
-          <category-select 
-          :label="$t('Category')" 
-          api-get="screen_categories" 
-          api-list="screen_categories" 
+          <category-select
+          :label="$t('Category')"
+          api-get="screen_categories"
+          api-list="screen_categories"
           v-model="dupScreen.screen_category_id"
-          :errors="errors.screen_category_id"
-          @update:duplicateScreenCategory="updateCategory">
+          :errors="errors.screen_category_id">
           </category-select>
         </div>
         <div class="form-group">
@@ -237,10 +236,10 @@ export default {
           window.location.href = "/designer/screens/" + data.id + "/edit";
           break;
         case "duplicate-item":
-          this.dupScreen.title = data.title + " Copy";
+          this.dupScreen.title = data.title + ' ' + this.$t('Copy');
           this.dupScreen.type = data.type;
           this.dupScreen.category = data.category;
-          this.dupScreen.screen_category_id = data.category.id;
+          this.dupScreen.screen_category_id = data.screen_category_id;
           this.dupScreen.description = data.description;
           this.dupScreen.id = data.id;
           this.showModal();
@@ -297,10 +296,6 @@ export default {
           this.loading = false;
         });
     },
-    updateCategory(value) {
-      this.dupScreen.category = value;
-      this.dupScreen.screen_category_id = this.dupScreen.category.id;
-    }
   },
 
   computed: {}

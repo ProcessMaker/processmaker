@@ -12,6 +12,7 @@
                 <option value="previous_task_assignee">{{ $t("Previous Task Assignee") }}</option>
                 <option value="user_by_id">{{ $t("By User ID") }}</option>
             </select>
+            <small class="form-text text-muted">{{$t("Select the Task assignee")}}</small>
         </div>
 
         <user-select
@@ -43,6 +44,7 @@
 
         <form-checkbox
             :label="$t('Allow Reassignment')"
+            :helper="$t('Allows the Task assignee to reassign this Task')"
             :checked="allowReassignmentGetter"
             toggle="true"
             @change="allowReassignmentSetter">
@@ -51,12 +53,12 @@
         <div class="form-group">
 
             <div class="form-group special-assignment-header">
-                <label>{{ $t("Assign by Expression") }}</label>
+                <label>{{ $t("Assign by Expression: Use a rule to assign this Task conditionally") }}</label>
                 <button type="button"
                         @click="addingSpecialAssignment = true"
                         class="float-right btn-special-assignment-action btn btn-secondary btn-sm"
                         :class="{inactive: addingSpecialAssignment}">
-                    <i class="fa fa-plus"></i> {{ $t("Rule") }}
+                    <i class="fa fa-plus"/> {{ $t("Rule") }}
                 </button>
             </div>
 
@@ -67,10 +69,11 @@
                         <label>{{ $t("Expression") }}</label>
                         <input class="form-control" ref="specialAssignmentsInput" type="text"
                                v-model="assignmentExpression">
+                        <small class="form-text text-muted">{{$t("Enter the expression to evaluate Task assignment")}}</small>
                     </div>
 
                     <div class="form-group">
-                        <label>{{ $t("Task Assignment") }}</label>
+                        <label>{{ $t("Select the Task assignee") }}</label>
                         <select
                             ref="specialAssignmentsDropDownList"
                             class="form-control"

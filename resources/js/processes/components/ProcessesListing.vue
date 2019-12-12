@@ -171,7 +171,11 @@
         ]
       };
     },
-
+    created () {
+      ProcessMaker.EventBus.$on("api-data-process", (val) => {
+        this.fetch();
+      });
+    },
     methods: {
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
@@ -322,6 +326,8 @@
             )
             .then(response => {
               this.data = this.transform(response.data);
+              this.apiDataLoading = false;
+              this.apiNoResults = false;
               this.loading = false;
             });
       }
