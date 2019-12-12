@@ -3,6 +3,8 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Traits\HasSelfServiceTasks;
+use ProcessMaker\Traits\HasCategories;
 
 /**
  * ProcessVersion is used to store the historical version of a process.
@@ -20,6 +22,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ProcessVersion extends Model
 {
+    use HasSelfServiceTasks;
+    use HasCategories;
+
+    const categoryClass = ProcessCategory::class;
+
     protected $connection = 'processmaker';
 
     /**
@@ -37,6 +44,12 @@ class ProcessVersion extends Model
         'updated_at',
     ];
 
+    protected $casts = [
+        'start_events' => 'array',
+        'warnings' => 'array',
+        'self_service_tasks' => 'array',
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -47,4 +60,14 @@ class ProcessVersion extends Model
     protected $hidden = [
         'bpmn'
     ];
+
+    /**
+     * Set multiple|single categories to the process
+     *
+     * @param string $value
+     */
+    public function setProcessCategoryIdAttribute($value)
+    {
+        return $this->setMultipleCategories($value, 'process_category_id');
+    }
 }

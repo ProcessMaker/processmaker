@@ -10,12 +10,13 @@
       @upload-start="start"
       @file-removed="removed"
       @file-success="fileUploaded"
+      @file-added="addFile"
     >
       <uploader-unsupport></uploader-unsupport>
 
       <uploader-drop id="uploaderMain" class="form-control-file">
-        <p>{{$t('Drop a file here to upload or')}}</p>
-        <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{$t('select file')}}</uploader-btn>
+        <p>{{ $t('Drop a file here to upload or') }}</p>
+        <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{ $t('select file') }}</uploader-btn>
       </uploader-drop>
 
       <uploader-list></uploader-list>
@@ -36,7 +37,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", 'multiFiles'],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", 'multiFiles'],
   beforeMount() {
     this.getFileType();
   },
@@ -68,6 +69,14 @@ export default {
     inProgress() {
       return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
     },
+    filesAccept() {
+      let accept = [];
+
+      (this.accept.split(',')).forEach(item => {
+        accept.push(item.trim())
+      });
+      return accept;
+    }
   },
   data() {
     return {
@@ -93,10 +102,27 @@ export default {
         },
         singleFile: !this.multiFiles
       },
+      attrs: {
+        accept: this.accept
+      },
       reRenderKey: 0,
     };
   },
   methods: {
+    addFile(file) {
+      if (this.filesAccept) {
+        file.ignored = true;
+        if (this.filesAccept.indexOf(file.fileType) !== -1) {
+          file.ignored = false;
+        }
+        if (file.ignored) {
+          ProcessMaker.alert(this.$t("File not allowed."), "danger");
+        }
+        return false
+      }
+      file.ignored = false;
+      return true;
+    },
     removeDefaultClasses() {
       // we need to be able to remove the classes from the npm package
       document
@@ -106,12 +132,10 @@ export default {
         });
     },
     getFileType() {
-      if (document.head.querySelector('meta[name="request-id"]')) {
-        this.fileType = 'request';
-      }
-
       if (document.head.querySelector('meta[name="collection-id"]')) {
         this.fileType = 'collection';
+      } else {
+        this.fileType = 'request';
       }
     },
     fileUploaded(rootFile, file, message) {

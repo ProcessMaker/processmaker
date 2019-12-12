@@ -5,8 +5,8 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Validation\CategoryRule;
@@ -23,10 +23,11 @@ use ProcessMaker\Validation\CategoryRule;
  * @property array config
  * @property array computed
  * @property array custom_css
+ * @property array watchers
  * @property string label
  * @property Carbon type
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $created_at
  *
  * @OA\Schema(
  *   schema="screensEditable",
@@ -45,7 +46,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * )
- * 
+ *
  * * @OA\Schema(
  *   schema="screenExported",
  *   @OA\Property(property="url", type="string"),
@@ -57,6 +58,7 @@ class Screen extends Model
     use SerializeToIso8601;
     use HideSystemResources;
     use HasCategories;
+    use HasVersioning;
 
     const categoryClass = ScreenCategory::class;
 
@@ -64,7 +66,8 @@ class Screen extends Model
 
     protected $casts = [
         'config' => 'array',
-        'computed' => 'array'
+        'computed' => 'array',
+        'watchers' => 'array',
     ];
 
     /**
@@ -90,10 +93,10 @@ class Screen extends Model
         $unique = Rule::unique('screens')->ignore($existing);
 
         return [
-            'title' => ['required', $unique],
+            'title' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'type' => 'required',
-            'screen_category_id' => ['required', new CategoryRule]
+            'screen_category_id' => [new CategoryRule($existing)]
         ];
     }
 
@@ -131,5 +134,21 @@ class Screen extends Model
     public function getScreenCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    public function builderComponent()
+    {
+        if (isset($this->config['builderComponent'])) {
+            return $this->config['builderComponent'];
+        }
+        return 'ScreenBuilder';
+    }
+    
+    public function renderComponent()
+    {
+        if (isset($this->config['renderComponent'])) {
+            return $this->config['renderComponent'];
+        }
+        return 'task-screen';
     }
 }

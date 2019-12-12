@@ -35,6 +35,11 @@
           >#{{props.rowData.process_request.id}} {{props.rowData.process.name}}</b-link>
         </template>
 
+        <template slot="status" slot-scope="props">
+          <i class="fas fa-circle small" :class="statusColor(props.rowData)"></i>
+          {{ (statusLabel(props.rowData)) }}
+        </template>
+
         <template slot="assignee" slot-scope="props">
           <avatar-image size="25" :input-data="props.rowData.user" hide-name="true" v-if="props.rowData.user"></avatar-image>
         </template>
@@ -122,6 +127,9 @@ export default {
       case "CLOSED":
         status = "Completed";
         break;
+      case "SELF_SERVICE":
+        status = "Self Service";
+        break;
       default:
         status = "In Progress";
         break;
@@ -161,8 +169,8 @@ export default {
             field.sortField = 'element_name';
             break;
           case 'status':
-            field.name = 'status';
-            field.callback = this.formatStatus;
+            field.name = '__slot:status';
+            field.sortField = 'status';
             break;
           case 'request':
             field.name = '__slot:requestName';
@@ -270,21 +278,29 @@ export default {
         window.location = link;
       }
     },
-    formatStatus(status) {
-      let statusNames = {
-        ACTIVE: this.$t("In Progress"),
-        CLOSED: this.$t("Completed")
-      };
-      let bubbleColor = {
-        ACTIVE: "text-success",
-        CLOSED: "text-primary"
-      };
-      return (
-        '<i class="fas fa-circle ' +
-        bubbleColor[status] +
-        ' small"></i> ' +
-        statusNames[status]
-      );
+    statusColor(props) {
+      let status = props.status, isSelfService = props.is_self_service;
+      if (status == 'ACTIVE' && isSelfService) {
+        return 'text-warning';
+      } else if (status == 'ACTIVE') {
+        return 'text-success';
+      } else if (status == 'CLOSED') {
+        return 'text-primary';
+      } else {
+        return 'text-secondary';
+      }
+    },
+    statusLabel(props) {
+      let status = props.status, isSelfService = props.is_self_service;
+      if (status == 'ACTIVE' && isSelfService) {
+        return 'Self Service';
+      } else if (status == 'ACTIVE') {
+        return 'In Progress';
+      } else if (status == 'CLOSED') {
+        return 'Completed';
+      } else {
+        return status;
+      }
     },
     classDueDate(value) {
       let dueDate = moment(value);

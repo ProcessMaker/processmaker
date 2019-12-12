@@ -1,6 +1,6 @@
 <template>
     <div class="data-table">
-        <div class="card card-body table-card">
+        <div>
             <vuetable :no-data-template="$t('No Data Available')"
                       :dataManager="dataManager"
                       :sortOrder="sortOrder"
@@ -27,7 +27,8 @@
                 </template>
 
                 <template slot="participants" slot-scope="props">
-                    <avatar-image class="d-inline-flex pull-left align-items-center"
+                    <span v-if="props.rowData.is_self_service">{{$t('Self Service')}}</span>
+                    <avatar-image v-else class="d-inline-flex pull-left align-items-center"
                                   size="25"
                                   :input-data="props.rowData.participants"
                     ></avatar-image>
@@ -86,8 +87,17 @@
       __(variable) {
         return __(variable);
       },
+      canClaim(row) {
+        let assignable = false;
+        if (row.assignable_users instanceof Array) {
+          assignable = !!row.assignable_users.find(user => {
+            return String(user.id) === String(window.ProcessMaker.user.id);
+          });
+        }
+        return !row.user_id && row.is_self_service && assignable;
+      },
       isEditable(row) {
-        return String(row.user_id) === String(window.ProcessMaker.user.id) || row.status !== "ACTIVE";
+        return String(row.user_id) === String(window.ProcessMaker.user.id) || this.canClaim(row) || row.status !== "ACTIVE";
       },
       onAction(action, rowData, index) {
         switch (action) {
@@ -113,7 +123,7 @@
         data.meta.to = data.meta.from + data.meta.count;
         //load data for participants
         for (let record of data.data) {
-          record["participants"] = [record["user"]];
+          record["participants"] = record["user"] ? [record["user"]] : [];
 
           let color = "text-primary";
           if (record["status"] === "overdue") {
@@ -133,7 +143,7 @@
           .get(
             "tasks?page=" +
             this.page +
-            "&include=user" +
+            "&include=user,assignableUsers" +
             "&process_request_id=" +
             this.processRequestId +
             "&status=" +

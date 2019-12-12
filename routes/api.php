@@ -14,6 +14,8 @@ Route::group(
     Route::put('users/restore', 'UserController@restore')->name('users.restore')->middleware('can:create-users');
     Route::put('users/{user}', 'UserController@update')->name('users.update'); //Permissions handled in the controller
     Route::delete('users/{user}', 'UserController@destroy')->name('users.destroy')->middleware('can:delete-users');
+    // User Groups
+    Route::put('users/{user}/groups', 'UserController@updateGroups')->name('users.groups.update')->middleware('can:edit-users');
     // User personal access tokens
     Route::get('users/{user}/tokens', 'UserTokenController@index')->name('users.tokens.index'); //Permissions handled in the controller
     Route::get('users/{user}/tokens/{tokenId}', 'UserTokenController@show')->name('users.tokens.show'); //Permissions handled in the controller
@@ -55,11 +57,11 @@ Route::group(
     Route::post('screens/import', 'ScreenController@import')->name('screens.import')->middleware('can:import-screens');
 
     // Screen Categories
-    Route::get('screen_categories', 'ScreenCategoryController@index')->name('screen_categories.index')->middleware('can:view-screens');
-    Route::get('screen_categories/{screen_category}', 'ScreenCategoryController@show')->name('screen_categories.show')->middleware('can:view-screens');
-    Route::post('screen_categories', 'ScreenCategoryController@store')->name('screen_categories.store')->middleware('can:edit-screens');
-    Route::put('screen_categories/{screen_category}', 'ScreenCategoryController@update')->name('screen_categories.update')->middleware('can:edit-screens');
-    Route::delete('screen_categories/{screen_category}', 'ScreenCategoryController@destroy')->name('screen_categories.destroy')->middleware('can:edit-screens');
+    Route::get('screen_categories', 'ScreenCategoryController@index')->name('screen_categories.index')->middleware('can:view-screen-categories');
+    Route::get('screen_categories/{screen_category}', 'ScreenCategoryController@show')->name('screen_categories.show')->middleware('can:view-screen-categories');
+    Route::post('screen_categories', 'ScreenCategoryController@store')->name('screen_categories.store')->middleware('can:create-screen-categories');
+    Route::put('screen_categories/{screen_category}', 'ScreenCategoryController@update')->name('screen_categories.update')->middleware('can:edit-screen-categories');
+    Route::delete('screen_categories/{screen_category}', 'ScreenCategoryController@destroy')->name('screen_categories.destroy')->middleware('can:delete-screen-categories');
 
     // Scripts
     Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');
@@ -68,14 +70,15 @@ Route::group(
     Route::put('scripts/{script}', 'ScriptController@update')->name('scripts.update')->middleware('can:edit-scripts');
     Route::put('scripts/{script}/duplicate', 'ScriptController@duplicate')->name('scripts.duplicate')->middleware('can:create-scripts');
     Route::delete('scripts/{script}', 'ScriptController@destroy')->name('scripts.destroy')->middleware('can:delete-scripts');
-    Route::post('scripts/{script}/preview', 'ScriptController@preview')->name('script.preview')->middleware('can:view-scripts');
+    Route::post('scripts/{script}/preview', 'ScriptController@preview')->name('scripts.preview')->middleware('can:view-scripts');
+    Route::post('scripts/execute/{script_id}/{script_key?}', 'ScriptController@execute')->name('scripts.execute')->middleware('can:view-scripts');
 
     // Script Categories
-    Route::get('script_categories', 'ScriptCategoryController@index')->name('script_categories.index')->middleware('can:view-scripts');
-    Route::get('script_categories/{script_category}', 'ScriptCategoryController@show')->name('script_categories.show')->middleware('can:view-scripts');
-    Route::post('script_categories', 'ScriptCategoryController@store')->name('script_categories.store')->middleware('can:edit-scripts');
-    Route::put('script_categories/{script_category}', 'ScriptCategoryController@update')->name('script_categories.update')->middleware('can:edit-scripts');
-    Route::delete('script_categories/{script_category}', 'ScriptCategoryController@destroy')->name('script_categories.destroy')->middleware('can:edit-scripts');
+    Route::get('script_categories', 'ScriptCategoryController@index')->name('script_categories.index')->middleware('can:view-script-categories');
+    Route::get('script_categories/{script_category}', 'ScriptCategoryController@show')->name('script_categories.show')->middleware('can:view-script-categories');
+    Route::post('script_categories', 'ScriptCategoryController@store')->name('script_categories.store')->middleware('can:create-script-categories');
+    Route::put('script_categories/{script_category}', 'ScriptCategoryController@update')->name('script_categories.update')->middleware('can:edit-script-categories');
+    Route::delete('script_categories/{script_category}', 'ScriptCategoryController@destroy')->name('script_categories.destroy')->middleware('can:delete-script-categories');
 
     // Processes
     Route::get('processes', 'ProcessController@index')->name('processes.index')->middleware('can:view-processes');
@@ -93,11 +96,11 @@ Route::group(
     Route::get('start_processes', 'ProcessController@startProcesses')->name('processes.start'); //Filtered in controller
 
     // Process Categories
-    Route::get('process_categories', 'ProcessCategoryController@index')->name('process_categories.index')->middleware('can:view-categories');
-    Route::get('process_categories/{process_category}', 'ProcessCategoryController@show')->name('process_categories.show')->middleware('can:view-categories');
-    Route::post('process_categories', 'ProcessCategoryController@store')->name('process_categories.store')->middleware('can:create-categories');
-    Route::put('process_categories/{process_category}', 'ProcessCategoryController@update')->name('process_categories.update')->middleware('can:edit-categories');
-    Route::delete('process_categories/{process_category}', 'ProcessCategoryController@destroy')->name('process_categories.destroy')->middleware('can:delete-categories');
+    Route::get('process_categories', 'ProcessCategoryController@index')->name('process_categories.index')->middleware('can:view-process-categories');
+    Route::get('process_categories/{process_category}', 'ProcessCategoryController@show')->name('process_categories.show')->middleware('can:view-process-categories');
+    Route::post('process_categories', 'ProcessCategoryController@store')->name('process_categories.store')->middleware('can:create-process-categories');
+    Route::put('process_categories/{process_category}', 'ProcessCategoryController@update')->name('process_categories.update')->middleware('can:edit-process-categories');
+    Route::delete('process_categories/{process_category}', 'ProcessCategoryController@destroy')->name('process_categories.destroy')->middleware('can:delete-process-categories');
 
     // Permissions
     Route::put('permissions', 'PermissionController@update')->name('permissions.update')->middleware('can:edit-users');
@@ -159,6 +162,7 @@ Route::group(
     Route::get('data_sources', 'DataSourcesController@index')->name('data-sources.index')->middleware('can:view-data-sources');
     Route::get('data_sources/{data_source}', 'DataSourcesController@show')->name('data-sources.show')->middleware('can:view-data-sources');
     Route::post('requests/{request}/data_sources/{data_source}', 'DataSourcesController@executeDataSource');
+    Route::post('requests/data_sources/{data_source}', 'DataSourcesController@executeDataSourceTest');
 
 
     //UI customization

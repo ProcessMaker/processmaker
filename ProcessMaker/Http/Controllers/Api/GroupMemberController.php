@@ -264,20 +264,29 @@ class GroupMemberController extends Controller
     {
         $member_id = $request->input('member_id', null);
         $member_type = $request->input('member_type', null);
+        $assignedResult = collect([]);
+        
+        if ($request->input('order_by') == 'assigned' && $member_id && $member_type) {
+            $orderByAssigned = true;
+        } else {
+            $orderByAssigned = false;
+        }
+        
+        if ($orderByAssigned) {
+            $orderBy = 'name';
+        } else {
+            $orderBy = $request->input('order_by', 'name');
+        }
 
         $members = [];
         if ($member_id && $member_type) {
             //Load groups already assigned.
-            $data = GroupMember::where('member_type', $member_type)
+            $members = GroupMember::where('member_type', $member_type)
                 ->where('member_id', $member_id)
-                ->get();
-            foreach ($data as $item) {
-                array_push($members, $item->group_id);
-            }
+                ->get()->pluck('group_id');
         }
-
-        $query = Group::where('status', 'ACTIVE')
-            ->whereNotIn('id', $members);
+        
+        $query = Group::where('status', 'ACTIVE');
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
@@ -287,11 +296,30 @@ class GroupMemberController extends Controller
                 $query->Where('name', 'like', $filter);
             });
         }
-        $response =
-            $query->orderBy(
-                $request->input('order_by', 'name'),
-                $request->input('order_direction', 'ASC')
-            )->paginate($request->input('per_page', 10));
+
+        $query->orderBy(
+            $orderBy,
+            $request->input('order_direction', 'ASC')
+        );
+        
+        if ($orderByAssigned) {
+            $assignedQuery = clone $query;
+            $assignedQuery->whereIn('id', $members);
+        }
+        
+        $query->whereNotIn('id', $members);
+
+        $response = $query->get();
+        
+        if ($orderByAssigned) {
+            $assignedResponse = $assignedQuery->get();
+            $response = $assignedResponse->merge($response);
+            
+            $response = $response->map(function($group) use ($members) {
+                $group->assigned = $members->contains($group->id);
+                return $group;
+            })->values();
+        }
 
         return new ApiCollection($response);
     }

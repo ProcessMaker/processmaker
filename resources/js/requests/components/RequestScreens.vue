@@ -1,6 +1,6 @@
 <template>
   <div class="data-table">
-    <div class="card card-body table-card">
+    <div>
       <vuetable
         :dataManager="dataManager"
         :noDataTemplate="$t('No Data Available')"
@@ -100,7 +100,6 @@
       },
       previewScreen(data) {
         data.view = !data.view;
-        console.log(data);
         this.$refs.screens.toggleDetailRow(data.id);
       },
       fetch() {

@@ -16,10 +16,10 @@
                 </b-col>
                 <b-col cols="4">
                     <b-input-group>
-                        <b-input-group-text slot="prepend">
-                            <i class="fas fa-search"></i>
-                        </b-input-group-text>
                         <b-form-input v-model="filter" :placeholder="$t('Search') + '...'"></b-form-input>
+                        <b-input-group-append>
+                            <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                        </b-input-group-append>
                     </b-input-group>
                 </b-col>
             </b-row>
@@ -128,7 +128,7 @@
             this.filter +
             "&order_by=category.name,name" +
             "&order_direction=asc,asc" +
-            "&include=events,category"
+            "&include=events,categories"
           )
           .then(response => {
             let data = response.data;
@@ -153,16 +153,15 @@
         // We need to pull out the category name, and if it's available in our processes, append it there
         // if not, create the category in our processes array and then append it
         for (let process of data) {
-          let category = process.category
-            ? process.category.name
-            : "Uncategorized";
-          // Now determine if we have it defined in our processes list
-          if (typeof this.processes[category] == "undefined") {
-            // Create it
-            this.processes[category] = [];
+          for (let category of process.categories) {
+            // Now determine if we have it defined in our processes list
+            if (typeof this.processes[category.name] == "undefined") {
+              // Create it
+              this.processes[category.name] = [];
+            }
+            // Now append
+            this.processes[category.name].push(process);
           }
-          // Now append
-          this.processes[category].push(process);
         }
       }
     }

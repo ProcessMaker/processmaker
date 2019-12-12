@@ -20,7 +20,7 @@
               pagination-path="meta"
               :noDataTemplate="$t('No Data Available')"
       >
-        <template slot="name" slot-scope="props">{{props.rowData.name}} <i v-if="props.rowData.warnings" class="text-warning fa fa-exclamation-triangle"></i></template>
+        <template slot="name" slot-scope="props">{{props.rowData.name}} <i v-if="props.rowData.warnings" v-b-tooltip.hover :title="$t('BPMN validation issues. Request cannot be started.')" class="text-warning fa fa-exclamation-triangle"></i></template>
 
         <template slot="owner" slot-scope="props">
           <avatar-image
@@ -171,7 +171,11 @@
         ]
       };
     },
-
+    created () {
+      ProcessMaker.EventBus.$on("api-data-process", (val) => {
+        this.fetch();
+      });
+    },
     methods: {
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
@@ -248,9 +252,9 @@
                       .then(response => {
                         ProcessMaker.alert(
                             this.$t("The process was archived."),
-                            "warning"
+                            "success"
                         );
-                        this.$emit("reload");
+                        this.$refs.pagination.loadPage(1);
                       });
                 }
             );
@@ -322,6 +326,8 @@
             )
             .then(response => {
               this.data = this.transform(response.data);
+              this.apiDataLoading = false;
+              this.apiNoResults = false;
               this.loading = false;
             });
       }

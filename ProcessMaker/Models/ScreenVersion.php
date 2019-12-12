@@ -3,9 +3,14 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Traits\HasCategories;
 
 class ScreenVersion extends Model
 {
+    use HasCategories;
+
+    const categoryClass = ScreenCategory::class;
+
     protected $connection = 'processmaker';
 
     /**
@@ -24,7 +29,19 @@ class ScreenVersion extends Model
     ];
 
     protected $casts = [
-        'config' => 'array'
+        'config' => 'array',
+        'computed' => 'array',
+        'watchers' => 'array',
     ];
+
+    /**
+     * Set multiple|single categories to the screen
+     *
+     * @param string $value
+     */
+    public function setScreenCategoryIdAttribute($value)
+    {
+        return $this->setMultipleCategories($value, 'screen_category_id');
+    }
 
 }

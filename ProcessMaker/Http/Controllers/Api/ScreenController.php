@@ -87,11 +87,13 @@ class ScreenController extends Controller
                 $query->where('title', 'like', $filter)
                     ->orWhere('description', 'like', $filter)
                     ->orWhere('type', 'like', $filter)
-                    ->orWhere('config', 'like', $filter);
+                    ->orWhere('config', 'like', $filter)
+                    ->orWhere('category.name', 'like', $filter);
             });
         }
         if ($request->input('type')) {
-            $query->where('type', $request->input('type'));
+            $types = explode(',', $request->input('type'));
+            $query->whereIn('type', $types);
         }
         $response =
             $query->orderBy(
@@ -162,6 +164,7 @@ class ScreenController extends Controller
         $request->validate(Screen::rules());
         $screen = new Screen();
         $screen->fill($request->input());
+        
         $screen->saveOrFail();
         return new ApiResource($screen);
     }
@@ -201,14 +204,8 @@ class ScreenController extends Controller
     public function update(Screen $screen, Request $request)
     {
         $request->validate(Screen::rules($screen));
-        $original_attributes = $screen->getAttributes();
         $screen->fill($request->input());
         $screen->saveOrFail();
-
-        unset($original_attributes['id'],
-        $original_attributes['updated_at']);
-        $screen->versions()->create($original_attributes);
-
         return response([], 204);
     }
 
@@ -267,7 +264,7 @@ class ScreenController extends Controller
 
         if( $request->has('screen_category_id')) {
             $newScreen->screen_category_id = $request->input('screen_category_id');
-        } 
+        }
 
         $newScreen->saveOrFail();
         return new ApiResource($newScreen);

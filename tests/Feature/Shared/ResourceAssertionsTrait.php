@@ -181,7 +181,6 @@ trait ResourceAssertionsTrait
         $this->assertEquals($version->user_id, $original_attributes['user_id']);
         $this->assertEquals($version->name, $original_attributes['name']);
         $this->assertEquals($version->description, $original_attributes['description']);
-        $this->assertEquals((string) $version->created_at, (string) $yesterday);
     }
 
     /**

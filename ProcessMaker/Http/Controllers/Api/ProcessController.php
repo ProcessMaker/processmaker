@@ -236,7 +236,6 @@ class ProcessController extends Controller
     public function update(Request $request, Process $process)
     {
         $request->validate(Process::rules($process));
-        $original_attributes = $process->getAttributes();
 
         //bpmn validation
         if ($schemaErrors = $this->validateBpmn($request)) {
@@ -262,12 +261,6 @@ class ProcessController extends Controller
                 422
             );
         }
-
-        unset(
-            $original_attributes['id'],
-            $original_attributes['updated_at']
-        );
-        $process->versions()->create($original_attributes);
 
         //If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {

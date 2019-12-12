@@ -27,14 +27,19 @@
     ]])
 @endsection
 @section('content')
-    <div id="task" class="container">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="container-fluid">
-
+    <div id="task" class="container-fluid px-3">
+        <div class="d-flex flex-column flex-md-row">
+            <div class="flex-grow-1">
+                @if ($task->processRequest->status === 'ACTIVE' && $task->is_self_service)
+                    <div class="alert alert-primary" role="alert">
+                        <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                        {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                    </div>
+                @else
+                <div class="container-fluid h-100 d-flex flex-column">
                     @if ($task->processRequest->status === 'ACTIVE')
                         @can('editData', $task->processRequest)
-                            <ul id="tabHeader" role="tablist" class="nav nav-tabs mb-3">
+                            <ul id="tabHeader" role="tablist" class="nav nav-tabs">
                                 <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
                                                         aria-controls="tab-form" aria-selected="true"
                                                         class="nav-link active">{{__('Form')}}</a></li>
@@ -45,26 +50,30 @@
                             </ul>
                         @endcan
                     @endif
-                    <div id="tabContent" class="tab-content">
-                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
+                    <div id="tabContent" class="tab-content flex-grow-1">
+                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
                             @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
-                                <div class="card card-body">
+                                <div class="card card-body border-top-0 h-100">
                                     @if ($task->getScreen())
-                                        <task-screen
+                                        <component
+                                            :is="'{{ $task->getScreen()->renderComponent() }}'"
                                             ref="taskScreen"
-                                            :listen-process-events="allowInterstitial"
+                                            :allow-interstitial="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
                                             :screen="{{json_encode($task->getScreen()->config)}}"
+                                            :submitUrl="'{{ $submitUrl }}'"
+                                            :csrf-token="'{{ csrf_token() }}'"
                                             :computed="{{json_encode($task->getScreen()->computed)}}"
                                             :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
+                                            :watchers="{{json_encode($task->getScreen()->watchers)}}"
                                             :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
-                                        </task-screen>
+                                        </component>
                                     @else
                                         <task-screen
                                             ref="taskScreen"
-                                            :listen-process-events="allowInterstitial"
+                                            :allow-interstitial="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
@@ -83,13 +92,14 @@
                                 <task-screen
                                     ref="taskWaitScreen"
                                     v-if="allowInterstitial"
-                                    :listen-process-events="allowInterstitial"
+                                    :allow-interstitial="allowInterstitial"
                                     process-id="{{$task->processRequest->process->getKey()}}"
                                     instance-id="{{$task->processRequest->getKey()}}"
                                     token-id="{{$task->getKey()}}"
                                     :screen="{{json_encode($screenInterstitial->config)}}"
                                     :computed="{{json_encode($screenInterstitial->computed)}}"
                                     :custom-css="{{json_encode(strval($screenInterstitial->custom_css))}}"
+                                    :watchers="{{json_encode($screenInterstitial->watchers)}}"
                                     :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
                                     @activity-assigned="redirectToNextAssignedTask"
                                     @process-completed="redirectWhenProcessCompleted"
@@ -102,15 +112,16 @@
                         </div>
                         @if ($task->processRequest->status === 'ACTIVE')
                             @can('editData', $task->processRequest)
-                                <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="tab-pane">
+                                <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
                                     @include('tasks.editdata')
                                 </div>
                             @endcan
                         @endif
                     </div>
                 </div>
+                @endif
             </div>
-            <div class="col-md-4">
+            <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="dateDueAt">
                     <div class="card">
                         <div :class="statusCard">
@@ -136,7 +147,7 @@
 
                             <li class="list-group-item">
                                 <h5>{{__('Assigned To')}}</h5>
-                                <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                <avatar-image v-if="userAssigned" size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="userAssigned"></avatar-image>
                                 @if(!empty($task->getDefinition()['allowReassignment']) && $task->getDefinition()['allowReassignment']==='true')
                                     <div>
@@ -230,6 +241,15 @@
 @endsection
 
 @section('js')
+  <script>
+    window.ProcessMaker.EventBus.$on("screen-renderer-init", (screen) => {
+      if (screen.watchers_config) {
+        screen.watchers_config.api.execute = @json(route('api.scripts.execute', ['script_id' => 'script_id', 'script_key' => 'script_key']));
+      } else {
+        console.warn('Screen builder version does not have watchers');
+      }
+    });
+  </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach
@@ -290,6 +310,16 @@
           }
         },
         methods: {
+          claimTask() {
+            ProcessMaker.apiClient
+              .put("tasks/" + this.task.id, {
+                user_id: window.ProcessMaker.user.id,
+                is_self_service: 0,
+              })
+              .then(response => {
+                window.location.reload();
+              });
+          },
           redirectWhenProcessCompleted() {
             window.location.href = `/requests/${this.task.process_request_id}`;
           },
@@ -373,7 +403,7 @@
                 }
               )
               .then(response => {
-                this.usersList = response.data.assignableUsers;
+                this.usersList = response.data.assignable_users;
               });
           },
           classHeaderCard (status) {

@@ -9,6 +9,7 @@ use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\User;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class TaskController extends Controller
@@ -30,11 +31,6 @@ class TaskController extends Controller
         }
 
         return view('tasks.index', compact('title'));
-    }
-
-    public function show()
-    {
-        return view('tasks.show');
     }
 
     public function edit(ProcessRequestToken $task)
@@ -62,6 +58,15 @@ class TaskController extends Controller
         $manager = new ScreenBuilderManager();
         event(new ScreenBuilderStarting($manager, $task->getScreen() ? $task->getScreen()->type : 'FORM'));
 
-        return view('tasks.edit', ['task' => $task, 'dueLabels' => self::$dueLabels, 'manager' => $manager, 'allowInterstitial' => $allowInterstitial, 'screenInterstitial' => $screenInterstitial]);
+        $submitUrl = route('api.tasks.update', $task->id);
+
+        return view('tasks.edit', [
+            'task' => $task,
+            'dueLabels' => self::$dueLabels,
+            'manager' => $manager,
+            'allowInterstitial' => $allowInterstitial,
+            'screenInterstitial' => $screenInterstitial,
+            'submitUrl' => $submitUrl
+            ]);
     }
 }

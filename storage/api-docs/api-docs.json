@@ -89,6 +89,312 @@
                 }
             }
         },
+        "/data_sources": {
+            "get": {
+                "tags": [
+                    "Data Sources"
+                ],
+                "summary": "Returns all Data Sources that the user has access to",
+                "operationId": "getDataSources",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_by"
+                    },
+                    {
+                        "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "list of Data Sources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "Get the list of records of a Data Source",
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "meta": {
+                                            "description": "Get the list of records of a Data Source",
+                                            "type": "object",
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/metadata"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Data Sources"
+                ],
+                "summary": "Save a new Data Source",
+                "operationId": "createDataSource",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_sources/data_source_id": {
+            "get": {
+                "tags": [
+                    "Data Sources"
+                ],
+                "summary": "Get single Data Source by ID",
+                "operationId": "getDataSourceById",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Source to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found the Data Source",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string",
+                                            "format": "id"
+                                        },
+                                        "name": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string"
+                                        },
+                                        "endpoints": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string"
+                                        },
+                                        "mappings": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string"
+                                        },
+                                        "authtype": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string"
+                                        },
+                                        "credentials": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string"
+                                        },
+                                        "data_source_category_id": {
+                                            "description": "Get a single Data Source.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Data Sources"
+                ],
+                "summary": "Update a Data Source",
+                "operationId": "updateDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Source to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Data Sources"
+                ],
+                "summary": "Delete a Data Source",
+                "operationId": "deleteDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Source to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "request/{request_id}/data_source/{data_source_id}": {
+            "post": {
+                "tags": [
+                    "Data Sources"
+                ],
+                "summary": "execute Data Source",
+                "operationId": "executeDataSource",
+                "parameters": [
+                    {
+                        "name": "request_id",
+                        "in": "path",
+                        "description": "ID of the request in whose context the datasource will be executed",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of DataSource to be run",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "config": {
+                                        "$ref": "#/components/schemas/DataSourceCallParameters"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/data_sources/data_source_id/test": {
+            "post": {
+                "tags": [
+                    "Data Sources"
+                ],
+                "summary": "Send a Data Source request",
+                "operationId": "sendDataSource",
+                "parameters": [
+                    {
+                        "name": "data_source_id",
+                        "in": "path",
+                        "description": "ID of Data Source to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/environment_variables": {
             "get": {
                 "tags": [
@@ -348,6 +654,15 @@
                         "name": "model",
                         "in": "query",
                         "description": "Name of the class of the model",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "data_name",
+                        "in": "query",
+                        "description": "Name of the variable used in a request",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -1984,6 +2299,9 @@
                         }
                     },
                     {
+                        "$ref": "#/components/parameters/filter"
+                    },
+                    {
                         "$ref": "#/components/parameters/order_by"
                     },
                     {
@@ -3163,6 +3481,50 @@
                 }
             }
         },
+        "/scripts/{script_id}/execute": {
+            "post": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Execute script",
+                "operationId": "getScriptsPreview",
+                "parameters": [
+                    {
+                        "name": "script_id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "data",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "config",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success if the script was queued",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/scriptsPreview"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/scripts/{script_id}": {
             "get": {
                 "tags": [
@@ -3673,6 +4035,48 @@
                     }
                 }
             }
+        },
+        "/users/restore": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Restore a soft deleted user",
+                "operationId": "restoreUser",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of user to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/usersEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -3746,6 +4150,110 @@
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/commentsEditable"
+                    }
+                ]
+            },
+            "dataSourceEditable": {
+                "properties": {
+                    "id": {
+                        "description": "Class DataSource",
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "name": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "endpoints": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "mappings": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "authtype": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "credentials": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    },
+                    "data_source_category_id": {
+                        "description": "Class DataSource",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "dataSource": {
+                "properties": {
+                    "created_at": {
+                        "description": "Class DataSource",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Class DataSource",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/dataSourceEditable"
+                    }
+                ]
+            },
+            "DataSourceCategoryEditable": {
+                "properties": {
+                    "name": {
+                        "description": "Represents a business data Source category definition.",
+                        "type": "string"
+                    },
+                    "status": {
+                        "description": "Represents a business data Source category definition.",
+                        "type": "string",
+                        "enum": [
+                            "ACTIVE",
+                            "INACTIVE"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "DataSourceCategory": {
+                "properties": {
+                    "id": {
+                        "description": "Represents a business data Source category definition.",
+                        "type": "string",
+                        "format": "id"
+                    },
+                    "created_at": {
+                        "description": "Represents a business data Source category definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "Represents a business data Source category definition.",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/DataSourceCategoryEditable"
                     }
                 ]
             },
@@ -4203,6 +4711,11 @@
                                 "description": "Represents a business process definition.",
                                 "type": "string",
                                 "format": "id"
+                            },
+                            "deleted_at": {
+                                "description": "Represents a business process definition.",
+                                "type": "string",
+                                "format": "date-time"
                             },
                             "created_at": {
                                 "description": "Represents a business process definition.",
@@ -5051,6 +5564,15 @@
                         "type": "object"
                     }
                 ]
+            },
+            "DataSourceCallParameters": {
+                "properties": {
+                    "endpoint": {
+                        "description": "Execute a data Source endpoint",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "metadata": {
                 "properties": {

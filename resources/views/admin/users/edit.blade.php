@@ -34,268 +34,54 @@
 
                     </div>
                 </nav>
-                <div class="container mt-3">
+                <div class="container mt-0 border-top-0 p-3 card card-body">
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
                              aria-labelledby="nav-home-tab">
-                            <div class="row">
-                                <div class="col-8">
-                                    <div class="card card-body">
-                                        <h5>{{__('Name')}}</h5>
-                                            <div class="form-group">
-                                                {!! Form::label('firstname', __('First Name')) !!}
-                                                {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
-                                                'form-control', 'v-model' => 'formData.firstname',
-                                                'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.firstname}']) !!}
-                                                <div class="invalid-feedback" v-if="errors.firstname">
-                                                    @{{errors.firstname[0]}}
-                                                </div>
-
-                                                {!! Form::label('lastname', __('Last Name'))!!}
-                                                {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4,
-                                                'class'=> 'form-control', 'v-model'
-                                                => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.lastname}']) !!}
-                                                <div class="invalid-feedback" v-if="errors.lastname">
-                                                    @{{errors.lastname[0]}}
-                                                </div>
-
-                                                                                        <div class="form-group">
-                                          {!!Form::label('title', __('Job Title')) !!}
-                                           <b-form-input
-                                              id="input-1"
-                                              class="mb-2"
-                                              v-model="formData.title"
-                                              type="text"
-                                              required
-                                              placeholder="Job Title"
-                                            ></b-form-input>
-                                        </div>
-
-                                        </div>
-                                        <h5 class="mt-2">{{__('Contact Information')}}</h5>
-
-                                            <div class="form-group">
-                                                {!! Form::label('email', __('Email')) !!}
-                                                {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
-                                                'form-control', 'v-model'
-                                                => 'formData.email', 'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.email}']) !!}
-                                                <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}
-                                                </div>
-                                            </div>
-                                            <div class="form-group">
-                                                {!! Form::label('phone', __('Phone')) !!}
-                                                {!! Form::text('phone', null, ['id' => 'phone','class'=> 'form-control',
-                                                'v-model' => 'formData.phone',
-                                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.phone}'])
-                                                !!}
-                                                <div class="invalid-feedback" v-if="errors.phone">@{{errors.phone}}
-                                                </div>
-                                            </div>
-
-                                     <div class="form-group">
-                                                {!! Form::label('fax', __('Fax')) !!}
-                                                {!! Form::text('fax', null, ['id' => 'fax','class'=> 'form-control',
-                                                'v-model' => 'formData.fax',
-                                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.fax}'])
-                                                !!}
-                                                <div class="invalid-feedback" v-if="errors.fax">@{{errors.fax}}
-                                                </div>
-                                            </div>
-
-                                     <div class="form-group">
-                                                {!! Form::label('cell', __('Cell')) !!}
-                                                {!! Form::text('cell', null, ['id' => 'cell','class'=> 'form-control',
-                                                'v-model' => 'formData.cell',
-                                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.cell}'])
-                                                !!}
-                                                <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell}}
-                                                </div>
-                                            </div>
-
-                                        <h5 class="mt-2">{{__('Address')}}</h5>
-                                        <div class="row">
-                                            <div class="form-group col">
-                                                {!! Form::label('address', __('Address')) !!}
-                                                {!! Form::text('address', null, ['id' => 'address','class'=>
-                                                'form-control', 'v-model' => 'formData.address',
-                                                'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.address}']) !!}
-                                                <div class="invalid-feedback" v-if="errors.address">
-                                                    @{{errors.address}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col">
-                                                {!! Form::label('city', __('City')) !!}
-                                                {!! Form::text('city', null, ['id' => 'city', 'rows' => 4, 'class'=>
-                                                'form-control', 'v-model'
-                                                => 'formData.city', 'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.city}']) !!}
-                                                <div class="invalid-feedback" v-if="errors.city">@{{errors.city}}</div>
-                                            </div>
-                                            <div class="form-group col">
-                                                {!! Form::label('state', __('State or Region')) !!}
-                                                {!! Form::select('state',
-                                                $states,
-                                                'formData.state',
-                                                ['id' => 'state',
-                                                'class'=> 'form-control',
-                                                'v-model' => 'formData.state',
-                                                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.state}'
-                                                ])
-                                                !!}
-                                                <div class="invalid-feedback" v-if="errors.state">@{{errors.state}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col">
-                                                {!! Form::label('postal', __('Postal Code')) !!}
-                                                {!! Form::text('postal', null, ['id' => 'postal', 'rows' => 4, 'class'=>
-                                                'form-control', 'v-model'
-                                                => 'formData.postal', 'v-bind:class' => '{\'form-control\':true,
-                                                \'is-invalid\':errors.postal}']) !!}
-                                                <div class="invalid-feedback" v-if="errors.postal">@{{errors.postal}}
-                                                </div>
-                                            </div>
-                                            <div class="form-group col">
-                                                {!! Form::label('country', __('Country')) !!}
-                                                <b-form-select v-model="formData.country" :options="countries" placeholder="Select" class="form-control">
-                                                    <template slot="first">
-                                                        <option :value="null" disabled>{{__('Select')}}</option>
-                                                    </template>
-                                                </b-form-select>
-                                                <div class="invalid-feedback" v-if="errors.country">
-                                                    @{{errors.country}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <h5 class="mt-2">{{__('Localization')}}</h5>
-                                        <div class="row">
-                                            <div class="form-group col">
-                                                {!!Form::label('datetime_format', __('Date Format'));!!}
-                                                <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
-                                                </b-form-select>
-                                                <div class="invalid-feedback" v-if="errors.email">
-                                                    @{{errors.datetime_format}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group col">
-                                                {!!Form::label('timezone', __('Time Zone'));!!}
-                                                <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
-                                                </b-form-select>
-                                                <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
-                                                </div>
-                                            </div>
-
-                                            <div class="form-group col">
-                                                {!! Form::label('language', __('Language')) !!}
-
-
-                                                <b-form-select id="language" v-model="formData.language" class="form-control" :options="langs">
-                                                </b-form-select>
-
-                                                <div class="invalid-feedback" v-if="errors.language">
-                                                    @{{errors.language}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="text-right mt-2">
-                                            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'profileUpdate']) !!}
-                                        </div>
-                                    </div>
+                            <div class="d-flex flex-column flex-lg-row">
+                                <div class="flex-grow-1">
+                                    @include('shared.users.profile')
                                 </div>
-                                <div class="col-4">
-                                    <div class="card card-body">
-                                        <div align="center" data-toggle="modal" data-target="#updateAvatarModal">
-                                            <avatar-image size="150" class-image="m-1"
-                                                          :input-data="options"></avatar-image>
-                                        </div>
-                                        <hr>
-                                        <div class="form-group">
-                                            @include('shared.input',
-                                                ['type' => 'text', 'name' => 'username', 'label' => __('Username')]
-                                            )
-                                        </div>
-                                        <div class="form-group">
-                                            {!!Form::label('status', __('Status')) !!}
-                                            {!!Form::select('size', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')],
-                                            'formData.status', ['class'=> 'form-control', 'v-model'=> 'formData.status',
-                                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']);!!}
-                                            <div class="invalid-feedback" v-if="errors.email">@{{errors.status}}</div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <small class="form-text text-muted">
-                                                {{__('Leave the password blank to keep the current password:')}}
-                                            </small>
-                                        </div>
-                                        <div class="form-group">
-                                            {!! Form::label('password', __('New Password')) !!}
-                                            <vue-password v-model="formData.password" :disable-toggle=true>
-                                                <div slot="password-input" slot-scope="props">
-                                                    {!! Form::password('password', ['id' => 'password', 'rows' => 4,
-                                                    'class'=> 'form-control', 'v-model'
-                                                    => 'formData.password', 'autocomplete' => 'new-password', '@input' =>
-                                                    'props.updatePassword($event.target.value)',
-                                                    'v-bind:class' => '{\'form-control\':true,
-                                                    \'is-invalid\':errors.password}']) !!}
-                                                </div>
-                                            </vue-password>
-                                        </div>
-                                        <div class="form-group">
-                                            {!! Form::label('confPassword', __('Confirm Password')) !!}
-                                            {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4,
-                                            'class'=> 'form-control', 'v-model'
-                                            => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' =>
-                                            '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
-                                            <div class="invalid-feedback"
-                                                 :style="{display: (errors.password) ? 'block' : 'none' }"
-                                                 v-if="errors.password">@{{errors.password[0]}}
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="ml-lg-3 mt-3 mt-lg-0">
+                                    @include('shared.users.sidebar')
                                 </div>
                             </div>
-
+                            <div class="d-flex justify-content-end mt-3">
+                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
+                            </div>
                         </div>
                         <div class="tab-pane fade show" id="nav-groups" role="tabpanel"
                              aria-labelledby="nav-groups-tab">
-                            <div class="row">
-                                <div class="col">
-                                </div>
-                                <div class="col-8" align="right">
-                                    <button type="button" class="btn btn-action text-light" data-toggle="modal"
-                                            data-target="#addUserToGroup" @click="loadGroups">
-                                        <i class="fas fa-plus"></i>
-                                        {{__('Add User To Group')}}
-                                    </button>
-                                </div>
+                             <div class="input-group w-100 mb-3">
+                                 <input v-model="userGroupsFilter" class="form-control" placeholder="{{__('Search')}}">
+                                 <div class="input-group-append">
+                                     <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                                 </div>
+                             </div>
+                            <div id="user-groups-listing">
+                                <user-groups-listing 
+                                    :filter="userGroupsFilter"
+                                    ref="userGroupsListing"
+                                    :user-id='@json($user->id)'
+                                    :current-groups='@json($user->groups)'
+                                />
                             </div>
-
-                            <div id="groups-listing">
-                                <groups-listing ref="groupsListing" filter="" :member_id="formData.id"/>
+                            <div class="d-flex justify-content-end mt-3">
+                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onSaveGroups']) !!}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
-                            <div class="accordion card card-body" id="accordionPermissions">
-                                <label>
-                                    <input type="checkbox" v-model="formData.is_administrator"
-                                           @input="adminHasChanged = true">
-                                    {{__('Make this user a Super Admin')}}
-                                </label>
-                                <label class="mb-3">
-                                    <input type="checkbox" v-model="selectAll" @click="select"
-                                           :disabled="formData.is_administrator">
-                                    {{__('Assign all permissions to this user')}}
-                                </label>
+                            <div class="accordion" id="accordionPermissions">
+                                <div class="mb-2 custom-control custom-switch">
+                                    <input v-model="formData.is_administrator" type="checkbox" class="custom-control-input" id="is_administrator" @input="adminHasChanged = true">
+                                    <label class="custom-control-label" for="is_administrator">{{ __('Make this user a Super Admin') }}</label>
+                                </div>
+                                <div class="mb-3 custom-control custom-switch">
+                                    <input v-model="selectAll" type="checkbox" class="custom-control-input" id="selectAll" @click="select" :disabled="formData.is_administrator">
+                                    <label class="custom-control-label" for="selectAll">{{ __('Assign all permissions to this user') }}</label>
+                                </div>
                                 @include('admin.shared.permissions')
                                 <div class="text-right mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
@@ -304,99 +90,58 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
-                            <div class="card card-body table-card mb-3">
-
-                                <user-tokens-listing :user_id="formData.id"></user-tokens-listing>
-
-                                <div class="form-group" v-if="newToken != null">
-                                    <div class="alert alert-warning">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                        {{__("Make sure you copy your access token now. You won't be able to see it again.")}}
-                                    </div>
-                                    <button type="button" @click="copyTextArea" class="btn btn-secondary">
-                                        <i class="fas fa-paste"></i>
-                                        {{__('Copy Token To Clipboard')}}
+                            <div>
+                                <div class="d-flex justify-content-end mb-3">
+                                    <button type="button" class="btn btn-secondary" @click="generateToken">
+                                        <i class="fas fa-plus"></i> {{__('Token')}}
                                     </button>
-                                    <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
                                 </div>
-                                <hr class="mt-0">
-                                <button type="button" class="btn btn-secondary float-right" @click="generateToken">
-                                    {{__('Generate New Token')}}
-                                </button>
+
+                                <user-tokens-listing :user_id="formData.id" ref="tokenList"></user-tokens-listing>
+                                
+                                <div class="modal" tabindex="-1" role="dialog" id="newTokenModal" ref="newTokenModal">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content p-3">
+                                            <div class="modal-header p-0 mb-3">
+                                                <h5 class="modal-title m-0">{{__('New Token')}}</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body p-0 mb-3" v-if="newToken != null">
+                                                
+                                                <div class="alert alert-warning">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    {{__("Make sure you copy your access token now. You won't be able to see it again.")}}
+                                                </div>
+                                                
+                                                <div>
+                                                    <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer p-0">
+                                                <div class="d-flex w-100">
+                                                    <button type="button" @click="copyTextArea" class="btn btn-secondary">
+                                                        <i class="fas fa-paste"></i>
+                                                        {{__('Copy Token To Clipboard')}}
+                                                    </button>
+                                                    <button type="button" @click="hideNewTokenModal" class="ml-auto btn btn-outline-secondary">
+                                                        {{__('Close')}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="modal" tabindex="-1" role="dialog" id="addUserToGroup">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{__('Add User To Group')}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                                @click="onCloseAddUserToGroup">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            {!!Form::label('groups', __('Groups'))!!}
-                            <multiselect v-model="selectedGroup"
-                                         placeholder="{{__('Select group or type here to search groups')}}"
-                                         :options="groups"
-                                         :multiple="true"
-                                         track-by="name"
-                                         :custom-label="customLabel"
-                                         :show-labels="false"
-                                         :searchable="true"
-                                         :internal-search="false"
-                                         @search-change="loadGroups"
-                                         label="name">
-
-                                <template slot="noResult" >
-                                    {{ __('No elements found. Consider changing the search query.') }}
-                                </template>
-
-                                <template slot="noOptions" >
-                                    {{ __('No Data Available') }}
-                                </template>
-
-                                <template slot="tag" slot-scope="props">
-                                    <span class="multiselect__tag  d-flex align-items-center"
-                                          style="width:max-content;">
-                                        <span class="option__desc mr-1">
-                                            <span class="option__title">@{{ props.option.name }}</span>
-                                        </span>
-                                        <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
-                                           class="multiselect__tag-icon"></i>
-                                    </span>
-                                </template>
-
-                                <template slot="option" slot-scope="props">
-                                    <div class="option__desc d-flex align-items-center">
-                                        <span class="option__title mr-1">@{{ props.option.name }}</span>
-                                    </div>
-                                </template>
-                            </multiselect>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
-                                @click="onCloseAddUserToGroup">
-                            {{__('Cancel')}}
-                        </button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="saveUserToGroup">
-                            {{__('Save')}}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-
-
 
     <div class="modal" tabindex="-1" role="dialog" id="updateAvatarModal" ref="updateAvatarModal">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -444,7 +189,7 @@
     <script src="{{mix('js/admin/users/edit.js')}}"></script>
 
     <script>
-      new Vue({
+      var modalVueInstance = new Vue({
         el: '#updateAvatarModal',
         data() {
           return {
@@ -470,6 +215,14 @@
               // And finally close the modal
               this.hideModal();
             })
+          },
+          deleteAvatar() {
+              let optionValues = formVueInstance.$data.options[0];
+              optionValues.src = null;
+              formVueInstance.$data.options.splice(0, 1, optionValues)
+              formVueInstance.$data.image = false;
+              formVueInstance.$data.formData.avatar = false;
+              window.ProcessMaker.events.$emit('update-profile-avatar');
           },
           browse() {
             this.$refs.customFile.click();
@@ -513,6 +266,8 @@
             timezones: @json($timezones),
             datetimeFormats: @json($datetimeFormats),
             countries: @json($countries),
+            states: @json($states),
+            userId: @json($user->id),
             image: '',
             errors: {
               username: null,
@@ -538,6 +293,7 @@
             }],
             selectedGroup: [],
             groups: [],
+            userGroupsFilter: '',
           }
         },
         created() {
@@ -596,6 +352,15 @@
           onClose() {
             window.location.href = '/admin/users';
           },
+          deleteAvatar() {
+              modalVueInstance.deleteAvatar();
+          },
+          openNewTokenModal() {
+            $('#newTokenModal').modal("show");
+          },
+          hideNewTokenModal() {
+            $('#newTokenModal').modal("hide");
+          },
           validatePassword() {
             if (!this.formData.password && !this.formData.confpassword) {
               delete this.formData.password;
@@ -625,12 +390,9 @@
             ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData, {context: this})
               .then(response => {
                 ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
-                if ($event !== false) {
-                  this.onClose();
-                }
+                window.ProcessMaker.events.$emit('update-profile-avatar');
               })
               .catch(error => {
-                console.log(error);
                 this.errors = error.response.data.errors;
               });
           },
@@ -644,7 +406,6 @@
             })
               .then(response => {
                 ProcessMaker.alert('{{__('User Permissions Updated Successfully ')}}', 'success');
-                this.onClose();
               })
           },
           hasPermission() {
@@ -661,7 +422,7 @@
             }
           },
           loadTokens() {
-            
+
           },
           generateToken() {
             ProcessMaker.apiClient({
@@ -676,12 +437,25 @@
                 this.newToken = result.data.token;
                 this.newToken.accessToken = result.data.accessToken;
                 this.loadTokens();
-                ProcessMaker.alert(this.$t('Access token generated successfully'), "success");
+                this.$refs.tokenList.fetch();
+                this.openNewTokenModal();
               })
           },
-          
           customLabel(options) {
             return `${options.name}`
+          },
+          onSaveGroups() {
+            let groups = this.$refs.userGroupsListing.userGroups.join(',');
+
+            ProcessMaker.apiClient.put(`users/${this.formData.id}/groups`, {
+                groups: groups
+            })
+            .then(response => {
+              ProcessMaker.alert('{{__('Groups Updated Successfully ')}}', 'success');
+            })
+            .catch(error => {
+              this.errors = error.response.data.errors;
+            });
           },
           loadGroups(filter) {
             filter = typeof filter === 'string' ? '?filter=' + filter + '&' : '?';
@@ -694,25 +468,6 @@
               .then(response => {
                 this.groups = response.data.data
               });
-          },
-          onCloseAddUserToGroup() {
-            this.selectedGroup = [];
-          },
-          saveUserToGroup() {
-            let that = this;
-            that.selectedGroup.forEach(function (group) {
-              ProcessMaker.apiClient
-                .post('group_members', {
-                  'group_id': group.id,
-                  'member_type': 'ProcessMaker\\Models\\User',
-                  'member_id': that.formData.id
-                })
-                .then(response => {
-                  that.$refs['groupsListing'].fetch();
-                  $('#addUserToGroup').modal('hide');
-                  that.selectedGroup = [];
-                });
-            });
           }
         }
       });

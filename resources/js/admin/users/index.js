@@ -22,7 +22,8 @@ new Vue({
             addError: {},
             submitted: false,
             disabled: false
-        }
+        },
+        configCopy: '',
     },
     methods: {
         reload() {
@@ -51,18 +52,23 @@ new Vue({
             return true
         },
         showModal() {
+            this.configCopy = _.cloneDeep(this.config);
             this.$refs['addUserModal'].showAddUserModal();
         },
         hideModal() {
             this.$refs['addUserModal'].hideAddUserModal();
         },
         onSubmit() {
-            if (this.validatePassword) {
+            if (this.validatePassword()) {
                 this.$refs['addUserModal'].onSubmit(this.config);
             }
         },
     },
     mounted() {
+        this.$root.$on('bv::modal::hide', () => {
+            this.config = this.configCopy;
+        });
+
         this.$root.$on('updateErrors', (val) => {
             this.config.addError = val;
         });

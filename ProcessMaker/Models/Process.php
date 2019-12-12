@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -19,6 +20,8 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasSelfServiceTasks;
+use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
@@ -26,6 +29,7 @@ use ProcessMaker\Traits\ProcessTimerEventsTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Mustache_Engine;
 
 /**
  * Represents a business process definition.
@@ -127,6 +131,8 @@ class Process extends Model implements HasMedia
     use HideSystemResources;
     use PMQL;
     use HasCategories;
+    use HasVersioning;
+    use HasSelfServiceTasks;
 
     const categoryClass = ProcessCategory::class;
 
@@ -203,7 +209,8 @@ class Process extends Model implements HasMedia
 
     protected $casts = [
         'start_events' => 'array',
-        'warnings' => 'array'
+        'warnings' => 'array',
+        'self_service_tasks' => 'array',
     ];
 
     /**
@@ -311,7 +318,7 @@ class Process extends Model implements HasMedia
         $unique = Rule::unique('processes')->ignore($existing);
 
         return [
-            'name' => ['required', $unique],
+            'name' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
             'status' => 'in:ACTIVE,INACTIVE',
             'process_category_id' => 'exists:process_categories,id',
@@ -518,12 +525,26 @@ class Process extends Model implements HasMedia
             return $userByRule;
         }
 
+        $definitions = $token->getInstance()->process->getDefinitions();
+        $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
+        $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock']  : false;
+
+        if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
+            $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
+            if ($user) {
+                return User::where('id', $user)->first();
+            }
+        }
+
         switch ($assignmentType) {
             case 'group':
                 $user = $this->getNextUserFromGroupAssignment($activity->getId());
                 break;
             case 'user':
                 $user = $this->getNextUserAssignment($activity->getId());
+                break;
+            case 'user_by_id':
+                $user = $this->getNextUserFromVariable($activity, $token);
                 break;
             case 'requester':
                 $user = $this->getRequester($token);
@@ -541,6 +562,30 @@ class Process extends Model implements HasMedia
                 $user = null;
         }
         return $user ? User::where('id', $user)->first() : null;
+    }
+
+    /**
+     * If the assignment type is user_by_id, we need to parse
+     * mustache syntax with the current data to get the user
+     * that should be assigned
+     *
+     * @param ProcessRequestToken $token
+     * @return User $user
+     * @throws InvalidUserAssignmentException
+     */
+    private function getNextUserFromVariable($activity, $token)
+    {
+        $userExpression = $activity->getProperty('assignedUsers');
+        $instanceData = $token->getInstance()->getDataStore()->getData();
+
+        $mustache = new Mustache_Engine();
+        $userId = $mustache->render($userExpression, $instanceData);
+
+        $user = User::find($userId);
+        if (!$user) {
+            throw new InvalidUserAssignmentException($userExpression, $userId);
+        }
+        return $user->id;
     }
 
     /**
@@ -573,6 +618,26 @@ class Process extends Model implements HasMedia
             }
         }
         return $users[0];
+    }
+
+    /**
+     * Given a request, returns the last user assigned to a task. If it is the
+     * first time that the task is assigned, null is returned.
+     *
+     * @param string $processTaskUuid
+     *
+     * @return binary
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function getLastUserAssignedToTask($processTaskUuid, $processRequestId)
+    {
+        $last = ProcessRequestToken::where('process_id', $this->id)
+            ->where('element_id', $processTaskUuid)
+            ->where('process_request_id', $processRequestId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $last ? $last->user_id : null;
     }
 
     /**
@@ -1032,5 +1097,34 @@ class Process extends Model implements HasMedia
     public function getProcessCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    /**
+     * Get the latest version of the process
+     *
+     */
+    public function getLatestVersion()
+    {
+        return $this->versions()->orderBy('id', 'desc')->first();
+    }
+
+    /**
+     * Get a list of self service tasks assignable to $userId
+     *
+     * @param [type] $userId
+     * @return void
+     */
+    public function getSelfServiceAssignableTasks($userId)
+    {
+        $user = User::findOrFail($userId);
+        $groups = $user->groups;
+        foreach(Process::all() as $process) {
+            foreach ($process->self_service_tasks as $taskId => $assignedGroups) {
+                array_filter($groups, function ($group) use ($assignedGroups) {
+                    return in_array($group->getKey(), $assignedGroups);
+                });
+            }
+        }
+
     }
 }

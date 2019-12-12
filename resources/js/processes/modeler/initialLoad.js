@@ -22,6 +22,7 @@ import {
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
 import GroupSelect from './components/inspector/GroupSelect';
+import UserById from './components/inspector/UserById';
 import TaskNotifications from './components/inspector/TaskNotifications';
 import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
@@ -33,6 +34,7 @@ import {registerNodes} from "@processmaker/modeler";
 import Interstitial from "./components/inspector/Interstitial";
 
 Vue.component('UserSelect', UserSelect);
+Vue.component('UserById', UserById);
 Vue.component('GroupSelect', GroupSelect);
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('TaskNotifications', TaskNotifications);
@@ -93,7 +95,9 @@ ProcessMaker.EventBus.$on(
           component: 'StartPermission',
           config: {
             label: 'Permission To Start',
-            helper: '',
+            helper: 'Select who may start a Request of this Process',
+            userHelper: 'Select who may start a Request',
+            groupHelper: 'Select the group from which any user may start a Request',
             name: 'startPermission'
           }
         },
@@ -104,8 +108,8 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(task, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Screen For Input',
-        helper: 'What Screen Should Be Used For Rendering This Task',
+        label: 'Screen for Input',
+        helper: 'Select Screen to display this Task',
         name: 'screenRef',
         type: 'FORM'
       }
@@ -160,8 +164,8 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(task, {
       component: "Interstitial",
       config: {
-        label: "Enable Interstitial",
-        helper: "redirected to my next assigned task",
+        label: "Display Next Assigned Task to Task Assignee",
+        helper: "Directs Task assignee to the next assigned Task",
         name: "interstitial"
       }
     });
@@ -171,7 +175,7 @@ ProcessMaker.EventBus.$on(
       component: 'ScriptSelect',
       config: {
         label: 'Script',
-        helper: 'Script that will be executed by the task',
+        helper: 'Select the Script this element runs',
         name: 'scriptRef'
       }
     });
@@ -180,7 +184,7 @@ ProcessMaker.EventBus.$on(
       component: 'ConfigEditor',
       config: {
         label: 'Script Configuration',
-        helper: 'Configuration JSON for the script task',
+        helper: 'Enter the JSON to configure the Script',
         name: 'scriptConfiguration',
         property: 'config'
       }
@@ -188,9 +192,9 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(endEvent, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Summary screen',
+        label: 'Summary Screen',
         helper:
-          'Summary screen that will be displayed when process finish with this End event.',
+          'Select Display-type Screen to show the summary of this Request when it completes',
         name: 'screenRef',
         params: { type: 'DISPLAY' }
       }
@@ -198,9 +202,9 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(manualTask, {
       component: 'ModelerScreenSelect',
       config: {
-        label: 'Summary screen',
+        label: 'Screen for Input',
         helper:
-          'Summary screen that will be displayed when process finish with this End event.',
+          'Select Screen to display this Task',
         name: 'screenRef',
         params: { type: 'DISPLAY' }
       }
@@ -209,7 +213,7 @@ ProcessMaker.EventBus.$on(
       component: 'TaskDueIn',
       config: {
         label: 'Due In',
-        helper: 'Time when the task will be due',
+        helper: 'Enter the hours until this Task is overdue',
         name: 'taskDueIn',
       }
     });
@@ -250,6 +254,14 @@ ProcessMaker.EventBus.$on(
           }
         },
       ],
+    });
+    registerInspectorExtension(manualTask, {
+      component: "Interstitial",
+      config: {
+        label: "Enable Interstitial",
+        helper: "redirected to my next assigned task",
+        name: "interstitial"
+      }
     });
   }
 );

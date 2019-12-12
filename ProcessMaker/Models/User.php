@@ -100,23 +100,11 @@ class User extends Authenticatable implements HasMedia
         'timezone',
         'datetime_format',
         'language',
-        'expires_at'
-
-    ];
-
-    protected $guarded = [
-        'id',
-        'created_at',
-        'updated_at',
     ];
 
     protected $appends = [
         'fullname',
         'avatar',
-    ];
-
-    protected $dates = [
-        'loggedin_at',
     ];
 
     protected $casts = [
@@ -135,18 +123,27 @@ class User extends Authenticatable implements HasMedia
         $unique = Rule::unique('users')->ignore($existing);
 
         $checkUserIsDeleted = function($attribute, $value, $fail) use ($existing) {
-            if (!$existing && User::where($attribute, $value)->exists()) {
-                $fail('userExists');
+            if (!$existing) {
+                $user = User::withTrashed()->where($attribute, $value)->first();
+                if ($user) {
+                    $fail(
+                        __(
+                            'A user with the username :username and email :email was previously deleted.',
+                            ['username' => $user->username, 'email' => $user->email]
+                        )
+                    );
+                }
             }
         };
 
         return [
-            'username' => ['required', 'alpha_dash', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
-            'firstname' => 'required',
-            'lastname' => 'required',
+            'username' => ['required', 'alpha_spaces', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
+            'firstname' => ['required', 'max:50'],
+            'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
             'status' => ['required', 'in:ACTIVE,INACTIVE'],
-            'password' => 'required|sometimes|min:6'
+            'password' => 'required|sometimes|min:6',
+            'birthdate' => 'date|nullable'
         ];
     }
 

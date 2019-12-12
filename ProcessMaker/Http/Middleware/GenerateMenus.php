@@ -26,7 +26,7 @@ class GenerateMenus
             $menu->group(['prefix' => 'tasks'], function ($request_items) {
                 $request_items->add(__('Tasks'), ['route' => 'tasks.index'])->active('tasks/*');
             });
-            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-categories|view-scripts|view-screens|view-environment_variables')) {
+            if (\Auth::check() && \Auth::user()->canAny('view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables')) {
                 $menu->group(['prefix' => 'processes'], function ($request_items) {
                     $request_items->add(__('Designer'), ['route' => 'processes.index'])->active('processes/*');
                 });
@@ -87,6 +87,11 @@ class GenerateMenus
                 'icon' => 'fa-check-square',
                 'id' => 'homeid'
             ]);
+            $submenu->add(__('Self Service'), [
+                'route' => ['tasks.index', 'status' => 'SELF_SERVICE'],
+                'icon' => 'fa-user',
+                'id' => 'homeid'
+            ]);
         });
         Menu::make('sidebar_request', function ($menu) {
             $submenu = $menu->add(__('Request'));
@@ -117,13 +122,6 @@ class GenerateMenus
                     'route' => 'processes.index',
                     'icon' => 'fa-play-circle',
                     'id' => 'processes'
-                ]);
-            }
-            if (\Auth::check() && \Auth::user()->can('archive-processes')) {
-                $submenu->add(__('Archived Processes'), [
-                    'route' => ['processes.index', 'status' => 'inactive'],
-                    'icon' => 'fa-archive',
-                    'id' => 'process-environment'
                 ]);
             }
             if (\Auth::check() && \Auth::user()->can('view-scripts')) {

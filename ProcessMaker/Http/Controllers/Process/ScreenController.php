@@ -29,7 +29,6 @@ class ScreenController extends Controller
 
         $catConfig = (object) [
             'labels' => (object) [
-                'newCategoryTitle' => __('Create Screen Category'),
                 'countColumn' => __('# Screens'),
             ],
             'routes' => (object) [
@@ -96,7 +95,7 @@ class ScreenController extends Controller
      */
     public function download(Screen $screen, $key)
     {
-        $fileName = snake_case($screen->title) . '.json';
+        $fileName = trim($screen->title) . '.json';
         $fileContents = Cache::get($key);
 
         if (! $fileContents) {

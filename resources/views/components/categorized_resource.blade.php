@@ -19,7 +19,7 @@
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="{{$firstTab}}" id="nav-sources-tab" data-toggle="tab" href="#nav-sources" role="tab"
-               aria-controls="nav-sources" aria-selected="true">
+               onclick="loadProcess()" aria-controls="nav-sources" aria-selected="true">
                 {{ $tabs[0] ?? __('Resources') }}
             </a>
         </li>
@@ -29,20 +29,35 @@
                 {{ $tabs[1] ?? __('Categories') }}
             </a>
         </li>
+        @isset($tabs[2])
+            <li class="nav-item">
+                <a class="nav-item nav-link" id="nav-archived-tab" data-toggle="tab" href="#nav-archived"
+                   role="tab" onclick="loadProcess()" aria-controls="nav-archived" aria-selected="true">
+                    {{ $tabs[2] ?? __('Archived Processes') }}
+                </a>
+            </li>
+        @endisset
     </ul>
 
-    <div class="mt-3">
+    <div>
         <div class="tab-content">
             <div class="{{$firstContent}}" id="nav-sources" role="tabpanel" aria-labelledby="nav-sources-tab">
-                <div class="card card-body">
+                <div class="card card-body p-3 border-top-0">
                     {{ $itemList }}
                 </div>
             </div>
             <div class="{{$secondContent}}" id="nav-categories" role="tabpanel" aria-labelledby="nav-categories-tab">
-                <div class="card card-body">
+                <div class="card card-body p-3 border-top-0">
                     {{ $categoryList }}
                 </div>
             </div>
+            @isset($tabs[2])
+                <div class="tab-pane fade" id="nav-archived" role="tabpanel" aria-labelledby="nav-archived-tab">
+                    <div class="card card-body p-3 border-top-0">
+                        {{ $archivedList }}
+                    </div>
+                </div>
+            @endisset
         </div>
     </div>
 </div>
@@ -51,6 +66,9 @@
     <script>
       loadCategory = function () {
         ProcessMaker.EventBus.$emit("api-data-category", true);
+      };
+      loadProcess = function () {
+        ProcessMaker.EventBus.$emit("api-data-process");
       };
       if ({{$listConfig->countCategories}} === 0) loadCategory();
     </script>

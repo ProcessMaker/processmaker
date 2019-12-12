@@ -81,7 +81,7 @@ class ScriptsTest extends TestCase
         ];
 
         $err = function($response) {
-            return $response->json()['errors']['script_category_id'][0]; 
+            return $response->json()['errors']['script_category_id'][0];
         };
 
         $params['script_category_id'] = '';
@@ -98,7 +98,7 @@ class ScriptsTest extends TestCase
         $params['script_category_id'] = $category1->id . ',' . $category2->id;
         $response = $this->apiCall('POST', $url, $params);
         $response->assertStatus(201);
-        
+
         $params['script_category_id'] = $category1->id;
         $params['title'] = 'other title';
         $response = $this->apiCall('POST', $url, $params);
@@ -110,7 +110,7 @@ class ScriptsTest extends TestCase
      */
     public function testNotCreateScriptWithTitleExists()
     {
-        factory(Script::class)->create([
+        $script = factory(Script::class)->create([
             'title' => 'Script Title',
         ]);
 
@@ -120,7 +120,8 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
             'language' => 'php',
-            'code' => $faker->sentence($faker->randomDigitNotNull)
+            'code' => $faker->sentence($faker->randomDigitNotNull),
+            'script_category_id' => $script->script_category_id
         ]);
         $response->assertStatus(422);
         $response->assertSeeText('The name has already been taken');
@@ -131,7 +132,7 @@ class ScriptsTest extends TestCase
      */
     public function testNotCreateScriptWithKeyExists()
     {
-        factory(Script::class)->create([
+        $script = factory(Script::class)->create([
             'key' => 'some-key',
         ]);
 
@@ -140,6 +141,7 @@ class ScriptsTest extends TestCase
             'key' => 'some-key',
             'code' => '123',
             'language' => 'php',
+            'script_category_id' => $script->script_category_id
         ]);
         $response->assertStatus(422);
         $response->assertSeeText('The key has already been taken');
@@ -311,7 +313,6 @@ class ScriptsTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->language, $original_attributes['language']);
         $this->assertEquals($version->code, $original_attributes['code']);
-        $this->assertEquals((string) $version->created_at, (string) $yesterday);
         $this->assertLessThan(3, $version->updated_at->diffInSeconds($script->updated_at));
     }
 
@@ -371,11 +372,11 @@ class ScriptsTest extends TestCase
             );
         }
 
-        $url = route('api.script.preview', $this->getScript('lua')->id);
+        $url = route('api.scripts.preview', $this->getScript('lua')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);
         $response->assertStatus(200);
 
-        $url = route('api.script.preview', $this->getScript('php')->id);
+        $url = route('api.scripts.preview', $this->getScript('php')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => '<?php return ["response"=>1];']);
         $response->assertStatus(200);
 
@@ -396,7 +397,7 @@ class ScriptsTest extends TestCase
     public function testPreviewScriptFail()
     {
         Notification::fake();
-        $url = route('api.script.preview', $this->getScript('foo')->id);
+        $url = route('api.scripts.preview', $this->getScript('foo')->id);
         $response = $this->apiCall('POST', $url, ['data' => 'foo', 'config' => 'foo', 'code' => 'foo']);
 
         // Assertion: An exception is notified to usr through broadcast channel
@@ -464,5 +465,82 @@ class ScriptsTest extends TestCase
             'run_as_user_id' => $this->user->id,
             'language' => $language,
         ]);
+    }
+
+    /**
+     * Get a list of Screen filter by category
+     */
+    public function testFilterByCategory()
+    {
+        $name = 'Search title Category Screen';
+        $category = factory(ScriptCategory::class)->create([
+            'name' => $name,
+            'status' => 'active'
+        ]);
+
+
+        factory(Script::class)->create([
+            'script_category_id' => $category->getKey(),
+            'status' => 'active'
+        ]);
+
+        //List Screen with filter option
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCRIPT . $query;
+        $response = $this->apiCall('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        $json = $response->json();
+
+        //verify response in meta
+        $this->assertEquals(1, $json['meta']['total']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        $this->assertEquals($name, $json['meta']['filter']);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+
+
+        //List Screen without peers
+        $name = 'Search category that does not exist';
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCRIPT . $query;
+        $response = $this->apiCall('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        $json = $response->json();
+
+        //verify response in meta
+        $this->assertEquals(0, $json['meta']['total']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        $this->assertEquals($name, $json['meta']['filter']);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+    }
+
+    public function testUpdateScriptCategories()
+    {
+        $screen = factory(Script::class)->create();
+        $url = route('api.scripts.update', $screen);
+        $params = [
+            'title' => 'Title Script',
+            'language' => 'php',
+            'description' => 'Description.',
+            'run_as_user_id' => factory(User::class)->create(['status' => 'ACTIVE', 'is_administrator' => true])->getKey(),
+            'script_category_id' => factory(ScriptCategory::class)->create()->getKey() . ',' . factory(ScriptCategory::class)->create()->getKey()
+        ];
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(204);
     }
 }

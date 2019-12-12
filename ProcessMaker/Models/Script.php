@@ -10,6 +10,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\ScriptRunners\ScriptRunner;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Validation\CategoryRule;
 
@@ -43,7 +44,7 @@ use ProcessMaker\Validation\CategoryRule;
  *   @OA\Property(property="created_at", type="string", format="date-time"),
  *   @OA\Property(property="updated_at", type="string", format="date-time"),
  * ),
- * 
+ *
  * @OA\Schema(
  *   schema="scriptsPreview",
  *   @OA\Property(property="status", type="string"),
@@ -55,6 +56,7 @@ class Script extends Model
     use SerializeToIso8601;
     use HideSystemResources;
     use HasCategories;
+    use HasVersioning;
 
     const categoryClass = ScriptCategory::class;
 
@@ -83,7 +85,7 @@ class Script extends Model
 
         return [
             'key' => 'unique:scripts,key',
-            'title' => ['required', 'string', $unique],
+            'title' => ['required', 'string', $unique, 'alpha_spaces'],
             'language' => [
                 'required',
                 Rule::in(static::scriptFormatValues())
@@ -91,7 +93,7 @@ class Script extends Model
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
-            'script_category_id' => ['required', new CategoryRule]
+            'script_category_id' => [new CategoryRule($existing)]
         ];
     }
 

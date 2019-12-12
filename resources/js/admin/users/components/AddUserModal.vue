@@ -27,7 +27,7 @@ export default {
                 title: this.$t('Deleted User Found'),
                 centered: true,
                 okVariant: 'secondary',
-                okTitle: this.$t('Save'),
+                okTitle: this.$t('Yes'),
                 cancelVariant: 'outline-secondary'
             }).then(value => {
                 if (value) {
@@ -66,31 +66,26 @@ export default {
                 this.addError = error.response.data.errors;
                 this.$root.$emit('updateErrors', error.response.data.errors);
                 this.disabled = false;
-                if (!Object.values(this.addError).some(field => field.includes('userExists') || field.includes('The email field is required.'))) {
-                    if (this.addError.email) {
-                        let h = this.$createElement;
-                        let messageVNode = h('p', {}, [
-                            this.$t('An existing user has been found with the email')
-                            + ' "' + this.email + '" ' + 
-                            this.$t('would you like to save and reactivate their account?')
-                        ]);
-                        let restoreData = {
-                            email: this.email
-                        };
-                        this.showMsgBox(messageVNode, restoreData);
-                    } else if (this.addError.username) {
-                        let h = this.$createElement;
-                        let messageVNode = h('p', {}, [
-                            this.$t('An existing user has been found with the username')
-                            + ' "' + this.username + '" ' + 
-                            this.$t('would you like to save and reactivate their account?')
-                        ]);
-                        let restoreData = {
-                            username: this.username
-                        };
-                        this.showMsgBox(messageVNode, restoreData);
+
+                let deletedUserExists = false;
+                for (let key of ['username', 'email']) {
+                    if (key in this.addError ) {
+                        let message = this.addError[key].find(m => m.startsWith('A user with the'));
+                        if (message) {
+                            deletedUserExists = message;
+                        }
                     }
-                    this.hideAddUserModal();
+                }
+
+                if (deletedUserExists) {
+                    let h = this.$createElement;
+                    let messageVNode = h('p', {}, [
+                        deletedUserExists + ' ' + this.$t('Would you like to save and reactivate their account?')
+                    ]);
+                    let restoreData = {
+                        email: this.email
+                    };
+                    this.showMsgBox(messageVNode, restoreData);
                 }
             });
     

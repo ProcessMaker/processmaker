@@ -19,10 +19,9 @@
     ]])
 @endsection
 @section('content')
-    <div id="request" class="container">
-        <div class="row">
-            <div class="col-md-8">
-
+    <div id="request" class="container-fluid px-3">
+        <div class="d-flex flex-column flex-md-row">
+            <div class="flex-grow-1">
                 <div class="container-fluid">
                     <ul class="nav nav-tabs" id="requestTab" role="tablist">
                         <template v-if="status">
@@ -47,7 +46,7 @@
                             </li>
                             @if ($request->status === 'COMPLETED' && !$request->errors)
                                 @can('editData', $request)
-                                    <li>
+                                    <li class="nav-item">
                                         <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab"
                                            aria-controls="editdata" aria-selected="false"
                                            class="nav-link">
@@ -75,33 +74,29 @@
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
-                        <div class="tab-pane" :class="{ active: activeErrors }" id="errors" role="tabpanel"
+                        <div class="tab-pane card card-body border-top-0 p-0" :class="{ active: activeErrors }" id="errors" role="tabpanel"
                              aria-labelledby="errors-tab">
                             <request-errors :errors="errorLogs"></request-errors>
                         </div>
-                        <div class="tab-pane fade show" :class="{ active: activePending }" id="pending" role="tabpanel"
+                        <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }" id="pending" role="tabpanel"
                              aria-labelledby="pending-tab" v-if="!showSummary">
                             <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
                             </request-detail>
                         </div>
-                        <div v-bind:class="{ 'tab-pane':true, active: showSummary }" id="summary"
+                        <div class="card card-body border-top-0 p-0" v-bind:class="{ 'tab-pane':true, active: showSummary }" id="summary"
                              role="tabpanel" aria-labelledby="summary-tab">
                             <template v-if="showSummary">
                                 <template v-if="showScreenSummary">
-                                    <div class="card mt-3">
-                                        <div class="card-body">
-                                            <task-screen ref="screen" :screen="screenSummary" :data="dataSummary"/>
-                                        </div>
-                                    </div>
+                                    <task-screen ref="screen" :screen="screenSummary.config" :data="dataSummary" :computed="screenSummary.computed" />
                                 </template>
                                 <template v-else>
                                     <template v-if="summary.length > 0">
-                                        <div class="card mt-3">
-                                            <table class="vuetable table table-hover">
+                                        <div class="card border-0">
+                                            <table class="vuetable table table-hover border-top-0 mb-0">
                                                 <thead>
                                                 <tr>
-                                                    <th scope="col">{{ __('Key') }}</th>
-                                                    <th scope="col">{{ __('Value') }}</th>
+                                                    <th class="border-top-0" scope="col">{{ __('Key') }}</th>
+                                                    <th class="border-top-0" scope="col">{{ __('Value') }}</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -114,9 +109,9 @@
                                         </div>
                                     </template>
                                     <template v-else>
-                                        <div class="card mt-3">
-                                            <div class="card-header">
-                                                <h5>
+                                        <div class="card border-0">
+                                            <div class="card-header bg-white">
+                                                <h5 class="m-0">
                                                     {{ __('No Data Found') }}
                                                 </h5>
                                             </div>
@@ -133,16 +128,16 @@
                             </template>
                             <template v-else>
                                 <template v-if="showScreenRequestDetail">
-                                    <div class="card mt-3">
+                                    <div class="card">
                                         <div class="card-body">
                                             <task-screen ref="screenRequestDetail" :screen="screenRequestDetail" :data="dataSummary"/>
                                         </div>
                                     </div>
                                 </template>
                                 <template v-else>
-                                    <div class="card mt-3">
-                                        <div class="card-header">
-                                            <h5>
+                                    <div class="card border-0">
+                                        <div class="card-header bg-white">
+                                            <h5 class="m-0">
                                                 {{ __('Request In Progress') }}
                                             </h5>
                                         </div>
@@ -159,17 +154,17 @@
                         </div>
                         @if ($request->status === 'COMPLETED')
                             @can('editData', $request)
-                                <div id="editdata" role="tabpanel" aria-labelledby="editdata" class="tab-pane">
+                                <div id="editdata" role="tabpanel" aria-labelledby="editdata" class="tab-pane card card-body border-top-0 p-3">
                                     @include('tasks.editdata')
                                 </div>
                             @endcan
                         @endif
-                        <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+                        <div class="tab-pane fade card card-body border-top-0 p-0" id="completed" role="tabpanel" aria-labelledby="completed-tab">
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
                             </request-detail>
                         </div>
-                        <div class="tab-pane fade" id="files" role="tabpanel" aria-labelledby="files-tab">
-                            <div class="card mt-3">
+                        <div class="tab-pane fade card card-body border-top-0 p-3" id="files" role="tabpanel" aria-labelledby="files-tab">
+                            <div class="card">
                                 <div>
                                     <table class="vuetable table table-hover">
                                         <thead>
@@ -194,7 +189,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="forms" role="tabpanel" aria-labelledby="forms-tab" v-show="canViewPrint">
+                        <div class="tab-pane fade card card-body border-top-0 p-0" id="forms" role="tabpanel" aria-labelledby="forms-tab" v-show="canViewPrint">
                             <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested" ref="forms">
                             </request-screens>
                         </div>
@@ -208,13 +203,14 @@
                 @endif
 
             </div>
-            <div class="col-md-4">
+            <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="statusLabel">
                     <div class="card">
                         <div :class="classStatusCard">
                             <h4 style="margin:0; padding:0; line-height:1">@{{ __(statusLabel) }}</h4>
                         </div>
                         <ul class="list-group list-group-flush w-100">
+                            @if($request->user_id)
                             <li class="list-group-item">
                                 <h5>{{__('Requested By')}}</h5>
                                 <avatar-image v-if="userRequested" size="32"
@@ -222,7 +218,7 @@
                                               :input-data="requestBy" display-name="true"></avatar-image>
                                 <span v-if="!userRequested">{{__('Web Entry')}}</span>
                             </li>
-
+                            @endif
                             @if($canCancel == true && $request->status === 'ACTIVE')
                                 <template>
                                     <li class="list-group-item">
@@ -261,11 +257,13 @@
                               @endforeach
                             </li>
                             @endif
+                            @if ($request->participants->count())
                             <li class="list-group-item">
                                 <h5>{{__('Participants')}}</h5>
                                 <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="participants" hide-name="true"></avatar-image>
                             </li>
+                            @endif
                             <li class="list-group-item">
                                 <h5>@{{statusLabel}}</h5>
                                 <i class="far fa-calendar-alt"></i>
@@ -380,7 +378,7 @@
            * Get Screen summary
            * */
           screenSummary() {
-            return this.request.summary_screen.config;
+            return this.request.summary_screen;
           },
           /**
            * prepare data screen

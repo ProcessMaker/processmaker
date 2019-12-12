@@ -253,7 +253,6 @@ class ScreenTest extends TestCase
         $this->assertEquals($version->title, $original_attributes['title']);
         $this->assertEquals($version->description, $original_attributes['description']);
         $this->assertEquals($version->config, null);
-        $this->assertEquals((string) $version->created_at, (string) $yesterday);
         $this->assertLessThan(3, $version->updated_at->diffInSeconds($screen->updated_at));
     }
 
@@ -347,6 +346,19 @@ class ScreenTest extends TestCase
         $response->assertStatus(405);
     }
 
+    public function testCategoryNotRequiredIfAlreadySavedInDatabase()
+    {
+        $screen = factory(Screen::class)->create();
+        $url = route('api.screens.update', $screen);
+        $params = [
+            'title' => 'Title Screen',
+            'type' => 'FORM',
+            'description' => 'Description.'
+        ];
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(204);
+    }
+
     public function testCreateCategoryRequired()
     {
         $url = route('api.screens.store');
@@ -357,7 +369,7 @@ class ScreenTest extends TestCase
         ];
 
         $err = function($response) {
-            return $response->json()['errors']['screen_category_id'][0]; 
+            return $response->json()['errors']['screen_category_id'][0];
         };
 
         $params['screen_category_id'] = '';
@@ -374,10 +386,86 @@ class ScreenTest extends TestCase
         $params['screen_category_id'] = $category1->id . ',' . $category2->id;
         $response = $this->apiCall('POST', $url, $params);
         $response->assertStatus(201);
-        
+
         $params['screen_category_id'] = $category1->id;
         $params['title'] = 'other title';
         $response = $this->apiCall('POST', $url, $params);
         $response->assertStatus(201);
+    }
+
+    /**
+     * Get a list of Screen filter by category
+     */
+    public function testFilterByCategory()
+    {
+        $name = 'Search title Category Screen';
+        $category = factory(ScreenCategory::class)->create([
+            'name' => $name,
+            'status' => 'active'
+        ]);
+
+
+        factory(Screen::class)->create([
+            'screen_category_id' => $category->getKey(),
+            'status' => 'active'
+        ]);
+
+        //List Screen with filter option
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCREEN . $query;
+        $response = $this->apiCall('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        $json = $response->json();
+
+        //verify response in meta
+        $this->assertEquals(1, $json['meta']['total']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        $this->assertEquals($name, $json['meta']['filter']);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+
+
+        //List Screen without peers
+        $name = 'Search category that does not exist';
+        $query = '?filter=' . urlencode($name);
+        $url = self::API_TEST_SCREEN . $query;
+        $response = $this->apiCall('GET', $url);
+        //Validate the answer is correct
+        $response->assertStatus(200);
+        //verify structure paginate
+        $response->assertJsonStructure([
+            'data',
+            'meta',
+        ]);
+
+        $json = $response->json();
+
+        //verify response in meta
+        $this->assertEquals(0, $json['meta']['total']);
+        $this->assertEquals(1, $json['meta']['current_page']);
+        $this->assertEquals($name, $json['meta']['filter']);
+        //verify structure of model
+        $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+    }
+
+    public function testUpdateScreenCategories()
+    {
+        $screen = factory(Screen::class)->create();
+        $url = route('api.screens.update', $screen);
+        $params = [
+            'title' => 'Title Screen',
+            'type' => 'FORM',
+            'description' => 'Description.',
+            'screen_category_id' => factory(ScreenCategory::class)->create()->getKey() . ',' . factory(ScreenCategory::class)->create()->getKey()
+        ];
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(204);
     }
 }

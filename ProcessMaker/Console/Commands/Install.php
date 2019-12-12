@@ -9,6 +9,8 @@ use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Helper\Table;
+use UserSeeder;
+use Validator;
 
 /**
  * Install command handles installing a fresh copy of ProcessMaker.
@@ -76,7 +78,10 @@ class Install extends Command
             'DATE_FORMAT' => '"m/d/Y H:i"',
             'MAIN_LOGO_PATH' => '"/img/processmaker_logo.png"',
             'ICON_PATH_PATH' => '"/img/processmaker_icon.png"',
-            'LOGIN_LOGO_PATH' => '"img/processmaker_login.png"'
+            'LOGIN_LOGO_PATH' => '"img/processmaker_login.png"',
+            'REDIS_CLIENT' => 'predis',
+            'REDIS_PREFIX' => null,
+            'HORIZON_PREFIX' => 'horizon:',
         ];
 
         // Configure the filesystem to be local
@@ -170,6 +175,9 @@ class Install extends Command
         $this->call('config:clear');
         $this->call('cache:clear');
 
+        // Set username, email, password
+        $this->fetchUserInformation();
+
         // Install migrations
         $this->callSilent('migrate:fresh', [
             '--seed' => true,
@@ -191,6 +199,57 @@ class Install extends Command
         $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
         $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
         return true;
+    }
+
+    /**
+     * Configure the username, email, password of the admin user
+     *
+     */
+    private function fetchUserInformation()
+    {
+        do {
+            $username = $this->anticipate('Enter your username', ['admin'], 'admin');
+            $validator = $this->validateField('username', $username, ['required', 'alpha_dash', 'min:4', 'max:255']);
+        } while($validator->fails());
+        do {
+            $email = $this->ask('Enter your email');
+            $validator = $this->validateField('email', $email, ['required', 'email']);
+        } while($validator->fails());
+        do {
+            $password = $this->secret('Enter your password');
+            $validator = $this->validateField('password', $password, ['required', 'sometimes', 'min:6']);
+        } while($validator->fails());
+        do {
+            $confirmPassword = $this->secret('Confirm your password');
+            $match = $password === $confirmPassword;
+            if (!$match) {
+                $this->error('Your password/confirm password fields do not match');
+            }
+        } while(!$match);
+        // Set the default admin properties for UserSeeder
+        UserSeeder::$INSTALLER_ADMIN_USERNAME = $username;
+        UserSeeder::$INSTALLER_ADMIN_EMAIL = $email;
+        UserSeeder::$INSTALLER_ADMIN_PASSWORD = $password;
+    }
+
+    /**
+     * Validate a field value
+     *
+     * @param string $name
+     * @param mixed $value
+     * @param array $rules
+     *
+     * @return Validator
+     */
+    private function validateField($name, $value, $rules)
+    {
+        $validator = Validator::make([$name => $value], [
+            $name => $rules,
+        ]);
+        foreach($validator->errors()->get($name) as $error) {
+            $this->error($error);
+        }
+        return $validator;
     }
 
     /**
