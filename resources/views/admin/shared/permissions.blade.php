@@ -1,5 +1,5 @@
 @foreach ($permissionGroups as $groupName => $permissions)
-    <div class="card">
+    <div class="card border-bottom">
         <div class="card-header">
             <div class="mb-0">
                 <button class="btn btn-link collapsed d-flex w-100 justify-content-between" type="button" data-toggle="collapse" data-target="#{{ \Illuminate\Support\Str::slug($groupName) }}">
@@ -10,14 +10,18 @@
         <div id="{{ \Illuminate\Support\Str::slug($groupName) }}" class="collapse" >
             <div class="card-body">
                 @foreach ($permissions as $permission)
-                    <label><input type="checkbox"
-                                  :disabled="formData.is_administrator"
-                                  value="{{ $permission->name }}"
-                                  v-model="selectedPermissions"
-                                  @if ($permission->action == 'create')@@change="checkCreate('edit-{{ $permission->resource_name }}', $event)"@endif
-                                  @if ($permission->action == 'edit')@@change="checkEdit('create-{{ $permission->resource_name }}', $event)"@endif
-                            > {{__($permission->title)}}
-                    </label>
+                    <div class="mb-2 custom-control custom-switch">
+                        <input type="checkbox"
+                               :disabled="formData.is_administrator"
+                               value="{{ $permission->name }}"
+                               v-model="selectedPermissions"
+                               class="custom-control-input"
+                               id="permission_{{ $permission->name }}"
+                               @if ($permission->action == 'create')@@change="checkCreate('edit-{{ $permission->resource_name }}', $event)"@endif
+                               @if ($permission->action == 'edit')@@change="checkEdit('create-{{ $permission->resource_name }}', $event)"@endif
+                        >
+                        <label class="custom-control-label" for="permission_{{ $permission->name }}">{{__($permission->title)}}</label>
+                    </div>
                 @endforeach
             </div>
         </div>
