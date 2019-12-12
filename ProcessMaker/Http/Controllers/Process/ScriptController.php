@@ -2,7 +2,8 @@
 
 namespace ProcessMaker\Http\Controllers\Process;
 
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
@@ -47,18 +48,33 @@ class ScriptController extends Controller
         return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptFormats'));
     }
 
-    public function builder(Script $script)
+    public function builder(Request $request, Script $script)
     {
         $scriptFormat = $script->language_name;
+        $processRequestAttributes = $this->getProcessRequestAttributes();
+        $processRequestAttributes['user_id'] = $request->user()->id;
+        
         $testData = [
-            '_request' => factory(ProcessRequest::class)->raw([
-                'callable_id' => 'process_1',
-                'user_id' => Auth::id(),
-                'process_id' => 1,
-                'process_collaboration_id' => 1,
-            ]),
+            '_request' => $processRequestAttributes
         ];
-
         return view('processes.scripts.builder', compact('script', 'scriptFormat', 'testData'));
+    }
+
+    private function getProcessRequestAttributes()
+    {
+        $emptyProcessRequest = new ProcessRequest();
+        $columns = Schema::connection(
+            $emptyProcessRequest->getConnectionName()
+        )->getColumnListing(
+            $emptyProcessRequest->getTable()
+        );
+
+        $attributes = [];
+
+        foreach($columns as $column) {
+            $attributes[$column] = null;
+        }
+
+        return $attributes;
     }
 }
