@@ -489,3 +489,9 @@ h1.page-title {
 #sidebar .closed .nav-pl {
   padding-left: 0em;
 }
+
+@include media-breakpoint-up(lg) {
+  .profile-sidebar {
+    max-width: 350px;
+  }  
+}
