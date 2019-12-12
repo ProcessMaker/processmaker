@@ -59,7 +59,7 @@ new Vue({
             this.$refs['addUserModal'].hideAddUserModal();
         },
         onSubmit() {
-            if (this.validatePassword) {
+            if (this.validatePassword()) {
                 this.$refs['addUserModal'].onSubmit(this.config);
             }
         },

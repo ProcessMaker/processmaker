@@ -123,8 +123,16 @@ class User extends Authenticatable implements HasMedia
         $unique = Rule::unique('users')->ignore($existing);
 
         $checkUserIsDeleted = function($attribute, $value, $fail) use ($existing) {
-            if (!$existing && User::where($attribute, $value)->exists()) {
-                $fail('userExists');
+            if (!$existing) {
+                $user = User::withTrashed()->where($attribute, $value)->first();
+                if ($user) {
+                    $fail(
+                        __(
+                            'A user with the username :username and email :email was previously deleted.',
+                            ['username' => $user->username, 'email' => $user->email]
+                        )
+                    );
+                }
             }
         };
 
