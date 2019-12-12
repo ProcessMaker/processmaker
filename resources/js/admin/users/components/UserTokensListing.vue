@@ -1,6 +1,13 @@
 <template>
     <div class="data-table">
-        <div class="card card-body table-card">
+      <data-loading
+              :for=/users\/.+\/tokens\?.+/
+              v-show="shouldShowLoader"
+              :empty="$t('No Data Available')"
+              :empty-desc="$t('')"
+              empty-icon="noData"
+      />
+        <div v-show="!shouldShowLoader" class="card card-body table-card">
             <vuetable
                     :dataManager="dataManager"
                     :sortOrder="sortOrder"
@@ -13,14 +20,18 @@
                     :noDataTemplate="$t('No Data Available')"
                     pagination-path="meta">
                 <template slot="actions" slot-scope="props">
-                    <b-btn
-                            variant="link"
-                            @click="deleteToken(props.rowData)"
-                            v-b-tooltip.hover
-                            :title="$t('Delete Token')"
-                    >
-                        <i class="fas fa-minus-circle fa-lg fa-fw"></i>
-                    </b-btn>
+                  <div class="actions">
+                    <div class="popout">
+                      <b-btn
+                              variant="link"
+                              @click="deleteToken(props.rowData)"
+                              v-b-tooltip.hover
+                              :title="$t('Delete Token')"
+                      >
+                          <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+                      </b-btn>
+                    </div>
+                  </div>
                 </template>
             </vuetable>
 
@@ -38,10 +49,10 @@
 
 <script>
   import datatableMixin from "../../../components/common/mixins/datatable";
-
+  import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
   export default {
-    mixins: [datatableMixin],
+    mixins: [datatableMixin, dataLoadingMixin],
     props: ["user_id"],
     data() {
       return {
@@ -68,7 +79,7 @@
             name: "expires_at",
           },
           {
-            title: () => this.$t("Delete"),
+            title: () => '',
             name: "__slot:actions",
           }
         ]
@@ -123,8 +134,6 @@
 </script>
 
 <style lang="scss" scoped>
-.data-table .card { 
-  border: 0;
-}
+
 </style>
 
