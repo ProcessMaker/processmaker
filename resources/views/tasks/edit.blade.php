@@ -30,6 +30,12 @@
     <div id="task" class="container-fluid px-3">
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
+                @if ($task->processRequest->status === 'ACTIVE' && $task->is_self_service)
+                    <div class="alert alert-primary" role="alert">
+                        <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                        {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                    </div>
+                @else
                 <div class="container-fluid h-100 d-flex flex-column">
                     @if ($task->processRequest->status === 'ACTIVE')
                         @can('editData', $task->processRequest)
@@ -113,6 +119,7 @@
                         @endif
                     </div>
                 </div>
+                @endif
             </div>
             <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="dateDueAt">
@@ -140,7 +147,7 @@
 
                             <li class="list-group-item">
                                 <h5>{{__('Assigned To')}}</h5>
-                                <avatar-image size="32" class="d-inline-flex pull-left align-items-center"
+                                <avatar-image v-if="userAssigned" size="32" class="d-inline-flex pull-left align-items-center"
                                               :input-data="userAssigned"></avatar-image>
                                 @if(!empty($task->getDefinition()['allowReassignment']) && $task->getDefinition()['allowReassignment']==='true')
                                     <div>
@@ -303,6 +310,16 @@
           }
         },
         methods: {
+          claimTask() {
+            ProcessMaker.apiClient
+              .put("tasks/" + this.task.id, {
+                user_id: window.ProcessMaker.user.id,
+                is_self_service: 0,
+              })
+              .then(response => {
+                window.location.reload();
+              });
+          },
           redirectWhenProcessCompleted() {
             window.location.href = `/requests/${this.task.process_request_id}`;
           },
@@ -386,7 +403,7 @@
                 }
               )
               .then(response => {
-                this.usersList = response.data.assignableUsers;
+                this.usersList = response.data.assignable_users;
               });
           },
           classHeaderCard (status) {

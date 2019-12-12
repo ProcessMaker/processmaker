@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasCategories;
 
 /**
@@ -21,6 +22,7 @@ use ProcessMaker\Traits\HasCategories;
  */
 class ProcessVersion extends Model
 {
+    use HasSelfServiceTasks;
     use HasCategories;
 
     const categoryClass = ProcessCategory::class;
@@ -45,6 +47,7 @@ class ProcessVersion extends Model
     protected $casts = [
         'start_events' => 'array',
         'warnings' => 'array',
+        'self_service_tasks' => 'array',
     ];
 
     /**

@@ -19,6 +19,7 @@ use ProcessMaker\Notifications\TaskReassignmentNotification;
 use ProcessMaker\SanitizeHelper;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
+use ProcessMaker\Models\User;
 
 class TaskController extends Controller
 {
@@ -108,8 +109,26 @@ class TaskController extends Controller
         $parameters = $request->all();
         foreach ($parameters as $column => $filter) {
             if (in_array($column, $filterByFields)) {
-                $key = array_search($column, $filterByFields);
-                $query->where(is_string($key) ? $key : $column, 'like', $filter);
+                if ($column === 'user_id') {
+                    $key = array_search($column, $filterByFields);
+                    $query->where(function($query) use ($key, $column, $filter){
+                        $userColumn = is_string($key) ? $key : $column;
+                        $query->where($userColumn, $filter);
+                        $query->orWhere(function ($query) use($userColumn, $filter) {
+                            $query->whereNull($userColumn);
+                            $query->where('process_request_tokens.is_self_service', 1);
+                            $user = User::find($filter);
+                            $query->where(function ($query) use ($user) {
+                                foreach($user->groups as $group) {
+                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey()));
+                                }
+                            });
+                        });
+                    });
+                } else {
+                    $key = array_search($column, $filterByFields);
+                    $query->where(is_string($key) ? $key : $column, 'like', $filter);
+                }
             }
         }
 
@@ -248,11 +267,17 @@ class TaskController extends Controller
             WorkflowManager::completeTask($process, $instance, $task, $data);
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
-            // Validate if user can reassign
-            $task->authorizeReassignment(Auth::user());
-
-            // Reassign user
-            $task->user_id = $request->input('user_id');
+            $userToAssign = $request->input('user_id');
+            if ($task->is_self_service && $userToAssign == Auth::id() && !$task->user_id) {
+                // Claim task
+                $task->is_self_service = 0;
+                $task->user_id = $userToAssign;
+            } else {
+                // Validate if user can reassign
+                $task->authorizeReassignment(Auth::user());
+                // Reassign user
+                $task->user_id = $userToAssign;
+            }
             $task->save();
 
             // Send a notification to the user

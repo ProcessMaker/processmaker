@@ -131,6 +131,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     protected $casts = [
         'data' => 'array',
+        'self_service_groups' => 'array',
     ];
 
     /**
@@ -218,6 +219,16 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the creator/author of this request.
+     *
+     */
+    public function assignableUsers()
+    {
+        $query = $this->newQuery();
+        return new TokenAssignableUsers($query, $this);
     }
 
     /**
@@ -408,10 +419,15 @@ class ProcessRequestToken extends Model implements TokenInterface
         $value = mb_strtolower($value);
     
         return function($query) use ($value, $statusMap) {
-            if (array_key_exists($value, $statusMap)) {
-                $query->where('status', $statusMap[$value]);
+            if ($value === 'self service') {
+                $query->where('status', 'ACTIVE')
+                ->where('is_self_service', 1);
+            } elseif (array_key_exists($value, $statusMap)) {
+                $query->where('status', $statusMap[$value])
+                    ->where('is_self_service', 0);
             } else {
-                $query->where('status', $value);
+                $query->where('status', $value)
+                    ->where('is_self_service', 0);
             }
         };
     }
@@ -497,5 +513,32 @@ class ProcessRequestToken extends Model implements TokenInterface
             $this->version_id = $script->getLatestVersion()->getKey();
             $this->version_type = ScriptVersion::class;
         }
+    }
+
+    /**
+     * Get the assignment rule for the token.
+     *
+     * @return string
+     */
+    public function getAssignmentRule()
+    {
+        $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
+        $assignmentRules = $activity->getProperty('assignmentRules', null);
+
+        $instanceData = $assignmentRules ? $this->getInstance()->getDataStore()->getData() : null;
+        if ($assignmentRules && $instanceData) {
+            $list = json_decode($assignmentRules);
+            $list = ($list === null) ? [] : $list;
+            foreach ($list as $item) {
+                $formalExp = new FormalExpression();
+                $formalExp->setLanguage('FEEL');
+                $formalExp->setBody($item->expression);
+                $eval = $formalExp($instanceData);
+                if ($eval) {
+                    return $item->type;
+                }
+            }
+        }
+        return $activity->getProperty('assignment', null);
     }
 }

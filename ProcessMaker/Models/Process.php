@@ -20,6 +20,7 @@ use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
@@ -131,6 +132,7 @@ class Process extends Model implements HasMedia
     use PMQL;
     use HasCategories;
     use HasVersioning;
+    use HasSelfServiceTasks;
 
     const categoryClass = ProcessCategory::class;
 
@@ -207,7 +209,8 @@ class Process extends Model implements HasMedia
 
     protected $casts = [
         'start_events' => 'array',
-        'warnings' => 'array'
+        'warnings' => 'array',
+        'self_service_tasks' => 'array',
     ];
 
     /**
@@ -1103,5 +1106,25 @@ class Process extends Model implements HasMedia
     public function getLatestVersion()
     {
         return $this->versions()->orderBy('id', 'desc')->first();
+    }
+
+    /**
+     * Get a list of self service tasks assignable to $userId
+     *
+     * @param [type] $userId
+     * @return void
+     */
+    public function getSelfServiceAssignableTasks($userId)
+    {
+        $user = User::findOrFail($userId);
+        $groups = $user->groups;
+        foreach(Process::all() as $process) {
+            foreach ($process->self_service_tasks as $taskId => $assignedGroups) {
+                array_filter($groups, function ($group) use ($assignedGroups) {
+                    return in_array($group->getKey(), $assignedGroups);
+                });
+            }
+        }
+
     }
 }

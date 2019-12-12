@@ -32,5 +32,6 @@ class ProcessObserver
     public function saving(Process $process)
     {
         $process->start_events = $process->getUpdatedStartEvents();
+        $process->self_service_tasks = $process->getUpdatedSelfServiceTasks();
     }
 }
