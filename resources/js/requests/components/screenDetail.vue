@@ -45,7 +45,6 @@
     computed: {
       json() {
         const json = JSON.parse(JSON.stringify(this.rowData.config));
-        console.log("JSON", json);
         return this.disableForm(json);
       },
       formData() {
@@ -54,13 +53,10 @@
       printablePages() {
         const pages = [0];
         if (this.json instanceof Array) {
-          console.log("Yup");
           this.json.forEach(page => {
-            console.log("it", page);
             this.findPagesInNavButtons(page, pages);
           });
         }
-        console.log("printablePages", pages);
         return pages;
       },
       component() {
@@ -131,7 +127,6 @@
         handler() {
           this.$nextTick(() => {
             this.$refs.print.forEach((page, index) => {
-              console.log("SETTING CURRENT PAGE TO",this.printablePages[index]);
               page.currentPage = this.printablePages[index];
             });
           });
