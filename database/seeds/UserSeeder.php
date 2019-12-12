@@ -10,6 +10,9 @@ use Laravel\Passport\ClientRepository;
 class UserSeeder extends Seeder
 {
 
+    static $INSTALLER_ADMIN_USERNAME = 'admin';
+    static $INSTALLER_ADMIN_PASSWORD = 'admin';
+    static $INSTALLER_ADMIN_EMAIL = 'admin@processmaker.com';
     /**
      * Run the database seeds.
      *
@@ -23,9 +26,9 @@ class UserSeeder extends Seeder
 
         //Create admin user
         $user = factory(User::class)->create([
-            'username' => env('INSTALLER_ADMIN_USERNAME', 'admin'),
-            'password' => Hash::make(env('INSTALLER_ADMIN_PASSWORD', 'admin')),
-            'email' => Hash::make(env('INSTALLER_ADMIN_EMAIL', 'admin@processmaker.com')),
+            'username' => self::$INSTALLER_ADMIN_USERNAME,
+            'password' => Hash::make(self::$INSTALLER_ADMIN_PASSWORD),
+            'email' => self::$INSTALLER_ADMIN_EMAIL,
             'firstname' => 'admin',
             'lastname' => 'admin',
             'timezone' => 'America/Los_Angeles',

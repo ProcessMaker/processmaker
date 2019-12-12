@@ -9,6 +9,7 @@ use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Helper\Table;
+use UserSeeder;
 use Validator;
 
 /**
@@ -204,27 +205,28 @@ class Install extends Command
     private function fetchUserInformation()
     {
         do {
-            $username = $this->anticipate(__('Enter your username'), ['admin'], 'admin');
+            $username = $this->anticipate('Enter your username', ['admin'], 'admin');
             $validator = $this->validateField('username', $username, ['required', 'alpha_dash', 'min:4', 'max:255']);
         } while($validator->fails());
         do {
-            $email = $this->ask(__('Enter your email'));
+            $email = $this->ask('Enter your email');
             $validator = $this->validateField('email', $email, ['required', 'email']);
         } while($validator->fails());
         do {
-            $password = $this->secret(__('Enter your password'));
+            $password = $this->secret('Enter your password');
             $validator = $this->validateField('password', $password, ['required', 'sometimes', 'min:6']);
         } while($validator->fails());
         do {
-            $confirmPassword = $this->secret(__('Confirm your password'));
+            $confirmPassword = $this->secret('Confirm your password');
             $match = $password === $confirmPassword;
             if (!$match) {
-                $this->error(__('Your password/confirm password fields do not match'));
+                $this->error('Your password/confirm password fields do not match');
             }
         } while(!$match);
-        putenv ("INSTALLER_ADMIN_USERNAME=$username");
-        putenv ("INSTALLER_ADMIN_EMAIL=$email");
-        putenv ("INSTALLER_ADMIN_PASSWORD=$password");
+        // Set the default admin properties for UserSeeder
+        UserSeeder::$INSTALLER_ADMIN_USERNAME = $username;
+        UserSeeder::$INSTALLER_ADMIN_EMAIL = $email;
+        UserSeeder::$INSTALLER_ADMIN_PASSWORD = $password;
     }
 
     /**
