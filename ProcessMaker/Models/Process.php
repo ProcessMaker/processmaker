@@ -522,6 +522,17 @@ class Process extends Model implements HasMedia
             return $userByRule;
         }
 
+        $definitions = $token->getInstance()->process->getDefinitions();
+        $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
+        $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock']  : false;
+
+        if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
+            $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
+            if ($user) {
+                return User::where('id', $user)->first();
+            }
+        }
+
         switch ($assignmentType) {
             case 'group':
                 $user = $this->getNextUserFromGroupAssignment($activity->getId());
@@ -551,7 +562,7 @@ class Process extends Model implements HasMedia
     }
 
     /**
-     * If the assignment type is user_by_id, we need to parse 
+     * If the assignment type is user_by_id, we need to parse
      * mustache syntax with the current data to get the user
      * that should be assigned
      *
@@ -604,6 +615,26 @@ class Process extends Model implements HasMedia
             }
         }
         return $users[0];
+    }
+
+    /**
+     * Given a request, returns the last user assigned to a task. If it is the
+     * first time that the task is assigned, null is returned.
+     *
+     * @param string $processTaskUuid
+     *
+     * @return binary
+     * @throws TaskDoesNotHaveUsersException
+     */
+    private function getLastUserAssignedToTask($processTaskUuid, $processRequestId)
+    {
+        $last = ProcessRequestToken::where('process_id', $this->id)
+            ->where('element_id', $processTaskUuid)
+            ->where('process_request_id', $processRequestId)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $last ? $last->user_id : null;
     }
 
     /**

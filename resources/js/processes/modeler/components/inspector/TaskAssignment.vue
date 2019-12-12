@@ -36,9 +36,17 @@
         ></user-by-id>
 
         <form-checkbox
+                :label="$t('Lock task assignment to user')"
+                :checked="assignmentLockGetter"
+                toggle="true"
+                @change="assignmentLockSetter">
+        </form-checkbox>
+
+        <form-checkbox
             :label="$t('Allow Reassignment')"
             :helper="$t('Allows the Task assignee to reassign this Task')"
             :checked="allowReassignmentGetter"
+            toggle="true"
             @change="allowReassignmentSetter">
         </form-checkbox>
 
@@ -166,6 +174,9 @@
       /**
        * Get the value of the edited property
        */
+      assignmentLockGetter () {
+          return _.get(this.node, 'assignmentLock');
+      },
       allowReassignmentGetter () {
         return _.get(this.node, "allowReassignment");
       },
@@ -226,6 +237,12 @@
       },
     },
     methods: {
+      /**
+       * Update assignmentLock property
+       */
+      assignmentLockSetter (value) {
+        this.$set(this.node, "assignmentLock", value);
+      },
       /**
        * Update allowReassignment property
        */
