@@ -9,6 +9,7 @@
                 <option value="user">{{ $t('User') }}</option>
                 <option value="group">{{ $t('Group') }}</option>
             </select>
+            <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
         </div>
 
         <div class="form-group" v-if="assignmentGetter">
@@ -34,14 +35,14 @@
                 </template>
             </multiselect>
             <small v-if="error" class="text-danger">{{error}}</small>
-            <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
+            <small v-if="helperText" class="form-text text-muted">{{ $t(helperText) }}</small>
         </div>
     </div>
 </template>
 
 <script>
   export default {
-    props: ["value", "label", "helper", "property"],
+    props: ["value", "label", "helper", "userHelper", "groupHelper", "property"],
     data() {
       return {
         content: null,
@@ -69,6 +70,9 @@
       }
     },
     computed: {
+      helperText() {
+        return this.type === 'user' ? this.userHelper : this.groupHelper;
+      },
       assignmentGetter() {
         const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
         const value = _.get(node, "assignment");

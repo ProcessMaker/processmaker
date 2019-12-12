@@ -5,7 +5,6 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
-use ProcessMaker\Models\ScreenVersion;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -24,10 +23,11 @@ use ProcessMaker\Validation\CategoryRule;
  * @property array config
  * @property array computed
  * @property array custom_css
+ * @property array watchers
  * @property string label
  * @property Carbon type
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $created_at
  *
  * @OA\Schema(
  *   schema="screensEditable",
@@ -134,5 +134,21 @@ class Screen extends Model
     public function getScreenCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    public function builderComponent()
+    {
+        if (isset($this->config['builderComponent'])) {
+            return $this->config['builderComponent'];
+        }
+        return 'ScreenBuilder';
+    }
+    
+    public function renderComponent()
+    {
+        if (isset($this->config['renderComponent'])) {
+            return $this->config['renderComponent'];
+        }
+        return 'task-screen';
     }
 }

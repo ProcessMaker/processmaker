@@ -1,7 +1,16 @@
 <template>
-  <div class="card">
-    <div class="card-body" style="pointer-events:none;">
-      <vue-form-renderer ref="print" v-model="formData" @update="onUpdate" :config="json"/>
+  <div class="card h-100">
+    <div class="card-body h-100" style="pointer-events:none;">
+      <component
+        :is="component"
+        v-model="formData"
+        :data="formData"
+        @update="onUpdate"
+        :config="json"
+        csrf-token=""
+        submiturl=""
+        token-id=""
+      />
     </div>
     <div class="card-footer d-print-none" v-if="canPrint">
       <button type="button" class="btn btn-secondary float-right" @click="print">
@@ -37,11 +46,20 @@
     },
     computed: {
       json() {
-        return this.disableForm(this.rowData.config);
+        if (Array.isArray(this.rowData.config)) {
+          return this.disableForm(this.rowData.config);
+        }
+        return this.rowData.config;
       },
       formData() {
         return this.rowData.data ? this.rowData.data : {};
       },
+      component() {
+        if ('renderComponent' in this.rowData.config) {
+          return this.rowData.config.renderComponent;
+        }
+        return 'vue-form-renderer';
+      }
     },
     mounted() {
       if (this.canPrint) {

@@ -92,7 +92,8 @@ class ScreenController extends Controller
             });
         }
         if ($request->input('type')) {
-            $query->where('type', $request->input('type'));
+            $types = explode(',', $request->input('type'));
+            $query->whereIn('type', $types);
         }
         $response =
             $query->orderBy(
@@ -163,6 +164,7 @@ class ScreenController extends Controller
         $request->validate(Screen::rules());
         $screen = new Screen();
         $screen->fill($request->input());
+        
         $screen->saveOrFail();
         return new ApiResource($screen);
     }

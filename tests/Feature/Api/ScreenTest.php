@@ -361,13 +361,6 @@ class ScreenTest extends TestCase
 
     public function testCreateCategoryRequired()
     {
-
-
-
-        $this->markTestSkipped();
-
-
-        
         $url = route('api.screens.store');
         $params = [
             'title' => 'Title Screen',
@@ -376,7 +369,7 @@ class ScreenTest extends TestCase
         ];
 
         $err = function($response) {
-            return $response->json()['errors']['screen_category_id'][0]; 
+            return $response->json()['errors']['screen_category_id'][0];
         };
 
         $params['screen_category_id'] = '';
@@ -393,7 +386,7 @@ class ScreenTest extends TestCase
         $params['screen_category_id'] = $category1->id . ',' . $category2->id;
         $response = $this->apiCall('POST', $url, $params);
         $response->assertStatus(201);
-        
+
         $params['screen_category_id'] = $category1->id;
         $params['title'] = 'other title';
         $response = $this->apiCall('POST', $url, $params);
@@ -438,7 +431,7 @@ class ScreenTest extends TestCase
         //verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
 
-        
+
         //List Screen without peers
         $name = 'Search category that does not exist';
         $query = '?filter=' . urlencode($name);
@@ -460,5 +453,19 @@ class ScreenTest extends TestCase
         $this->assertEquals($name, $json['meta']['filter']);
         //verify structure of model
         $response->assertJsonStructure(['*' => self::STRUCTURE], $json['data']);
+    }
+
+    public function testUpdateScreenCategories()
+    {
+        $screen = factory(Screen::class)->create();
+        $url = route('api.screens.update', $screen);
+        $params = [
+            'title' => 'Title Screen',
+            'type' => 'FORM',
+            'description' => 'Description.',
+            'screen_category_id' => factory(ScreenCategory::class)->create()->getKey() . ',' . factory(ScreenCategory::class)->create()->getKey()
+        ];
+        $response = $this->apiCall('PUT', $url, $params);
+        $response->assertStatus(204);
     }
 }
