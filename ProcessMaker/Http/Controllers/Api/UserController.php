@@ -283,6 +283,11 @@ class UserController extends Controller
         if (filter_var($data['avatar'], FILTER_VALIDATE_URL)) {
             return;
         }
+        
+        if ($data['avatar'] === false) {
+            $user->clearMediaCollection(User::COLLECTION_PROFILE);
+            return;
+        }
 
         if (preg_match('/^data:image\/(\w+);base64,/', $data['avatar'] , $type)) {
             $data = substr($data['avatar'], strpos($data['avatar'], ',') + 1);
