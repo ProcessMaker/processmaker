@@ -224,6 +224,57 @@ class UserController extends Controller
         }
         return response([], 204);
     }
+    
+    /**
+     * Update a user's groups
+     *
+     * @param User $user
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     *     @OA\Put(
+     *     path="/users/{user_id}/groups",
+     *     summary="Update a user's groups",
+     *     operationId="updateUserGroups",
+     *     tags={"Users"},
+     *     @OA\Parameter(
+     *         description="ID of user to return",
+     *         in="path",
+     *         name="user_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *       required=true,
+     *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="success",
+     *         @OA\JsonContent(ref="#/components/schemas/users")
+     *     ),
+     * )
+     */
+    public function updateGroups(User $user, Request $request)
+    {
+        if ($request->has('groups')) {
+            if ($request->filled('groups')) {
+                if (! is_array($request->groups)) {
+                    $groups = array_map('intval', explode(',', $request->groups));
+                }
+                $user->groups()->sync($groups);
+            } else {
+                $user->groups()->detach();
+            }
+        } else {
+            return response([], 400);
+        }
+
+        return response([], 204);
+    }
 
     /**
      * Delete a user
