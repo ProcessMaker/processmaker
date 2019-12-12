@@ -1,23 +1,21 @@
 <template>
   <div class="card h-100">
-    <div class="card-body h-100" style="pointer-events:none;">
-      <component
-        :is="component"
-        v-model="formData"
-        :data="formData"
-        @update="onUpdate"
-        :config="json"
-        csrf-token=""
-        submiturl=""
-        token-id=""
-      />
-    </div>
-    <div class="card-footer d-print-none" v-if="canPrint">
-      <button type="button" class="btn btn-secondary float-right" @click="print">
-        <i class="fas fa-print"></i> {{ $t('Print') }}
-      </button>
-    </div>
+      <div v-for="page in printablePages" :key="page" class="card">
+      <div class="card-body h-100" style="pointer-events:none;">
+        <component
+          ref="print"
+          :is="component"
+          v-model="formData"
+          :data="formData"
+          @update="onUpdate"
+          :config="json"
+          csrf-token=""
+          submiturl=""
+          token-id=""
+        />
 
+      </div>
+    </div>
   </div>
 </template>
 
@@ -46,13 +44,20 @@
     },
     computed: {
       json() {
-        if (Array.isArray(this.rowData.config)) {
-          return this.disableForm(this.rowData.config);
-        }
-        return this.rowData.config;
+        const json = JSON.parse(JSON.stringify(this.rowData.config));
+        return this.disableForm(json);
       },
       formData() {
         return this.rowData.data ? this.rowData.data : {};
+      },
+      printablePages() {
+        const pages = [0];
+        if (this.rowData.config instanceof Array) {
+          this.rowData.config.forEach(page => {
+            this.findPagesInNavButtons(page, pages);
+          });
+        }
+        return pages;
       },
       component() {
         if ('renderComponent' in this.rowData.config) {
@@ -67,6 +72,20 @@
       }
     },
     methods: {
+      findPagesInNavButtons(object, found = []) {
+        if (object.items) {
+          object.items.forEach(item => {
+            this.findPagesInNavButtons(item, found);
+          });
+        } else if (object instanceof Array) {
+          object.forEach(item => {
+            this.findPagesInNavButtons(item, found);
+          });
+        } else if (object.config && object.config.event === 'pageNavigate') {
+          const page = parseInt(object.config.eventData);
+          found.indexOf(page) === -1 ? found.push(page) : null;
+        }
+      },
       /**
        * Disable the form items.
        *
@@ -101,5 +120,18 @@
         return true;
       }
     },
+    watch: {
+      "rowData.config": {
+        deep: true,
+        immediate: true,
+        handler() {
+          this.$nextTick(() => {
+            this.$refs.print.forEach((page, index) => {
+              page.currentPage = this.printablePages[index];
+            });
+          });
+        }
+      }
+    }
   }
 </script>
