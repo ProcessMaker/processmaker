@@ -124,13 +124,6 @@ class GenerateMenus
                     'id' => 'processes'
                 ]);
             }
-            if (\Auth::check() && \Auth::user()->can('archive-processes')) {
-                $submenu->add(__('Archived Processes'), [
-                    'route' => ['processes.index', 'status' => 'inactive'],
-                    'icon' => 'fa-archive',
-                    'id' => 'process-environment'
-                ]);
-            }
             if (\Auth::check() && \Auth::user()->can('view-scripts')) {
                 $submenu->add(__('Scripts'), [
                     'route' => 'scripts.index',

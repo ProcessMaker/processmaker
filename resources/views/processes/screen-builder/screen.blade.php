@@ -18,9 +18,9 @@
 
 @section('content')
     <div id="screen-container" style="display: contents !important">
-        <screen-builder :screen="{{$screen}}"
-                        :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}">
-        </screen-builder>
+        <component :is="'{{ $screen->builderComponent() }}'" :screen="{{ $screen }}"
+                   :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}">
+        </component>
     </div>
 @endsection
 

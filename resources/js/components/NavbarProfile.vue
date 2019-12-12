@@ -16,13 +16,13 @@
           <li class="list-group-item px-1">
             <a :href="user_id">
               <i class="fas fa-user fa-fw fa-lg"></i>
-              {{$t('View Profile')}}
+              {{$t('View')}} {{username}} {{$t('Profile')}}
             </a>
           </li>
           <li class="list-group-item px-1">
             <a href="/profile/edit">
               <i class="fas fa-user-cog fa-fw fa-lg"></i>
-              {{$t('Edit Profile')}}
+              {{$t('Edit')}} {{username}} {{$t('Profile')}}
             </a>
           </li>
           <li class="list-group-item px-1">
@@ -62,6 +62,7 @@ export default {
     return {
       sourceImage: false,
       fullName: null,
+      username: null,
       user_id: null,
       popoverShow: true,
       information: []
@@ -84,6 +85,7 @@ export default {
       }
       this.fullName = user.fullname;
       this.user_id = "/profile/" + user.id;
+      this.username = user.username;
       this.information = [
         {
           src: user.avatar

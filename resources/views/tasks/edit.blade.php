@@ -36,7 +36,7 @@
                         {{__('This task is unassigned, click Claim Task to assign yourself.')}}
                     </div>
                 @else
-                <div class="container-fluid">
+                <div class="container-fluid h-100 d-flex flex-column">
                     @if ($task->processRequest->status === 'ACTIVE')
                         @can('editData', $task->processRequest)
                             <ul id="tabHeader" role="tablist" class="nav nav-tabs">
@@ -50,27 +50,30 @@
                             </ul>
                         @endcan
                     @endif
-                    <div id="tabContent" class="tab-content">
-                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show">
+                    <div id="tabContent" class="tab-content flex-grow-1">
+                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
                             @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
-                                <div class="card card-body border-top-0">
+                                <div class="card card-body border-top-0 h-100">
                                     @if ($task->getScreen())
-                                        <task-screen
+                                        <component
+                                            :is="'{{ $task->getScreen()->renderComponent() }}'"
                                             ref="taskScreen"
-                                            :listen-process-events="allowInterstitial"
+                                            :allow-interstitial="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
                                             :screen="{{json_encode($task->getScreen()->config)}}"
+                                            :submitUrl="'{{ $submitUrl }}'"
+                                            :csrf-token="'{{ csrf_token() }}'"
                                             :computed="{{json_encode($task->getScreen()->computed)}}"
                                             :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
                                             :watchers="{{json_encode($task->getScreen()->watchers)}}"
                                             :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
-                                        </task-screen>
+                                        </component>
                                     @else
                                         <task-screen
                                             ref="taskScreen"
-                                            :listen-process-events="allowInterstitial"
+                                            :allow-interstitial="allowInterstitial"
                                             process-id="{{$task->processRequest->process->getKey()}}"
                                             instance-id="{{$task->processRequest->getKey()}}"
                                             token-id="{{$task->getKey()}}"
@@ -89,7 +92,7 @@
                                 <task-screen
                                     ref="taskWaitScreen"
                                     v-if="allowInterstitial"
-                                    :listen-process-events="allowInterstitial"
+                                    :allow-interstitial="allowInterstitial"
                                     process-id="{{$task->processRequest->process->getKey()}}"
                                     instance-id="{{$task->processRequest->getKey()}}"
                                     token-id="{{$task->getKey()}}"

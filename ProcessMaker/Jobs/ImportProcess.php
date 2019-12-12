@@ -379,12 +379,8 @@ class ImportProcess implements ShouldQueue
             $this->prepareStatus('screens', count($screens) > 0);
             foreach ($screens as $screen) {
                 $new = new Screen;
+                $new->fill((array)$screen);
                 $new->title = $this->formatName($screen->title, 'title', Screen::class);
-                $new->description = $screen->description;
-                $new->type = $screen->type;
-                $new->config = $screen->config;
-                $new->computed = $screen->computed;
-                $new->custom_css = $screen->custom_css;
                 $new->created_at = $this->formatDate($screen->created_at);
                 $new->save();
 
@@ -463,7 +459,7 @@ class ImportProcess implements ShouldQueue
                 $new->code = $script->code;
                 $new->created_at = $this->formatDate($script->created_at);
                 $new->save();
-                
+
                 // save categories
                 if (isset($script->categories)) {
                     foreach ($script->categories as $categoryDef) {

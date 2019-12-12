@@ -28,6 +28,7 @@
             'tabs' => [
             __('Processes'),
             __('Categories'),
+            __('Archived Processes'),
         ],
         'listConfig' => $listConfig,
         'catConfig' => $catConfig,
@@ -39,6 +40,11 @@
 
         @slot('categoryList')
             @component('categories.list', ['config' => $catConfig])
+            @endcomponent
+        @endslot
+
+        @slot('archivedList')
+            @component('processes.archivedList', ['config' => $listConfig])
             @endcomponent
         @endslot
     @endcomponent
