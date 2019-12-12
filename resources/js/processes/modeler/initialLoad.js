@@ -255,5 +255,13 @@ ProcessMaker.EventBus.$on(
         },
       ],
     });
+    registerInspectorExtension(manualTask, {
+      component: "Interstitial",
+      config: {
+        label: "Enable Interstitial",
+        helper: "redirected to my next assigned task",
+        name: "interstitial"
+      }
+    });
   }
 );
