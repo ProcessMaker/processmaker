@@ -2,7 +2,7 @@
     <div>
         <div :class="{'has-error':error}">
             <form-checkbox
-                :label="$t('Enable Interstitial')"
+                :label="$t('Display Next Assigned Task to Task Assignee')"
                 :checked="allowInterstitialGetter"
                 @change="allowInterstitialSetter">
             </form-checkbox>
