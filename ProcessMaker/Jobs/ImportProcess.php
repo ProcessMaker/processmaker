@@ -379,9 +379,16 @@ class ImportProcess implements ShouldQueue
             $this->prepareStatus('screens', count($screens) > 0);
             foreach ($screens as $screen) {
                 $new = new Screen;
-                $new->fill((array)$screen);
-                $new->title = $this->formatName($screen->title, 'title', Screen::class);
+                $new->computed = $screen->computed;
+                $new->config = $screen->config;
                 $new->created_at = $this->formatDate($screen->created_at);
+                $new->custom_css = $screen->custom_css;
+                $new->description = $screen->description;
+                $new->title = $this->formatName($screen->title, 'title', Screen::class);
+                $new->type = $screen->type;
+                if (property_exists($screen, 'watchers')) {
+                    $new->watchers = $screen->watchers;
+                }
                 $new->save();
 
                 // save categories
