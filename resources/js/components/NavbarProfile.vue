@@ -1,6 +1,6 @@
 <template>
   <div id="userMenu">
-    <a data-toggle="dropdown" href="#" aria-expanded="false" id="profileMenu">
+    <div id="profileMenu">    
       <avatar-image
         id="avatarMenu"
         class-container="d-flex m-1"
@@ -8,36 +8,36 @@
         class-image="m-1"
         :input-data="information"
       ></avatar-image>
-    </a>
+    </div>
 
     <b-popover target="profileMenu" placement="bottomleft" triggers="click blur">
       <template>
-        <ul class="list-group list-group-flush m-1">
-          <li class="list-group-item px-1">
+        <ul class="list-group list-group-flush px-1">
+          <li class="list-group-item px-2">
             <a :href="user_id">
               <i class="fas fa-user fa-fw fa-lg"></i>
               {{$t('View')}} {{username}} {{$t('Profile')}}
             </a>
           </li>
-          <li class="list-group-item px-1">
+          <li class="list-group-item px-2">
             <a href="/profile/edit">
               <i class="fas fa-user-cog fa-fw fa-lg"></i>
               {{$t('Edit')}} {{username}} {{$t('Profile')}}
             </a>
           </li>
-          <li class="list-group-item px-1">
+          <li class="list-group-item px-2">
             <a href="https://processmaker.gitbook.io/processmaker/" target="_blank">
               <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg"></i>
               {{$t('Documentation')}}
             </a>
           </li>
-          <li class="list-group-item px-1">
+          <li class="list-group-item px-2">
             <a href="/about">
               <i class="fas fa-info-circle fa-fw fa-lg"></i>
               {{$t('About')}}
             </a>
           </li>
-          <li class="list-group-item px-1">
+          <li class="list-group-item px-2">
             <a href="/logout">
               <i class="fas fa-sign-out-alt fa-fw fa-lg"></i>
               {{$t('Log Out')}}
