@@ -329,4 +329,22 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->where('username', $username)->first();
     }
+
+    /**
+     * Check if the user can self-serve themselves a task
+     *
+     * @param ProcessRequestToken $task
+     * @return boolean
+     */
+    public function canSelfServe(ProcessRequestToken $task)
+    {
+        if (!$task->is_self_service) {
+            return false;
+        }
+
+        return collect($task->self_service_groups)
+            ->intersect(
+                $this->groups()->pluck('groups.id')
+            )->count() > 0;
+    }
 }

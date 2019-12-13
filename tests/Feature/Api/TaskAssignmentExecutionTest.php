@@ -6,6 +6,10 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Facades\WorkflowManager;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -134,5 +138,63 @@ class TaskAssignmentExecutionTest extends TestCase
             $response['message'],
             'The variable, {{ userIdInData }}, which equals "foo", is not a valid User ID in the system'
         );
+    }
+
+    public function testSelfServeAssignment()
+    {
+        $users = factory(User::class, 20)->create(['status'=>'ACTIVE']);
+        $userWithNoGroup = factory(User::class)->create(['status'=>'ACTIVE']);
+
+        $group = factory(Group::class)->create();
+        foreach ($users as $user) {
+            factory(GroupMember::class)->create([
+                'member_id' => $user->id,
+                'member_type' => User::class,
+                'group_id' => $group->id,
+            ]);
+        }
+
+        $screen = factory(Screen::class)->create();
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/SelfServeAssignment.bpmn');
+        $bpmn = str_replace(
+            ['[SCREEN_ID]', '[GROUP_ID]'],
+            [$screen->id, $group->id],
+            $bpmn
+        );
+        $process = factory(Process::class)->create([
+            'bpmn' => $bpmn,
+            'user_id' => $this->user->id,
+        ]);
+
+        $event = $process->getDefinitions()->getEvent('node_4');
+        $processRequest = WorkflowManager::triggerStartEvent($process, $event, []);
+        $task = $processRequest->refresh()->tokens()->where('status', 'ACTIVE')->first();
+
+        $listTasksUrl = route('api.tasks.index');
+        // $listTasksUrl = route('api.tasks.index', ['pmql' => '(status = "Self Service")']);
+        $updateTaskUrl = route('api.tasks.update', [$task->id]);
+
+        // Assert someone not in the group can not take the task
+        $this->user = $userWithNoGroup;
+        $response = $this->apiCall('GET', $listTasksUrl)->json();
+        $this->assertCount(0, $response['data']);
+        $response = $this->apiCall('put', $updateTaskUrl, [
+            'is_self_service' => false,
+            'user_id' => $this->user->id,
+        ]);
+        $response->assertStatus(403); // should be not authorized
+        
+        // Assert a group member can claim the task
+        $this->user = $users[1];
+        $response = $this->apiCall('GET', $listTasksUrl)->json();
+
+        $this->assertCount(1, $response['data']);
+        $this->assertEquals($response['data'][0]['id'], $task->id);
+        $response = $this->apiCall('put', $updateTaskUrl, [
+            'is_self_service' => false,
+            'user_id' => $this->user->id,
+        ]);
+        $response->assertStatus(200);
     }
 }
