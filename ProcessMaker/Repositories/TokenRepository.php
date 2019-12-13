@@ -89,7 +89,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->user_id = $user ? $user->getKey() : null;
         $token->is_self_service = $token->getAssignmentRule() === 'self_service' ? 1 : 0;
         $selfServiceTasks = $token->processRequest->processVersion->self_service_tasks;
-        $token->self_service_groups = $selfServiceTasks ? $selfServiceTasks[$activity->getId()] : [];
+        $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
         //Default 3 days of due date
         $due = $activity->getProperty('dueIn', '72');
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;

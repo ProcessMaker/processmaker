@@ -32,6 +32,9 @@ trait HasVersioning
     public function saveVersion()
     {
         $attributes = $this->attributesToArray();
+        foreach($this->hidden as $field) {
+            $attributes[$field] = $this->$field;
+        }
         unset($attributes['id'],
         $attributes['updated_at'],
         $attributes['created_at'],
