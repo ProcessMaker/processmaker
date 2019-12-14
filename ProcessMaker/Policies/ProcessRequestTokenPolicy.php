@@ -36,6 +36,9 @@ class ProcessRequestTokenPolicy
         if ($processRequestToken->user_id == $user->id) {
             return true;
         }
+        if ($user->canSelfServe($processRequestToken)) {
+            return true;
+        }
     }
 
     /**
@@ -48,6 +51,9 @@ class ProcessRequestTokenPolicy
     public function update(User $user, ProcessRequestToken $processRequestToken)
     {
         if ($processRequestToken->user_id == $user->id) {
+            return true;
+        }
+        if ($user->canSelfServe($processRequestToken)) {
             return true;
         }
     }    

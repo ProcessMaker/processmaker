@@ -1107,24 +1107,5 @@ class Process extends Model implements HasMedia
     {
         return $this->versions()->orderBy('id', 'desc')->first();
     }
-
-    /**
-     * Get a list of self service tasks assignable to $userId
-     *
-     * @param [type] $userId
-     * @return void
-     */
-    public function getSelfServiceAssignableTasks($userId)
-    {
-        $user = User::findOrFail($userId);
-        $groups = $user->groups;
-        foreach(Process::all() as $process) {
-            foreach ($process->self_service_tasks as $taskId => $assignedGroups) {
-                array_filter($groups, function ($group) use ($assignedGroups) {
-                    return in_array($group->getKey(), $assignedGroups);
-                });
-            }
-        }
-
-    }
+    
 }
