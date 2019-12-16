@@ -4,7 +4,6 @@ namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
@@ -148,7 +147,6 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->status = 'ACTIVE';
         $instance->data = $data;
         $instance->saveOrFail();
-        event(new ProcessUpdated($instance));
     }
 
     /**

@@ -24,8 +24,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Events\ProcessUpdated;
 
 /**
  * Execution Instance Repository.
@@ -97,6 +96,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->saveOrFail();
         $token->setId($token->getKey());
+        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_ACTIVATED'));
     }
 
     /**
@@ -126,6 +126,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->riskchanges_at = null;
         $token->saveOrFail();
         $token->setId($token->getKey());
+        event(new ProcessUpdated($token->getInstance(), 'START_EVENT_TRIGGERED'));
     }
 
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
@@ -148,6 +149,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->save();
         $token->setId($token->getKey());
+        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_EXCEPTION'));
     }
 
     /**
@@ -172,6 +174,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->completed_at = Carbon::now();
         $token->save();
         $token->setId($token->getKey());
+        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_COMPLETED'));
     }
 
     /**

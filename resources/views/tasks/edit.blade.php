@@ -96,7 +96,7 @@
                                     :custom-css="task.interstitial_screen.custom_css"
                                     :watchers="task.interstitial_screen.watchers"
                                     :data="task.request_data"
-                                    @activity-assigned="redirectToNextAssignedTask"
+                                    @activity-assigned="activityAssigned"
                                     @process-completed="redirectWhenProcessCompleted"
                                     @process-updated="refreshWhenProcessUpdated"
                                 ></task-screen>
@@ -316,13 +316,16 @@
           }
         },
         methods: {
+          activityAssigned() {
+            this.redirectToNextAssignedTask(false);
+          },
           reload() {
             this.loadTask(this.task.id);
           },
           loadTask(id) {
             window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
               .then((response) => {
-                this.task = response.data;
+                this.$set(this, 'task', response.data);
                 this.prepareTask();
               });
           },
@@ -339,8 +342,10 @@
           redirectWhenProcessCompleted() {
             window.location.href = `/requests/${this.task.process_request_id}`;
           },
-          refreshWhenProcessUpdated() {
-            this.reload();
+          refreshWhenProcessUpdated(data) {
+            if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
+              this.reload();
+            }
           },
           redirectToNextAssignedTask(redirect = false) {
             if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {

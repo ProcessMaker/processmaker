@@ -72,6 +72,14 @@ export default {
     update(data) {
       this.formData = data;
     }
+  },
+  watch: {
+    data: {
+      deep: true,
+      handler(data) {
+        this.formData = data;
+      }
+    }
   }
 };
 </script>
