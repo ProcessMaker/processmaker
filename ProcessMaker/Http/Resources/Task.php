@@ -44,6 +44,14 @@ class Task extends ApiResource
         if (in_array('definition', $include)) {
             $array['definition'] = $this->getDefinition();
         }
+        if (in_array('bpmnTagName', $include)) {
+            $array['bpmn_tag_name'] = $this->getBpmnDefinition()->localName;
+        }
+        if (in_array('interstitial', $include)) {
+            $interstitial = $this->getInterstitial();
+            $array['allow_interstitial'] = $interstitial['allow_interstitial'];
+            $array['interstitial_screen'] = $interstitial['interstitial_screen'];
+        }
         if (in_array('assignableUsers', $include)) {
             $definition = $this->getDefinition();
             $assignment = isset($definition['assignment']) ? $definition['assignment'] : 'requester';

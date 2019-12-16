@@ -27,7 +27,7 @@
     ]])
 @endsection
 @section('content')
-    <div id="task" class="container-fluid px-3">
+    <div v-cloak id="task" class="container-fluid px-3">
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
                 <div v-if="isSelfService" class="alert alert-primary" role="alert">
@@ -71,33 +71,31 @@
                                         <task-screen
                                             ref="taskScreen"
                                             :allow-interstitial="allowInterstitial"
-                                            process-id="task.process_id"
-                                            instance-id="task.process_request_id"
-                                            token-id="task.id"
+                                            :process-id="task.process_id"
+                                            :instance-id="task.process_request_id"
+                                            :token-id="task.id"
                                             :screen="[{items:[]}]"
                                             :data="task.request_data">
                                         </task-screen>
                                     </template>
                                 </div>
-                                @if ($task->getBpmnDefinition()->localName==='manualTask' || !$task->getScreen())
-                                    <div class="card-footer">
-                                        <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
-                                    </div>
-                                @endif
+                                <div v-if="task.bpmn_tag_name === 'manualTask' || !task.screen" class="card-footer">
+                                    <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
+                                </div>
                             </template>
                             <template v-if="taskIsCompleted">
                                 <task-screen
                                     ref="taskWaitScreen"
                                     v-if="allowInterstitial"
-                                    :allow-interstitial="allowInterstitial"
-                                    process-id="{{$task->processRequest->process->getKey()}}"
-                                    instance-id="{{$task->processRequest->getKey()}}"
-                                    token-id="{{$task->getKey()}}"
-                                    :screen="{{json_encode($screenInterstitial->config)}}"
-                                    :computed="{{json_encode($screenInterstitial->computed)}}"
-                                    :custom-css="{{json_encode(strval($screenInterstitial->custom_css))}}"
-                                    :watchers="{{json_encode($screenInterstitial->watchers)}}"
-                                    :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
+                                    :allow-interstitial="task.allow_interstitial"
+                                    :process-id="task.process_id"
+                                    :instance-id="task.process_request_id"
+                                    :token-id="task.id"
+                                    :screen="task.interstitial_screen.config"
+                                    :computed="task.interstitial_screen.computed"
+                                    :custom-css="task.interstitial_screen.custom_css"
+                                    :watchers="task.interstitial_screen.watchers"
+                                    :data="task.request_data"
                                     @activity-assigned="redirectToNextAssignedTask"
                                     @process-completed="redirectWhenProcessCompleted"
                                     @process-updated="refreshWhenProcessUpdated"
@@ -107,13 +105,11 @@
                                 </div>
                             </template>
                         </div>
-                        @if ($task->processRequest->status === 'ACTIVE')
-                            @can('editData', $task->processRequest)
-                                <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
-                                    @include('tasks.editdata')
-                                </div>
-                            @endcan
-                        @endif
+                        @can('editData', $task->processRequest)
+                            <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
+                                @include('tasks.editdata')
+                            </div>
+                        @endcan
                     </div>
                 </div>
             </div>
@@ -121,12 +117,12 @@
                 <template v-if="dateDueAt">
                     <div class="card">
                         <div :class="statusCard">
-                            <h4 style="margin:0; padding:0; line-height:1">{{__($task->advanceStatus)}}</h4>
+                            <h4 style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</h4>
                         </div>
                         <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item" v-if="showDueAtDates">
                                 <i class='far fa-calendar-alt'></i>
-                                <small> {{__($dueLabels[$task->advanceStatus])}} @{{ moment(dateDueAt).fromNow() }}
+                                <small> @{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}
                                 </small>
                                 <br>
                                 @{{ moment(dateDueAt).format() }}
@@ -135,7 +131,7 @@
 
                             <li class="list-group-item" v-if="!showDueAtDates">
                                 <i class='far fa-calendar-alt'></i>
-                                <small> {{__($dueLabels[$task->advanceStatus])}} @{{ moment().to(moment(completedAt)) }}
+                                <small> @{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}
                                 </small>
                                 <br>
                                 @{{ moment(completedAt).format() }}
@@ -143,19 +139,16 @@
 
                             <li class="list-group-item">
                                 <h5>{{__('Assigned To')}}</h5>
-                                <avatar-image v-if="userAssigned" size="32" class="d-inline-flex pull-left align-items-center"
-                                              :input-data="userAssigned"></avatar-image>
-                                @if(!empty($task->getDefinition()['allowReassignment']) && $task->getDefinition()['allowReassignment']==='true')
-                                    <div>
-                                        <br>
-                                        <span>
-                                @if ($task->advanceStatus === 'open')
-                                                <button type="button" class="btn btn-outline-secondary btn-block"
-                                                        @click="show">
-                                    <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                                </button>
-                                            @endif
-                                <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
+                                <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
+                                              :input-data="task.user"></avatar-image>
+                              <div v-if="task.definition.allowReassignment === 'true'">
+                                <br>
+                                <span>
+                                    <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
+                                            @click="show">
+                                        <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                    </button>
+                                  <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
                                          @hide="cancelReassign"
                                          v-cloak>
                                     <div class="form-group">
@@ -204,10 +197,9 @@
                                             {{__('Reassign')}}
                                         </button>
                                     </div>
-                                </b-modal>
-                            </span>
-                                    </div>
-                                @endif
+                                  </b-modal>
+                                </span>
+                              </div>
                             </li>
                             <li class="list-group-item">
                                 <i class="far fa-calendar-alt"></i>
@@ -222,10 +214,10 @@
                                 </a>
                                 <br><br>
                                 <h5>{{__('Requested By')}}</h5>
-                                <avatar-image v-if="userRequested" size="32"
+                                <avatar-image v-if="task.requestor" size="32"
                                               class="d-inline-flex pull-left align-items-center"
-                                              :input-data="userRequested"></avatar-image>
-                                <p v-if="!userRequested">{{__('Web Entry')}}</p>
+                                              :input-data="task.requestor"></avatar-image>
+                                <p v-if="!task.requestor">{{__('Web Entry')}}</p>
                             </li>
                         </ul>
                     </div>
@@ -270,13 +262,10 @@
           showReassignment: false,
 
           task: @json($task->toArray()),
-          requested: @json($task->processRequest->user),
           data: @json($task->processRequest->data),
           statusCard: "card-header text-capitalize text-white bg-success",
-          userAssigned: [],
-          userRequested: [],
           selectedUser: [],
-          allowInterstitial: @json($allowInterstitial)
+          allowInterstitial: @json($task->allow_interstitial)
         },
         watch: {
           showReassignment (show) {
@@ -284,6 +273,14 @@
           }
         },
         computed: {
+          dueLabel() {
+            const dueLabels = {
+              'open': 'Due',
+              'completed': 'Completed',
+              'overdue': 'Due',
+            };
+            return dueLabels[this.task.advanceStatus] || '';
+          },
           taskIsCompleted() {
             return this.task.advanceStatus === 'completed';
           },
@@ -315,12 +312,11 @@
         },
         methods: {
           loadTask(id) {
-            window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData`)
+            window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
               .then((response) => {
                 const task = response.data;
                 this.task = task;
                 this.assigned = task.user;
-                this.requested = task.requestor;
                 this.data = task.data;
                 //this.prepareTask();
               });
@@ -445,8 +441,6 @@
           },
           prepareTask() {
             this.statusCard = this.classHeaderCard(this.task.advanceStatus);
-            this.userAssigned = this.assigned;
-            this.userRequested = this.requested;
             this.updateRequestData = debounce(this.updateRequestData, 1000);
             this.editJsonData();
             if (this.allowInterstitial) {
