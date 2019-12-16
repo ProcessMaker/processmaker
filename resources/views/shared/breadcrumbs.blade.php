@@ -1,4 +1,4 @@
-<div class="d-print-none">
+<div id="breadcrumbs" v-cloak class="d-print-none">
 <nav aria-label="breadcrumb" >
     <ol class="breadcrumb border-top border-bottom">
         <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>

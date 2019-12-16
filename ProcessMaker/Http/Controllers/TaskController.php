@@ -46,6 +46,7 @@ class TaskController extends Controller
 
         $submitUrl = route('api.tasks.update', $task->id);
         $task->processRequest;
+        $task->user;
         $screen = $task->getScreen();
         $task->component = $screen ? $screen->renderComponent() : null;
         $task->screen = $screen ? $screen->toArray() : null;

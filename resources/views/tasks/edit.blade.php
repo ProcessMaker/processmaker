@@ -23,7 +23,7 @@
         },
         $task->processRequest->name =>
             Auth::user()->can('view', $task->processRequest) ? route('requests.show', ['id' => $task->processRequest->id]) : null,
-        $task->element_name => null,
+        '@{{taskTitle}}' => null,
     ]])
 @endsection
 @section('content')
@@ -243,7 +243,7 @@
     @endforeach
     <script src="{{mix('js/tasks/show.js')}}"></script>
     <script>
-      new Vue({
+      const main = new Vue({
         el: "#task",
         data: {
           //Edit data
@@ -268,6 +268,12 @@
           allowInterstitial: @json($task->allow_interstitial)
         },
         watch: {
+          task: {
+            deep: true,
+            handler(task) {
+              breadcrumbs.taskTitle = task.element_name;
+            }
+          },
           showReassignment (show) {
             show ? this.loadUsers() : null;
           }
@@ -338,14 +344,18 @@
             window.location.href = `/requests/${this.task.process_request_id}`;
           },
           refreshWhenProcessUpdated() {
-            window.location.reload();
+            this.reload();
           },
-          redirectToNextAssignedTask() {
+          redirectToNextAssignedTask(redirect = false) {
             if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
-              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user.id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
+              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user_id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
                 if (response.data.data.length > 0) {
                   const firstNextAssignedTask = response.data.data[0].id;
-                  window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+                  if (redirect) {
+                    window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+                  } else {
+                    this.loadTask(firstNextAssignedTask);
+                  }
                 } else if (this.task.process_request.status === 'COMPLETED') {
                   setTimeout(() => {
                     window.location.href = `/requests/${this.task.process_request_id}`;
@@ -442,17 +452,25 @@
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
           },
-          prepareTask() {
+          prepareTask(redirect = false) {
             this.statusCard = this.classHeaderCard(this.task.advanceStatus);
             this.updateRequestData = debounce(this.updateRequestData, 1000);
             this.editJsonData();
             if (this.allowInterstitial) {
-              this.redirectToNextAssignedTask();
+              this.redirectToNextAssignedTask(redirect);
             }
           },
         },
         mounted () {
-          this.prepareTask();
+          this.prepareTask(true);
+        }
+      });
+      const breadcrumbs = new Vue({
+        el: "#breadcrumbs",
+        data() {
+          return {
+            taskTitle: @json($task->element_name),
+          };
         }
       });
     </script>
