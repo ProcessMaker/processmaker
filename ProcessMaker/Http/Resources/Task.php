@@ -36,7 +36,7 @@ class Task extends ApiResource
             $array['component'] = $this->getScreen() ? $this->getScreen()->renderComponent() : null;
         }
         if (in_array('screen', $include)) {
-            $array['screen'] = $this->getScreen()->toArray();
+            $array['screen'] = $this->getScreen() ? $this->getScreen()->toArray() : null;
         }
         if (in_array('requestData', $include)) {
             $array['request_data'] = $this->processRequest->data ?: new StdClass();

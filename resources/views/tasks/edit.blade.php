@@ -311,6 +311,9 @@
           }
         },
         methods: {
+          reload() {
+            this.loadTask(this.task.id);
+          },
           loadTask(id) {
             window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
               .then((response) => {
@@ -318,7 +321,7 @@
                 this.task = task;
                 this.assigned = task.user;
                 this.data = task.data;
-                //this.prepareTask();
+                this.prepareTask();
               });
           },
           claimTask() {
@@ -328,7 +331,7 @@
                 is_self_service: 0,
               })
               .then(response => {
-                window.location.reload();
+                this.reload();
               });
           },
           redirectWhenProcessCompleted() {
@@ -339,7 +342,7 @@
           },
           redirectToNextAssignedTask() {
             if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
-              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.assigned.id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
+              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user.id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
                 if (response.data.data.length > 0) {
                   const firstNextAssignedTask = response.data.data[0].id;
                   window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
@@ -450,7 +453,6 @@
         },
         mounted () {
           this.prepareTask();
-          this.loadTask(41);
         }
       });
     </script>

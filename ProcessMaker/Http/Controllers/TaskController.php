@@ -46,7 +46,9 @@ class TaskController extends Controller
 
         $submitUrl = route('api.tasks.update', $task->id);
         $task->processRequest;
-        $task->screen;
+        $screen = $task->getScreen();
+        $task->component = $screen ? $screen->renderComponent() : null;
+        $task->screen = $screen ? $screen->toArray() : null;
         $task->request_data = $task->processRequest->data;
         $task->bpmn_tag_name = $task->getBpmnDefinition()->localName;
         $interstitial = $task->getInterstitial();

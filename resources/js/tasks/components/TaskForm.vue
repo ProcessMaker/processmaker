@@ -56,7 +56,7 @@ export default {
           if (!this.allowInterstitial) {
             document.location.href = "/tasks";
           } else {
-            document.location.reload();
+            this.$parent.reload instanceof Function ? this.$parent.reload() : document.location.reload();
           }
         })
         .catch(error => {
