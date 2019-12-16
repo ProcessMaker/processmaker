@@ -262,7 +262,6 @@
           showReassignment: false,
 
           task: @json($task->toArray()),
-          data: @json($task->processRequest->data),
           statusCard: "card-header text-capitalize text-white bg-success",
           selectedUser: [],
           allowInterstitial: @json($task->allow_interstitial)
@@ -323,10 +322,7 @@
           loadTask(id) {
             window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
               .then((response) => {
-                const task = response.data;
-                this.task = task;
-                this.assigned = task.user;
-                this.data = task.data;
+                this.task = response.data;
                 this.prepareTask();
               });
           },
@@ -392,7 +388,7 @@
             }
           },
           editJsonData () {
-            this.jsonData = JSON.stringify(this.data, null, 4);
+            this.jsonData = JSON.stringify(this.task.request_data, null, 4);
           },
           // Reassign methods
           show () {
