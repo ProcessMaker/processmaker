@@ -59,6 +59,9 @@ class TaskController extends Controller
         event(new ScreenBuilderStarting($manager, $task->getScreen() ? $task->getScreen()->type : 'FORM'));
 
         $submitUrl = route('api.tasks.update', $task->id);
+        $task->processRequest;
+        $task->screen;
+        $task->request_data = $task->processRequest->data;
 
         return view('tasks.edit', [
             'task' => $task,

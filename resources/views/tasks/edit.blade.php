@@ -30,65 +30,62 @@
     <div id="task" class="container-fluid px-3">
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
-                @if ($task->processRequest->status === 'ACTIVE' && $task->is_self_service)
-                    <div class="alert alert-primary" role="alert">
-                        <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
-                        {{__('This task is unassigned, click Claim Task to assign yourself.')}}
-                    </div>
-                @else
-                <div class="container-fluid h-100 d-flex flex-column">
-                    @if ($task->processRequest->status === 'ACTIVE')
-                        @can('editData', $task->processRequest)
-                            <ul id="tabHeader" role="tablist" class="nav nav-tabs">
-                                <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
-                                                        aria-controls="tab-form" aria-selected="true"
-                                                        class="nav-link active">{{__('Form')}}</a></li>
-                                <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
-                                                        aria-controls="tab-data" aria-selected="false"
-                                                        @click="resizeMonaco"
-                                                        class="nav-link">{{__('Data')}}</a></li>
-                            </ul>
-                        @endcan
-                    @endif
+                <div v-if="isSelfService" class="alert alert-primary" role="alert">
+                    <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                    {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                </div>
+                <div v-else class="container-fluid h-100 d-flex flex-column">
+                    @can('editData', $task->processRequest)
+                        <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
+                            <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
+                                                    aria-controls="tab-form" aria-selected="true"
+                                                    class="nav-link active">{{__('Form')}}</a></li>
+                            <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
+                                                    aria-controls="tab-data" aria-selected="false"
+                                                    @click="resizeMonaco"
+                                                    class="nav-link">{{__('Data')}}</a></li>
+                        </ul>
+                    @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
-                            @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
+                            <template v-if="taskIsOpenOrOverdue">
                                 <div class="card card-body border-top-0 h-100">
-                                    @if ($task->getScreen())
+                                    <template v-if="task.component">
                                         <component
-                                            :is="'{{ $task->getScreen()->renderComponent() }}'"
+                                            :is="task.component"
                                             ref="taskScreen"
                                             :allow-interstitial="allowInterstitial"
-                                            process-id="{{$task->processRequest->process->getKey()}}"
-                                            instance-id="{{$task->processRequest->getKey()}}"
-                                            token-id="{{$task->getKey()}}"
-                                            :screen="{{json_encode($task->getScreen()->config)}}"
+                                            :process-id="task.process_id"
+                                            :instance-id="task.process_request_id"
+                                            :token-id="task.id"
+                                            :screen="task.screen.config"
                                             :submitUrl="'{{ $submitUrl }}'"
                                             :csrf-token="'{{ csrf_token() }}'"
-                                            :computed="{{json_encode($task->getScreen()->computed)}}"
-                                            :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
-                                            :watchers="{{json_encode($task->getScreen()->watchers)}}"
-                                            :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
+                                            :computed="task.screen.computed"
+                                            :custom-css="task.screen.custom_css"
+                                            :watchers="task.screen.watchers"
+                                            :data="task.request_data">
                                         </component>
-                                    @else
+                                    </template>
+                                    <template v-else>
                                         <task-screen
                                             ref="taskScreen"
                                             :allow-interstitial="allowInterstitial"
-                                            process-id="{{$task->processRequest->process->getKey()}}"
-                                            instance-id="{{$task->processRequest->getKey()}}"
-                                            token-id="{{$task->getKey()}}"
+                                            process-id="task.process_id"
+                                            instance-id="task.process_request_id"
+                                            token-id="task.id"
                                             :screen="[{items:[]}]"
-                                            :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
+                                            :data="task.request_data">
                                         </task-screen>
-                                    @endif
+                                    </template>
                                 </div>
                                 @if ($task->getBpmnDefinition()->localName==='manualTask' || !$task->getScreen())
                                     <div class="card-footer">
                                         <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
                                     </div>
                                 @endif
-                            @elseif ($task->advanceStatus==='completed')
-
+                            </template>
+                            <template v-if="taskIsCompleted">
                                 <task-screen
                                     ref="taskWaitScreen"
                                     v-if="allowInterstitial"
@@ -108,7 +105,7 @@
                                 <div v-else class="card card-body text-center" v-cloak>
                                     <h1>{{ __('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
                                 </div>
-                            @endif
+                            </template>
                         </div>
                         @if ($task->processRequest->status === 'ACTIVE')
                             @can('editData', $task->processRequest)
@@ -119,7 +116,6 @@
                         @endif
                     </div>
                 </div>
-                @endif
             </div>
             <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="dateDueAt">
@@ -273,8 +269,7 @@
           filter: "",
           showReassignment: false,
 
-          task: @json($task),
-          assigned: @json($task->user),
+          task: @json($task->toArray()),
           requested: @json($task->processRequest->user),
           data: @json($task->processRequest->data),
           statusCard: "card-header text-capitalize text-white bg-success",
@@ -289,6 +284,15 @@
           }
         },
         computed: {
+          taskIsCompleted() {
+            return this.task.advanceStatus === 'completed';
+          },
+          taskIsOpenOrOverdue() {
+            return this.task.advanceStatus === 'open' || this.task.advanceStatus === 'overdue';
+          },
+          isSelfService() {
+            return this.task.process_request.status === 'ACTIVE' && this.task.is_self_service;
+          },
           dateDueAt () {
             return this.task.due_at;
           },
@@ -310,6 +314,17 @@
           }
         },
         methods: {
+          loadTask(id) {
+            window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData`)
+              .then((response) => {
+                const task = response.data;
+                this.task = task;
+                this.assigned = task.user;
+                this.requested = task.requestor;
+                this.data = task.data;
+                //this.prepareTask();
+              });
+          },
           claimTask() {
             ProcessMaker.apiClient
               .put("tasks/" + this.task.id, {
@@ -427,17 +442,21 @@
           resizeMonaco () {
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
-          }
+          },
+          prepareTask() {
+            this.statusCard = this.classHeaderCard(this.task.advanceStatus);
+            this.userAssigned = this.assigned;
+            this.userRequested = this.requested;
+            this.updateRequestData = debounce(this.updateRequestData, 1000);
+            this.editJsonData();
+            if (this.allowInterstitial) {
+              this.redirectToNextAssignedTask();
+            }
+          },
         },
         mounted () {
-          this.statusCard = this.classHeaderCard(this.task.advanceStatus);
-          this.userAssigned = this.assigned;
-          this.userRequested = this.requested;
-          this.updateRequestData = debounce(this.updateRequestData, 1000);
-          this.editJsonData();
-          if (this.allowInterstitial) {
-            this.redirectToNextAssignedTask();
-          }
+          this.prepareTask();
+          this.loadTask(41);
         }
       });
     </script>
