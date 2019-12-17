@@ -54,7 +54,6 @@
                                         <component
                                             :is="task.component"
                                             ref="taskScreen"
-                                            :allow-interstitial="allowInterstitial"
                                             :process-id="task.process_id"
                                             :instance-id="task.process_request_id"
                                             :token-id="task.id"
@@ -64,18 +63,25 @@
                                             :computed="task.screen.computed"
                                             :custom-css="task.screen.custom_css"
                                             :watchers="task.screen.watchers"
-                                            :data="task.request_data">
+                                            :data="task.request_data"
+                                            @activity-assigned="activityAssigned"
+                                            @process-completed="redirectWhenProcessCompleted"
+                                            @process-updated="refreshWhenProcessUpdated"
+                                        >
                                         </component>
                                     </template>
                                     <template v-else>
                                         <task-screen
                                             ref="taskScreen"
-                                            :allow-interstitial="allowInterstitial"
                                             :process-id="task.process_id"
                                             :instance-id="task.process_request_id"
                                             :token-id="task.id"
                                             :screen="[{items:[]}]"
-                                            :data="task.request_data">
+                                            :data="task.request_data"
+                                            @activity-assigned="activityAssigned"
+                                            @process-completed="redirectWhenProcessCompleted"
+                                            @process-updated="refreshWhenProcessUpdated"
+                                        >
                                         </task-screen>
                                     </template>
                                 </div>
@@ -86,8 +92,7 @@
                             <template v-if="taskIsCompleted">
                                 <task-screen
                                     ref="taskWaitScreen"
-                                    v-if="allowInterstitial"
-                                    :allow-interstitial="task.allow_interstitial"
+                                    v-if="task.allow_interstitial"
                                     :process-id="task.process_id"
                                     :instance-id="task.process_request_id"
                                     :token-id="task.id"
@@ -263,8 +268,7 @@
 
           task: @json($task->toArray()),
           statusCard: "card-header text-capitalize text-white bg-success",
-          selectedUser: [],
-          allowInterstitial: @json($task->allow_interstitial)
+          selectedUser: []
         },
         watch: {
           task: {
@@ -317,6 +321,7 @@
         },
         methods: {
           activityAssigned() {
+            this.checkTaskStatus();
             this.redirectToNextAssignedTask(false);
           },
           reload() {
@@ -343,8 +348,22 @@
             window.location.href = `/requests/${this.task.process_request_id}`;
           },
           refreshWhenProcessUpdated(data) {
+            console.log('refresh');
             if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
               this.reload();
+            }
+          },
+          checkTaskStatus(redirect=false) {
+            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
+              this.closeTask();
+            }
+          },
+          closeTask() {
+            if (!this.task.allow_interstitial) {
+              document.location.href = "/tasks";
+            } else {
+              //this.$parent.reload instanceof Function ? this.$parent.reload() : document.location.reload();
+              this.redirectToNextAssignedTask();
             }
           },
           redirectToNextAssignedTask(redirect = false) {
@@ -457,9 +476,7 @@
             this.statusCard = this.classHeaderCard(this.task.advanceStatus);
             this.updateRequestData = debounce(this.updateRequestData, 1000);
             this.editJsonData();
-            if (this.allowInterstitial) {
-              this.redirectToNextAssignedTask(redirect);
-            }
+            this.checkTaskStatus(redirect);
           },
         },
         mounted () {
