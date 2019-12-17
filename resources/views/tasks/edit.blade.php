@@ -24,7 +24,7 @@
         $task->processRequest->name =>
             Auth::user()->can('view', $task->processRequest) ? route('requests.show', ['id' => $task->processRequest->id]) : null,
         '@{{taskTitle}}' => null,
-    ]])
+      ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
     <div v-cloak id="task" class="container-fluid px-3">
