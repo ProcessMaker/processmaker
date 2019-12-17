@@ -348,7 +348,6 @@
             window.location.href = `/requests/${this.task.process_request_id}`;
           },
           refreshWhenProcessUpdated(data) {
-            console.log('refresh');
             if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
               this.reload();
             }
