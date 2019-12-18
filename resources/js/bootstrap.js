@@ -46,6 +46,7 @@ import VueI18Next from '@panter/vue-i18next';
 import {install as VuetableInstall} from 'vuetable-2';
 import Pagination from "./components/common/Pagination";
 import MonacoEditor from "vue-monaco";
+import RequestChannel from './tasks/components/ProcessRequestChannel';
 
 window.Vue.use(VueI18Next);
 VuetableInstall(window.Vue);
@@ -142,6 +143,8 @@ window.ProcessMaker = {
         this.missingTranslations.add(value)
         console.warn('Missing Translation:', value)
     },
+
+    RequestChannel,
 };
 
 /**
