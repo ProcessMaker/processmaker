@@ -22,6 +22,13 @@ trait MakeHttpRequests
     ];
 
     /**
+     * Verify certificate ssl
+     *
+     * @var bool
+     */
+    protected $verifySsl = true;
+
+    /**
      * Send a HTTP request based on the datasource, configuration
      * and the process request data.
      *
@@ -39,6 +46,8 @@ trait MakeHttpRequests
         $endpoint = $this->endpoints[$config['endpoint']];
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
+
+        $this->verifySsl = $this->credentials['verify_certificate'] !== 'undefined' ? $this->credentials['verify_certificate']  : true;
         // Datasource works with json responses
         $headers = ['Accept' => 'application/json'];
         if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
@@ -194,9 +203,7 @@ trait MakeHttpRequests
      */
     private function call($method, $url, array $headers, $body, $bodyType)
     {
-        $params = [];
-        !config('app.api_ssl_verify') ? $params['verify'] = false : null;
-        $client = new Client($params);
+        $client = new Client(['verify' => $this->verifySsl]);
         $options = [];
         if ($bodyType === 'form-data') {
             $options['form_params'] = json_decode($body, true);
