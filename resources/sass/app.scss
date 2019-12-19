@@ -172,33 +172,40 @@ html {
 }
 
 /*modal style*/
-.modal-title {
-  margin-left: 15px;
-  // font-size: 18px;
-  font-weight: 600;
+
+.modal-content {
+  @extend .p-3;
 }
 
 .modal-header {
-  border: none;
-  padding-top: 16px;
-  margin-bottom: 15px;
-
+  @extend .p-0, .m-0, .mb-3, .border-0;
+  font-weight: 600;
+  
   .close {
-    padding: 20px;
-    margin-right: -3px;
-    // font-size: 28px;
-    font-weight: 1000;
-    margin: -26px;
+    @extend .p-0, .m-0;
+    line-height: .5;
   }
 }
 
-.modal-content {
-  border-radius: 2px;
+.modal-title,
+.modal-header h5 {
+  line-height: 1;
+}
+
+.modal-body {
+  @extend .p-0, .m-0;
 }
 
 .modal-footer {
-  border: none;
-  padding: 10px 32px 38px;
+  @extend .p-0, .mt-3, .d-flex, .align-items-end, .border-0;
+}
+
+.modal-footer > :not(:first-child) {
+  margin-left: 0;
+}
+
+.modal-footer > :not(:last-child) {
+  @extend .mr-3;
 }
 
 .form-group label {
@@ -231,6 +238,11 @@ html {
 }
 
 .modal-body {
+  
+  .form-group {
+    @extend .p-0, .m-0, .mb-3;
+  }
+  
   padding: 0 32px;
 }
 
