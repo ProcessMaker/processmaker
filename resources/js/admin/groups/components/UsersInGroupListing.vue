@@ -104,7 +104,7 @@
         let that = this;
         ProcessMaker.confirmModal(
           this.$t("Caution!"),
-          "<b>" + this.$t('Are you sure you want to delete {{item}}?', {item: data.fullname}) + "</b>",
+          this.$t('Are you sure you want to delete {{item}}?', {item: data.fullname}),
           null,
           function () {
             ProcessMaker.apiClient
