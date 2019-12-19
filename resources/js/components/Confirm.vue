@@ -8,12 +8,12 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body mb-1 text-center">
-                    <p :class="classMessage"><span v-html="message"></span></p>
+                <div class="modal-body text-center">
+                    <div class="my-3" :class="classMessage">{{ message }}</div>
                 </div>
                 <div class="modal-footer">
-                    <button id="cancel" type="button" class="float-right btn btn-outline-secondary ml-2" data-dismiss="modal" @click="onDeny">{{ $t('Cancel') }}</button>
-                    <button id="confirm" type="button" class="float-right btn btn-secondary ml-2" @click="onConfirm">{{ $t('Confirm') }}</button>
+                    <button id="cancel" type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onDeny">{{ $t('Cancel') }}</button>
+                    <button id="confirm" type="button" class="btn btn-secondary" @click="onConfirm">{{ $t('Confirm') }}</button>
                 </div>
             </div>
         </div>

@@ -31,8 +31,8 @@
                     </div>
                 </nav>
 
-                <div class="tab-content mt-3" id="nav-tabContent">
-                    <div class="card card-body tab-pane fade show active" id="nav-home" role="tabpanel"
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="card card-body border-top-0 tab-pane p-3 fade show active" id="nav-home" role="tabpanel"
                          aria-labelledby="nav-home-tab">
                         <div class="form-group">
                             {!! Form::label('name', __('Name')) !!}
@@ -45,7 +45,7 @@
                             <small class="form-text text-muted">{{__('Group name must be distinct')}}</small>
                             <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             {!! Form::label('description', __('Description')) !!}
                             {!! Form::textarea('description', null, [
                             'id' => 'description',
@@ -55,7 +55,7 @@
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}']) !!}
                             <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             {!! Form::label('status', __('Status')) !!}
                             {!! Form::select('status', ['ACTIVE' => __('active'), 'INACTIVE' => __('inactive')], null, [
                             'id' => 'status',
@@ -65,47 +65,45 @@
                             <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
                         </div>
                         <br>
-                        <div class="text-right">
+                        <div class="d-flex justify-content-end mt-3">
                             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate']) !!}
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
-                        <div class="row">
-                            <div class="col">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-search"></i>
-                                        </span>
+                    <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div id="search-bar" class="search mb-3" vcloak>
+                            <div class="d-flex flex-column flex-md-row">
+                                <div class="flex-grow-1">
+                                    <div id="search" class="mb-3 mb-md-0">
+                                        <div class="input-group w-100">
+                                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <input v-model="filter" class="form-control" placeholder="{{__('Search')}}...">
                                 </div>
-
-                            </div>
-                            <div class="col-8" align="right">
-                                <button type="button" class="btn btn-action text-light" data-toggle="modal"
-                                        data-target="#addUser" @click="loadUsers">
-                                    <i class="fas fa-plus"></i>
-                                    {{__('User')}}
-                                </button>
+                                <div class="d-flex ml-md-2 flex-column flex-md-row">
+                                    <button type="button" class="btn btn-secondary" data-toggle="modal"
+                                            data-target="#addUser" @click="loadUsers">
+                                        <i class="fas fa-plus"></i>
+                                        {{__('User')}}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <users-in-group ref="listing" :filter="filter" :group-id="formData.id"></users-in-group>
                     </div>
-                    <div class="tab-pane fade" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
-                        <div class="card">
-                            <div class="card-body">
-                                <label class="mb-3">
-                                    <input type="checkbox" v-model="selectAll" @click="select"
-                                           :disabled="formData.is_administrator">
-                                    {{__('Assign all permissions to this group')}}
-                                </label>
-                                @include('admin.shared.permissions')
-                                <div class="text-right mt-2">
-                                    {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
-                                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
-                                </div>
+                    <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
+                        <div class="accordion" id="accordionPermissions">
+                            <div class="mb-3 custom-control custom-switch">
+                                <input v-model="selectAll" type="checkbox" class="custom-control-input" id="selectAll" @click="select">
+                                <label class="custom-control-label" for="selectAll">{{ __('Assign all permissions to this user') }}</label>
+                            </div>
+                            @include('admin.shared.permissions')
+                            <div class="d-flex justify-content-end mt-3">
+                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'permissionUpdate'])!!}
                             </div>
                         </div>
                     </div>

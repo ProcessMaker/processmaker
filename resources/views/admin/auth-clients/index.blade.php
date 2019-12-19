@@ -59,7 +59,7 @@
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                             {{__('Cancel')}}
                         </button>
-                        <button type="button" class="btn btn-secondary ml-2" @click.prevent="save" :disabled="disabled">
+                        <button type="button" class="btn btn-secondary" @click.prevent="save" :disabled="disabled">
                             {{__('Save')}}
                         </button>
                     </div>

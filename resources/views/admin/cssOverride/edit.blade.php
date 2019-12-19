@@ -18,7 +18,7 @@
     <div class="container" id="editCss" v-cloak>
         <div class="row" role="document">
             <div class="col">
-                <div class="card card-body">
+                <div class="card card-body p-3">
                     <div class="form-group">
                         {!! Form::label('fileLogin', __('Custom Login Logo')) !!}
                         <small class="d-block">{{ __('We recommended a transparent PNG at :size pixels.', ['size' => '292x52']) }}</small>
@@ -106,10 +106,10 @@
                         </multiselect>
                     </div>
                     <br>
-                    <div class="text-right">
-                        {!! Form::button(__('Reset'), ['class'=>'btn btn-secondary mr-2', '@click' => 'onReset', ':disabled' => '!config' ]) !!}
-                        {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onSubmit']) !!}
+                    <div class="d-flex">
+                        {!! Form::button('<i class="fas fa-undo"></i> ' . __('Reset'), ['class'=>'btn btn-outline-danger', '@click' => 'onReset', ':disabled' => '!config' ]) !!}
+                        {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary ml-auto', '@click' => 'onClose']) !!}
+                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onSubmit']) !!}
                     </div>
                 </div>
             </div>
@@ -460,7 +460,12 @@
         .svg {
             fill: #aeb5bb;
         }
-
+        
+        }
+        
+        .vc-sketch {
+            position: absolute;
+            z-index: 100;
         }
     </style>
 @endsection

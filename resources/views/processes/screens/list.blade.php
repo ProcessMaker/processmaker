@@ -90,7 +90,7 @@
                             {{__('Cancel')}}
                         </button>
                         @if ($config->countCategories !== 0)
-                            <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
+                            <button type="button" @click="onSubmit" class="btn btn-secondary" :disabled="disabled">
                                 {{__('Save')}}
                             </button>
                         @endif

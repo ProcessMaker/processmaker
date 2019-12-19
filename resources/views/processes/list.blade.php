@@ -87,13 +87,15 @@
                             {!! Form::label('fileName', __('Upload BPMN File (optional)')) !!}
                             <div class="input-group">
                                 <input type="text" name="fileName" class="form-control" v-model="selectedFile">
-                                <button type="button" @click="browse" class="btn btn-secondary"><i
-                                        class="fas fa-upload"></i>
-                                    {{__('Upload file')}}
-                                </button>
+                                <div class="input-group-append">
+                                    <button type="button" @click="browse" class="btn btn-secondary"><i
+                                            class="fas fa-upload"></i>
+                                        {{__('Upload file')}}
+                                    </button>
+                                </div>
                                 <input type="file" class="custom-file-input"
                                        :class="{'is-invalid': addError.bpmn && addError.bpmn.length}"
-                                       ref="customFile" @change="onFileChange" accept=".bpmn" style="height: 1em;">
+                                       ref="customFile" @change="onFileChange" accept=".bpmn" style="height: 0;">
                                 <div class="invalid-feedback" v-for="error in addError.bpmn">@{{error}}</div>
                             </div>
                         </div>
@@ -110,7 +112,7 @@
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                             @click="onClose">{{__('Cancel')}}</button>
                     @if ($config->countCategories!== 0)
-                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="disabled">
+                        <button type="button" class="btn btn-secondary" @click="onSubmit" :disabled="disabled">
                             {{__('Save')}}
                         </button>
                     @endif
