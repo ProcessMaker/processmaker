@@ -361,7 +361,6 @@
             if (!this.task.allow_interstitial) {
               document.location.href = "/tasks";
             } else {
-              //this.$parent.reload instanceof Function ? this.$parent.reload() : document.location.reload();
               this.redirectToNextAssignedTask();
             }
           },
