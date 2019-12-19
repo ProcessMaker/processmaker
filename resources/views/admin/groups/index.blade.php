@@ -75,7 +75,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
                                 @click="onClose">{{__('Cancel')}}</button>
-                        <button type="button" @click="onSubmit" class="btn btn-secondary ml-2" :disabled="disabled">
+                        <button type="button" @click="onSubmit" class="btn btn-secondary" :disabled="disabled">
                             {{__('Save')}}
                         </button>
                     </div>

@@ -1,13 +1,17 @@
 <template>
-    <b-modal id="addUserModal" hide-footer>
-        <slot name="modal-title"></slot>
-        <slot name="default"></slot>
-        <slot name="modal-footer"></slot>
+    <b-modal id="addUserModal" :title="title">
+        <template v-slot:default>
+            <slot name="default"></slot>
+        </template>
+        <template v-slot:modal-footer>
+            <slot name="modal-footer"></slot>
+        </template>
     </b-modal>
 </template>
 
 <script>
 export default {
+    props: ['title'],
     data() {
         return {
             username: '',

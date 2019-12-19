@@ -43,11 +43,7 @@
                            v-on:reload="reload"></users-listing>
         </div>
         @can('create-users')
-        <add-user-modal ref="addUserModal">
-                <template v-slot:modal-title>
-                    <h5>{{__('Create User')}}</h5>
-                </template>
-    
+        <add-user-modal ref="addUserModal" title="{{__('Create User')}}">
                 <template v-slot:default>
                     <div class="form-group">
                         {!!Form::label('username', __('Username'))!!}<small class="ml-1">*</small>
@@ -114,14 +110,12 @@
                 </template>
     
                 <template v-slot:modal-footer>
-                    <div class="text-right pb-5 mt-3">
-                        <button type="button" class="btn btn-outline-secondary" @click="hideModal">
-                            {{__('Cancel')}}
-                        </button>
-                        <button type="button" class="btn btn-secondary ml-2" @click="onSubmit" :disabled="config.disabled">
-                            {{__('Save')}}
-                        </button>
-                    </div>
+                    <button type="button" class="btn btn-outline-secondary" @click="hideModal">
+                        {{__('Cancel')}}
+                    </button>
+                    <button type="button" class="btn btn-secondary" @click="onSubmit" :disabled="config.disabled">
+                        {{__('Save')}}
+                    </button>
                 </template>
             </add-user-modal>
         @endcan
