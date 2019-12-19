@@ -12,7 +12,7 @@ export default {
     VueFormRenderer
   },
   mixins: [ProcessRequestChannel],
-  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "watchers", "allowInterstitial"],
+  props: ["processId", "instanceId", "tokenId", "screen", "data", "computed", "customCss", "watchers"],
   data() {
     return {
       disabled: false,
@@ -20,17 +20,15 @@ export default {
     };
   },
   mounted() {
-    if (this.allowInterstitial) {
-      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ActivityAssigned', (data) => {
-        this.$emit('activity-assigned', data);
-      });
-      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ProcessCompleted', (data) => {
-        this.$emit('process-completed', data);
-      });
-      this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ProcessUpdated', (data) => {
-        this.$emit('process-updated', data);
-      });
-    }
+    this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ActivityAssigned', (data) => {
+      this.$emit('activity-assigned', data);
+    });
+    this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ProcessCompleted', (data) => {
+      this.$emit('process-completed', data);
+    });
+    this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, '.ProcessUpdated', (data) => {
+      this.$emit('process-updated', data);
+    });
   },
   methods: {
     displayErrors(errors) {
@@ -53,11 +51,6 @@ export default {
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(() => {
           window.ProcessMaker.alert(message, 'success', 5, true);
-          if (!this.allowInterstitial) {
-            document.location.href = "/tasks";
-          } else {
-            document.location.reload();
-          }
         })
         .catch(error => {
           this.disabled = false;
@@ -71,6 +64,14 @@ export default {
     },
     update(data) {
       this.formData = data;
+    }
+  },
+  watch: {
+    data: {
+      deep: true,
+      handler(data) {
+        this.formData = data;
+      }
     }
   }
 };

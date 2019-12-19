@@ -41,31 +41,27 @@ class TaskController extends Controller
             ->whereNotNull('read_at')
             ->update(['read_at' => Carbon::now()]);
 
-        $definition = $task->getDefinition();
-        $screenInterstitial = new Screen();
-        $allowInterstitial = false;
-
-        if (array_key_exists('allowInterstitial', $definition)) {
-            $allowInterstitial = !!json_decode($definition['allowInterstitial']);
-            if (array_key_exists('interstitialScreenRef', $definition) && $definition['interstitialScreenRef']) {
-                $screenInterstitial = Screen::find($definition['interstitialScreenRef']);
-            } else {
-                $screenInterstitial = Screen::where('key', 'interstitial')->first();
-            }
-
-        }
-
         $manager = new ScreenBuilderManager();
         event(new ScreenBuilderStarting($manager, $task->getScreen() ? $task->getScreen()->type : 'FORM'));
 
         $submitUrl = route('api.tasks.update', $task->id);
+        $task->processRequest;
+        $task->user;
+        $screen = $task->getScreen();
+        $task->component = $screen ? $screen->renderComponent() : null;
+        $task->screen = $screen ? $screen->toArray() : null;
+        $task->request_data = $task->processRequest->data;
+        $task->bpmn_tag_name = $task->getBpmnDefinition()->localName;
+        $interstitial = $task->getInterstitial();
+        $task->interstitial_screen = $interstitial['interstitial_screen'];
+        $task->allow_interstitial = $interstitial['allow_interstitial'];
+        $task->definition = $task->getDefinition();
+        $task->requestor = $task->processRequest->user;
 
         return view('tasks.edit', [
             'task' => $task,
             'dueLabels' => self::$dueLabels,
             'manager' => $manager,
-            'allowInterstitial' => $allowInterstitial,
-            'screenInterstitial' => $screenInterstitial,
             'submitUrl' => $submitUrl
             ]);
     }

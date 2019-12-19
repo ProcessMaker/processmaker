@@ -14,15 +14,17 @@ class ProcessUpdated implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $processRequest;
+    public $event;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(ProcessRequest $processRequest)
+    public function __construct(ProcessRequest $processRequest, $event)
     {
         $this->processRequest = $processRequest;
+        $this->event = $event;
     }
 
     /**

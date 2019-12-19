@@ -23,114 +23,111 @@
         },
         $task->processRequest->name =>
             Auth::user()->can('view', $task->processRequest) ? route('requests.show', ['id' => $task->processRequest->id]) : null,
-        $task->element_name => null,
-    ]])
+        '@{{taskTitle}}' => null,
+      ], 'attributes' => 'v-cloak'])
 @endsection
 @section('content')
-    <div id="task" class="container-fluid px-3">
+    <div v-cloak id="task" class="container-fluid px-3">
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
-                @if ($task->processRequest->status === 'ACTIVE' && $task->is_self_service)
-                    <div class="alert alert-primary" role="alert">
-                        <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
-                        {{__('This task is unassigned, click Claim Task to assign yourself.')}}
-                    </div>
-                @else
-                <div class="container-fluid h-100 d-flex flex-column">
-                    @if ($task->processRequest->status === 'ACTIVE')
-                        @can('editData', $task->processRequest)
-                            <ul id="tabHeader" role="tablist" class="nav nav-tabs">
-                                <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
-                                                        aria-controls="tab-form" aria-selected="true"
-                                                        class="nav-link active">{{__('Form')}}</a></li>
-                                <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
-                                                        aria-controls="tab-data" aria-selected="false"
-                                                        @click="resizeMonaco"
-                                                        class="nav-link">{{__('Data')}}</a></li>
-                            </ul>
-                        @endcan
-                    @endif
+                <div v-if="isSelfService" class="alert alert-primary" role="alert">
+                    <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                    {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                </div>
+                <div v-else class="container-fluid h-100 d-flex flex-column">
+                    @can('editData', $task->processRequest)
+                        <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
+                            <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
+                                                    aria-controls="tab-form" aria-selected="true"
+                                                    class="nav-link active">{{__('Form')}}</a></li>
+                            <li class="nav-item"><a id="summary-tab" data-toggle="tab" href="#tab-data" role="tab"
+                                                    aria-controls="tab-data" aria-selected="false"
+                                                    @click="resizeMonaco"
+                                                    class="nav-link">{{__('Data')}}</a></li>
+                        </ul>
+                    @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
-                            @if ($task->advanceStatus==='open' || $task->advanceStatus==='overdue')
+                            <template v-if="taskIsOpenOrOverdue">
                                 <div class="card card-body border-top-0 h-100">
-                                    @if ($task->getScreen())
+                                    <template v-if="task.component">
                                         <component
-                                            :is="'{{ $task->getScreen()->renderComponent() }}'"
+                                            :is="task.component"
                                             ref="taskScreen"
-                                            :allow-interstitial="allowInterstitial"
-                                            process-id="{{$task->processRequest->process->getKey()}}"
-                                            instance-id="{{$task->processRequest->getKey()}}"
-                                            token-id="{{$task->getKey()}}"
-                                            :screen="{{json_encode($task->getScreen()->config)}}"
+                                            :process-id="task.process_id"
+                                            :instance-id="task.process_request_id"
+                                            :token-id="task.id"
+                                            :screen="task.screen.config"
                                             :submitUrl="'{{ $submitUrl }}'"
                                             :csrf-token="'{{ csrf_token() }}'"
-                                            :computed="{{json_encode($task->getScreen()->computed)}}"
-                                            :custom-css="{{json_encode(strval($task->getScreen()->custom_css))}}"
-                                            :watchers="{{json_encode($task->getScreen()->watchers)}}"
-                                            :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
+                                            :computed="task.screen.computed"
+                                            :custom-css="task.screen.custom_css"
+                                            :watchers="task.screen.watchers"
+                                            :data="task.request_data"
+                                            @activity-assigned="activityAssigned"
+                                            @process-completed="redirectWhenProcessCompleted"
+                                            @process-updated="refreshWhenProcessUpdated"
+                                        >
                                         </component>
-                                    @else
+                                    </template>
+                                    <template v-else>
                                         <task-screen
                                             ref="taskScreen"
-                                            :allow-interstitial="allowInterstitial"
-                                            process-id="{{$task->processRequest->process->getKey()}}"
-                                            instance-id="{{$task->processRequest->getKey()}}"
-                                            token-id="{{$task->getKey()}}"
+                                            :process-id="task.process_id"
+                                            :instance-id="task.process_request_id"
+                                            :token-id="task.id"
                                             :screen="[{items:[]}]"
-                                            :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}">
+                                            :data="task.request_data"
+                                            @activity-assigned="activityAssigned"
+                                            @process-completed="redirectWhenProcessCompleted"
+                                            @process-updated="refreshWhenProcessUpdated"
+                                        >
                                         </task-screen>
-                                    @endif
+                                    </template>
                                 </div>
-                                @if ($task->getBpmnDefinition()->localName==='manualTask' || !$task->getScreen())
-                                    <div class="card-footer">
-                                        <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
-                                    </div>
-                                @endif
-                            @elseif ($task->advanceStatus==='completed')
-
+                                <div v-if="task.bpmn_tag_name === 'manualTask' || !task.screen" class="card-footer">
+                                    <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
+                                </div>
+                            </template>
+                            <template v-if="taskIsCompleted">
                                 <task-screen
                                     ref="taskWaitScreen"
-                                    v-if="allowInterstitial"
-                                    :allow-interstitial="allowInterstitial"
-                                    process-id="{{$task->processRequest->process->getKey()}}"
-                                    instance-id="{{$task->processRequest->getKey()}}"
-                                    token-id="{{$task->getKey()}}"
-                                    :screen="{{json_encode($screenInterstitial->config)}}"
-                                    :computed="{{json_encode($screenInterstitial->computed)}}"
-                                    :custom-css="{{json_encode(strval($screenInterstitial->custom_css))}}"
-                                    :watchers="{{json_encode($screenInterstitial->watchers)}}"
-                                    :data="{{$task->processRequest->data ? json_encode($task->processRequest->data) : '{}'}}"
-                                    @activity-assigned="redirectToNextAssignedTask"
+                                    v-if="task.allow_interstitial"
+                                    :process-id="task.process_id"
+                                    :instance-id="task.process_request_id"
+                                    :token-id="task.id"
+                                    :screen="task.interstitial_screen.config"
+                                    :computed="task.interstitial_screen.computed"
+                                    :custom-css="task.interstitial_screen.custom_css"
+                                    :watchers="task.interstitial_screen.watchers"
+                                    :data="task.request_data"
+                                    @activity-assigned="activityAssigned"
                                     @process-completed="redirectWhenProcessCompleted"
                                     @process-updated="refreshWhenProcessUpdated"
                                 ></task-screen>
                                 <div v-else class="card card-body text-center" v-cloak>
                                     <h1>{{ __('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
                                 </div>
-                            @endif
+                            </template>
                         </div>
-                        @if ($task->processRequest->status === 'ACTIVE')
-                            @can('editData', $task->processRequest)
-                                <div id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
-                                    @include('tasks.editdata')
-                                </div>
-                            @endcan
-                        @endif
+                        @can('editData', $task->processRequest)
+                            <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
+                                @include('tasks.editdata')
+                            </div>
+                        @endcan
                     </div>
                 </div>
-                @endif
             </div>
             <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="dateDueAt">
                     <div class="card">
                         <div :class="statusCard">
-                            <h4 style="margin:0; padding:0; line-height:1">{{__($task->advanceStatus)}}</h4>
+                            <h4 style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</h4>
                         </div>
                         <ul class="list-group list-group-flush w-100">
                             <li class="list-group-item" v-if="showDueAtDates">
                                 <i class='far fa-calendar-alt'></i>
-                                <small> {{__($dueLabels[$task->advanceStatus])}} @{{ moment(dateDueAt).fromNow() }}
+                                <small> @{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}
                                 </small>
                                 <br>
                                 @{{ moment(dateDueAt).format() }}
@@ -139,7 +136,7 @@
 
                             <li class="list-group-item" v-if="!showDueAtDates">
                                 <i class='far fa-calendar-alt'></i>
-                                <small> {{__($dueLabels[$task->advanceStatus])}} @{{ moment().to(moment(completedAt)) }}
+                                <small> @{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}
                                 </small>
                                 <br>
                                 @{{ moment(completedAt).format() }}
@@ -147,19 +144,16 @@
 
                             <li class="list-group-item">
                                 <h5>{{__('Assigned To')}}</h5>
-                                <avatar-image v-if="userAssigned" size="32" class="d-inline-flex pull-left align-items-center"
-                                              :input-data="userAssigned"></avatar-image>
-                                @if(!empty($task->getDefinition()['allowReassignment']) && $task->getDefinition()['allowReassignment']==='true')
-                                    <div>
-                                        <br>
-                                        <span>
-                                @if ($task->advanceStatus === 'open')
-                                                <button type="button" class="btn btn-outline-secondary btn-block"
-                                                        @click="show">
-                                    <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                                </button>
-                                            @endif
-                                <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
+                                <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
+                                              :input-data="task.user"></avatar-image>
+                              <div v-if="task.definition.allowReassignment === 'true'">
+                                <br>
+                                <span>
+                                    <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
+                                            @click="show">
+                                        <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                    </button>
+                                  <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
                                          @hide="cancelReassign"
                                          v-cloak>
                                     <div class="form-group">
@@ -208,10 +202,9 @@
                                             {{__('Reassign')}}
                                         </button>
                                     </div>
-                                </b-modal>
-                            </span>
-                                    </div>
-                                @endif
+                                  </b-modal>
+                                </span>
+                              </div>
                             </li>
                             <li class="list-group-item">
                                 <i class="far fa-calendar-alt"></i>
@@ -226,10 +219,10 @@
                                 </a>
                                 <br><br>
                                 <h5>{{__('Requested By')}}</h5>
-                                <avatar-image v-if="userRequested" size="32"
+                                <avatar-image v-if="task.requestor" size="32"
                                               class="d-inline-flex pull-left align-items-center"
-                                              :input-data="userRequested"></avatar-image>
-                                <p v-if="!userRequested">{{__('Web Entry')}}</p>
+                                              :input-data="task.requestor"></avatar-image>
+                                <p v-if="!task.requestor">{{__('Web Entry')}}</p>
                             </li>
                         </ul>
                     </div>
@@ -255,7 +248,7 @@
     @endforeach
     <script src="{{mix('js/tasks/show.js')}}"></script>
     <script>
-      new Vue({
+      const main = new Vue({
         el: "#task",
         data: {
           //Edit data
@@ -273,22 +266,39 @@
           filter: "",
           showReassignment: false,
 
-          task: @json($task),
-          assigned: @json($task->user),
-          requested: @json($task->processRequest->user),
-          data: @json($task->processRequest->data),
+          task: @json($task->toArray()),
           statusCard: "card-header text-capitalize text-white bg-success",
-          userAssigned: [],
-          userRequested: [],
-          selectedUser: [],
-          allowInterstitial: @json($allowInterstitial)
+          selectedUser: []
         },
         watch: {
+          task: {
+            deep: true,
+            handler(task) {
+              breadcrumbs.taskTitle = task.element_name;
+            }
+          },
           showReassignment (show) {
             show ? this.loadUsers() : null;
           }
         },
         computed: {
+          dueLabel() {
+            const dueLabels = {
+              'open': 'Due',
+              'completed': 'Completed',
+              'overdue': 'Due',
+            };
+            return dueLabels[this.task.advanceStatus] || '';
+          },
+          taskIsCompleted() {
+            return this.task.advanceStatus === 'completed';
+          },
+          taskIsOpenOrOverdue() {
+            return this.task.advanceStatus === 'open' || this.task.advanceStatus === 'overdue';
+          },
+          isSelfService() {
+            return this.task.process_request.status === 'ACTIVE' && this.task.is_self_service;
+          },
           dateDueAt () {
             return this.task.due_at;
           },
@@ -310,6 +320,20 @@
           }
         },
         methods: {
+          activityAssigned() {
+            this.checkTaskStatus();
+            this.redirectToNextAssignedTask(false);
+          },
+          reload() {
+            this.loadTask(this.task.id);
+          },
+          loadTask(id) {
+            window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
+              .then((response) => {
+                this.$set(this, 'task', response.data);
+                this.prepareTask();
+              });
+          },
           claimTask() {
             ProcessMaker.apiClient
               .put("tasks/" + this.task.id, {
@@ -317,21 +341,39 @@
                 is_self_service: 0,
               })
               .then(response => {
-                window.location.reload();
+                this.reload();
               });
           },
           redirectWhenProcessCompleted() {
             window.location.href = `/requests/${this.task.process_request_id}`;
           },
-          refreshWhenProcessUpdated() {
-            window.location.reload();
+          refreshWhenProcessUpdated(data) {
+            if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
+              this.reload();
+            }
           },
-          redirectToNextAssignedTask() {
+          checkTaskStatus(redirect=false) {
             if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
-              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.assigned.id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
+              this.closeTask();
+            }
+          },
+          closeTask() {
+            if (!this.task.allow_interstitial) {
+              document.location.href = "/tasks";
+            } else {
+              this.redirectToNextAssignedTask();
+            }
+          },
+          redirectToNextAssignedTask(redirect = false) {
+            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
+              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user_id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
                 if (response.data.data.length > 0) {
                   const firstNextAssignedTask = response.data.data[0].id;
-                  window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+                  if (redirect) {
+                    window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+                  } else {
+                    this.loadTask(firstNextAssignedTask);
+                  }
                 } else if (this.task.process_request.status === 'COMPLETED') {
                   setTimeout(() => {
                     window.location.href = `/requests/${this.task.process_request_id}`;
@@ -368,7 +410,7 @@
             }
           },
           editJsonData () {
-            this.jsonData = JSON.stringify(this.data, null, 4);
+            this.jsonData = JSON.stringify(this.task.request_data, null, 4);
           },
           // Reassign methods
           show () {
@@ -427,17 +469,24 @@
           resizeMonaco () {
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
-          }
+          },
+          prepareTask(redirect = false) {
+            this.statusCard = this.classHeaderCard(this.task.advanceStatus);
+            this.updateRequestData = debounce(this.updateRequestData, 1000);
+            this.editJsonData();
+            this.checkTaskStatus(redirect);
+          },
         },
         mounted () {
-          this.statusCard = this.classHeaderCard(this.task.advanceStatus);
-          this.userAssigned = this.assigned;
-          this.userRequested = this.requested;
-          this.updateRequestData = debounce(this.updateRequestData, 1000);
-          this.editJsonData();
-          if (this.allowInterstitial) {
-            this.redirectToNextAssignedTask();
-          }
+          this.prepareTask(true);
+        }
+      });
+      const breadcrumbs = new Vue({
+        el: "#breadcrumbs",
+        data() {
+          return {
+            taskTitle: @json($task->element_name),
+          };
         }
       });
     </script>

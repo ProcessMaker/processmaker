@@ -541,4 +541,28 @@ class ProcessRequestToken extends Model implements TokenInterface
         }
         return $activity->getProperty('assignment', null);
     }
+
+    /**
+     * Get Interstitial properties
+     *
+     * @return array
+     */
+    public function getInterstitial()
+    {
+        $definition = $this->getDefinition();
+        $interstitialScreen = new Screen();
+        $allowInterstitial = false;
+        if (array_key_exists('allowInterstitial', $definition)) {
+            $allowInterstitial = !!json_decode($definition['allowInterstitial']);
+            if (array_key_exists('interstitialScreenRef', $definition) && $definition['interstitialScreenRef']) {
+                $interstitialScreen = Screen::find($definition['interstitialScreenRef']);
+            } else {
+                $interstitialScreen = Screen::where('key', 'interstitial')->first();
+            }
+        }
+        return [
+            'allow_interstitial' => $allowInterstitial,
+            'interstitial_screen' => $interstitialScreen
+        ];
+    }
 }
