@@ -29,7 +29,7 @@
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
             <b-nav-item class="d-none d-lg-block">
-                <component id="navbar-request-button" v-bind:is="'request-modal'" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
+                <component id="navbar-request-button" v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             </b-nav-item>
 
             <b-nav-item class="d-none d-lg-block">

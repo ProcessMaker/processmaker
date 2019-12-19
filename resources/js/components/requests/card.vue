@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <div>
+    <div class="mt-3">
       <div class="card" v-for="event in process.startEvents" :key="event.id">
         <div class="card-body">
           <div class="row">
@@ -22,8 +21,6 @@
         </div>
       </div>
     </div>
-    <br>
-  </div>
 </template>
 
 <script>
