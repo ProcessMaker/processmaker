@@ -83,10 +83,10 @@
                                     <label class="custom-control-label" for="selectAll">{{ __('Assign all permissions to this user') }}</label>
                                 </div>
                                 @include('admin.shared.permissions')
-                                <div class="text-right mt-2">
-                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'permissionUpdate'])!!}
-                            </div>
+                                <div class="d-flex justify-content-end mt-3">
+                                    {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
+                                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'permissionUpdate'])!!}
+                                </div>
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
