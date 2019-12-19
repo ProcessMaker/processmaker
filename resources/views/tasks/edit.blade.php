@@ -58,7 +58,6 @@
                                             :instance-id="task.process_request_id"
                                             :token-id="task.id"
                                             :screen="task.screen.config"
-                                            :submitUrl="'{{ $submitUrl }}'"
                                             :csrf-token="'{{ csrf_token() }}'"
                                             :computed="task.screen.computed"
                                             :custom-css="task.screen.custom_css"

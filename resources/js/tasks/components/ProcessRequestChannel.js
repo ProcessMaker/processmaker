@@ -4,6 +4,17 @@ export default {
       socketListeners: []
     };
   },
+  mounted () {
+    this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ActivityAssigned", (data) => {
+      this.$emit("activity-assigned", data);
+    });
+    this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ProcessCompleted", (data) => {
+      this.$emit("process-completed", data);
+    });
+    this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ProcessUpdated", (data) => {
+      this.$emit("process-updated", data);
+    });
+  },
   methods: {
     addSocketListener (channel, event, callback) {
       this.socketListeners.push({
