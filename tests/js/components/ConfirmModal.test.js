@@ -41,7 +41,7 @@ describe('Component Confirm Modal', () => {
       }
     });
     expect(wrapper.find('.modal-title').text()).toBe(title);
-    expect(wrapper.find('.modal-body span').text()).toBe(message);
+    expect(wrapper.find('.modal-body').text()).toBe(message);
 
   });
 
