@@ -1,9 +1,9 @@
-<b-navbar id="navbar" v-cloak toggleable="md" type="light" variant="light" class="d-print-none">
-    <div class="d-flex d-none d-xs-block d-md-none w-100">
+<b-navbar id="navbar" v-cloak toggleable="lg" type="light" variant="light" class="d-print-none">
+    <div class="d-flex d-none d-xs-block d-lg-none w-100">
         @php
             $loginLogo = \ProcessMaker\Models\Setting::getLogin();
         @endphp
-        <b-navbar-brand href="#" class="d-md-none pl-2"><img class="navbar-logo" src={{$loginLogo}}></b-navbar-brand>
+        <b-navbar-brand href="#" class="d-lg-none pl-2"><img class="navbar-logo" src={{$loginLogo}}></b-navbar-brand>
         <b-navbar-toggle class="ml-auto" target="nav_collapse"></b-navbar-toggle>
     </div>
 
@@ -32,12 +32,12 @@
                 <component id="navbar-request-button" v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             </b-nav-item>
 
-            <b-nav-item class="d-none d-md-block">
+            <b-nav-item class="d-none d-lg-block">
                 <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
                 </notifications>
             </b-nav-item>
-            <li class="separator d-none d-md-block"></li>
-            <li class="d-none d-md-block">
+            <li class="separator d-none d-lg-block"></li>
+            <li class="d-none d-lg-block">
                 @php
                     $items = [];
                     foreach ($dropdown_nav->items as $item ) {
