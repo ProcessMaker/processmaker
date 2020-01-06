@@ -7,7 +7,7 @@
             :src="timestamp(value.src)"
             :width="sizeImage"
             :height="sizeImage"
-            class="image"
+            :class="image"
             :title="value.tooltip"
           >
         </template>
