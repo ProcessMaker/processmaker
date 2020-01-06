@@ -1,7 +1,7 @@
 <template>
   <span :class="classContainer">
     <template v-for="(value, key) in options">
-      <a :href="value.id" style="margin: 0 2px;">
+      <a :href="value.id">
         <template v-if="value.src" class="align-center">
           <img
             :src="timestamp(value.src)"
