@@ -1,5 +1,5 @@
 <b-navbar id="navbar" v-cloak toggleable="lg" type="light" variant="light" class="d-print-none">
-    <div class="d-flex d-none d-xs-block d-lg-none w-100">
+    <div class="d-flex d-lg-none w-100">
         @php
             $loginLogo = \ProcessMaker\Models\Setting::getLogin();
         @endphp
