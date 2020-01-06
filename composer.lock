@@ -2489,6 +2489,7 @@
                 "bcmath",
                 "math"
             ],
+            "abandoned": "brick/math",
             "time": "2017-02-16T16:54:46+00:00"
         },
         {
@@ -3152,11 +3153,11 @@
                 "illuminate/support": "5.1 - 5.8|^6.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.16.0",
-                "laravel/laravel": "5.1 - 5.8|^6.0",
+                "friendsofphp/php-cs-fixer": "^2.12",
+                "laravel/laravel": "5.1 - 5.8",
                 "mockery/mockery": "^1.1.0",
                 "overtrue/phplint": "^1.1",
-                "phpunit/phpunit": "5.7 || 6.0 || 7.0 || 7.5 || 8.4"
+                "phpunit/phpunit": "5.7 || 6.0 || 7.0 || 7.5"
             },
             "type": "library",
             "extra": {
@@ -3182,7 +3183,7 @@
                 }
             ],
             "description": "Service for chunked upload with several js providers",
-            "time": "2019-11-05T21:38:31+00:00"
+            "time": "2018-11-28T19:48:49+00:00"
         },
         {
             "name": "predis/predis",
@@ -3291,12 +3292,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "dfe7baf10d8c8425ddea83098aa77efcc53e46d5"
+                "reference": "b1ca45be1bddf952b95c85dc185c78851a3166d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/dfe7baf10d8c8425ddea83098aa77efcc53e46d5",
-                "reference": "dfe7baf10d8c8425ddea83098aa77efcc53e46d5",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/b1ca45be1bddf952b95c85dc185c78851a3166d4",
+                "reference": "b1ca45be1bddf952b95c85dc185c78851a3166d4",
                 "shasum": ""
             },
             "require-dev": {
@@ -3313,7 +3314,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2019-09-03T19:23:42+00:00"
+            "time": "2020-01-06T14:03:35+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -3347,18 +3348,15 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
                     "email": "taylor@processmaker.com"
                 }
             ],
-            "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent"
+            "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
+            "time": "2019-09-11T17:04:46+00:00"
         },
         {
             "name": "psr/cache",
@@ -4244,9 +4242,9 @@
             "authors": [
                 {
                     "name": "Alex Vanderbist",
+                    "role": "Developer",
                     "email": "alex@spatie.be",
-                    "homepage": "https://spatie.be",
-                    "role": "Developer"
+                    "homepage": "https://spatie.be"
                 }
             ],
             "description": "Easily create, use and destroy temporary directories",
@@ -6390,6 +6388,7 @@
                 "psr",
                 "psr-7"
             ],
+            "abandoned": "laminas/laminas-diactoros",
             "time": "2019-08-06T17:53:53+00:00"
         },
         {
@@ -6618,8 +6617,8 @@
             "authors": [
                 {
                     "name": "Filipe Dobreira",
-                    "homepage": "https://github.com/filp",
-                    "role": "Developer"
+                    "role": "Developer",
+                    "homepage": "https://github.com/filp"
                 }
             ],
             "description": "php error handling for cool kids",
