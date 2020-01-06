@@ -1,10 +1,10 @@
-<b-navbar id="navbar" v-cloak  toggleable="md" type="light" variant="light" class="d-print-none">
-    <div class="d-flex d-block d-sm-none">
+<b-navbar id="navbar" v-cloak toggleable="md" type="light" variant="light" class="d-print-none">
+    <div class="d-flex d-none d-xs-block d-md-none w-100">
         @php
             $loginLogo = \ProcessMaker\Models\Setting::getLogin();
         @endphp
-        <b-navbar-brand href="#"><img class="img-fluid" src={{$loginLogo}}></b-navbar-brand></td>
-        <b-navbar-toggle target="nav_collapse"></b-navbar-toggle></td>
+        <b-navbar-brand href="#" class="d-md-none pl-2"><img class="navbar-logo" src={{$loginLogo}}></b-navbar-brand>
+        <b-navbar-toggle class="ml-auto" target="nav_collapse"></b-navbar-toggle>
     </div>
 
     <b-collapse is-nav id="nav_collapse">
@@ -28,16 +28,16 @@
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
-            <b-nav-item class="d-none d-lg-block">
+            <b-nav-item class="d-block">
                 <component id="navbar-request-button" v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             </b-nav-item>
 
-            <b-nav-item class="d-none d-lg-block">
+            <b-nav-item class="d-none d-md-block">
                 <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
                 </notifications>
             </b-nav-item>
-            <b-nav-item class="seperator d-none d-lg-block"></b-nav-item>
-            <li class="d-none d-lg-block">
+            <li class="separator d-none d-md-block"></li>
+            <li class="d-none d-md-block">
                 @php
                     $items = [];
                     foreach ($dropdown_nav->items as $item ) {
@@ -50,15 +50,17 @@
                     $items = json_encode($items);
                     $user = Auth::user();
                 @endphp
-                <navbar-profile :info="{{$user}}"  :items="{{$items}}"></navbar-profile>
+                <navbar-profile :info="{{$user}}" :items="{{$items}}"></navbar-profile>
             </li>
         </b-navbar-nav>
     </b-collapse>
 </b-navbar>
 <style lang="scss" scoped>
-    .seperator {
+    .separator {
         border-right: 1px solid rgb(227, 231, 236);
         height: 30px;
+        margin-left: 0.5rem;
+        margin-right: 1rem;
     }
     #navbar { margin-left:-10px }
 </style>
