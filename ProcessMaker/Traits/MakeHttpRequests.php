@@ -47,7 +47,10 @@ trait MakeHttpRequests
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
 
-        $this->verifySsl = $this->credentials['verify_certificate'] !== 'undefined' ? $this->credentials['verify_certificate']  : true;
+        $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
+                            ? $this->credentials['verify_certificate']
+                            : true;
+
         // Datasource works with json responses
         $headers = ['Accept' => 'application/json'];
         if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
