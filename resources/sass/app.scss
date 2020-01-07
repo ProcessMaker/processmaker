@@ -43,6 +43,17 @@ html {
 
 }
 
+.card-deck-flex {
+  @extend .d-flex, .flex-column, .flex-md-row, .w-100;
+  
+  .card {
+    @extend .w-100, .flex-fill, .mb-3;
+    &:not(:last-child) {
+      @extend .mr-md-3;
+    }
+  }
+}
+
 // .active {
 //   color: $primary;
 // }
