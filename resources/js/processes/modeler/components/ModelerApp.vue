@@ -12,6 +12,7 @@
       <b-card-footer class="p-0 border-0">
         <statusbar>
           <validation-status
+            ref="validationStatus"
             :validation-errors="validationErrors"
             :warnings="warnings"
           />
@@ -39,6 +40,27 @@ export default {
     };
   },
   methods: {
+    updateBpmnValidations() {
+      const statusBar = this.$refs.validationStatus;
+      const warnings = this.warnings;
+      if(warnings instanceof Array) {
+        const bpmnWarnings = [];
+        warnings.forEach((warning) => {
+          if (warning.errors instanceof Object) {
+            Object.keys(warning.errors).forEach(node => {
+              warning.errors[node].forEach(error => {
+                bpmnWarnings.push({
+                  category: 'error',
+                  id: node,
+                  message: error
+                });
+              });
+            });
+          }
+        });
+        this.$refs.modeler.$set(this.$refs.modeler.validationErrors, 'bpmn', bpmnWarnings);
+      }
+    },
     refreshSession: _.throttle(() => {
       ProcessMaker.apiClient({
         method: 'POST',
@@ -78,6 +100,9 @@ export default {
             // Now show alert
             ProcessMaker.alert(this.$t('The process was saved.'), 'success');
             window.ProcessMaker.EventBus.$emit('save-changes');
+            if (response.data.warnings && response.data.warnings.length > 0) {
+              this.$refs.validationStatus.autoValidate = true;
+            }
           })
           .catch((err) => {
             const message = err.response.data.message;
@@ -101,5 +126,19 @@ export default {
       window.ProcessMaker.EventBus.$emit('new-changes');
     });
   },
+  watch: {
+    validationErrors: {
+      deep: true,
+      handler() {
+        this.updateBpmnValidations();
+      }
+    },
+    warnings: {
+      deep: true,
+      handler() {
+        this.updateBpmnValidations();
+      }
+    }
+  }
 };
 </script>
