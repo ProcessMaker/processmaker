@@ -19,10 +19,10 @@
     <div class="row">
         <div class="col-sm-12">
             <template v-if="title">
-                <b-card-group deck>
+                <div class="card-deck-flex">
 
-                    <b-card header-class="d-flex align-items-center justify-content-center card-size-header border-0"
-                        text-variant="white" class="bg-info mb-3 d-flex flex-row card-border border-0">
+                    <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
+                        text-variant="white" class="bg-info d-flex flex-row card-border border-0">
                         <i slot="header" class='fas fa-id-badge fa-2x'></i>
                         <a href="{{ route('requests_by_type', ['type' => '']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$startedMe}}</h1>
@@ -30,8 +30,8 @@
                         </a>
                     </b-card>
 
-                    <b-card header-class="d-flex border-0"
-                        text-variant="white" class="bg-success mb-3 d-flex flex-row card-border border-0">
+                    <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
+                        text-variant="white" class="bg-success d-flex flex-row card-border border-0">
                         <i slot="header" class='fas fa-clipboard-list fa-2x'></i>
                         <a href="{{ route('requests_by_type', ['type' => 'in_progress']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$inProgress}}</h1>
@@ -39,8 +39,8 @@
                         </a>
                     </b-card>
 
-                    <b-card header-class="d-flex align-items-center justify-content-center card-size-header border-0"
-                        text-variant="white" class="bg-primary mb-3 d-flex flex-row card-border border-0">
+                    <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
+                        text-variant="white" class="bg-primary d-flex flex-row card-border border-0">
                         <i slot="header" class='fas fa-clipboard-check fa-2x'></i>
                         <a href="{{ route('requests_by_type', ['type' => 'completed']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$completed}}</h1>
@@ -48,8 +48,8 @@
                         </a>
                     </b-card>
                     @can('view-all_requests')
-                    <b-card header-class="d-flex align-items-center justify-content-center card-size-header border-0"
-                        text-variant="white" class="bg-warning mb-3 d-flex flex-row  card-border border-0">
+                    <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
+                        text-variant="white" class="bg-warning d-flex flex-row  card-border border-0">
                         <i slot="header" class='fas fa-clipboard fa-2x'></i>
                         <a href="{{ route('requests_by_type', ['type' => 'all']) }}" class="card-link text-light">
                             <h1 class="m-0 font-weight-bold">{{$allRequest}}</h1>
@@ -58,7 +58,7 @@
                     </b-card>
                     @endcan
 
-                </b-card-group>
+                </div>
 
                 <div id="search-bar" class="search mb-3 bg-light p-2">
                     <div class="d-flex">
@@ -266,7 +266,7 @@
     }
 
     .card-size-header {
-        width: 90px;
+        max-width: 90px;
     }
     .option__image {
         width:27px;
