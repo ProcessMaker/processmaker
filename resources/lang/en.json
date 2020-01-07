@@ -1,5 +1,4 @@
 {
-  "Overdue": "Overdue",
   " pending": " pending",
   ":user has completed the task :task_name": ":user has completed the task :task_name",
   "{{variable}} is running.": "{{variable}} is running.",
@@ -533,6 +532,7 @@
   "organization": "organization",
   "Output": "Output",
   "Output Variable Name": "Output Variable Name",
+  "Overdue": "Overdue",
   "Owner": "Owner",
   "Package installed": "Package installed",
   "Page Name": "Page Name",
