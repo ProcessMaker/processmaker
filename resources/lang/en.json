@@ -115,6 +115,8 @@
   "Caution!": "Caution!",
   "Cell": "Cell",
   "Center": "Center",
+  "Change Type": "Change Type",
+  "Changing this type will replace your current configuration": "Changing this type will replace your current configuration",
   "Checkbox": "Checkbox",
   "Checked by default": "Checked by default",
   "Choose icon image": "Choose icon image",
