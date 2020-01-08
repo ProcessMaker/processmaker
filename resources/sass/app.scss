@@ -53,6 +53,15 @@ html {
   border-bottom: 0;
 }
 
+.navbar-logo {
+  max-height: 30px;
+  max-width: 100%;
+}
+
+button:focus.navbar-toggler {
+  outline: 0;
+}
+
 .navbar-light .navbar-nav .show > .nav-link,
 .navbar-light .navbar-nav .active > .nav-link,
 .navbar-light .navbar-nav .nav-link.show,

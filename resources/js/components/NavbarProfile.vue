@@ -3,43 +3,44 @@
     <div id="profileMenu">    
       <avatar-image
         id="avatarMenu"
-        class-container="d-flex m-1"
+        class-container="d-flex"
         size="40"
-        class-image="m-1"
+        class-image="m-0"
         :input-data="information"
+        hide-name="true"
       ></avatar-image>
     </div>
 
-    <b-popover target="profileMenu" placement="bottomleft" triggers="click blur">
+    <b-popover target="profileMenu" placement="bottomleft" offset="3" triggers="click blur">
       <template>
         <ul class="list-group list-group-flush px-1">
           <li class="list-group-item px-2">
             <a :href="user_id">
-              <i class="fas fa-user fa-fw fa-lg"></i>
+              <i class="fas fa-user fa-fw fa-lg mr-1"></i>
               {{$t('View')}} {{username}} {{$t('Profile')}}
             </a>
           </li>
           <li class="list-group-item px-2">
             <a href="/profile/edit">
-              <i class="fas fa-user-cog fa-fw fa-lg"></i>
+              <i class="fas fa-user-cog fa-fw fa-lg mr-1"></i>
               {{$t('Edit')}} {{username}} {{$t('Profile')}}
             </a>
           </li>
           <li class="list-group-item px-2">
             <a href="https://processmaker.gitbook.io/processmaker/" target="_blank">
-              <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg"></i>
+              <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg mr-1"></i>
               {{$t('Documentation')}}
             </a>
           </li>
           <li class="list-group-item px-2">
             <a href="/about">
-              <i class="fas fa-info-circle fa-fw fa-lg"></i>
+              <i class="fas fa-info-circle fa-fw fa-lg mr-1"></i>
               {{$t('About')}}
             </a>
           </li>
           <li class="list-group-item px-2">
             <a href="/logout">
-              <i class="fas fa-sign-out-alt fa-fw fa-lg"></i>
+              <i class="fas fa-sign-out-alt fa-fw fa-lg mr-1"></i>
               {{$t('Log Out')}}
             </a>
           </li>
@@ -134,12 +135,5 @@ export default {
   font-size: 12px;
   padding: 5px;
   width: 160px;
-}
-
-.avatar-image {
-  width: 40px;
-  height: 40px;
-  margin-left: -16px;
-  margin-top: -7px;
 }
 </style>
