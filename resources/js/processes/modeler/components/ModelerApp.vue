@@ -58,7 +58,10 @@ export default {
             });
           }
         });
-        this.$refs.modeler.$set(this.$refs.modeler.validationErrors, 'bpmn', bpmnWarnings);
+        JSON.stringify(bpmnWarnings) !== JSON.stringify(this.$refs.modeler.validationErrors.bpmn)
+          ? this.$refs.modeler.$set(this.$refs.modeler.validationErrors, 'bpmn', bpmnWarnings) : null;
+        JSON.stringify(bpmnWarnings) !== JSON.stringify(this.validationErrors.bpmn)
+          ? this.$set(this.validationErrors, 'bpmn', bpmnWarnings) : null;
       }
     },
     refreshSession: _.throttle(() => {
@@ -100,6 +103,7 @@ export default {
             // Now show alert
             ProcessMaker.alert(this.$t('The process was saved.'), 'success');
             window.ProcessMaker.EventBus.$emit('save-changes');
+            this.$set(this, 'warnings', response.data.warnings || []);
             if (response.data.warnings && response.data.warnings.length > 0) {
               this.$refs.validationStatus.autoValidate = true;
             }
@@ -108,7 +112,6 @@ export default {
             const message = err.response.data.message;
             const errors = err.response.data.errors;
             ProcessMaker.alert(message, 'danger');
-            console.log(errors);
           })
         }
       });
