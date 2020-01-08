@@ -3,6 +3,7 @@
 namespace ProcessMaker\Rules\BPMN;
 
 use Illuminate\Contracts\Validation\Rule;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Storage\BpmnElement;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
@@ -27,7 +28,15 @@ class AssignPreviousUser implements Rule
      */
     public function passes($id, $node)
     {
-        return false;
+        $incoming = $node->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'incoming');
+        foreach ($incoming as $inc) {
+            $flow = $node->ownerDocument->findElementById($inc->nodeValue);
+            $source = $node->ownerDocument->findElementById($flow->getAttribute('sourceRef'));
+            if ($source->localName === 'startEvent') {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
