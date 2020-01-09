@@ -1,8 +1,11 @@
 <template>
   <div>
     <label v-uni-for="name">{{ label }}</label>
-
+    <b-card v-if="mode === 'preview'" class="mb-2">
+      {{ $t('File uploads are unavailable in preview mode.') }}
+    </b-card>
     <uploader
+      v-else
       :key="reRenderKey"
       :options="options"
       ref="uploader"
@@ -41,6 +44,9 @@ export default {
   beforeMount() {
     this.getFileType();
   },
+  updated() {
+    this.removeDefaultClasses();
+  },
   mounted() {
     this.removeDefaultClasses();
 
@@ -60,6 +66,9 @@ export default {
 
   },
   computed: {
+    mode() {
+      return this.$root.$children[0].mode;
+    },
     classList() {
       return {
         "is-invalid": (this.validator && this.validator.errorCount) || this.error,
@@ -70,6 +79,10 @@ export default {
       return this.$refs.uploader.fileList.some(file => file._prevProgress < 1);
     },
     filesAccept() {
+      if (!this.accept) {
+        return null;
+      }
+
       let accept = [];
 
       (this.accept.split(',')).forEach(item => {
