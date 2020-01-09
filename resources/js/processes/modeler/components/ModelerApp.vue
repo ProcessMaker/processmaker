@@ -6,6 +6,7 @@
           ref="modeler"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
+          @saveBpmn="saveBpmn"
         />
       </b-card-body>
 
