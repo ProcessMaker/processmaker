@@ -57,10 +57,10 @@ div.main {
   }
   const warnings = @json($process->warnings);
  
-  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, breadcrumbs }) => {
+  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, addBreadcrumbs }) => {
     loadXML(window.ProcessMaker.modeler.xml);
     addWarnings(warnings || []);
-    breadcrumbs(breadcrumbData || []);
+    addBreadcrumbs(breadcrumbData || []);
   });
   </script>
     @foreach($manager->getScripts() as $script)
