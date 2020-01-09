@@ -32,6 +32,10 @@ export default {
       Blockly.svgResize(workspace);
     };
 
+    workspace.addChangeListener(() => {
+      this.$emit('input', Blockly.JavaScript.workspaceToCode(workspace));
+    });
+
     window.addEventListener('resize', onresize, false);
     onresize();
   }

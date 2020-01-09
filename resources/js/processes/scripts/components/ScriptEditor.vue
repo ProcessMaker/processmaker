@@ -11,7 +11,10 @@
       <b-card-body class="overflow-hidden p-4">
         <b-row class="h-100">
           <b-col cols="9" class="h-100">
-            <blockly-editor v-if="script.language === 'javascript'"/>
+            <blockly-editor
+              v-if="script.language === 'javascript'"
+              @input="code = $event"
+            />
             <monaco-editor
               v-else
               :options="monacoOptions"
