@@ -11,7 +11,9 @@
       <b-card-body class="overflow-hidden p-4">
         <b-row class="h-100">
           <b-col cols="9" class="h-100">
+            <blockly-editor v-if="script.language === 'javascript'"/>
             <monaco-editor
+              v-else
               :options="monacoOptions"
               v-model="code"
               :language="script.language"
@@ -140,6 +142,7 @@
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 import customFilters from "../customFilters";
+import BlocklyEditor from "./BlocklyEditor";
 
 export default {
   props: ["process", "script", "scriptFormat", "testData"],
@@ -170,6 +173,7 @@ export default {
     }
   },
   components: {
+    BlocklyEditor,
     MonacoEditor
   },
   mounted() {
@@ -246,7 +250,7 @@ export default {
           break;
         case 'lua':
           this.code = Vue.filter('lua')(this.boilerPlateTemplate);
-          break; 
+          break;
         case 'javascript':
           this.code = Vue.filter('javascript')(this.boilerPlateTemplate);
           break;

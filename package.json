@@ -56,6 +56,7 @@
     "@processmaker/vue-form-elements": "^0.12.8",
     "babel-eslint": "^10.0.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "blockly": "^3.20191014.4",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.0.4",
     "bpmn-moddle": "^6.0.0",
