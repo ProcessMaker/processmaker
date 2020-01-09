@@ -128,14 +128,14 @@ class TaskAssignmentExecutionTest extends TestCase
         // Assert it throws exception when the variable is missing
         $response = $run(['foo' => $user->id]);
         $this->assertEquals(
-            $response['message'],
+            $response['errors'][0]['message'],
             'The variable, {{ userIdInData }}, which equals "", is not a valid User ID in the system'
         );
 
         // Assert it throws exception when the variable is not a valid user id
         $response = $run(['userIdInData' => 'foo']);
         $this->assertEquals(
-            $response['message'],
+            $response['errors'][0]['message'],
             'The variable, {{ userIdInData }}, which equals "foo", is not a valid User ID in the system'
         );
     }
