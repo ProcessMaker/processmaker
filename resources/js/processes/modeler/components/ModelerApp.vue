@@ -10,26 +10,23 @@
       </b-card-body>
 
       <b-card-footer class="p-0 border-0">
-        <statusbar>
-          <validation-status
-            :validation-errors="validationErrors"
-            :warnings="warnings"
-          />
-        </statusbar>
+        <validation-status
+          :validation-errors="validationErrors"
+          :warnings="warnings"
+        />
       </b-card-footer>
     </b-card>
   </b-container>
 </template>
 
 <script>
-import { Modeler, Statusbar, ValidationStatus } from "@processmaker/modeler";
+import { Modeler, ValidationStatus } from "@processmaker/modeler";
 
 export default {
   name: 'ModelerApp',
   components: {
     Modeler,
     ValidationStatus,
-    Statusbar,
   },
   data() {
     return {
