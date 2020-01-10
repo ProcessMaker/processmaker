@@ -141,8 +141,8 @@ export default {
         '<i class="fas fa-circle ' +
         bubbleColor[status] +
         ' small"></i><span class="text-capitalize"> ' +
-        this.$t(status) +
-        "</span>"
+        this.$t(status.charAt(0).toUpperCase() + status.slice(1)) +
+        '</span>'
       );
     },
     goToEdit(data) {
