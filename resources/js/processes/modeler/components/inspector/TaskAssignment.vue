@@ -49,7 +49,7 @@
         <div class="form-group">
 
             <div class="form-group special-assignment-header">
-                <label>{{ $t("Assign by Expression: Use a rule to assign this Task conditionally") }}</label>
+                <label>{{ $t("Assign by Expression Use a rule to assign this Task conditionally") }}</label>
                 <button type="button"
                         @click="addingSpecialAssignment = true"
                         class="float-right btn-special-assignment-action btn btn-secondary btn-sm"

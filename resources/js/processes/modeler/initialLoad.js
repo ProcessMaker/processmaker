@@ -88,7 +88,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Start Permissions',
         icon: 'user-shield',
-        name: 'startPermissions',
+        name: 'inspector-accordion',
       },
       items: [
         {
@@ -129,7 +129,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Assignment Rules',
         icon: 'users',
-        name: 'assignmentRules',
+        name: 'inspector-accordion',
       },
       items: [
         {
@@ -149,7 +149,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Notifications',
         icon: 'bell',
-        name: 'notifications',
+        name: 'inspector-accordion',
       },
       items: [
         {
@@ -224,7 +224,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Assignment Rules',
         icon: 'users',
-        name: 'assignmentRules',
+        name: 'inspector-accordion',
       },
       items: [
         {
@@ -244,7 +244,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Notifications',
         icon: 'bell',
-        name: 'notifications',
+        name: 'inspector-accordion',
       },
       items: [
         {
