@@ -54,9 +54,17 @@ window.ProcessMaker.nodeTypes.get = function (id) {
 
 // Setup breadcrumbs as a Vue component so that we can cloak it until Vue
 // has finished loading.
-new Vue({
-  el: '#breadcrumbs'
-});
+
+if (document.getElementById("breadcrumbs")) {
+  window.ProcessMaker.breadcrumbs = new Vue({
+    el: '#breadcrumbs',
+    data() {
+      return {
+        taskTitle: '',
+      }
+    }
+  });
+}
 
 // Assign our navbar component to our global ProcessMaker object
 window.ProcessMaker.navbar = new Vue({

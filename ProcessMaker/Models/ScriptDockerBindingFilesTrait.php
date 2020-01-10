@@ -63,7 +63,7 @@ trait ScriptDockerBindingFilesTrait
         }
 
         $cmd .= config('app.processmaker_scripts_docker') . sprintf(
-            ' run %s %s %s %s 2>&1',
+            ' run --rm %s %s %s %s 2>&1',
             $parameters,
             $bindings,
             $image,

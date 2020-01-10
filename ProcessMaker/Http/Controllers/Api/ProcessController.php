@@ -6,6 +6,7 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
@@ -20,6 +21,8 @@ use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
+use ProcessMaker\Nayra\Storage\BpmnElement;
+use ProcessMaker\Rules\BPMNValidation;
 
 class ProcessController extends Controller
 {
@@ -241,8 +244,12 @@ class ProcessController extends Controller
         if ($schemaErrors = $this->validateBpmn($request)) {
             $warnings = [];
             foreach ($schemaErrors as $error) {
-                $text = str_replace('DOMDocument::schemaValidate(): ', '', $error);
-                $warnings[] = ['title' => __('Schema Validation'), 'text' => $text];
+                if (is_string($error)) {
+                    $text = str_replace('DOMDocument::schemaValidate(): ', '', $error);
+                    $warnings[] = ['title' => __('Schema Validation'), 'text' => $text];
+                } else {
+                    $warnings[] = $error;
+                }
             }
             $process->warnings = $warnings;
         } else {
@@ -381,7 +388,16 @@ class ProcessController extends Controller
                 $schemaErrors[] = $e->getMessage();
             }
             $schemaErrors = $this->validateOnlyOneDiagram($document, $schemaErrors);
-        }
+            $rulesValidation = new BPMNValidation;
+            if(!$rulesValidation->passes('document', $document)) {
+                $errors = $rulesValidation->errors('document', $document)->getMessages();
+                $schemaErrors[] = [
+                    'title' => 'BPMN Validation failed',
+                    'text' => 'Some bpmn elements do not comply with the validation',
+                    'errors' => $errors,
+                ];
+            }
+    }
         return $schemaErrors;
     }
 

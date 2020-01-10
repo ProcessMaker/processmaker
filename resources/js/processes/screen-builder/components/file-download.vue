@@ -1,20 +1,25 @@
 <template>
   <div>
-    <div v-if="loading">
-      <i class="fas fa-cog fa-spin text-muted"></i>
-      {{$t('Loading...')}}
-    </div>
+    <b-card v-if="mode === 'preview'" class="mb-2">
+      {{ messageForPreview }}
+    </b-card>
     <div v-else>
-      <template v-if="! loading && files.data && files.data.length !== 0">
-        <div v-for="file in files.data">
-          <b-btn v-show="!isReadOnly" class="mb-2 d-print-none" variant="primary" @click="onClick(file)">
-            <i class="fas fa-file-download"></i> {{$t('Download')}}
-          </b-btn>
-          {{file.file_name}}
-        </div>
-      </template>
+      <div v-if="loading">
+        <i class="fas fa-cog fa-spin text-muted"></i>
+        {{$t('Loading...')}}
+      </div>
       <div v-else>
-        {{$t('No files available for download')}}
+        <template v-if="! loading && files.data && files.data.length !== 0">
+          <div v-for="file in files.data">
+            <b-btn v-show="!isReadOnly" class="mb-2 d-print-none" variant="primary" @click="onClick(file)">
+              <i class="fas fa-file-download"></i> {{$t('Download')}}
+            </b-btn>
+            {{file.file_name}}
+          </div>
+        </template>
+        <div v-else>
+          {{$t('No files available for download')}}
+        </div>
       </div>
     </div>
   </div>
@@ -56,6 +61,15 @@
       }
     },
     computed: {
+      messageForPreview() {
+        return this.$t(
+          'Download button for {{fileName}} will appear here.',
+          { fileName: this.name }
+        );
+      },
+      mode() {
+        return this.$root.$children[0].mode;
+      },
       isReadOnly() {
         return this.$attrs.readonly ? this.$attrs.readonly : false
       },
