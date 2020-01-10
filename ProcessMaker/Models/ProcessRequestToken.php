@@ -2,15 +2,17 @@
 
 namespace ProcessMaker\Models;
 
-use Log;
 use Carbon\Carbon;
-use ProcessMaker\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
+use Log;
+use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Traits\SerializeToIso8601;
-use \Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\SerializeToIso8601;
+use Throwable;
 
 /**
  * ProcessRequestToken is used to store the state of a token of the
@@ -564,5 +566,16 @@ class ProcessRequestToken extends Model implements TokenInterface
             'allow_interstitial' => $allowInterstitial,
             'interstitial_screen' => $interstitialScreen
         ];
+    }
+
+    /**
+     * Log an error when executing the token
+     *
+     * @param \Throwable $error
+     * @param \ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface $bpmnElement
+     */
+    public function logError(Throwable $error, FlowElementInterface $bpmnElement)
+    {
+        $this->getInstance()->logError($error, $bpmnElement);
     }
 }

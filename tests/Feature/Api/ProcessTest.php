@@ -527,7 +527,7 @@ class ProcessTest extends TestCase
         (new \PermissionSeeder())->run($this->user);
 
         //Test to update name process
-        $name = $this->faker->name;
+        $name = $this->faker->sentence(3);
         $this->assertModelUpdate(
             Process::class,
             [
