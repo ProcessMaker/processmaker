@@ -80,7 +80,6 @@ class TokenRepository implements TokenRepositoryInterface
         $this->addRequestToData($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
-//        $token->element_type = $activity instanceof ScriptTaskInterface ? 'scriptTask' : 'task';
         $token->element_type = $this->getActivityType($activity);
         $token->element_name = $activity->getName();
         $token->process_id = $token->getInstance()->process->getKey();
@@ -146,6 +145,9 @@ class TokenRepository implements TokenRepositoryInterface
         $this->instanceRepository->persistInstanceError($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
+        $token->element_type = $this->getActivityType($activity);
+        $token->element_name = $activity->getName();
+        $token->process_id = $token->getInstance()->process_id;
         $token->process_request_id = $token->getInstance()->getKey();
         $token->save();
         $token->setId($token->getKey());

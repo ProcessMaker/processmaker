@@ -3,6 +3,7 @@
 namespace ProcessMaker\AssignmentRules;
 
 use ProcessMaker\Contracts\AssignmentRuleInterface;
+use ProcessMaker\Exception\ThereIsNoPreviousUserAssignedException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -31,6 +32,9 @@ class PreviousTaskAssignee implements AssignmentRuleInterface
         $previous = $request->tokens()
             ->where('element_type', 'task')
             ->orderBy('id', 'desc')->first();
+        if (!$previous) {
+            throw new ThereIsNoPreviousUserAssignedException($task);
+        }
         return $previous->user_id;
     }
 }

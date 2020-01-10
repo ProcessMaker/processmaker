@@ -6,4 +6,5 @@ return [
     'SyntaxErrorException' => 'Syntax error. :error',
     'ExpressionFailedException' => 'Failed to evaluate expression. :error',
     'TaskDoesNotHaveRequesterException' => 'This process was started by an anonymous user so this task can not be assigned to the requester',
+    'ThereIsNoPreviousUserAssignedException' => 'Can not assign this task because there is no previous user assigned before this task',
 ];

@@ -3,7 +3,7 @@
     <b-card no-body class="h-100 border-top-0">
       <modeler ref="modeler" @validate="validationErrors = $event" @warnings="warnings = $event" />
       
-      <validation-status :validation-errors="validationErrors" :warnings="warnings" />
+      <validation-status ref="validationStatus" :validation-errors="validationErrors" :warnings="warnings" />
     </b-card>
   </b-container>
 </template>
@@ -25,6 +25,30 @@ export default {
     };
   },
   methods: {
+    updateBpmnValidations() {
+      const statusBar = this.$refs.validationStatus;
+      const warnings = this.warnings;
+      if(warnings instanceof Array) {
+        const bpmnWarnings = [];
+        warnings.forEach((warning) => {
+          if (warning.errors instanceof Object) {
+            Object.keys(warning.errors).forEach(node => {
+              warning.errors[node].forEach(error => {
+                bpmnWarnings.push({
+                  category: 'error',
+                  id: node,
+                  message: error
+                });
+              });
+            });
+          }
+        });
+        JSON.stringify(bpmnWarnings) !== JSON.stringify(this.$refs.modeler.validationErrors.bpmn)
+          ? this.$refs.modeler.$set(this.$refs.modeler.validationErrors, 'bpmn', bpmnWarnings) : null;
+        JSON.stringify(bpmnWarnings) !== JSON.stringify(this.validationErrors.bpmn)
+          ? this.$set(this.validationErrors, 'bpmn', bpmnWarnings) : null;
+      }
+    },
     refreshSession: _.throttle(() => {
       ProcessMaker.apiClient({
         method: 'POST',
@@ -64,12 +88,15 @@ export default {
             // Now show alert
             ProcessMaker.alert(this.$t('The process was saved.'), 'success');
             window.ProcessMaker.EventBus.$emit('save-changes');
+            this.$set(this, 'warnings', response.data.warnings || []);
+            if (response.data.warnings && response.data.warnings.length > 0) {
+              this.$refs.validationStatus.autoValidate = true;
+            }
           })
           .catch((err) => {
             const message = err.response.data.message;
             const errors = err.response.data.errors;
             ProcessMaker.alert(message, 'danger');
-            console.log(errors);
           })
         }
       });
@@ -87,5 +114,19 @@ export default {
       window.ProcessMaker.EventBus.$emit('new-changes');
     });
   },
+  watch: {
+    validationErrors: {
+      deep: true,
+      handler() {
+        this.updateBpmnValidations();
+      }
+    },
+    warnings: {
+      deep: true,
+      handler() {
+        this.updateBpmnValidations();
+      }
+    }
+  }
 };
 </script>
