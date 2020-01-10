@@ -1032,5 +1032,7 @@
   "Requests In Progress": "Requests In Progress",
   "The variable, :variable, which equals \":value\", is not a valid User ID in the system": "The variable, :variable, which equals \":value\", is not a valid User ID in the system",
   "Variable Name of User ID Value": "Variable Name of User ID Value",
-  "By User ID": "By User ID"
+  "By User ID": "By User ID",
+  "File uploads are unavailable in preview mode.": "File uploads are unavailable in preview mode.",
+  "Download button for {{fileName}} will appear here.": "Download button for {{fileName}} will appear here."
 }

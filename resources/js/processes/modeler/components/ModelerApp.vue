@@ -1,36 +1,21 @@
 <template>
   <b-container id="modeler-app" class="container p-0">
     <b-card no-body class="h-100 border-top-0">
-      <b-card-body class="overflow-hidden position-relative p-0 h-100">
-        <modeler
-          ref="modeler"
-          @validate="validationErrors = $event"
-          @warnings="warnings = $event"
-        />
-      </b-card-body>
-
-      <b-card-footer class="p-0 border-0">
-        <statusbar>
-          <validation-status
-            ref="validationStatus"
-            :validation-errors="validationErrors"
-            :warnings="warnings"
-          />
-        </statusbar>
-      </b-card-footer>
+      <modeler ref="modeler" @validate="validationErrors = $event" @warnings="warnings = $event" />
+      
+      <validation-status ref="validationStatus" :validation-errors="validationErrors" :warnings="warnings" />
     </b-card>
   </b-container>
 </template>
 
 <script>
-import { Modeler, Statusbar, ValidationStatus } from "@processmaker/modeler";
+import { Modeler, ValidationStatus } from "@processmaker/modeler";
 
 export default {
   name: 'ModelerApp',
   components: {
     Modeler,
     ValidationStatus,
-    Statusbar,
   },
   data() {
     return {
