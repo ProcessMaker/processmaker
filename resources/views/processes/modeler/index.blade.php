@@ -8,19 +8,6 @@
     @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
-
-@section('breadcrumbs')
-    @include('shared.breadcrumbs', [
-    'routes' => [
-        __('Designer') => route('processes.index'),
-        __('Processes') => route('processes.index'),
-        __('Modeler') => null,
-        $process->name => null,
-      ],
-      'showModelerSaveButton' => true
-    ])
-@endsection
-
 @section('content')
     <div id="modeler-app">
     </div>
@@ -39,30 +26,41 @@ div.main {
   height: 100%;
   max-height: 100%;
 }
-
-[aria-label="breadcrumb"] {
-  position: relative;
-}
-
-.modeler-save-button {
-  right: 1rem;
-  transform: translateY(-50%);
-  top: 50%;
-}
 </style>
 @endsection
 
 @section('js')
   <script src="{{mix('js/leave-warning.js')}}"></script>
-  <script>
+  <script> 
+  const breadcrumbData = [
+    {
+      'text':'{{__('Designer')}}',
+      'url':'{{route('processes.index')}}'
+    },
+    {
+      'text':'{{__('Processes')}}',
+      'url':'{{route('processes.index')}}'
+    },
+    {
+      'text':'{{__('Modeler')}}',
+      'url':''
+    },
+    {
+      'text':'{{$process->name}}',
+      'url':''
+    },
+  ]
   window.ProcessMaker.modeler = {
     process: @json($process),
-    xml: @json($process->bpmn)
+    xml: @json($process->bpmn),
+    processName: @json($process->name),
   }
   const warnings = @json($process->warnings);
-  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings }) => {
+ 
+  window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML, addWarnings, addBreadcrumbs }) => {
     loadXML(window.ProcessMaker.modeler.xml);
     addWarnings(warnings || []);
+    addBreadcrumbs(breadcrumbData || []);
   });
   </script>
     @foreach($manager->getScripts() as $script)
