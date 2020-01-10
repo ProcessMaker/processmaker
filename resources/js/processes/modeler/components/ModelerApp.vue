@@ -2,7 +2,7 @@
   <b-container id="modeler-app" class="container p-0">
     <b-card no-body class="h-100 border-top-0">
       <modeler ref="modeler" @validate="validationErrors = $event" @warnings="warnings = $event" />
-
+      
       <validation-status :validation-errors="validationErrors" :warnings="warnings" />
     </b-card>
   </b-container>
