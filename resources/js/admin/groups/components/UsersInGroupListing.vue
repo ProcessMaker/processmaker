@@ -93,8 +93,9 @@
         return (
           '<i class="fas fa-circle ' +
           bubbleColor[status] +
-          ' small"></i> ' +
-          this.$t(status.charAt(0).toUpperCase() + status.slice(1))
+          ' small"></i><span class="text-capitalize"> ' +
+          this.$t(status.charAt(0).toUpperCase() + status.slice(1)) +
+          '</span>'
         );
       },
       onEdit(data, index) {

@@ -179,10 +179,21 @@
             break;
         }
       },
-      formatStatus (value) {
-        let response =
-          "<i class=\"fas fa-circle " + value.toLowerCase() + "\"></i> ";
-        return response + _.capitalize(value);
+      formatStatus(status) {
+        status = status.toLowerCase();
+        let bubbleColor = {
+          active: "text-success",
+          inactive: "text-danger",
+          draft: "text-warning",
+          archived: "text-info"
+        };
+        return (
+          '<i class="fas fa-circle ' +
+          bubbleColor[status] +
+          ' small"></i><span class="text-capitalize"> ' +
+          this.$t(status.charAt(0).toUpperCase() + status.slice(1)) +
+          '</span>'
+        );
       }
     }
   };
