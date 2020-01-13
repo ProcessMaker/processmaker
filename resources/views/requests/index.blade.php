@@ -18,7 +18,7 @@
 <div class="px-3 page-content mb-0" id="requests-listing">
     <div class="row">
         <div class="col-sm-12">
-            <template v-if="title">
+            <template>
                 <div class="card-deck-flex">
 
                     <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
@@ -59,135 +59,9 @@
                     @endcan
 
                 </div>
-
-                <div id="search-bar" class="search mb-3 bg-light p-2">
-                    <div class="d-flex">
-                        <div class="flex-grow-1">
-                            <div id="search-dropdowns" v-if="! advanced" class="row">
-                                <div class="col-3">
-                                    <multiselect v-model="process"
-                                                 @search-change="getProcesses"
-                                                 @input="buildPmql"
-                                                 :show-labels="false"
-                                                 :loading="isLoading.process"
-                                                 open-direction="bottom"
-                                                 label="name"
-                                                 :options="processOptions"
-                                                 :track-by="'id'"
-                                                 :multiple="true"
-                                                 :placeholder="$t('Process')">
-                                        <template slot="noResult">
-                                            {{ __('No elements found. Consider changing the search query.') }}
-                                        </template>
-                                        <template slot="noOptions">
-                                            {{ __('No Data Available') }}
-                                        </template>
-                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('processes') }}</span>
-                                        </template>
-                                    </multiselect>
-                                </div>
-                                <div class="col-3">
-                                    <multiselect v-model="status"
-                                                 :show-labels="false"
-                                                 @input="buildPmql"
-                                                 :loading="isLoading.status"
-                                                 open-direction="bottom"
-                                                 label="name"
-                                                 :options="statusOptions"
-                                                 track-by="value"
-                                                 :multiple="true"
-                                                 :placeholder="$t('Status')">
-                                        <template slot="noResult">
-                                            {{ __('No elements found. Consider changing the search query.') }}
-                                        </template>
-                                        <template slot="noOptions">
-                                            {{ __('No Data Available') }}
-                                        </template>
-                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('statuses') }}</span>
-                                        </template>
-                                    </multiselect>
-                                </div>
-                                <div class="col-3">
-                                    <multiselect v-model="requester"
-                                                 @search-change="getRequesters"
-                                                 @input="buildPmql"
-                                                 :show-labels="false"
-                                                 :loading="isLoading.requester"
-                                                 open-direction="bottom"
-                                                 label="fullname"
-                                                 :options="requesterOptions"
-                                                 :track-by="'id'"
-                                                 :multiple="true"
-                                                 :placeholder="$t('Requester')">
-                                        <template slot="noResult">
-                                            {{ __('No elements found. Consider changing the search query.') }}
-                                        </template>
-                                        <template slot="noOptions">
-                                            {{ __('No Data Available') }}
-                                        </template>
-                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
-                                        </template>
-                                        <template slot="option" slot-scope="props">
-                                            <img v-if="props.option.avatar.length > 0" class="option__image"
-                                                 :src="props.option.avatar">
-                                            <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                                            <span class="ml-1">@{{props.option.fullname}}</span>
-                                        </template>
-                                    </multiselect>
-                                </div>
-                                <div class="col-3">
-                                    <multiselect v-model="participants"
-                                                 @search-change="getParticipants"
-                                                 @input="buildPmql"
-                                                 :show-labels="false"
-                                                 :loading="isLoading.participants"
-                                                 open-direction="bottom"
-                                                 label="fullname"
-                                                 :options="participantsOptions"
-                                                 :track-by="'id'"
-                                                 :multiple="true"
-                                                 :placeholder="$t('Participants')">
-                                        <template slot="noResult">
-                                            {{ __('No elements found. Consider changing the search query.') }}
-                                        </template>
-                                        <template slot="noOptions">
-                                            {{ __('No Data Available') }}
-                                        </template>
-                                        <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                            <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requesters') }}</span>
-                                        </template>
-                                        <template slot="option" slot-scope="props">
-                                            <img v-if="props.option.avatar.length > 0" class="option__image"
-                                                 :src="props.option.avatar">
-                                            <span v-else class="initials bg-warning text-white p-1"> @{{getInitials(props.option.firstname, props.option.lastname)}}</span>
-                                            <span class="ml-1">@{{props.option.fullname}}</span>
-                                        </template>
-                                    </multiselect>
-                                </div>
-                            </div>
-                            <div id="search-manual" v-if="advanced">
-                                <input ref="search_input" type="text" class="form-control" placeholder="PMQL" v-model="pmql" @keyup.enter="runSearch(true)">
-                            </div>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <div id="search-actions">
-                                <div v-if="! advanced">
-                                    <b-btn variant="primary" @click="runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
-                                    <b-btn variant="secondary" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Advanced Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                                </div>
-                                <div v-if="advanced">
-                                    <b-btn variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
-                                    <b-btn variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <advanced-search ref="advancedSearch" type="requests" :param-status="status" :param-requester="requester" @change="onChange" @submit="onSearch"></advanced-search>
             </template>
-            <requests-listing ref="requestList" filter=""></requests-listing>
+            <requests-listing ref="requestList" :filter="filter" :pmql="pmql"></requests-listing>
         </div>
     </div>
 </div>
@@ -204,47 +78,6 @@
 
 @section('css')
 <style>
-    #search-bar {
-        height: 59px;
-        max-height: 59px;
-    }
-
-    #search-manual input {
-        border: 1px solid #e8e8e8;
-        border-radius: 5px;
-        color: gray;
-        height: 41px;
-    }
-
-    #search-dropdowns {
-        padding: 0 11px;
-    }
-
-    #search-dropdowns .col-3 {
-        padding: 0 4px;
-    }
-
-    #search-actions button {
-        display: inline-block;
-        float: left;
-        height: 41px;
-        margin-left: 8px;
-    }
-
-    .multiselect__placeholder {
-        padding-top: 1px;
-    }
-
-    .multiselect__single {
-        padding-bottom: 2px;
-        padding-top: 2px;
-    }
-
-    .search {
-        border: 1px solid rgba(0, 0, 0, 0.125);
-        margin-left: -1px;
-        margin-right: -1px;
-    }
     .has-search .form-control {
         padding-left: 2.375rem;
     }
