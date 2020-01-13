@@ -1,17 +1,19 @@
 <template>
   <b-container id="modeler-app" class="container p-0">
     <b-card no-body class="h-100 border-top-0">
-      <modeler 
-        ref="modeler" 
-        @validate="validationErrors = $event" 
-        @warnings="warnings = $event" 
-        @saveBpmn="saveBpmn" 
-      />
-      
-      <validation-status 
-        ref="validationStatus" 
-        :validation-errors="validationErrors" 
-        :warnings="warnings" 
+      <b-card-body class="overflow-hidden position-relative p-0 vh-100" data-test="body-container">
+        <modeler
+          ref="modeler"
+          @validate="validationErrors = $event"
+          @warnings="warnings = $event"
+          @saveBpmn="saveBpmn"
+        />
+      </b-card-body>
+
+      <validation-status
+        ref="validationStatus"
+        :validation-errors="validationErrors"
+        :warnings="warnings"
       />
     </b-card>
   </b-container>
