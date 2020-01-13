@@ -14,6 +14,9 @@
 @import '../../public/css/precompiled/vue-multiselect.min.css';
 @import '../../public/css/precompiled/npm-font-open-sans/open-sans.scss';
 
+$form-control-border-color: #b6bfc6;
+$form-control-border-radius: 2px;
+
 body,
 html {
   width: 100%;
@@ -101,6 +104,11 @@ button:focus.navbar-toggler {
   background: #788793 !important;
 }
 
+.multiselect .multiselect__tags {
+  border-color: $form-control-border-color;
+  border-radius: $form-control-border-radius;
+}
+
 .multiselect__tags {
   min-height: 35px;
   padding: 7px 40px 0 7px;
@@ -122,6 +130,126 @@ button:focus.navbar-toggler {
 
 .multiselect.is-invalid ~ .invalid-feedback {
   display: block;
+}
+
+.btn-save-search {
+  @extend .ml-2;
+  height: 40px;
+}
+
+.search-bar-advanced {
+  .form-control,
+  .form-control:active,
+  .form-control:focus {
+    border-color: $success;
+    border-bottom-right-radius: 0;
+    border-right-width: 0;
+    border-top-right-radius: 0;
+    color: gray;
+    height: 40px;
+  }
+  
+  .btn:active,
+  .btn:focus {
+    box-shadow: none !important;
+    outline: 0 !important;
+  }
+
+  .multiselect {
+    .multiselect__placeholder {
+      padding-top: 0;
+      padding-left: 2px;
+    }    
+  }
+  
+  .btn-search-advanced {
+    .btn-search-run,
+    .btn-search-toggle {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    
+    .btn-search-run {
+      border-bottom-right-radius: $form-control-border-radius;
+      border-top-right-radius: $form-control-border-radius;
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    .multiselect {    
+      .multiselect__tags {
+        border-top-color: #ddd;
+        border-bottom-width: 0;
+        border-radius: 0;
+        height: 40px;
+        max-height: 40px;
+      }
+
+      &:first-child {
+        .multiselect__tags {
+          border-top-color: $form-control-border-color;
+          border-top-left-radius: $form-control-border-radius;
+          border-top-right-radius: $form-control-border-radius;
+        }
+      }
+      
+      &:last-child {
+        .multiselect__tags {
+          border-bottom-color: $form-control-border-color;
+          border-bottom-width: 1px;
+          border-bottom-left-radius: $form-control-border-radius;
+          border-bottom-right-radius: $form-control-border-radius;
+        }
+      }
+    }
+  }
+
+  @include media-breakpoint-up(md) {
+    #search-bar {
+        max-height: 40px;
+    }
+    
+    .btn-search-run,
+    .btn-search-toggle {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    
+    .btn-search-run {
+      border-bottom-right-radius: $form-control-border-radius;
+      border-top-right-radius: $form-control-border-radius;
+    }
+    
+    .multiselect {    
+      .multiselect__tags {
+        border-left-color: #ddd;
+        border-right-width: 0;
+        border-radius: 0;
+        height: 40px;
+        max-height: 40px;
+      }
+
+      &:first-child {
+        .multiselect__tags {
+          border-left-color: $form-control-border-color;
+          border-bottom-left-radius: $form-control-border-radius;
+          border-top-left-radius: $form-control-border-radius;
+        }
+      }
+      
+      &:last-child {
+        .multiselect__tags {
+          border-right-width: 0;
+          border-bottom-right-radius: 0;
+          border-top-right-radius: 0;
+        }
+      }
+    }
+  }
 }
 
 #app-container .main {
@@ -243,8 +371,8 @@ button:focus.navbar-toggler {
 .form-control {
   // font-size: 14px;
   color: #333333;
-  border-color: #b6bfc6;
-  border-radius: 2px;
+  border-color: $form-control-border-color;
+  border-radius: $form-control-border-radius;
 }
 
 .form-control::placeholder {
