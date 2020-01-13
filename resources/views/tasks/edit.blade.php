@@ -273,7 +273,7 @@
           task: {
             deep: true,
             handler(task) {
-              breadcrumbs.taskTitle = task.element_name;
+              window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
             }
           },
           showReassignment (show) {
@@ -480,14 +480,7 @@
           this.prepareTask(true);
         }
       });
-      const breadcrumbs = new Vue({
-        el: "#breadcrumbs",
-        data() {
-          return {
-            taskTitle: @json($task->element_name),
-          };
-        }
-      });
+      window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
     </script>
 @endsection
 
