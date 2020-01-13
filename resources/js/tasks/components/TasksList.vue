@@ -102,7 +102,7 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "columns"],
+  props: ["filter", "columns", "pmql"],
   data() {
     return {
       orderBy: "ID",
@@ -117,29 +117,6 @@ export default {
       ],
       fields: []
     };
-  },
-  beforeCreate() {
-    let params = new URL(document.location).searchParams;
-    this.status = params.get("status");
-    let status = "";
-
-    switch (this.status) {
-      case "CLOSED":
-        status = "Completed";
-        break;
-      case "SELF_SERVICE":
-        status = "Self Service";
-        break;
-      default:
-        status = "In Progress";
-        break;
-    }
-    this.$parent.status.push({
-      name: this.$t(status),
-      value: status
-    });
-
-    this.$parent.buildPmql();
   },
   mounted: function mounted() {
     this.setupColumns();
@@ -332,54 +309,61 @@ export default {
     },
 
     fetch(query) {
-      if (this.cancelToken) {
-        this.cancelToken();
-        this.cancelToken = null;
-      }
-      const CancelToken = ProcessMaker.apiClient.CancelToken;
-      
-      let pmql = this.$parent.pmql;
-      let filter = this.filter;
-      
-      if (query && query.length) {
-        if (query.isPMQL()) {
-          pmql = `(${pmql}) and (${query})`;
-        } else {
-          filter = query;
-        }
-      }
-      
-      // Load from our api client
-      ProcessMaker.apiClient
-        .get(
-          "tasks?page=" +
-            this.page +
-            "&include=process,processRequest,processRequest.user,user,data" +
-            "&pmql=" +
-            encodeURIComponent(pmql) +
-            "&per_page=" +
-            this.perPage +
-            "&user_id=" +
-            window.ProcessMaker.user.id +
-            "&filter=" +
-            filter +
-            "&statusfilter=ACTIVE,CLOSED" +
-            this.getSortParam(),
-          {
-            cancelToken: new CancelToken(c => {
-              this.cancelToken = c;
-            })
-          }
-        )
-        .then(response => {
-          this.data = this.transform(response.data);
-          if (response.data.meta.in_overdue > 0) {
-            this.$emit("in-overdue", response.data.meta.in_overdue);
-          }
-        })
-        .catch(error => {
-          window.ProcessMaker.alert(error.response.data.message, "danger");
-          this.data = [];
+        Vue.nextTick(() => {
+            if (this.cancelToken) {
+              this.cancelToken();
+              this.cancelToken = null;
+            }
+            const CancelToken = ProcessMaker.apiClient.CancelToken;
+            
+            let pmql = '';
+            
+            if (this.pmql !== undefined) {
+                pmql = this.pmql;
+            }
+
+            let filter = this.filter;
+            
+            if (query && query.length) {
+              if (query.isPMQL()) {
+                pmql = `(${pmql}) and (${query})`;
+              } else {
+                filter = query;
+              }
+            }
+            
+            // Load from our api client
+            ProcessMaker.apiClient
+              .get(
+                "tasks?page=" +
+                  this.page +
+                  "&include=process,processRequest,processRequest.user,user,data" +
+                  "&pmql=" +
+                  encodeURIComponent(pmql) +
+                  "&per_page=" +
+                  this.perPage +
+                  "&user_id=" +
+                  window.ProcessMaker.user.id +
+                  "&filter=" +
+                  filter +
+                  "&statusfilter=ACTIVE,CLOSED" +
+                  this.getSortParam(),
+                {
+                  cancelToken: new CancelToken(c => {
+                    this.cancelToken = c;
+                  })
+                }
+              )
+              .then(response => {
+                this.data = this.transform(response.data);
+                if (response.data.meta.in_overdue > 0) {
+                  this.$emit("in-overdue", response.data.meta.in_overdue);
+                }
+              })
+              .catch(error => {
+                window.ProcessMaker.alert(error.response.data.message, "danger");
+                this.data = [];
+              });
         });
     }
   }
