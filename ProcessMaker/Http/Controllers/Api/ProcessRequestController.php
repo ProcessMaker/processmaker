@@ -59,7 +59,7 @@ class ProcessRequestController extends Controller
      *     @OA\Parameter(
      *         name="type",
      *         in="query",
-     *         description="Only return requests by type",
+     *         description="Only return requests by type (all|in_progress|completed)",
      *         required=false,
      *         @OA\Schema(type="string", enum={"all", "in_progress", "completed"}),
      *     ),
