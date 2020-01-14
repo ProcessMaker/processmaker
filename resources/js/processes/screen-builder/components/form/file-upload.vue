@@ -6,8 +6,9 @@
     </b-card>
     <uploader
       v-else
-      :key="reRenderKey"
+      :key="renderKey"
       :options="options"
+      :attrs="attrs"
       ref="uploader"
       @complete="complete"
       @upload-start="start"
@@ -22,7 +23,18 @@
         <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{ $t('select file') }}</uploader-btn>
       </uploader-drop>
 
-      <uploader-list></uploader-list>
+      <uploader-list>
+        <template slot-scope="{ fileList }">
+          <ul>
+            <li v-if="fileList.length === 0 && value">
+              <i class="fas fa-paperclip"></i> {{ value }}
+            </li>
+            <li v-for="file in fileList" :key="file.id">
+              <uploader-file :file="file" :list="true"></uploader-file>
+            </li>
+          </ul>
+        </template>
+      </uploader-list>
     </uploader>
 
     <div class="invalid-feedback" v-if="error">{{error}}</div>
@@ -52,20 +64,18 @@ export default {
 
     // If we're in a record list, this will fire to give us the prefix
     this.$root.$on('set-upload-data-name', (recordList, index) => {
-      if (!index) {
+      if (index === null) {
         // Adding new record
         index = recordList.value ? recordList.value.length : 0;
       }
-      const prefix = recordList.name + "." + index.toString() + ".";
-      this.options.query.data_name = prefix + this.name;
-
-      // Trigger re-render
-      this.reRenderKey++;
-      this.$nextTick(() => this.removeDefaultClasses());
+      this.prefix = recordList.name + "." + index.toString() + ".";
+      this.options.query.data_name = this.prefix + this.name;
     })
-
   },
   computed: {
+    renderKey() {
+      return this.prefix + this.name;
+    },
     mode() {
       return this.$root.$children[0].mode;
     },
@@ -91,6 +101,11 @@ export default {
       return accept;
     }
   },
+  watch: {
+    name() {
+      this.options.query.data_name = this.name;
+    },
+  },
   data() {
     return {
       content: "",
@@ -99,6 +114,7 @@ export default {
         errorCount: 0,
         errors: [],
       },
+      prefix: '',
       options: {
         target: this.getTargetUrl,
         // We cannot increase this until laravel chunk uploader handles this gracefully
@@ -118,7 +134,6 @@ export default {
       attrs: {
         accept: this.accept
       },
-      reRenderKey: 0,
     };
   },
   methods: {
@@ -130,8 +145,8 @@ export default {
         }
         if (file.ignored) {
           ProcessMaker.alert(this.$t("File not allowed."), "danger");
+          return false
         }
-        return false
       }
       file.ignored = false;
       return true;
