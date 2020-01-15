@@ -1034,5 +1034,13 @@
   "Variable Name of User ID Value": "Variable Name of User ID Value",
   "By User ID": "By User ID",
   "File uploads are unavailable in preview mode.": "File uploads are unavailable in preview mode.",
-  "Download button for {{fileName}} will appear here.": "Download button for {{fileName}} will appear here."
+  "Download button for {{fileName}} will appear here.": "Download button for {{fileName}} will appear here.",
+  "Edit Script Categories": "Edit Script Categories",
+  "Create Script Categories": "Create Script Categories",
+  "Delete Script Categories": "Delete Script Categories",
+  "View Script Categories": "View Script Categories",
+  "Edit Screen Categories": "Edit Screen Categories",
+  "Create Screen Categories": "Create Screen Categories",
+  "Delete Screen Categories": "Delete Screen Categories",
+  "View Screen Categories": "View Screen Categories"
 }
