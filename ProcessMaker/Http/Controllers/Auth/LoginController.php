@@ -2,8 +2,9 @@
 namespace ProcessMaker\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use ProcessMaker\Models\User;
 use ProcessMaker\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
@@ -52,6 +53,13 @@ class LoginController extends Controller
             // Getting intended deletes it, so put in back
             $request->session()->put('url.intended', $intended);
         }
+        
+        // Check the status of the user
+        $user = User::where('username', $request->input('username'))->firstOrFail();
+        if ($user->status === 'INACTIVE') {
+            return redirect()->back();
+        }
+        
         return $this->login($request);
     }
 
