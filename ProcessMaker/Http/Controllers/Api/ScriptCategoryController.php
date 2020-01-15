@@ -31,7 +31,6 @@ class ScriptCategoryController extends Controller
      *     operationId="getScriptCategories",
      *     tags={"Script Categories"},
      *     @OA\Parameter(
-     *             parameter="filter",
      *             name="filter",
      *             in="query",
      *             description="Filter results by string. Searches Name, Description, and Status. All fields must match exactly.",

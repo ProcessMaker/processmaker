@@ -15,7 +15,6 @@
  *     ),
  *     @OA\Components(
  *         @OA\Parameter(
- *             parameter="filter",
  *             name="filter",
  *             in="query",
  *             description="Filter results by string. Searches Name, Description, and Status. Status must match exactly. Others can be a substring.",
@@ -76,6 +75,10 @@
  *           @OA\Property(property="date", type="string"),
  *         ),
  *     ),
- *     security={{"pm_api_token": {}}, {"pm_api_key": {}},{"pm_api_auth_code": {}}},
+ *     security={
+ *         {"pm_api_token": {}},
+ *         {"pm_api_key": {}},
+ *         {"pm_api_auth_code": {}}
+ *     },
  * )
  */

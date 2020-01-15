@@ -229,13 +229,6 @@ class GroupMemberController extends Controller
      *           type="string",
      *         )
      *     ),
-     *     @OA\Parameter(
-     *         parameter="filter",
-     *         name="filter",
-     *         in="query",
-     *         description="Filter results by string. Searches Name and Status. Status must match exactly. Others can be a substring.",
-     *         @OA\Schema(type="string"),
-     *     ),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -345,7 +338,6 @@ class GroupMemberController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         parameter="filter",
      *         name="filter",
      *         in="query",
      *         description="Filter results by string. Searches Name. Can be a substring.",

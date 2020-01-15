@@ -20,8 +20,7 @@ class ProcessCategoryController extends Controller
      *     summary="Returns all processes categories that the user has access to",
      *     operationId="getProcessCategories",
      *     tags={"Process Categories"},
-     *    @OA\Parameter(
-     *        parameter="filter",
+     *     @OA\Parameter(
      *        name="filter",
      *        in="query",
      *        description="Filter results by string. Searches Name and Status. All fields must match exactly.",

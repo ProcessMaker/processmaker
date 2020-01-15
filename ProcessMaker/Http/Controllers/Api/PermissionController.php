@@ -46,7 +46,6 @@ class PermissionController extends Controller
      *          @OA\Property(
      *              property="permission_names",
      *              type="array",
-     *              collectionFormat="multi",
      *              @OA\Items (type="string"))
      *       )
      *     ),

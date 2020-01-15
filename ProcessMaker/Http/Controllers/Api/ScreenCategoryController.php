@@ -31,7 +31,6 @@ class ScreenCategoryController extends Controller
      *     operationId="getScreenCategories",
      *     tags={"Screen Categories"},
      *     @OA\Parameter(
-     *             parameter="filter",
      *             name="filter",
      *             in="query",
      *             description="Filter results by string. Searches Name, Description, and Status. All fields must match exactly.",
