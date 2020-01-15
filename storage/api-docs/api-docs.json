@@ -2287,7 +2287,7 @@
                     {
                         "name": "type",
                         "in": "query",
-                        "description": "Only return requests by type",
+                        "description": "Only return requests by type (all|in_progress|completed)",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -4036,6 +4036,48 @@
                 }
             }
         },
+        "/users/{user_id}/groups": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update a user's groups",
+                "operationId": "updateUserGroups",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of user to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/usersEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/restore": {
             "put": {
                 "tags": [
@@ -4913,7 +4955,9 @@
                         "type": "string",
                         "enum": [
                             "ACTIVE",
-                            "COMPLETED"
+                            "COMPLETED",
+                            "ERROR",
+                            "CANCELED"
                         ]
                     },
                     "name": {
