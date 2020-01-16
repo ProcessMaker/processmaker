@@ -17,7 +17,8 @@ import {
   messageFlow,
   serviceTask,
   callActivity,
-  eventBasedGateway
+  eventBasedGateway,
+  intermediateMessageCatchEvent
 } from '@processmaker/modeler';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -262,6 +263,34 @@ ProcessMaker.EventBus.$on(
         helper: "redirected to my next assigned task",
         name: "interstitial"
       }
+    });
+
+    /* Register extension for intermediate message catch event */
+    registerInspectorExtension(intermediateMessageCatchEvent, {
+      component: 'UserSelect',
+      config: {
+        label: 'Allowed User',
+        helper: 'Select allowed user',
+        name: 'allowedUsers'
+      }
+    });
+
+    registerInspectorExtension(intermediateMessageCatchEvent, {
+      component: 'GroupSelect',
+      config: {
+        label: 'Allowed Group',
+        helper: 'Select allowed group',
+        name: 'allowedGroups'
+      }
+    });
+
+    registerInspectorExtension(intermediateMessageCatchEvent, {
+      component: 'FormInput',
+      config: {
+          label: 'Whitelist',
+          helper: 'IP/Domain whitelist',
+          name: 'whitelist',
+      },
     });
   }
 );
