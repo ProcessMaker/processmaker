@@ -76,9 +76,9 @@
  *         ),
  *     ),
  *     security={
- *         {"pm_api_token": {}},
- *         {"pm_api_key": {}},
- *         {"pm_api_auth_code": {}}
+ *         {"pm_api_auth_code": {}},
+ *         {"pm_api_bearer": {}},
+ *         {"pm_api_key": {}}
  *     },
  * )
  */

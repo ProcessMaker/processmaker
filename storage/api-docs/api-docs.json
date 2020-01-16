@@ -2281,7 +2281,8 @@
                             "enum": [
                                 "all",
                                 "in_progress",
-                                "completed"
+                                "completed",
+                                "started_me"
                             ]
                         }
                     },
@@ -4940,8 +4941,7 @@
                     },
                     "data": {
                         "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
-                        "type": "string",
-                        "format": "json"
+                        "type": "object"
                     },
                     "status": {
                         "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
@@ -5823,13 +5823,13 @@
     },
     "security": [
         {
-            "pm_api_token": []
+            "pm_api_auth_code": []
+        },
+        {
+            "pm_api_bearer": []
         },
         {
             "pm_api_key": []
-        },
-        {
-            "pm_api_auth_code": []
         }
     ]
 }
