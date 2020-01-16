@@ -20,6 +20,7 @@ class ProfileController extends Controller
         $currentUser = \Auth::user();
         $states = JsonData::states();
         $countries = JsonData::countries();
+        $status = [__('ACTIVE'), __('INACTIVE')];
 
         $langs = ['en'];
         if (app()->getProvider(\ProcessMaker\Package\Translations\PackageServiceProvider::class)) {
@@ -43,7 +44,7 @@ class ProfileController extends Controller
                             );
 
         return view('profile.edit',
-            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats', 'availableLangs'));
+            compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats', 'availableLangs', 'status'));
     }
 
     /**

@@ -85,6 +85,7 @@
                 datetimeFormats: @json($datetimeFormats),
                 countries: @json($countries),
                 states: @json($states),
+                status: @json($status),
                 errors: {
                     username: null,
                     firstname: null,

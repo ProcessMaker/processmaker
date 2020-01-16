@@ -156,7 +156,7 @@
 
                                     <template slot="option" slot-scope="props">
                                         <div class="option__desc d-flex align-items-center">
-                                            <span class="option__title mr-1">@{{ props.option.fullname }}</span>
+                                            <span class="option__title mr-1">@{{ props.option.fullname }} (@{{ props.option.username }})</span>
                                         </div>
                                     </template>
                                 </multiselect>

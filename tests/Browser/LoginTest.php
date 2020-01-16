@@ -38,4 +38,21 @@ class LoginTest extends DuskTestCase
                 ->logout();
         });
     }
+
+    public function test_inactive_user_login_fails() {
+        $user = factory(User::class)->create([
+            'username' => 'testuser',
+            'password' => Hash::make('secret'),
+            'status' => 'INACTIVE'
+        ]);
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->visit(new LoginPage)
+                ->type('username', $user->username)
+                ->type('password', 'secret')
+                ->assertInputValue('password', 'secret')
+                ->press('@login')
+                ->assertRouteIs('login');
+        });
+    }
 }

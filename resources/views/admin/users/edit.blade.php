@@ -269,6 +269,7 @@
             states: @json($states),
             userId: @json($user->id),
             image: '',
+            status: @json($status),
             errors: {
               username: null,
               firstname: null,
