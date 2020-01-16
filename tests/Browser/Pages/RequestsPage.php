@@ -39,7 +39,7 @@ class RequestsPage extends Page
             '@container' => '#requests-listing',
             '@widgets' => '.card-deck',
             '@vuetable' => '.data-table',
-            '@pmql' => '#search-manual input',
+            '@pmql' => '.search-bar-manual-input',
             '@search-button' => '.btn-search-run',
             '@advanced-search-button' => '.btn-search-toggle',
         ];

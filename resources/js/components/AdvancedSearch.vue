@@ -172,7 +172,7 @@
                 </div>
                 <div class="search-bar-advanced d-flex w-100" v-if="advanced">
                     <div class="search-bar-inputs flex-grow w-100">
-                        <input ref="search_input" type="text" class="form-control" :placeholder="$t('Advanced Search (PMQL)')" v-model="pmql" @keyup.enter="runSearch(true)">
+                        <input ref="search_input" type="text" class="search-bar-manual-input form-control" :placeholder="$t('Advanced Search (PMQL)')" v-model="pmql" @keyup.enter="runSearch(true)">
                     </div>
                     <div class="search-bar-actions d-flex flex-shrink btn-search-advanced">
                         <b-btn class="btn-search-toggle" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
