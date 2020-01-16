@@ -52,6 +52,7 @@ class UserController extends Controller
         $currentUser = $user;
         $states = JsonData::states();
         $countries = JsonData::countries();
+        $status = [__('ACTIVE'), __('INACTIVE')];
 
         $timezones = array_reduce(JsonData::timezones(),
             function ($result, $item) {
@@ -77,7 +78,8 @@ class UserController extends Controller
             'timezones',
             'countries',
             'datetimeFormats',
-            'availableLangs'
+            'availableLangs',
+            'status'
         ));
     }
 
