@@ -303,7 +303,7 @@
                 }
             }
         },
-        "request/{request_id}/data_source/{data_source_id}": {
+        "/request/{request_id}/data_source/{data_source_id}": {
             "post": {
                 "tags": [
                     "Data Sources"
@@ -990,7 +990,6 @@
                         }
                     },
                     {
-                        "parameter": "filter",
                         "name": "filter",
                         "in": "query",
                         "description": "Filter results by string. Searches Name and Status. Status must match exactly. Others can be a substring.",
@@ -1191,15 +1190,6 @@
                         }
                     },
                     {
-                        "parameter": "filter",
-                        "name": "filter",
-                        "in": "query",
-                        "description": "Filter results by string. Searches Name and Status. Status must match exactly. Others can be a substring.",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "$ref": "#/components/parameters/filter"
                     },
                     {
@@ -1257,7 +1247,6 @@
                         }
                     },
                     {
-                        "parameter": "filter",
                         "name": "filter",
                         "in": "query",
                         "description": "Filter results by string. Searches Name. Can be a substring.",
@@ -1630,8 +1619,7 @@
                                         "type": "array",
                                         "items": {
                                             "type": "string"
-                                        },
-                                        "collectionFormat": "multi"
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -1655,7 +1643,6 @@
                 "operationId": "getProcessCategories",
                 "parameters": [
                     {
-                        "parameter": "filter",
                         "name": "filter",
                         "in": "query",
                         "description": "Filter results by string. Searches Name and Status. All fields must match exactly.",
@@ -2287,14 +2274,15 @@
                     {
                         "name": "type",
                         "in": "query",
-                        "description": "Only return requests by type",
+                        "description": "Only return requests by type (all|in_progress|completed)",
                         "required": false,
                         "schema": {
                             "type": "string",
                             "enum": [
                                 "all",
                                 "in_progress",
-                                "completed"
+                                "completed",
+                                "started_me"
                             ]
                         }
                     },
@@ -2700,7 +2688,6 @@
                 "operationId": "getScreenCategories",
                 "parameters": [
                     {
-                        "parameter": "filter",
                         "name": "filter",
                         "in": "query",
                         "description": "Filter results by string. Searches Name, Description, and Status. All fields must match exactly.",
@@ -3171,7 +3158,6 @@
                 "operationId": "getScriptCategories",
                 "parameters": [
                     {
-                        "parameter": "filter",
                         "name": "filter",
                         "in": "query",
                         "description": "Filter results by string. Searches Name, Description, and Status. All fields must match exactly.",
@@ -3441,6 +3427,7 @@
                     {
                         "name": "script_id",
                         "in": "path",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -3487,11 +3474,12 @@
                     "Scripts"
                 ],
                 "summary": "Execute script",
-                "operationId": "getScriptsPreview",
+                "operationId": "executeScript",
                 "parameters": [
                     {
                         "name": "script_id",
                         "in": "path",
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -3794,7 +3782,7 @@
                         "name": "task_id",
                         "in": "path",
                         "description": "task id",
-                        "required": false,
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -4024,6 +4012,48 @@
                 ],
                 "responses": {
                     "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/users"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{user_id}/groups": {
+            "put": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update a user's groups",
+                "operationId": "updateUserGroups",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID of user to return",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/usersEditable"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
                         "description": "success",
                         "content": {
                             "application/json": {
@@ -4772,7 +4802,10 @@
                             },
                             "assignable": {
                                 "description": "Represents a business process definition.",
-                                "type": "array[]"
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         },
                         "type": "object"
@@ -4791,7 +4824,10 @@
                         "properties": {
                             "notifications": {
                                 "description": "Represents a business process definition.",
-                                "type": "array[]"
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         },
                         "type": "object"
@@ -4905,15 +4941,16 @@
                     },
                     "data": {
                         "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
-                        "type": "string",
-                        "format": "json"
+                        "type": "object"
                     },
                     "status": {
                         "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
                         "type": "string",
                         "enum": [
                             "ACTIVE",
-                            "COMPLETED"
+                            "COMPLETED",
+                            "ERROR",
+                            "CANCELED"
                         ]
                     },
                     "name": {
@@ -5524,7 +5561,10 @@
                     },
                     "media": {
                         "description": "The attributes that are mass assignable.",
-                        "type": "array[]"
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     },
                     "birthdate": {
                         "description": "The attributes that are mass assignable.",
@@ -5763,7 +5803,9 @@
                     "authorizationCode": {
                         "authorizationUrl": "/oauth/authorize",
                         "tokenUrl": "/oauth/token",
-                        "scopes": "*"
+                        "scopes": {
+                            "*": ""
+                        }
                     }
                 }
             },
@@ -5781,13 +5823,13 @@
     },
     "security": [
         {
-            "pm_api_token": []
+            "pm_api_auth_code": []
+        },
+        {
+            "pm_api_bearer": []
         },
         {
             "pm_api_key": []
-        },
-        {
-            "pm_api_auth_code": []
         }
     ]
 }

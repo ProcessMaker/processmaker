@@ -119,6 +119,7 @@ class ScriptController extends Controller
      *             name="script_id",
      *             in="path",
      *             @OA\Schema(type="integer"),
+     *             required=true,
      *         ),
      *         @OA\Parameter(
      *             name="data",
@@ -160,12 +161,13 @@ class ScriptController extends Controller
      *     @OA\Post(
      *     path="/scripts/{script_id}/execute",
      *     summary="Execute script",
-     *     operationId="getScriptsPreview",
+     *     operationId="executeScript",
      *     tags={"Scripts"},
      *         @OA\Parameter(
      *             name="script_id",
      *             in="path",
      *             @OA\Schema(type="integer"),
+     *             required=true,
      *         ),
      *         @OA\Parameter(
      *             name="data",

@@ -8,10 +8,12 @@ use function GuzzleHttp\json_decode;
 class BuildSdk {
     private $rebuild = false;
     private $debug = false;
-    private $image = "openapitools/openapi-generator-online:v4.0.0-beta2";
+    private $image = "openapitools/openapi-generator-cli";
+    private $tag = "v4.2.2";
     private $lang = null;
     private $outputPath = null;
     private $jsonPath = null;
+    private $tmpfile = null;
 
     public function __construct($jsonPath, $outputPath, $debug = false, $rebuild = false) {
         $this->jsonPath = $jsonPath;
@@ -22,52 +24,53 @@ class BuildSdk {
 
     public function run()
     {
-        $this->runChecks();
-        $this->startBootSequence();
+        $folder = "/tmp/sdk-" . $this->lang;
+        $this->runCmd("rm -rf " . $folder);
 
-        $response = $this->docker($this->curlPost());
+        $this->writeOptionsToTmpFile();
 
-        $json = json_decode($response, true);
-        if (!array_key_exists('link', $json)) {
-            throw new Exception("Generator Error: " . $response);
-        }
-        $link = $json['link'];
+        $this->startContainer();
+        $this->cp($this->jsonPath, "generator:/api-docs.json");
+        $this->cp($this->tmpfile, "generator:/config.json");
+        $this->generator("validate -i /api-docs.json");
+        $this->generator("generate -g " . $this->lang . " -i /api-docs.json -c /config.json -o /sdk");
+        $this->cp("generator:/sdk", $folder);
+        $this->stopContainer();
 
-        $zip = $this->getZip($link);
-        $folder = $this->unzip($zip);
         $this->commentErroneousCode($folder); // lua
         $this->addMissingDependency($folder); // java
         $this->removeDateTime($folder); // csharp
         $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
-        $this->log("DONE. Api is at {$this->outputDir()}");
+
+        return "DONE. Api is at {$this->outputDir()}";
     }
 
-    private function startBootSequence()
+    private function cp($from, $to)
     {
-        $existing = $this->existingContainer();
+        $this->runCmd("docker cp " . $from . " " . $to);
+    }
 
-        if ($this->rebuild && $existing !== "") {
-            $this->runCmd("docker container stop $existing || echo 'Container already stopped'");
-            $this->runCmd("docker container rm $existing");
-        }
+    private function imageWithTag()
+    {
+        return $this->image . ":" . $this->tag;
+    }
 
-        if ($existing === "" || $this->rebuild) {
-            $this->runCmd('docker pull ' . $this->image);
-            $cid = $this->runCmd('docker run -d --name generator -e GENERATOR_HOST=http://127.0.0.1:8080 ' . $this->image);
-            $this->docker('apk add --update curl && rm -rf /var/cache/apk/*');
-        } else {
-            $this->runCmd("docker start generator || echo 'Generator already started'");
-        }
+    private function startContainer()
+    {
+        $this->runCmd("docker run -t -d --entrypoint '/bin/sh' --name generator " . $this->imageWithTag());
+    }
 
-        $this->runCmd('docker start generator || echo "Container already running"');
-
-        $this->waitForBoot();
+    private function stopContainer()
+    {
+        $this->runCmd("docker kill generator || true");
+        $this->runCmd("docker rm generator || true");
     }
 
     public function setLang($value)
     {
-        if (!in_array($value, $this->getAvailableLanguages())) {
-            throw new Exception("$value language is not supported");
+        $langs = $this->getAvailableLanguages();
+        if (!in_array($value, $langs)) {
+            throw new Exception("$value language is not supported. Must be one of these: " . implode(",", $langs));
         }
         $this->lang = $value;
     }
@@ -77,15 +80,13 @@ class BuildSdk {
         if (!$this->lang) {
             throw new Exception("Language must be specified using setLang()");
         }
-        $this->startBootSequence();
-        return $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients/{$this->lang}");
+        return $this->runCmd('docker run ' . $this->imageWithTag() . ' config-help -g ' . $this->lang);
     }
     
     public function getAvailableLanguages()
     {
-        $this->startBootSequence();
-        $result = $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients");
-        return json_decode($result, true);
+        $result = $this->runCmd('docker run ' . $this->imageWithTag() . ' list -s');
+        return explode(",", $result);
     }
 
     private function runChecks()
@@ -110,9 +111,9 @@ class BuildSdk {
             throw new Exception("Json file does not exist or can not be read: " . $this->jsonPath);
         }
 
-        if (json_decode($this->apiJsonRaw()) === null) {
-            throw new Exception("File is not valid json: " . $this->jsonPath);
-        }
+        // if (json_decode($this->apiJsonRaw()) === null) {
+        //     throw new Exception("File is not valid json: " . $this->jsonPath);
+        // }
 
     }
 
@@ -121,75 +122,23 @@ class BuildSdk {
         return $this->outputPath;
     }
 
-    private function waitForBoot()
+    private function generator($cmd)
     {
-        $i = 0;
-        while(true) {
-            try {
-                $this->docker("curl -s -S http://127.0.0.1:8080/api/gen/clients/{$this->lang}");
-                break;
-            } catch(Exception $e) {
-                if (strpos($e->getMessage(), 'Connection refused') !== false) {
-                    $this->log("Not ready, trying again in 2 seconds. " . $e->getMessage());
-                } else {
-                    throw $e;
-                }
-            }
-            if ($i > 20) {
-                throw new Exception("Took too long to start up.");
-            }
-            sleep(2);
-            $i++;
-        }
+        return $this->runCmd('docker exec generator docker-entrypoint.sh ' . $cmd);
     }
 
-    private function getZip($url)
+    private function writeOptionsToTmpFile()
     {
-        $filename = "{$this->outputPath}/api.zip";
-        $this->docker("curl -s -S $url > $filename");
-        return $filename;
-    }
-
-    private function unzip($file)
-    {
-        $zip = new ZipArchive;
-        $res = $zip->open($file);
-        $folder = explode('/', $zip->statIndex(0)['name'])[0];
-        $this->runCmd('rm -rf /tmp/processmaker-sdk-tmp');
-        $zip->extractTo("/tmp/processmaker-sdk-tmp");
-        $zip->close();
-        unlink($file);
-        return "/tmp/processmaker-sdk-tmp/{$this->lang}-client";
-    }
-
-    private function existingContainer()
-    {
-        return $this->runCmd("docker container ls -aq --filter='name=generator'");
-    }
-
-    private function curlPost()
-    {
-        return 'curl -s -S '
-            . '-H "Accept: application/json" '
-            . '-H "Content-Type: application/json" '
-            . '-X POST -d ' . $this->cliBody() . ' '
-            . 'http://127.0.0.1:8080/api/gen/clients/'.$this->lang;
-    }
-
-    private function docker($cmd)
-    {
-        return $this->runCmd('docker exec generator ' . $cmd);
-    }
-
-    private function cliBody()
-    {
-        return escapeshellarg(
-            str_replace('"API-DOCS-JSON"', $this->apiJsonRaw(), $this->requestBody())
+        $this->tmpfile = tempnam("/tmp", "json");
+        $handle = fopen($this->tmpfile, "w");
+        fwrite(
+            $handle,
+            json_encode($this->getConfig())
         );
+        fclose($handle);
     }
 
-    private function requestBody()
-    {
+    private function getConfig() {
         # get all available options with curl http://127.0.0.1:8080/api/gen/clients/php
         $options = [
             "gitUserId" => "processmaker",
@@ -203,18 +152,12 @@ class BuildSdk {
         if (isset($this->config()['options'])) {
             $options = array_merge($options, $this->config()['options']);
         }
-
-        return json_encode(['options' => $options, 'spec' => 'API-DOCS-JSON']);
+        return $options;
     }
 
     private function config()
     {
         return config('script-runners.' . $this->lang);
-    }
-
-    private function apiJsonRaw()
-    {
-        return json_encode(json_decode(file_get_contents($this->jsonPath)));
     }
 
     private function runCmd($cmd)
@@ -223,6 +166,7 @@ class BuildSdk {
         exec($cmd . " 2>&1", $output, $returnVal);
         $output = implode("\n", $output);
         if ($returnVal) {
+            $this->stopContainer();
             throw new Exception("Cmd returned: $returnVal " . $output);
         }
         $this->log("Got: '$output'");

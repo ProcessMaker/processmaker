@@ -258,7 +258,6 @@ class GroupController extends Controller
      *         )
      *     ),
      *     @OA\Parameter(
-     *         parameter="filter",
      *         name="filter",
      *         in="query",
      *         description="Filter results by string. Searches Name and Status. Status must match exactly. Others can be a substring.",

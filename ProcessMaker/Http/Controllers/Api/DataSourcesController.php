@@ -156,7 +156,7 @@ class DataSourcesController extends Controller
      * ),
      *
      * @OA\Post(
-     *     path="request/{request_id}/data_source/{data_source_id}",
+     *     path="/request/{request_id}/data_source/{data_source_id}",
      *     summary="execute Data Source",
      *     operationId="executeDataSource",
      *     tags={"Data Sources"},

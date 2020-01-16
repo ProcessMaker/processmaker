@@ -104,7 +104,7 @@ use Mustache_Engine;
  *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),
  *      @OA\Schema(
  *         @OA\Property( property="status", type="object"),
- *         @OA\Property( property="assignable", type="array[]")
+ *         @OA\Property( property="assignable", type="array", @OA\Items(type="string") )
  *      )
  *    }
  * ),
@@ -115,7 +115,7 @@ use Mustache_Engine;
  *       @OA\Schema(ref="#/components/schemas/ProcessEditable"),
  *       @OA\Schema(ref="#/components/schemas/Process"),
  *       @OA\Schema(
- *           @OA\Property(property="notifications", type="array[]"),
+ *           @OA\Property(property="notifications", type="array", @OA\Items(type="string")),
  *       )
  *   }
  * )

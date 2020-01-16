@@ -200,7 +200,7 @@ class TaskController extends Controller
      *         description="task id",
      *         in="path",
      *         name="task_id",
-     *         required=false,
+     *         required=true,
      *         @OA\Schema(
      *           type="integer",
      *         )

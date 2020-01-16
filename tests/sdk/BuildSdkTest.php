@@ -6,41 +6,29 @@ use ProcessMaker\BuildSdk;
 
 class BuildSdkTest extends TestCase
 {
+    private function jsonFile() {
+        return base_path('storage/api-docs/api-docs.json');
+    }
+
     public function testWithUnsupportedLanguage()
     {   
-        $builder = new BuildSdk(base_path());
+        $builder = new BuildSdk($this->jsonFile(), '/tmp/output');
         try {
             $builder->setLang('foo');
             $this->fail('Exception was not thrown.');
         } catch(\Exception $e) {
-            $this->assertEquals("foo language is not supported", $e->getMessage());
+            $this->assertContains("foo language is not supported", $e->getMessage());
         }
     }
     
-    public function testWithExistingFolder()
-    {   
-        exec('mkdir -p ' . base_path('storage/api/lua-client'));
-        $builder = new BuildSdk(base_path());
-        $builder->setLang('lua');
-        try {
-            $builder->run();
-            $this->fail('Exception was not thrown.');
-        } catch(\Exception $e) {
-            $this->assertContains("You must manually remove the destination", $e->getMessage());
-        }
-    }
-
     public function testBuildPhp()
     {
-        $userApiFile = base_path("storage/api/php-client/lib/Api/UsersApi.php");
-
-        exec('rm -rf ' . base_path('storage/api/php-client'));
-        $this->assertFileNotExists($userApiFile);
-
-        $builder = new BuildSdk(base_path());
+        $output = '/tmp/output';
+        $builder = new BuildSdk($this->jsonFile(), $output);
         $builder->setLang('php');
         $builder->run();
         
+        $userApiFile = $output . "/lib/Api/UsersApi.php";
         $this->assertFileExists($userApiFile);
     }
 }
