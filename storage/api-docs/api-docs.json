@@ -4801,7 +4801,10 @@
                             },
                             "assignable": {
                                 "description": "Represents a business process definition.",
-                                "type": "array[]"
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         },
                         "type": "object"
@@ -4820,7 +4823,10 @@
                         "properties": {
                             "notifications": {
                                 "description": "Represents a business process definition.",
-                                "type": "array[]"
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         },
                         "type": "object"
@@ -5552,6 +5558,13 @@
                     "avatar": {
                         "description": "The attributes that are mass assignable.",
                         "type": "string"
+                    },
+                    "media": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     },
                     "birthdate": {
                         "description": "The attributes that are mass assignable.",

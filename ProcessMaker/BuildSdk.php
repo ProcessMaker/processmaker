@@ -33,7 +33,7 @@ class BuildSdk {
         $this->cp($this->jsonPath, "generator:/api-docs.json");
         $this->cp($this->tmpfile, "generator:/config.json");
         $this->generator("validate -i /api-docs.json");
-        $this->generator("generate -g php -i /api-docs.json -c /config.json -o /sdk");
+        $this->generator("generate -g " . $this->lang . " -i /api-docs.json -c /config.json -o /sdk");
         $this->cp("generator:/sdk", $folder);
         $this->stopContainer();
 
