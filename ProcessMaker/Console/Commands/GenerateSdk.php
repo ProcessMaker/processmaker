@@ -42,7 +42,7 @@ class GenerateSdk extends Command
     {
         try {
             $jsonPath = base_path('storage/api-docs/api-docs.json');
-            $builder = new BuildSdk($jsonPath, $this->argument('output'), true);
+            $builder = new BuildSdk($jsonPath, $this->argument('output'), false);
             if ($this->argument('language') === 'none') {
                 $this->info(
                     "No language specified. Choose one of these: \n" . 
@@ -55,7 +55,7 @@ class GenerateSdk extends Command
                 $this->info($builder->getOptions());
                 return;
             }
-            $builder->run();
+            $this->info($builder->run());
         } catch(Exception $e) {
             echo "ERROR: {$e->getMessage()}\n";
             exit(1);

@@ -63,7 +63,6 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="member_id", type="string"),
      *   @OA\Property(property="fullname", type="string"),
      *   @OA\Property(property="avatar", type="string"),
-     *   @OA\Property(property="media", type="array[]"),
      *   @OA\Property(property="birthdate", type="string"),
      * ),
      * @OA\Schema(
