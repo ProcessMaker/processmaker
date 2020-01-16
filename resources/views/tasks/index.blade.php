@@ -24,103 +24,9 @@
                 </b-alert>
             </div>
         </div>
-        <div id="search-bar" class="search mb-3 bg-light p-2" vcloak>
-            <div class="d-flex">
-                <div class="flex-grow-1">
-                    <div id="search-dropdowns" v-if="! advanced" class="row">
-                        <div class="col-4">
-                            <multiselect v-model="request"
-                                         @search-change="getRequests"
-                                         @input="buildPmql"
-                                         :show-labels="false"
-                                         :loading="isLoading.request"
-                                         open-direction="bottom"
-                                         label="name"
-                                         :options="requestOptions"
-                                         :track-by="'id'"
-                                         :multiple="true"
-                                         :placeholder="$t('Request')">
-                                <template slot="noResult">
-                                    {{ __('No elements found. Consider changing the search query.') }}
-                                </template>
-                                <template slot="noOptions">
-                                    {{ __('No Data Available') }}
-                                </template>
-                                <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                    <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('requests') }}</span>
-                                </template>
-                            </multiselect>
-                        </div>
-                        <div class="col-4">
-                            <multiselect v-model="name"
-                                         @search-change="getNames"
-                                         @input="buildPmql"
-                                         :show-labels="false"
-                                         :loading="isLoading.name"
-                                         open-direction="bottom"
-                                         label="name"
-                                         :options="nameOptions"
-                                         :track-by="'name'"
-                                         :multiple="true"
-                                         :placeholder="_.startCase(_.camelCase($t('Task')))">
-                                <template slot="noResult">
-                                    {{ __('No elements found. Consider changing the search query.') }}
-                                </template>
-                                <template slot="noOptions">
-                                    {{ __('No Data Available') }}
-                                </template>
-                                <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                    <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('names') }}</span>
-                                </template>
-                            </multiselect>
-                        </div>
-                        <div class="col-4">
-                            <multiselect v-model="status"
-                                         :show-labels="false"
-                                         @input="buildPmql"
-                                         :loading="isLoading.status"
-                                         open-direction="bottom"
-                                         label="name"
-                                         :options="statusOptions"
-                                         track-by="value"
-                                         :multiple="true"
-                                         :placeholder="$t('Status')">
-                                <template slot="noResult">
-                                    {{ __('No elements found. Consider changing the search query.') }}
-                                </template>
-                                <template slot="noOptions">
-                                    {{ __('No Data Available') }}
-                                </template>
-                                <template slot="selection" slot-scope="{ values, search, isOpen }">
-                                    <span class="multiselect__single" v-if="values.length > 1 && !isOpen">@{{ values.length }} {{ __('statuses') }}</span>
-                                </template>
-                            </multiselect>
-                        </div>
-                    </div>
-                    <div id="search-manual" v-if="advanced">
-                        <input ref="search_input" type="text" class="form-control" placeholder="PMQL" v-model="pmql" @keyup.enter="runSearch(true)">
-                    </div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div id="search-actions">
-                        <div v-if="! advanced">
-                            <b-btn variant="primary" @click="runSearch()" v-b-tooltip.hover :title="$t('Search')"><i
-                                        class="fas fa-search"></i></b-btn>
-                            <b-btn variant="secondary" @click="toggleAdvanced" v-b-tooltip.hover
-                                   :title="$t('Advanced Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                        </div>
-                        <div v-if="advanced">
-                            <b-btn variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i
-                                        class="fas fa-search"></i></b-btn>
-                            <b-btn variant="success" @click="toggleAdvanced" v-b-tooltip.hover
-                                   :title="$t('Basic Search')"><i class="fas fa-ellipsis-h"></i></b-btn>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <advanced-search ref="advancedSearch" type="tasks" :param-status="status" @change="onChange" @submit="onSearch"></advanced-search>
         <div class="container-fluid">
-            <tasks-list ref="taskList" :filter="filter" @in-overdue="setInOverdueMessage"></tasks-list>
+            <tasks-list ref="taskList" :filter="filter" :pmql="pmql" @in-overdue="setInOverdueMessage"></tasks-list>
         </div>
     </div>
 @endsection
@@ -131,48 +37,6 @@
 
 @section('css')
     <style>
-        #search-bar {
-            height: 59px;
-            max-height: 59px;
-        }
-
-        #search-manual input {
-            border: 1px solid #e8e8e8;
-            border-radius: 5px;
-            color: gray;
-            height: 41px;
-        }
-
-        #search-dropdowns {
-            padding: 0 11px;
-        }
-
-        #search-dropdowns .col-4 {
-            padding: 0 4px;
-        }
-
-        #search-actions button {
-            display: inline-block;
-            float: left;
-            height: 41px;
-            margin-left: 8px;
-        }
-
-        .multiselect__placeholder {
-            padding-top: 1px;
-        }
-
-        .multiselect__single {
-            padding-bottom: 2px;
-            padding-top: 2px;
-        }
-
-        .search {
-            border: 1px solid rgba(0, 0, 0, 0.125);
-            margin-left: -1px;
-            margin-right: -1px;
-        }
-
         .has-search .form-control {
             padding-left: 2.375rem;
         }

@@ -95,7 +95,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "resources/sass/_variables.scss";
+@import "../../../sass/variables";
 .meta {
   font-size: 12px;
   color: #788793;

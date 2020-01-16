@@ -39,9 +39,9 @@ class RequestsPage extends Page
             '@container' => '#requests-listing',
             '@widgets' => '.card-deck',
             '@vuetable' => '.data-table',
-            '@pmql' => '#search-manual input',
-            '@search-button' => '#search-actions button:first-of-type',
-            '@advanced-search-button' => '#search-actions button:last-of-type',
+            '@pmql' => '.search-bar-manual-input',
+            '@search-button' => '.btn-search-run',
+            '@advanced-search-button' => '.btn-search-toggle',
         ];
     }
 }
