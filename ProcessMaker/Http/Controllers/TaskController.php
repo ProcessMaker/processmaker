@@ -10,6 +10,7 @@ use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
+use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class TaskController extends Controller
@@ -57,12 +58,17 @@ class TaskController extends Controller
         $task->allow_interstitial = $interstitial['allow_interstitial'];
         $task->definition = $task->getDefinition();
         $task->requestor = $task->processRequest->user;
+        $element = $task->getDefinition(true);
 
-        return view('tasks.edit', [
-            'task' => $task,
-            'dueLabels' => self::$dueLabels,
-            'manager' => $manager,
-            'submitUrl' => $submitUrl
-            ]);
+        if ($element instanceof ScriptTaskInterface) {
+            return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
+        } else {
+            return view('tasks.edit', [
+                'task' => $task,
+                'dueLabels' => self::$dueLabels,
+                'manager' => $manager,
+                'submitUrl' => $submitUrl
+                ]);
+        }
     }
 }
