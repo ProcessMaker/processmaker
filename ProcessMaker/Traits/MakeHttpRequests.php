@@ -58,6 +58,15 @@ trait MakeHttpRequests
                 $headers[$mustache->render($header['key'], $data)] = $mustache->render($header['value'], $data);
             }
         }
+
+        if (empty($endpoint['body']) && isset($config['dataMapping'])) {
+            $mappedData = [];
+            foreach ($config['dataMapping'] as $map) {
+                $mappedData[$map['key']] = '{{ ' . $map['value'] . ' }}';
+            }
+            $endpoint['body'] = json_encode(['data' => $mappedData]);
+        }
+
         $body = $mustache->render($endpoint['body'], $data);
         $bodyType = $mustache->render($endpoint['body_type'], $data);
         $request = [$method, $url, $headers, $body, $bodyType];
