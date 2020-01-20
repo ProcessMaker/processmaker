@@ -142,7 +142,7 @@ class Install extends Command
             || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/')));
 
         // Set telescope enabled
-        $this->env['TELESCOPE_ENABLED'] = $this->choice('Enable Telescope Debugging', ['true', 'false'], 'false');
+        $this->env['TELESCOPE_ENABLED'] = $this->confirm('Would you like to enable Telescope debugging?');
 
         // Set broadcaster url
         $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
