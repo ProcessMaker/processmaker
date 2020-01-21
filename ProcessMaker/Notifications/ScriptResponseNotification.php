@@ -6,6 +6,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Carbon\Carbon;
 use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\Script;
 
 class ScriptResponseNotification extends Notification
 {
@@ -47,13 +50,14 @@ class ScriptResponseNotification extends Notification
     public function toArray($notifiable)
     {
         $date = new Carbon();
+        $response = $this->cacheResponse($this->response);
         return [
             'type' => 'SCRIPT_RESPONSE',
             'name' => __('Script executed'),
             'dateTime' => $date->toIso8601String(),
             'status' => $this->status,
             'watcher' => $this->watcher,
-            'response' => $this->response,
+            'response' => $response,
         ];
     }
 
@@ -83,5 +87,17 @@ class ScriptResponseNotification extends Notification
     public function getResponse()
     {
         return $this->response;
+    }
+
+    /**
+     * Cache the script response to be loaded by API
+     *
+     * @return string
+     */
+    public function cacheResponse()
+    {
+        $key = uniqid('srn', true);
+        Cache::put("srn.$key", $this->response, now()->addMinutes(1));
+        return ['key' => $key];
     }
 }
