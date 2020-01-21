@@ -68,8 +68,8 @@ export default {
         // Adding new record
         index = recordList.value ? recordList.value.length : 0;
       }
-      this.prefix = recordList.name + "." + index.toString() + ".";
-      this.options.query.data_name = this.prefix + this.name;
+      const prefix = recordList.name + "." + index.toString() + ".";
+      this.setFileUploadNameForChildren(recordList.$children, prefix);
     })
   },
   computed: {
@@ -102,8 +102,17 @@ export default {
     }
   },
   watch: {
-    name() {
-      this.options.query.data_name = this.name;
+    name: {
+      handler() {
+        this.options.query.data_name = this.prefix + this.name;
+      },
+      immediate: true,
+    },
+    prefix: {
+      handler() {
+        this.options.query.data_name = this.prefix + this.name;
+      },
+      immediate: true,
     },
   },
   data() {
@@ -137,6 +146,15 @@ export default {
     };
   },
   methods: {
+    setFileUploadNameForChildren(children, prefix) {
+      children.forEach(child => {
+        if (_.get(child, '$options.name') === 'FileUpload') {
+          child.prefix = prefix;
+        } else if (_.get(child, '$children', []).length > 0) {
+          this.setFileUploadNameForChildren(child.$children, prefix);
+        }
+      });
+    },
     addFile(file) {
       if (this.filesAccept) {
         file.ignored = true;
