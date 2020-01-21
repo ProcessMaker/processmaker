@@ -9,6 +9,7 @@ use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Helper\Table;
+use ProcessMaker\Traits\SupportsNonInteraction;
 use UserSeeder;
 use Validator;
 
@@ -19,12 +20,49 @@ use Validator;
  */
 class Install extends Command
 {
+    use SupportsNonInteraction;
+    
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'processmaker:install';
+    protected $signature = "
+        processmaker:install
+            {--app-debug                        : Enable system-wide debugging}
+            {--url=                             : The URL of the application, without a trailing slash}
+            {--username=                        : The default admin username}
+            {--password=                        : The default admin password}
+            {--email=                           : The default admin user's email address}
+            {--telescope                        : Enable Telescope debugging}
+            {--db-host=                         : The primary database host}
+            {--db-port=                         : The primary database port}
+            {--db-name=                         : The primary database name}
+            {--db-username=                     : The primary database username}
+            {--db-password=                     : The primary database password}
+            {--data-driver=                     : The driver of the data database (none, mysql, pgsql, or sqlsrv)}
+            {--data-host=                       : The data database host}
+            {--data-port=                       : The data database port}
+            {--data-name=                       : The data database name}
+            {--data-username=                   : The data database username}
+            {--data-password=                   : The data database password}
+            {--data-schema=                     : The data database schema (if pgsql)}
+            {--redis-client=predis              : The Redis client (predis or phpredis)}
+            {--redis-prefix=                    : The prefix to be appended to Redis entries}
+            {--horizon-prefix=horizon:          : The prefix to be appended to Horizon queue entries}
+            {--broadcast-debug                  : Enable broadcast debugging}
+            {--broadcast-driver=redis           : The broadcast driver (redis or pusher)}
+            {--broadcast-host=                  : The Redis broadcast host}
+            {--broadcast-key=                   : The Redis broadcast key}
+            {--echo-host=                       : The Laravel Echo server host}
+            {--echo-port=6001                   : The Laravel Echo server port}
+            {--pusher-app-id=                   : The Pusher app ID}
+            {--pusher-app-key=                  : The Pusher app key}
+            {--pusher-app-secret=               : The Pusher app secret}
+            {--pusher-cluster=                  : The Pusher cluster}
+            {--pusher-tls                       : Enable TLS for pusher}
+            {--p|pretend                          : Dump the env file variables that would be saved}
+    ";
 
     /**
      * The console command description.
@@ -44,44 +82,45 @@ class Install extends Command
      * The encryption key we will use for for fresh install and any encryption during install
      */
     private $key;
-
+    
     /**
      * Installs a fresh copy of ProcessMaker
      *
      * @return mixed If the command succeeds, true
      */
     public function handle()
-    {
+    {        
         // Setup our initial encryption key and set our running laravel app key to it
         $this->key = 'base64:' . base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
         config(['app.key' => $this->key]);
 
         // Our initial .env values
         $this->env = [
-            'APP_DEBUG' => 'FALSE',
+            'APP_DEBUG' => $this->option('app-debug') ? 'TRUE' : 'FALSE',
             'APP_NAME' => '"ProcessMaker"',
             'APP_ENV' => 'production',
             'APP_KEY' => $this->key,
-            'BROADCAST_DRIVER' => 'redis',
+            'APP_URL' => $this->option('url'),
+            'BROADCAST_DRIVER' => $this->option('broadcast-driver'),
             'BROADCASTER_HOST' => null,
-            'BROADCASTER_KEY' => '21a795019957dde6bcd96142e05d4b10',
+            'BROADCASTER_KEY' => $this->option('broadcast-key') ? $this->option('broadcast-key') : '21a795019957dde6bcd96142e05d4b10',
             'LARAVEL_ECHO_SERVER_AUTH_HOST' => null,
-            'LARAVEL_ECHO_SERVER_PORT' => null,
-            'LARAVEL_ECHO_SERVER_DEBUG' => null,
-            'PUSHER_APP_ID' => null,
-            'PUSHER_APP_KEY' => null,
-            'PUSHER_APP_SECRET' => null,
-            'PUSHER_CLUSTER' => null,
-            'PUSHER_TLS' => 'TRUE',
-            'PUSHER_DEBUG' => 'FALSE',
+            'LARAVEL_ECHO_SERVER_PORT' => $this->option('echo-port'),
+            'LARAVEL_ECHO_SERVER_DEBUG' => $this->option('broadcast-debug') ? 'TRUE' : 'FALSE',
+            'PUSHER_APP_ID' => $this->option('pusher-app-id'),
+            'PUSHER_APP_KEY' => $this->option('pusher-app-key'),
+            'PUSHER_APP_SECRET' => $this->option('pusher-app-secret'),
+            'PUSHER_CLUSTER' => $this->option('pusher-cluster'),
+            'PUSHER_TLS' => $this->option('pusher-tls') ? 'TRUE' : 'FALSE',
+            'PUSHER_DEBUG' => $this->option('broadcast-debug') ? 'TRUE' : 'FALSE',
             'APP_TIMEZONE' => 'UTC',
             'DATE_FORMAT' => '"m/d/Y H:i"',
             'MAIN_LOGO_PATH' => '"/img/processmaker_logo.png"',
             'ICON_PATH_PATH' => '"/img/processmaker_icon.png"',
             'LOGIN_LOGO_PATH' => '"img/processmaker_login.png"',
-            'REDIS_CLIENT' => 'predis',
-            'REDIS_PREFIX' => null,
-            'HORIZON_PREFIX' => 'horizon:',
+            'REDIS_CLIENT' => $this->option('redis-client'),
+            'REDIS_PREFIX' => $this->option('redis-prefix'),
+            'HORIZON_PREFIX' => $this->option('horizon-prefix'),
         ];
 
         // Configure the filesystem to be local
@@ -95,14 +134,15 @@ class Install extends Command
         // Determine if .env file exists or not
         // if exists, bail out with an error
         // If file does not exist, begin to generate it
-        if (Storage::disk('install')->exists('.env')) {
+        if (! $this->pretending() && Storage::disk('install')->exists('.env')) {
             $this->error(__('A .env file already exists. Stop the installation procedure, delete the existing .env file, and then restart the installation.'));
             $this->error(__('Remove the .env file to perform a new installation.'));
             return 255;
         }
+
         $this->info(__("This application installs a new version of ProcessMaker."));
         $this->info(__("You must have your database credentials available in order to continue."));
-        if (!$this->confirm(__("Are you ready to begin?"))) {
+        if ($this->interactive() && !$this->confirm(__("Are you ready to begin?"))) {
             return;
         }
         $this->checkDependencies();
@@ -110,9 +150,18 @@ class Install extends Command
             $this->fetchDatabaseCredentials();
         } while (!$this->testLocalConnection());
         // Configure the DATA connection
-        $this->info(__('ProcessMaker requires a DATA database.'));
-        $dataConnection = $this->choice(__('Would you like setup different credentials or use the same ProcessMaker 
-        connection?'), ['different', 'same']);
+        $this->infoIfInteractive(__('ProcessMaker requires a DATA database.'));
+        
+        if ($this->interactive()) {
+            $dataConnection = $this->choice(__('Would you like to setup different credentials or use the same ProcessMaker 
+            connection?'), ['different', 'same']);
+        } else {
+            if ($this->option('data-driver') !== 'none') {
+                $dataConnection = 'different';
+            } else {
+                $dataConnection = 'same';
+            }
+        }
         if ($dataConnection === 'same') {
             $this->env['DATA_DB_DRIVER'] = 'mysql';
             $this->env['DATA_DB_HOST'] = $this->env['DB_HOSTNAME'];
@@ -124,17 +173,23 @@ class Install extends Command
             $this->env['DATA_DB_COLLATION'] = 'utf8mb4_unicode_ci';
             $this->env['DATA_DB_ENGINE'] = 'InnoDB';
         }
-        do {
-            $dataConnection !== 'different' ?: $this->fetchDataConnectionCredentials();
-        } while (!$this->testDataConnection());
-        $this->env['DATA_DB_DRIVER'] === 'sqlsrv' ? $this->checkDateFormatSqlServer() : null;
+        if ($dataConnection == 'different') {
+            do {
+                $this->fetchDataConnectionCredentials();
+            } while (!$this->testDataConnection());
+        }
+        
+        if (! $this->pretending()) {
+            $this->env['DATA_DB_DRIVER'] === 'sqlsrv' ? $this->checkDateFormatSqlServer() : null;            
+        }
+        
         // Ask for URL and validate
         $invalid = false;
         do {
             if ($invalid) {
-                $this->error(__('The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes.'));
+                $this->errorOrExit(__('The URL you provided is invalid. Please provide the scheme, host and path without trailing slashes.'));
             }
-            $this->env['APP_URL'] = $this->ask(__('What is the URL of this ProcessMaker installation? (Ex: https://processmaker.example.com, with no trailing slash)'));
+            $this->env['APP_URL'] = $this->askOptional('url', __('What is the URL of this ProcessMaker installation? (Ex: https://processmaker.example.com, with no trailing slash)'));
         } while ($invalid = (!filter_var(
             $this->env['APP_URL'],
             FILTER_VALIDATE_URL
@@ -142,25 +197,13 @@ class Install extends Command
             || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/')));
 
         // Set telescope enabled
-        $this->env['TELESCOPE_ENABLED'] = $this->confirm('Would you like to enable Telescope debugging?');
+        $this->env['TELESCOPE_ENABLED'] = $this->confirmOptional('telescope', 'Would you like to enable Telescope debugging?') ? 'TRUE' : 'FALSE';
 
         // Set broadcaster url
-        $this->env['BROADCASTER_HOST'] = $this->env['APP_URL'] . ':6001';
+        $this->env['BROADCASTER_HOST'] = $this->option('broadcast-host') ? $this->option('broadcast-host') : $this->env['APP_URL'] . ':6001';
 
         // Set laravel echo server settings
-        $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->env['APP_URL'];
-        $this->env['LARAVEL_ECHO_SERVER_PORT'] = '6001';
-        $this->env['LARAVEL_ECHO_SERVER_DEBUG'] = 'FALSE';
-
-        // Set it as our url in our config
-        config(['app.url' => $this->env['APP_URL']]);
-
-
-        $this->info(__("Installing ProcessMaker database, OAuth SSL keys and configuration file."));
-
-        // The database should already exist and is tested by the fetchDatabaseCredentials call
-        // Set the database default connection to install
-        DB::reconnect();
+        $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->option('echo-host') ? $this->option('echo-host') : $this->env['APP_URL'];
 
         // Now generate the .env file
         $contents = '';
@@ -168,36 +211,57 @@ class Install extends Command
         foreach ($this->env as $key => $value) {
             $contents .= $key . '=' . $value . "\n";
         }
-        // Now store it
-        Storage::disk('install')->put('.env', $contents);
+        
+        if ($this->pretending()) {
+            $headers = ['Key', 'Value'];
+            $rows = [];
+            foreach ($this->env as $key => $value) {
+                $rows[] = [$key, $value];
+            }
+            $this->table($headers, $rows);
+        } else {
+            // Set it as our url in our config
+            config(['app.url' => $this->env['APP_URL']]);
 
-        $this->call('config:cache');
-        $this->call('config:clear');
-        $this->call('cache:clear');
+            $this->info(__("Installing ProcessMaker database, OAuth SSL keys and configuration file."));
 
-        // Set username, email, password
-        $this->fetchUserInformation();
+            // The database should already exist and is tested by the fetchDatabaseCredentials call
+            // Set the database default connection to install
+            DB::reconnect();
 
-        // Install migrations
-        $this->callSilent('migrate:fresh', [
-            '--seed' => true,
-        ]);
+            // Now store the env file
+            Storage::disk('install')->put('.env', $contents);
 
-        $this->info(__("ProcessMaker database installed successfully."));
+            $this->call('config:cache');
+            $this->call('config:clear');
+            $this->call('cache:clear');
 
-        // Generate passport secure keys and personal token oauth client
-        $this->call('passport:install', [
-            '--force' => true
-        ]);
+            // Set username, email, password
+            $this->fetchUserInformation();
 
-        //Create a symbolic link from "public/storage" to "storage/app/public"
-        $this->call('storage:link');
+            $this->info(__("Installing database..."));
 
+            // Install migrations
+            $this->callSilent('migrate:fresh', [
+                '--seed' => true,
+            ]);
 
-        $this->call('vendor:publish', ['--tag'=>'telescope-assets', '--force' =>true]);
+            $this->info(__("ProcessMaker database installed successfully."));
 
-        $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
-        $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
+            // Generate passport secure keys and personal token oauth client
+            $this->call('passport:install', [
+                '--force' => true
+            ]);
+
+            //Create a symbolic link from "public/storage" to "storage/app/public"
+            $this->call('storage:link');
+
+            $this->call('vendor:publish', ['--tag'=>'telescope-assets', '--force' =>true]);            
+
+            $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
+            $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
+        }
+
         return true;
     }
 
@@ -208,22 +272,22 @@ class Install extends Command
     private function fetchUserInformation()
     {
         do {
-            $username = $this->anticipate('Enter your username', ['admin'], 'admin');
+            $username = $this->anticipateOptional('username', 'Enter the desired admin username', ['admin'], 'admin');
             $validator = $this->validateField('username', $username, ['required', 'alpha_dash', 'min:4', 'max:255']);
         } while($validator->fails());
         do {
-            $email = $this->ask('Enter your email');
+            $email = $this->askOptional('email', 'Enter the email address of the admin user');
             $validator = $this->validateField('email', $email, ['required', 'email']);
         } while($validator->fails());
         do {
-            $password = $this->secret('Enter your password');
+            $password = $this->secretOptional('password', 'Enter the desired admin password');
             $validator = $this->validateField('password', $password, ['required', 'sometimes', 'min:6']);
         } while($validator->fails());
         do {
-            $confirmPassword = $this->secret('Confirm your password');
+            $confirmPassword = $this->secretOptional('password', 'Confirm the admin password');
             $match = $password === $confirmPassword;
             if (!$match) {
-                $this->error('Your password/confirm password fields do not match');
+                $this->errorOrExit('Your password/confirm password fields do not match');
             }
         } while(!$match);
         // Set the default admin properties for UserSeeder
@@ -247,7 +311,7 @@ class Install extends Command
             $name => $rules,
         ]);
         foreach($validator->errors()->get($name) as $error) {
-            $this->error($error);
+            $this->errorOrExit($error);
         }
         return $validator;
     }
@@ -283,13 +347,12 @@ class Install extends Command
      */
     private function fetchDatabaseCredentials()
     {
-        $this->info(__('ProcessMaker requires a MySQL database.'));
-        $this->info(__('Database connection failed. Check your database configuration and try again.'));
-        $this->env['DB_HOSTNAME'] = $this->anticipate(__('Enter your MySQL host'), ['127.0.0.1'], '127.0.0.1');
-        $this->env['DB_PORT'] = $this->anticipate(__('Enter your MySQL port (usually 3306)'), [3306], 3306);
-        $this->env['DB_DATABASE'] = $this->anticipate(__('Enter your MySQL database name'), ['processmaker'], 'processmaker');
-        $this->env['DB_USERNAME'] = $this->ask(__('Enter your MySQL username'));
-        $this->env['DB_PASSWORD'] = $this->secret(__('Enter your MySQL password (input hidden)'));
+        $this->infoIfInteractive(__('ProcessMaker requires a MySQL database.'));
+        $this->env['DB_HOSTNAME'] = $this->anticipateOptional('db-host', __('Enter your MySQL host'), ['127.0.0.1'], '127.0.0.1');
+        $this->env['DB_PORT'] = $this->anticipateOptional('db-port', __('Enter your MySQL port (usually 3306)'), [3306], 3306);
+        $this->env['DB_DATABASE'] = $this->anticipateOptional('db-name', __('Enter your MySQL database name'), ['processmaker'], 'processmaker');
+        $this->env['DB_USERNAME'] = $this->askOptional('db-username', __('Enter your MySQL username'));
+        $this->env['DB_PASSWORD'] = $this->secretOptional('db-password', __('Enter your MySQL password (input hidden)'));
     }
 
     /**
@@ -299,14 +362,20 @@ class Install extends Command
      */
     private function fetchDataConnectionCredentials()
     {
-        $this->info(__('Configure the DATA connection.'));
-        $this->env['DATA_DB_DRIVER'] = $this->choice(__('Enter the DB driver'), ['mysql', 'pgsql', 'sqlsrv']);
-        if ($this->env['DATA_DB_DRIVER'] === 'mysql') {
-            $this->fetchMysqlCredentials();
-        } elseif ($this->env['DATA_DB_DRIVER'] === 'pgsql') {
-            $this->fetchPostgreCredentials();
-        } elseif ($this->env['DATA_DB_DRIVER'] === 'sqlsrv') {
-            $this->fetchSqlServerCredentials();
+        $this->infoIfInteractive(__('Configure the DATA connection.'));
+        $this->env['DATA_DB_DRIVER'] = $this->choiceOptional('data-driver', __('Enter the DB driver'), ['mysql', 'pgsql', 'sqlsrv']);
+        
+        switch($this->env['DATA_DB_DRIVER']) {
+            case 'pgsql':
+                $this->fetchPostgreCredentials();
+                break;
+            case 'sqlsrv':
+                $this->fetchSqlServerCredentials();
+                break;
+            case 'mysql':
+            default:
+                $this->fetchMysqlCredentials();
+                break;
         }
     }
 
@@ -317,13 +386,13 @@ class Install extends Command
      */
     private function fetchPostgreCredentials()
     {
-        $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1'], '127.0.0.1');
-        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 5432)'), [5432], 5432);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
-        $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
-        $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
+        $this->env['DATA_DB_HOST'] = $this->anticipateOptional('data-host', __('Enter your DB host'), ['127.0.0.1'], '127.0.0.1');
+        $this->env['DATA_DB_PORT'] = $this->anticipateOptional('data-port', __('Enter your DB port (usually 5432)'), [5432], 5432);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipateOptional('data-name', __('Enter your DB database name'), ['data'], 'data');
+        $this->env['DATA_DB_USERNAME'] = $this->askOptional('data-username', __('Enter your DB username'));
+        $this->env['DATA_DB_PASSWORD'] = $this->secretOptional('data-password', __('Enter your DB password (input hidden)'));
         $this->env['DATA_DB_CHARSET'] = 'utf8';
-        $this->env['DATA_DB_SCHEMA'] = $this->anticipate(__('Enter your DB Schema'), ['public'], 'public');
+        $this->env['DATA_DB_SCHEMA'] = $this->anticipateOptional('data-schema', __('Enter your DB Schema'), ['public'], 'public');
     }
 
     /**
@@ -333,11 +402,11 @@ class Install extends Command
      */
     private function fetchMysqlCredentials()
     {
-        $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1']);
-        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 3306)'), [3306], 3306);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
-        $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
-        $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
+        $this->env['DATA_DB_HOST'] = $this->anticipateOptional('data-host', __('Enter your DB host'), ['127.0.0.1']);
+        $this->env['DATA_DB_PORT'] = $this->anticipateOptional('data-port', __('Enter your DB port (usually 3306)'), [3306], 3306);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipateOptional('data-name', __('Enter your DB database name'), ['data'], 'data');
+        $this->env['DATA_DB_USERNAME'] = $this->askOptional('data-username', __('Enter your DB username'));
+        $this->env['DATA_DB_PASSWORD'] = $this->secretOptional('data-password', __('Enter your DB password (input hidden)'));
         $this->env['DATA_DB_CHARSET'] = 'utf8mb4';
         $this->env['DATA_DB_COLLATION'] = 'utf8mb4_unicode_ci';
         $this->env['DATA_DB_ENGINE'] = 'InnoDB';
@@ -350,11 +419,11 @@ class Install extends Command
      */
     private function fetchSqlServerCredentials()
     {
-        $this->env['DATA_DB_HOST'] = $this->anticipate(__('Enter your DB host'), ['127.0.0.1']);
-        $this->env['DATA_DB_PORT'] = $this->anticipate(__('Enter your DB port (usually 1433)'), [1433], 1433);
-        $this->env['DATA_DB_DATABASE'] = $this->anticipate(__('Enter your DB database name'), ['data'], 'data');
-        $this->env['DATA_DB_USERNAME'] = $this->ask(__('Enter your DB username'));
-        $this->env['DATA_DB_PASSWORD'] = $this->secret(__('Enter your DB password (input hidden)'));
+        $this->env['DATA_DB_HOST'] = $this->anticipateOptional('data-host', __('Enter your DB host'), ['127.0.0.1']);
+        $this->env['DATA_DB_PORT'] = $this->anticipateOptional('data-port', __('Enter your DB port (usually 1433)'), [1433], 1433);
+        $this->env['DATA_DB_DATABASE'] = $this->anticipateOptional('data-name', __('Enter your DB database name'), ['data'], 'data');
+        $this->env['DATA_DB_USERNAME'] = $this->askOptional('data-username', __('Enter your DB username'));
+        $this->env['DATA_DB_PASSWORD'] = $this->secretOptional('data-password', __('Enter your DB password (input hidden)'));
     }
 
     /**
@@ -381,7 +450,6 @@ class Install extends Command
      */
     private function testLocalConnection()
     {
-
         if (!isset($this->env['DB_DRIVER'])) {
             $this->env['DB_DRIVER'] = 'mysql';
         }
@@ -395,12 +463,14 @@ class Install extends Command
             'password' => $this->env['DB_PASSWORD']
         ]]);
         // Attempt to connect
-        try {
-            DB::reconnect();
-            $pdo = DB::connection('processmaker')->getPdo();
-        } catch (Exception $e) {
-            $this->error(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.processmaker'))));
-            return false;
+        if (! $this->pretending()) {
+            try {
+                DB::reconnect();
+                $pdo = DB::connection('processmaker')->getPdo();
+            } catch (Exception $e) {
+                $this->errorOrExit(__('Failed to connect to MySQL database. Ensure the database exists. Check your credentials and try again.' . json_encode(config('database.connections.processmaker'))));
+                return false;
+            }
         }
         return true;
     }
@@ -425,13 +495,15 @@ class Install extends Command
             'schema' => isset($this->env['DATA_DB_SCHEMA']) ? $this->env['DATA_DB_SCHEMA'] : '',
             'engine' => isset($this->env['DATA_DB_ENGINE']) ? $this->env['DATA_DB_ENGINE'] : '',
         ]]);
-        // Attempt to connect
-        try {
-            DB::connection('data')->reconnect();
-            $pdo = DB::connection('data')->getPdo();
-        } catch (Exception $e) {
-            $this->error(__('Failed to connect to DATA connection. Ensure the database exists. Check your credentials and try again. ' . json_encode(config('database.connections.data'))));
-            return false;
+        if (! $this->pretending()) {
+            // Attempt to connect
+            try {
+                DB::connection('data')->reconnect();
+                $pdo = DB::connection('data')->getPdo();
+            } catch (Exception $e) {
+                $this->errorOrExit(__('Failed to connect to DATA connection. Ensure the database exists. Check your credentials and try again. ' . json_encode(config('database.connections.data'))));
+                return false;
+            }
         }
         return true;
     }
