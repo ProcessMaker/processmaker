@@ -13,6 +13,8 @@ class UserSeeder extends Seeder
     static $INSTALLER_ADMIN_USERNAME = 'admin';
     static $INSTALLER_ADMIN_PASSWORD = 'admin';
     static $INSTALLER_ADMIN_EMAIL = 'admin@processmaker.com';
+    static $INSTALLER_ADMIN_FIRSTNAME = 'Admin';
+    static $INSTALLER_ADMIN_LASTNAME = 'User';
     /**
      * Run the database seeds.
      *
@@ -29,8 +31,18 @@ class UserSeeder extends Seeder
             'username' => self::$INSTALLER_ADMIN_USERNAME,
             'password' => Hash::make(self::$INSTALLER_ADMIN_PASSWORD),
             'email' => self::$INSTALLER_ADMIN_EMAIL,
-            'firstname' => 'admin',
-            'lastname' => 'admin',
+            'firstname' => self::$INSTALLER_ADMIN_FIRSTNAME,
+            'lastname' => self::$INSTALLER_ADMIN_LASTNAME,
+            'address' => null,
+            'city' => null,
+            'state' => null,
+            'postal' => null,
+            'country' => null,
+            'phone' => null,
+            'fax' => null,
+            'cell' => null,
+            'title' => null,
+            'birthdate' => null,
             'timezone' => 'America/Los_Angeles',
             'datetime_format' => 'm/d/Y H:i',
             'language' => 'en',
