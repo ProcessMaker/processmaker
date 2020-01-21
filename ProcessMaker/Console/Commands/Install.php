@@ -34,6 +34,8 @@ class Install extends Command
             {--username=                        : The default admin username}
             {--password=                        : The default admin password}
             {--email=                           : The default admin user's email address}
+            {--first-name=                      : The default admin user's first name}
+            {--last-name=                       : The default admin user's last name}
             {--telescope                        : Enable Telescope debugging}
             {--db-host=                         : The primary database host}
             {--db-port=                         : The primary database port}
@@ -294,10 +296,26 @@ class Install extends Command
                 $this->errorOrExit('Your password/confirm password fields do not match');
             }
         } while(!$match);
+        do {
+            $firstname = $this->anticipateOptional('first-name', 'Enter the first name of the admin user', ['Admin'], 'Admin');
+            if (!$firstname) {
+                $firstname = 'Admin';
+            }
+            $validator = $this->validateField('firstname', $firstname, ['max:50']);
+        } while($validator->fails());
+        do {
+            $lastname = $this->anticipateOptional('last-name', 'Enter the last name of the admin user', ['User'], 'User');
+            if (!$lastname) {
+                $lastname = 'User';
+            }
+            $validator = $this->validateField('lastname', $lastname, ['max:50']);
+        } while($validator->fails());
         // Set the default admin properties for UserSeeder
         UserSeeder::$INSTALLER_ADMIN_USERNAME = $username;
         UserSeeder::$INSTALLER_ADMIN_EMAIL = $email;
         UserSeeder::$INSTALLER_ADMIN_PASSWORD = $password;
+        UserSeeder::$INSTALLER_ADMIN_FIRSTNAME = $firstname;
+        UserSeeder::$INSTALLER_ADMIN_LASTNAME = $lastname;
     }
 
     /**
