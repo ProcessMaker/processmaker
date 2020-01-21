@@ -173,11 +173,9 @@ class Install extends Command
             $this->env['DATA_DB_COLLATION'] = 'utf8mb4_unicode_ci';
             $this->env['DATA_DB_ENGINE'] = 'InnoDB';
         }
-        if ($dataConnection == 'different') {
-            do {
-                $this->fetchDataConnectionCredentials();
-            } while (!$this->testDataConnection());
-        }
+        do {
+            $dataConnection !== 'different' ?: $this->fetchDataConnectionCredentials();
+        } while (!$this->testDataConnection());
         
         if (! $this->pretending()) {
             $this->env['DATA_DB_DRIVER'] === 'sqlsrv' ? $this->checkDateFormatSqlServer() : null;            
@@ -204,13 +202,6 @@ class Install extends Command
 
         // Set laravel echo server settings
         $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->option('echo-host') ? $this->option('echo-host') : $this->env['APP_URL'];
-
-        // Now generate the .env file
-        $contents = '';
-        // Build out the file contents for our .env file
-        foreach ($this->env as $key => $value) {
-            $contents .= $key . '=' . $value . "\n";
-        }
         
         if ($this->pretending()) {
             $headers = ['Key', 'Value'];
@@ -228,6 +219,13 @@ class Install extends Command
             // The database should already exist and is tested by the fetchDatabaseCredentials call
             // Set the database default connection to install
             DB::reconnect();
+
+            // Now generate the .env file
+            $contents = '';
+            // Build out the file contents for our .env file
+            foreach ($this->env as $key => $value) {
+                $contents .= $key . '=' . $value . "\n";
+            }
 
             // Now store the env file
             Storage::disk('install')->put('.env', $contents);
