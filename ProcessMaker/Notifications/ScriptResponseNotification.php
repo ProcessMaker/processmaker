@@ -98,6 +98,6 @@ class ScriptResponseNotification extends Notification
     {
         $key = uniqid('srn', true);
         Cache::put("srn.$key", $this->response, now()->addMinutes(1));
-        return ['key' => $key];//url('/api/1.0/scripts/execution/' . $key);
+        return ['key' => $key];
     }
 }
