@@ -495,7 +495,7 @@ class ImportProcess implements ShouldQueue
      *
      * @return void
      */
-    private function saveCategory($type, $category)
+    protected function saveCategory($type, $category)
     {
         if (!array_key_exists($type . '_categories', $this->new)) {
             $this->new[$type . '_categories'] = [];
