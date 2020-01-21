@@ -203,6 +203,12 @@ class Install extends Command
         // Set laravel echo server settings
         $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->option('echo-host') ? $this->option('echo-host') : $this->env['APP_URL'];
         
+        // Set path and Docker settings
+        Storage::disk('local')->makeDirectory('scripts');
+        $this->env['DOCKER_SCRIPTS_HOME'] = storage_path('app/scripts');
+        $this->env['DOCKER_HOST_URL'] = $this->env['APP_URL'];
+        $this->env['HOME'] = base_path();
+        
         if ($this->pretending()) {
             $headers = ['Key', 'Value'];
             $rows = [];
