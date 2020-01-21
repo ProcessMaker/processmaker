@@ -4,6 +4,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Mockery\Exception;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -184,7 +185,6 @@ class ScriptController extends Controller
      *         response=200,
      *         description="success if the script was queued",
      *         @OA\JsonContent(ref="#/components/schemas/scriptsPreview")
-     *         ),
      *     ),
      * )
      */
@@ -193,11 +193,39 @@ class ScriptController extends Controller
         $script = count($scriptKey) === 1 && is_numeric($scriptKey[0]) ? Script::find($scriptKey[0]) : Script::where('key', implode('/', $scriptKey))->first();
         $data = json_decode($request->get('data'), true) ?: [];
         $config = json_decode($request->get('config'), true) ?: [];
-        $watcher = $request->get('watcher');
+        $watcher = $request->get('watcher', uniqid('scr', true));
         $code = $script->code;
 
         ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config);
-        return ['status' => 'success'];
+        return ['status' => 'success', 'key' => $watcher];
+    }
+
+    /**
+     * Get the response of a script execution
+     *
+     *     @OA\Get(
+     *     path="/scripts/execution/{key}",
+     *     summary="Get the response of a script execution by execution key",
+     *     operationId="getScriptExecutionResponse",
+     *     tags={"Scripts"},
+     *
+     *     @OA\Parameter(
+     *         name="key",
+     *         in="path",
+     *         @OA\Schema(type="string"),
+     *         required=true,
+     *     ),
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="response of a script execution",
+     *         @OA\JsonContent(),
+     *     ),
+     * )
+     */
+    public function execution($key)
+    {
+        return response()->json(Cache::get("srn.$key"));
     }
 
     /**

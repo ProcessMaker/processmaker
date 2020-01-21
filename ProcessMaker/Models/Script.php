@@ -48,6 +48,7 @@ use ProcessMaker\Validation\CategoryRule;
  * @OA\Schema(
  *   schema="scriptsPreview",
  *   @OA\Property(property="status", type="string"),
+ *   @OA\Property(property="key", type="string"),
  * )
  *
  */

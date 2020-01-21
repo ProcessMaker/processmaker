@@ -145,6 +145,7 @@ export default {
   props: ["process", "script", "scriptFormat", "testData"],
   data() {
     return {
+      executionKey: null,
       resizing: false,
       monacoOptions: {
         automaticLayout: true
@@ -188,6 +189,9 @@ export default {
 
   methods: {
     outputResponse(response) {
+      if (this.executionKey && this.executionKey !== response.data.watcher) {
+        return;
+      }
       this.preview.output = response.response;
 
       if (response.status === 200) {
@@ -218,6 +222,8 @@ export default {
         data: this.preview.data,
         config: this.preview.config,
         timeout: this.script.timeout
+      }).then((response) => {
+        this.executionKey = response.data.key;
       });
     },
     onClose() {
