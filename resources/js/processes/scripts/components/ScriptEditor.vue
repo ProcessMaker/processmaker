@@ -152,6 +152,10 @@ export default {
       },
       code: this.script.code,
       preview: {
+        error: {
+          exception: '',
+          message: ''
+        },
         executing: false,
         data: this.testData ? this.testData : "{}",
         config: "{}",
@@ -192,15 +196,24 @@ export default {
       if (this.executionKey && this.executionKey !== response.data.watcher) {
         return;
       }
-      this.preview.output = response.response;
+      ProcessMaker.apiClient.get("scripts/execution/" + response.response.key).then((response) => {
+        if (response.data.exception) {
+          this.preview.executing = false;
+          this.preview.failure = true;
+          this.preview.error.exception = response.data.exception;
+          this.preview.error.message = response.data.message;
+        } else {
+          this.preview.executing = false;
+          this.preview.success = true;
+          this.preview.output = response.data;
+        }
+      });
 
-      if (response.status === 200) {
-        this.preview.executing = false;
-        this.preview.success = true;
-      } else {
+      if (response.status !== 200) {
         this.preview.executing = false;
         this.preview.failure = true;
-        this.preview.error = response.response;
+        this.preview.error.exception = response.status;
+        this.preview.error.message = response.response;
       }
     },
     stopResizing: _.debounce(function() {
