@@ -56,7 +56,6 @@ class CallActivity implements CallActivityInterface
         $callable = $this->getCalledElement();
         // Capability to specify the target start event on the sequence flow to the call activity.
         $startId = $sequenceFlow->getProperty('startEvent');
-        $startEvent = $startId ? $callable->getEngine()->getStorage()->getElementInstanceById($startId) : null;
         $dataStore = $callable->getRepository()->createDataStore();
         // The entire data model is sent to the target
         $data = $token->getInstance()->getDataStore()->getData();
@@ -70,8 +69,13 @@ class CallActivity implements CallActivityInterface
 
         $configString = $this->getProperty('config');
         if ($configString) {
-            $data['_parent']['config'] = json_decode($configString, true);
+            $config = json_decode($configString, true);
+            $data['_parent']['config'] = $config;
+            if (isset($config['startEvent'])) {
+                $startId = $config['startEvent'];
+            }
         }
+        $startEvent = $startId ? $callable->getEngine()->getStorage()->getElementInstanceById($startId) : null;
 
         $dataStore->setData($data);
         $instance = $callable->call($dataStore, $startEvent);
