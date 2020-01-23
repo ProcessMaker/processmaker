@@ -27,8 +27,8 @@ class ImportScreen extends ImportProcess
             $new->created_at = $this->formatDate($screen->created_at);
             if (property_exists($screen, 'watchers')) {
                 \Illuminate\Support\Facades\Log::info("*** Tiene watchers");
-                $new->watchers = $screen->watchers;
-                $this->saveWatcherScripts($new);
+                //$new->watchers = $screen->watchers;
+                $new->watchers =  json_encode($this->saveWatcherScripts($new));
             }
 
             $new->save();
@@ -43,16 +43,15 @@ class ImportScreen extends ImportProcess
 
     private function saveWatcherScripts($screen)
     {
+        $watcherList =[];
         foreach($screen->watchers as $watcher) {
-            \Illuminate\Support\Facades\Log::info("*** Salvando watcher");
-            $script = $watcher->script;
+            $script = (object) $watcher['script'];
             $new = new Script;
             $new->title = $this->formatName($script->title, 'title', Script::class);
             $new->description = $script->description;
             $new->language = $script->language;
             $new->code = $script->code;
             $new->created_at = $this->formatDate($script->created_at);
-            $new->save();
 
             // save categories
             if (isset($script->categories)) {
@@ -62,10 +61,13 @@ class ImportScreen extends ImportProcess
                 }
             }
 
-            $watcher->script_id = $new->id;
+            $new->save();
 
-            \Illuminate\Support\Facades\Log::info("script id:", $new->id);
+            $watcher['script_id'] = $new->id;
+            $watcher['xxxscript_idx'] = $new->id;
+            $watcherList[] = $watcher;
         }
+       return $watcherList;
     }
 
     /**
