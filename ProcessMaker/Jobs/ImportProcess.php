@@ -387,6 +387,7 @@ class ImportProcess implements ShouldQueue
                 $new->title = $this->formatName($screen->title, 'title', Screen::class);
                 $new->type = $screen->type;
                 if (property_exists($screen, 'watchers')) {
+                    //$new->watchers =  $this->watcherScriptsToSave($new);
                     $new->watchers = $screen->watchers;
                 }
                 $new->save();
@@ -787,4 +788,39 @@ class ImportProcess implements ShouldQueue
             $this->status[$element]['message'] = __('Unable to import');
         }
     }
+
+    /**
+     * Returns the list of watchers ready to be imported
+     * @param $screen
+     * @return array
+     */
+    protected function watcherScriptsToSave($screen)
+    {
+        $watcherList =[];
+        foreach($screen->watchers as $watcher) {
+            $script = (object) $watcher['script'];
+            $new = new Script;
+            $new->title = $this->formatName($script->title, 'title', Script::class);
+            $new->description = $script->description;
+            $new->language = $script->language;
+            $new->code = $script->code;
+            $new->created_at = $this->formatDate($script->created_at);
+
+            // save categories
+            if (isset($script->categories)) {
+                foreach ($script->categories as $categoryDef) {
+                    $category = $this->saveCategory('script', $categoryDef);
+                    $new->categories()->save($category);
+                }
+            }
+
+            $new->save();
+
+            $watcher['script_id'] = $new->id;
+            $watcher['script']['title'] = $new->title;
+            $watcherList[] = (object) $watcher;
+        }
+        return $watcherList;
+    }
+
 }

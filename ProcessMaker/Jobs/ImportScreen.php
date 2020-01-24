@@ -26,48 +26,15 @@ class ImportScreen extends ImportProcess
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
             $new->created_at = $this->formatDate($screen->created_at);
             if (property_exists($screen, 'watchers')) {
-                \Illuminate\Support\Facades\Log::info("*** Tiene watchers");
-                //$new->watchers = $screen->watchers;
-                $new->watchers =  json_encode($this->saveWatcherScripts($new));
+                $new->watchers =  $this->watcherScriptsToSave($new);
             }
 
             $new->save();
-            $this->new['screens'][] = $new;
 
             $this->finishStatus('screens');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error(print_r($e->getTraceAsString()));
             $this->finishStatus('screens', true);
         }
-    }
-
-    private function saveWatcherScripts($screen)
-    {
-        $watcherList =[];
-        foreach($screen->watchers as $watcher) {
-            $script = (object) $watcher['script'];
-            $new = new Script;
-            $new->title = $this->formatName($script->title, 'title', Script::class);
-            $new->description = $script->description;
-            $new->language = $script->language;
-            $new->code = $script->code;
-            $new->created_at = $this->formatDate($script->created_at);
-
-            // save categories
-            if (isset($script->categories)) {
-                foreach ($script->categories as $categoryDef) {
-                    $category = $this->saveCategory('script', $categoryDef);
-                    $new->categories()->save($category);
-                }
-            }
-
-            $new->save();
-
-            $watcher['script_id'] = $new->id;
-            $watcher['xxxscript_idx'] = $new->id;
-            $watcherList[] = $watcher;
-        }
-       return $watcherList;
     }
 
     /**
