@@ -1042,5 +1042,7 @@
   "Edit Screen Categories": "Edit Screen Categories",
   "Create Screen Categories": "Create Screen Categories",
   "Delete Screen Categories": "Delete Screen Categories",
-  "View Screen Categories": "View Screen Categories"
+  "View Screen Categories": "View Screen Categories",
+  "Default Value": "Default Value",
+  "Takes precedence over value set in data.": "Takes precedence over value set in data."
 }
