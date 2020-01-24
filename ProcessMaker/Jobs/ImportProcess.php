@@ -387,8 +387,8 @@ class ImportProcess implements ShouldQueue
                 $new->title = $this->formatName($screen->title, 'title', Screen::class);
                 $new->type = $screen->type;
                 if (property_exists($screen, 'watchers')) {
-                    //$new->watchers =  $this->watcherScriptsToSave($new);
-                    $new->watchers = $screen->watchers;
+                    $new->watchers =  $this->watcherScriptsToSave($new);
+                    //$new->watchers = $screen->watchers;
                 }
                 $new->save();
 
@@ -407,6 +407,7 @@ class ImportProcess implements ShouldQueue
             $this->completeScreenRefs();
             $this->finishStatus('screens');
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::info('*** Error: '. $e->getMessage());
             $this->finishStatus('screens', true);
         }
     }
@@ -796,6 +797,10 @@ class ImportProcess implements ShouldQueue
      */
     protected function watcherScriptsToSave($screen)
     {
+        if (!$screen->watchers) {
+            return null;
+        }
+
         $watcherList =[];
         foreach($screen->watchers as $watcher) {
             $script = (object) $watcher['script'];
