@@ -26,7 +26,7 @@ class ImportScreen extends ImportProcess
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
             $new->created_at = $this->formatDate($screen->created_at);
             if (property_exists($screen, 'watchers')) {
-                $new->watchers =  $this->watcherScriptsToSave($new);
+                $new->watchers =  $this->watcherScriptsToSave($screen);
             }
 
             $new->save();

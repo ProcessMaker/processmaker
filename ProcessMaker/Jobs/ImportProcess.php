@@ -387,8 +387,7 @@ class ImportProcess implements ShouldQueue
                 $new->title = $this->formatName($screen->title, 'title', Screen::class);
                 $new->type = $screen->type;
                 if (property_exists($screen, 'watchers')) {
-                    $new->watchers =  $this->watcherScriptsToSave($new);
-                    //$new->watchers = $screen->watchers;
+                    $new->watchers =  $this->watcherScriptsToSave($screen);
                 }
                 $new->save();
 
@@ -791,7 +790,7 @@ class ImportProcess implements ShouldQueue
     }
 
     /**
-     * Returns the list of watchers ready to be imported
+     * Returns the list of watchers to be imported
      * @param $screen
      * @return array
      */
@@ -803,27 +802,27 @@ class ImportProcess implements ShouldQueue
 
         $watcherList =[];
         foreach($screen->watchers as $watcher) {
-            $script = (object) $watcher['script'];
-            $new = new Script;
-            $new->title = $this->formatName($script->title, 'title', Script::class);
-            $new->description = $script->description;
-            $new->language = $script->language;
-            $new->code = $script->code;
-            $new->created_at = $this->formatDate($script->created_at);
+            $script = $watcher->script;
+            $newScript = new Script;
+            $newScript->title = $this->formatName($script->title, 'title', Script::class);
+            $newScript->description = $script->description;
+            $newScript->language = $script->language;
+            $newScript->code = $script->code;
+            $newScript->created_at = $this->formatDate($script->created_at);
 
             // save categories
             if (isset($script->categories)) {
                 foreach ($script->categories as $categoryDef) {
                     $category = $this->saveCategory('script', $categoryDef);
-                    $new->categories()->save($category);
+                    $newScript->categories()->save($category);
                 }
             }
 
-            $new->save();
+            $newScript->save();
 
-            $watcher['script_id'] = $new->id;
-            $watcher['script']['title'] = $new->title;
-            $watcherList[] = (object) $watcher;
+            $watcher->script_id = $newScript->id;
+            $watcher->script->title = $newScript->title;
+            $watcherList[] = $watcher;
         }
         return $watcherList;
     }
