@@ -207,7 +207,7 @@ class Install extends Command
         
         // Set path and Docker settings
         Storage::disk('local')->makeDirectory('scripts');
-        $this->env['DOCKER_SCRIPTS_HOME'] = storage_path('app/scripts');
+        $this->env['PROCESSMAKER_SCRIPTS_HOME'] = storage_path('app/scripts');
         $this->env['DOCKER_HOST_URL'] = $this->env['APP_URL'];
         $this->env['HOME'] = base_path();
         
