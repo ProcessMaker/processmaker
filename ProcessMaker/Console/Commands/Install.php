@@ -63,7 +63,7 @@ class Install extends Command
             {--pusher-app-secret=               : The Pusher app secret}
             {--pusher-cluster=                  : The Pusher cluster}
             {--pusher-tls                       : Enable TLS for pusher}
-            {--p|pretend                          : Dump the env file variables that would be saved}
+            {--p|pretend                        : Dump the env file variables that would be saved}
     ";
 
     /**
