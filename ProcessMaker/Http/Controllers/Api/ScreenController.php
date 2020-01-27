@@ -4,11 +4,12 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Http\Resources\ApiResource;
-use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Query\SyntaxError;
 
 class ScreenController extends Controller
 {
@@ -94,6 +95,14 @@ class ScreenController extends Controller
         if ($request->input('type')) {
             $types = explode(',', $request->input('type'));
             $query->whereIn('type', $types);
+        }
+        $pmql = $request->input('pmql', '');
+        if (!empty($pmql)) {
+            try {
+                $query->pmql($pmql);
+            } catch (SyntaxError $e) {
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
+            }
         }
         $response =
             $query->orderBy(

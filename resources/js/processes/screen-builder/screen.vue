@@ -50,6 +50,7 @@
           :screenType="type"
           ref="builder"
           @change="updateConfig"
+          :screen="screen"
         />
 
         <!-- Preview -->

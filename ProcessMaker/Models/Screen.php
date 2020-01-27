@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -59,6 +60,7 @@ class Screen extends Model
     use HideSystemResources;
     use HasCategories;
     use HasVersioning;
+    use ExtendedPMQL;
 
     const categoryClass = ScreenCategory::class;
 
@@ -150,5 +152,15 @@ class Screen extends Model
             return $this->config['renderComponent'];
         }
         return 'task-screen';
+    }
+
+    /**
+     * PMQL field alias (created = created_at)
+     *
+     * @return string
+     */
+    public function fieldAliasId()
+    {
+        return 'screens.id';
     }
 }
