@@ -98,7 +98,7 @@
                         <div class="accordion" id="accordionPermissions">
                             <div class="mb-3 custom-control custom-switch">
                                 <input v-model="selectAll" type="checkbox" class="custom-control-input" id="selectAll" @click="select">
-                                <label class="custom-control-label" for="selectAll">{{ __('Assign all permissions to this user') }}</label>
+                                <label class="custom-control-label" for="selectAll">{{ __('Assign all permissions to this group') }}</label>
                             </div>
                             @include('admin.shared.permissions')
                             <div class="d-flex justify-content-end mt-3">
