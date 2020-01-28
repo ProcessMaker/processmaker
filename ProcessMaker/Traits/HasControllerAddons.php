@@ -9,8 +9,8 @@ trait HasControllerAddons
     /**
      * Get configured addons for this controller
      *
-     * @param string $method
-     * @param array $data
+     * @param string $method filter to identify the type of addon we are interested on
+     * @param array $data data that the controller will pass to the addon views
      *
      * @return array
      */
