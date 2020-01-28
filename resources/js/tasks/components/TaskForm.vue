@@ -43,9 +43,8 @@ export default {
         })
         .catch(error => {
           this.disabled = false;
-          let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;
-          ProcessMaker.alert(error.response.data.message, 'danger');
-          ProcessMaker.alert(message, 'danger');
+          // If there are errors, the user will be redirected to the request page
+          // to view error details. This is done in loadTask in edit.blade.php
         });
     },
     onUpdate(data) {
