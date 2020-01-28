@@ -155,7 +155,7 @@ class Screen extends Model
     }
 
     /**
-     * PMQL field alias (created = created_at)
+     * PMQL field (id = screens.id)
      *
      * @return string
      */
