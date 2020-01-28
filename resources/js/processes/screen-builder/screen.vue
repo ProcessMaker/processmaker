@@ -216,6 +216,7 @@ import formTypes from "./formTypes";
           minimap: false,
         },
         mockMagicVariables,
+        validationWarnings: [],
       };
     },
     components: {
@@ -276,9 +277,10 @@ import formTypes from "./formTypes";
         }
 
         const validationErrors = [];
+        this.validationWarnings.splice(0);
 
         if (this.type === formTypes.form && !this.containsSubmitButton()) {
-          validationErrors.push({ message: 'Form requires a submit button' });
+          this.validationWarnings.push(this.$t('Form requires a submit button to be saved'));
         }
 
         this.config.forEach(page => {
@@ -417,6 +419,9 @@ import formTypes from "./formTypes";
         if (this.allErrors !== 0) {
           ProcessMaker.alert(this.$t("This screen has validation errors."), "danger");
         } else {
+          if (this.validationWarnings.length > 0) {
+            this.validationWarnings.forEach(warning => ProcessMaker.alert(warning, 'warning'));
+          }
           ProcessMaker.apiClient
             .put("screens/" + this.screen.id, {
               title: this.screen.title,
