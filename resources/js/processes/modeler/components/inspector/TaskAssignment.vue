@@ -11,19 +11,11 @@
             <small class="form-text text-muted">{{$t("Select the Task assignee")}}</small>
         </div>
 
-        <user-select
-            v-if="showAssignOneUser"
-            :label="$t('Assigned User')"
-            v-model="assigned"
-        >
-        </user-select>
-
-        <group-select
-            v-if="showAssignGroup"
-            :label="$t('Assigned Group')"
-            v-model="assigned"
-        >
-        </group-select>
+        <select-user-group
+            v-if="showAssignments"
+            :label="$t('Assigned Users/Groups')"
+            v-model="assignments"
+            :hide-users="hideUsers"/>
 
         <user-by-id
             v-if="showAssignUserById"
@@ -79,21 +71,12 @@
                         </select>
                     </div>
 
-                    <user-select
-                        ref="userAssignedSpecial"
-                        v-if="showSpecialAssignOneUser"
-                        :label="$t('Assigned User')"
+                    <select-user-group
+                        v-if="showSpecialAssignOneUserGroup"
+                        ref="userGroupAssignedSpecial"
+                        :label="$t('Assigned Users/Groups')"
                         v-model="assignedExpression"
-                    >
-                    </user-select>
-
-                    <group-select
-                        ref="groupAssignedSpecial"
-                        v-if="showSpecialAssignGroup"
-                        :label="$t('Assigned Group')"
-                        v-model="assignedExpression"
-                    >
-                    </group-select>
+                        :hide-users="hideUsersAssignmentExpression"/>
 
                     <div class="form-group form-group-actions">
                         <button
@@ -143,8 +126,7 @@
       return {
         assignmentTypes: [
           {value:"requester", label: "Requester"},
-          {value:"user", label: "User"},
-          {value:"group", label: "Group"},
+          {value:"user_group", label: "Users / Groups"},
           {value:"previous_task_assignee", label: "Previous Task Assignee"},
           {value:"user_by_id", label: "By User ID"},
           {value:"self_service", label: "Self Service"},
@@ -156,6 +138,8 @@
         specialAssignmentsData: [],
         assignedExpression: null,
         error: "",
+        hideUsers: false,
+        hideUsersAssignmentExpression: false,
       };
     },
     mounted() {
@@ -190,22 +174,40 @@
       assignedGroupGetter () {
         return _.get(this.node, "assignedGroups");
       },
+      assignments: {
+        get() {
+          let value = [], users = [];
+          if ( this.assignment !== 'self_service') {
+            users = this.assignedUserGetter ? this.assignedUserGetter.split(',') : [];
+          }
+          value.users = users;
+          value.groups = this.assignedGroupGetter ? this.assignedGroupGetter.split(',') : [];
+
+          return value;
+        },
+        set(value) {
+          this.assignedUserSetter(value.users.join(','));
+          let users = '';
+          if ( this.assignment !== 'self_service') {
+            users = value.users.join(',');
+          }
+          this.assignedUserSetter(users);
+          this.assignedGroupSetter(value.groups.join(','));
+        }
+      },
 
       assigned: {
         get() {
           let value = "";
-          if (this.assignment === "user" || this.assignment === 'user_by_id') {
+          if ( this.assignment === 'user_by_id') {
             value = this.assignedUserGetter;
-          } else if (this.assignment === "group" || this.assignment === "self_service") {
-            value = this.assignedGroupGetter;
           }
           return value;
         },
         set(value) {
-          if ((this.assignment === "user" || this.assignment === 'user_by_id') && value) {
+          if (this.assignment === 'user_by_id' && value) {
             this.assignedUserSetter(value);
-          } else if ((this.assignment === "group" || this.assignment === "self_service") && value) {
-            this.assignedGroupSetter(value);
+            this.assignedGroupSetter('');
           }
         }
       },
@@ -221,17 +223,17 @@
       showAssignUserById () {
         return this.assignment === "user_by_id";
       },
-      showAssignOneUser () {
-        return this.assignment === "user";
+      showAssignments () {
+        this.hideUsers = this.assignment === 'self_service';
+
+        const assign = ['user', 'group', 'self_service', 'user_group'];
+        return assign.indexOf(this.assignment) !== -1;
       },
-      showAssignGroup () {
-        return this.assignment === "group" || this.assignment === "self_service";
-      },
-      showSpecialAssignOneUser () {
-        return this.typeAssignmentExpression === "user";
-      },
-      showSpecialAssignGroup () {
-        return this.typeAssignmentExpression === "group" || this.typeAssignmentExpression === "self_service";
+      showSpecialAssignOneUserGroup() {
+        this.hideUsersAssignmentExpression = this.typeAssignmentExpression === 'self_service';
+
+        const assign = ['user', 'group', 'self_service', 'user_group'];
+        return assign.indexOf(this.typeAssignmentExpression) !== -1;
       },
       specialAssignmentsListGetter () {
         const value = this.node.get('assignmentRules') || '[]';
@@ -257,11 +259,9 @@
       assignedUserSetter (id) {
         let value = this.formatIfById(id);
         this.$set(this.node, "assignedUsers", value);
-        this.$set(this.node, "assignedGroups", "");
       },
       assignedGroupSetter (id) {
         let node = this.node;
-        this.$set(node, "assignedUsers", "");
         this.$set(node, "assignedGroups", id);
       },
       formatIfById(val) {
@@ -327,14 +327,12 @@
         if (byExpression.type && byExpression.expression) {
           this.specialAssignments.push(byExpression);
           this.assignmentRulesSetter();
-
           let assignmentName = "";
-          if (this.typeAssignmentExpression === 'user') {
-            assignmentName = this.$refs.userAssignedSpecial.content.fullname;
-          } else if (this.typeAssignmentExpression === 'group' || this.typeAssignmentExpression === 'self_service') {
-            assignmentName = this.$refs.groupAssignedSpecial.content.name
-          } else {
-            assignmentName = "";
+          if (this.typeAssignmentExpression === 'user_group' || this.typeAssignmentExpression === 'self_service') {
+              this.$refs.userGroupAssignedSpecial.content.forEach( item => {
+                assignmentName += assignmentName ? ', ' : '';
+                assignmentName += item.fullname || item.name;
+              });
           }
 
           this.specialAssignmentsData.push({
@@ -364,6 +362,42 @@
               assignee: item.assignee,
               expression: item.expression
             });
+          } else if ((item.type === "user_group" || item.type === "self_service") && item.assignee.users) {
+
+            let assignmentName = '';
+
+            let usersPromise = Promise.all(
+              item.assignee.users.map(user => {
+                return ProcessMaker.apiClient.get("users/" + user);
+              })
+            )
+              .then(response => {
+                response.forEach(user => {
+                  assignmentName += assignmentName ? ', ' + user.data.fullname : user.data.fullname;
+                });
+              });
+
+            let groupsPromise = Promise.all(
+              item.assignee.groups.map(group => {
+                return ProcessMaker.apiClient.get("groups/" + group);
+              })
+            )
+              .then(response => {
+                response.forEach(group => {
+                  assignmentName += assignmentName ? ', ' + group.data.name : group.data.name;
+                });
+              });
+
+            Promise.all([usersPromise, groupsPromise])
+              .then(() => {
+                this.specialAssignmentsData.push({
+                  type: item.type,
+                  assignee: item.assignee,
+                  expression: item.expression,
+                  assignmentName: assignmentName
+                });
+              });
+
           } else if (item.type === "user") {
             ProcessMaker.apiClient
               .get("users/" + item.assignee)
