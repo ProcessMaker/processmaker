@@ -19,7 +19,7 @@ class SyntaxErrorException extends Exception
      */
     public function __construct(Throwable $previous, String $body)
     {
-        parent::__construct(__('exceptions.SyntaxErrorException', [
+        parent::__construct(__('The expression ":body" is invalid. Please contact the creator of this process to fix the issue. Original error: ":error"', [
             'error' => $previous->getMessage(),
             'body' => $body
         ]), 0, $previous);

@@ -16,6 +16,6 @@ class ThereIsNoPreviousUserAssignedException extends Exception
      */
     public function __construct(ActivityInterface $task)
     {
-        parent::__construct(__('exceptions.ThereIsNoPreviousUserAssignedException', ['task' => $task->getName()]));
+        parent::__construct(__('Can not assign this task because there is no previous user assigned before this task', ['task' => $task->getName()]));
     }
 }

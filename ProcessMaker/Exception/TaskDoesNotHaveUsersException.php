@@ -15,6 +15,6 @@ class TaskDoesNotHaveUsersException extends Exception
      */
     public function __construct($task)
     {
-        parent::__construct(__('exceptions.TaskDoesNotHaveUsersException', ['task' => $task]));
+        parent::__construct(__('The task ":task" has an incomplete assignment. You should select one user or group.', ['task' => $task]));
     }
 }
