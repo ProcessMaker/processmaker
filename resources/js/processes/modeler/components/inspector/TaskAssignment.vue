@@ -6,7 +6,8 @@
                 ref="assignmentsDropDownList"
                 class="form-control"
                 v-model="assignment">
-                <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{ $t(type.label) }}</option>
+                <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{ $t(type.label) }}
+                </option>
             </select>
             <small class="form-text text-muted">{{$t("Select the Task assignee")}}</small>
         </div>
@@ -24,10 +25,10 @@
         ></user-by-id>
 
         <form-checkbox
-                :label="$t('Lock task assignment to user')"
-                :checked="assignmentLockGetter"
-                toggle="true"
-                @change="assignmentLockSetter">
+            :label="$t('Lock task assignment to user')"
+            :checked="assignmentLockGetter"
+            toggle="true"
+            @change="assignmentLockSetter">
         </form-checkbox>
 
         <form-checkbox
@@ -67,7 +68,9 @@
                             class="form-control"
                             v-model="typeAssignmentExpression">
                             <option value=""></option>
-                            <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{ $t(type.label) }}</option>
+                            <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{
+                                $t(type.label) }}
+                            </option>
                         </select>
                     </div>
 
@@ -125,11 +128,26 @@
     data () {
       return {
         assignmentTypes: [
-          {value:"requester", label: "Requester"},
-          {value:"user_group", label: "Users / Groups"},
-          {value:"previous_task_assignee", label: "Previous Task Assignee"},
-          {value:"user_by_id", label: "By User ID"},
-          {value:"self_service", label: "Self Service"},
+          {
+            value: "requester",
+            label: "Requester"
+          },
+          {
+            value: "user_group",
+            label: "Users / Groups"
+          },
+          {
+            value: "previous_task_assignee",
+            label: "Previous Task Assignee"
+          },
+          {
+            value: "user_by_id",
+            label: "By User ID"
+          },
+          {
+            value: "self_service",
+            label: "Self Service"
+          },
         ],
         specialAssignments: [],
         addingSpecialAssignment: false,
@@ -142,7 +160,7 @@
         hideUsersAssignmentExpression: false,
       };
     },
-    mounted() {
+    mounted () {
       this.loadSpecialAssignments();
     },
     computed: {
@@ -161,7 +179,7 @@
        * Get the value of the edited property
        */
       assignmentLockGetter () {
-          return _.get(this.node, 'assignmentLock');
+        return _.get(this.node, "assignmentLock");
       },
       allowReassignmentGetter () {
         return _.get(this.node, "allowReassignment");
@@ -175,48 +193,49 @@
         return _.get(this.node, "assignedGroups");
       },
       assignments: {
-        get() {
-          let value = [], users = [];
-          if ( this.assignment !== 'self_service') {
-            users = this.assignedUserGetter ? this.assignedUserGetter.split(',') : [];
+        get () {
+          let value = [],
+            users = [];
+          if (this.assignment !== "self_service") {
+            users = this.assignedUserGetter ? this.assignedUserGetter.split(",") : [];
           }
           value.users = users;
-          value.groups = this.assignedGroupGetter ? this.assignedGroupGetter.split(',') : [];
+          value.groups = this.assignedGroupGetter ? this.assignedGroupGetter.split(",") : [];
 
           return value;
         },
-        set(value) {
-          this.assignedUserSetter(value.users.join(','));
-          let users = '';
-          if ( this.assignment !== 'self_service') {
-            users = value.users.join(',');
+        set (value) {
+          this.assignedUserSetter(value.users.join(","));
+          let users = "";
+          if (this.assignment !== "self_service") {
+            users = value.users.join(",");
           }
           this.assignedUserSetter(users);
-          this.assignedGroupSetter(value.groups.join(','));
+          this.assignedGroupSetter(value.groups.join(","));
         }
       },
 
       assigned: {
-        get() {
+        get () {
           let value = "";
-          if ( this.assignment === 'user_by_id') {
+          if (this.assignment === "user_by_id") {
             value = this.assignedUserGetter;
           }
           return value;
         },
-        set(value) {
-          if (this.assignment === 'user_by_id' && value) {
+        set (value) {
+          if (this.assignment === "user_by_id" && value) {
             this.assignedUserSetter(value);
-            this.assignedGroupSetter('');
+            this.assignedGroupSetter("");
           }
         }
       },
       assignment: {
-        get() {
+        get () {
           const value = _.get(this.node, "assignment");
           return value;
         },
-        set(value) {
+        set (value) {
           this.$set(this.node, "assignment", value);
         }
       },
@@ -224,19 +243,19 @@
         return this.assignment === "user_by_id";
       },
       showAssignments () {
-        this.hideUsers = this.assignment === 'self_service';
+        this.hideUsers = this.assignment === "self_service";
 
-        const assign = ['user', 'group', 'self_service', 'user_group'];
+        const assign = ["user", "group", "self_service", "user_group"];
         return assign.indexOf(this.assignment) !== -1;
       },
-      showSpecialAssignOneUserGroup() {
-        this.hideUsersAssignmentExpression = this.typeAssignmentExpression === 'self_service';
+      showSpecialAssignOneUserGroup () {
+        this.hideUsersAssignmentExpression = this.typeAssignmentExpression === "self_service";
 
-        const assign = ['user', 'group', 'self_service', 'user_group'];
+        const assign = ["user", "group", "self_service", "user_group"];
         return assign.indexOf(this.typeAssignmentExpression) !== -1;
       },
       specialAssignmentsListGetter () {
-        const value = this.node.get('assignmentRules') || '[]';
+        const value = this.node.get("assignmentRules") || "[]";
         return JSON.parse(value);
       },
     },
@@ -264,17 +283,17 @@
         let node = this.node;
         this.$set(node, "assignedGroups", id);
       },
-      formatIfById(val) {
-        if (this.assignment === 'user_by_id') {
+      formatIfById (val) {
+        if (this.assignment === "user_by_id") {
           return `{{ ${val} }}`;
         }
         return val;
       },
-      unformatIfById(val) {
-        if (this.assignment === 'user_by_id') {
+      unformatIfById (val) {
+        if (this.assignment === "user_by_id") {
           try {
             return val.match(/^{{ (.*) }}$/)[1];
-          } catch(e) {
+          } catch (e) {
             return "";
           }
         }
@@ -328,11 +347,11 @@
           this.specialAssignments.push(byExpression);
           this.assignmentRulesSetter();
           let assignmentName = "";
-          if (this.typeAssignmentExpression === 'user_group' || this.typeAssignmentExpression === 'self_service') {
-              this.$refs.userGroupAssignedSpecial.content.forEach( item => {
-                assignmentName += assignmentName ? ', ' : '';
-                assignmentName += item.fullname || item.name;
-              });
+          if (this.typeAssignmentExpression === "user_group" || this.typeAssignmentExpression === "self_service") {
+            this.$refs.userGroupAssignedSpecial.content.forEach(item => {
+              assignmentName += assignmentName ? ", " : "";
+              assignmentName += item.fullname || item.name;
+            });
           }
 
           this.specialAssignmentsData.push({
@@ -364,7 +383,7 @@
             });
           } else if ((item.type === "user_group" || item.type === "self_service") && item.assignee.users) {
 
-            let assignmentName = '';
+            let assignmentName = "";
 
             let usersPromise = Promise.all(
               item.assignee.users.map(user => {
@@ -373,7 +392,7 @@
             )
               .then(response => {
                 response.forEach(user => {
-                  assignmentName += assignmentName ? ', ' + user.data.fullname : user.data.fullname;
+                  assignmentName += assignmentName ? ", " + user.data.fullname : user.data.fullname;
                 });
               });
 
@@ -384,7 +403,7 @@
             )
               .then(response => {
                 response.forEach(group => {
-                  assignmentName += assignmentName ? ', ' + group.data.name : group.data.name;
+                  assignmentName += assignmentName ? ", " + group.data.name : group.data.name;
                 });
               });
 
@@ -476,7 +495,13 @@
 </script>
 
 <style lang="scss" scoped>
-    $transition: .25s;
+    $
+    transition:
+
+    .25
+    s
+
+    ;
 
     .list-users-groups {
         width: 100%;
@@ -491,9 +516,11 @@
     }
 
     .special-assignment-header {
+
     label {
         padding-top: 4px;
     }
+
     }
 
     .special-assignment-wrapper {
@@ -501,7 +528,7 @@
         height: 0;
         opacity: 0;
         overflow: hidden;
-        transition: height $transition, opacity $transition;
+        transition: height $ transition, opacity $ transition;
     }
 
     .special-assignment-form {
@@ -520,10 +547,13 @@
         font-size: 12px;
         font-weight: bold;
         padding: 2px 4px;
-        transition: opacity $transition;
-    &.inactive {
-         opacity: 0;
-     }
+        transition: opacity $ transition;
+
+    &
+    .inactive {
+        opacity: 0;
+    }
+
     }
 
     .list-group-item {
@@ -531,7 +561,7 @@
         margin-bottom: 9px;
 
     .btn-special-assignment-delete {
-        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 75%);
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 75%);
         border: 0;
         color: gray;
         cursor: pointer;
@@ -542,24 +572,31 @@
         right: 0;
         top: 0;
 
-    &:hover {
-         color: #ed4757;
-     }
+    &
+    :hover {
+        color: #ed4757;
     }
 
-    &:hover {
-    .btn-special-assignment-delete {
-        background: linear-gradient(90deg, rgba(247,248,249,0) 0%, rgba(247,248,249,1) 75%);
     }
+
+    &
+    :hover {
+
+    .btn-special-assignment-delete {
+        background: linear-gradient(90deg, rgba(247, 248, 249, 0) 0%, rgba(247, 248, 249, 1) 75%);
+    }
+
     }
     }
 
     .special-assignment-section {
         padding: 4px 1px 4px 4px;
 
-    &:first-child {
-         border-bottom: 1px solid #eee;
-     }
+    &
+    :first-child {
+        border-bottom: 1px solid #eee;
+    }
+
     }
 
     .special-assignment-value {
