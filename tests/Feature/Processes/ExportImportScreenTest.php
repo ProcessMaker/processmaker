@@ -129,4 +129,22 @@ class ExportImportScreenTest extends TestCase
         //Unable to import the screen.
         $this->assertFalse($response->json('status'));
     }
+
+    public function testImportScreenWithWatchers()
+    {
+        // Load the file to test
+        $fileName = __DIR__ . '/../../Fixtures/screen_with_watchers.json';
+
+        $file = new UploadedFile($fileName, 'screen_with_watchers.json', null, null, null, true);
+
+        // Test to ensure our admin user can import a other file
+        //$this->user = $adminUser;
+        $response = $this->apiCall('POST', '/screens/import', [
+            'file' => $file,
+        ]);
+        $response->assertStatus(200);
+
+        //Unable to import the screen.
+        $this->assertFalse($response->json('status')['screens']['success']);
+    }
 }
