@@ -268,7 +268,8 @@
 
           task: @json($task->toArray()),
           statusCard: "card-header text-capitalize text-white bg-success",
-          selectedUser: []
+          selectedUser: [],
+          hasErrors: false,
         },
         watch: {
           task: {
@@ -331,6 +332,9 @@
             window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
               .then((response) => {
                 this.$set(this, 'task', response.data);
+                if (response.data.process_request.status === 'ERROR') {
+                  this.hasErrors = true;
+                }
                 this.prepareTask();
               });
           },
@@ -358,6 +362,10 @@
             }
           },
           closeTask() {
+            if (this.hasErrors) {
+              window.location.href = `/requests/${this.task.process_request_id}`;
+              return;
+            }
             if (!this.task.allow_interstitial) {
               document.location.href = "/tasks";
             } else {

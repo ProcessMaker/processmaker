@@ -15,6 +15,6 @@ class ScriptLanguageNotSupported extends Exception
      */
     public function __construct($language)
     {
-        parent::__construct(__('exceptions.ScriptLanguageNotSupported', ['language' => $language]));
+        parent::__construct(__('The ":language" language is not supported', ['language' => $language]));
     }
 }

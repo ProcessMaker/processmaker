@@ -1043,6 +1043,12 @@
   "Create Screen Categories": "Create Screen Categories",
   "Delete Screen Categories": "Delete Screen Categories",
   "View Screen Categories": "View Screen Categories",
+  "The task \":task\" has an incomplete assignment. You should select one user or group.": "The task \":task\" has an incomplete assignment. You should select one user or group.",
+  "The \":language\" language is not supported": "The \":language\" language is not supported",
+  "The expression \":body\" is invalid. Please contact the creator of this process to fix the issue. Original error: \":error\"": "The expression \":body\" is invalid. Please contact the creator of this process to fix the issue. Original error: \":error\"",
+  "Failed to evaluate expression. :error": "Failed to evaluate expression. :error",
+  "This process was started by an anonymous user so this task can not be assigned to the requester": "This process was started by an anonymous user so this task can not be assigned to the requester",
+  "Can not assign this task because there is no previous user assigned before this task": "Can not assign this task because there is no previous user assigned before this task",
   "Default Value": "Default Value",
   "Takes precedence over value set in data.": "Takes precedence over value set in data."
 }

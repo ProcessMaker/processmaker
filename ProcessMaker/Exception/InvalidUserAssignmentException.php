@@ -14,7 +14,7 @@ class InvalidUserAssignmentException extends Exception
     {
         parent::__construct(
             __(
-                'exceptions.InvalidUserAssignmentException', [
+                'The variable, :variable, which equals ":value", is not a valid User ID in the system', [
                     'variable' => $variable,
                     'value' => $value
                 ]

@@ -9,7 +9,7 @@
                     </button>
                 </div>
                 <div class="modal-body text-center">
-                    <div class="my-3" :class="classMessage">{{ message }}</div>
+                    <div class="my-3" :class="classMessage" v-html="message"></div>
                 </div>
                 <div class="modal-footer">
                     <button id="cancel" type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onDeny">{{ $t('Cancel') }}</button>

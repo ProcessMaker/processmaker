@@ -82,7 +82,7 @@ class FormalExpression implements FormalExpressionInterface
             $values = $encoder ? $this->$encoder($data) : $data;
             return $this->$evaluator->evaluate($body, $values);
         } catch (SyntaxError $syntaxError) {
-            throw new SyntaxErrorException($syntaxError);
+            throw new SyntaxErrorException($syntaxError, $body);
         } catch (Throwable $error) {
             throw new ExpressionFailedException($error);
         }
