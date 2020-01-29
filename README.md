@@ -1,16 +1,16 @@
-# ProcessMaker 4 Community Edition Documentation
+# ProcessMaker 4 Documentation
 
-![](https://www.processmaker.com/assets/PartnerArea/new_logos/sample200_whitebg.png)
-
-[![CircleCI](https://circleci.com/gh/ProcessMaker/bpm/tree/develop.svg?style=svg&circle-token=bc15deff649712440252088a12ec20b4b7c96826)](https://circleci.com/gh/ProcessMaker/bpm/tree/develop)
-
-## ProcessMaker 4 Community Edition Documentation
-
-#### Overview
+# Overview
 
 ProcessMaker is an open source, workflow management software suite, which includes tools to automate your workflow, design forms, create documents, assign roles and users, create routing rules, and map an individual process quickly and easily. It's relatively lightweight and doesn't require any kind of installation on the client computer. This file describes the requirements and installation steps for the server.
 
-### Development
+## Using ProcessMaker 4
+
+The online documentation for usage of ProcessMaker 4 can be found by clicking the link below.
+
+https://processmaker.gitbook.io/processmaker/
+
+## Development
 
 #### System Requirements
 
