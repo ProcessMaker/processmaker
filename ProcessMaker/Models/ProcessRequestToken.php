@@ -240,7 +240,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function getDefinition($asObject = false)
     {
-        $definitions = $this->processRequest->process->getDefinitions();
+        $definitions = $this->processRequest->processVersion->getDefinitions();
         $element = $definitions->findElementById($this->element_id);
         if (!$element) {
             return [];

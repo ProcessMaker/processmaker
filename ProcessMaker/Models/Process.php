@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Mustache_Engine;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
+use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
-use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -26,10 +27,10 @@ use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\ProcessStartEventAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTaskAssignmentsTrait;
 use ProcessMaker\Traits\ProcessTimerEventsTrait;
+use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
-use Mustache_Engine;
 
 /**
  * Represents a business process definition.
@@ -133,6 +134,7 @@ class Process extends Model implements HasMedia
     use HasCategories;
     use HasVersioning;
     use HasSelfServiceTasks;
+    use ProcessTrait;
 
     const categoryClass = ProcessCategory::class;
 
@@ -171,13 +173,6 @@ class Process extends Model implements HasMedia
     protected $hidden = [
         'bpmn'
     ];
-
-    /**
-     * Parsed process BPMN definitions.
-     *
-     * @var \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
-     */
-    private $bpmnDefinitions;
 
     public $requestNotifiableTypes = [
         'requester',
@@ -413,45 +408,6 @@ class Process extends Model implements HasMedia
     public function scopeInactive($query)
     {
         return $query->where('processes.status', 'INACTIVE');
-    }
-
-    /**
-     * Get the process definitions from BPMN field.
-     *
-     * @param bool $forceParse
-     *
-     * @return \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
-     */
-    public function getDefinitions($forceParse = false, $engine = null)
-    {
-        if ($forceParse || empty($this->bpmnDefinitions)) {
-            $options = ['process' => $this];
-            !$engine ?: $options['engine'] = $engine;
-            $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
-            if ($this->bpmn) {
-                $this->bpmnDefinitions->loadXML($this->bpmn);
-                //Load the collaborations if exists
-                $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
-                foreach ($collaborations as $collaboration) {
-                    try {
-                        $collaboration->getBpmnElementInstance();
-                    } catch (\ProcessMaker\Nayra\Exceptions\ElementNotFoundException $e) {
-                        if (is_array($this->warnings)) {
-                            $warnings = $this->warnings;
-                        } else {
-                            $warnings = [];
-                        }
-
-                        $warnings[] = [
-                            'title' => __('Element Not Found'),
-                            'text' => $e->getMessage()
-                        ];
-                        $this->warnings = $warnings;
-                    }
-                }
-            }
-        }
-        return $this->bpmnDefinitions;
     }
 
     public function getCollaborations()
