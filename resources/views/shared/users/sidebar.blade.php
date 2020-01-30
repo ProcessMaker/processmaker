@@ -1,12 +1,4 @@
 <div class="profile-sidebar">
-
-    <div class="card card-body p-3">
-        @foreach ($addons as $addon)
-            {{ __($addon['title']) }}
-            {!! __($addon['content']) !!}
-        @endforeach
-    </div>
-
     <div class="card card-body p-3">
         <h5 class="mb-3 font-weight-bold">{{__('Avatar')}}</h5>
         <div align="center" data-toggle="modal" data-target="#updateAvatarModal">
@@ -94,7 +86,8 @@
                     @{{errors.status}}
                 </div>
             </div>
-    </div><div class="card card-body mt-3">
+    </div>
+    <div class="card card-body mt-3">
         <h5 class="mb-3 font-weight-bold">{{__('Settings')}}</h5>
         <div class="form-group">
             {!!Form::label('datetime_format', __('Date Format'));!!}
@@ -122,4 +115,12 @@
         </div>
 
     </div>
+    @isset($addons)
+        <div class="card card-body mt-3">
+            @foreach ($addons as $addon)
+                {{ __($addon['title']) }}
+                {!! __($addon['content']) !!}
+            @endforeach
+        </div>
+    @endisset
 </div>

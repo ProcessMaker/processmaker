@@ -46,7 +46,7 @@ class ProfileController extends Controller
                                 }
                             );
 
-        $addons = $this->getPluginAddons('dynamic-homepage-edit', []);
+        $addons = $this->getPluginAddons('edit', []);
 
         return view('profile.edit',
             compact('currentUser', 'states', 'timezones', 'countries', 'datetimeFormats', 'availableLangs',
