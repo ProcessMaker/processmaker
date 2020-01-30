@@ -314,6 +314,11 @@ class ProcessRequestToken extends Model implements TokenInterface
             $result = 'completed';
         }
 
+        if ($this->status === 'TRIGGERED') {
+            $result = 'triggered';
+
+        }
+
         return $result;
     }
 

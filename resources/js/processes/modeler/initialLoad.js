@@ -104,6 +104,14 @@ ProcessMaker.EventBus.$on(
         },
       ],
     });
+    registerInspectorExtension(startEvent, {
+      component: "Interstitial",
+      config: {
+        label: "Display Next Assigned Task to Task Assignee",
+        helper: "Directs Task assignee to the next assigned Task",
+        name: "interstitial"
+      }
+    });
 
     /* Register the inspector extensions for tasks */
     registerInspectorExtension(task, {

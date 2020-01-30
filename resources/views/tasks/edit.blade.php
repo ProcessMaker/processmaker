@@ -118,114 +118,112 @@
                 </div>
             </div>
             <div class="ml-md-3 mt-3 mt-md-0">
-                <template v-if="dateDueAt">
-                    <div class="card">
-                        <div :class="statusCard">
-                            <h4 style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</h4>
-                        </div>
-                        <ul class="list-group list-group-flush w-100">
-                            <li class="list-group-item" v-if="showDueAtDates">
-                                <i class='far fa-calendar-alt'></i>
-                                <small> @{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}
-                                </small>
-                                <br>
-                                @{{ moment(dateDueAt).format() }}
-                            </li>
-
-
-                            <li class="list-group-item" v-if="!showDueAtDates">
-                                <i class='far fa-calendar-alt'></i>
-                                <small> @{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}
-                                </small>
-                                <br>
-                                @{{ moment(completedAt).format() }}
-                            </li>
-
-                            <li class="list-group-item">
-                                <h5>{{__('Assigned To')}}</h5>
-                                <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
-                                              :input-data="task.user"></avatar-image>
-                              <div v-if="task.definition.allowReassignment === 'true'">
-                                <br>
-                                <span>
-                                    <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
-                                            @click="show">
-                                        <i class="fas fa-user-friends"></i> {{__('Reassign')}}
-                                    </button>
-                                  <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
-                                         @hide="cancelReassign"
-                                         v-cloak>
-                                    <div class="form-group">
-                                        {!!Form::label('user', __('User'))!!}
-                                        <multiselect v-model="selectedUser"
-                                                     placeholder="{{__('Select the user to reassign to the task')}}"
-                                                     :options="usersList"
-                                                     :multiple="false"
-                                                     track-by="fullname"
-                                                     :show-labels="false"
-                                                     :searchable="false"
-                                                     :internal-search="false"
-                                                     @search-change="loadUsers"
-                                                     label="fullname">
-                                             <template slot="noResult">
-                                                {{ __('No elements found. Consider changing the search query.') }}
-                                            </template>
-                                            <template slot="noOptions">
-                                                {{ __('No Data Available') }}
-                                            </template>
-                                            <template slot="tag" slot-scope="props">
-                                                <span class="multiselect__tag  d-flex align-items-center"
-                                                      style="width:max-content;">
-                                                    <span class="option__desc mr-1">
-                                                        <span class="option__title">@{{ props.option.fullname }}</span>
-                                                    </span>
-                                                    <i aria-hidden="true" tabindex="1"
-                                                       @click="props.remove(props.option)"
-                                                       class="multiselect__tag-icon"></i>
-                                                </span>
-                                            </template>
-
-                                            <template slot="option" slot-scope="props">
-                                                <div class="option__desc d-flex align-items-center">
-                                                    <span class="option__title mr-1">@{{ props.option.fullname }}</span>
-                                                </div>
-                                            </template>
-                                        </multiselect>
-                                    </div>
-                                    <div slot="modal-footer">
-                                        <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
-                                            {{__('Cancel')}}
-                                        </button>
-                                        <button type="button" class="btn btn-secondary ml-2" @click="reassignUser"
-                                                :disabled="disabled">
-                                            {{__('Reassign')}}
-                                        </button>
-                                    </div>
-                                  </b-modal>
-                                </span>
-                              </div>
-                            </li>
-                            <li class="list-group-item">
-                                <i class="far fa-calendar-alt"></i>
-                                <small> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</small>
-                                <br>
-                                @{{ moment(createdAt).format() }}
-                            </li>
-                            <li class="list-group-item">
-                                <h5>{{__('Request')}}</h5>
-                                <a href="{{route('requests.show', [$task->process_request_id])}}">
-                                    #{{$task->process_request_id}} {{$task->process->name}}
-                                </a>
-                                <br><br>
-                                <h5>{{__('Requested By')}}</h5>
-                                <avatar-image v-if="task.requestor" size="32"
-                                              class="d-inline-flex pull-left align-items-center"
-                                              :input-data="task.requestor"></avatar-image>
-                                <p v-if="!task.requestor">{{__('Web Entry')}}</p>
-                            </li>
-                        </ul>
+                <div class="card">
+                    <div :class="statusCard">
+                        <h4 style="margin:0; padding:0; line-height:1">@{{$t(task.advanceStatus)}}</h4>
                     </div>
-                </template>
+                    <ul class="list-group list-group-flush w-100">
+                        <li v-if="dateDueAt" class="list-group-item" v-if="showDueAtDates">
+                            <i class='far fa-calendar-alt'></i>
+                            <small> @{{$t(dueLabel)}} @{{ moment(dateDueAt).fromNow() }}
+                            </small>
+                            <br>
+                            @{{ moment(dateDueAt).format() }}
+                        </li>
+
+
+                        <li class="list-group-item" v-if="!showDueAtDates">
+                            <i class='far fa-calendar-alt'></i>
+                            <small> @{{$t(dueLabel)}} @{{ moment().to(moment(completedAt)) }}
+                            </small>
+                            <br>
+                            @{{ moment(completedAt).format() }}
+                        </li>
+
+                        <li class="list-group-item">
+                            <h5>{{__('Assigned To')}}</h5>
+                            <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
+                                          :input-data="task.user"></avatar-image>
+                          <div v-if="task.definition.allowReassignment === 'true'">
+                            <br>
+                            <span>
+                                <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
+                                        @click="show">
+                                    <i class="fas fa-user-friends"></i> {{__('Reassign')}}
+                                </button>
+                              <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
+                                      @hide="cancelReassign"
+                                      v-cloak>
+                                <div class="form-group">
+                                    {!!Form::label('user', __('User'))!!}
+                                    <multiselect v-model="selectedUser"
+                                                  placeholder="{{__('Select the user to reassign to the task')}}"
+                                                  :options="usersList"
+                                                  :multiple="false"
+                                                  track-by="fullname"
+                                                  :show-labels="false"
+                                                  :searchable="false"
+                                                  :internal-search="false"
+                                                  @search-change="loadUsers"
+                                                  label="fullname">
+                                          <template slot="noResult">
+                                            {{ __('No elements found. Consider changing the search query.') }}
+                                        </template>
+                                        <template slot="noOptions">
+                                            {{ __('No Data Available') }}
+                                        </template>
+                                        <template slot="tag" slot-scope="props">
+                                            <span class="multiselect__tag  d-flex align-items-center"
+                                                  style="width:max-content;">
+                                                <span class="option__desc mr-1">
+                                                    <span class="option__title">@{{ props.option.fullname }}</span>
+                                                </span>
+                                                <i aria-hidden="true" tabindex="1"
+                                                    @click="props.remove(props.option)"
+                                                    class="multiselect__tag-icon"></i>
+                                            </span>
+                                        </template>
+
+                                        <template slot="option" slot-scope="props">
+                                            <div class="option__desc d-flex align-items-center">
+                                                <span class="option__title mr-1">@{{ props.option.fullname }}</span>
+                                            </div>
+                                        </template>
+                                    </multiselect>
+                                </div>
+                                <div slot="modal-footer">
+                                    <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
+                                        {{__('Cancel')}}
+                                    </button>
+                                    <button type="button" class="btn btn-secondary ml-2" @click="reassignUser"
+                                            :disabled="disabled">
+                                        {{__('Reassign')}}
+                                    </button>
+                                </div>
+                              </b-modal>
+                            </span>
+                          </div>
+                        </li>
+                        <li class="list-group-item">
+                            <i class="far fa-calendar-alt"></i>
+                            <small> {{__('Assigned') }} @{{ moment(createdAt).fromNow() }}</small>
+                            <br>
+                            @{{ moment(createdAt).format() }}
+                        </li>
+                        <li class="list-group-item">
+                            <h5>{{__('Request')}}</h5>
+                            <a href="{{route('requests.show', [$task->process_request_id, 'skipInterstitial' => '1'])}}">
+                                #{{$task->process_request_id}} {{$task->process->name}}
+                            </a>
+                            <br><br>
+                            <h5>{{__('Requested By')}}</h5>
+                            <avatar-image v-if="task.requestor" size="32"
+                                          class="d-inline-flex pull-left align-items-center"
+                                          :input-data="task.requestor"></avatar-image>
+                            <p v-if="!task.requestor">{{__('Web Entry')}}</p>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -291,7 +289,7 @@
             return dueLabels[this.task.advanceStatus] || '';
           },
           taskIsCompleted() {
-            return this.task.advanceStatus === 'completed';
+            return this.task.advanceStatus === 'completed' || this.task.advanceStatus === 'triggered';
           },
           taskIsOpenOrOverdue() {
             return this.task.advanceStatus === 'open' || this.task.advanceStatus === 'overdue';
@@ -353,7 +351,7 @@
             }
           },
           checkTaskStatus(redirect=false) {
-            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
+            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
               this.closeTask();
             }
           },
@@ -365,7 +363,7 @@
             }
           },
           redirectToNextAssignedTask(redirect = false) {
-            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED') {
+            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
               window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user_id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
                 if (response.data.data.length > 0) {
                   const firstNextAssignedTask = response.data.data[0].id;
