@@ -89,6 +89,7 @@
                                 </div>
                             </template>
                             <template v-if="taskIsCompleted">
+                              <div class="card card-body border-top-0 h-100">
                                 <task-screen
                                     ref="taskWaitScreen"
                                     v-if="task.allow_interstitial"
@@ -107,6 +108,7 @@
                                 <div v-else class="card card-body text-center" v-cloak>
                                     <h1>{{ __('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
                                 </div>
+                              </div>
                             </template>
                         </div>
                         @can('editData', $task->processRequest)

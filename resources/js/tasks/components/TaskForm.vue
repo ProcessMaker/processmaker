@@ -39,6 +39,7 @@ export default {
       ProcessMaker.apiClient
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(() => {
+          this.disabled = false;
           window.ProcessMaker.alert(message, 'success', 5, true);
         })
         .catch(error => {
@@ -60,6 +61,12 @@ export default {
       deep: true,
       handler(data) {
         this.formData = data;
+      }
+    },
+    screen: {
+      deep: true,
+      handler() {
+        this.disabled = false;
       }
     }
   }
