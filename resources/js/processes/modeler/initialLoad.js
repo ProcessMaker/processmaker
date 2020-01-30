@@ -33,6 +33,7 @@ import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
 import {registerNodes} from "@processmaker/modeler";
 import Interstitial from "./components/inspector/Interstitial";
+import SelectUserGroup from "../../components/SelectUserGroup";
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('UserById', UserById);
@@ -46,6 +47,7 @@ Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
 Vue.component("Interstitial", Interstitial);
+Vue.component("SelectUserGroup", SelectUserGroup);
 
 let nodeTypes = [
   endEvent,

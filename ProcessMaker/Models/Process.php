@@ -537,6 +537,7 @@ class Process extends Model implements HasMedia
         }
 
         switch ($assignmentType) {
+            case 'user_group':
             case 'group':
                 $user = $this->getNextUserFromGroupAssignment($activity->getId());
                 break;
@@ -694,6 +695,19 @@ class Process extends Model implements HasMedia
                 $eval = $formalExp($instanceData);
                 if ($eval) {
                     switch ($item->type) {
+                        case 'user_group':
+                            $users =  [];
+                            foreach ($item->assignee->users as $user) {
+                                $users[$user] = $user;
+                            }
+                            foreach ($item->assignee->groups as $group) {
+                                $this->getConsolidatedUsers($group, $users);
+                            }
+                            $user = $this->getNextUserFromGroupAssignment(
+                                $activity->getId(),
+                                $users
+                            );
+                            break;
                         case 'group':
                             $users = [];
                             $user = $this->getNextUserFromGroupAssignment(
@@ -1107,5 +1121,5 @@ class Process extends Model implements HasMedia
     {
         return $this->versions()->orderBy('id', 'desc')->first();
     }
-    
+
 }
