@@ -240,7 +240,8 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function getDefinition($asObject = false)
     {
-        $definitions = $this->processRequest->process->getDefinitions();
+        $process = $this->processRequest->processVersion ?: $this->processRequest->process;
+        $definitions = $process->getDefinitions();
         $element = $definitions->findElementById($this->element_id);
         if (!$element) {
             return [];
@@ -312,6 +313,11 @@ class ProcessRequestToken extends Model implements TokenInterface
 
         if ($this->status === 'CLOSED') {
             $result = 'completed';
+        }
+
+        if ($this->status === 'TRIGGERED') {
+            $result = 'triggered';
+
         }
 
         return $result;
