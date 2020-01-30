@@ -53,7 +53,7 @@
     "@processmaker/modeler": "^0.18.2",
     "@processmaker/processmaker-bpmn-moddle": "^0.4.6",
     "@processmaker/screen-builder": "^0.21.4",
-    "@processmaker/vue-form-elements": "^0.13.1",
+    "@processmaker/vue-form-elements": "^0.13.2",
     "babel-eslint": "^10.0.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "bootstrap": "^4.4.1",
