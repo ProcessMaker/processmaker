@@ -494,14 +494,9 @@
   };
 </script>
 
+
 <style lang="scss" scoped>
-    $
-    transition:
-
-    .25
-    s
-
-    ;
+    $transition: .25s;
 
     .list-users-groups {
         width: 100%;
@@ -516,11 +511,9 @@
     }
 
     .special-assignment-header {
-
-    label {
-        padding-top: 4px;
-    }
-
+        label {
+            padding-top: 4px;
+        }
     }
 
     .special-assignment-wrapper {
@@ -528,7 +521,7 @@
         height: 0;
         opacity: 0;
         overflow: hidden;
-        transition: height $ transition, opacity $ transition;
+        transition: height $transition, opacity $transition;
     }
 
     .special-assignment-form {
@@ -547,56 +540,46 @@
         font-size: 12px;
         font-weight: bold;
         padding: 2px 4px;
-        transition: opacity $ transition;
-
-    &
-    .inactive {
-        opacity: 0;
-    }
-
+        transition: opacity $transition;
+        &.inactive {
+            opacity: 0;
+        }
     }
 
     .list-group-item {
         padding: 0;
         margin-bottom: 9px;
 
-    .btn-special-assignment-delete {
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 75%);
-        border: 0;
-        color: gray;
-        cursor: pointer;
-        margin: 0;
-        outline: 0;
-        padding: 4px 4px 4px 60px;
-        position: absolute;
-        right: 0;
-        top: 0;
+        .btn-special-assignment-delete {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 75%);
+            border: 0;
+            color: gray;
+            cursor: pointer;
+            margin: 0;
+            outline: 0;
+            padding: 4px 4px 4px 60px;
+            position: absolute;
+            right: 0;
+            top: 0;
 
-    &
-    :hover {
-        color: #ed4757;
-    }
+            &:hover {
+                color: #ed4757;
+            }
+        }
 
-    }
-
-    &
-    :hover {
-
-    .btn-special-assignment-delete {
-        background: linear-gradient(90deg, rgba(247, 248, 249, 0) 0%, rgba(247, 248, 249, 1) 75%);
-    }
-
-    }
+        &:hover {
+            .btn-special-assignment-delete {
+                background: linear-gradient(90deg, rgba(247,248,249,0) 0%, rgba(247,248,249,1) 75%);
+            }
+        }
     }
 
     .special-assignment-section {
         padding: 4px 1px 4px 4px;
 
-    &
-    :first-child {
-        border-bottom: 1px solid #eee;
-    }
-
+        &:first-child {
+            border-bottom: 1px solid #eee;
+        }
     }
 
     .special-assignment-value {
@@ -616,3 +599,4 @@
         padding: 0px;
     }
 </style>
+
