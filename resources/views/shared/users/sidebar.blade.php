@@ -116,11 +116,8 @@
 
     </div>
     @isset($addons)
-        <div class="card card-body mt-3">
             @foreach ($addons as $addon)
-                {{ __($addon['title']) }}
                 {!! __($addon['content']) !!}
             @endforeach
-        </div>
     @endisset
 </div>
