@@ -5,9 +5,11 @@ use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
 {
+    use HasControllerAddons;
     /*
     |--------------------------------------------------------------------------
     | Login Controller
