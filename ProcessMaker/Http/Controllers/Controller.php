@@ -13,7 +13,7 @@ use ProcessMaker\Traits\HasControllerAddons;
  */
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, HasControllerAddons;
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     /**
      * Our overridden callAction unsets the parameters used by our middleware since

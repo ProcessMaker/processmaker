@@ -11,9 +11,12 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class ProcessController extends Controller
 {
+    use HasControllerAddons;
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.

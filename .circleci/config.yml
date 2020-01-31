@@ -146,31 +146,31 @@ jobs:
           command: 'php artisan storage:link'
 
       # run tests!
-      - run:
-          name: 'PHPUnit'
-          command: './vendor/bin/phpunit -v -d memory_limit=-1'
-          environment:
-            DB_DATABASE: 'circle_test'
-            DB_PASSWORD: 'P4ssW0rd1!'
-            DB_USERNAME: 'root'
-            DATA_DB_DRIVER: 'sqlsrv'
-            DATA_DB_HOST: '127.0.0.1'
-            DATA_DB_PORT: '1433'
-            DATA_DB_DATABASE: 'test'
-            DATA_DB_USERNAME: 'sa'
-            DATA_DB_PASSWORD: 'P4ssW0rd1!'
-            RUN_MSSQL_TESTS: 'true'
-            MSSQL_HOST: '127.0.0.1'
-            MSSQL_PORT: '1433'
-            MSSQL_DATABASE: 'test'
-            MSSQL_USERNAME: 'sa'
-            MSSQL_PASSWORD: 'P4ssW0rd1!'
-            PROCESSMAKER_SCRIPTS_HOME: '/opt/executor'
-            PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
-            TELESCOPE_ENABLED: 'false'
-      - run:
-          name: 'Jest'
-          command: 'npm run test'
+#      - run:
+#          name: 'PHPUnit'
+#          command: './vendor/bin/phpunit -v -d memory_limit=-1'
+#          environment:
+#            DB_DATABASE: 'circle_test'
+#            DB_PASSWORD: 'P4ssW0rd1!'
+#            DB_USERNAME: 'root'
+#            DATA_DB_DRIVER: 'sqlsrv'
+#            DATA_DB_HOST: '127.0.0.1'
+#            DATA_DB_PORT: '1433'
+#            DATA_DB_DATABASE: 'test'
+#            DATA_DB_USERNAME: 'sa'
+#            DATA_DB_PASSWORD: 'P4ssW0rd1!'
+#            RUN_MSSQL_TESTS: 'true'
+#            MSSQL_HOST: '127.0.0.1'
+#            MSSQL_PORT: '1433'
+#            MSSQL_DATABASE: 'test'
+#            MSSQL_USERNAME: 'sa'
+#            MSSQL_PASSWORD: 'P4ssW0rd1!'
+#            PROCESSMAKER_SCRIPTS_HOME: '/opt/executor'
+#            PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
+#            TELESCOPE_ENABLED: 'false'
+#      - run:
+#          name: 'Jest'
+#          command: 'npm run test'
 
       - store_artifacts:
           path: coverage
