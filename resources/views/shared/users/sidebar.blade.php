@@ -116,8 +116,8 @@
 
     </div>
     @isset($addons)
-            @foreach ($addons as $addon)
-                {!! __($addon['content']) !!}
-            @endforeach
+        @foreach ($addons as $addon)
+            {!! __($addon['content']) !!}
+        @endforeach
     @endisset
 </div>

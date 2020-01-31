@@ -28,11 +28,13 @@
                         <a class="nav-item nav-link" id="nav-groups-tab" data-toggle="tab" href="#nav-notifications"
                            role="tab"
                            aria-controls="nav-notifications" aria-selected="true">{{__('Notifications')}}</a>
-                        @foreach ($addons as $addon)
-                            <a class="nav-item nav-link" id="{{$addon['id'] . '-tab'}}" data-toggle="tab"
-                               href="{{'#' . $addon['id']}}" role="tab"
-                               aria-controls="nav-notifications" aria-selected="true">{{ __($addon['title']) }}</a>
-                        @endforeach
+                        @isset($addons)
+                            @foreach ($addons as $addon)
+                                <a class="nav-item nav-link" id="{{$addon['id'] . '-tab'}}" data-toggle="tab"
+                                   href="{{'#' . $addon['id']}}" role="tab"
+                                   aria-controls="nav-notifications" aria-selected="true">{{ __($addon['title']) }}</a>
+                            @endforeach
+                        @endisset
                     </div>
                 </nav>
                 <div class="card card-body card-body-nav-tabs">
