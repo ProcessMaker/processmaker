@@ -224,12 +224,14 @@
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
                         </div>
-                        @foreach ($addons as $addon)
-                            <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel"
-                                 aria-labelledby="nav-notifications-tab">
-                                {!! $addon['content'] !!}
-                            </div>
-                        @endforeach
+                        @isset($addons)
+                            @foreach ($addons as $addon)
+                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel"
+                                     aria-labelledby="nav-notifications-tab">
+                                    {!! $addon['content'] !!}
+                                </div>
+                            @endforeach
+                        @endisset
                     </div>
                 </div>
 
