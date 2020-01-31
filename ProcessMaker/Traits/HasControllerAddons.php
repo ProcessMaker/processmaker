@@ -16,6 +16,10 @@ trait HasControllerAddons
      */
     protected function getPluginAddons($method, array $data)
     {
+        if (!isset(static::$addons)) {
+            return;
+        }
+
         $addons = [];
         foreach(static::$addons as $addon) {
             // The addon must have the requested method and must be associated to the current controller
