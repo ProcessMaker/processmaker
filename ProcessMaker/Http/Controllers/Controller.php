@@ -5,6 +5,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use ProcessMaker\Traits\HasControllerAddons;
 
 /**
  * Our base controller.  Any shared functionality across all web controllers can go here
@@ -12,7 +13,7 @@ use Illuminate\Routing\Controller as BaseController;
  */
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, HasControllerAddons;
 
     /**
      * Our overridden callAction unsets the parameters used by our middleware since

@@ -5,7 +5,6 @@ use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
 {
@@ -21,7 +20,6 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
-    use HasControllerAddons;
 
     /**
      * Where to redirect users after login.
@@ -39,10 +37,6 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except(['logout', 'keepAlive']);
-    }
-
-    public function redirectTo() {
-        return "xxx";
     }
 
     public function loginWithIntendedCheck(Request $request) {

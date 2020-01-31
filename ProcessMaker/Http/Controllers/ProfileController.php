@@ -6,13 +6,9 @@ use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\JsonData;
 use ProcessMaker\i18nHelper;
-use ProcessMaker\Traits\HasControllerAddons;
-
 
 class ProfileController extends Controller
 {
-    use HasControllerAddons;
-
     /**
      * edit your profile.
      *

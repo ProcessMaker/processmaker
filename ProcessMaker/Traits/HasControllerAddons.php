@@ -18,7 +18,7 @@ trait HasControllerAddons
     {
         $addons = [];
         foreach(static::$addons as $addon) {
-            if($addon['method'] === $method) {
+            if($addon['method'] === $method && $addon['scope'] === get_class($this)) {
                 if ($addon['data'] && is_callable($addon['data'])) {
                     $data = call_user_func($addon['data'], $data);
                 }
@@ -41,6 +41,8 @@ trait HasControllerAddons
      */
     public static function registerAddon(array $config)
     {
+        // Add the controller to which the addon is attached
+        $config['scope'] = static::class;
         static::$addons[] = $config;
     }
 }
