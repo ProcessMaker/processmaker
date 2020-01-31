@@ -97,6 +97,25 @@ class RequestController extends Controller
      */
     public function show(ProcessRequest $request, Media $mediaItems)
     {
+        if (!request()->input('skipInterstitial') && $request->status === 'ACTIVE') {
+            $startEvent = $request->tokens()->orderBy('id')->first();
+            if ($startEvent) {
+                $definition = $startEvent->getDefinition();
+                if (isset($definition['allowInterstitial']) && !empty($definition['interstitialScreenRef'])) {
+                    $allowInterstitial = filter_var($definition['allowInterstitial'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                } else {
+                    $allowInterstitial = false;
+                }
+                if ($allowInterstitial && $request->user_id == Auth::id()) {
+                    $active = $request->tokens()
+                        ->where('user_id', Auth::id())
+                        ->where('status', 'ACTIVE')
+                        ->orderBy('id')->first();
+                    return redirect(route('tasks.edit', ['task' => $active ? $active->getKey() : $startEvent->getKey()]));
+                }
+            }
+        }
+
         $this->authorize('view', $request);
         $request->participants;
         $request->user;

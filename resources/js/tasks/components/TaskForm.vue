@@ -39,13 +39,13 @@ export default {
       ProcessMaker.apiClient
         .put("tasks/" + this.tokenId, {status:"COMPLETED", data: this.formData})
         .then(() => {
+          this.disabled = false;
           window.ProcessMaker.alert(message, 'success', 5, true);
         })
         .catch(error => {
           this.disabled = false;
-          let message = error.response.data && error.response.data.errors && this.displayErrors(error.response.data.errors) || error && error.message;
-          ProcessMaker.alert(error.response.data.message, 'danger');
-          ProcessMaker.alert(message, 'danger');
+          // If there are errors, the user will be redirected to the request page
+          // to view error details. This is done in loadTask in edit.blade.php
         });
     },
     onUpdate(data) {
@@ -60,6 +60,12 @@ export default {
       deep: true,
       handler(data) {
         this.formData = data;
+      }
+    },
+    screen: {
+      deep: true,
+      handler() {
+        this.disabled = false;
       }
     }
   }

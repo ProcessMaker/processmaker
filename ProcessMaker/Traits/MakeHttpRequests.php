@@ -59,12 +59,18 @@ trait MakeHttpRequests
             }
         }
 
-        if (empty($endpoint['body']) && isset($config['dataMapping'])) {
+        if (isset($config['dataMapping'])) {
             $mappedData = [];
             foreach ($config['dataMapping'] as $map) {
-                $mappedData[$map['key']] = '{{ ' . $map['value'] . ' }}';
+                $mappedData[$map['key']] =  $map['value'];
             }
-            $endpoint['body'] = json_encode(['data' => $mappedData]);
+
+            if (empty($endpoint['body'])) {
+                $endpoint['body'] = json_encode($mappedData);
+            } else  {
+                $endpointBody = json_decode($endpoint['body'], true);
+                $endpoint['body'] = json_encode(array_merge($endpointBody, $mappedData));
+            }
         }
 
         $body = $mustache->render($endpoint['body'], $data);

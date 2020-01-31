@@ -16,6 +16,6 @@ class TaskDoesNotHaveRequesterException extends Exception
      */
     public function __construct()
     {
-        parent::__construct(__('exceptions.TaskDoesNotHaveRequesterException'));
+        parent::__construct(__('This process was started by an anonymous user so this task can not be assigned to the requester'));
     }
 }

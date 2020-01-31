@@ -3513,6 +3513,35 @@
                 }
             }
         },
+        "/scripts/execution/{key}": {
+            "get": {
+                "tags": [
+                    "Scripts"
+                ],
+                "summary": "Get the response of a script execution by execution key",
+                "operationId": "getScriptExecutionResponse",
+                "parameters": [
+                    {
+                        "name": "key",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "response of a script execution",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/scripts/{script_id}": {
             "get": {
                 "tags": [
@@ -5362,6 +5391,10 @@
             "scriptsPreview": {
                 "properties": {
                     "status": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "string"
+                    },
+                    "key": {
                         "description": "Represents an Eloquent model of a Script",
                         "type": "string"
                     }

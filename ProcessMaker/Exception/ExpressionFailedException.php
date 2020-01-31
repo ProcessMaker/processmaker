@@ -19,6 +19,6 @@ class ExpressionFailedException extends Exception
      */
     public function __construct(Throwable $previous)
     {
-        parent::__construct(__('exceptions.ExpressionFailedException', ['error' => $previous->getMessage()]), 0, $previous);
+        parent::__construct(__('Failed to evaluate expression. :error', ['error' => $previous->getMessage()]), 0, $previous);
     }
 }
