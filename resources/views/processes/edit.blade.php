@@ -240,14 +240,6 @@
 @section('js')
     <script src="{{mix('js/processes/edit.js')}}"></script>
     <script>
-      var addons = [];
-    </script>
-    @foreach ($addons as $addon)
-        @if (!empty($addon['script']))
-            {!! $addon['script'] !!}
-        @endif
-    @endforeach
-    <script>
       test = new Vue({
         el: '#editProcess',
         mixins: addons,
