@@ -168,7 +168,7 @@ jobs:
             PROCESSMAKER_SCRIPTS_HOME: '/opt/executor'
             PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
             TELESCOPE_ENABLED: 'false'
-#      - run:
+      - run:
           name: 'Jest'
           command: 'npm run test'
 
