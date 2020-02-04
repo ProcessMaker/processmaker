@@ -62,11 +62,14 @@ class CallActivityMultilevelTest extends TestCase
         $this->completeTask($activeTask, []);
 
         // Get active tokens
+        $instance->refresh();
+        $childRequest->refresh();
+        $grandChildRequest->refresh();
         $activeTokensParent = $instance->tokens()->where('status', 'ACTIVE')->get();
         $activeTokensChild = $childRequest->tokens()->where('status', 'ACTIVE')->get();
         $activeTokensGrandChild = $grandChildRequest->tokens()->where('status', 'ACTIVE')->get();
-
-        // Assert all the request al completed
+        
+        // Assertion: All the request were completed
         $this->assertCount(0, $activeTokensParent);
         $this->assertCount(0, $activeTokensChild);
         $this->assertCount(0, $activeTokensGrandChild);

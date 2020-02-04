@@ -28,7 +28,7 @@ class CallActivity implements CallActivityInterface
     }
 
     /**
-     * Configure the activity to go to a FAILING status when activated.
+     * Initialize the Call Activity element.
      *
      */
     protected function initActivity()
@@ -75,7 +75,8 @@ class CallActivity implements CallActivityInterface
                 $startId = $config['startEvent'];
             }
         }
-        $startEvent = $startId ? $callable->getEngine()->getStorage()->getElementInstanceById($startId) : null;
+
+        $startEvent = $startId ? $callable->ownerDocument->getElementInstanceById($startId) : null;
 
         $dataStore->setData($data);
         $instance = $callable->call($dataStore, $startEvent);
@@ -144,14 +145,14 @@ class CallActivity implements CallActivityInterface
         $calledElementRef = $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT);
         $refs = explode('-', $calledElementRef);
         if (count($refs) === 1) {
-            $localBpmn = $this->ownerProcess->getEngine()->getStorage();
-            return $localBpmn->getElementInstanceById($calledElementRef);
+            return $this->ownerDocument->getElementInstanceById($calledElementRef);
         } elseif (count($refs) === 2) {
             // Capability to reuse other processes inside a process
             $process = Process::findOrFail($refs[1]);
             $engine = $this->getProcess()->getEngine();
-            return isset($engine->currentInstance) ? $engine->currentInstance->getProcess()
-                : $process->getDefinitions(false, $engine)->getElementInstanceById($refs[0]);
+            $definitions = $engine->getDefinition($process->getLatestVersion());
+            $response = $definitions->getElementInstanceById($refs[0]);
+            return $response;
         }
     }
 
