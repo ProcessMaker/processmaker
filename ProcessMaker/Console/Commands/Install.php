@@ -171,8 +171,6 @@ class Install extends Command
             $this->env['DATA_DB_DATABASE'] = $this->env['DB_DATABASE'];
             $this->env['DATA_DB_USERNAME'] = $this->env['DB_USERNAME'];
             $this->env['DATA_DB_PASSWORD'] = $this->env['DB_PASSWORD'];
-            $this->env['DATA_DB_CHARSET'] = 'utf8mb4';
-            $this->env['DATA_DB_COLLATION'] = 'utf8mb4_unicode_ci';
             $this->env['DATA_DB_ENGINE'] = 'InnoDB';
         }
         do {
@@ -413,7 +411,6 @@ class Install extends Command
         $this->env['DATA_DB_DATABASE'] = $this->anticipateOptional('data-name', __('Enter your DB database name'), ['data'], 'data');
         $this->env['DATA_DB_USERNAME'] = $this->askOptional('data-username', __('Enter your DB username'));
         $this->env['DATA_DB_PASSWORD'] = $this->secretOptional('data-password', __('Enter your DB password (input hidden)'));
-        $this->env['DATA_DB_CHARSET'] = 'utf8';
         $this->env['DATA_DB_SCHEMA'] = $this->anticipateOptional('data-schema', __('Enter your DB Schema'), ['public'], 'public');
     }
 
@@ -429,8 +426,6 @@ class Install extends Command
         $this->env['DATA_DB_DATABASE'] = $this->anticipateOptional('data-name', __('Enter your DB database name'), ['data'], 'data');
         $this->env['DATA_DB_USERNAME'] = $this->askOptional('data-username', __('Enter your DB username'));
         $this->env['DATA_DB_PASSWORD'] = $this->secretOptional('data-password', __('Enter your DB password (input hidden)'));
-        $this->env['DATA_DB_CHARSET'] = 'utf8mb4';
-        $this->env['DATA_DB_COLLATION'] = 'utf8mb4_unicode_ci';
         $this->env['DATA_DB_ENGINE'] = 'InnoDB';
     }
 
@@ -512,8 +507,6 @@ class Install extends Command
             'database' => $this->env['DATA_DB_DATABASE'],
             'username' => $this->env['DATA_DB_USERNAME'],
             'password' => $this->env['DATA_DB_PASSWORD'],
-            'charset' => isset($this->env['DATA_DB_CHARSET']) ? $this->env['DATA_DB_CHARSET'] : '',
-            'collation' => isset($this->env['DATA_DB_COLLATION']) ? $this->env['DATA_DB_COLLATION'] : '',
             'schema' => isset($this->env['DATA_DB_SCHEMA']) ? $this->env['DATA_DB_SCHEMA'] : '',
             'engine' => isset($this->env['DATA_DB_ENGINE']) ? $this->env['DATA_DB_ENGINE'] : '',
         ]]);
