@@ -8,11 +8,10 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\CallableElementInterface;
 
 /**
  * Call Activity model
@@ -76,7 +75,7 @@ class CallActivity implements CallActivityInterface
             }
         }
 
-        $startEvent = $startId ? $callable->ownerDocument->getElementInstanceById($startId) : null;
+        $startEvent = $startId ? $callable->getOwnerDocument()->getElementInstanceById($startId) : null;
 
         $dataStore->setData($data);
         $instance = $callable->call($dataStore, $startEvent);
@@ -145,7 +144,7 @@ class CallActivity implements CallActivityInterface
         $calledElementRef = $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT);
         $refs = explode('-', $calledElementRef);
         if (count($refs) === 1) {
-            return $this->ownerDocument->getElementInstanceById($calledElementRef);
+            return $this->getOwnerDocument()->getElementInstanceById($calledElementRef);
         } elseif (count($refs) === 2) {
             // Capability to reuse other processes inside a process
             $process = Process::findOrFail($refs[1]);
