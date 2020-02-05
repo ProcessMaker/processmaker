@@ -61,7 +61,7 @@
                   });
                   if (dataSource) {
                     data.push({
-                      "type": @json(__('Data Source')),
+                      "type": @json(__('Data Connector')),
                       "items": dataSource,
                     });
                   }
