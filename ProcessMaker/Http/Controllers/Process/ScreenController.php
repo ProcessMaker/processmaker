@@ -20,7 +20,7 @@ class ScreenController extends Controller
      * @param Request $request
      * @return Factory|View
      */
-    public function index()
+    public function index(Request $request)
     {
         $types = [];
         foreach(ScreenType::pluck('name')->toArray() as $type) {
@@ -38,6 +38,12 @@ class ScreenController extends Controller
             ],
             'countField' => 'screens_count',
             'apiListInclude' => 'screensCount',
+            'permissions' => [
+                'view'   => $request->user()->can('view-screen-categories'),
+                'create' => $request->user()->can('create-screen-categories'),
+                'edit'   => $request->user()->can('edit-screen-categories'),
+                'delete' => $request->user()->can('delete-screen-categories'),
+            ],
         ];
 
         $listConfig = (object) [

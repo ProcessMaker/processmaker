@@ -28,7 +28,7 @@
                                 @click="onAction('edit-item', props.rowData, props.rowIndex)"
                                 v-b-tooltip.hover
                                 :title="$t('Edit')"
-                                v-if="permission.includes('edit-process-categories')"
+                                v-if="permissions.edit"
                             >
                                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
                             </b-btn>
@@ -37,7 +37,7 @@
                                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                 v-b-tooltip.hover
                                 :title="$t('Remove')"
-                                v-if="permission.includes('delete-process-categories') && props.rowData[count] == 0"
+                                v-if="permissions.delete && props.rowData[count] == 0"
                             >
                                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
                             </b-btn>
@@ -63,7 +63,7 @@
 
   export default {
     mixins: [datatableMixin, dataLoadingMixin],
-    props: ["filter", "permission", "apiRoute", "include", "labelCount", "count", "loadOnStart"],
+    props: ["filter", "permissions", "apiRoute", "include", "labelCount", "count", "loadOnStart"],
     data () {
       return {
         localLoadOnStart: !!this.loadOnStart,

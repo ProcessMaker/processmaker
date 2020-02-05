@@ -50,6 +50,12 @@ class ProcessController extends Controller
             ],
             'countField' => 'processes_count',
             'apiListInclude' => 'processesCount',
+            'permissions' => [
+                'view'   => $request->user()->can('view-process-categories'),
+                'create' => $request->user()->can('create-process-categories'),
+                'edit'   => $request->user()->can('edit-process-categories'),
+                'delete' => $request->user()->can('delete-process-categories'),
+            ],
         ];
 
         $listConfig = (object)[

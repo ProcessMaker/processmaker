@@ -1,3 +1,4 @@
+@if ($config->permissions['view'])
 <div class="page-content mb-0" id="categories-listing">
     <div id="search-bar" class="search mb-3" vcloak>
         <div class="d-flex flex-column flex-md-row">
@@ -13,14 +14,14 @@
                     </div>
                 </div>
             </div>
-            @can('create-categories')
+            @if ($config->permissions['create'])
                 <div class="d-flex ml-md-2 flex-column flex-md-row">
                     <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
                             data-target="#createCategory" @click="emptyData">
                         <i class="fas fa-plus"></i> {{ __('Category') }}
                     </button>
                 </div>
-            @endcan
+            @endif
         </div>
     </div>
 
@@ -28,7 +29,7 @@
         ref="list"
         @reload="reload"
         :filter="filter"
-        :permission="{{ \Auth::user()->hasPermissionsFor('categories') }}"
+        :permissions="{{ json_encode($config->permissions) }}"
         api-route="{{route($config->routes->categoryListApi)}}"
         load-on-start="{{$config->showCategoriesTab ?? true}}"
         include="{{$config->apiListInclude}}"
@@ -37,7 +38,7 @@
         count="{{$config->countField}}">
     </categories-listing>
 
-    @can('create-process-categories')
+    @if ($config->permissions['create'] || $config->permissions['edit'])
         <div class="modal fade" tabindex="-1" role="dialog" id="createCategory" data-backdrop="static">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -76,7 +77,7 @@
 
             </div>
         </div>
-    @endcan
+    @endif
 
 </div>
 
@@ -162,3 +163,4 @@
       });
     </script>
 @append
+@endif
