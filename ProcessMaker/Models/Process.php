@@ -1078,4 +1078,13 @@ class Process extends Model implements HasMedia
         return $this->versions()->orderBy('id', 'desc')->first();
     }
 
+    /**
+     * Check if process is valid for execution
+     *
+     * @return boolean
+     */
+    public function isValidForExecution()
+    {
+        return empty($this->warnings) && !empty($this->getLatestVersion());
+    }
 }

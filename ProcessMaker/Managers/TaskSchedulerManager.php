@@ -47,6 +47,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         ScheduledTask::where('process_id', $process->id)
             ->where('type', 'TIMER_START_EVENT')
             ->delete();
+        if (!$process->isValidForExecution()) {
+            return;
+        }
         $definitions = $process->getDefinitions();
         if ($definitions) {
             $definitions->getEngine()->getJobManager()->enableRegisterStartEvents();
