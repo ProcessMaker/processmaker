@@ -225,6 +225,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
         $process = Process::find($id);
 
+        if (!$process->isValidForExecution()) {
+            return;
+        }
+
         // If a process is configured to pause timer start events we do nothing
         if ($process->pause_timer_start === 1) {
             return;
