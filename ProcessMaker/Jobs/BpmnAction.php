@@ -30,7 +30,7 @@ abstract class BpmnAction implements ShouldQueue
         if (isset($this->instanceId)) {
             $instance = ProcessRequest::find($this->instanceId);
             $processModel = $instance->process;
-            $definitions = $instance->processVersion->getDefinitions(true);
+            $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
             $engine = $definitions->getEngine();
             $instance = $engine->loadProcessRequest($instance);
         } else {

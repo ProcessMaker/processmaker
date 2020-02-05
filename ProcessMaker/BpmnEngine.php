@@ -125,12 +125,12 @@ class BpmnEngine implements EngineInterface
                 return $executionInstance;
             }
         }
-        $definitions = $this->getDefinition($instance->processVersion);
+        $definitions = $this->getDefinition($instance->processVersion ?? $instance->process);
         $instance = $this->loadExecutionInstance($instance->getKey(), $definitions);
         return $instance;
     }
 
-    public function getDefinition(ProcessVersion $processVersion)
+    public function getDefinition($processVersion)
     {
         $key = $processVersion->getKey();
         if(!isset($this->definitions[$key])) {
