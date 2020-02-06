@@ -368,6 +368,11 @@ button:focus.navbar-toggler {
   margin-top: 7px;
 }
 
+.form-border {
+  border: 1px solid $form-control-border-color;
+  border-radius: $form-control-border-radius;
+}
+
 .form-control {
   // font-size: 14px;
   color: #333333;
