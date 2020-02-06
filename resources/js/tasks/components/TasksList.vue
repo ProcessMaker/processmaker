@@ -21,17 +21,17 @@
         ref="vuetable"
       >
         <template slot="ids" slot-scope="props">
-          <b-link @click="onAction('edit', props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
+          <b-link :href="onAction('edit', props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
         </template>
         <template slot="name" slot-scope="props">
           <b-link
-            @click="onAction('edit', props.rowData, props.rowIndex)"
+            :href="onAction('edit', props.rowData, props.rowIndex)"
           >{{props.rowData.element_name}}</b-link>
         </template>
 
         <template slot="requestName" slot-scope="props">
           <b-link
-            @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
+            :href="onAction('showRequestSummary', props.rowData, props.rowIndex)"
           >#{{props.rowData.process_request.id}} {{props.rowData.process.name}}</b-link>
         </template>
 
@@ -61,7 +61,7 @@
             <div class="popout">
               <b-btn
                 variant="link"
-                @click="onAction('edit', props.rowData, props.rowIndex)"
+                :href="onAction('edit', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Open Task')"
               >
@@ -69,7 +69,7 @@
               </b-btn>
               <b-btn
                 variant="link"
-                @click="onAction('showRequestSummary', props.rowData, props.rowIndex)"
+                :href="onAction('showRequestSummary', props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Open Request')"
               >
@@ -247,12 +247,12 @@ export default {
     onAction(action, rowData, index) {
       if (action === "edit") {
         let link = "/tasks/" + rowData.id + "/edit";
-        window.location = link;
+        return link;
       }
 
       if (action === "showRequestSummary") {
         let link = "/requests/" + rowData.process_request.id;
-        window.location = link;
+        return link;
       }
     },
     statusColor(props) {
