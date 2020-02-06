@@ -1054,10 +1054,11 @@
   "Source": "Source",
   "Watching Variable": "Watching Variable",
   "Output Variable": "Output Variable",
-  "Output Data Mapping": "Output Data Mapping",
+  "Output Variable Property Mapping": "Output Variable Property Mapping",
   "New Key": "New Key",
   "New Value": "New Value",
-  "Keys and values to map from the Data Connector into the output variable": "Keys and values to map from the Data Connector into the output variable",
+  "Properties to map from the Data Connector into the output variable": "Properties to map from the Data Connector into the output variable",
+  "(If empty, all data returned will be mapped to the output variable)": "(If empty, all data returned will be mapped to the output variable)",
   "Are you sure you want to delete the Watcher?": "Are you sure you want to delete the Watcher?",
   "A name to describe this Watcher": "A name to describe this Watcher",
   "The Variable to Watch field is required": "The Variable to Watch field is required",
@@ -1072,5 +1073,6 @@
   "Configuration data for the script (valid JSON object, variables supported)": "Configuration data for the script (valid JSON object, variables supported)",
   "The Data Connector endpoint to access when this Watcher runs": "The Data Connector endpoint to access when this Watcher runs",
   "Data to pass to the Data Connector (valid JSON object, variables supported)": "Data to pass to the Data Connector (valid JSON object, variables supported)",
-  "The Script Configuration field is required": "The Script Configuration field is required"
+  "The Script Configuration field is required": "The Script Configuration field is required",
+  "Property": "Property"
 }
