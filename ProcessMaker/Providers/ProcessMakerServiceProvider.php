@@ -49,9 +49,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return "<?php echo htmlentities(lavaryMenuJson({$menu}), ENT_QUOTES); ?>";
         });
 
-        //Custom validator for process, scripts, etc names (just alphanumeric, space or dash characters)
+        //Custom validator for process, scripts, etc names (just alphanumeric, space, apostrophe or dash characters)
         Validator::extend('alpha_spaces', function ($attr, $val) {
-            return preg_match('/^[\pL\s\-\_\d\.]+$/u', $val);
+            return preg_match('/^[\pL\s\-\_\d\.\']+$/u', $val);
         });
 
 
