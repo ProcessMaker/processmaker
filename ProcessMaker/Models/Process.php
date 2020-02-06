@@ -127,12 +127,12 @@ class Process extends Model implements HasMedia
     use SerializeToIso8601;
     use SoftDeletes;
     use ProcessTaskAssignmentsTrait;
+    use HasVersioning;
     use ProcessTimerEventsTrait;
     use ProcessStartEventAssignmentsTrait;
     use HideSystemResources;
     use PMQL;
     use HasCategories;
-    use HasVersioning;
     use HasSelfServiceTasks;
     use ProcessTrait;
 
@@ -1078,4 +1078,13 @@ class Process extends Model implements HasMedia
         return $this->versions()->orderBy('id', 'desc')->first();
     }
 
+    /**
+     * Check if process is valid for execution
+     *
+     * @return boolean
+     */
+    public function isValidForExecution()
+    {
+        return empty($this->warnings) && !empty($this->getLatestVersion());
+    }
 }

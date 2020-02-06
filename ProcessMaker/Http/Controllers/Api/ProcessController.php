@@ -523,7 +523,7 @@ class ProcessController extends Controller
         $processes = $query->get();
 
         foreach ($processes as $key => $process) {
-            //filter he start events that can be used manually (no timer start events);
+            // filter the start events that can be used manually (no timer start events);
             // TODO: startEvents is not a real property on Process.
             // Move below to $process->getManualStartEvents();
             $process->startEvents = $process->events->filter(function ($event) {
@@ -535,6 +535,10 @@ class ProcessController extends Controller
             });
 
             if (count($process->startEvents) === 0) {
+                $processes->forget($key);
+            }
+            // filter only valid executable processes
+            if (!$process->isValidForExecution()) {
                 $processes->forget($key);
             }
         }
