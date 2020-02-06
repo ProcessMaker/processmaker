@@ -66,7 +66,6 @@ class WorkflowServiceProvider extends ServiceProvider
             $bpmnRepository->setFactory($repository);
             $bpmnRepository->setSkipElementsNotImplemented(true);
             $mapping = $bpmnRepository->getBpmnElementsMapping();
-            $engine->setStorage($bpmnRepository);
             $engine->setProcess($params['process']);
 
             //Initialize custom properties for ProcessMaker
