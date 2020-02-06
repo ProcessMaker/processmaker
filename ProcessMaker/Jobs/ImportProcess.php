@@ -378,27 +378,7 @@ class ImportProcess implements ShouldQueue
             $this->new['screens'] = [];
             $this->prepareStatus('screens', count($screens) > 0);
             foreach ($screens as $screen) {
-                $new = new Screen;
-                $new->computed = $screen->computed;
-                $new->config = $screen->config;
-                $new->created_at = $this->formatDate($screen->created_at);
-                $new->custom_css = $screen->custom_css;
-                $new->description = $screen->description;
-                $new->title = $this->formatName($screen->title, 'title', Screen::class);
-                $new->type = $screen->type;
-                if (property_exists($screen, 'watchers')) {
-                    $new->watchers =  $this->watcherScriptsToSave($screen);
-                }
-                $new->save();
-
-                // save categories
-                if (isset($screen->categories)) {
-                    foreach ($screen->categories as $categoryDef) {
-                        $category = $this->saveCategory('screen', $categoryDef);
-                        $new->categories()->save($category);
-                    }
-                }
-
+                $new = $this->saveScreen($screen);
                 $this->updateScreenRefs($screen->id, $new->id, $process);
 
                 $this->new['screens'][] = $new;
@@ -410,6 +390,43 @@ class ImportProcess implements ShouldQueue
             $this->finishStatus('screens', true);
         }
     }
+    
+    /**
+     * Create a new Screen model for an individual screen, then save it.
+     *
+     * @param Screen $screen
+     *
+     * @return void
+     */
+    protected function saveScreen($screen)
+    {
+        try {
+            $new = new Screen;
+            $new->computed = $screen->computed;
+            $new->config = $screen->config;
+            $new->created_at = $this->formatDate($screen->created_at);
+            $new->custom_css = $screen->custom_css;
+            $new->description = $screen->description;
+            $new->title = $this->formatName($screen->title, 'title', Screen::class);
+            $new->type = $screen->type;
+            if (property_exists($screen, 'watchers')) {
+                $new->watchers =  $this->watcherScriptsToSave($screen);
+            }
+            $new->save();
+
+            // save categories
+            if (isset($screen->categories)) {
+                foreach ($screen->categories as $categoryDef) {
+                    $category = $this->saveCategory('screen', $categoryDef);
+                    $new->categories()->save($category);
+                }
+            }
+            
+            return $new;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }    
 
     /**
      * Pass an old script ID and a new script ID, then replace any references
