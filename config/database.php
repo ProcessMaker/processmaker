@@ -1,5 +1,20 @@
 <?php
 
+switch(env('DATA_DB_DRIVER', 'mysql')) {
+    case 'pgsql':
+        $charset = 'utf8';
+        $collation = null;
+        break;
+    case 'sqlsrv':
+        $charset = null;
+        $collation = null;
+        break;
+    default:
+        $charset = 'utf8mb4';
+        $collation = 'utf8mb4_unicode_ci';
+        break;
+}
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -50,8 +65,8 @@ return [
             'username' => env('DATA_DB_USERNAME'),
             'password' => env('DATA_DB_PASSWORD'),
             'unix_socket' => env('DATA_DB_SOCKET'),
-            'charset' => env('DATA_DB_CHARSET'),
-            'collation' => env('DATA_DB_COLLATION'),
+            'charset' => $charset,
+            'collation' => $collation,
             'schema' => env('DATA_DB_SCHEMA'),
             'engine' => env('DATA_DB_ENGINE'),
             'date_format' => env('DATA_DB_DATE_FORMAT'),
