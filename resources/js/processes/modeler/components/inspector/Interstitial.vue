@@ -12,12 +12,11 @@
         <screen-select
             v-if="allowInterstitialGetter"
             :label="$t('Screen Interstitial')"
+            :placeholder="$t('Default Screen')"
             :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"
             :params="parameters"
             v-model="screen"
-        >
-
-        </screen-select>
+        />
 
     </div>
 </template>
