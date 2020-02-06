@@ -379,7 +379,11 @@ class ProcessController extends Controller
         $schemaErrors = null;
         if (isset($data['bpmn'])) {
             $document = new BpmnDocument();
-            $document->loadXML($data['bpmn']);
+            try {
+                $document->loadXML($data['bpmn']);
+            } catch (\ErrorException $e) {
+                return [$e->getMessage()];
+            }
 
             try {
                 $validation = $document->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
