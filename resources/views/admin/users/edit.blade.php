@@ -60,7 +60,7 @@
                                  </div>
                              </div>
                             <div id="user-groups-listing">
-                                <user-groups-listing 
+                                <user-groups-listing
                                     :filter="userGroupsFilter"
                                     ref="userGroupsListing"
                                     :user-id='@json($user->id)'
@@ -98,7 +98,7 @@
                                 </div>
 
                                 <user-tokens-listing :user_id="formData.id" ref="tokenList"></user-tokens-listing>
-                                
+
                                 <div class="modal" tabindex="-1" role="dialog" id="newTokenModal" ref="newTokenModal">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                         <div class="modal-content p-3">
@@ -110,12 +110,12 @@
                                             </div>
 
                                             <div class="modal-body p-0 mb-3" v-if="newToken != null">
-                                                
+
                                                 <div class="alert alert-warning">
                                                     <i class="fas fa-exclamation-triangle"></i>
                                                     {{__("Make sure you copy your access token now. You won't be able to see it again.")}}
                                                 </div>
-                                                
+
                                                 <div>
                                                     <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
                                                 </div>
@@ -290,7 +290,7 @@
             options: [{
               src: @json($user['avatar']),
               title: @json($user['fullname']),
-              initials: @json($user['firstname'][0]) + @json($user['lastname'][0])
+              initials: @json(mb_substr($user['firstname'], 0, 1)) + @json(mb_substr($user['lastname'], 0, 1))
             }],
             selectedGroup: [],
             groups: [],
