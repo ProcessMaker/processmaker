@@ -5,9 +5,11 @@ use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class LoginController extends Controller
 {
+    use HasControllerAddons;
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -59,7 +61,15 @@ class LoginController extends Controller
         if ($user->status === 'INACTIVE') {
             return redirect()->back();
         }
-        
+
+        $addons = $this->getPluginAddons('command', []);
+        foreach($addons as $addon) {
+            if(array_key_exists('command', $addon)) {
+                $command = $addon['command'];
+                $command->execute($request, $request->input('username'));
+            }
+        }
+
         return $this->login($request);
     }
 

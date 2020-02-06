@@ -35,7 +35,7 @@
     "pion/laravel-chunk-upload": "dev-master",
     "predis/predis": "^1.1",
     "processmaker/laravel-i18next": "dev-master",
-    "processmaker/nayra": "dev-master",
+    "processmaker/nayra": "^1.0.1",
     "processmaker/pmql": "1.1.1",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",

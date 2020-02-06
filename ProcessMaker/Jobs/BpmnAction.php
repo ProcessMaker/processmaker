@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use ProcessMaker\Models\Process as Definitions;
+use ProcessMaker\Models\ProcessRequest;
 use Throwable;
 
 abstract class BpmnAction implements ShouldQueue
@@ -26,21 +27,24 @@ abstract class BpmnAction implements ShouldQueue
     public function handle()
     {
         //Load the process definition
-        $processModel = Definitions::find($this->definitionsId);
-        $definitions = $processModel->getDefinitions();
-        $engine = $definitions->getEngine();
+        if (isset($this->instanceId)) {
+            $instance = ProcessRequest::find($this->instanceId);
+            $processModel = $instance->process;
+            $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
+            $engine = $definitions->getEngine();
+            $instance = $engine->loadProcessRequest($instance);
+        } else {
+            $processModel = Definitions::find($this->definitionsId);
+            $definitions = $processModel->getDefinitions();
+            $engine = $definitions->getEngine();
+            $instance = null;
+        }
 
         //Load the instances of the process and its collaborators
-        $instance = isset($this->instanceId) ? $engine->loadExecutionInstance($this->instanceId) : null;
         if ($instance && $instance->collaboration) {
             foreach ($instance->collaboration->requests as $request) {
                 if ($request->getKey() !== $instance->getKey()) {
-                    if ($request->process->id === $processModel->id) {
-                        $engine->loadProcessRequest($request);
-                    } else {
-                        $engine->currentInstance = $instance;
-                        $engine->loadProcessRequest($request);
-                    }
+                    $engine->loadProcessRequest($request);
                 }
             }
         }

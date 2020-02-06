@@ -6,7 +6,7 @@
                      label="title"
                      :class="{'border border-danger':error}"
                      :loading="loading"
-                     :placeholder="$t('type here to search')"
+                     :placeholder="placeholder || $t('type here to search')"
                      :options="screens"
                      :multiple="false"
                      :show-labels="false"
@@ -38,7 +38,7 @@
   import Multiselect from "vue-multiselect";
 
   export default {
-    props: ["value", "label", "helper", "params", "requiredMessage"],
+    props: ["value", "label", "helper", "params", "requiredMessage", "placeholder"],
     components: {
       Multiselect
     },

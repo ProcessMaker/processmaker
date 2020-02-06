@@ -492,6 +492,24 @@ class ProcessTest extends TestCase
         //A validation error should be displayed
         $response->assertStatus(422);
     }
+    
+    /**
+     * Test the creation of processes with invalid XML posted
+     */
+    public function testValidateInvalidXmlWhenCreatingAProcess()
+    {
+        $route = route('api.' . $this->resource . '.store');
+        $base = factory(Process::class)->make([
+            'user_id' => static::$DO_NOT_SEND,
+            'process_category_id' => static::$DO_NOT_SEND,
+        ]);
+        $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
+        //Add a bpmn content
+        $array['bpmn'] = 'foo';
+        $response = $this->apiCall('POST', $route, $array);
+        //A validation error should be displayed
+        $response->assertStatus(422);
+    }
 
     /**
      * Test show process

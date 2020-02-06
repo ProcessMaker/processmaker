@@ -9,16 +9,21 @@ trait HasControllerAddons
     /**
      * Get configured addons for this controller
      *
-     * @param string $method
-     * @param array $data
+     * @param string $method filter to identify the type of addon we are interested on
+     * @param array $data data that the controller will pass to the addon views
      *
      * @return array
      */
     protected function getPluginAddons($method, array $data)
     {
+        if (!isset(static::$addons)) {
+            return;
+        }
+
         $addons = [];
         foreach(static::$addons as $addon) {
-            if($addon['method'] === $method) {
+            // The addon must have the requested method and must be associated to the current controller
+            if($addon['method'] === $method && $addon['scope'] === get_class($this)) {
                 if ($addon['data'] && is_callable($addon['data'])) {
                     $data = call_user_func($addon['data'], $data);
                 }
@@ -41,6 +46,8 @@ trait HasControllerAddons
      */
     public static function registerAddon(array $config)
     {
+        // Add the controller to which the addon is attached
+        $config['scope'] = static::class;
         static::$addons[] = $config;
     }
 }

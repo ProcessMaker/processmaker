@@ -84,6 +84,13 @@
 
                 <b-collapse v-model="showDataInput" id="showDataInput">
                   <monaco-editor :options="monacoOptions" class="data-collapse" v-model="previewInput" language="json"/>
+
+                  <div v-if="!previewInputValid" class="pl-3">
+                      <i class="fas text-danger fa-times-circle mr-1"></i>
+                      <small class="text-muted text-capitalize">
+                        {{ $t('Invalid JSON Data Object') }}
+                      </small>
+                  </div>
                 </b-collapse>
 
                 <b-button variant="outline"
@@ -127,10 +134,6 @@
         </div>
 
         <div v-if="showValidationErrors" class="validation-panel position-absolute border-top border-left overflow-auto" :class="{'d-block':showValidationErrors && validationErrors.length}">
-            <div v-if="!previewInputValid" class="p-3 font-weight-bold text-dark text-capitalize">
-              <i class="fas fa-times-circle text-danger mr-3"></i>
-              {{$t('Invalid JSON Data Object')}}
-            </div>
             <b-button variant="link" class="validation__message d-flex align-items-center p-3 text-capitalize"
                       v-for="(validation,index) in validationErrors"
                       :key="index"
@@ -263,13 +266,7 @@ import formTypes from "./formTypes";
         return this.mode === 'preview';
       },
       allErrors() {
-        let errorCount = 0;
-
-        if(!this.previewInputValid) {
-          errorCount++;
-        }
-
-        return this.validationErrors.length + errorCount
+        return this.validationErrors.length;
       },
       validationErrors() {
         if (!this.toggleValidation) {
@@ -306,6 +303,10 @@ import formTypes from "./formTypes";
       },
       getValidationErrorsForItems(items, page) {
         const validationErrors = [];
+            
+        if (!Array.isArray(items)) {
+          items = [items];
+        }
 
         items.forEach(item => {
           if (item.container) {
@@ -350,6 +351,9 @@ import formTypes from "./formTypes";
         return item.component === 'FormButton' && item.config.event === 'submit';
       },
       itemsContainSubmitButton(items) {
+        if (!Array.isArray(items)) {
+          items = [items];
+        }
         return items.some(item => {
           return item.container
             ? item.items.some(this.itemsContainSubmitButton)

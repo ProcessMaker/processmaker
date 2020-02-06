@@ -47,6 +47,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         ScheduledTask::where('process_id', $process->id)
             ->where('type', 'TIMER_START_EVENT')
             ->delete();
+        if (!$process->isValidForExecution()) {
+            return;
+        }
         $definitions = $process->getDefinitions();
         if ($definitions) {
             $definitions->getEngine()->getJobManager()->enableRegisterStartEvents();
@@ -221,6 +224,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         }
 
         $process = Process::find($id);
+
+        if (!$process->isValidForExecution()) {
+            return;
+        }
 
         // If a process is configured to pause timer start events we do nothing
         if ($process->pause_timer_start === 1) {
