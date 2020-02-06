@@ -306,6 +306,10 @@ import formTypes from "./formTypes";
       },
       getValidationErrorsForItems(items, page) {
         const validationErrors = [];
+            
+        if (!Array.isArray(items)) {
+          items = [items];
+        }
 
         items.forEach(item => {
           if (item.container) {
@@ -350,6 +354,9 @@ import formTypes from "./formTypes";
         return item.component === 'FormButton' && item.config.event === 'submit';
       },
       itemsContainSubmitButton(items) {
+        if (!Array.isArray(items)) {
+          items = [items];
+        }
         return items.some(item => {
           return item.container
             ? item.items.some(this.itemsContainSubmitButton)
