@@ -57,6 +57,17 @@
       @endif
     @endif
   </script>
+    @isset($addons)
+        <script>
+            var addons = [];
+        </script>
+        @foreach ($addons as $addon)
+            @if (!empty($addon['script']))
+                {!! $addon['script'] !!}
+            @endif
+        @endforeach
+    @endisset
+
 </head>
 
 <body>
