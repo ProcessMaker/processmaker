@@ -3,6 +3,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
@@ -70,7 +71,7 @@ class ProcessExecutionTest extends TestCase
     {
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'StartEventUID']);
-        $data = [];
+        $data = ['foo' => 'bar'];
         $response = $this->apiCall('POST', $route, $data);
         //Verify status
         $response->assertStatus(201);
@@ -81,6 +82,14 @@ class ProcessExecutionTest extends TestCase
         $route = route('api.tasks.index');
         $response = $this->apiCall('GET', $route);
         $tasks = $response->json('data');
+
+        // Verify that the start event data was stored in the task
+        $task = ProcessRequestToken::where([
+            'process_request_id' => $request['id'],
+            'status' => 'TRIGGERED'
+        ])->first();
+        $this->assertEquals(['foo'=>'bar'], $task->data);
+
         //Complete the task
         $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
         $response = $this->apiCall('PUT', $route, ['data' => $data]);
