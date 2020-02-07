@@ -5,7 +5,6 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\HasCategories;
 
-
 class ScriptVersion extends Model
 {
     use HasCategories;
@@ -13,11 +12,6 @@ class ScriptVersion extends Model
     const categoryClass = ScriptCategory::class;
 
     protected $connection = 'processmaker';
-
-    /**
-     * Do not automatically set created_at
-     */
-    const CREATED_AT = null;
 
     /**
      * Attributes that are not mass assignable.
