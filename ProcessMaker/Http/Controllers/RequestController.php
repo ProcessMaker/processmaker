@@ -101,10 +101,9 @@ class RequestController extends Controller
             $startEvent = $request->tokens()->orderBy('id')->first();
             if ($startEvent) {
                 $definition = $startEvent->getDefinition();
-                if (isset($definition['allowInterstitial']) && !empty($definition['interstitialScreenRef'])) {
+                $allowInterstitial = false;
+                if (isset($definition['allowInterstitial'])) {
                     $allowInterstitial = filter_var($definition['allowInterstitial'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-                } else {
-                    $allowInterstitial = false;
                 }
                 if ($allowInterstitial && $request->user_id == Auth::id()) {
                     $active = $request->tokens()

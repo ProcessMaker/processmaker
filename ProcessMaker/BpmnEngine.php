@@ -4,6 +4,7 @@ namespace ProcessMaker;
 
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
@@ -31,9 +32,14 @@ class BpmnEngine implements EngineInterface
     /**
      * Process definition row.
      *
-     * @var \ProcessMaker\Model\Process 
+     * @var \ProcessMaker\Model\Process
      */
     private $process;
+
+    /**
+     * Loaded versioned definitions
+     */
+    private $definitions = [];
 
     /**
      * Test engine constructor.
@@ -113,16 +119,23 @@ class BpmnEngine implements EngineInterface
      */
     public function loadProcessRequest(ProcessRequest $instance)
     {
-        // If exists return the already loaded instance by id 
-        foreach($this->executionInstances as $executionInstance) {
+        // If exists return the already loaded instance by id
+        foreach ($this->executionInstances as $executionInstance) {
             if ($executionInstance->getId() === $instance->getKey()) {
                 return $executionInstance;
             }
         }
-        $parentStorage = $this->getStorage();
-        $this->setStorage($instance->process->getDefinitions(false, $this));
-        $instance = $this->loadExecutionInstance($instance->getKey());
-        $this->setStorage($parentStorage);
+        $definitions = $this->getDefinition($instance->processVersion ?? $instance->process);
+        $instance = $this->loadExecutionInstance($instance->getKey(), $definitions);
         return $instance;
+    }
+
+    public function getDefinition($processVersion)
+    {
+        $key = $processVersion->getKey();
+        if(!isset($this->definitions[$key])) {
+            $this->definitions[$key]  = $processVersion->getDefinitions(false, $this);
+        }
+        return $this->definitions[$key];
     }
 }

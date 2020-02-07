@@ -95,7 +95,7 @@
                                 </div>
                                 <input type="file" class="custom-file-input"
                                        :class="{'is-invalid': addError.bpmn && addError.bpmn.length}"
-                                       ref="customFile" @change="onFileChange" accept=".bpmn" style="height: 0;">
+                                       ref="customFile" @change="onFileChange" accept=".bpmn,.xml" style="height: 0;">
                                 <div class="invalid-feedback" v-for="error in addError.bpmn">@{{error}}</div>
                             </div>
                         </div>
