@@ -21,7 +21,7 @@
         ref="vuetable"
       >
         <template slot="ids" slot-scope="props">
-          <b-link @click="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
+          <b-link :href="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
         </template>
         <template slot="participants" slot-scope="props">
           <avatar-image
@@ -38,7 +38,7 @@
             <div class="popout">
               <b-btn
                 variant="link"
-                @click="onAction('edit-designer', props.rowData, props.rowIndex)"
+                :href="openRequest(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Open Request')"
               >
@@ -176,15 +176,8 @@ export default {
         ];
       }
     },
-    onAction(action, data, index) {
-      switch (action) {
-        case "edit-designer":
-          this.openRequest(data, index);
-          break;
-      }
-    },
     openRequest(data, index) {
-      window.location.href = "/requests/" + data.id;
+      return "/requests/" + data.id;
     },
     formatStatus(status) {
       let color = "success",

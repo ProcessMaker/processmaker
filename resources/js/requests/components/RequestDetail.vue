@@ -13,14 +13,14 @@
             >
                 <template slot="ids" slot-scope="props">
                     <b-link v-if="isEditable(props.rowData)"
-                            @click="onAction('edit', props.rowData, props.rowIndex)">
+                            :href="onAction('edit', props.rowData, props.rowIndex)">
                         #{{props.rowData.id}}
                     </b-link>
                     <span v-else>#{{props.rowData.id}}</span>
                 </template>
                 <template slot="name" slot-scope="props">
                     <b-link v-if="isEditable(props.rowData)"
-                            @click="onAction('edit', props.rowData, props.rowIndex)">
+                            :href="onAction('edit', props.rowData, props.rowIndex)">
                         {{props.rowData.element_name}}
                     </b-link>
                     <span v-else>{{props.rowData.element_name}}</span>
@@ -102,7 +102,7 @@
       onAction(action, rowData, index) {
         switch (action) {
           case "edit":
-            window.location = "/tasks/" + rowData.id + "/edit";
+            return "/tasks/" + rowData.id + "/edit";
             break;
         }
       },
