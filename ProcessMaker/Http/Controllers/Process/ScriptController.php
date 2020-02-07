@@ -17,7 +17,7 @@ class ScriptController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
-    public function index()
+    public function index(Request $request)
     {
         $catConfig = (object) [
             'labels' => (object) [
@@ -30,6 +30,12 @@ class ScriptController extends Controller
             ],
             'countField' => 'scripts_count',
             'apiListInclude' => 'scriptsCount',
+            'permissions' => [
+                'view'   => $request->user()->can('view-script-categories'),
+                'create' => $request->user()->can('create-script-categories'),
+                'edit'   => $request->user()->can('edit-script-categories'),
+                'delete' => $request->user()->can('delete-script-categories'),
+            ],
         ];
 
         $listConfig = (object) [

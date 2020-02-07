@@ -28,15 +28,6 @@ class UserTest extends TestCase
         $nl_group = factory(Group::class)->create(['name' => 'Nuke Launchers']);
         $p_group = factory(Group::class)->create(['name' => 'Presidents']);
 
-        // TODO: Make this work with attach
-        // factory(GroupMember::class)->create([
-        //     'group_id' => $nl_group->id,
-        //     'member_type' => Group::class,
-        //     'member_id' => $p_group,
-        // ]);
-
-        // $nl_group->childGroups()->attach($p_group);
-
         factory(GroupMember::class)->create([
             'group_id' => $nl_group->id,
             'member_type' => User::class,
@@ -85,5 +76,42 @@ class UserTest extends TestCase
         $this->assertTrue($user->can('bar'));
         $this->assertEquals('bar', $user->canAny('foo|bar'));
         $this->assertEquals('baz', $user->canAny('foo|baz'));
+    }
+
+    public function testAddCategoryViewPermissions()
+    {
+        $testFor = [
+            'processes' => 'view-process-categories',
+            'scripts' => 'view-script-categories',
+            'screens' => 'view-screen-categories'
+        ];
+
+        $testFor = function($singular, $plural) {
+
+            $viewCatPerm = factory(Permission::class)->create(['name' => 'view-' . $singular . '-categories']);
+            $editCatePerm = factory(Permission::class)->create(['name' => 'edit-' . $singular . '-categories']);
+
+            foreach (['create', 'edit'] as $method) {
+                $user = factory(User::class)->create();
+                
+                $perm = factory(Permission::class)->create(['name' => "{$method}-{$plural}"]);
+                
+                (new AuthServiceProvider(app()))->boot();
+                
+                $this->assertFalse($user->can($perm->name));
+                $this->assertFalse($user->can($viewCatPerm->name));
+
+                $user->permissions()->attach($perm);
+                $user->refresh();
+                
+                $this->assertTrue($user->can($viewCatPerm->name));
+                $this->assertFalse($user->can($editCatePerm->name));
+            }
+        };
+
+        $testFor('process', 'processes');
+        $testFor('screen', 'screens');
+        $testFor('script', 'scripts');
+
     }
 }

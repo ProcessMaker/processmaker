@@ -20,7 +20,8 @@ trait HasAuthorization
     
     public function loadUserPermissions()
     {
-        return $this->permissions->pluck('name')->toArray();
+        $permissions = $this->permissions->pluck('name')->toArray();
+        return $this->addCategoryViewPermissions($permissions);
     }
     
     public function loadGroupPermissions()
@@ -32,8 +33,8 @@ trait HasAuthorization
             $names = $group->permissions->pluck('name')->toArray();
             $permissions = array_merge($permissions, $names);
         }
-        
-        return $permissions;
+
+        return $this->addCategoryViewPermissions($permissions);
     }
 
     public function hasPermission($permissionString)
@@ -50,6 +51,32 @@ trait HasAuthorization
         }
 
         return in_array($permissionString, $permissionStrings);
+    }
+
+    /**
+     * If a user can create or edit a resource,
+     * they should be able to view its categories.
+     *
+     * @param Array $permissions
+     * @return Array $permissions
+     */
+    private function addCategoryViewPermissions($permissions) {
+        $addFor = [
+            'processes' => 'view-process-categories',
+            'scripts' => 'view-script-categories',
+            'screens' => 'view-screen-categories'
+        ];
+        foreach($addFor as $resource => $categoryPermission) {
+            if (
+                in_array('create-' . $resource, $permissions) ||
+                in_array('edit-' . $resource, $permissions)
+            ) {
+                if (!in_array($categoryPermission, $permissions)) {
+                    $permissions[] = $categoryPermission;
+                }
+            }
+        }
+        return $permissions;
     }
 
     public function giveDirectPermission($permissionNames)
