@@ -32,11 +32,6 @@ class ProcessVersion extends Model
     protected $connection = 'processmaker';
 
     /**
-     * Do not automatically set created_at
-     */
-    const CREATED_AT = null;
-
-    /**
      * Attributes that are not mass assignable.
      *
      * @var array $fillable
