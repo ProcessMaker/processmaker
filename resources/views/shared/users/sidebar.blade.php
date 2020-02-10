@@ -87,34 +87,6 @@
                 </div>
             </div>
     </div>
-    <div class="card card-body mt-3">
-        <h5 class="mb-3 font-weight-bold">{{__('Settings')}}</h5>
-        <div class="form-group">
-            {!!Form::label('datetime_format', __('Date Format'));!!}
-            <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
-            </b-form-select>
-            <div class="invalid-feedback" v-if="errors.email">
-                @{{errors.datetime_format}}
-            </div>
-        </div>
-        <div class="form-group">
-            {!!Form::label('timezone', __('Time Zone'));!!}
-            <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
-            </b-form-select>
-            <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
-            </div>
-        </div>
-
-        <div class="form-group">
-            {!! Form::label('language', __('Language')) !!}
-            <b-form-select id="language" v-model="formData.language" class="form-control" :options="langs">
-            </b-form-select>
-            <div class="invalid-feedback" v-if="errors.language">
-                @{{errors.language}}
-            </div>
-        </div>
-
-    </div>
     @isset($addons)
         @foreach ($addons as $addon)
             {!! __($addon['content']) !!}
