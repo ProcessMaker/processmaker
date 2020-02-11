@@ -1074,5 +1074,8 @@
   "The Data Connector endpoint to access when this Watcher runs": "The Data Connector endpoint to access when this Watcher runs",
   "Data to pass to the Data Connector (valid JSON object, variables supported)": "Data to pass to the Data Connector (valid JSON object, variables supported)",
   "The Script Configuration field is required": "The Script Configuration field is required",
-  "Property": "Property"
+  "Property": "Property",
+  "JSON Schema": "JSON Schema",
+  "Valid for JSON Schema": "Valid for JSON Schema",
+  "Not a valid JSON Schema": "Not a valid JSON Schema"
 }
