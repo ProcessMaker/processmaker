@@ -68,12 +68,38 @@
               :watchers="watchers"
               v-on:css-errors="cssErrors = $event"
               :mock-magic-variables="mockMagicVariables"
+              :json-schema="jsonSchema"
+              @json-schema-valid="jsonSchemaValid"
             />
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
             <b-card no-body class="p-0 h-100 rounded-0 border-top-0 border-right-0 border-bottom-0">
               <b-card-body class="p-0 overflow-auto">
+
+                <b-button variant="outline"
+                  v-b-toggle.schema-validator
+                  class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
+                  >
+                  <i class="fas fa-file-import mr-2"></i>
+                    {{ $t('JSON Schema') }}
+                  <i class="fas ml-auto" :class="showSv ? 'fa-angle-right' : 'fa-angle-down'"></i>
+                </b-button>
+                <b-collapse id="schema-validator" v-model="showSv">
+                  <div class="p-2">
+                    <b-form-file @change="loadSchema" placeholder="JSON Schema File"></b-form-file>
+
+                    <div class="alert mt-2 mb-0" v-if="jsonSchema" :class="{'alert-success': !jsonSchemaErrors, 'alert-danger': jsonSchemaErrors}">
+                      <span v-if="!jsonSchemaErrors">{{ $t('Valid for JSON Schema') }}</span>
+                      <div v-else>
+                        <template v-if="jsonSchemaErrors">
+                          <span v-for="(error, i) of jsonSchemaErrors" :key="i">{{ formatDataPath(error.dataPath) }} {{ error.message }}</span>
+                        </template>
+                      </div>
+                    </div>
+                  </div>
+                </b-collapse>
+
                 <b-button variant="outline"
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
                   @click="showDataInput = !showDataInput">
@@ -172,6 +198,7 @@
 
 import Validator from "validatorjs";
 import formTypes from "./formTypes";
+import Ajv from 'ajv';
 
   // To include another language in the Validator with variable processmaker
   if (window.ProcessMaker && window.ProcessMaker.user && window.ProcessMaker.user.lang) {
@@ -220,6 +247,9 @@ import formTypes from "./formTypes";
         },
         mockMagicVariables,
         validationWarnings: [],
+        showSv: true,
+        jsonSchema: null,
+        jsonSchemaErrors: null,
       };
     },
     components: {
@@ -298,6 +328,30 @@ import formTypes from "./formTypes";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
     },
     methods: {
+      loadSchema(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          try {
+            const text = e.target.result;
+            this.jsonSchema = JSON.parse(text);
+          } catch(error) {
+            this.jsonSchemaErrors = [error];
+          }
+        };
+        reader.readAsText(file);
+      },
+      jsonSchemaValid(schemaValid, errors) {
+        this.jsonSchemaErrors = errors;
+      },
+      formatDataPath(dataPath) {
+        if (!dataPath) {
+          return '';
+        }
+        const rep = /^\./;
+        return dataPath.replace(rep, '');
+      },
       onUpdate(data) {
         ProcessMaker.EventBus.$emit('form-data-updated', data);
       },
