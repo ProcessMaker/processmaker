@@ -14,8 +14,9 @@
 @import '../../public/css/precompiled/vue-multiselect.min.css';
 @import '../../public/css/precompiled/npm-font-open-sans/open-sans.scss';
 
-$form-control-border-color: #b6bfc6;
-$form-control-border-radius: 2px;
+// RTL SUpoort
+@import 'rtl';
+
 
 body,
 html {
