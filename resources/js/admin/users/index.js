@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VuePassword from "vue-password";
 import UsersListing from './components/UsersListing';
 import AddUserModal from './components/AddUserModal';
+import DeletedUsersListing from './components/DeletedUsersListing';
 
 Vue.component("vue-password", VuePassword);
 
@@ -73,4 +74,12 @@ new Vue({
             this.config.addError = val;
         });
     }
+});
+
+ new Vue({
+    el: '#deleted-users-listing',
+    components: {DeletedUsersListing}, 
+    data: {
+        filter: ''
+    },
 });
