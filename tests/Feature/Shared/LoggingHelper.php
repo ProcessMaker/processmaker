@@ -39,7 +39,7 @@ trait LoggingHelper
     }
     
     /**
-     * Assert that a log entry 
+     * Assert that a log entry exists that contains specific text
      *
      * @param array $data
      *
