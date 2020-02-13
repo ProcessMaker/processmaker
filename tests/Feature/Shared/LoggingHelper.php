@@ -38,6 +38,26 @@ trait LoggingHelper
         return $this->assertEquals($count, $matches, 'Failed asserting that a log entry exists.');
     }
     
+    public function assertBroadcastEventSizeLessThan($name, $size)
+    {
+        $length = 0;
+        $records = app('log')->getHandlers()[0]->getRecords();
+        
+        foreach ($records as $record) {
+            if (array_key_exists('message', $record)) {
+                $doesMatch = preg_match('/Broadcasting \[(?<name>.+)\].+ with payload:(?<payload>.+)/s', $record['message'], $matches);
+                if ($doesMatch) {
+                    if ($matches['name'] == $name) {
+                        $length = strlen($matches['payload']);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        $this->assertLessThan($size, $length);
+    }
+    
     /**
      * Assert that a log entry exists that contains specific text
      *
