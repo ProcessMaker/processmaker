@@ -42,7 +42,8 @@ trait LoggingHelper
      * Assert that an event broadcast to the log has a payload smaller than the
      * specified size in bytes.
      *
-     * @param array $data
+     * @param string $name
+     * @param integer $size
      *
      * @return mixed
      */
