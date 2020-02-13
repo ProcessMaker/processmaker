@@ -1,15 +1,24 @@
 <?php
 namespace Tests\Feature;
 
+use Auth;
 use Tests\TestCase;
 use Tests\Feature\Shared\LoggingHelper;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessUpdated;
+use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Events\ModelerStarting;
+use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
+use ProcessMaker\Models\User;
 use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\ProcessRequest as Request;
+use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
+use ProcessMaker\Managers\ModelerManager as Modeler;
 use Illuminate\Foundation\Testing\WithFaker;
+
+
 
 class BroadcastTest extends TestCase
 {
@@ -100,5 +109,44 @@ class BroadcastTest extends TestCase
         $this->assertLogContainsText('ProcessUpdated');
         $this->assertLogContainsText(addcslashes(route('api.requests.show', ['task' => $request->id]), '/'));
         $this->assertBroadcastEventSizeLessThan('ProcessUpdated', 10000);
+    }
+
+
+    /**
+     * Asserts that the ScreenBuilderStarting broadcast event works.
+     *
+     * @return void
+     */
+    public function testScreenBuilderStartingBroadcast()
+    {
+        $this->markTestSkipped('Will implement later');
+        $manager = new ScreenBuilder();
+        event(new ScreenBuilderStarting($manager, 'DISPLAY'));
+    }
+
+     /**
+     * Asserts that the ScreenBuilderStarting broadcast event works.
+     *
+     * @return void
+     */
+    public function testModelerStartingBroadcast()
+    {
+        $this->markTestSkipped('Will implement later');
+        $manager = new Modeler();
+        event(new ModelerStarting($manager));
+    }
+
+     /**
+     * Asserts that the SessionStart broadcast event works.
+     *
+     * @return void
+     */
+    public function testSessionStartedBroadcast()
+    {
+        $user = factory(User::class)->create();
+        event(new SessionStartedEvent($user));
+        
+        $this->assertLogContainsText('SessionStarted');
+        $this->assertBroadcastEventSizeLessThan('SessionStarted', 10000);
     }
 }
