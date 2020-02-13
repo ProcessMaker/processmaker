@@ -13,7 +13,7 @@ class ProcessUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $processRequest;
+    public $payload;
     public $event;
 
     /**
@@ -23,7 +23,10 @@ class ProcessUpdated implements ShouldBroadcastNow
      */
     public function __construct(ProcessRequest $processRequest, $event)
     {
-        $this->processRequest = $processRequest;
+        $this->payload = [
+            'type' => 'process_request',
+            'id' => $processRequest->getKey(),
+        ];
         $this->event = $event;
     }
 
@@ -44,6 +47,6 @@ class ProcessUpdated implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequest->getKey());
+        return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->payload['id']);
     }
 }

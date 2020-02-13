@@ -13,10 +13,8 @@ class ActivityAssigned implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @var ProcessRequestToken $token
-     */
-    public $token;
+    public $payload;
+    public $processRequestKey;
 
     /**
      * Create a new event instance.
@@ -25,7 +23,11 @@ class ActivityAssigned implements ShouldBroadcastNow
      */
     public function __construct(ProcessRequestToken $token)
     {
-        $this->token = $token;
+        $this->payload = [
+            'type' => 'process_request_token',
+            'id' => $token->id,
+        ];
+        $this->processRequestKey = $token->processRequest->getKey();
     }
 
     /**
@@ -45,6 +47,6 @@ class ActivityAssigned implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->token->processRequest->getKey());
+        return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequestKey);
     }
 }

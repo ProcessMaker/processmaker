@@ -13,7 +13,7 @@ class ActivityCompleted implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $processRequestToken;
+    public $payload;
 
     /**
      * Create a new event instance.
@@ -22,7 +22,10 @@ class ActivityCompleted implements ShouldBroadcastNow
      */
     public function __construct(ProcessRequestToken $processRequestToken)
     {
-        $this->processRequestToken = $processRequestToken;
+        $this->payload = [
+            'type' => 'process_request_token',
+            'id' => $processRequestToken->getKey(),
+        ];
     }
 
     /**
@@ -42,6 +45,6 @@ class ActivityCompleted implements ShouldBroadcastNow
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('ProcessMaker.Models.ProcessRequestToken.' . $this->processRequestToken->getKey());
+        return new PrivateChannel('ProcessMaker.Models.ProcessRequestToken.' . $this->payload['id']);
     }
 }
