@@ -6,24 +6,24 @@ export default {
   },
   mounted () {
     this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ActivityAssigned", (data) => {
-      if (data.payload) {
-        this.obtainPayload(data.payload.type, data.payload.id)
+      if (data.payloadUrl) {
+        this.obtainPayload(data.payloadUrl)
           .then(response => {
-            this.$emit("activity-assigned", response)
+            this.$emit("activity-assigned", response);
           });        
       }
     });
     this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ProcessCompleted", (data) => {
-      if (data.payload) {
-        this.obtainPayload(data.payload.type, data.payload.id)
+      if (data.payloadUrl) {
+        this.obtainPayload(data.payloadUrl)
           .then(response => {
             this.$emit("process-completed", response);
           });
       }
     });
     this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${this.instanceId}`, ".ProcessUpdated", (data) => {
-      if (data.payload) {
-        this.obtainPayload(data.payload.type, data.payload.id)
+      if (data.payloadUrl) {
+        this.obtainPayload(data.payloadUrl)
           .then(response => {
             if (data.event) {
               response.event = data.event;
@@ -44,16 +44,7 @@ export default {
         callback
       );
     },
-    obtainPayload(type, id) {
-      let url;
-      switch (type) {
-        case 'process_request':
-          url = `/requests/${id}`;
-          break;
-        case 'process_request_token':
-          url = `/tasks/${id}`;
-          break;
-      }
+    obtainPayload(url) {
       return new Promise((resolve, reject) => {
         ProcessMaker.apiClient
           .get(url)
