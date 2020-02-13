@@ -14,6 +14,20 @@ class BroadcastTest extends TestCase
 {
     use LoggingHelper;
 
+    public function testBroadcastEventsHaveTesting()
+    {
+        $path = app_path('Events');
+        $files = scandir($path);
+        foreach ($files as $file) {
+            $doesMatch = preg_match('/(?<name>.+).php/', $file, $matches);
+            if ($doesMatch) {
+                $name = $matches['name'];
+                $methodName = "test{$name}Broadcast";
+                $this->assertTrue(method_exists($this, $methodName), "Failed asserting that broadcast event $name has a test.");
+            }
+        }
+    }
+
     /**
      * Asserts that the ActivityAssigned broadcast event works.
      *
