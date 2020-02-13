@@ -37,6 +37,37 @@ trait LoggingHelper
         
         return $this->assertEquals($count, $matches, 'Failed asserting that a log entry exists.');
     }
+    
+    /**
+     * Assert that a log entry 
+     *
+     * @param array $data
+     *
+     * @return mixed
+     */        
+    public function assertLogContainsText($data)
+    {
+        $records = app('log')->getHandlers()[0]->getRecords();
+        $count = 1;
+        $matches = 0;
+
+        foreach ($records as $record) {
+            $matches = 0;
+            
+            if (array_key_exists('message', $record)) {
+                $message = $record['message'];
+                if (strpos($message, $data) !== false) {
+                    $matches = 1;
+                }
+            }
+            
+            if ($matches === $count) {
+                break;
+            }
+        }
+        
+        return $this->assertEquals($count, $matches, 'Failed asserting that the log contains text.');
+    }
 
     /**
      * Assert that a log message exists. This exclusively tests only the actual
