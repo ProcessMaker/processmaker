@@ -6,6 +6,7 @@ use Tests\Feature\Shared\LoggingHelper;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Events\ActivityCompleted;
 use ProcessMaker\Events\ProcessCompleted;
+use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\ProcessRequest as Request;
 
@@ -60,8 +61,8 @@ class BroadcastTest extends TestCase
     public function testProcessUpdatedBroadcast()
     {
         $request = factory(Request::class)->create();
-        event(new ProcessCompleted($request));
-        $this->assertLogContainsText('ProcessCompleted');
+        event(new ProcessUpdated($request, 'ACTIVITY_COMPLETED'));
+        $this->assertLogContainsText('ProcessUpdated');
         $this->assertLogContainsText(addcslashes(route('api.requests.show', ['task' => $request->id]), '/'));
     }
 }
