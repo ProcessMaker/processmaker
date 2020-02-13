@@ -37,7 +37,15 @@ trait LoggingHelper
         
         return $this->assertEquals($count, $matches, 'Failed asserting that a log entry exists.');
     }
-    
+
+    /**
+     * Assert that an event broadcast to the log has a payload smaller than the
+     * specified size in bytes.
+     *
+     * @param array $data
+     *
+     * @return mixed
+     */
     public function assertBroadcastEventSizeLessThan($name, $size)
     {
         $length = 0;
@@ -55,7 +63,7 @@ trait LoggingHelper
             }
         }
         
-        $this->assertLessThan($size, $length);
+        return $this->assertLessThan($size, $length);
     }
     
     /**
