@@ -25,6 +25,7 @@ class BroadcastTest extends TestCase
         event(new ActivityAssigned($task));
         $this->assertLogContainsText('ActivityAssigned');
         $this->assertLogContainsText(addcslashes(route('api.tasks.show', ['task' => $task->id]), '/'));
+        $this->assertBroadcastEventSizeLessThan('ActivityAssigned', 10000);
     }
 
      /**
@@ -38,6 +39,7 @@ class BroadcastTest extends TestCase
         event(new ActivityCompleted($task));
         $this->assertLogContainsText('ActivityCompleted');
         $this->assertLogContainsText(addcslashes(route('api.tasks.show', ['task' => $task->id]), '/'));
+        $this->assertBroadcastEventSizeLessThan('ActivityCompleted', 10000);
     }
 
      /**
@@ -51,6 +53,7 @@ class BroadcastTest extends TestCase
         event(new ProcessCompleted($request));
         $this->assertLogContainsText('ProcessCompleted');
         $this->assertLogContainsText(addcslashes(route('api.requests.show', ['task' => $request->id]), '/'));
+        $this->assertBroadcastEventSizeLessThan('ProcessCompleted', 10000);
     }
 
     /**
@@ -64,5 +67,6 @@ class BroadcastTest extends TestCase
         event(new ProcessUpdated($request, 'ACTIVITY_COMPLETED'));
         $this->assertLogContainsText('ProcessUpdated');
         $this->assertLogContainsText(addcslashes(route('api.requests.show', ['task' => $request->id]), '/'));
+        $this->assertBroadcastEventSizeLessThan('ProcessUpdated', 10000);
     }
 }
