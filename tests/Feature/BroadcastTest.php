@@ -9,10 +9,11 @@ use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\ProcessRequest as Request;
+use Illuminate\Foundation\Testing\WithFaker;
 
 class BroadcastTest extends TestCase
 {
-    use LoggingHelper;
+    use LoggingHelper, WithFaker;
 
     public function testBroadcastEventsHaveTesting()
     {
@@ -35,7 +36,12 @@ class BroadcastTest extends TestCase
      */
     public function testActivityAssignedBroadcast()
     {
-        $task = factory(Task::class)->create();
+        $task = factory(Task::class)->create([
+            'data' => [
+                'test' => $this->faker->text(20000),
+            ]
+        ]);
+        
         event(new ActivityAssigned($task));
         $this->assertLogContainsText('ActivityAssigned');
         $this->assertLogContainsText(addcslashes(route('api.tasks.show', ['task' => $task->id]), '/'));
@@ -49,7 +55,11 @@ class BroadcastTest extends TestCase
      */
     public function testActivityCompletedBroadcast()
     {
-        $task = factory(Task::class)->create();
+        $task = factory(Task::class)->create([
+            'data' => [
+                'test' => $this->faker->text(20000),
+            ]
+        ]);
         event(new ActivityCompleted($task));
         $this->assertLogContainsText('ActivityCompleted');
         $this->assertLogContainsText(addcslashes(route('api.tasks.show', ['task' => $task->id]), '/'));
@@ -63,7 +73,11 @@ class BroadcastTest extends TestCase
      */
     public function testProcessCompletedBroadcast()
     {
-        $request = factory(Request::class)->create();
+        $request = factory(Request::class)->create([
+            'data' => [
+                'test' => $this->faker->text(20000),
+            ]
+        ]);
         event(new ProcessCompleted($request));
         $this->assertLogContainsText('ProcessCompleted');
         $this->assertLogContainsText(addcslashes(route('api.requests.show', ['task' => $request->id]), '/'));
@@ -77,7 +91,11 @@ class BroadcastTest extends TestCase
      */
     public function testProcessUpdatedBroadcast()
     {
-        $request = factory(Request::class)->create();
+        $request = factory(Request::class)->create([
+            'data' => [
+                'test' => $this->faker->text(20000),
+            ]
+        ]);
         event(new ProcessUpdated($request, 'ACTIVITY_COMPLETED'));
         $this->assertLogContainsText('ProcessUpdated');
         $this->assertLogContainsText(addcslashes(route('api.requests.show', ['task' => $request->id]), '/'));
