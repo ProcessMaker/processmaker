@@ -6,7 +6,7 @@
     "php bpm processmaker"
   ],
   "homepage": "http://processmaker.com",
-  "license": "GNU Affero General Public License version 3",
+  "license": "GAGPL-3.0-or-later",
   "minimum-stability": "dev",
   "prefer-stable": true,
   "repositories": [
