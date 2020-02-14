@@ -13,8 +13,10 @@ class ProcessUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $processRequest;
+    public $payloadUrl;
     public $event;
+    
+    private $processRequest;
 
     /**
      * Create a new event instance.
@@ -23,8 +25,10 @@ class ProcessUpdated implements ShouldBroadcastNow
      */
     public function __construct(ProcessRequest $processRequest, $event)
     {
-        $this->processRequest = $processRequest;
+        $this->payloadUrl = route('api.requests.show', ['request' => $processRequest->getKey()]);
         $this->event = $event;
+        
+        $this->processRequest = $processRequest;
     }
 
     /**

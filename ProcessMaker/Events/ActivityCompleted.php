@@ -13,7 +13,9 @@ class ActivityCompleted implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $processRequestToken;
+    public $payloadUrl;
+    
+    private $processRequestToken;
 
     /**
      * Create a new event instance.
@@ -22,6 +24,7 @@ class ActivityCompleted implements ShouldBroadcastNow
      */
     public function __construct(ProcessRequestToken $processRequestToken)
     {
+        $this->payloadUrl = route('api.tasks.show', ['task' => $processRequestToken->id]);
         $this->processRequestToken = $processRequestToken;
     }
 
