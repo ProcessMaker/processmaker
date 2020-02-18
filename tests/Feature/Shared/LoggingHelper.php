@@ -39,6 +39,66 @@ trait LoggingHelper
     }
 
     /**
+     * Assert that an event broadcast to the log has a payload smaller than the
+     * specified size in bytes.
+     *
+     * @param string $name
+     * @param integer $size
+     *
+     * @return mixed
+     */
+    public function assertBroadcastEventSizeLessThan($name, $size)
+    {
+        $length = 0;
+        $records = app('log')->getHandlers()[0]->getRecords();
+        
+        foreach ($records as $record) {
+            if (array_key_exists('message', $record)) {
+                $doesMatch = preg_match('/Broadcasting \[(?<name>.+)\].+ with payload:(?<payload>.+)/s', $record['message'], $matches);
+                if ($doesMatch) {
+                    if ($matches['name'] == $name) {
+                        $length = strlen($matches['payload']);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return $this->assertLessThan($size, $length);
+    }
+    
+    /**
+     * Assert that a log entry exists that contains specific text
+     *
+     * @param array $data
+     *
+     * @return mixed
+     */        
+    public function assertLogContainsText($data)
+    {
+        $records = app('log')->getHandlers()[0]->getRecords();
+        $count = 1;
+        $matches = 0;
+
+        foreach ($records as $record) {
+            $matches = 0;
+            
+            if (array_key_exists('message', $record)) {
+                $message = $record['message'];
+                if (strpos($message, $data) !== false) {
+                    $matches = 1;
+                }
+            }
+            
+            if ($matches === $count) {
+                break;
+            }
+        }
+        
+        return $this->assertEquals($count, $matches, 'Failed asserting that the log contains text.');
+    }
+
+    /**
      * Assert that a log message exists. This exclusively tests only the actual
      * log message string and not the context, level, or other items.
      *

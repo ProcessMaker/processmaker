@@ -31,6 +31,7 @@
       <env name="TESTING_VERBOSE" value="false" />
       <env name="POPULATE_DATABASE" value="true" />
       <env name="TELESCOPE_ENABLED" value="false" />
+      <env name="BROADCAST_DRIVER" value="log"/>
 
       <!-- Caching config -->
       <env name="CACHE_DRIVER" value="array" />

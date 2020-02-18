@@ -58,30 +58,34 @@ trait ProcessTaskAssignmentsTrait
     private static function setAssignments(DOMElement $node, array $assignments)
     {
 
-        $users = explode(',',
-            $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedUsers'));
-        if ($users) {
-            foreach ($users as $user) {
-                if (!empty($user)) {
-                    $assignments[] = [
-                        'process_task_id' => $node->getAttribute('id'),
-                        'assignment_id' => $user,
-                        'assignment_type' => User::class,
-                    ];
+        $assignment = $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignment');
+        if ($assignment === 'user' || $assignment === 'group' || $assignment === 'user_group' || $assignment === 'self_service') {
+
+            $users = explode(',',
+                $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedUsers'));
+            if ($users) {
+                foreach ($users as $user) {
+                    if (!empty($user)) {
+                        $assignments[] = [
+                            'process_task_id' => $node->getAttribute('id'),
+                            'assignment_id' => $user,
+                            'assignment_type' => User::class,
+                        ];
+                    }
                 }
             }
-        }
 
-        $groups = explode(',',
-            $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedGroups'));
-        if ($groups) {
-            foreach ($groups as $group) {
-                if (!empty($group)) {
-                    $assignments[] = [
-                        'process_task_id' => $node->getAttribute('id'),
-                        'assignment_id' => $group,
-                        'assignment_type' => Group::class,
-                    ];
+            $groups = explode(',',
+                $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedGroups'));
+            if ($groups) {
+                foreach ($groups as $group) {
+                    if (!empty($group)) {
+                        $assignments[] = [
+                            'process_task_id' => $node->getAttribute('id'),
+                            'assignment_id' => $group,
+                            'assignment_type' => Group::class,
+                        ];
+                    }
                 }
             }
         }
