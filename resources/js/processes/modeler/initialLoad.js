@@ -219,7 +219,8 @@ ProcessMaker.EventBus.$on(
         helper:
           'Select Screen to display this Task',
         name: 'screenRef',
-        params: { type: 'DISPLAY' }
+        params: { type: 'DISPLAY' },
+        required: true,
       }
     });
     registerInspectorExtension(manualTask, {
