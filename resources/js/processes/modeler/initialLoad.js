@@ -188,7 +188,8 @@ ProcessMaker.EventBus.$on(
       config: {
         label: 'Script',
         helper: 'Select the Script this element runs',
-        name: 'scriptRef'
+        name: 'scriptRef',
+        required: true,
       }
     });
 
