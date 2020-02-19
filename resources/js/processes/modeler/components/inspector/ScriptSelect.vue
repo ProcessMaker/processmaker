@@ -65,12 +65,14 @@
     watch: {
       content: {
         handler() {
-          // this.$emit("input", this.content.id);
           this.validate();
-          if (this.node) {
-            this.$set(this.definition, "scriptRef", this.content.id);
-          } else  {
-            this.$emit('input', this.content.id);
+          if (this.content) {
+            this.error = '';
+            if (this.node) {
+              this.$set(this.definition, "scriptRef", this.content.id);
+            } else  {
+              this.$emit('input', this.content.id);
+            }
           }
         }
       },
@@ -96,7 +98,6 @@
               });
           } else {
             this.content = '';
-            this.error = '';
           }
         },
       }
