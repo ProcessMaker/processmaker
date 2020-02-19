@@ -27,13 +27,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        /**
-         * Currently no scheduled tasks exists, however once scheduled cron tasks are required, they should
-         * be placed here.
-         */
 
-        $scheduleManager = new TaskSchedulerManager();
-        $scheduleManager->scheduleTasks($schedule);
+        $schedule->call(function() {
+            $scheduleManager = new TaskSchedulerManager();
+            $scheduleManager->scheduleTasks();
+        })->everyMinute();
     }
 
     /**
