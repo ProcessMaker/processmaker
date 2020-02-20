@@ -20,6 +20,7 @@ class GlobalSignalsTest extends TestCase
      */
     public function testGlobalSignals()
     {
+        $this->logExecutionEvents();
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);
 

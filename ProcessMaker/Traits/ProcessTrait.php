@@ -4,7 +4,7 @@ namespace ProcessMaker\Traits;
 
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
-use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 
 trait ProcessTrait
 {
@@ -30,24 +30,15 @@ trait ProcessTrait
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
-                //Load the collaborations if exists
-                $collaborations = $this->bpmnDefinitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
-                foreach ($collaborations as $collaboration) {
-                    try {
-                        $collaboration->getBpmnElementInstance();
-                    } catch (\ProcessMaker\Nayra\Exceptions\ElementNotFoundException $e) {
-                        if (is_array($this->warnings)) {
-                            $warnings = $this->warnings;
-                        } else {
-                            $warnings = [];
-                        }
-
-                        $warnings[] = [
-                            'title' => __('Element Not Found'),
-                            'text' => $e->getMessage()
-                        ];
-                        $this->warnings = $warnings;
-                    }
+                try {
+                    $this->bpmnDefinitions->getEngine()->loadProcessDefinitions($this->bpmnDefinitions);
+                } catch (ElementNotFoundException $e) {
+                    $warnings = is_array($this->warnings) ? $this->warnings : [];
+                    $warnings[] = [
+                        'title' => __('Element Not Found'),
+                        'text' => $e->getMessage()
+                    ];
+                    $this->warnings = $warnings;
                 }
             }
         }

@@ -4,11 +4,11 @@ namespace ProcessMaker;
 
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\Engine\EngineTrait;
+use ProcessMaker\Nayra\Storage\BpmnDocument;
 
 /**
  * Test implementation for EngineInterface.
@@ -133,9 +133,23 @@ class BpmnEngine implements EngineInterface
     public function getDefinition($processVersion)
     {
         $key = $processVersion->getKey();
-        if(!isset($this->definitions[$key])) {
-            $this->definitions[$key]  = $processVersion->getDefinitions(false, $this);
+        if (!isset($this->definitions[$key])) {
+            $this->definitions[$key] = $processVersion->getDefinitions(false, $this);
         }
         return $this->definitions[$key];
+    }
+
+    public function loadProcessDefinitions(BpmnDocument $definitions)
+    {
+        //Load the collaborations
+        $collaborations = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'collaboration');
+        foreach ($collaborations as $collaboration) {
+            $this->loadCollaboration($collaboration->getBpmnElementInstance());
+        }
+        //Load the collaborations
+        $processes = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
+        foreach ($processes as $process) {
+            $this->loadProcess($process->getBpmnElementInstance());
+        }
     }
 }

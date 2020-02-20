@@ -29,7 +29,7 @@
       <outgoing>_26</outgoing>
     </task>
     <sequenceFlow id="_9" sourceRef="_6" targetRef="_8"/>
-    <intermediateThrowEvent id="_6" name="siganal 1">
+    <intermediateThrowEvent id="_6" name="signal 1">
       <incoming>_7</incoming>
       <outgoing>_9</outgoing>
       <inputSet/>
@@ -140,7 +140,7 @@
       <bpmndi:BPMNShape bpmnElement="_6" id="Yaoqiang-_6">
         <dc:Bounds height="32.0" width="32.0" x="403.62745098039215" y="139.50000000000003"/>
         <bpmndi:BPMNLabel>
-          <dc:Bounds height="18.96" width="54.0" x="392.63" y="180.02"/>
+          <dc:Bounds height="18.96" width="48.0" x="395.63" y="180.02"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="_27" id="Yaoqiang-_27">
