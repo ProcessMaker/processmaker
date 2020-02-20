@@ -58,7 +58,7 @@
                 @if ($config->countCategories!== 0)
                     <div class="modal-body">
                         <div class="form-group">
-                            {!! Form::label('name', __('Name')) !!}
+                            {!! Form::label('name', __('Name')) !!}*
                             {!! Form::text('name', null, [
                             'autocomplete' => 'off',
                             'class'=> 'form-control',
@@ -69,7 +69,7 @@
                             <div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('description', __('Description')) !!}
+                            {!! Form::label('description', __('Description')) !!}*
                             {!! Form::textarea('description', null, [
                             'class'=> 'form-control',
                             'rows' => '3',
@@ -79,7 +79,7 @@
                                 @{{description}}
                             </div>
                         </div>
-                        <category-select :label="$t('Category')" api-get="process_categories"
+                        <category-select :label="$t('Category') + '*'" api-get="process_categories"
                                          api-list="process_categories" v-model="process_category_id"
                                          :errors="addError.process_category_id">
                         </category-select>
