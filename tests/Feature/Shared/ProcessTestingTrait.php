@@ -131,6 +131,7 @@ trait ProcessTestingTrait
      */
     private function runScheduledTasks()
     {
+        $schedule = app()->make(Schedule::class);
         $scheduleManager = new TaskSchedulerManager();
         $scheduleManager->scheduleTasks();
         ///
