@@ -53,7 +53,7 @@
                     @if ($config->countCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
-                                {!! Form::label('title', __('Name')) !!}
+                                {!! Form::label('title', __('Name')) !!}*
                                 {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                                 'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
                                 <small class="form-text text-muted" v-if="! errors.title">
@@ -62,19 +62,19 @@
                                 <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('type', __('Type')) !!}
+                                {!! Form::label('type', __('Type')) !!}*
                                 {!! Form::select('type', [null => __('Select')] + $config->types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
                                 'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
                                 <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('description', __('Description')) !!}
+                                {!! Form::label('description', __('Description')) !!}*
                                 {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                                 'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
                                 <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
                                 </div>
                             </div>
-                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
+                            <category-select :label="$t('Category') + '*'" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
                             </category-select>
                         </div>
                     @else
