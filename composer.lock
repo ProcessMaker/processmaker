@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0fbfa877c1773d7fa9a8a3c267ef2026",
+    "content-hash": "32b5601610e54b73419c5b724442f697",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -3236,12 +3236,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/laravel-chunk-upload.git",
-                "reference": "388df281c1da2dcd2908fb7e0f763c678d7f1e92"
+                "reference": "8b49e88f5e7ac238d1366e63bace7f189b1082ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/laravel-chunk-upload/zipball/388df281c1da2dcd2908fb7e0f763c678d7f1e92",
-                "reference": "388df281c1da2dcd2908fb7e0f763c678d7f1e92",
+                "url": "https://api.github.com/repos/ProcessMaker/laravel-chunk-upload/zipball/8b49e88f5e7ac238d1366e63bace7f189b1082ef",
+                "reference": "8b49e88f5e7ac238d1366e63bace7f189b1082ef",
                 "shasum": ""
             },
             "require": {
@@ -3281,7 +3281,7 @@
                 }
             ],
             "description": "Service for chunked upload with several js providers",
-            "time": "2018-11-28T19:48:49+00:00"
+            "time": "2019-11-05T21:38:31+00:00"
         },
         {
             "name": "predis/predis",
@@ -3334,18 +3334,39 @@
             "time": "2016-06-16T16:22:20+00:00"
         },
         {
+            "name": "processmaker/docker-executor-php",
+            "version": "0.0.1",
+            "dist": {
+                "type": "path",
+                "url": "/home/vagrant/packages/ProcessMaker/docker-executor-php",
+                "reference": "cc49fb466c470ea523865457d304399f4541dfe4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorPhp\\DockerExecutorPhpServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "description": "PHP script executor for processmaker 4",
+            "transport-options": {
+                "symlink": true
+            }
+        },
+        {
             "name": "processmaker/laravel-i18next",
             "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/laravel-i18next.git",
-                "reference": "a22fb92dd56b7173a3df78d374d93516f8748a72"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/laravel-i18next/zipball/a22fb92dd56b7173a3df78d374d93516f8748a72",
-                "reference": "a22fb92dd56b7173a3df78d374d93516f8748a72",
-                "shasum": ""
+                "type": "path",
+                "url": "/home/vagrant/packages/ProcessMaker/laravel-i18next",
+                "reference": "a22fb92dd56b7173a3df78d374d93516f8748a72"
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.2"
@@ -3367,7 +3388,11 @@
                     "src/helpers.php"
                 ]
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "test": [
+                    "vendor/bin/phpunit --configuration phpunit.xml"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -3382,7 +3407,9 @@
                 }
             ],
             "description": "Transform Laravel localization files into i18next compatible format. Provides routes for i18next-xhr-backend.",
-            "time": "2019-01-29T15:38:58+00:00"
+            "transport-options": {
+                "symlink": true
+            }
         },
         {
             "name": "processmaker/nayra",
@@ -8502,6 +8529,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
+        "processmaker/docker-executor-php": 20,
         "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,

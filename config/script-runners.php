@@ -9,13 +9,6 @@ return [
     | This option controls the available Script Runners.
     |
     */
-    'php' => [
-        'name' => 'PHP',
-        'runner' => 'PhpRunner',
-        'mime_type' => 'application/x-php',
-        'image' => env('SCRIPTS_PHP_IMAGE', 'processmaker4/executor-php'),
-        'options' => ['invokerPackage' => "ProcessMaker\\Client"]
-    ],
     'lua' => [
         'name' => 'Lua',
         'runner' => 'LuaRunner',
