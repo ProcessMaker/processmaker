@@ -79,7 +79,7 @@
       value: {
         immediate: true,
         handler() {
-          this.validate();
+          this.checkScreenRefExists();
           // Load selected item.
           if (this.value) {
             this.loading = true;
