@@ -21,14 +21,14 @@
             <div class="col">
                 <div class="card card-body">
                     <div class="form-group">
-                        {!!Form::label('name', __('Name'))!!}
+                        {!!Form::label('name', __('Name')  . '<small class="ml-1">*</small>', [], false)!!}
                         {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'formData.name',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                         <small class="form-text text-muted" v-if="! errors.name">{{__('The environment variable name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
                     <div class="form-group">
-                        {!!Form::label('description', __('Description'))!!}
+                        {!!Form::label('description', __('Description')  . '<small class="ml-1">*</small>', [], false)!!}
                         {!!Form::textArea('description', null, ['class'=> 'form-control', 'v-model'=> 'formData.description',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}','rows'=>3])!!}
                         <div class="invalid-feedback" v-for="description in errors.description">@{{description}}</div>
