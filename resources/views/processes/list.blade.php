@@ -58,7 +58,7 @@
                 @if ($config->countCategories!== 0)
                     <div class="modal-body">
                         <div class="form-group">
-                            {!! Form::label('name', __('Name')) !!}
+                            {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
                             {!! Form::text('name', null, [
                             'autocomplete' => 'off',
                             'class'=> 'form-control',
@@ -69,7 +69,7 @@
                             <div class="invalid-feedback" v-for="name in addError.name">@{{name}}</div>
                         </div>
                         <div class="form-group">
-                            {!! Form::label('description', __('Description')) !!}
+                            {!! Form::label('description', __('Description')) !!}<small class="ml-1">*</small>
                             {!! Form::textarea('description', null, [
                             'class'=> 'form-control',
                             'rows' => '3',
