@@ -1,10 +1,10 @@
 <template>
-    <div class="form-group" :class="{'has-error':error}">
+    <div class="form-group">
         <label>{{ $t(label) }}</label>
         <multiselect v-model="content"
                      track-by="id"
                      label="title"
-                     :class="{'border border-danger':error}"
+                     :class="{'is-invalid':error}"
                      :loading="loading"
                      :placeholder="placeholder || $t('type here to search')"
                      :options="screens"
@@ -12,6 +12,7 @@
                      :show-labels="false"
                      :searchable="true"
                      :internal-search="false"
+                     :required="required"
                      @open="load"
                      @search-change="load">
             <template slot="noResult" >
@@ -21,7 +22,9 @@
                 {{ $t('No Data Available') }}
             </template>
         </multiselect>
-        <small v-if="error" class="text-danger">{{ error }}</small>
+        <div v-if="error" class="invalid-feedback">
+          <div>{{ error }}</div>
+        </div>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
         <a
                 v-if="content.id"
@@ -38,7 +41,7 @@
   import Multiselect from "vue-multiselect";
 
   export default {
-    props: ["value", "label", "helper", "params", "requiredMessage", "placeholder"],
+    props: ["value", "label", "helper", "params", "required", "placeholder"],
     components: {
       Multiselect
     },
@@ -52,24 +55,31 @@
     },
     computed: {
       node() {
-        return this.$parent.$parent.highlightedNode.definition;
-      }
+        return this.$parent.$parent.$parent.$parent.highlightedNode;
+      },
+      definition() {
+        return this.node.definition;
+      },
     },
     watch: {
-      content: {
+     content: {
         immediate: true,
         handler() {
+          this.validate();
           if (this.content) {
             this.error = '';
-            this.$emit("input", this.content.id);
-          } else if (this.requiredMessage) {
-            this.error = this.requiredMessage
+            if (this.node) {
+              this.$set(this.definition, "screenRef", this.content.id);
+            } else  {
+              this.$emit('input', this.content.id);
+            }
           }
         }
       },
       value: {
         immediate: true,
         handler() {
+          this.checkScreenRefExists();
           // Load selected item.
           if (this.value) {
             this.loading = true;
@@ -88,11 +98,6 @@
               });
           } else {
             this.content = '';
-            if (this.requiredMessage) {
-              this.error = this.requiredMessage
-            } else {
-              this.error = '';
-            }
           }
         },
       }
@@ -126,7 +131,27 @@
           .catch(err => {
             this.loading = false;
           });
+      },
+      checkScreenRefExists() {
+        if (this.definition.screenRef) {
+          return;
+        }
+        this.$set(this.definition, "screenRef", '');
+      },
+      validate() {
+        if (!this.required || this.value && this.value !== undefined)  {
+          return;
+        }
+
+        this.error = this.$t('A screen selection is required');
+      },
+    },
+    mounted() {
+      if (this.node) {
+        this.checkScreenRefExists();
       }
+
+      this.validate();
     }
   };
 </script>
