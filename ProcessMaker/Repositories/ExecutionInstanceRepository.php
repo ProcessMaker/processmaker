@@ -11,6 +11,8 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
+use Reflection;
+use ReflectionClass;
 
 /**
  * Execution Instance Repository.
@@ -99,8 +101,8 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $data = $instance->getDataStore()->getData();
         //Get the process
         $process = $instance->getProcess();
-        //Get process definition
-        $definition = $process->getEngine()->getProcess();
+        //Get process definition 
+        $definition = $process->getOwnerDocument()->getModel();
 
         //Save the row
         $instance->callable_id = $process->getId();

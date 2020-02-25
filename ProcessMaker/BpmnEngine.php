@@ -8,7 +8,7 @@ use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\Engine\EngineTrait;
-use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Repositories\BpmnDocument;
 
 /**
  * Test implementation for EngineInterface.
@@ -28,13 +28,6 @@ class BpmnEngine implements EngineInterface
      * @var EventBusInterface $dispatcher
      */
     private $dispatcher;
-
-    /**
-     * Process definition row.
-     *
-     * @var \ProcessMaker\Model\Process
-     */
-    private $process;
 
     /**
      * Loaded versioned definitions
@@ -92,25 +85,6 @@ class BpmnEngine implements EngineInterface
     }
 
     /**
-     * @return Model\Process
-     */
-    public function getProcess()
-    {
-        return $this->process;
-    }
-
-    /**
-     * @param RepositoryInterface $repository
-     *
-     * @return $this
-     */
-    public function setProcess(Process $process)
-    {
-        $this->process = $process;
-        return $this;
-    }
-
-    /**
      * Load an execution instance from an external storage.
      *
      * @param ProcessRequest $instance
@@ -139,6 +113,12 @@ class BpmnEngine implements EngineInterface
         return $this->definitions[$key];
     }
 
+    /**
+     * Load a process definitin to the engine
+     *
+     * @param BpmnDocument $definitions
+     * @return void
+     */
     public function loadProcessDefinitions(BpmnDocument $definitions)
     {
         //Load the collaborations
