@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ExportProcess implements ShouldQueue
@@ -52,6 +53,12 @@ class ExportProcess implements ShouldQueue
      * @var array[]
      */
     protected $package = [];
+
+    /**
+     * @var ExportManager
+     */
+    private $manager;
+
 
     /**
      * Create a new job instance, set the process, get BPMN definitions, and
@@ -125,16 +132,7 @@ class ExportProcess implements ShouldQueue
         $this->package['screens'] = [];
         $this->package['screen_categories'] = [];
 
-        $screenIds = [];
-
-        $humanTasks = ['task', 'userTask', 'manualTask', 'endEvent'];
-        foreach ($humanTasks as $humanTask) {
-            $tasks = $this->definitions->getElementsByTagName($humanTask);
-            foreach ($tasks as $task) {
-                $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-                $screenIds[] = $screenRef;
-            }
-        }
+        $screenIds = $this->manager->getDependenciesOfType(Screen::class, $this->process);
 
         //Add cancel screen
         if ($this->process->cancel_screen_id) {
@@ -265,6 +263,7 @@ class ExportProcess implements ShouldQueue
      */
     public function handle()
     {
+        $this->manager = app(ExportManager::class);
         // Package up our process
         $this->packageFile();
 

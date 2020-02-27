@@ -20,7 +20,7 @@ trait ProcessTrait
      *
      * @param bool $forceParse
      *
-     * @return \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
+     * @return BpmnDocument
      */
     public function getDefinitions($forceParse = false, $engine = null)
     {

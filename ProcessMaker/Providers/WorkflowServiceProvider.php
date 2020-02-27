@@ -7,8 +7,11 @@ use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
@@ -145,6 +148,18 @@ class WorkflowServiceProvider extends ServiceProvider
                 ]
             );
             return $bpmnRepository;
+        });
+        /**
+         * Export Manager
+         */
+        $this->app->singleton(ExportManager::class, function () {
+            $instance = new ExportManager;
+            $instance->addDependencie([
+                'type' => Screen::class,
+                'owner' => Process::class,
+                'callback' => [$instance, 'screensInBpmn'],
+            ]);
+            return $instance;
         });
     }
 }
