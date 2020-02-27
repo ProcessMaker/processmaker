@@ -132,16 +132,15 @@ class ExportProcess implements ShouldQueue
         $this->package['screens'] = [];
         $this->package['screen_categories'] = [];
 
-        $screenIds = $this->manager->getDependenciesOfType(Screen::class, $this->process);
-
-        //Add cancel screen
-        if ($this->process->cancel_screen_id) {
-            $screenIds[] = $this->process->cancel_screen_id;
-        }
+        $screenIds = $this->manager->getDependenciesOfType(Screen::class, $this->process, []);
 
         if (count($screenIds)) {
             $screens = Screen::whereIn('id', $screenIds)->get();
+            $screens->each(function ($screen) use (&$screenIds) {
+                $screenIds = $this->manager->getDependenciesOfType(Screen::class, $screen, $screenIds);
+            });
 
+            $screens = Screen::whereIn('id', $screenIds)->get();
             $screens->each(function ($screen) {
                 $screenArray = $screen->toArray();
                 $screenArray['categories'] = $screen->categories->toArray();

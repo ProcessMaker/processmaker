@@ -157,7 +157,12 @@ class WorkflowServiceProvider extends ServiceProvider
             $instance->addDependencie([
                 'type' => Screen::class,
                 'owner' => Process::class,
-                'callback' => [$instance, 'screensInBpmn'],
+                'callback' => [$instance, 'screensUsedInProcess'],
+            ]);
+            $instance->addDependencie([
+                'type' => Screen::class,
+                'owner' => Screen::class,
+                'callback' => [$instance, 'screensUsedInScreen'],
             ]);
             return $instance;
         });
