@@ -277,7 +277,7 @@ import formTypes from "./formTypes";
         this.validationWarnings.splice(0);
 
         if (this.type === formTypes.form && !this.containsSubmitButton()) {
-          this.validationWarnings.push(this.$t('Form requires a submit button to be saved'));
+          this.validationWarnings.push('Warning: Screens without save buttons cannot be executed.');
         }
 
         this.config.forEach(page => {
@@ -303,7 +303,7 @@ import formTypes from "./formTypes";
       },
       getValidationErrorsForItems(items, page) {
         const validationErrors = [];
-            
+
         if (!Array.isArray(items)) {
           items = [items];
         }
