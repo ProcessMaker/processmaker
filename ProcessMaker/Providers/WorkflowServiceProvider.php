@@ -12,6 +12,7 @@ use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
@@ -163,6 +164,16 @@ class WorkflowServiceProvider extends ServiceProvider
                 'type' => Screen::class,
                 'owner' => Screen::class,
                 'callback' => [$instance, 'screensUsedInScreen'],
+            ]);
+            $instance->addDependencie([
+                'type' => Script::class,
+                'owner' => Process::class,
+                'callback' => [$instance, 'scriptsUsedInProcess'],
+            ]);
+            $instance->addDependencie([
+                'type' => Script::class,
+                'owner' => Screen::class,
+                'callback' => [$instance, 'scriptsUsedInScreen'],
             ]);
             return $instance;
         });

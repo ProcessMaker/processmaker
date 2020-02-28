@@ -136,11 +136,6 @@ class ExportProcess implements ShouldQueue
 
         if (count($screenIds)) {
             $screens = Screen::whereIn('id', $screenIds)->get();
-            $screens->each(function ($screen) use (&$screenIds) {
-                $screenIds = $this->manager->getDependenciesOfType(Screen::class, $screen, $screenIds);
-            });
-
-            $screens = Screen::whereIn('id', $screenIds)->get();
             $screens->each(function ($screen) {
                 $screenArray = $screen->toArray();
                 $screenArray['categories'] = $screen->categories->toArray();
@@ -158,14 +153,9 @@ class ExportProcess implements ShouldQueue
     {
         $this->package['scripts'] = [];
 
-        $scriptIds = [];
+        $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->process, []);
 
-        $tasks = $this->definitions->getElementsByTagName('scriptTask');
-        foreach ($tasks as $task) {
-            $scriptRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
-            $scriptIds[] = $scriptRef;
-        }
-
+        \Log::debug($scriptIds);
         if (count($scriptIds)) {
             $scripts = Script::whereIn('id', $scriptIds)->get();
 
