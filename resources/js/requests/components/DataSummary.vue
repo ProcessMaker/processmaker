@@ -8,21 +8,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, key) in summary" :key="key">
-                    <template v-if="shouldNest(item)">
-                        <td colspan="2">
-                            <div class="d-flex">
-                                <div class="pr-2">{{ key }}</div>
-                                <div class="border border-top-0 flex-grow-1">
-                                    <data-summary :summary="item" :show-head="false"></data-summary>
-                                </div>
-                            </div>
-                        </td>
-                    </template>
-                    <template v-else>
-                        <td>{{ key }}</td>
-                        <td>{{ item }}</td>
-                    </template>
+                <tr v-for="(item, key) in formattedData" :key="key">
+                    <td>{{ key }}</td>
+                    <td>{{ item }}</td>
                 </tr>
             </tbody>
         </table>
@@ -36,10 +24,25 @@ export default {
         showHead: { type: Boolean, default: true }
     },
     data() {
-        return {}
+        return {
+            formattedData: {}
+        }
+    },
+    mounted() {
+        this.formatData("", this.summary);
     },
     methods: {
-        shouldNest(item) {
+        formatData(prefix, items) {
+            for (const key in items) {
+                const item = items[key];
+                if (this.isObject(item)) {
+                    this.formatData(prefix + key + ".", item);
+                } else {
+                    this.formattedData[prefix + key] = item
+                }
+            }
+        },
+        isObject(item) {
             // Arrays or Objects
             return item && typeof item === 'object';
         },
