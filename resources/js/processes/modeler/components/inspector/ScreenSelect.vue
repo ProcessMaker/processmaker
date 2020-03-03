@@ -55,7 +55,7 @@
     },
     computed: {
       node() {
-        return this.$parent.$parent.$parent.$parent.highlightedNode;
+        return this.$root.$children[0].$children[0].highlightedNode;
       },
       definition() {
         return this.node.definition;
