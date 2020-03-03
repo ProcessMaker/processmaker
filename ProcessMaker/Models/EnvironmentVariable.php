@@ -25,7 +25,6 @@ use Illuminate\Validation\Rule;
  * )
  *
  *
-
  *
  *
  */
@@ -71,4 +70,10 @@ class EnvironmentVariable extends Model
         ];
     }
 
+    public static function messages()
+    {
+        return [
+            'name.regex' => trans('environmentVariables.validation.name.invalid_variable_name'),
+        ];
+    }
 }
