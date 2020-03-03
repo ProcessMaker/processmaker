@@ -113,6 +113,7 @@
                     <div class="special-assignment-section">
                         <div class="special-assignment-value">{{ $t("Assigned to") }}
                             <strong v-if="row.type == 'requester'">{{$t(row.type)}}</strong>
+                            <strong v-if="row.type == 'previous_task_assignee'">{{$t('Previous Task Assignee')}}</strong>
                             <strong v-else>{{$t(row.assignmentName)}}</strong>
                         </div>
                     </div>
@@ -375,50 +376,56 @@
         this.specialAssignments = items;
 
         items.forEach(item => {
-          if (item.type === "requester") {
-            this.specialAssignmentsData.push({
-              type: item.type,
-              assignee: item.assignee,
-              expression: item.expression
-            });
-          } else if ((item.type === "user_group" || item.type === "self_service") && item.assignee.users) {
-
-            let assignmentName = "";
-
-            let usersPromise = Promise.all(
-              item.assignee.users.map(user => {
-                return ProcessMaker.apiClient.get("users/" + user);
-              })
-            )
-              .then(response => {
-                response.forEach(user => {
-                  assignmentName += assignmentName ? ", " + user.data.fullname : user.data.fullname;
-                });
+          switch (item.type) 
+          {
+            case 'requester': 
+            case 'previous_task_assignee':
+              this.specialAssignmentsData.push({
+                type: item.type,
+                assignee: item.assignee,
+                expression: item.expression
               });
+              break;
+            case 'user_group':
+            case 'self_service':
+              if (item.assignee.users) {
+                let assignmentName = "";
 
-            let groupsPromise = Promise.all(
-              item.assignee.groups.map(group => {
-                return ProcessMaker.apiClient.get("groups/" + group);
-              })
-            )
-              .then(response => {
-                response.forEach(group => {
-                  assignmentName += assignmentName ? ", " + group.data.name : group.data.name;
-                });
-              });
+                let usersPromise = Promise.all(
+                  item.assignee.users.map(user => {
+                    return ProcessMaker.apiClient.get("users/" + user);
+                  })
+                )
+                  .then(response => {
+                    response.forEach(user => {
+                      assignmentName += assignmentName ? ", " + user.data.fullname : user.data.fullname;
+                    });
+                  });
 
-            Promise.all([usersPromise, groupsPromise])
-              .then(() => {
-                this.specialAssignmentsData.push({
-                  type: item.type,
-                  assignee: item.assignee,
-                  expression: item.expression,
-                  assignmentName: assignmentName
-                });
-              });
+                let groupsPromise = Promise.all(
+                  item.assignee.groups.map(group => {
+                    return ProcessMaker.apiClient.get("groups/" + group);
+                  })
+                )
+                  .then(response => {
+                    response.forEach(group => {
+                      assignmentName += assignmentName ? ", " + group.data.name : group.data.name;
+                    });
+                  });
 
-          } else if (item.type === "user") {
-            ProcessMaker.apiClient
+                Promise.all([usersPromise, groupsPromise])
+                  .then(() => {
+                    this.specialAssignmentsData.push({
+                      type: item.type,
+                      assignee: item.assignee,
+                      expression: item.expression,
+                      assignmentName: assignmentName
+                    });
+                  });
+              }
+              break;
+            case 'user':
+              ProcessMaker.apiClient
               .get("users/" + item.assignee)
               .then(response => {
                 this.specialAssignmentsData.push({
@@ -432,24 +439,27 @@
                 item.assignmentName = "";
                 this.specialAssignmentsData.push(item);
               });
-          } else if (item.type === "group" || item.type === "self_service") {
-            ProcessMaker.apiClient
-              .get("groups/" + item.assignee)
-              .then(response => {
-                this.specialAssignmentsData.push({
-                  type: item.type,
-                  assignee: item.assignee,
-                  expression: item.expression,
-                  assignmentName: response.data.name
+              break;
+            case 'group':
+            case 'self_service':
+              ProcessMaker.apiClient
+                .get("groups/" + item.assignee)
+                .then(response => {
+                  this.specialAssignmentsData.push({
+                    type: item.type,
+                    assignee: item.assignee,
+                    expression: item.expression,
+                    assignmentName: response.data.name
+                  });
+                })
+                .catch(() => {
+                  item.assignmentName = "";
+                  this.specialAssignmentsData.push(item);
                 });
-              })
-              .catch(() => {
-                item.assignmentName = "";
-                this.specialAssignmentsData.push(item);
-              });
+              break;
           }
-        });
-      },
+        })
+      }
     },
     watch: {
       assigned: {
