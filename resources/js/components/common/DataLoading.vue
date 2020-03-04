@@ -111,6 +111,7 @@
     .icon-container {
         display:inline-block;
         width: 5em;
+        height: 5em;
         margin-bottom: 1em;
 
         i {
