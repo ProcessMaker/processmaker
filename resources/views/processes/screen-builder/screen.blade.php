@@ -30,9 +30,10 @@
         // Registrar el EP para script, datasource y execute
         if (builder.watchers) {
           if (@json(route::has('api.scripts.index'))) {
-            builder.watchers_config.api.scripts.push((data, filter) => {
+            console.log('hit in screen blade');
+            builder.watchers_config.api.scripts.push((data) => {
               ProcessMaker.apiClient
-                .get(@json(route('api.scripts.index' )) + (typeof filter === "string" ? "?filter=" + filter : ""))
+                .get(@json(route('api.scripts.index' )) + '?per_page=10000')
                 .then(response => {
                   let scripts = response.data.data.map(item => {
                     item.id = "script-" + item.id;
@@ -49,9 +50,9 @@
           }
 
           if (@json(route::has('api.data-sources.index'))) {
-            builder.watchers_config.api.scripts.push((data, filter) => {
+            builder.watchers_config.api.scripts.push((data) => {
               ProcessMaker.apiClient
-                .get('data_sources' + (typeof filter === "string" ? "?filter=" + filter : ""))
+                .get('data_sources' + '?per_page=10000')
                 .then(response => {
                   let dataSource = response.data.data.map(item => {
                     item.id = "data_source-" + item.id;

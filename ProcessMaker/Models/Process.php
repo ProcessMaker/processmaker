@@ -55,7 +55,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   @OA\Property(property="pause_timer_start", type="integer"),
  *   @OA\Property(property="cancel_screen_id", type="integer"),
  *   @OA\Property(property="has_timer_start_events", type="boolean"),
- *   @OA\Property(property="start_events", type="string", format="json"),
  * ),
  * @OA\Schema(
  *   schema="Process",

@@ -94,20 +94,7 @@
                                 <template v-else>
                                     <template v-if="summary.length > 0">
                                         <div class="card border-0">
-                                            <table class="vuetable table table-hover border-top-0 mb-0">
-                                                <thead>
-                                                <tr>
-                                                    <th class="border-top-0" scope="col">{{ __('Key') }}</th>
-                                                    <th class="border-top-0" scope="col">{{ __('Value') }}</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <tr v-for="item in summary">
-                                                    <td>@{{item.key}}</td>
-                                                    <td>@{{item.value}}</td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
+                                            <data-summary :summary="dataSummary"></data-summary>
                                         </div>
                                     </template>
                                     <template v-else>
