@@ -1074,5 +1074,10 @@
   "The Data Connector endpoint to access when this Watcher runs": "The Data Connector endpoint to access when this Watcher runs",
   "Data to pass to the Data Connector (valid JSON object, variables supported)": "Data to pass to the Data Connector (valid JSON object, variables supported)",
   "The Script Configuration field is required": "The Script Configuration field is required",
-  "Property": "Property"
+  "Property": "Property",
+  "Deleted User": "Deleted User",
+  "Deleted Users": "Deleted Users", 
+  "Restore User": "Restore User",
+  "Are you sure you want to restore the user {{item}}?": "Are you sure you want to restore the user {{item}}?",
+  "The user was restored": "The user was restored"
 }
