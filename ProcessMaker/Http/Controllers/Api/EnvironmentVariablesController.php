@@ -106,7 +106,7 @@ class EnvironmentVariablesController extends Controller
    */
   public function store(Request $request)
   {
-      $request->validate(EnvironmentVariable::rules());
+      $request->validate(EnvironmentVariable::rules(), EnvironmentVariable::messages());
       $environment_variable = EnvironmentVariable::create($request->all());
 
       return new EnvironmentVariableResource($environment_variable);
