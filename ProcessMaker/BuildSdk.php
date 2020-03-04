@@ -37,7 +37,7 @@ class BuildSdk {
         $this->cp("generator:/sdk", $folder);
         $this->stopContainer();
 
-        $this->commentErroneousCode($folder); // lua
+        $this->fixErroneousCode($folder); // lua and python
         $this->addMissingDependency($folder); // java
         $this->removeDateTime($folder); // csharp
         $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
@@ -180,10 +180,18 @@ class BuildSdk {
         }
     }
 
-    private function commentErroneousCode($folder)
+    private function fixErroneousCode($folder)
     {
         if ($this->lang === 'lua') {
             $this->runCmd("find {$folder} -name '*.lua' -exec sed -i -E 's/(req\.readers:upsert.*)/-- \\1/g' {} \;");
+        }
+        
+        if ($this->lang === 'python') {
+            // Replace \User with \\User since slash \U is unicode in python. Major slashitis.
+            $this->runCmd(
+                "find {$folder} -name '*.py' -exec " .
+                "sed -i -E 's/ProcessMaker\\\Models\\\/ProcessMaker\\\\\\\Models\\\\\\\/g' {} \;"
+            );
         }
     }
 
@@ -211,7 +219,6 @@ class BuildSdk {
     private function removeDateTime($folder)
     {
         if ($this->lang === 'csharp') {
-            // $this->runCmd("find {$folder} -name '*.cs' -exec sed -i -E 's/DateTime\?/DateTime/g' {} \;");
             unlink("{$folder}/src/ProcessMakerSDK/Model/DateTime.cs");
         }
     }
