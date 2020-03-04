@@ -767,7 +767,7 @@
   "The environment variable was saved.": "The environment variable was saved.",
   "The following items should be configured to ensure your process is functional.": "The following items should be configured to ensure your process is functional.",
   "The following items should be configured to ensure your process is functional": "The following items should be configured to ensure your process is functional",
-  "The form to be displayed is not assigned..": "The form to be displayed is not assigned..",
+  "The form to be displayed is not assigned.": "The form to be displayed is not assigned.",
   "The form to use for adding/editing records": "The form to use for adding/editing records",
   "The group was created.": "The group was created.",
   "The group was deleted.": "The group was deleted.",
@@ -1074,5 +1074,10 @@
   "The Data Connector endpoint to access when this Watcher runs": "The Data Connector endpoint to access when this Watcher runs",
   "Data to pass to the Data Connector (valid JSON object, variables supported)": "Data to pass to the Data Connector (valid JSON object, variables supported)",
   "The Script Configuration field is required": "The Script Configuration field is required",
-  "Property": "Property"
+  "Property": "Property",
+  "Deleted User": "Deleted User",
+  "Deleted Users": "Deleted Users", 
+  "Restore User": "Restore User",
+  "Are you sure you want to restore the user {{item}}?": "Are you sure you want to restore the user {{item}}?",
+  "The user was restored": "The user was restored"
 }
