@@ -25,7 +25,6 @@ use Illuminate\Validation\Rule;
  * )
  *
  *
-
  *
  *
  */
@@ -62,12 +61,19 @@ class EnvironmentVariable extends Model
     public static function rules($existing = null)
     {
         $unique = Rule::unique('environment_variables')->ignore($existing);
+        $validVariableName = '/^[a-zA-Z][a-zA-Z_$0-9]*$/';
 
         return [
             'description' => 'required',
             'value' => 'nullable',
-            'name' => ['required', 'alpha_dash', $unique]
+            'name' => ['required', "regex:${validVariableName}", $unique],
         ];
     }
 
+    public static function messages()
+    {
+        return [
+            'name.regex' => trans('environmentVariables.validation.name.invalid_variable_name'),
+        ];
+    }
 }
