@@ -1,4 +1,5 @@
 import Vue from "vue";
+import DataSummary from "./components/DataSummary";
 import RequestDetail from "./components/RequestDetail";
 import AvatarImage from "../components/AvatarImage";
 import TaskForm from '../tasks/components/TaskForm';
@@ -8,6 +9,7 @@ import debounce from 'lodash/debounce';
 import Comments from '../components/Comments'
 import RequestScreens from '../requests/components/RequestScreens';
 
+Vue.component('data-summary', DataSummary);
 Vue.component('request-detail', RequestDetail);
 Vue.component('avatar-image', AvatarImage);
 Vue.component('task-screen', TaskForm);
