@@ -4745,11 +4745,6 @@
                     "has_timer_start_events": {
                         "description": "Represents a business process definition.",
                         "type": "boolean"
-                    },
-                    "start_events": {
-                        "description": "Represents a business process definition.",
-                        "type": "string",
-                        "format": "json"
                     }
                 },
                 "type": "object"

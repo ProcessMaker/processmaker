@@ -28,10 +28,7 @@ class ScreenBuilderController extends Controller
          */
         event(new ScreenBuilderStarting($manager, $screen->type));
 
-        //Get the script id for executing datasources
-        $dataSourceScript = Script::where('key', 'package-data-sources/data-source-task-service')->first();
-        $dataSourceScriptId = $dataSourceScript ? $dataSourceScript->id : null;
-        return view('processes.screen-builder.screen', compact('screen', 'manager', 'dataSourceScriptId'));
+        return view('processes.screen-builder.screen', compact('screen', 'manager'));
     }
 
 }
