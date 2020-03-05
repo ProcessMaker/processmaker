@@ -47,6 +47,12 @@ trait MakeHttpRequests
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
 
+        // If exists a query string in the call, add it to the URL
+        if (array_key_exists('queryString', $config)) {
+            $separator = strpos($url, '?') ? '&' : '?';
+            $url .= $separator . $config['queryString'];
+        }
+
         $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
                             ? $this->credentials['verify_certificate']
                             : true;
