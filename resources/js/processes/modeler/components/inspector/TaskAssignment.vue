@@ -81,6 +81,12 @@
                         v-model="assignedExpression"
                         :hide-users="hideUsersAssignmentExpression"/>
 
+                    <user-by-id
+                        v-if="showSpecialAssignUserById"
+                        :label="$t('Variable Name of User ID Value')"
+                        v-model="specialAssignedUserID"
+                    ></user-by-id>
+
                     <div class="form-group form-group-actions">
                         <button
                             type="button"
@@ -111,11 +117,12 @@
                         </div>
                     </div>
                     <div class="special-assignment-section">
-                        <div class="special-assignment-value">{{ $t("Assigned to") }}
+                        <small class="special-assignment-value">{{ $t("Assigned to") }}
                             <strong v-if="row.type == 'requester'">{{$t(row.type)}}</strong>
                             <strong v-if="row.type == 'previous_task_assignee'">{{$t('Previous Task Assignee')}}</strong>
+                            <strong v-if="row.type == 'user_by_id'">{{$t('User with ID') }} {{row.assignee}}</strong>
                             <strong v-else>{{$t(row.assignmentName)}}</strong>
-                        </div>
+                        </small>
                     </div>
                 </template>
             </div>
@@ -231,6 +238,20 @@
           }
         }
       },
+      specialAssignedUserID: {
+        get () {
+          let value = "";
+          if (this.typeAssignmentExpression === "user_by_id") {
+            value = this.specialAssignedUserIdGetter();
+          }
+          return value;
+        },
+        set (value) {
+          if (this.typeAssignmentExpression === "user_by_id" && value) {
+            this.specialAssignedUserIdSetter(value);
+          }
+        }
+      },
       assignment: {
         get () {
           const value = _.get(this.node, "assignment");
@@ -259,6 +280,9 @@
         const value = this.node.get("assignmentRules") || "[]";
         return JSON.parse(value);
       },
+      showSpecialAssignUserById () {
+        return this.typeAssignmentExpression === "user_by_id";
+      },
     },
     methods: {
       /**
@@ -285,13 +309,13 @@
         this.$set(node, "assignedGroups", id);
       },
       formatIfById (val) {
-        if (this.assignment === "user_by_id") {
+        if (this.assignment === "user_by_id" || this.typeAssignmentExpression === "user_by_id") {
           return `{{ ${val} }}`;
         }
         return val;
       },
       unformatIfById (val) {
-        if (this.assignment === "user_by_id") {
+        if (this.assignment === "user_by_id" || this.typeAssignmentExpression === "user_by_id") {
           try {
             return val.match(/^{{ (.*) }}$/)[1];
           } catch (e) {
@@ -333,14 +357,14 @@
           this.assignmentExpression = "";
           this.typeAssignmentExpression = "";
           this.assignedExpression = null;
+          this.specialAssignedUserIdSetter(null);
         }
       },
 
       saveSpecialAssignment () {
-
         let byExpression = {
           type: this.typeAssignmentExpression,
-          assignee: this.assignedExpression || "",
+          assignee: this.assignedExpression || this.specialAssignedUserID || "",
           expression: this.assignmentExpression
         };
 
@@ -357,7 +381,7 @@
 
           this.specialAssignmentsData.push({
             type: this.typeAssignmentExpression,
-            assignee: this.assignedExpression || "",
+            assignee: this.assignedExpression || this.specialAssignedUserID || "",
             expression: this.assignmentExpression,
             assignmentName,
           });
@@ -365,6 +389,7 @@
           this.assignmentExpression = "";
           this.typeAssignmentExpression = "";
           this.assignedExpression = null;
+          this.specialAssignedUserIdSetter(null);
         }
 
         this.addingSpecialAssignment = false;
@@ -380,6 +405,7 @@
           {
             case 'requester': 
             case 'previous_task_assignee':
+            case 'user_by_id':
               this.specialAssignmentsData.push({
                 type: item.type,
                 assignee: item.assignee,
@@ -459,6 +485,13 @@
               break;
           }
         })
+      },
+      specialAssignedUserIdSetter (id) {        
+        this.$set(this.node, "specialAssignedUserId", id);
+      },
+      specialAssignedUserIdGetter () {
+        let value = _.get(this.node, "specialAssignedUserId");
+        return value;
       }
     },
     watch: {
