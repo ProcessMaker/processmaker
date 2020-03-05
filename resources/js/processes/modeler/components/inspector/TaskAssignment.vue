@@ -296,13 +296,13 @@
         this.$set(node, "assignedGroups", id);
       },
       formatIfById (val) {
-        if (this.assignment === "user_by_id" || this.typeAssignmentExpression === "user_by_id") {
+        if (this.assignment === "user_by_id") {
           return `{{ ${val} }}`;
         }
         return val;
       },
       unformatIfById (val) {
-        if (this.assignment === "user_by_id" || this.typeAssignmentExpression === "user_by_id") {
+        if (this.assignment === "user_by_id") {
           try {
             return val.match(/^{{ (.*) }}$/)[1];
           } catch (e) {
