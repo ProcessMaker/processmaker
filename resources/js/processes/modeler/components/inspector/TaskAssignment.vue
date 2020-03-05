@@ -166,6 +166,7 @@
         error: "",
         hideUsers: false,
         hideUsersAssignmentExpression: false,
+        specialAssignedUserID: null,
       };
     },
     mounted () {
@@ -235,20 +236,6 @@
           if (this.assignment === "user_by_id" && value) {
             this.assignedUserSetter(value);
             this.assignedGroupSetter("");
-          }
-        }
-      },
-      specialAssignedUserID: {
-        get () {
-          let value = "";
-          if (this.typeAssignmentExpression === "user_by_id") {
-            value = this.specialAssignedUserIdGetter();
-          }
-          return value;
-        },
-        set (value) {
-          if (this.typeAssignmentExpression === "user_by_id" && value) {
-            this.specialAssignedUserIdSetter(value);
           }
         }
       },
@@ -357,7 +344,7 @@
           this.assignmentExpression = "";
           this.typeAssignmentExpression = "";
           this.assignedExpression = null;
-          this.specialAssignedUserIdSetter(null);
+          this.specialAssignedUserID = null;
         }
       },
 
@@ -389,7 +376,7 @@
           this.assignmentExpression = "";
           this.typeAssignmentExpression = "";
           this.assignedExpression = null;
-          this.specialAssignedUserIdSetter(null);
+          this.specialAssignedUserID = null;
         }
 
         this.addingSpecialAssignment = false;
@@ -486,13 +473,6 @@
           }
         })
       },
-      specialAssignedUserIdSetter (id) {        
-        this.$set(this.node, "specialAssignedUserId", id);
-      },
-      specialAssignedUserIdGetter () {
-        let value = _.get(this.node, "specialAssignedUserId");
-        return value;
-      }
     },
     watch: {
       assigned: {
