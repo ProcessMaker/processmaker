@@ -9,6 +9,7 @@
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="saveBpmn"
+          @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
 
@@ -17,6 +18,7 @@
         :validation-errors="validationErrors"
         :warnings="warnings"
         :owner="self"
+        :xml-manager="xmlManager"
       >
         <component v-for="(component, index) in validationBar" :key="`validation-status-${index}`" :is="component" :owner="self" />
       </validation-status>
@@ -43,6 +45,7 @@ export default {
       process: window.ProcessMaker.modeler.process,
       validationErrors: {},
       warnings: [],
+      xmlManager: null,
     };
   },
   methods: {
