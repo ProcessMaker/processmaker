@@ -680,6 +680,11 @@ class Process extends Model implements HasMedia
                         case 'self_service':
                             $user = null;
                             break;
+                        case 'user_by_id':
+                            $mustache = new Mustache_Engine();
+                            $assigneeId = $mustache->render($item->assignee, $instanceData);
+                            $user = $assigneeId;
+                            break;
                         case 'script':
                         default:
                             $user = null;
