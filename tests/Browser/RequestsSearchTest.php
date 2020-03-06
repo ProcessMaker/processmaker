@@ -16,6 +16,8 @@ class RequestsSearchTest extends DuskTestCase
 
     public function testPmqlErrors()
     {
+        $this->markTestSkipped('Skipping due to Dusk issues...');
+        
         $user = User::first();
 
         factory(ProcessRequest::class)->create([
