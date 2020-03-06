@@ -10,6 +10,7 @@ Route::group(
     // Users
     Route::get('users', 'UserController@index')->name('users.index')->middleware('can:view-users');
     Route::get('users/{user}', 'UserController@show')->name('users.show'); //Permissions handled in the controller
+    Route::get('deleted_users', 'UserController@deletedUsers')->name('users.deletedUsers')->middleware('can:view-users'); 
     Route::post('users', 'UserController@store')->name('users.store')->middleware('can:create-users');
     Route::put('users/restore', 'UserController@restore')->name('users.restore')->middleware('can:create-users');
     Route::put('users/{user}', 'UserController@update')->name('users.update'); //Permissions handled in the controller
@@ -157,14 +158,6 @@ Route::group(
     Route::post('comments', 'CommentController@store')->name('comments.store')->middleware('can:create-comments');
     Route::put('comments/{comment}', 'CommentController@update')->name('comments.update')->middleware('can:edit-comments');
     Route::delete('comments/{comment}', 'CommentController@destroy')->name('comments.destroy')->middleware('can:delete-comments');
-
-
-    //DataSources
-    Route::get('data_sources', 'DataSourcesController@index')->name('data-sources.index')->middleware('can:view-data-sources');
-    Route::get('data_sources/{data_source}', 'DataSourcesController@show')->name('data-sources.show')->middleware('can:view-data-sources');
-    Route::post('requests/{request}/data_sources/{data_source}', 'DataSourcesController@executeDataSource');
-    Route::post('requests/data_sources/{data_source}', 'DataSourcesController@executeDataSourceTest');
-
 
     //UI customization
     Route::post('customize-ui', 'CssOverrideController@store')->name('customize-ui.store');

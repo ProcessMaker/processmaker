@@ -21,7 +21,7 @@
             <div class="col">
                 <div class="card card-body">
                     <div class="form-group">
-                        {!! Form::label('title', __('Name')) !!}
+                        {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
                         {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
                         <small class="form-text text-muted" v-if="! errors.title">{{__('The screen name must be distinct.') }}</small>

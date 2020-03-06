@@ -3,7 +3,7 @@
     <h5 class="mb-3">{{__('General Information')}}</h5>
         <div class="row">
             <div class="form-group col">
-                {!! Form::label('firstname', __('First Name')) !!}
+                {!! Form::label('firstname', __('First Name') . '<small class="ml-1">*</small>', [], false) !!}
                 {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
                 'form-control', 'v-model' => 'formData.firstname',
                 'v-bind:class' => '{\'form-control\':true,
@@ -13,7 +13,7 @@
                 </div>
             </div>
             <div class="form-group col">
-                {!! Form::label('lastname', __('Last Name'))!!}
+                {!! Form::label('lastname', __('Last Name') . '<small class="ml-1">*</small>', [], false)!!}
                 {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4,
                 'class'=> 'form-control', 'v-model'
                 => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true,
@@ -39,7 +39,7 @@
     <h5 class="mt-1 mb-3">{{__('Contact Information')}}</h5>
 
         <div class="form-group">
-            {!! Form::label('email', __('Email')) !!}
+            {!! Form::label('email', __('Email') . '<small class="ml-1">*</small>', [], false) !!}
             {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
             'form-control', 'v-model'
             => 'formData.email', 'v-bind:class' => '{\'form-control\':true,

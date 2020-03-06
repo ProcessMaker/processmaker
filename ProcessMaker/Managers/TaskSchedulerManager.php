@@ -120,9 +120,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     /**
      * Checks the schedule_tasks table to execute jobs
      *
-     * @param Schedule $schedule
      */
-    public function scheduleTasks(Schedule $schedule)
+    public function scheduleTasks()
     {
         $today = $this->today();
         try {

@@ -12,6 +12,7 @@
         <screen-select
             v-if="allowInterstitialGetter"
             :label="$t('Screen Interstitial')"
+            :required="true"
             :placeholder="$t('Default Screen')"
             :helper="$t('What Screen Should Be Used For Rendering This Interstitial')"
             :params="parameters"
@@ -68,6 +69,11 @@
       allowInterstitialSetter (value) {
         this.$set(this.node, "allowInterstitial", value);
       },
+    },
+    mounted() {
+      if (!this.node.allowInterstitial) {
+        this.$set(this.node, "allowInterstitial", false);
+      }
     }
   };
 </script>
