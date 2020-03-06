@@ -100,6 +100,7 @@ class User extends Authenticatable implements HasMedia
         'timezone',
         'datetime_format',
         'language',
+        'meta',
     ];
 
     protected $appends = [
@@ -108,7 +109,8 @@ class User extends Authenticatable implements HasMedia
     ];
 
     protected $casts = [
-        'is_administrator' => 'bool'
+        'is_administrator' => 'bool',
+        'meta' => 'object',
     ];
 
     /**
