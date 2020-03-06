@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Jobs\BuildScriptExecutor;
 
 class ScriptExecutorController extends Controller
 {
@@ -38,8 +39,11 @@ class ScriptExecutorController extends Controller
         }
         
         $appDockerfilePath = storage_path("docker-build-config/Dockerfile-${language}");
-
         file_put_contents($appDockerfilePath, $request->input('appDockerfileContents'));
+
+        BuildScriptExecutor::dispatch($language, $request->user()->id);
+
+        return ['status'=>'started'];
     }
 
     private function checkAuth($request)
