@@ -65,9 +65,9 @@ class BuildScriptExecutors extends Command
             $dockerfile .= $initDockerfile;
         }
         $dockerfile .= "\n";
-        $userDockerfilePath = storage_path("docker-build-config/Dockerfile-${lang}");
-        if (file_exists($userDockerfilePath)) {
-            $dockerfile .= file_get_contents($userDockerfilePath);
+        $appDockerfilePath = storage_path("docker-build-config/Dockerfile-${lang}");
+        if (file_exists($appDockerfilePath)) {
+            $dockerfile .= file_get_contents($appDockerfilePath);
         }
 
         $this->info("Dockerfile:\n  " . implode("\n  ", explode("\n", $dockerfile)));

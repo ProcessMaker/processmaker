@@ -25,18 +25,18 @@ class ScriptCategoriesTest extends TestCase
         $result = $result->json();
         $this->assertArrayHasKey('php', $result['languages']);
 
-        $docker = $result['languages']['php']['userDockerfileContents'];
+        $docker = $result['languages']['php']['appDockerfileContents'];
         $this->assertEquals("Foo", $docker);
     }
 
     public function testSetDockerfile()
     {
         $route = route('api.script-executors.update', ['language' => 'lua']);
-        $result = $this->apiCall('PUT', $route, ['userDockerfileContents' => 'Bar']);
+        $result = $this->apiCall('PUT', $route, ['appDockerfileContents' => 'Bar']);
         
         $result = $this->apiCall('GET', route('api.script-executors.index'));
         $result = $result->json();
-        $docker = $result['languages']['lua']['userDockerfileContents'];
+        $docker = $result['languages']['lua']['appDockerfileContents'];
         $this->assertEquals('Bar', $docker);
     }
 }

@@ -15,15 +15,15 @@ class ScriptExecutorController extends Controller
 
         $languages = [];
         foreach (config('script-runners') as $key => $config) {
-            $userDockerfileContents = '';
+            $appDockerfileContents = '';
             
-            $userDockerfilePath = storage_path("docker-build-config/Dockerfile-${key}");
-            if (file_exists($userDockerfilePath)) {
-                $userDockerfileContents .= file_get_contents($userDockerfilePath);
+            $appDockerfilePath = storage_path("docker-build-config/Dockerfile-${key}");
+            if (file_exists($appDockerfilePath)) {
+                $appDockerfileContents .= file_get_contents($appDockerfilePath);
             }
 
             $languages[$key] = [
-                'userDockerfileContents' => $userDockerfileContents
+                'appDockerfileContents' => $appDockerfileContents
             ];
         }
 
@@ -37,9 +37,9 @@ class ScriptExecutorController extends Controller
             throw new ModelNotFoundException;
         }
         
-        $userDockerfilePath = storage_path("docker-build-config/Dockerfile-${language}");
+        $appDockerfilePath = storage_path("docker-build-config/Dockerfile-${language}");
 
-        file_put_contents($userDockerfilePath, $request->input('userDockerfileContents'));
+        file_put_contents($appDockerfilePath, $request->input('appDockerfileContents'));
     }
 
     private function checkAuth($request)
