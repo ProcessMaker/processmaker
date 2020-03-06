@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
@@ -568,5 +569,74 @@ class ProcessRequestsTest extends TestCase
         
         $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
         $response->assertStatus(204);
+    }
+
+    /**
+     * Test lists of requests and permissions
+     *
+     * @return void
+     */
+    public function testGetProcessRequestListAndPermissions()
+    {
+        // Setup user as non administrator
+        $this->user->is_administrator = false;
+        $this->user->save();
+
+        factory(ProcessRequest::class, 10)->create([
+            'user_id' => $this->user->getKey(),
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+
+        //Validate the header status code
+        $response->assertStatus(200);
+
+        // Verify structure
+        $response->assertJsonStructure([
+            'data' => ['*' => self::STRUCTURE],
+            'meta',
+        ]);
+        // Verify count
+        $this->assertEquals(10, $response->json()['meta']['total']);
+
+        // Create 10 more
+        factory(ProcessRequest::class, 10)->create([
+            'user_id' => $this->user->getKey(),
+        ]);
+
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?per_page=15');
+
+        //Validate the header status code
+        $response->assertStatus(200);
+
+        // Verify structure
+        $response->assertJsonStructure([
+            'data' => ['*' => self::STRUCTURE],
+            'meta',
+        ]);
+
+        // Verify page count
+        $this->assertEquals(15, $response->json()['meta']['count']);
+        // Verify total count
+        $this->assertEquals(20, $response->json()['meta']['total']);
+
+        // Create 10 more for different users
+        factory(ProcessRequest::class, 10)->create();
+
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?per_page=15');
+
+        //Validate the header status code
+        $response->assertStatus(200);
+
+        // Verify structure
+        $response->assertJsonStructure([
+            'data' => ['*' => self::STRUCTURE],
+            'meta',
+        ]);
+
+        // Verify page count
+        $this->assertEquals(15, $response->json()['meta']['count']);
+        // Verify total count
+        $this->assertEquals(20, $response->json()['meta']['total']);
     }
 }
