@@ -1,4 +1,4 @@
-<div class="px-3 page-content" id="deleted-users-listing">
+<div id="deleted-users-listing">
     <div id="search-bar" class="search mb-3" vcloak>
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
