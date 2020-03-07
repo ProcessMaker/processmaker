@@ -61,8 +61,6 @@
           if (this.content) {
             this.error = '';
             this.$emit('input', this.content.id);
-          } else  {
-            this.$emit('input', '');
           }
         }
       },
