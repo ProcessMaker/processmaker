@@ -59,7 +59,8 @@ class ScreensInProcess extends ProcessAssets
      */
     public function updateReferences(Process $process, array $references = [])
     {
-        $xpath = new DOMXPath($process->getDefinitions());
+        $definitions = $process->getDefinitions();
+        $xpath = new DOMXPath($definitions);
         $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
 
         // Used in screenRef
@@ -86,6 +87,7 @@ class ScreensInProcess extends ProcessAssets
             $oldRef = $process->request_detail_screen_id;
             $process->request_detail_screen_id = $references[Screen::class][$oldRef]->getKey();
         }
+        $process->bpmn = $definitions->saveXML();
         $process->save();
     }
 }
