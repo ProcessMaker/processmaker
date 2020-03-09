@@ -59,6 +59,10 @@
         ],
         fields: [
           {
+            title: () => this.$t("ID"),
+            name: "id"
+          },
+          {
             title: () => this.$t("Username"),
             name: "username",
             sortField: "username"
