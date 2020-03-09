@@ -3,6 +3,7 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Listeners\BpmnSubscriber;
@@ -158,22 +159,23 @@ class WorkflowServiceProvider extends ServiceProvider
             $instance->addDependencie([
                 'type' => Screen::class,
                 'owner' => Process::class,
-                'callback' => [$instance, 'screensUsedInProcess'],
+                'exportReferences' => [$instance, 'screensUsedInProcess'],
             ]);
+            $instance->addDependencieManager(ScreensInProcess::class);
             $instance->addDependencie([
                 'type' => Screen::class,
                 'owner' => Screen::class,
-                'callback' => [$instance, 'screensUsedInScreen'],
+                'exportReferences' => [$instance, 'screensUsedInScreen'],
             ]);
             $instance->addDependencie([
                 'type' => Script::class,
                 'owner' => Process::class,
-                'callback' => [$instance, 'scriptsUsedInProcess'],
+                'exportReferences' => [$instance, 'scriptsUsedInProcess'],
             ]);
             $instance->addDependencie([
                 'type' => Script::class,
                 'owner' => Screen::class,
-                'callback' => [$instance, 'scriptsUsedInScreen'],
+                'exportReferences' => [$instance, 'scriptsUsedInScreen'],
             ]);
             return $instance;
         });

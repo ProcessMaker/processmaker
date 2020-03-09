@@ -18,7 +18,7 @@ class ImportScreen extends ImportProcess
     private function saveScreens($screen)
     {
         try {
-            $this->new['screens'] = [];
+            $this->new[Screen::class] = [];
             $this->prepareStatus('screens', true);
 
             $new = new Screen();

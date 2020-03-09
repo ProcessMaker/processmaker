@@ -56,7 +56,7 @@ class ExportManager
             list($class, $id) = explode(':', $ref);
             $class === $modelClass ? $ids[] = $id : null;
         }
-        return $ids;
+        return array_unique($ids);
     }
 
     /**
@@ -78,7 +78,7 @@ class ExportManager
         $newReferences = [];
         foreach ($this->dependencies as $dependencie) {
             if (is_a($owner, $dependencie['owner'])) {
-                $newReferences = call_user_func($dependencie['callback'], $owner, $newReferences);
+                $newReferences = call_user_func($dependencie['referencesToExport'], $owner, $newReferences);
             }
         }
         $newReferences = array_unique(array_diff($newReferences, $references));
@@ -92,40 +92,6 @@ class ExportManager
             }
         }
         return $references;
-    }
-
-    /**
-     * Get screens used in a process
-     *
-     * @param Process $process
-     * @param array $screens
-     *
-     * @return array
-     */
-    public function screensUsedInProcess(Process $process, array $screens = [])
-    {
-        // Screens used in BPMN
-        $xpath = new DOMXPath($process->getDefinitions());
-        $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
-        // Used in screenRef
-        $nodes = $xpath->query("//*[@pm:screenRef!='']");
-        foreach ($nodes as $node) {
-            $screens[] = Screen::class . ':' . $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-        }
-        // Used in interstitialScreenRef
-        $nodes = $xpath->query("//*[@pm:interstitialScreenRef!='']");
-        foreach ($nodes as $node) {
-            $screens[] = Screen::class . ':' . $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'interstitialScreenRef');
-        }
-        // Add cancel screen
-        if ($process->cancel_screen_id) {
-            $screens[] = Screen::class . ':' . $process->cancel_screen_id;
-        }
-        // Add request detail screen
-        if ($process->request_detail_screen_id) {
-            $screens[] = Screen::class . ':' . $process->request_detail_screen_id;
-        }
-        return $screens;
     }
 
     /**
@@ -210,5 +176,35 @@ class ExportManager
                 call_user_func($callback, $item);
             }
         }
+    }
+
+    /**
+     * Update references for a given model
+     *
+     * @param Model $model
+     * @param array $newReferences
+     *
+     * @return Model
+     */
+    public function updateReferences(Model $model, array $newReferences)
+    {
+        foreach ($this->dependencies as $dependencie) {
+            if (is_a($model, $dependencie['owner']) && isset($dependencie['updateReferences'])) {
+                $newReferences = call_user_func($dependencie['updateReferences'], $model, $newReferences);
+            }
+        }
+        return $model;
+    }
+
+    public function addDependencieManager($class)
+    {
+        $instance = new $class;
+        $this->addDependencie([
+            'type' => $instance->type,
+            'owner' => $instance->owner,
+            'referencesToExport' => [$instance, 'referencesToExport'],
+            'updateReferences' => [$instance, 'updateReferences'],
+        ]);
+        return $this;
     }
 }

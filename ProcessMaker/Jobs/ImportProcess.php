@@ -16,8 +16,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Traits\PluginServiceProviderTrait;
+use Illuminate\Support\Facades\Log;
 
 class ImportProcess implements ShouldQueue
 {
@@ -375,18 +377,15 @@ class ImportProcess implements ShouldQueue
     private function saveScreens($screens, $process)
     {
         try {
-            $this->new['screens'] = [];
+            $this->new[Screen::class] = [];
             $this->prepareStatus('screens', count($screens) > 0);
             foreach ($screens as $screen) {
                 $new = $this->saveScreen($screen);
-                $this->updateScreenRefs($screen->id, $new->id, $process);
-
-                $this->new['screens'][] = $new;
+                $this->new[Screen::class][$screen->id] = $new;
             }
-            $this->completeScreenRefs();
             $this->finishStatus('screens');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::info('*** Error: '. $e->getMessage());
+            Log::info('*** Error: '. $e->getMessage());
             $this->finishStatus('screens', true);
         }
     }
@@ -497,7 +496,6 @@ class ImportProcess implements ShouldQueue
 
                 $this->new['scripts'][] = $new;
             }
-            $this->completeScriptRefs();
             $this->finishStatus('scripts');
         } catch (\Exception $e) {
             $this->finishStatus('scripts', true);
@@ -672,6 +670,9 @@ class ImportProcess implements ShouldQueue
     {
         $this->new['process']->bpmn = $this->definitions->saveXML();
         $this->new['process']->save();
+
+        $manager = app(ExportManager::class);
+        $manager->updateReferences($this->new['process'], $this->new);
     }
 
     /**
