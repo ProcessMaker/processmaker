@@ -75,6 +75,11 @@ export default {
       ],
       fields: [
         {
+          title: () => this.$t("ID"),
+          name: "id",
+          sortField: "id"
+        },
+        {
           title: () => this.$t("Username"),
           name: "username",
           sortField: "username"
