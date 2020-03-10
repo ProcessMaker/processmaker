@@ -47,7 +47,7 @@
                     {{ $t('Close')}}
                 </b-button>
 
-                <b-button v-if="showCancel" variant="secondary" @click="cancel">
+                <b-button v-if="showCancel" :disabled="this.pidFile === null" variant="secondary" @click="cancel">
                     {{ $t('Cancel')}}
                 </b-button>
 
