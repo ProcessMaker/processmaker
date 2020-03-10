@@ -1,0 +1,6 @@
+COPY $SDK_DIR /opt/executor/sdk-lua
+WORKDIR /opt/executor/sdk-lua
+RUN luarocks make --local
+
+# Set working directory to our /opt/executor location
+WORKDIR /opt/executor

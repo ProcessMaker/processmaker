@@ -9,12 +9,6 @@ return [
     | This option controls the available Script Runners.
     |
     */
-    'lua' => [
-        'name' => 'Lua',
-        'runner' => 'LuaRunner',
-        'mime_type' => 'application/x-lua',
-        'image' => env('SCRIPTS_LUA_IMAGE', 'processmaker4/executor-lua'),
-    ],
     'javascript' => [
         'name' => 'JavaScript',
         'runner' => 'NodeRunner',

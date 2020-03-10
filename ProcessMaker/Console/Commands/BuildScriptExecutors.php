@@ -92,13 +92,13 @@ class BuildScriptExecutors extends Command
         if ($this->userId) {
             $this->runProc(
                 $command,
-                function($output) {
-                    // Command output callback
-                    $this->sendEvent($output, 'running');
-                },
                 function($pidFilePath) {
                     // Command starting
                     $this->sendEvent($pidFilePath, 'starting');
+                },
+                function($output) {
+                    // Command output callback
+                    $this->sendEvent($output, 'running');
                 },
                 function($exitCode) {
                     // Command finished callback
@@ -130,7 +130,7 @@ class BuildScriptExecutors extends Command
         return $pidFilePath;
     }
 
-    private function runProc($cmd, $callback, $start, $done)
+    private function runProc($cmd, $start, $callback, $done)
     {
         $dsc = [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']];
         $process = proc_open("($cmd) 2>&1", $dsc, $pipes);
