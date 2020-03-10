@@ -33,7 +33,7 @@ class BuildScriptExecutor implements ShouldQueue
      */
     public function handle()
     {
-        \Log::info("Started artisan command to build script executor for language: " . $this->lang . " for user: " . $this->userId);
+        \Log::info("Started artisan command to build script executor for language", ['lang'=>$this->lang, 'user'=>$this->userId]);
         \Artisan::call('processmaker:build-script-executor ' . $this->lang . ' ' . $this->userId);
         \Log::info("Finished running build script executor");
     }

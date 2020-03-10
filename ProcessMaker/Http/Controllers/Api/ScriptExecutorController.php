@@ -19,12 +19,16 @@ class ScriptExecutorController extends Controller
             $appDockerfileContents = '';
             
             $appDockerfilePath = storage_path("docker-build-config/Dockerfile-${key}");
+            $mtime = null;
             if (file_exists($appDockerfilePath)) {
+                $mtime = filemtime($appDockerfilePath);
                 $appDockerfileContents .= file_get_contents($appDockerfilePath);
             }
 
             $languages[$key] = [
-                'appDockerfileContents' => $appDockerfileContents
+                'mtime' => $mtime,
+                'appDockerfileContents' => $appDockerfileContents,
+                'initDockerfile' => isset($config['init_dockerfile']) ? $config['init_dockerfile'] : '',
             ];
         }
 

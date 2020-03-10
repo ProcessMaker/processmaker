@@ -48,6 +48,8 @@ class BuildScriptExecutors extends Command
      */
     public function handle()
     {
+        $this->userId = $this->argument('user');
+        
         $lang = $this->argument('lang');
         $this->info("Building for language: $lang");
 
@@ -66,6 +68,7 @@ class BuildScriptExecutors extends Command
             'language' => $lang,
             'output' => $sdkDir
         ]);
+        $this->info("SDK is at ${sdkDir}");
 
         $dockerfile = '';
         $initDockerfile = config('script-runners.' . $lang . '.init_dockerfile');
@@ -83,9 +86,9 @@ class BuildScriptExecutors extends Command
 
         $this->info("Building the docker executor");
 
-        $command = "docker build -t processmaker4/executor-${lang}:latest ${dockerDir}";
+        $tag = 'v1.0.0'; // Hard coding this for now until we get versions set up
+        $command = "docker build --build-arg SDK_DIR=/sdk -t processmaker4/executor-instance-${lang}:${tag} ${dockerDir}";
 
-        $this->userId = $this->argument('user');
         if ($this->userId) {
             $this->runProc(
                 $command,
@@ -93,9 +96,13 @@ class BuildScriptExecutors extends Command
                     // Command output callback
                     $this->sendEvent($output, 'running');
                 },
-                function() {
+                function($pidFilePath) {
+                    // Command starting
+                    $this->sendEvent($pidFilePath, 'starting');
+                },
+                function($exitCode) {
                     // Command finished callback
-                    $this->sendEvent('', 'done');
+                    $this->sendEvent($exitCode, 'done');
                 }
             );
         } else {
@@ -103,24 +110,43 @@ class BuildScriptExecutors extends Command
         }
     }
 
-    private function sendEvent($output, $status) {
+    public function info($text, $verbosity = null) {
+        if ($this->userId) {
+            $this->sendEvent($text . "\n", 'running');
+        }
+        parent::info($text, $verbosity);
+    }
+
+    private function sendEvent($output, $status)
+    {
         event(new BuildScriptExecutor($output, $this->userId, $status));
     }
 
-    private function runProc($cmd, $callback, $done)
+    private function savePid($process)
+    {
+        $pid = proc_get_status($process)['pid'];
+        $pidFilePath = tempnam('/tmp', 'build_script_executor_');
+        file_put_contents($pidFilePath, $pid);
+        return $pidFilePath;
+    }
+
+    private function runProc($cmd, $callback, $start, $done)
     {
         $dsc = [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']];
         $process = proc_open("($cmd) 2>&1", $dsc, $pipes);
+
+        $pidFilePath = $this->savePid($process);
+        $start($pidFilePath);
 
         while(!feof($pipes[1])) {
             $callback(fgets($pipes[1]));
         }
 
-        $done();
-
         fclose($pipes[0]);
         fclose($pipes[1]);
         fclose($pipes[2]);
-        return proc_close($process);
+        unlink($pidFilePath);
+        $exitCode = proc_close($process);
+        $done($exitCode);
     }
 }

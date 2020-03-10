@@ -1,1 +1,7 @@
+# Install the processmaker4 SDK
+COPY $SDK_DIR /opt/sdk-php
+RUN composer config repositories.sdk-php path /opt/sdk-php
+RUN composer require ProcessMaker/sdk-php:@dev
+
+# Get the last AWS-SDK version
 RUN composer require aws/aws-sdk-php
