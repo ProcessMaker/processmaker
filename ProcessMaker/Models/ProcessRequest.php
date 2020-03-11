@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Log;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -113,6 +115,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         'initiated_at' => 'datetime:c',
         'data' => 'array',
         'errors' => 'array',
+        'signal_events' => 'array',
     ];
 
     /**
@@ -504,7 +507,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function valueAliasRequest($value)
     {
-        return function($query) use ($value) {
+        return function ($query) use ($value) {
             $processes = Process::where('name', $value)->get();
             $query->whereIn('process_id', $processes->pluck('id'));
         };
@@ -528,7 +531,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         $value = mb_strtolower($value);
 
-        return function($query) use ($value, $statusMap) {
+        return function ($query) use ($value, $statusMap) {
             if (array_key_exists($value, $statusMap)) {
                 $query->where('status', $statusMap[$value]);
             } else {
@@ -549,7 +552,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $user = User::where('username', $value)->get()->first();
         $requests = ProcessRequest::where('user_id', $user->id)->get();
 
-        return function($query) use ($requests) {
+        return function ($query) use ($requests) {
             $query->whereIn('id', $requests->pluck('id'));
         };
     }
@@ -566,7 +569,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $user = User::where('username', $value)->get()->first();
         $tokens = ProcessRequestToken::where('user_id', $user->id)->get();
 
-        return function($query) use ($tokens) {
+        return function ($query) use ($tokens) {
             $query->whereIn('id', $tokens->pluck('process_request_id'));
         };
     }
@@ -579,5 +582,25 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function processVersion()
     {
         return $this->belongsTo(ProcessVersion::class, 'process_version_id');
+    }
+
+    /**
+     * Update the current catch events for the requests
+     *
+     * @param TokenInterface $token
+     *
+     * @return void
+     */
+    public function updateCatchEvents()
+    {
+        $signalEvents = [];
+        foreach ($this->tokens as $token) {
+            $element = $token->getDefinition();
+            if ($element instanceof SignalEventDefinitionInterface) {
+                $signalEvents[]= $element->getSignalRef();
+            }
+        }
+        $this->signal_events = $signalEvents;
+        $this->save();
     }
 }

@@ -208,6 +208,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'start_events' => 'array',
         'warnings' => 'array',
         'self_service_tasks' => 'array',
+        'signal_events' => 'array',
     ];
 
     /**
@@ -1088,5 +1089,23 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     public function isValidForExecution()
     {
         return empty($this->warnings) && !empty($this->getLatestVersion());
+    }
+
+    /**
+     * Get the start events with signal events
+     *
+     * @return array
+     */
+    public function getUpdatedStartEventsSignalEvents()
+    {
+        $response = [];
+        foreach($this->start_events as $event) {
+            foreach($event['eventDefinitions'] as $eventDefinition) {
+                if ($eventDefinition['$type'] === 'signalEventDefinition') {
+                    $response[] = $eventDefinition['signalRef'];
+                }
+            }
+        }
+        return $response;
     }
 }

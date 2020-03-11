@@ -50,27 +50,31 @@ class CatchSignalEvent implements ShouldQueue
 
     public function handle()
     {
-        //$processes = Process::whereJsonContains('signal_events', $this->signalRef);
+        $processes = Process::whereJsonContains('signal_events', $this->signalRef);
         $count = ProcessRequest::whereJsonContains('signal_events', $this->signalRef)
             ->where('status', 'ACTIVE')
-            ->count();
-        $perJob = ceil($count / self::maxJobs);
-        $requests = ProcessRequest::select(['id'])
-            ->whereJsonContains('signal_events', $this->signalRef)
-            ->where('status', 'ACTIVE')
             ->where('id', '!=', $this->requestId)
-            ->orderBy('id')
-            ->pluck(['id']);
-        $chuncks = array_chunk($requests, $perJob);
-        foreach ($chuncks as $chunck) {
-            CatchSignalEventRequest::dispatch(
-                $chunck,
-                $this->signalRef,
-                $this->payload,
-                $this->throwEvent,
-                $this->eventDefinition,
-                $this->tokenId
-            );
+            ->count();
+        if ($count) {
+            $perJob = ceil($count / self::maxJobs);
+            $requests = ProcessRequest::select(['id'])
+                ->whereJsonContains('signal_events', $this->signalRef)
+                ->where('status', 'ACTIVE')
+                ->where('id', '!=', $this->requestId)
+                ->orderBy('id')
+                ->pluck('id')
+                ->toArray();
+            $chuncks = array_chunk($requests, $perJob);
+            foreach ($chuncks as $chunck) {
+                CatchSignalEventRequest::dispatch(
+                    $chunck,
+                    $this->signalRef,
+                    $this->payload,
+                    $this->throwEvent,
+                    $this->eventDefinition,
+                    $this->tokenId
+                );
+            }
         }
     }
 }
