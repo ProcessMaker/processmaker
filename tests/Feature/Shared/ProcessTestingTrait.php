@@ -104,7 +104,7 @@ trait ProcessTestingTrait
             return $response;
         } else {
             $json = $response->json();
-            if ($json && $json['id']) {
+            if ($json && isset($json['id'])) {
                 return ProcessRequestToken::find($response->json()['id']);
             } else {
                 throw new \Exception($response->getContents());
