@@ -197,7 +197,7 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     if (error.response && error.response.status && error.response.status === 401) {
         window.location = "/login";
     } else {
-      if (!error.config.url.match('/debug')) {
+      if (_.has(error, 'config.url') && !error.config.url.match('/debug')) {
         window.ProcessMaker.apiClient.post('/debug', {
             name: 'Javascript ProcessMaker.apiClient Error',
             message: JSON.stringify({

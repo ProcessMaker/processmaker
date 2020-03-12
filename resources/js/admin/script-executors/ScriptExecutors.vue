@@ -171,6 +171,12 @@ export default {
                             this.pidFile = null;
                             this.exitCode = event.output;
                             break;
+                        case 'error' :
+                            this.output(event.output);
+                            this.pidFile = null;
+                            this.exitCode = 1;
+                            this.status = 'done';
+                            break;
                         default:
                             this.output(event.output);
                     }

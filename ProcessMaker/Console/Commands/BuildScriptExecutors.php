@@ -30,6 +30,13 @@ class BuildScriptExecutors extends Command
      * @var int
      */
     protected $userId = null;
+    
+    /**
+     * The path to save the current running process id
+     *
+     * @var string
+     */
+    protected $pidFilePath = null;
 
     /**
      * Create a new command instance.
@@ -48,13 +55,28 @@ class BuildScriptExecutors extends Command
      */
     public function handle()
     {
+        try {
+            $this->buildExecutor();
+        } catch (\Exception $e) {
+            if ($this->userId) {
+                event(new BuildScriptExecutor($e->getMessage(), $this->userId, 'error'));
+            }
+            throw new \Exception($e->getMessage());
+        }
+    }
+
+    public function buildExecutor()
+    {
         $this->userId = $this->argument('user');
+
+        $this->savePid();
+        $this->sendEvent($this->pidFilePath, 'starting');
         
         $lang = $this->argument('lang');
         $this->info("Building for language: $lang");
 
         $this->info("Generating SDK json document");
-        \Artisan::call('l5-swagger:generate');
+        $this->artisan('l5-swagger:generate');
 
         $dockerDir = sys_get_temp_dir() . "/pm4-docker-builds/${lang}";
         $sdkDir = $dockerDir . "/sdk";
@@ -64,7 +86,7 @@ class BuildScriptExecutors extends Command
         }
 
         $this->info("Building the SDK");
-        \Artisan::call("processmaker:sdk", [
+        $this->artisan("processmaker:sdk", [
             'language' => $lang,
             'output' => $sdkDir
         ]);
@@ -92,9 +114,8 @@ class BuildScriptExecutors extends Command
         if ($this->userId) {
             $this->runProc(
                 $command,
-                function($pidFilePath) {
+                function() {
                     // Command starting
-                    $this->sendEvent($pidFilePath, 'starting');
                 },
                 function($output) {
                     // Command output callback
@@ -121,13 +142,17 @@ class BuildScriptExecutors extends Command
     {
         event(new BuildScriptExecutor($output, $this->userId, $status));
     }
-
-    private function savePid($process)
+    
+    private function artisan($cmd)
     {
-        $pid = proc_get_status($process)['pid'];
-        $pidFilePath = tempnam('/tmp', 'build_script_executor_');
-        file_put_contents($pidFilePath, $pid);
-        return $pidFilePath;
+        \Artisan::call($cmd);
+    }
+
+    private function savePid()
+    {
+        $pid = getmypid();
+        $this->pidFilePath = tempnam('/tmp', 'build_script_executor_');
+        file_put_contents($this->pidFilePath, $pid);
     }
 
     private function runProc($cmd, $start, $callback, $done)
@@ -135,8 +160,7 @@ class BuildScriptExecutors extends Command
         $dsc = [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']];
         $process = proc_open("($cmd) 2>&1", $dsc, $pipes);
 
-        $pidFilePath = $this->savePid($process);
-        $start($pidFilePath);
+        $start();
 
         while(!feof($pipes[1])) {
             $callback(fgets($pipes[1]));
@@ -145,7 +169,9 @@ class BuildScriptExecutors extends Command
         fclose($pipes[0]);
         fclose($pipes[1]);
         fclose($pipes[2]);
-        unlink($pidFilePath);
+        if ($this->pidFilePath) {
+            unlink($this->pidFilePath);
+        }
         $exitCode = proc_close($process);
         $done($exitCode);
     }

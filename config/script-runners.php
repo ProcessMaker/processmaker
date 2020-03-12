@@ -6,14 +6,10 @@ return [
     | Script Runners
     |--------------------------------------------------------------------------
     |
-    | This option controls the available Script Runners.
+    | These have been moved to executor packages. See:
+    | https://github.com/ProcessMaker/docker-executor-php
+    | https://github.com/ProcessMaker/docker-executor-lua
+    | https://github.com/ProcessMaker/docker-executor-node
     |
     */
-    'javascript' => [
-        'name' => 'JavaScript',
-        'runner' => 'NodeRunner',
-        'mime_type' => 'text/javascript',
-        'image' => env('SCRIPTS_NODE_IMAGE', 'processmaker4/executor-node'),
-        'options' => ['gitRepoId' => 'sdk-node']
-    ],
 ];

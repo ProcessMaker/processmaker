@@ -12,8 +12,12 @@ class BuildScriptExecutor implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    // These will be send with the payload
     protected $lang;
     protected $userId;
+
+    // Do not retry this job if it fails
+    public $tries = 1;
 
     /**
      * Create a new job instance.
@@ -33,8 +37,6 @@ class BuildScriptExecutor implements ShouldQueue
      */
     public function handle()
     {
-        \Log::info("Started artisan command to build script executor for language", ['lang'=>$this->lang, 'user'=>$this->userId]);
         \Artisan::call('processmaker:build-script-executor ' . $this->lang . ' ' . $this->userId);
-        \Log::info("Finished running build script executor");
     }
 }
