@@ -71,13 +71,6 @@ let nodeTypes = [
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
 
-// Set default properties for task
-task.definition = function definition(moddle) {
-  return moddle.create('bpmn:Task', {
-    name: window.ProcessMaker.events.$t('New Task'),
-    assignment: 'requester'
-  });
-};
 ProcessMaker.EventBus.$on('modeler-init', registerNodes);
 
 ProcessMaker.EventBus.$on(
