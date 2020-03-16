@@ -6,7 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Log;
+use ProcessMaker\Nayra\Bpmn\Models\IntermediateCatchEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
@@ -595,9 +597,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $signalEvents = [];
         foreach ($this->tokens as $token) {
-            $element = $token->getDefinition();
-            if ($element instanceof SignalEventDefinitionInterface) {
-                $signalEvents[]= $element->getSignalRef();
+            $element = $token->getDefinition(true);
+            if ($element instanceof IntermediateCatchEventInterface) {
+                foreach ($element->getEventDefinitions() as $eventDefinition) {
+                    if ($eventDefinition instanceof SignalEventDefinitionInterface) {
+                        $signalEvents[]= $eventDefinition->getProperty('signalRef');
+                    }
+                }
             }
         }
         $this->signal_events = $signalEvents;

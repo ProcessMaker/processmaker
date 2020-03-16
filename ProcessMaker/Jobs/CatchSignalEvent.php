@@ -41,11 +41,11 @@ class CatchSignalEvent implements ShouldQueue
     public function __construct(ThrowEventInterface $throwEvent, SignalEventDefinition $sourceEventDefinition, TokenInterface $token)
     {
         $this->eventDefinition = $sourceEventDefinition->getId();
-        $this->payload = $token->getInstance()->data;
-        $this->requestId = $token->getInstance()->getId();
+        $this->payload = $token->processRequest->data;
+        $this->requestId = $token->processRequest->getKey();
         $this->signalRef = $sourceEventDefinition->getProperty('signalRef');
         $this->throwEvent = $throwEvent->getId();
-        $this->tokenId = $token->getId();
+        $this->tokenId = $token->getKey();
     }
 
     public function handle()
@@ -55,6 +55,7 @@ class CatchSignalEvent implements ShouldQueue
             ->where('status', 'ACTIVE')
             ->where('id', '!=', $this->requestId)
             ->count();
+        //dump(['requestId' => $this->requestId], ProcessRequest::all()->toArray(), $count);
         if ($count) {
             $perJob = ceil($count / self::maxJobs);
             $requests = ProcessRequest::select(['id'])
@@ -72,7 +73,8 @@ class CatchSignalEvent implements ShouldQueue
                     $this->payload,
                     $this->throwEvent,
                     $this->eventDefinition,
-                    $this->tokenId
+                    $this->tokenId,
+                    $this->requestId
                 );
             }
         }

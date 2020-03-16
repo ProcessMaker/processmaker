@@ -34,7 +34,7 @@ class CatchSignalEventRequest implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($chunck, $signalRef, $payload, $throwEvent, $eventDefinition, $tokenId)
+    public function __construct($chunck, $signalRef, $payload, $throwEvent, $eventDefinition, $tokenId, $requestId)
     {
         $this->chunck = $chunck;
         $this->payload = $payload;
@@ -42,18 +42,21 @@ class CatchSignalEventRequest implements ShouldQueue
         $this->throwEvent = $throwEvent;
         $this->eventDefinition = $eventDefinition;
         $this->tokenId = $tokenId;
+        $this->requestId = $requestId;
     }
 
     public function handle()
     {
+        dump("++++++++++++++++++++++handle");
         $mainRequest = ProcessRequest::find($this->requestId);
         $definitions = ($mainRequest->processVersion ?? $mainRequest->process)->getDefinitions(true);
         $throwEvent = $definitions->findElementById($this->throwEvent)->getBpmnElementInstance();
         $eventDefinition = $definitions->findElementById($this->eventDefinition)->getBpmnElementInstance();
         $token = ProcessRequestToken::find($this->tokenId);
         foreach ($this->chunck as $requestId) {
+            dump("==============================");
             $request = ProcessRequest::find($requestId);
-            $definitions = ($request->processVersion ?? $request->process)->getDefinitions(true);
+            $definitions = ($request->processVersion ?? $request->process)->getDefinitions(true, null, false);
             $engine = $definitions->getEngine();
             $instance = $engine->loadProcessRequest($request);
             $engine->getEventDefinitionBus()->dispatchEventDefinition(

@@ -61,17 +61,20 @@ class WorkflowServiceProvider extends ServiceProvider
             $eventBus = app('events');
 
             //Initialize the BpmnEngine
-            $engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
+            //$engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
+            $engine = new BpmnEngine($repository, $eventBus);
             $eventDefinitionBus = new EventDefinitionBus;
             $engine->setEventDefinitionBus($eventDefinitionBus);
 
             // Catch the signal events
-            $eventDefinitionBus->attachEvent(
-                SignalEventDefinition::class,
-                function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
-                    WorkflowManagerFacade::catchSignalEvent($source, $sourceEventDefinition, $token);
-                }
-            );
+            if ($params['globalEvents']) {
+                $eventDefinitionBus->attachEvent(
+                    SignalEventDefinition::class,
+                    function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
+                        WorkflowManagerFacade::catchSignalEvent($source, $sourceEventDefinition, $token);
+                    }
+                );
+            }
 
             $engine->setJobManager(new TaskSchedulerManager());
 

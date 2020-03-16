@@ -22,11 +22,12 @@ trait ProcessTrait
      *
      * @return \ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface
      */
-    public function getDefinitions($forceParse = false, $engine = null)
+    public function getDefinitions($forceParse = false, $engine = null, $globalEvents = true)
     {
         if ($forceParse || empty($this->bpmnDefinitions)) {
             $options = ['process' => $this instanceof ProcessVersion ? $this->process : $this];
             !$engine ?: $options['engine'] = $engine;
+            $options['globalEvents'] = $globalEvents;
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);

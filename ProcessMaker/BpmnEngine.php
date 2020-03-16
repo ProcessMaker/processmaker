@@ -33,6 +33,7 @@ class BpmnEngine implements EngineInterface
      * Loaded versioned definitions
      */
     private $definitions = [];
+    public $uid;
 
     /**
      * Test engine constructor.
@@ -42,6 +43,7 @@ class BpmnEngine implements EngineInterface
      */
     public function __construct(RepositoryInterface $repository, $dispatcher)
     {
+        $this->uid = uniqid();
         $this->repository = $repository;
         $this->dispatcher = $dispatcher;
     }
