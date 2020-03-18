@@ -24,10 +24,15 @@ use ProcessMaker\Traits\HideSystemResources;
  * ),
  * @OA\Schema(
  *   schema="ScreenCategory",
- *   allOf={@OA\Schema(ref="#/components/schemas/ScreenCategoryEditable")},
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   allOf={
+ *      @OA\Schema(ref="#/components/schemas/ScreenCategoryEditable"),
+ *      @OA\Schema(
+ *          type="object",
+ *          @OA\Property(property="id", type="string", format="id"),
+ *          @OA\Property(property="created_at", type="string", format="date-time"),
+ *          @OA\Property(property="updated_at", type="string", format="date-time"),
+ *      )
+ *   },
  * )
  */
 class ScreenCategory extends Model
