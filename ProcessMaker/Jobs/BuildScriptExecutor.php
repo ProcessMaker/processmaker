@@ -18,6 +18,9 @@ class BuildScriptExecutor implements ShouldQueue
 
     // Do not retry this job if it fails
     public $tries = 1;
+    
+    // Building can take some time
+    public $timeout = 600;
 
     /**
      * Create a new job instance.
