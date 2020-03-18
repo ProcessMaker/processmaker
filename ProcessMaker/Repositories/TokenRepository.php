@@ -228,7 +228,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->setId($token->getKey());
     }
 
-    public function persistCatchEventMessageArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token, TokenInterface $source)
+    public function persistCatchEventMessageArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
