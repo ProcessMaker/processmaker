@@ -66,6 +66,8 @@ let nodeTypes = [
   messageFlow,
   serviceTask,
   textAnnotation,
+  intermediateMessageCatchEvent,
+  eventBasedGateway,
 ];
 
 ProcessMaker.nodeTypes.push(startEvent);
