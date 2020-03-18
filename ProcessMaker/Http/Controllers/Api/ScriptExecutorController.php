@@ -56,4 +56,12 @@ class ScriptExecutorController extends Controller
             throw new AuthorizationException;
         }
     }
+
+    public function cancel(Request $request)
+    {
+        $pidFile = $request->input('pidFile');
+        $pid = file_get_contents($pidFile);
+        exec("kill -9 $pid");
+        return ['status' => 'canceled', 'pid' => $pid];
+    }
 }

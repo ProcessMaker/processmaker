@@ -165,6 +165,7 @@ Route::group(
     // Rebuild Script Executors
     Route::get('script-executors', 'ScriptExecutorController@index')->name('script-executors.index');
     Route::put('script-executors/{language}', 'ScriptExecutorController@update')->name('script-executors.update');
+    Route::post('script-executors/cancel', 'ScriptExecutorController@cancel')->name('script-executors.cancel');
 
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');

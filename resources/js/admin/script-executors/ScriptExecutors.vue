@@ -112,12 +112,21 @@ export default {
         cancel(e) {
             // e.preventDefault();
             if (this.pidFile) {
-                ProcessMaker.apiClient.post('/script-executors/cancel', { pidFile: this.pidFile });
+                ProcessMaker.apiClient.post('/script-executors/cancel', {
+                    pidFile: this.pidFile
+                }).then((result) => {
+                    if (_.get(result, 'data.status') === 'canceled') {
+                        this.$refs.edit.hide();
+                    }
+                });
             }
         },
         scrollToBottom(){
             if (this.$refs.pre) {
-                this.$refs.pre.scrollTop = this.$refs.pre.scrollHeight;
+                // after text has rendered
+                setTimeout(() => {
+                    this.$refs.pre.scrollTop = this.$refs.pre.scrollHeight;
+                }, 5);
             }
         },
         save() {
