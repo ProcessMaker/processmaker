@@ -13,7 +13,7 @@ class GlobalSignalsTest extends TestCase
     use ProcessTestingTrait;
 
     /**
-     * Test a definition with two processes and signals
+     * Test signals in a process collaboration
      *
      * @group process_tests
      */
@@ -79,7 +79,7 @@ class GlobalSignalsTest extends TestCase
     }
 
     /**
-     * Test a definition with two processes and signals
+     * Test an start event signal from two different processes
      *
      * @group process_tests
      */
@@ -149,7 +149,7 @@ class GlobalSignalsTest extends TestCase
     }
 
     /**
-     * Test a definition with two processes and signals
+     * Test send signals from two diffetent processes
      *
      * @group process_tests
      */

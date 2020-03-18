@@ -2,22 +2,12 @@
 
 namespace ProcessMaker\Jobs;
 
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
-use ProcessMaker\Models\Process as Definitions;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
-use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
-use Throwable;
 
 class CatchSignalEventRequest implements ShouldQueue
 {
