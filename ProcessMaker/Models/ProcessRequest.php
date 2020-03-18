@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Log;
 use ProcessMaker\Nayra\Bpmn\Models\IntermediateCatchEvent;
+use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -587,6 +588,31 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
+     * Get the process version used by this request
+     *
+     * @return ProcessVersion
+     */
+    public function userPermissions()
+    {
+        return $this->hasMany(RequestUserPermission::class, 'request_id');
+    }
+
+    /**
+     * Filter process started with user
+     *
+     * @param $query
+     *
+     * @param $id User id
+     */
+    public function scopeRequestsThatUserCan($query, $permission, User $user)
+    {
+        $query->whereHas('userPermissions', function ($query) use ($permission, $user) {
+            $query->where('user_id', $user->getKey());
+            $query->where($permission, true);
+        });
+    }
+
+    /**
      * Update the current catch events for the requests
      *
      * @param TokenInterface $token
@@ -595,18 +621,18 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function updateCatchEvents()
     {
-        $signalEvents = [];
-        foreach ($this->tokens as $token) {
-            $element = $token->getDefinition(true);
-            if ($element instanceof IntermediateCatchEventInterface) {
-                foreach ($element->getEventDefinitions() as $eventDefinition) {
-                    if ($eventDefinition instanceof SignalEventDefinitionInterface) {
-                        $signalEvents[]= $eventDefinition->getProperty('signalRef');
-                    }
-                }
-            }
-        }
-        $this->signal_events = $signalEvents;
-        $this->save();
+       $signalEvents = [];
+       foreach ($this->tokens as $token) {
+           $element = $token->getDefinition(true);
+           if ($element instanceof IntermediateCatchEventInterface) {
+               foreach ($element->getEventDefinitions() as $eventDefinition) {
+                   if ($eventDefinition instanceof SignalEventDefinitionInterface) {
+                       $signalEvents[]= $eventDefinition->getProperty('signalRef');
+                   }
+               }
+           }
+       }
+       $this->signal_events = $signalEvents;
+       $this->save();
     }
 }

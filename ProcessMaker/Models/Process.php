@@ -57,7 +57,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   @OA\Property(property="pause_timer_start", type="integer"),
  *   @OA\Property(property="cancel_screen_id", type="integer"),
  *   @OA\Property(property="has_timer_start_events", type="boolean"),
- *   @OA\Property(property="start_events", type="string", format="json"),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -683,6 +682,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                         case 'manual':
                         case 'self_service':
                             $user = null;
+                            break;
+                        case 'user_by_id':
+                            $mustache = new Mustache_Engine();
+                            $assigneeId = $mustache->render($item->assignee, $instanceData);
+                            $user = $assigneeId;
                             break;
                         case 'script':
                         default:

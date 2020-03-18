@@ -21,7 +21,7 @@
             <div class="col">
                 <div class="card card-body">
                     <div class="form-group">
-                        {!! Form::label('title', __('Name')) !!}
+                        {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
                         {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
                         <small class="form-text text-muted"
@@ -31,13 +31,13 @@
                     <category-select :label="$t('Category')" api-get="script_categories" api-list="script_categories" v-model="formData.script_category_id" :errors="errors.script_category_id">
                     </category-select>
                     <div class="form-group">
-                        <label class="typo__label">{{__('Run script as')}}</label>
+                        <label class="typo__label">{{__('Run script as')}}<small class="ml-1">*</small></label>
                         <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': errors.run_as_user_id}">
                         </select-user>
                         <div class="invalid-feedback" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('description', __('Description')) !!}
+                        {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
                         <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>

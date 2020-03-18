@@ -122,6 +122,7 @@ ProcessMaker.EventBus.$on(
         label: 'Screen for Input',
         helper: 'Select Screen to display this Task',
         name: 'screenRef',
+        required: true,
         type: 'FORM'
       }
     });
@@ -187,7 +188,8 @@ ProcessMaker.EventBus.$on(
       config: {
         label: 'Script',
         helper: 'Select the Script this element runs',
-        name: 'scriptRef'
+        name: 'scriptRef',
+        required: true,
       }
     });
 
@@ -217,7 +219,8 @@ ProcessMaker.EventBus.$on(
         helper:
           'Select Screen to display this Task',
         name: 'screenRef',
-        params: { type: 'DISPLAY' }
+        params: { type: 'DISPLAY' },
+        required: true,
       }
     });
     registerInspectorExtension(manualTask, {

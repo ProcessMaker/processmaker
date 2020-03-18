@@ -4,29 +4,27 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Notification;
 use ProcessMaker\Exception\ReferentialIntegrityException;
-use ProcessMaker\Query\SyntaxError;
-use Illuminate\Database\QueryException;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ProcessRequestsCollection;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
+use ProcessMaker\Http\Resources\ProcessRequestsCollection;
+use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Notifications\ProcessCanceledNotification;
-use ProcessMaker\Facades\WorkflowManager;
-use Symfony\Component\HttpFoundation\IpUtils;
-use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
-use ProcessMaker\Jobs\CancelRequest;
+use ProcessMaker\Notifications\ProcessCanceledNotification;
+use ProcessMaker\Query\SyntaxError;
+use Symfony\Component\HttpFoundation\IpUtils;
 
 class ProcessRequestController extends Controller
 {
@@ -90,7 +88,12 @@ class ProcessRequestController extends Controller
      */
     public function index(Request $request)
     {
-        $query = ProcessRequest::query();
+        // Update request permissions for the user
+        $user = Auth::user();
+        $user->updatePermissionsToRequests();
+
+        // Filter request with user permissions
+        $query = ProcessRequest::requestsThatUserCan('can_view', $user);
         $includes = $request->input('include', '');
         foreach (array_filter(explode(',', $includes)) as $include) {
             if (in_array($include, ProcessRequest::$allowedIncludes)) {
@@ -137,9 +140,10 @@ class ProcessRequestController extends Controller
             $response = $query->orderBy(
                 str_ireplace('.', '->', $request->input('order_by', 'name')),
                 $request->input('order_direction', 'ASC')
-            )->get();
+            )->get();//->paginate($request->input('per_page', 10));
 
         } catch(QueryException $e) {
+            throw $e;
             $rawMessage = $e->getMessage();
             if (preg_match("/Column not found: 1054 (.*) in 'where clause'/", $rawMessage, $matches)) {
                 $message = $matches[1];
@@ -150,11 +154,6 @@ class ProcessRequestController extends Controller
         }
         
         if (isset($response)) {
-            //Filter by permission
-            $response = $response->filter(function ($processRequest) {
-                return Auth::user()->can('view', $processRequest);
-            })->values();
-
             //Map each item through its resource
             $response = $response->map(function ($processRequest) use ($request) {
                 return new ProcessRequestResource($processRequest);

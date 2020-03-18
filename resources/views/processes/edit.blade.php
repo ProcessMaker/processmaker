@@ -42,7 +42,7 @@
                         <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
                             <div class="form-group">
-                                {!!Form::label('processTitle', __('Name'))!!}
+                                {!!Form::label('processTitle', __('Name') . '<small class="ml-1">*</small>', [], false)!!}
                                 {!!Form::text('processTitle', null,
                                     [ 'id'=> 'name',
                                         'class'=> 'form-control',
@@ -55,7 +55,7 @@
                                 <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('description', __('Description')) !!}
+                                {!! Form::label('description', __('Description')  . '<small class="ml-1">*</small>', [], false) !!}
                                 {!! Form::textarea('description', null,
                                     ['id' => 'description',
                                         'rows' => 4,

@@ -1,6 +1,6 @@
 <template>
   <div class="form-group">
-    <label>{{ $t(label) }}</label>
+    <label>{{ $t(label) }}<small class="ml-1">*</small></label>
     <multiselect v-model="content"
                  track-by="id"
                  label="name"

@@ -142,7 +142,7 @@ trait ProcessTestingTrait
     {
         $schedule = app()->make(Schedule::class);
         $scheduleManager = new TaskSchedulerManager();
-        $scheduleManager->scheduleTasks($schedule);
+        $scheduleManager->scheduleTasks();
         ///
         $events = collect($schedule->events());
         $events->each(function (Event $event) {

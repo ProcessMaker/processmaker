@@ -194,6 +194,10 @@ class DataSourcesController extends Controller
     public function executeDataSource(ProcessRequest $request = null, DataSource $dataSource, Request $httpRequest)
     {
         $config= $httpRequest->json()->get('config');
+
+        // If the request has a Query String we add it to the config array
+        $config['queryString'] = $httpRequest->getQueryString();
+
         try {
             $response = $dataSource->request($request->data, $config);
             return response($response, 200);
@@ -205,7 +209,12 @@ class DataSourcesController extends Controller
     public function executeDataSourceTest(DataSource $dataSource, Request $httpRequest)
     {
         $config= $httpRequest->json()->get('config');
+
+        // If the request has a Query String we add it to the config array
+        $config['queryString'] = $httpRequest->getQueryString();
+
         $data= $httpRequest->json()->get('data', []);
+
         try {
             $response = $dataSource->request($data, $config);
             return response($response, 200);

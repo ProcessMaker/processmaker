@@ -4,7 +4,7 @@
         <multiselect v-model="content"
                      track-by="id"
                      label="title"
-                     :class="{'border border-danger':error}"
+                     :class="{'is-invalid':error}"
                      :loading="loading"
                      :placeholder="$t('type here to search')"
                      :options="scripts"
@@ -12,6 +12,7 @@
                      :show-labels="false"
                      :searchable="true"
                      :internal-search="false"
+                     :required="required"
                      @open="load"
                      @search-change="load">
             <template slot="noResult" >
@@ -21,7 +22,9 @@
                 {{ $t('No Data Available') }}
             </template>
         </multiselect>
-        <small v-if="error" class="text-danger">{{ error }}</small>
+        <div v-if="error" class="invalid-feedback">
+          <div>{{ error }}</div>
+        </div>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
         <a
                 v-if="content.id"
@@ -39,7 +42,7 @@
   import Multiselect from "vue-multiselect";
 
   export default {
-    props: ["value", "label", "helper", "params"],
+    props: ["value", "label", "helper", "params", 'required'],
     components: {
       Multiselect
     },
@@ -53,18 +56,30 @@
     },
     computed: {
       node() {
-        return this.$parent.$parent.highlightedNode.definition;
-      }
+        return this.$parent.$parent.$parent.$parent.highlightedNode;
+      },
+      definition() {
+        return this.node.definition;
+      },
     },
     watch: {
       content: {
         handler() {
-          this.$emit("input", this.content.id);
+          this.validate();
+          if (this.content) {
+            this.error = '';
+            if (this.node) {
+              this.$set(this.definition, "scriptRef", this.content.id);
+            } else  {
+              this.$emit('input', this.content.id);
+            }
+          }
         }
       },
       value: {
         immediate: true,
         handler() {
+          this.validate();
           // Load selected item.
           if (this.value) {
             this.loading = true;
@@ -83,7 +98,6 @@
               });
           } else {
             this.content = '';
-            this.error = '';
           }
         },
       }
@@ -100,7 +114,27 @@
           .catch(err => {
             this.loading = false;
           });
+      },
+      checkScriptRefExists() {
+        if (this.definition.scriptRef) {
+          return;
+        }
+        this.$set(this.definition, "scriptRef", '');
+      },
+      validate() {
+        if (!this.required || this.value && this.value !== undefined)  {
+          return;
+        }
+
+        this.error = this.$t('A script selection is required');
       }
+    },
+    mounted() {
+      if (this.node) {
+        this.checkScriptRefExists();  
+      }
+      
+      this.validate();
     }
   };
 </script>

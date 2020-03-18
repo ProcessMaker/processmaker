@@ -410,4 +410,41 @@ class UserController extends Controller
         }
         return response([], 200);  
     }
+
+    public function deletedUsers(Request $request) {
+        $query = User::query()->onlyTrashed();
+
+        $filter = $request->input('filter', '');
+        if (!empty($filter)) {
+            $filter = '%' . $filter . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->Where('username', 'like', $filter)
+                    ->orWhere('firstname', 'like', $filter)
+                    ->orWhere('lastname', 'like', $filter)
+                    ->orWhere('email', 'like', $filter);
+            });
+        }
+
+        $order_by = 'username';
+        $order_direction = 'ASC';
+
+        if($request->has('order_by')){
+          $order_by = $request->input('order_by');
+        }
+
+        if($request->has('order_direction')){
+          $order_direction = $request->input('order_direction');
+        }
+
+        $response =
+            $query->orderBy(
+                $request->input('order_by', $order_by),
+                $request->input('order_direction', $order_direction)
+            )
+            ->paginate($request->input('per_page', 10));
+
+        
+        // return $deletedUsers;
+        return new ApiCollection($response);
+    }
 }
