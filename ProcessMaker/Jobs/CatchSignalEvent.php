@@ -38,7 +38,7 @@ class CatchSignalEvent implements ShouldQueue
     {
         $this->collaborationId = $token->getInstance()->process_collaboration_id;
         $this->eventDefinition = $sourceEventDefinition->getId();
-        $this->payload = $token->getInstance()->getDataStore()->getData();
+        $this->payload = $token->getInstance()->data;
         $this->requestId = $token->getInstance()->getId();
         $event = $sourceEventDefinition->getPayload();
         $this->signalRef = $event ? $event->getId() : $sourceEventDefinition->getProperty('signalRef') ;
