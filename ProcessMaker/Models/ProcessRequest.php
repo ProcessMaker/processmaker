@@ -627,7 +627,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
            if ($element instanceof IntermediateCatchEventInterface) {
                foreach ($element->getEventDefinitions() as $eventDefinition) {
                    if ($eventDefinition instanceof SignalEventDefinitionInterface) {
-                       $signalEvents[]= $eventDefinition->getProperty('signalRef');
+                       $signalEvents[]= $eventDefinition->getProperty('signal')->getId();
                    }
                }
            }

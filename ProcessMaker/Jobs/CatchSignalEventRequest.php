@@ -51,25 +51,22 @@ class CatchSignalEventRequest implements ShouldQueue
 
     public function handle()
     {
-        return;
-        dump("++++++++++++++++++++++handle");
         $mainRequest = ProcessRequest::find($this->requestId);
         $definitions = ($mainRequest->processVersion ?? $mainRequest->process)->getDefinitions(true);
         $throwEvent = $definitions->findElementById($this->throwEvent)->getBpmnElementInstance();
         $eventDefinition = $definitions->findElementById($this->eventDefinition)->getBpmnElementInstance();
         $token = ProcessRequestToken::find($this->tokenId);
         foreach ($this->chunck as $requestId) {
-            dump("==============================");
             $request = ProcessRequest::find($requestId);
             $definitions = ($request->processVersion ?? $request->process)->getDefinitions(true, null, false);
             $engine = $definitions->getEngine();
-            $instance = $engine->loadProcessRequest($request);
+            $engine->loadProcessRequest($request);
             $engine->getEventDefinitionBus()->dispatchEventDefinition(
                 $throwEvent,
                 $eventDefinition,
                 $token
             );
-            dump("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+            $engine->runToNextState();
         }
     }
 }
