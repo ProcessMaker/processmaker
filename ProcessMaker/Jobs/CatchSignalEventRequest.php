@@ -47,6 +47,7 @@ class CatchSignalEventRequest implements ShouldQueue
 
     public function handle()
     {
+        return;
         dump("++++++++++++++++++++++handle");
         $mainRequest = ProcessRequest::find($this->requestId);
         $definitions = ($mainRequest->processVersion ?? $mainRequest->process)->getDefinitions(true);
@@ -64,6 +65,7 @@ class CatchSignalEventRequest implements ShouldQueue
                 $eventDefinition,
                 $token
             );
+            dump("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         }
     }
 }

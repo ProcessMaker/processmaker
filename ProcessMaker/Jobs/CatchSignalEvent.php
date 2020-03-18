@@ -41,11 +41,11 @@ class CatchSignalEvent implements ShouldQueue
     public function __construct(ThrowEventInterface $throwEvent, SignalEventDefinition $sourceEventDefinition, TokenInterface $token)
     {
         $this->eventDefinition = $sourceEventDefinition->getId();
-        $this->payload = $token->processRequest->data;
-        $this->requestId = $token->processRequest->getKey();
+        $this->payload = $token->getInstance()->getDataStore()->getData();
+        $this->requestId = $token->getInstance()->getId();
         $this->signalRef = $sourceEventDefinition->getProperty('signalRef');
         $this->throwEvent = $throwEvent->getId();
-        $this->tokenId = $token->getKey();
+        $this->tokenId = $token->getId();
     }
 
     public function handle()
