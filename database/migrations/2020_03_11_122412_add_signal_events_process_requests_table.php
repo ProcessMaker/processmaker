@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use ProcessMaker\Models\ProcessRequest;
 
 class AddSignalEventsProcessRequestsTable extends Migration
 {
@@ -13,7 +14,8 @@ class AddSignalEventsProcessRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::table('process_requests', function (Blueprint $table) {
+        $model = new ProcessRequest();
+        Schema::connection($model->getConnectionName())->table('process_requests', function (Blueprint $table) {
             $table->json('signal_events')->nullable();
         });
         Schema::table('processes', function (Blueprint $table) {
@@ -31,7 +33,8 @@ class AddSignalEventsProcessRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::table('process_requests', function (Blueprint $table) {
+        $model = new ProcessRequest();
+        Schema::connection($model->getConnectionName())->table('process_requests', function (Blueprint $table) {
             $table->dropColumn(['signal_events']);
         });
         Schema::table('processes', function (Blueprint $table) {
