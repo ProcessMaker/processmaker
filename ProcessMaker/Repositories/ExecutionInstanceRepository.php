@@ -103,7 +103,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $data = $instance->getDataStore()->getData();
         //Get the process
         $process = $instance->getProcess();
-        //Get process definition 
+        //Get process definition
         $definition = $process->getOwnerDocument()->getModel();
 
         //Save the row
@@ -128,7 +128,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     private function findParticipantFor(ExecutionInstanceInterface $instance)
     {
         $collaboration = $instance->getProcess()->getEngine()->getEventDefinitionBus()->getCollaboration();
-        foreach($collaboration->getParticipants() as $participant) {
+        if (!$collaboration) {
+            return;
+        }
+        foreach ($collaboration->getParticipants() as $participant) {
             if ($participant->getProcess()->getId() === $instance->getProcess()->getId()) {
                 return $participant;
             }
@@ -195,7 +198,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * @param ExecutionInstanceInterface $source Source instance
      * @param ParticipantInterface $sourceParticipant
      */
-    public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant)
+    public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant = null, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant = null)
     {
         if ($source->process_collaboration_id === null) {
             $collaboration = new ProcessCollaboration();

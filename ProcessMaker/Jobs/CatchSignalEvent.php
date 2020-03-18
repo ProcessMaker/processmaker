@@ -26,12 +26,14 @@ class CatchSignalEvent implements ShouldQueue
 
     private const maxJobs = 10;
 
+    public $collaborationId;
     public $eventDefinition;
     public $payload;
     public $requestId;
     public $signalRef;
     public $throwEvent;
     public $tokenId;
+    public $processId;
 
     /**
      * Create a new job instance.
@@ -40,29 +42,51 @@ class CatchSignalEvent implements ShouldQueue
      */
     public function __construct(ThrowEventInterface $throwEvent, SignalEventDefinition $sourceEventDefinition, TokenInterface $token)
     {
+        $this->collaborationId = $token->getInstance()->process_collaboration_id;
         $this->eventDefinition = $sourceEventDefinition->getId();
         $this->payload = $token->getInstance()->getDataStore()->getData();
         $this->requestId = $token->getInstance()->getId();
-        $this->signalRef = $sourceEventDefinition->getProperty('signalRef');
+        $event = $sourceEventDefinition->getPayload();
+        $this->signalRef = $event ? $event->getId() : $sourceEventDefinition->getProperty('signalRef') ;
         $this->throwEvent = $throwEvent->getId();
         $this->tokenId = $token->getId();
+        $this->processId = $token->getInstance()->process_id;
     }
 
     public function handle()
     {
-        $processes = Process::whereJsonContains('signal_events', $this->signalRef);
-        $count = ProcessRequest::whereJsonContains('signal_events', $this->signalRef)
-            ->where('status', 'ACTIVE')
-            ->where('id', '!=', $this->requestId)
+        $processes = Process::where('id', '!=', $this->processId)
+            ->whereJsonContains('signal_events', $this->signalRef)
+            ->pluck('id')
+            ->toArray();
+        foreach($processes as $process) {
+            CatchSignalEventProcess::dispatch(
+                $process,
+                $this->signalRef,
+                $this->payload,
+                $this->throwEvent,
+                $this->eventDefinition,
+                $this->tokenId,
+                $this->requestId
+            );
+        }
+        $count = ProcessRequest::where('status', 'ACTIVE')
+            ->where('id', '!=', $this->requestId);
+        if ($this->collaborationId) {
+            $count = $count->where('process_collaboration_id', '!=', $this->collaborationId);
+        }
+        $count = $count->whereJsonContains('signal_events', $this->signalRef)
             ->count();
-        //dump(['requestId' => $this->requestId], ProcessRequest::all()->toArray(), $count);
         if ($count) {
             $perJob = ceil($count / self::maxJobs);
             $requests = ProcessRequest::select(['id'])
                 ->whereJsonContains('signal_events', $this->signalRef)
                 ->where('status', 'ACTIVE')
-                ->where('id', '!=', $this->requestId)
-                ->orderBy('id')
+                ->where('id', '!=', $this->requestId);
+            if ($this->collaborationId) {
+                $requests = $requests->where('process_collaboration_id', '!=', $this->collaborationId);
+            }
+            $requests = $requests->orderBy('id')
                 ->pluck('id')
                 ->toArray();
             $chuncks = array_chunk($requests, $perJob);

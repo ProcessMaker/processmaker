@@ -19,57 +19,58 @@ use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
 use Throwable;
 
-class CatchSignalEventRequest implements ShouldQueue
+class CatchSignalEventProcess implements ShouldQueue
 {
     use Dispatchable,
         InteractsWithQueue,
         Queueable;
 
-    public $chunck;
-    public $signalRef;
-    public $payload;
-    public $throwEvent;
     public $eventDefinition;
-    public $tokenId;
+    public $payload;
+    public $processId;
     public $requestId;
+    public $signalRef;
+    public $throwEvent;
+    public $tokenId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($chunck, $signalRef, $payload, $throwEvent, $eventDefinition, $tokenId, $requestId)
+    public function __construct($processId, $signalRef, $payload, $throwEvent, $eventDefinition, $tokenId, $requestId)
     {
-        $this->chunck = $chunck;
+        $this->eventDefinition = $eventDefinition;
         $this->payload = $payload;
+        $this->processId = $processId;
+        $this->requestId = $requestId;
         $this->signalRef = $signalRef;
         $this->throwEvent = $throwEvent;
-        $this->eventDefinition = $eventDefinition;
         $this->tokenId = $tokenId;
-        $this->requestId = $requestId;
     }
 
     public function handle()
     {
-        return;
-        dump("++++++++++++++++++++++handle");
         $mainRequest = ProcessRequest::find($this->requestId);
         $definitions = ($mainRequest->processVersion ?? $mainRequest->process)->getDefinitions(true);
+        $engine = $definitions->getEngine();
         $throwEvent = $definitions->findElementById($this->throwEvent)->getBpmnElementInstance();
         $eventDefinition = $definitions->findElementById($this->eventDefinition)->getBpmnElementInstance();
-        $token = ProcessRequestToken::find($this->tokenId);
-        foreach ($this->chunck as $requestId) {
-            dump("==============================");
-            $request = ProcessRequest::find($requestId);
-            $definitions = ($request->processVersion ?? $request->process)->getDefinitions(true, null, false);
-            $engine = $definitions->getEngine();
-            $instance = $engine->loadProcessRequest($request);
-            $engine->getEventDefinitionBus()->dispatchEventDefinition(
-                $throwEvent,
-                $eventDefinition,
-                $token
-            );
-            dump("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        }
+        $instance = $engine->loadProcessRequest($mainRequest);
+        $token = $instance->getTokens()->find(function ($token) {
+            return $token->getId() == $this->tokenId;
+        })->item(0);
+
+        $version = Process::find($this->processId)->getLatestVersion();
+        $definitions = $version->getDefinitions(true, null, false);
+        $engine = $definitions->getEngine();
+        $engine->loadProcessDefinitions($definitions);
+        $engine->getEventDefinitionBus()->dispatchEventDefinition(
+            $throwEvent,
+            $eventDefinition,
+            $token
+        );
+
+        $engine->runToNextState();
     }
 }

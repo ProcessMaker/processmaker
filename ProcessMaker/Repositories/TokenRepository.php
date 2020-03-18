@@ -215,7 +215,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->saveOrFail();
         $token->setId($token->getKey());
         $token->getInstance()->updateCatchEvents();
-        dump("persistCatchEventTokenArrives " . $token->getInstance()->id);
     }
 
     public function persistCatchEventTokenConsumed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
@@ -231,7 +230,6 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistCatchEventMessageArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token, TokenInterface $source)
     {
-        dump("From: " . $source->getOwner()->getName() . " -to-> " . $token->getInstance()->getId());
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $intermediateCatchEvent->getId();
