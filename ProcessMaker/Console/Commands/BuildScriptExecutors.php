@@ -55,6 +55,7 @@ class BuildScriptExecutors extends Command
      */
     public function handle()
     {
+        $this->userId = $this->argument('user');
         try {
             $this->buildExecutor();
         } catch (\Exception $e) {
@@ -67,8 +68,6 @@ class BuildScriptExecutors extends Command
 
     public function buildExecutor()
     {
-        $this->userId = $this->argument('user');
-
         $this->savePid();
         $this->sendEvent($this->pidFilePath, 'starting');
         
@@ -86,10 +85,7 @@ class BuildScriptExecutors extends Command
         }
 
         $this->info("Building the SDK");
-        $this->artisan("processmaker:sdk", [
-            'language' => $lang,
-            'output' => $sdkDir
-        ]);
+        $this->artisan("processmaker:sdk $lang $sdkDir --clean");
         $this->info("SDK is at ${sdkDir}");
 
         $dockerfile = '';
@@ -128,6 +124,10 @@ class BuildScriptExecutors extends Command
             );
         } else {
             system($command);
+        }
+
+        if ($this->pidFilePath) {
+            unlink($this->pidFilePath);
         }
     }
 
@@ -169,9 +169,7 @@ class BuildScriptExecutors extends Command
         fclose($pipes[0]);
         fclose($pipes[1]);
         fclose($pipes[2]);
-        if ($this->pidFilePath) {
-            unlink($this->pidFilePath);
-        }
+        
         $exitCode = proc_close($process);
         $done($exitCode);
     }

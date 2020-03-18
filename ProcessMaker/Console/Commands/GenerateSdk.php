@@ -40,35 +40,30 @@ class GenerateSdk extends Command
      */
     public function handle()
     {
-        try {
-            $jsonPath = base_path('storage/api-docs/api-docs.json');
-            $builder = new BuildSdk($jsonPath, $this->argument('output'), false);
-            if ($this->argument('language') === 'none') {
-                $this->info(
-                    "No language specified. Choose one of these: \n" . 
-                    join(", ", $builder->getAvailableLanguages())
-                );
-                return;
-            }
-            $builder->setLang($this->argument('language'));
-            if ($this->options()['list-options']) {
-                $this->info($builder->getOptions());
-                return;
-            }
-
-            // Delete all files except .git folder
-            if ($this->options()['clean']) {
-                $folder = $this->argument('output');
-                if (substr($folder, -1) !== '/') {
-                    $folder .= "/";
-                }
-                exec('rm -rf ' . $folder . '*');
-            }
-
-            $this->info($builder->run());
-        } catch(Exception $e) {
-            echo "ERROR: {$e->getMessage()}\n";
-            exit(1);
+        $jsonPath = base_path('storage/api-docs/api-docs.json');
+        $builder = new BuildSdk($jsonPath, $this->argument('output'), false);
+        if ($this->argument('language') === 'none') {
+            $this->info(
+                "No language specified. Choose one of these: \n" . 
+                join(", ", $builder->getAvailableLanguages())
+            );
+            return;
         }
+        $builder->setLang($this->argument('language'));
+        if ($this->options()['list-options']) {
+            $this->info($builder->getOptions());
+            return;
+        }
+
+        // Delete all files except .git folder
+        if ($this->options()['clean']) {
+            $folder = $this->argument('output');
+            if (substr($folder, -1) !== '/') {
+                $folder .= "/";
+            }
+            exec('rm -rf ' . $folder . '*');
+        }
+
+        $this->info($builder->run());
     }
 }
