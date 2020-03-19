@@ -73,6 +73,5 @@ class CommentsSubscriber
     {
         $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
         $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
-        //$events->listen(GatewayInterface::EVENT_GATEWAY_TOKEN_PASSED, static::class . '@onGatewayConsumed');
     }
 }
