@@ -5,6 +5,7 @@ namespace ProcessMaker\Console\Commands;
 use Illuminate\Console\Command;
 use ProcessMaker\Events\BuildScriptExecutor;
 use ProcessMaker\BuildSdk;
+use ProcessMaker\Models\ScriptExecutor;
 use \Exception;
 
 class BuildScriptExecutors extends Command
@@ -37,6 +38,13 @@ class BuildScriptExecutors extends Command
      * @var string
      */
     protected $pidFilePath = null;
+    
+    /**
+     * The path to the executor package
+     *
+     * @var string
+     */
+    protected $packagePath = null;
 
     /**
      * Create a new command instance.
@@ -63,6 +71,13 @@ class BuildScriptExecutors extends Command
                 event(new BuildScriptExecutor($e->getMessage(), $this->userId, 'error'));
             }
             throw new \Exception($e->getMessage());
+        } finally {
+            if ($this->packagePath && file_exists($this->packagePath . '/Dockerfile.custom')) {
+                unlink($this->packagePath . '/Dockerfile.custom');
+            }
+            if ($this->pidFilePath) {
+                unlink($this->pidFilePath);
+            }
         }
     }
 
@@ -71,14 +86,24 @@ class BuildScriptExecutors extends Command
         $this->savePid();
         $this->sendEvent($this->pidFilePath, 'starting');
         
-        $lang = $this->argument('lang');
+        $langArg = $this->argument('lang');
+        if (is_numeric($langArg)) {
+            $scriptExecutor = ScriptExecutor::findOrFail($langArg);
+            $lang = $scriptExecutor->language;
+        } else {
+            $scriptExecutor = ScriptExecutor::initialExecutor($langArg);
+            if (!$scriptExecutor) {
+                throw new \Exception("Executor not found: " . $langArg);
+            }
+        }
+
         $this->info("Building for language: $lang");
 
         $this->info("Generating SDK json document");
         $this->artisan('l5-swagger:generate');
 
-        $dockerDir = sys_get_temp_dir() . "/pm4-docker-builds/${lang}";
-        $sdkDir = $dockerDir . "/sdk";
+        $this->packagePath = $packagePath = config('script-runners.' . $lang . '.package_path');
+        $sdkDir = $packagePath . "/sdk";
 
         if (!is_dir($sdkDir)) {
             mkdir($sdkDir, 0755, true);
@@ -88,24 +113,19 @@ class BuildScriptExecutors extends Command
         $this->artisan("processmaker:sdk $lang $sdkDir --clean");
         $this->info("SDK is at ${sdkDir}");
 
-        $dockerfile = '';
+        $dockerfile = file_get_contents($packagePath . '/Dockerfile');
         $initDockerfile = config('script-runners.' . $lang . '.init_dockerfile');
-        if ($initDockerfile) {
-            $dockerfile .= $initDockerfile;
-        }
-        $dockerfile .= "\n";
-        $appDockerfilePath = storage_path("docker-build-config/Dockerfile-${lang}");
-        if (file_exists($appDockerfilePath)) {
-            $dockerfile .= file_get_contents($appDockerfilePath);
-        }
+        $dockerfile .= "\n" . implode("\n", $initDockerfile);
+        $dockerfile .= "\n" . $scriptExecutor->config;
 
         $this->info("Dockerfile:\n  " . implode("\n  ", explode("\n", $dockerfile)));
-        file_put_contents($dockerDir . '/Dockerfile', $dockerfile);
+        file_put_contents($packagePath . '/Dockerfile.custom', $dockerfile);
 
         $this->info("Building the docker executor");
 
-        $tag = 'v1.0.0'; // Hard coding this for now until we get versions set up
-        $command = "docker build --build-arg SDK_DIR=/sdk -t processmaker4/executor-instance-${lang}:${tag} ${dockerDir}";
+        $tag = 'latest'; // might change with script executor versions
+        $id = $scriptExecutor->id;
+        $command = "docker build --build-arg SDK_DIR=/sdk -t processmaker4/executor-${lang}-${id}:${tag} -f ${packagePath}/Dockerfile.custom ${packagePath}";
 
         if ($this->userId) {
             $this->runProc(
@@ -124,10 +144,6 @@ class BuildScriptExecutors extends Command
             );
         } else {
             system($command);
-        }
-
-        if ($this->pidFilePath) {
-            unlink($this->pidFilePath);
         }
     }
 
