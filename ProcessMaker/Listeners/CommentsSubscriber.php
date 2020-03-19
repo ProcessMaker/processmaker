@@ -58,7 +58,7 @@ class CommentsSubscriber
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $token->process_request_id,
                 'subject' => 'Gateway',
-                'body' => $flowLabel,
+                'body' => __('Gateway: :flow_label', ['flow_label' => $flowLabel]),
             ]);
         }
     }
