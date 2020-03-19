@@ -15,7 +15,7 @@ class CreateScriptExecutorsTable extends Migration
     {
         Schema::create('script_executors', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('title');
+            $table->string('title');
             $table->text('description')->nullable();
             $table->string('language', 20)->default('PHP');
             $table->text('config')->nullable();

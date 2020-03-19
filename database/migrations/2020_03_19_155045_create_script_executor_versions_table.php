@@ -17,7 +17,7 @@ class CreateScriptExecutorVersionsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('script_executor_id');
 
-            $table->text('title');
+            $table->string('title');
             $table->text('description')->nullable();
             $table->string('language', 20)->default('PHP');
             $table->text('config')->nullable();
