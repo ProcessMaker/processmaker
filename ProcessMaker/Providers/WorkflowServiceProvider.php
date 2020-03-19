@@ -61,8 +61,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $eventBus = app('events');
 
             //Initialize the BpmnEngine
-            //$engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
-            $engine = new BpmnEngine($repository, $eventBus);
+            $engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
             $eventDefinitionBus = new EventDefinitionBus;
             $engine->setEventDefinitionBus($eventDefinitionBus);
 
