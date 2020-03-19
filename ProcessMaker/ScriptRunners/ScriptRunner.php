@@ -3,6 +3,7 @@
 namespace ProcessMaker\ScriptRunners;
 
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Models\ScriptExecutor;
 
 class ScriptRunner
 {
@@ -13,9 +14,9 @@ class ScriptRunner
      */
     private $runner;
 
-    public function __construct($language)
+    public function __construct(ScriptExecutor $executor)
     {
-        $this->runner = $this->getScriptRunnerByLanguage($language);
+        $this->runner = $this->getScriptRunner($executor);
     }
 
     /**
@@ -36,22 +37,22 @@ class ScriptRunner
     }
 
     /**
-     * Get a runner instance by language
+     * Get a runner instance from executor
      *
-     * @param string $language
+     * @param ScriptExecutor $executor
      *
      * @return \ProcessMaker\ScriptRunners\Base
      * @throws \ProcessMaker\Exception\ScriptLanguageNotSupported
      */
-    private function getScriptRunnerByLanguage($language)
+    private function getScriptRunner(ScriptExecutor $executor)
     {
-        $language = strtolower($language);
+        $language = strtolower($executor->language);
         $runner = config("script-runners.{$language}.runner");
         if (!$runner) {
             throw new ScriptLanguageNotSupported($language);
         } else {
             $class = "ProcessMaker\\ScriptRunners\\{$runner}";
-            return new $class;
+            return new $class($executor);
         }
     }
 }

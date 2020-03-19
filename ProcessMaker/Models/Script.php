@@ -106,7 +106,7 @@ class Script extends Model
      */
     public function runScript(array $data, array $config)
     {
-        $runner = new ScriptRunner($this->language);
+        $runner = new ScriptRunner($this->scriptExecutor);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
             throw new \RuntimeException("A user is required to run scripts");
@@ -263,5 +263,13 @@ class Script extends Model
     public function getScriptCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    /**
+     * Get the associated executor
+     */
+    public function scriptExecutor()
+    {
+        return $this->belongsTo(ScriptExecutor::class, 'script_executor_id');
     }
 }
