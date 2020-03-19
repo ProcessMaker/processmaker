@@ -172,7 +172,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      * @var array
      */
     protected $hidden = [
-        'bpmn'
+        'bpmn',
+        'svg',
     ];
 
     public $requestNotifiableTypes = [
