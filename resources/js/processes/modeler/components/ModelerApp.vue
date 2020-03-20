@@ -4,9 +4,12 @@
       <b-card-body class="overflow-hidden position-relative p-0 vh-100" data-test="body-container">
         <modeler
           ref="modeler"
+          :owner="self"
+          :decorations="decorations" 
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="saveBpmn"
+          @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
 
@@ -14,7 +17,11 @@
         ref="validationStatus"
         :validation-errors="validationErrors"
         :warnings="warnings"
-      />
+        :owner="self"
+        :xml-manager="xmlManager"
+      >
+        <component v-for="(component, index) in validationBar" :key="`validation-status-${index}`" :is="component" :owner="self" />
+      </validation-status>
     </b-card>
   </b-container>
 </template>
@@ -30,9 +37,15 @@ export default {
   },
   data() {
     return {
+      self: this,
+      validationBar: [],
+      decorations: {
+        borderOutline: {},
+      },
       process: window.ProcessMaker.modeler.process,
       validationErrors: {},
       warnings: [],
+      xmlManager: null,
     };
   },
   methods: {

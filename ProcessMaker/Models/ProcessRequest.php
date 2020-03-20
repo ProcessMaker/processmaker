@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Log;
+use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
@@ -579,5 +580,30 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function processVersion()
     {
         return $this->belongsTo(ProcessVersion::class, 'process_version_id');
+    }
+
+    /**
+     * Get the process version used by this request
+     *
+     * @return ProcessVersion
+     */
+    public function userPermissions()
+    {
+        return $this->hasMany(RequestUserPermission::class, 'request_id');
+    }
+
+    /**
+     * Filter process started with user
+     *
+     * @param $query
+     *
+     * @param $id User id
+     */
+    public function scopeRequestsThatUserCan($query, $permission, User $user)
+    {
+        $query->whereHas('userPermissions', function ($query) use ($permission, $user) {
+            $query->where('user_id', $user->getKey());
+            $query->where($permission, true);
+        });
     }
 }

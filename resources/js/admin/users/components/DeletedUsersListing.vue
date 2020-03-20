@@ -1,13 +1,13 @@
 <template>
   <div class="data-table">
     <data-loading
-      :for="/users\?page/"
+      :for="/deleted_users\?page/"
       v-show="shouldShowLoader"
       :empty="$t('No Data Available')"
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader"  class="card card-body table-card"> 
+    <div v-show="!shouldShowLoader" class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -28,29 +28,19 @@
             <div class="popout">
               <b-btn
                 variant="link"
-                @click="onAction('edit-item', props.rowData, props.rowIndex)"
+                @click="restoreUser(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="$t('Edit')"
-                v-if="permission.includes('edit-users')"
+                :title="$t('Restore User')"
               >
-                <i class="fas fa-pen-square fa-lg fa-fw"></i>
-              </b-btn>
-              <b-btn
-                variant="link"
-                @click="onAction('remove-item', props.rowData, props.rowIndex)"
-                v-b-tooltip.hover
-                :title="$t('Delete')"
-                v-if="permission.includes('delete-users')"
-              >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+                <i class="fas fa-trash-restore fa-lg fa-fw"></i>
               </b-btn>
             </div>
           </div>
         </template>
       </vuetable>
       <pagination
-        :single="$t('User')"
-        :plural="$t('Users')"
+        :single="$t('Deleted User')"
+        :plural="$t('Deleted Users')"
         :perPageSelectEnabled="true"
         @changePerPage="changePerPage"
         @vuetable-pagination:change-page="onPageChange"
@@ -72,7 +62,7 @@ export default {
   props: ["filter", "permission"],
   data() {
     return {
-      localLoadOnStart: true,
+      localLoadOnStart: false,
       orderBy: "username",
       vuetableData: [],
       // Our listing of users
@@ -81,7 +71,7 @@ export default {
           field: "username",
           sortField: "username",
           direction: "asc"
-        },
+        }
       ],
       fields: [
         {
@@ -136,12 +126,12 @@ export default {
     };
   },
   created() {
-      ProcessMaker.EventBus.$on("api-data-users", (val) => {
-        this.localLoadOnStart = val;
-        this.fetch();
-        this.apiDataLoading = false;
-        this.apiNoResults = false;
-      });
+    ProcessMaker.EventBus.$on("api-data-deleted-users", (val) => {
+      this.localLoadOnStart = val;
+      this.fetch();
+      this.apiDataLoading = false;
+      this.apiNoResults = false;
+    });
   },
   methods: {
     formatStatus(status) {
@@ -160,49 +150,37 @@ export default {
         '</span>'
       );
     },
-    goToEdit(data) {
-      window.location = "/admin/users/" + data + "/edit";
+    restoreUser(data, index) {
+      const $body = {
+        "email" : data.email
+      };
+      ProcessMaker.confirmModal(
+        this.$t('Caution!'),
+        this.$t('Are you sure you want to restore the user {{item}}?', {item: data.fullname}),
+        "",
+        () => {
+          ProcessMaker.apiClient.put('users/restore', $body).then(response => {
+            ProcessMaker.alert(
+              this.$t('The user was restored'),
+              "success"
+            );
+            ProcessMaker.EventBus.$emit("api-data-deleted-users", true);
+          });
+        }
+      );
     },
-    onAction(action, data, index) {
-      switch (action) {
-        case "edit-item":
-          this.goToEdit(data.id);
-          break;
-        case "remove-item":
-          ProcessMaker.confirmModal(
-            this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the user") +
-              " " +
-              data.fullname +
-              this.$t("?"),
-            "",
-            () => {
-              ProcessMaker.apiClient
-                .delete("users/" + data.id)
-                .then(response => {
-                  ProcessMaker.alert(
-                    this.$t("The user was deleted."),
-                    "danger"
-                  );
-                  ProcessMaker.EventBus.$emit("api-data-users", true);
-                });
-            }
-          );
-          break;
-      }
-    },
-    fetch() {
+    fetch() {      
       if (!this.localLoadOnStart) {
         this.vuetableData = [];
         return;
       }
       this.loading = true;
-      //change method sort by user
+      // Change method sort by user
       this.orderBy = this.orderBy === "fullname" ? "firstname" : this.orderBy;
       // Load from our api client
       ProcessMaker.apiClient
         .get(
-          "users?page=" +
+          "deleted_users?page=" +
             this.page +
             "&per_page=" +
             this.perPage +

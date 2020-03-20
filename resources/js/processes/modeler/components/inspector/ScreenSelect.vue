@@ -50,16 +50,8 @@
         content: "",
         loading: false,
         screens: [],
-        error: ''
+        error: null
       };
-    },
-    computed: {
-      node() {
-        return this.$parent.$parent.$parent.$parent.highlightedNode;
-      },
-      definition() {
-        return this.node.definition;
-      },
     },
     watch: {
      content: {
@@ -68,18 +60,13 @@
           this.validate();
           if (this.content) {
             this.error = '';
-            if (this.node) {
-              this.$set(this.definition, "screenRef", this.content.id);
-            } else  {
-              this.$emit('input', this.content.id);
-            }
+            this.$emit('input', this.content.id);
           }
         }
       },
       value: {
         immediate: true,
         handler() {
-          this.checkScreenRefExists();
           // Load selected item.
           if (this.value) {
             this.loading = true;
@@ -132,12 +119,6 @@
             this.loading = false;
           });
       },
-      checkScreenRefExists() {
-        if (this.definition.screenRef) {
-          return;
-        }
-        this.$set(this.definition, "screenRef", '');
-      },
       validate() {
         if (!this.required || this.value && this.value !== undefined)  {
           return;
@@ -147,10 +128,6 @@
       },
     },
     mounted() {
-      if (this.node) {
-        this.checkScreenRefExists();
-      }
-
       this.validate();
     }
   };

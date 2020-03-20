@@ -229,7 +229,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function assignableUsers()
     {
-        $query = $this->newQuery();
+        $query = $this->newQuery()->where('id', $this->getKey());
         return new TokenAssignableUsers($query, $this);
     }
 
