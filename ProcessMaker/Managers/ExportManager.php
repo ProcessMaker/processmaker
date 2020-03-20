@@ -116,27 +116,6 @@ class ExportManager
     }
 
     /**
-     * Get the scripts (ex. watchers) used in a screen
-     *
-     * @param Screen $screen
-     * @param array $scripts
-     *
-     * @return array
-     */
-    public function scriptsUsedInScreen(Screen $screen, array $scripts = [])
-    {
-        $config = $screen->watchers;
-        if (is_array($config)) {
-            $this->findInArray($config, function ($item) use (&$scripts) {
-                if (is_array($item) && !empty($item['script_id'])) {
-                    $scripts[] = Script::class . ':' . $item['script_id'];
-                }
-            });
-        }
-        return $scripts;
-    }
-
-    /**
      * Find recursively in an array
      *
      * @param array $array

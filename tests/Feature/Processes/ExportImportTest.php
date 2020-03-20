@@ -510,5 +510,15 @@ class ExportImportTest extends TestCase
         // Assertion: Verify references for scripts used in process
         $ref = $definitions->findElementById('node_4')->getAttributeNS($ns, 'scriptRef');
         $this->assertEquals($scripts['Script for Task'], $ref);
+
+        // Verify reference of nested screen
+        $screen = Screen::find($screens['Task Screen']);
+        $this->assertEquals($screens['Nested Screen'], $screen->config[0]['items'][0]['config']['screen']);
+
+        // Verify reference of watcher in nested screen
+        $nested = Screen::find($screens['Nested Screen']);
+        //$this->assertEquals($screens['Nested Screen'], $screen->config[0]['items'][0]['config']['screen']);
+        $this->assertEquals('script-' . $scripts['Script for Watcher'], $nested->watchers[0]['script']['id']);
+        $this->assertEquals($scripts['Script for Watcher'], $nested->watchers[0]['script_id']);
     }
 }

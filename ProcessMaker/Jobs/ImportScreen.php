@@ -25,6 +25,7 @@ class ImportScreen extends ImportProcess
             $new->fill((array)$screen);
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
             $new->created_at = $this->formatDate($screen->created_at);
+            $new->watchers =  $this->watcherScriptsToSave($screen);
 
             $new->save();
 
@@ -33,18 +34,6 @@ class ImportScreen extends ImportProcess
             $this->finishStatus('screens', true);
         }
     }
-
-    /**
-     * Parse files with version 1
-     *
-     * @return array
-     */
-    private function parseFileV1()
-    {
-        $this->saveScreens($this->file->screens);
-        return $this->status;
-    }
-
 
     /**
      * Execute the job.

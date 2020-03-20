@@ -378,6 +378,7 @@ class ImportProcess implements ShouldQueue
             $new->description = $screen->description;
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
             $new->type = $screen->type;
+            $new->watchers =  $this->watcherScriptsToSave($screen);
             $new->save();
 
             // save categories
@@ -788,7 +789,7 @@ class ImportProcess implements ShouldQueue
         $watcherList =[];
         foreach($screen->watchers as $watcher) {
             $script = $watcher->script;
-            $newScript = new Script;
+            /*$newScript = new Script;
             $newScript->title = $this->formatName($script->title, 'title', Script::class);
             $newScript->description = $script->description;
             $newScript->language = $script->language;
@@ -803,10 +804,10 @@ class ImportProcess implements ShouldQueue
                 }
             }
 
-            $newScript->save();
+            $newScript->save();*/
 
-            $watcher->script_id = $newScript->id;
-            $watcher->script->title = $newScript->title;
+            $watcher->script_id = $script->id;
+            $watcher->script->title = $script->title;
             $watcherList[] = $watcher;
         }
         return $watcherList;
