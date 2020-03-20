@@ -3,6 +3,7 @@
 namespace ProcessMaker\Assets;
 
 use DOMXPath;
+use Illuminate\Support\Arr;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Providers\WorkflowServiceProvider;
@@ -45,15 +46,16 @@ class ScreensInScreen
     {
         $config = $screen->config;
         if (is_array($config)) {
-            $this->findInArray($config, function (&$item) use (&$references) {
+            $this->findInArray($config, function ($item, $key) use ($references, &$config) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
-                    $oldRef = Screen::class . ':' . $item['config']['screen'];
+                    $oldRef = $item['config']['screen'];
                     $newRef = $references[Screen::class][$oldRef]->getKey();
-                    $item['config']['screen'] = $newRef;
+                    Arr::set($config, "$key.config.screen", $newRef);
                 }
             });
+            $screen->config = $config;
+            $screen->save();
         }
-        $screen->save();
     }
 
     /**
@@ -64,14 +66,14 @@ class ScreensInScreen
      *
      * @return void
      */
-    private function findInArray(array &$array, callable $callback)
+    private function findInArray(array $array, callable $callback, array $path = [])
     {
-        call_user_func($callback, $array);
-        foreach ($array as &$item) {
+        call_user_func($callback, $array, implode('.', $path));
+        foreach ($array as $key => $item) {
             if (is_array($item)) {
-                $this->findInArray($item, $callback);
+                $this->findInArray($item, $callback, array_merge($path, [$key]));
             } else {
-                call_user_func($callback, $item);
+                call_user_func($callback, $item, implode('.', array_merge($path, [$key])));
             }
         }
     }

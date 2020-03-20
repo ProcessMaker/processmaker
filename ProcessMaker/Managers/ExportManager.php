@@ -144,15 +144,26 @@ class ExportManager
      *
      * @return Model
      */
-    public function updateReferences(Model $model, array $newReferences)
+    public function updateReferences(array $newReferences)
+    {
+        foreach ($newReferences as $class =>  $model) {
+            if (is_array($model)) {
+                foreach ($model as $item) {
+                    $this->updateModelReferences($item, $newReferences);
+                }
+            } elseif (is_object($model) && $model instanceof Model) {
+                $this->updateModelReferences($model, $newReferences);
+            }
+        }
+    }
+
+    private function updateModelReferences(Model $model, array $newReferences)
     {
         foreach ($this->dependencies as $dependencie) {
             if (is_a($model, $dependencie['owner']) && isset($dependencie['updateReferences'])) {
-                //$newReferences = 
                 call_user_func($dependencie['updateReferences'], $model, $newReferences);
             }
         }
-        return $model;
     }
 
     public function addDependencieManager($class)

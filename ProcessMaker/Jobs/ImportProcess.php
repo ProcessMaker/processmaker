@@ -640,7 +640,7 @@ class ImportProcess implements ShouldQueue
         $this->new['process']->save();
 
         $manager = app(ExportManager::class);
-        $manager->updateReferences($this->new['process'], $this->new);
+        $manager->updateReferences($this->new);
     }
 
     /**
@@ -789,23 +789,6 @@ class ImportProcess implements ShouldQueue
         $watcherList =[];
         foreach($screen->watchers as $watcher) {
             $script = $watcher->script;
-            /*$newScript = new Script;
-            $newScript->title = $this->formatName($script->title, 'title', Script::class);
-            $newScript->description = $script->description;
-            $newScript->language = $script->language;
-            $newScript->code = $script->code;
-            $newScript->created_at = $this->formatDate($script->created_at);
-
-            // save categories
-            if (isset($script->categories)) {
-                foreach ($script->categories as $categoryDef) {
-                    $category = $this->saveCategory('script', $categoryDef);
-                    $newScript->categories()->save($category);
-                }
-            }
-
-            $newScript->save();*/
-
             $watcher->script_id = $script->id;
             $watcher->script->title = $script->title;
             $watcherList[] = $watcher;
