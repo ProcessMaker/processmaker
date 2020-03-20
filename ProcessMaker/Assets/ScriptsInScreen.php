@@ -50,6 +50,7 @@ class ScriptsInScreen
                 $watcher['script']['id'] = "script-$newRef";
             }
         }
+        $screen->watchers = $watches;
         $screen->save();
     }
 }
