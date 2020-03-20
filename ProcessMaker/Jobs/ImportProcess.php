@@ -318,36 +318,6 @@ class ImportProcess implements ShouldQueue
     }
 
     /**
-    * Pass an old screen ID and a new screen ID, then replace any references
-    * within the BPMN to the old ID with the new ID.
-    *
-    * @param string|integer $oldId
-    * @param string|integer $newId
-    * @param Process $process
-    *
-    * @return void
-    */
-    private function updateScreenRefs($oldId, $newId, $process)
-    {
-        $humanTasks = ['task', 'userTask', 'endEvent', 'manualTask'];
-        foreach ($humanTasks as $humanTask) {
-            $tasks = $this->definitions->getElementsByTagName($humanTask);
-            foreach ($tasks as $task) {
-                $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-                if ($screenRef == $oldId) {
-                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRefNew', $newId);
-                }
-            }
-        }
-
-        //Update id screen cancel process
-        if ($process->cancel_screen_id && $process->cancel_screen_id === $oldId) {
-            $this->new['process']->cancel_screen_id = $newId;
-            $this->new['process']->save();
-        }
-    }
-
-    /**
      * Complete the process of updating screen refs.
      *
      * @return void
@@ -663,9 +633,11 @@ class ImportProcess implements ShouldQueue
      *
      * @return void
      */
-    private function saveBpmn()
+    private function saveBpmn($process)
     {
         $this->new['process']->bpmn = $this->definitions->saveXML();
+        $this->new['process']->cancel_screen_id = $process->cancel_screen_id;
+        $this->new['process']->request_detail_screen_id = $process->request_detail_screen_id;
         $this->new['process']->save();
 
         $manager = app(ExportManager::class);
@@ -700,7 +672,7 @@ class ImportProcess implements ShouldQueue
         $this->saveScripts($this->file->scripts);
         $this->saveScreens($this->file->screens, $this->file->process);
         $this->parseAssignables();
-        $this->saveBpmn();
+        $this->saveBpmn($this->file->process);
 
         return (object)[
             'status' => collect($this->status),
