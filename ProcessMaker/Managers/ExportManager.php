@@ -116,27 +116,6 @@ class ExportManager
     }
 
     /**
-     * Get scripts used in a process
-     *
-     * @param Process $process
-     * @param array $scripts
-     *
-     * @return array
-     */
-    public function scriptsUsedInProcess(Process $process, array $scripts = [])
-    {
-        // Scripts used in BPMN
-        $xpath = new DOMXPath($process->getDefinitions());
-        $xpath->registerNamespace('pm', WorkflowServiceProvider::PROCESS_MAKER_NS);
-        // Used in scriptRef
-        $nodes = $xpath->query("//*[@pm:scriptRef!='']");
-        foreach ($nodes as $node) {
-            $scripts[] = Script::class . ':' . $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
-        }
-        return $scripts;
-    }
-
-    /**
      * Get the scripts (ex. watchers) used in a screen
      *
      * @param Screen $screen
@@ -190,7 +169,8 @@ class ExportManager
     {
         foreach ($this->dependencies as $dependencie) {
             if (is_a($model, $dependencie['owner']) && isset($dependencie['updateReferences'])) {
-                $newReferences = call_user_func($dependencie['updateReferences'], $model, $newReferences);
+                //$newReferences = 
+                call_user_func($dependencie['updateReferences'], $model, $newReferences);
             }
         }
         return $model;
