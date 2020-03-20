@@ -408,9 +408,6 @@ class ImportProcess implements ShouldQueue
             $new->description = $screen->description;
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
             $new->type = $screen->type;
-            if (property_exists($screen, 'watchers')) {
-                $new->watchers =  $this->watcherScriptsToSave($screen);
-            }
             $new->save();
 
             // save categories
@@ -492,7 +489,7 @@ class ImportProcess implements ShouldQueue
                     }
                 }
 
-                $this->updateScriptRefs($script->id, $new->id);
+                //$this->updateScriptRefs($script->id, $new->id);
 
                 $this->new['scripts'][] = $new;
             }
