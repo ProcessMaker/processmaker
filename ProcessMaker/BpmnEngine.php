@@ -2,8 +2,10 @@
 
 namespace ProcessMaker;
 
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\EventBusInterface;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
@@ -133,5 +135,23 @@ class BpmnEngine implements EngineInterface
         foreach ($processes as $process) {
             $this->loadProcess($process->getBpmnElementInstance());
         }
+    }
+
+    public function registerStartTimerEvents(ProcessInterface $process)
+    {
+        $this->getJobManager()->enableRegisterStartEvents();
+        foreach ($process->getEvents() as $event) {
+            if ($event instanceof StartEventInterface) {
+                //$event->scheduleTimerEvents(null);
+                //$event->registerWithEngine($this);
+                foreach ($event->getEventDefinitions() as $eventDefinition) {
+                    if ($eventDefinition instanceof TimerEventDefinitionInterface) {
+                        $eventDefinition->scheduleTimerEvents($event->getOwnerProcess()->getEngine(), $event, null);
+                    }
+                }
+
+            }
+        }
+        $this->getJobManager()->disableRegisterStartEvents();
     }
 }

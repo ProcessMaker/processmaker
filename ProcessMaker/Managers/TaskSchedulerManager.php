@@ -52,13 +52,12 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         }
         $definitions = $process->getDefinitions();
         if ($definitions) {
-            $definitions->getEngine()->getJobManager()->enableRegisterStartEvents();
             $processDefinitions = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
             foreach ($processDefinitions as $processDefinition) {
                 $element = $processDefinition->getBpmnElementInstance();
                 $definitions->getEngine()->loadProcess($element);
+                $definitions->getEngine()->registerStartTimerEvents($element);
             }
-            $definitions->getEngine()->getJobManager()->disableRegisterStartEvents();
         }
     }
 
