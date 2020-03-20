@@ -13,6 +13,8 @@ class ScriptExecutor extends Model
         'title', 'description', 'language', 'config'
     ];
 
+    protected $appends = ['initDockerfile'];
+
     public static function install($params)
     {
         $language = $params['language'];
@@ -39,5 +41,18 @@ class ScriptExecutor extends Model
     public function versions()
     {
         return $this->hasMany(ScriptExecutorVersion::class);
+    }
+
+    public function getInitDockerfileAttribute()
+    {
+        $dockerfile = file_get_contents($this->packagePath() . '/Dockerfile');
+        $initDockerfile = config('script-runners.' . $this->language . '.init_dockerfile');
+        $dockerfile .= "\n" . implode("\n", $initDockerfile);
+        return $dockerfile;
+    }
+
+    public function packagePath()
+    {
+        return config('script-runners.' . $this->language . '.package_path');
     }
 }

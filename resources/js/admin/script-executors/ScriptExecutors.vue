@@ -7,7 +7,7 @@
             <template v-slot:cell(edit)="data">
                 <b-btn
                     variant="link"
-                    @click="edit(data.item.language)"
+                    @click="edit(data.item.id)"
                     v-b-tooltip.hover
                     :title="$t('Edit')"
                 >
@@ -16,10 +16,24 @@
             </template>
         </b-table>
 
-        <b-modal ref="edit" id="edit" :title="$t('Edit') + ' ' + editKey + ' Dockerfile'" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
-            <pre>{{ formData.initDockerfile }}</pre>
+        <b-modal ref="edit" id="edit" :title="$t('Edit') + ' ' + formData.title + ' Dockerfile'" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
+
+            <div class="d-flex flex-row mb-1">
+                <div class="mr-1">
+                    <a @click="showDockerfile = !showDockerfile">
+                        <i class="fa" :class="{'fa-chevron-right': !showDockerfile, 'fa-chevron-down': showDockerfile}" style="width:14px"></i>
+                    </a>
+                </div>
+                <div class="flex-fill">
+                    <pre class="mt-1 mb-0" @click="showDockerfile = !showDockerfile">{{ formData.initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
+                    <b-collapse id="dockerfile" v-model="showDockerfile">
+                        <pre>{{ formData.initDockerfile.split("\n").slice(1).join("\n") }}</pre>
+                    </b-collapse>
+                </div>
+            </div>
+
             <b-form-textarea
-                v-model="formData.appDockerfileContents"
+                v-model="formData.config"
                 class="mb-3 dockerfile"
                 :disabled="isRunning"
             >
@@ -65,13 +79,13 @@ export default {
     data() {
         return {
             commandOutput: "",
-            languages: {},
-            formData: {},
-            editKey: '',
+            languages: [],
+            formData: { initDockerfile: '' },
             status: 'idle',
             pidFile: null,
             exitCode: 0,
-            languagesFields: ['language', 'modified', 'edit']
+            languagesFields: ['id', 'language', 'title', 'updated_at', 'edit'],
+            showDockerfile: false,
         };
     },
     computed: {
@@ -88,6 +102,7 @@ export default {
             return !this.isRunning;
         },
         languagesTable() {
+            return this.languages;
             return Object.keys(this.languages).map(key => {
                 const mtime = this.languages[key].mtime;
                 return {
@@ -133,19 +148,18 @@ export default {
             this.resetProcessInfo();
 
             this.status = 'saving';
-            const path = '/script-executors/' + this.editKey;
+            const path = '/script-executors/' + this.formData.id;
             ProcessMaker.apiClient.put(path, this.formData).then(result => {
                 this.status = _.get(result, 'data.status', 'error');
             });
         },
-        edit(lang) {
-            this.formData = _.cloneDeep(this.languages[lang]);
-            this.editKey = lang;
+        edit(id) {
+            this.formData = _.cloneDeep(this.languages.find(i => i.id === id));
             this.$refs.edit.show();
         },
         reset() {
-            this.formData = {};
-            this.editKey = '';
+            this.formData = { initDockerfile: '' };
+            this.showDockerfile = false;
             this.resetProcessInfo();
         },
         resetProcessInfo() {
@@ -161,7 +175,7 @@ export default {
     },
     mounted() {
         ProcessMaker.apiClient.get('/script-executors').then(result => {
-            this.languages = result.data.languages;
+            this.languages = result.data.data;
         });
 
         const userId = _.get(document.querySelector('meta[name="user-id"]'), 'content');

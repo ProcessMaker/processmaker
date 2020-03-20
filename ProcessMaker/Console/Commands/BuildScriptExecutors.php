@@ -102,7 +102,7 @@ class BuildScriptExecutors extends Command
         $this->info("Generating SDK json document");
         $this->artisan('l5-swagger:generate');
 
-        $this->packagePath = $packagePath = config('script-runners.' . $lang . '.package_path');
+        $this->packagePath = $packagePath = $scriptExecutor->packagePath();
         $sdkDir = $packagePath . "/sdk";
 
         if (!is_dir($sdkDir)) {
@@ -113,10 +113,7 @@ class BuildScriptExecutors extends Command
         $this->artisan("processmaker:sdk $lang $sdkDir --clean");
         $this->info("SDK is at ${sdkDir}");
 
-        $dockerfile = file_get_contents($packagePath . '/Dockerfile');
-        $initDockerfile = config('script-runners.' . $lang . '.init_dockerfile');
-        $dockerfile .= "\n" . implode("\n", $initDockerfile);
-        $dockerfile .= "\n" . $scriptExecutor->config;
+        $dockerfile = $scriptExecutor->initDockerfile . "\n" . $scriptExecutor->config;
 
         $this->info("Dockerfile:\n  " . implode("\n  ", explode("\n", $dockerfile)));
         file_put_contents($packagePath . '/Dockerfile.custom', $dockerfile);
