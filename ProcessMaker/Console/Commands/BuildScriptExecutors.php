@@ -89,20 +89,21 @@ class BuildScriptExecutors extends Command
         $langArg = $this->argument('lang');
         if (is_numeric($langArg)) {
             $scriptExecutor = ScriptExecutor::findOrFail($langArg);
-            $lang = $scriptExecutor->language;
         } else {
             $scriptExecutor = ScriptExecutor::initialExecutor($langArg);
             if (!$scriptExecutor) {
                 throw new \Exception("Executor not found: " . $langArg);
             }
         }
+        $lang = $scriptExecutor->language;
 
         $this->info("Building for language: $lang");
-
         $this->info("Generating SDK json document");
         $this->artisan('l5-swagger:generate');
 
-        $this->packagePath = $packagePath = $scriptExecutor->packagePath();
+        $this->packagePath = $packagePath =
+            ScriptExecutor::packagePath($lang);
+
         $sdkDir = $packagePath . "/sdk";
 
         if (!is_dir($sdkDir)) {

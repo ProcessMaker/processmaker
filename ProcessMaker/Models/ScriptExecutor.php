@@ -13,8 +13,6 @@ class ScriptExecutor extends Model
         'title', 'description', 'language', 'config'
     ];
 
-    protected $appends = ['initDockerfile'];
-
     public static function install($params)
     {
         $language = $params['language'];
@@ -43,16 +41,31 @@ class ScriptExecutor extends Model
         return $this->hasMany(ScriptExecutorVersion::class);
     }
 
-    public function getInitDockerfileAttribute()
+    public static function initDockerfile($language)
     {
-        $dockerfile = file_get_contents($this->packagePath() . '/Dockerfile');
-        $initDockerfile = config('script-runners.' . $this->language . '.init_dockerfile');
+        // remove try/catch block after lang packages updated
+        try {
+            $dockerfile = file_get_contents(self::packagePath($language) . '/Dockerfile');
+        } catch (\ErrorException $e) {
+            $dockerfile = '';
+        }
+        $initDockerfile = config('script-runners.' . $language . '.init_dockerfile');
+        
+        // remove check after lang packages updated
+        if (!is_array($initDockerfile)) {
+            $initDockerfile = explode("\n", $initDockerfile);
+        }
         $dockerfile .= "\n" . implode("\n", $initDockerfile);
+
         return $dockerfile;
     }
 
-    public function packagePath()
+    public static function packagePath($language)
     {
-        return config('script-runners.' . $this->language . '.package_path');
+        $config = config('script-runners');
+        if (isset($config[$language])) {
+            throw new \ErrorException("Language not in config: " . $language);
+        }
+        return config('script-runners.' . $language . '.package_path');
     }
 }

@@ -18,10 +18,21 @@ class ScriptExecutorController extends Controller
         return new ApiCollection(ScriptExecutor::all());
     }
 
+    public function store(Request $request)
+    {
+        $this->checkAuth($request);
+        ScriptExecutor::create(
+            $request->only((new ScriptExecutor)->getFillable())
+        );
+        return ['status'=>'done'];
+    }
+
     public function update(Request $request, ScriptExecutor $scriptExecutor)
     {
         $this->checkAuth($request);
-        $scriptExecutor->update($request->all());
+        $scriptExecutor->update(
+            $request->only($scriptExecutor->getFillable())
+        );
         
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
@@ -41,5 +52,18 @@ class ScriptExecutorController extends Controller
         $pid = file_get_contents($pidFile);
         exec("kill -9 $pid");
         return ['status' => 'canceled', 'pid' => $pid];
+    }
+
+    public function availableLanguages()
+    {
+        $languages = [];
+        foreach (config('script-runners') as $key => $config) {
+            $languages[] = [
+                'value' => $key,
+                'text' => $config['name'],
+                'initDockerfile' => ScriptExecutor::initDockerfile($key)
+            ];
+        }
+        return ['languages' => $languages];
     }
 }

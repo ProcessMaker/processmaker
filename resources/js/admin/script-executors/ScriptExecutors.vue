@@ -1,15 +1,25 @@
 <template>
     <div class="container">
+        <div class="d-flex mb-2">
+            <div class="mr-auto">
+                <i v-if="loading" class="fas fa-spinner fa-spin"></i>
+            </div>
+            <div>
+                <b-button type="button" @click="add()">
+                    <i class="fa fa-plus"/> {{ $t("Script Executor") }}
+                </b-button>
+            </div>
+        </div>
         <b-table
-            :fields="languagesFields"
-            :items="languagesTable"
+            :fields="scriptRunnerFields"
+            :items="scriptRunners"
         >
             <template v-slot:cell(edit)="data">
                 <b-btn
                     variant="link"
                     @click="edit(data.item.id)"
                     v-b-tooltip.hover
-                    :title="$t('Edit')"
+                    :title="formData.id ? $t('Edit') : $t('Add')"
                 >
                     <i class="fas fa-pen-square fa-lg fa-fw"></i>
                 </b-btn>
@@ -18,6 +28,18 @@
 
         <b-modal ref="edit" id="edit" :title="$t('Edit') + ' ' + formData.title + ' Dockerfile'" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
 
+            <b-container class="mb-2">
+                <b-row>
+                    <b-col>
+                        <b-row class="mb-1"><b-input v-model="formData.title" :placeholder="$t('Name')"></b-input></b-row>
+                        <b-row><b-form-select v-model="formData.language" :options="languagesSelect"></b-form-select></b-row>
+                    </b-col>
+                    <b-col class="d-flex flex-column">
+                        <b-textarea v-model="formData.description" class="flex-grow-1"></b-textarea>
+                    </b-col>
+                </b-row>
+            </b-container>
+
             <div class="d-flex flex-row mb-1">
                 <div class="mr-1">
                     <a @click="showDockerfile = !showDockerfile">
@@ -25,9 +47,9 @@
                     </a>
                 </div>
                 <div class="flex-fill">
-                    <pre class="mt-1 mb-0" @click="showDockerfile = !showDockerfile">{{ formData.initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
+                    <pre class="mt-1 mb-0" @click="showDockerfile = !showDockerfile">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
                     <b-collapse id="dockerfile" v-model="showDockerfile">
-                        <pre>{{ formData.initDockerfile.split("\n").slice(1).join("\n") }}</pre>
+                        <pre>{{ initDockerfile.split("\n").slice(1).join("\n") }}</pre>
                     </b-collapse>
                 </div>
             </div>
@@ -80,13 +102,24 @@ export default {
         return {
             commandOutput: "",
             languages: [],
-            formData: { initDockerfile: '' },
+            scriptRunners: [],
+            formData: null,
+            emptyFormData: {
+                name: '',
+                description: '',
+                config: '',
+                language: null,
+            },
             status: 'idle',
             pidFile: null,
             exitCode: 0,
-            languagesFields: ['id', 'language', 'title', 'updated_at', 'edit'],
+            scriptRunnerFields: ['id', 'language', 'title', 'updated_at', 'edit'],
             showDockerfile: false,
+            loading: true,
         };
+    },
+    created() {
+        this.reset();
     },
     computed: {
         isRunning() {
@@ -101,15 +134,22 @@ export default {
         showSave() {
             return !this.isRunning;
         },
-        languagesTable() {
-            return this.languages;
-            return Object.keys(this.languages).map(key => {
-                const mtime = this.languages[key].mtime;
-                return {
-                    language: key,
-                    modified: mtime ? moment.unix(mtime).format() : '',
-                }
-            })
+        languagesSelect() {
+            return [
+                { value: null, text: this.$t("Select a language") },
+                ...this.languages
+            ];
+        },
+        initDockerfile() {
+            let content = '';
+            if (this.formData.language) {
+                content = _.get(
+                    this.languages.find(l => l.value === this.formData.language),
+                    'initDockerfile',
+                    '',
+                );
+            }
+            return content;
         }
     },
     methods: {
@@ -146,19 +186,32 @@ export default {
         },
         save() {
             this.resetProcessInfo();
-
             this.status = 'saving';
-            const path = '/script-executors/' + this.formData.id;
-            ProcessMaker.apiClient.put(path, this.formData).then(result => {
-                this.status = _.get(result, 'data.status', 'error');
-            });
+            if (this.formData.id) {
+                const path = '/script-executors/' + this.formData.id;
+                ProcessMaker.apiClient.put(path, this.formData).then(result => {
+                    this.status = _.get(result, 'data.status', 'error');
+                }).catch(e => { this.status = 'error' });
+            } else {
+                const path = '/script-executors';
+                ProcessMaker.apiClient.post(path, this.formData).then(result => {
+                    this.status = _.get(result, 'data.status', 'error');
+                    if (this.status === 'done') {
+                        this.load();
+                        this.$refs.edit.hide();
+                    }
+                }).catch(e => { this.status = 'error' });
+            }
+        },
+        add() {
+            this.$refs.edit.show();
         },
         edit(id) {
-            this.formData = _.cloneDeep(this.languages.find(i => i.id === id));
+            this.formData = _.cloneDeep(this.scriptRunners.find(i => i.id === id));
             this.$refs.edit.show();
         },
         reset() {
-            this.formData = { initDockerfile: '' };
+            this.formData = _.cloneDeep(this.emptyFormData);
             this.showDockerfile = false;
             this.resetProcessInfo();
         },
@@ -166,6 +219,19 @@ export default {
             this.commandOutput = '';
             this.exitCode = 0;
             this.pidFile = null;
+        },
+        load() {
+            this.loading = true;
+            ProcessMaker.apiClient.get('/script-executors').then(result => {
+                this.scriptRunners = result.data.data;
+                this.loading = false;
+            });
+        },
+        loadLanguages() {
+            ProcessMaker.apiClient.get('/script-executors/available-languages').then(result => {
+                console.log("AL", result);
+                this.languages = result.data.languages;
+            });
         }
     },
     watch: {
@@ -174,9 +240,9 @@ export default {
         }
     },
     mounted() {
-        ProcessMaker.apiClient.get('/script-executors').then(result => {
-            this.languages = result.data.data;
-        });
+
+        this.load();
+        this.loadLanguages();
 
         const userId = _.get(document.querySelector('meta[name="user-id"]'), 'content');
         if (userId) {
