@@ -5,10 +5,12 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Jobs\BuildScriptExecutor;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\Script;
 
 class ScriptExecutorController extends Controller
 {
@@ -21,6 +23,8 @@ class ScriptExecutorController extends Controller
     public function store(Request $request)
     {
         $this->checkAuth($request);
+        $request->validate(ScriptExecutor::rules());
+
         ScriptExecutor::create(
             $request->only((new ScriptExecutor)->getFillable())
         );
@@ -30,6 +34,8 @@ class ScriptExecutorController extends Controller
     public function update(Request $request, ScriptExecutor $scriptExecutor)
     {
         $this->checkAuth($request);
+        $request->validate(ScriptExecutor::rules());
+
         $scriptExecutor->update(
             $request->only($scriptExecutor->getFillable())
         );
@@ -37,6 +43,11 @@ class ScriptExecutorController extends Controller
         BuildScriptExecutor::dispatch($scriptExecutor->id, $request->user()->id);
 
         return ['status'=>'started'];
+    }
+
+    public function delete(Request $request, ScriptExecutor $scriptExecutor)
+    {
+        throw ValidationException::withMessages(['delete' => 'Not Implemented']);
     }
 
     private function checkAuth($request)
@@ -57,7 +68,7 @@ class ScriptExecutorController extends Controller
     public function availableLanguages()
     {
         $languages = [];
-        foreach (config('script-runners') as $key => $config) {
+        foreach (Script::scriptFormats() as $key => $config) {
             $languages[] = [
                 'value' => $key,
                 'text' => $config['name'],

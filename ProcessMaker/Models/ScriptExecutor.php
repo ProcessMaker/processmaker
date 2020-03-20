@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\HasVersioning;
+use Illuminate\Validation\Rule;
 
 class ScriptExecutor extends Model
 {
@@ -63,9 +64,20 @@ class ScriptExecutor extends Model
     public static function packagePath($language)
     {
         $config = config('script-runners');
-        if (isset($config[$language])) {
+        if (!isset($config[$language])) {
             throw new \ErrorException("Language not in config: " . $language);
         }
         return config('script-runners.' . $language . '.package_path');
+    }
+    
+    public static function rules($existing = null)
+    {
+        return [
+            'title' => 'required',
+            'language' => [
+                'required',
+                Rule::in(Script::scriptFormatValues())
+            ],
+        ];
     }
 }

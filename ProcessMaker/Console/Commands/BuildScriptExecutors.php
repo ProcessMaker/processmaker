@@ -114,7 +114,7 @@ class BuildScriptExecutors extends Command
         $this->artisan("processmaker:sdk $lang $sdkDir --clean");
         $this->info("SDK is at ${sdkDir}");
 
-        $dockerfile = $scriptExecutor->initDockerfile . "\n" . $scriptExecutor->config;
+        $dockerfile = ScriptExecutor::initDockerfile($lang) . "\n" . $scriptExecutor->config;
 
         $this->info("Dockerfile:\n  " . implode("\n  ", explode("\n", $dockerfile)));
         file_put_contents($packagePath . '/Dockerfile.custom', $dockerfile);

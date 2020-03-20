@@ -19,9 +19,20 @@
                     variant="link"
                     @click="edit(data.item.id)"
                     v-b-tooltip.hover
-                    :title="formData.id ? $t('Edit') : $t('Add')"
+                    :title="$t('Edit')"
                 >
                     <i class="fas fa-pen-square fa-lg fa-fw"></i>
+                </b-btn>
+            </template>
+            
+            <template v-slot:cell(delete)="data">
+                <b-btn
+                    variant="link"
+                    @click="deleteExecutor(data.item.id)"
+                    v-b-tooltip.hover
+                    :title="$t('Delete')"
+                >
+                    <i class="fas fa-trash-alt fa-lg fa-fw"></i>
                 </b-btn>
             </template>
         </b-table>
@@ -29,16 +40,34 @@
         <b-modal ref="edit" id="edit" :title="$t('Edit') + ' ' + formData.title + ' Dockerfile'" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
 
             <b-container class="mb-2">
+                excode: {{ exitCode }}
+                status: {{ status }}
                 <b-row>
                     <b-col>
-                        <b-row class="mb-1"><b-input v-model="formData.title" :placeholder="$t('Name')"></b-input></b-row>
-                        <b-row><b-form-select v-model="formData.language" :options="languagesSelect"></b-form-select></b-row>
+                        <b-row class="mb-1">
+                            <b-input
+                                :class="{'is-invalid':getError('title')}"
+                                v-model="formData.title"
+                                :placeholder="$t('Name')">
+                            </b-input>
+                            <div v-if="getError('title')" class="invalid-feedback">{{ getError('title') }}</div>
+                        </b-row>
+                        <b-row>
+                            <b-form-select
+                                :class="{'is-invalid':getError('language')}"
+                                v-model="formData.language"
+                                :options="languagesSelect">
+                            </b-form-select>
+                            <div v-if="getError('language')" class="invalid-feedback">{{ getError('language') }}</div>
+                        </b-row>
                     </b-col>
                     <b-col class="d-flex flex-column">
-                        <b-textarea v-model="formData.description" class="flex-grow-1"></b-textarea>
+                        <b-textarea v-model="formData.description" :placeholder="$t('Description')" class="flex-grow-1"></b-textarea>
                     </b-col>
                 </b-row>
             </b-container>
+                
+            <p class="mb-0">Dockerfile</i></p>
 
             <div class="d-flex flex-row mb-1">
                 <div class="mr-1">
@@ -61,21 +90,22 @@
             >
             </b-form-textarea>
 
-            <p>{{ $t("Build Command Output") }}: <i v-if="isRunning" class="fas fa-spinner fa-spin"></i></p>
-
-            <pre
-                ref="pre"
-                class="border command-output pre-scrollable"
-                :class="{ error: exitCode !== 0 }"
-            >{{ commandOutput }}</pre>
+            <div v-if="commandOutput !== '' || isRunning">
+                <p>{{ $t("Build Command Output") }} <i v-if="isRunning" class="fas fa-spinner fa-spin"></i></p>
+                <pre
+                    ref="pre"
+                    class="border command-output pre-scrollable"
+                    :class="{ 'error': exitCode !== 0 }"
+                >{{ commandOutput }}</pre>
+            </div>
 
             <div v-if="status === 'done'">
                 <p v-if="exitCode === 0">
                     {{ $t('Executor Successfully Built. You can now close this window. ')}}
                 </p>
-                <p v-else>
+                <div v-if="exitCode > 0" class="invalid-feedback d-block">
                     {{ $t('Error Building Executor. See Output Above.')}}
-                </p>
+                </div>
             </div>
 
             <template v-slot:modal-footer>
@@ -110,10 +140,11 @@ export default {
                 config: '',
                 language: null,
             },
+            errors: {},
             status: 'idle',
             pidFile: null,
             exitCode: 0,
-            scriptRunnerFields: ['id', 'language', 'title', 'updated_at', 'edit'],
+            scriptRunnerFields: ['id', 'language', 'title', 'updated_at', 'edit', 'delete'],
             showDockerfile: false,
             loading: true,
         };
@@ -153,6 +184,41 @@ export default {
         }
     },
     methods: {
+        // canDelete(id) {
+        //     return true;
+        // },
+        deleteExecutor(id) {
+            ProcessMaker.confirmModal(
+                this.$t("Caution!"),
+                this.$t(
+                    "Are you sure you want to delete {{item}}?",
+                    {
+                        item: this.scriptRunners.find(sr => sr.id === id).title
+                    }
+                ),
+                '',
+                () => {
+                    const path = '/script-executors/' + id;
+                    ProcessMaker.apiClient.delete(path).then(result => {
+                        this.status = _.get(result, 'data.status', 'error');
+                        if (this.status === 'done') {
+                            this.load();
+                            this.$refs.edit.hide();
+                        }
+                    }).catch(e => {
+                        ProcessMaker.alert(e.response.data.errors.delete[0], "danger");
+                    });
+                }
+            );
+            
+        },
+        getError(name) {
+            return _.get(this.errors, name + '.0', false);
+        },
+        setErrors(errors) {
+            this.status = 'error';
+            this.errors = errors.response.data.errors;
+        },
         doNotHideIfRunning(e) {
             if (this.isRunning) {
                 e.preventDefault();
@@ -191,7 +257,7 @@ export default {
                 const path = '/script-executors/' + this.formData.id;
                 ProcessMaker.apiClient.put(path, this.formData).then(result => {
                     this.status = _.get(result, 'data.status', 'error');
-                }).catch(e => { this.status = 'error' });
+                }).catch(e => { this.setErrors(e); });
             } else {
                 const path = '/script-executors';
                 ProcessMaker.apiClient.post(path, this.formData).then(result => {
@@ -200,7 +266,7 @@ export default {
                         this.load();
                         this.$refs.edit.hide();
                     }
-                }).catch(e => { this.status = 'error' });
+                }).catch(e => { this.setErrors(e); });
             }
         },
         add() {
@@ -212,6 +278,7 @@ export default {
         },
         reset() {
             this.formData = _.cloneDeep(this.emptyFormData);
+            this.errors = {};
             this.showDockerfile = false;
             this.resetProcessInfo();
         },
