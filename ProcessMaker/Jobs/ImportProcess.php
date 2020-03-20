@@ -635,8 +635,12 @@ class ImportProcess implements ShouldQueue
     private function saveBpmn($process)
     {
         $this->new['process']->bpmn = $this->definitions->saveXML();
-        $this->new['process']->cancel_screen_id = $process->cancel_screen_id;
-        $this->new['process']->request_detail_screen_id = $process->request_detail_screen_id;
+        if (isset($process->cancel_screen_id)) {
+            $this->new['process']->cancel_screen_id = $process->cancel_screen_id;
+        }
+        if (isset($process->request_detail_screen_id)) {
+            $this->new['process']->request_detail_screen_id = $process->request_detail_screen_id;
+        }
         $this->new['process']->save();
 
         $manager = app(ExportManager::class);
@@ -648,7 +652,7 @@ class ImportProcess implements ShouldQueue
      *
      * @return object
      */
-    private function parseFileV1()
+    public function parseFileV1()
     {
         if (!$this->validatePackages($this->file->process)) {
             return (object)[
@@ -782,7 +786,7 @@ class ImportProcess implements ShouldQueue
      */
     protected function watcherScriptsToSave($screen)
     {
-        if (!$screen->watchers) {
+        if (empty($screen->watchers)) {
             return null;
         }
 
