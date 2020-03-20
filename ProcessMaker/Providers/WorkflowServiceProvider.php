@@ -5,6 +5,7 @@ namespace ProcessMaker\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
+use ProcessMaker\Assets\ScriptsInProcess;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Listeners\BpmnSubscriber;
@@ -159,11 +160,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $instance = new ExportManager;
             $instance->addDependencieManager(ScreensInProcess::class);
             $instance->addDependencieManager(ScreensInScreen::class);
-            $instance->addDependencie([
-                'type' => Script::class,
-                'owner' => Process::class,
-                'exportReferences' => [$instance, 'scriptsUsedInProcess'],
-            ]);
+            $instance->addDependencieManager(ScriptsInProcess::class);
             $instance->addDependencie([
                 'type' => Script::class,
                 'owner' => Screen::class,

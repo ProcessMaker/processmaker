@@ -284,7 +284,7 @@ class ImportProcess implements ShouldQueue
      */
     private function parseAssignableScripts()
     {
-        foreach ($this->new['scripts'] as $script) {
+        foreach ($this->new[Script::class] as $script) {
             $this->assignable->push((object)[
                 'type' => 'script',
                 'id' => $script->id,
@@ -440,7 +440,7 @@ class ImportProcess implements ShouldQueue
     private function saveScripts($scripts)
     {
         try {
-            $this->new['scripts'] = [];
+            $this->new[Script::class] = [];
             $this->prepareStatus('scripts', count($scripts) > 0);
             foreach ($scripts as $script) {
                 $new = new Script;
@@ -459,9 +459,7 @@ class ImportProcess implements ShouldQueue
                     }
                 }
 
-                //$this->updateScriptRefs($script->id, $new->id);
-
-                $this->new['scripts'][] = $new;
+                $this->new[Script::class][$script->id] = $new;
             }
             $this->finishStatus('scripts');
         } catch (\Exception $e) {

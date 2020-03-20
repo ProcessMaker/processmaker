@@ -7,7 +7,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
-class ScreensInProcess extends ProcessAssets
+class ScreensInProcess
 {
 
     public $type = Screen::class;

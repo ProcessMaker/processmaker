@@ -50,7 +50,6 @@ class ScreensInScreen
                     $oldRef = Screen::class . ':' . $item['config']['screen'];
                     $newRef = $references[Screen::class][$oldRef]->getKey();
                     $item['config']['screen'] = $newRef;
-                    \Log::info("update screen: $oldRef -> $newRef");
                 }
             });
         }
