@@ -34,7 +34,7 @@ class ScriptExecutor extends Model
     {
         return self::where('language', $language)
             ->orderBy('created_at', 'desc')
-            ->first();
+            ->firstOrFail();
     }
 
     public function versions()
@@ -79,5 +79,19 @@ class ScriptExecutor extends Model
                 Rule::in(Script::scriptFormatValues())
             ],
         ];
+    }
+
+    public static function list()
+    {
+        $list = [];
+        $executors =
+            self::orderBy('language', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        foreach ($executors as $executor) {
+            $list[$executor->id] = $executor->language . " - " . $executor->title;
+        }
+        return $list;
     }
 }
