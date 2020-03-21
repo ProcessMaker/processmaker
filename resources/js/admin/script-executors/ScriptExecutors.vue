@@ -40,8 +40,6 @@
         <b-modal ref="edit" id="edit" :title="$t('Edit') + ' ' + formData.title + ' Dockerfile'" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
 
             <b-container class="mb-2">
-                excode: {{ exitCode }}
-                status: {{ status }}
                 <b-row>
                     <b-col>
                         <b-row class="mb-1">
@@ -280,6 +278,7 @@ export default {
             this.formData = _.cloneDeep(this.emptyFormData);
             this.errors = {};
             this.showDockerfile = false;
+            this.status = 'idle',
             this.resetProcessInfo();
         },
         resetProcessInfo() {
