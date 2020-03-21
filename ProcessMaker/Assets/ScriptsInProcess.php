@@ -28,7 +28,7 @@ class ScriptsInProcess
         // Used in scriptRef
         $nodes = $xpath->query("//*[@pm:scriptRef!='']");
         foreach ($nodes as $node) {
-            $scripts[] = Script::class . ':' . $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef');
+            $scripts[] = [Script::class, $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'scriptRef')];
         }
         return $scripts;
     }

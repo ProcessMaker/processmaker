@@ -27,7 +27,7 @@ class ScreensInScreen
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$screens) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
-                    $screens[] = Screen::class . ':' . $item['config']['screen'];
+                    $screens[] = [Screen::class, $item['config']['screen']];
                 }
             });
         }

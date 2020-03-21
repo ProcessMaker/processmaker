@@ -641,10 +641,10 @@ class ImportProcess implements ShouldQueue
         if (isset($process->request_detail_screen_id)) {
             $this->new['process']->request_detail_screen_id = $process->request_detail_screen_id;
         }
-        $this->new['process']->save();
 
         $manager = app(ExportManager::class);
         $manager->updateReferences($this->new);
+        $this->new['process']->save();
     }
 
     /**
@@ -652,7 +652,7 @@ class ImportProcess implements ShouldQueue
      *
      * @return object
      */
-    public function parseFileV1()
+    private function parseFileV1()
     {
         if (!$this->validatePackages($this->file->process)) {
             return (object)[

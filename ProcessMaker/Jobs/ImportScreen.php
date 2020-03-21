@@ -36,6 +36,17 @@ class ImportScreen extends ImportProcess
     }
 
     /**
+     * Parse files with version 1
+     *
+     * @return array
+     */
+    private function parseFileV1()
+    {
+        $this->saveScreens($this->file->screens);
+        return $this->status;
+    }
+
+    /**
      * Execute the job.
      *
      * @return boolean

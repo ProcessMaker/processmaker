@@ -53,7 +53,7 @@ class ExportManager
         $references = $this->reviewDependenciesOf($owner, $references);
         $ids = [];
         foreach ($references as $ref) {
-            list($class, $id) = explode(':', $ref);
+            list($class, $id) = $ref;
             $class === $modelClass ? $ids[] = $id : null;
         }
         return array_unique($ids);
@@ -81,11 +81,11 @@ class ExportManager
                 $newReferences = call_user_func($dependencie['referencesToExport'], $owner, $newReferences);
             }
         }
-        $newReferences = array_unique(array_diff($newReferences, $references));
+        $newReferences = $this->unique(array_diff($newReferences, $references));
         $references = array_merge($references, $newReferences);
         // Find recurcively dependencies
         foreach ($newReferences as $ref) {
-            list($class, $id) = explode(':', $ref);
+            list($class, $id) = $ref;
             $nextOwner = $class::find($id);
             if ($nextOwner) {
                 $references = $this->reviewDependenciesOf($nextOwner, $references, $reviewed);
@@ -176,5 +176,23 @@ class ExportManager
             'updateReferences' => [$instance, 'updateReferences'],
         ]);
         return $this;
+    }
+
+    /**
+     * Remove duplicated items
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    private function unique(array $array)
+    {
+        $result = [];
+        foreach ($array as $item) {
+            if (!in_array($item, $result)) {
+                $result[] = $item;
+            }
+        }
+        return $result;
     }
 }
