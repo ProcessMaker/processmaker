@@ -2,13 +2,8 @@
 
 namespace ProcessMaker\Managers;
 
-use DOMXPath;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Nayra\Storage\BpmnDocument;
-use ProcessMaker\Providers\WorkflowServiceProvider;
 use Illuminate\Database\Eloquent\Model;
-use ProcessMaker\Models\Script;
 
 class ExportManager
 {
@@ -81,8 +76,7 @@ class ExportManager
                 $newReferences = call_user_func($dependencie['referencesToExport'], $owner, $newReferences);
             }
         }
-        dump(array_diff($newReferences, $references));
-        $newReferences = $this->unique(array_diff($newReferences, $references));
+        $newReferences = $this->uniqueDiff($newReferences, $references);
         $references = array_merge($references, $newReferences);
         // Find recurcively dependencies
         foreach ($newReferences as $ref) {
@@ -186,11 +180,11 @@ class ExportManager
      *
      * @return array
      */
-    private function unique(array $array)
+    private function uniqueDiff(array $array, array $references)
     {
         $result = [];
         foreach ($array as $item) {
-            if (!in_array($item, $result)) {
+            if (!in_array($item, $references) && !in_array($item, $result)) {
                 $result[] = $item;
             }
         }
