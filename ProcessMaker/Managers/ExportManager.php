@@ -81,6 +81,7 @@ class ExportManager
                 $newReferences = call_user_func($dependencie['referencesToExport'], $owner, $newReferences);
             }
         }
+        dump($newReferences, $references);
         $newReferences = $this->unique(array_diff($newReferences, $references));
         $references = array_merge($references, $newReferences);
         // Find recurcively dependencies
