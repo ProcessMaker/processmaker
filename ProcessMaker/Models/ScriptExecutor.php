@@ -33,7 +33,7 @@ class ScriptExecutor extends Model
     public static function initialExecutor($language)
     {
         return self::where('language', $language)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->firstOrFail();
     }
 
@@ -81,15 +81,18 @@ class ScriptExecutor extends Model
         ];
     }
 
-    public static function list()
+    public static function list($language = null)
     {
         $list = [];
         $executors =
             self::orderBy('language', 'asc')
-            ->orderBy('created_at', 'asc')
-            ->get();
+            ->orderBy('created_at', 'asc');
 
-        foreach ($executors as $executor) {
+        if ($language) {
+            $executors->where('language', $language);
+        }
+
+        foreach ($executors->get() as $executor) {
             $list[$executor->id] = $executor->language . " - " . $executor->title;
         }
         return $list;

@@ -72,6 +72,21 @@ class Script extends Model
     protected $casts = [
         'timeout' => 'integer',
     ];
+    
+    /**
+     * Override the default boot method to allow access to lifecycle hooks 
+     *
+     * @return null
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::saving(function($script) {
+            // If a script executor has not been set, choose one
+            // automatically based on the scripts set language
+            $script->setDefaultExecutor();
+        });
+    }
 
     /**
      * Validation rules
@@ -88,9 +103,10 @@ class Script extends Model
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique, 'alpha_spaces'],
             'language' => [
+                'required_without:script_executor_id',
                 Rule::in(static::scriptFormatValues())
             ],
-            'script_executor_id' => 'required|exists:script_executors,id',
+            'script_executor_id' => 'required_without:language|exists:script_executors,id',
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
@@ -273,27 +289,13 @@ class Script extends Model
         return $this->belongsTo(ScriptExecutor::class, 'script_executor_id');
     }
 
-    public static function boot()
-    {
-        parent::boot();
-        self::saving(function($script) {
-            $script->setDefaultExecutor();
-        });
-    }
-
-    public function getValidatorInstance()
-    {
-        $this->setDefaultExecutor();
-        parent::getValidatorInstance();
-    }
-    
     /**
      * Save the default executor when only a language is specified
      */
-    private function setDefaultValidator()
+    private function setDefaultExecutor()
     {
         if (empty($this->script_executor_id)) {
-            $this->script_executor_id = ScriptExecutor::initialExecutor($this->language);
+            $this->script_executor_id = ScriptExecutor::initialExecutor($this->language)->id;
         }
     }
 }

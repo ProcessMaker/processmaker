@@ -36,6 +36,15 @@
                         </select-user>
                         <div class="invalid-feedback" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
                     </div>
+
+                    <div class="form-group">
+                        {!!Form::label('script_executor_id', __('Script Executor'))!!}<small class="ml-1">*</small>
+                        {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutors, null, ['class'=>
+                        'form-control', 'v-model'=> 'formData.script_executor_id', 'v-bind:class' => '{\'form-control\':true,
+                        \'is-invalid\':errors.script_executor_id}']);!!}
+                        <div class="invalid-feedback" v-if="errors.script_executor_id">@{{errors.script_executor_id[0]}}</div>
+                    </div>
+
                     <div class="form-group">
                         {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
@@ -104,6 +113,7 @@
               description: this.formData.description,
               run_as_user_id: this.selectedUser === null ? null : this.selectedUser.id,
               timeout: this.formData.timeout,
+              script_executor_id: this.formData.script_executor_id,
             })
               .then(response => {
                 ProcessMaker.alert(this.$t('The script was saved.'), 'success');

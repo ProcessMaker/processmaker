@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
@@ -39,7 +40,7 @@ class ScriptController extends Controller
         ];
 
         $listConfig = (object) [
-            'scriptFormats' => Script::scriptFormatList(),
+            'scriptExecutors' => ScriptExecutor::list(),
             'countCategories' => ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count()
         ];
 
@@ -49,9 +50,9 @@ class ScriptController extends Controller
     public function edit(Script $script, User $users)
     {
         $selectedUser = $script->runAsUser;
-        $scriptFormats = Script::scriptFormatList();
+        $scriptExecutors = ScriptExecutor::list($script->language);
 
-        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptFormats'));
+        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptExecutors'));
     }
 
     public function builder(Request $request, Script $script)
