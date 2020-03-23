@@ -15,6 +15,8 @@ class ScriptExecutor extends Model
         'title', 'description', 'language', 'config'
     ];
 
+    protected $appends = ['scripts_count'];
+
     public static function install($params)
     {
         $language = $params['language'];
@@ -101,5 +103,23 @@ class ScriptExecutor extends Model
             $list[$executor->id] = $executor->language . " - " . $executor->title;
         }
         return $list;
+    }
+
+    public function dockerImageName()
+    {
+        $lang = $this->language;
+        $id = $this->id;
+        $tag = 'latest'; // might change with script executor versions
+        return "processmaker4/executor-${lang}-${id}:${tag}";
+    }
+
+    public function scripts()
+    {
+        return $this->hasMany(Script::class);
+    }
+
+    public function getScriptsCountAttribute()
+    {
+        return $this->scripts()->count();
     }
 }

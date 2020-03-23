@@ -89,8 +89,10 @@ abstract class Base
             ]
         ]);
 
-        // If the image name contains {id}, replace it with the script executor id
-        $dockerConfig['image'] = str_replace('{id}', $this->scriptExecutor->id, $dockerConfig['image']);
+        // If the image is not specified, use the one set by the executor
+        if (!isset($dockerConfig['image'])) {
+            $dockerConfig['image'] = $this->scriptExecutor->dockerImageName();
+        }
 
         // Execute docker
         $executeMethod = config('app.processmaker_scripts_docker_mode') === 'binding'

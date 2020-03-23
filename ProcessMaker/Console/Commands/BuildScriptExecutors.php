@@ -121,9 +121,8 @@ class BuildScriptExecutors extends Command
 
         $this->info("Building the docker executor");
 
-        $tag = 'latest'; // might change with script executor versions
-        $id = $scriptExecutor->id;
-        $command = "docker build --build-arg SDK_DIR=/sdk -t processmaker4/executor-${lang}-${id}:${tag} -f ${packagePath}/Dockerfile.custom ${packagePath}";
+        $image = $scriptExecutor->dockerImageName();
+        $command = "docker build --build-arg SDK_DIR=/sdk -t ${image} -f ${packagePath}/Dockerfile.custom ${packagePath}";
 
         if ($this->userId) {
             $this->runProc(

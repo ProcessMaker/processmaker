@@ -260,9 +260,9 @@ export default {
                 const path = '/script-executors';
                 ProcessMaker.apiClient.post(path, this.formData).then(result => {
                     this.status = _.get(result, 'data.status', 'error');
-                    if (this.status === 'done') {
-                        this.load();
-                        this.$refs.edit.hide();
+                    if (this.status === 'started') {
+                        this.formData.id = result.data.id;
+                        this.load(); // refresh the table (beneath the modal)
                     }
                 }).catch(e => { this.setErrors(e); });
             }
