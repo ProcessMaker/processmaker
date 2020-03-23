@@ -37,7 +37,7 @@
             </template>
         </b-table>
 
-        <b-modal ref="edit" id="edit" :title="$t('Edit') + ' ' + formData.title + ' Dockerfile'" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
+        <b-modal ref="edit" id="edit" :title="modalTitle" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
 
             <b-container class="mb-2">
                 <b-row>
@@ -151,6 +151,12 @@ export default {
         this.reset();
     },
     computed: {
+        modalTitle() {
+            if (this.formData.id) {
+                return this.$t('Edit') + ' ' + this.formData.title;
+            }
+            return this.$t("Add New Script Executor");
+        },
         isRunning() {
             return ['started', 'saving', 'running'].includes(this.status);
         },
