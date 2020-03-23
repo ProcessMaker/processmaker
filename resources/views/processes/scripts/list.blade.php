@@ -24,7 +24,7 @@
 
         <div class="container-fluid">
             <script-listing :filter="filter"
-                            :script-formats='@json($config->scriptExecutors)'
+                            :script-executors='@json($config->scriptExecutors)'
                             :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}"
                             ref="listScript"
                             @delete="deleteScript">

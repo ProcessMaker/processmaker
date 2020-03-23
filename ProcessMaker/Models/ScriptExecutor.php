@@ -107,7 +107,7 @@ class ScriptExecutor extends Model
 
     public function dockerImageName()
     {
-        $lang = $this->language;
+        $lang = strtolower($this->language);
         $id = $this->id;
         $tag = 'latest'; // might change with script executor versions
         return "processmaker4/executor-${lang}-${id}:${tag}";

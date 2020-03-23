@@ -297,5 +297,8 @@ class Script extends Model
         if (empty($this->script_executor_id)) {
             $this->script_executor_id = ScriptExecutor::initialExecutor($this->language)->id;
         }
+        if (empty($this->language)) {
+            $this->language = $this->scriptExecutor->language;
+        }
     }
 }
