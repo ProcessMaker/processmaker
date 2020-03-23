@@ -57,14 +57,13 @@ class ScriptController extends Controller
 
     public function builder(Request $request, Script $script)
     {
-        $scriptFormat = $script->language_name;
         $processRequestAttributes = $this->getProcessRequestAttributes();
         $processRequestAttributes['user_id'] = $request->user()->id;
         
         $testData = [
             '_request' => $processRequestAttributes
         ];
-        return view('processes.scripts.builder', compact('script', 'scriptFormat', 'testData'));
+        return view('processes.scripts.builder', compact('script', 'testData'));
     }
 
     private function getProcessRequestAttributes()

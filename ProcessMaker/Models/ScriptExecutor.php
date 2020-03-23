@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\HasVersioning;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ScriptExecutor extends Model
 {
@@ -17,7 +18,11 @@ class ScriptExecutor extends Model
     public static function install($params)
     {
         $language = $params['language'];
-        $initialExecutor = self::initialExecutor($language);
+        try {
+            $initialExecutor = self::initialExecutor($language);
+        } catch(ModelNotFoundException $e) {
+            $initialExecutor = null;
+        }
 
         if ($initialExecutor) {
             $initialExecutor->update($params);

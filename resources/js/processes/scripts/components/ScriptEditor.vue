@@ -14,7 +14,7 @@
             <monaco-editor
               :options="monacoOptions"
               v-model="code"
-              :language="script.language"
+              :language="language"
               class="h-100"
               :class="{hidden: resizing}"
             />
@@ -124,7 +124,7 @@
       <b-card-footer class="d-flex">
         <span class="text-secondary text-sm">
           Language:
-          <span class="text-uppercase">{{ script.language }}</span>
+          <span class="text-uppercase">{{ language }}</span>
         </span>
         <span class="ml-auto">
           <i v-if="preview.executing" class="fas fa-spinner fa-spin"></i>
@@ -142,7 +142,7 @@ import _ from "lodash";
 import customFilters from "../customFilters";
 
 export default {
-  props: ["process", "script", "scriptFormat", "testData"],
+  props: ["process", "script", "scriptExecutor", "testData"],
   data() {
     return {
       executionKey: null,
@@ -176,6 +176,11 @@ export default {
   },
   components: {
     MonacoEditor
+  },
+  computed: {
+    language() {
+      return this.scriptExecutor.language;
+    }
   },
   mounted() {
     window.addEventListener("resize", this.handleResize);
@@ -231,7 +236,6 @@ export default {
       // Attempt to execute a script, using our temp variables
       ProcessMaker.apiClient.post("scripts/" + this.script.id + "/preview", {
         code: this.code,
-        language: this.script.language,
         data: this.preview.data,
         config: this.preview.config,
         timeout: this.script.timeout
@@ -248,7 +252,7 @@ export default {
           code: this.code,
           title: this.script.title,
           description: this.script.description,
-          language: this.script.language,
+          script_executor_id: this.script.script_executor_id,
           run_as_user_id: this.script.run_as_user_id,
           timeout: this.script.timeout,
           description: this.script.description
