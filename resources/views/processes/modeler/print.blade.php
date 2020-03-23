@@ -1,13 +1,42 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-<h1>Yo!</h1>
-</body>
-</html>
+@extends('layouts.layout', ['content_margin'=>''])
+
+@section('title')
+    {{__('Print Process')}}
+@endsection
+
+@section('sidebar')
+    @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
+@endsection
+
+@section('content')
+    <div id="printable-view">
+    </div>
+@endsection
+
+@section('css')
+    <style>
+    </style>
+@endsection
+
+@section('js')
+    <script>
+      window.ProcessMaker.modeler = {
+        processName: @json($process->name),
+        updatedAt: `{{$process->updated_at}}`,
+        author: @json($process->user->username),
+        svg:  @json($process->svg),
+        bpmn: @json($process->bpmn),
+      }
+    </script>
+
+    <script src="{{ mix('js/processes/modeler/print/index.js') }}"></script>
+
+    <script>
+           const diagramContainer = document.getElementById('diagramContainer');
+           const diagram = document.getElementById('v-8');
+           const {width, height} = diagram.getBBox();
+           const paddingMultiplier = 1.20;
+           const viewBox = `0 0 ${width * paddingMultiplier} ${height * paddingMultiplier}`;
+           diagram.setAttribute('viewBox', viewBox);
+    </script>
+@endsection

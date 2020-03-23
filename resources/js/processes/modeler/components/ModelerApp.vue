@@ -102,9 +102,6 @@
         svg
       };
 
-      // eslint-disable-next-line no-console
-      console.log(data);
-
       const savedSuccessfully = (response) => {
         this.process.updated_at = response.data.updated_at;
         // Now show alert
