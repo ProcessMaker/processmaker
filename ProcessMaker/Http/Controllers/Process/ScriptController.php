@@ -9,9 +9,12 @@ use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class ScriptController extends Controller
 {
+    use HasControllerAddons;
+
      /**
      * Get the list of environment variables
      *
@@ -50,8 +53,9 @@ class ScriptController extends Controller
     {
         $selectedUser = $script->runAsUser;
         $scriptFormats = Script::scriptFormatList();
+        $addons = $this->getPluginAddons('edit', compact(['script']));
 
-        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptFormats'));
+        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptFormats', 'addons'));
     }
 
     public function builder(Request $request, Script $script)
