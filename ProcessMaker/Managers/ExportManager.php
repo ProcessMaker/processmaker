@@ -90,48 +90,6 @@ class ExportManager
     }
 
     /**
-     * Get the screens (nested) used in a screen
-     *
-     * @param Screen $screen
-     * @param array $screens
-     *
-     * @return array
-     */
-    public function screensUsedInScreen(Screen $screen, array $screens = [])
-    {
-        $config = $screen->config;
-        if (is_array($config)) {
-            $this->findInArray($config, function ($item) use (&$screens) {
-                if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
-                    $screens[] = Screen::class . ':' . $item['config']['screen'];
-                }
-            });
-        }
-        return $screens;
-    }
-
-    /**
-     * Find recursively in an array
-     *
-     * @param array $array
-     * @param callable $callback
-     *
-     * @return void
-     */
-    private function findInArray(array $array, callable $callback)
-    {
-        //array_walk_recursive();
-        call_user_func($callback, $array);
-        foreach ($array as $item) {
-            if (is_array($item)) {
-                $this->findInArray($item, $callback);
-            } else {
-                call_user_func($callback, $item);
-            }
-        }
-    }
-
-    /**
      * Update references for a given model
      *
      * @param Model $model

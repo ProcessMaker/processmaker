@@ -53,4 +53,24 @@ class ScriptsInScreen
         $screen->watchers = $watches;
         $screen->save();
     }
+
+    /**
+     * Find recursively in an array
+     *
+     * @param array $array
+     * @param callable $callback
+     *
+     * @return void
+     */
+    private function findInArray(array $array, callable $callback)
+    {
+        call_user_func($callback, $array);
+        foreach ($array as $item) {
+            if (is_array($item)) {
+                $this->findInArray($item, $callback);
+            } else {
+                call_user_func($callback, $item);
+            }
+        }
+    }
 }
