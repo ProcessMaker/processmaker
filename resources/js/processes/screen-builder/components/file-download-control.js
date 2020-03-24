@@ -11,7 +11,7 @@ export default {
         label: "File Download",
         component: "FileDownload",
         "editor-component": "FormText",
-        "editor-config": "FormText",
+        "editor-control": "FileDownload",
         config: {
             label: "New File Download",
             icon: "fas fa-file-download"
