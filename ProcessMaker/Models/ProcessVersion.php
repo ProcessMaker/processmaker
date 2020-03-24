@@ -77,4 +77,14 @@ class ProcessVersion extends Model
     {
         return $this->belongsTo(Process::class);
     }
+
+    /**
+     * Get the associated screen
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function parent()
+    {
+        return $this->belongsTo(Process::class, 'process_id', 'id');
+    }
 }
