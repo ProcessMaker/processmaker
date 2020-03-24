@@ -91,9 +91,6 @@ class BuildScriptExecutors extends Command
             $scriptExecutor = ScriptExecutor::findOrFail($langArg);
         } else {
             $scriptExecutor = ScriptExecutor::initialExecutor($langArg);
-            if (!$scriptExecutor) {
-                throw new \Exception("Executor not found: " . $langArg);
-            }
         }
         $lang = $scriptExecutor->language;
 

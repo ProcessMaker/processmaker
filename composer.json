@@ -35,6 +35,7 @@
     "pion/laravel-chunk-upload": "dev-master",
     "predis/predis": "^1.1",
     "processmaker/docker-executor-lua": "@dev",
+    "processmaker/docker-executor-node": "@dev",
     "processmaker/docker-executor-php": "@dev",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "^1.0.1",

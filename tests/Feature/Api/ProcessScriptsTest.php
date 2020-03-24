@@ -6,6 +6,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -75,6 +76,8 @@ class ProcessScriptsTest extends TestCase
                 'This test requires docker'
             );
         }
+        ScriptExecutor::setTestConfig('php');
+
         //Start a process request
         $route = route('api.process_events.trigger', [$this->process->id, 'event' => '_2']);
         $data = [];

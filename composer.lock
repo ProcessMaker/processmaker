@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "32b5601610e54b73419c5b724442f697",
+    "content-hash": "15317a1affa8c0fdb27c2ee60597e778",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -3333,6 +3333,60 @@
                 "redis"
             ],
             "time": "2016-06-16T16:22:20+00:00"
+        },
+        {
+            "name": "processmaker/docker-executor-lua",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "/home/vagrant/packages/ProcessMaker/docker-executor-lua",
+                "reference": "30e9e2cb2c238519dc9eaa29842e5c48d12a61e4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorLua\\DockerExecutorLuaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "description": "Lua script executor for processmaker 4",
+            "transport-options": {
+                "symlink": true
+            }
+        },
+        {
+            "name": "processmaker/docker-executor-node",
+            "version": "1.0.0",
+            "dist": {
+                "type": "path",
+                "url": "/home/vagrant/packages/ProcessMaker/docker-executor-node",
+                "reference": "2c0e8759446d5b0c5ce5521dacb468f378875fc5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorNode\\DockerExecutorNodeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "description": "Javascript script executor for processmaker 4",
+            "transport-options": {
+                "symlink": true
+            }
         },
         {
             "name": "processmaker/docker-executor-php",
@@ -8542,6 +8596,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
+        "processmaker/docker-executor-lua": 20,
+        "processmaker/docker-executor-node": 20,
         "processmaker/docker-executor-php": 20,
         "processmaker/laravel-i18next": 20
     },

@@ -50,7 +50,7 @@ class ScriptExecutorController extends Controller
 
     public function delete(Request $request, ScriptExecutor $scriptExecutor)
     {
-        if ($scriptExecutor->scripts_count > 0) {
+        if ($scriptExecutor->scripts()->count() > 0) {
             throw ValidationException::withMessages(['delete' => __('Can not delete executor when it is assigned to scripts.')]);
         }
 

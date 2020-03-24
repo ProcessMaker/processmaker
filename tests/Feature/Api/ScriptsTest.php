@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -53,12 +54,13 @@ class ScriptsTest extends TestCase
         $faker = Faker::create();
         $user = factory(User::class)->create(['is_administrator' => true]);
         $category = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
+        $executor = factory(ScriptExecutor::class)->create();
 
         //Post saved correctly
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
-            'language' => 'php',
+            'script_executor_id' => $executor->id,
             'code' => '123',
             'description' => 'Description',
             'script_category_id' => $category->getkey(),
@@ -371,6 +373,9 @@ class ScriptsTest extends TestCase
                 'This test requires docker'
             );
         }
+
+        ScriptExecutor::setTestConfig('lua');
+        ScriptExecutor::setTestConfig('php');
 
         $url = route('api.scripts.preview', $this->getScript('lua')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);

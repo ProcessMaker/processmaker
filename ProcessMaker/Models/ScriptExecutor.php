@@ -15,8 +15,6 @@ class ScriptExecutor extends Model
         'title', 'description', 'language', 'config'
     ];
 
-    protected $appends = ['scripts_count'];
-
     public static function install($params)
     {
         $language = $params['language'];
@@ -57,7 +55,7 @@ class ScriptExecutor extends Model
         } catch (\ErrorException $e) {
             $dockerfile = '';
         }
-        $initDockerfile = config('script-runners.' . $language . '.init_dockerfile');
+        $initDockerfile = self::config($language)['init_dockerfile'];
         
         // remove check after lang packages updated
         if (!is_array($initDockerfile)) {
@@ -70,11 +68,15 @@ class ScriptExecutor extends Model
 
     public static function packagePath($language)
     {
+        return self::config($language)['package_path'];
+    }
+
+    public static function config($language) {
         $config = config('script-runners');
         if (!isset($config[$language])) {
             throw new \ErrorException("Language not in config: " . $language);
         }
-        return config('script-runners.' . $language . '.package_path');
+        return $config[$language];
     }
     
     public static function rules($existing = null)
@@ -109,8 +111,18 @@ class ScriptExecutor extends Model
     {
         $lang = strtolower($this->language);
         $id = $this->id;
-        $tag = 'latest'; // might change with script executor versions
+        $tag = $this->imageTag();
         return "processmaker4/executor-${lang}-${id}:${tag}";
+    }
+
+    public function imageTag()
+    {
+        $config = self::config($this->language);
+        $tag = 'v';
+        if (isset($config['package_version'])) {
+            $tag .= $config['package_version'];
+        }
+        return $tag;
     }
 
     public function scripts()
@@ -121,5 +133,32 @@ class ScriptExecutor extends Model
     public function getScriptsCountAttribute()
     {
         return $this->scripts()->count();
+    }
+
+    /**
+     * If we need to run a docker image in a test, chances are the Executor IDs wont
+     * match up with the docker image names. To prevent errors, lets just grab the first
+     * image available on the testing machine and explicitly set the executor image.
+     * When 'image' is set in the config, it will ignore the one provided by the factory executor.
+     *
+     * @param string $language
+     * @return void
+     */
+    public static function setTestConfig($language)
+    {
+        $useImage = null;
+        exec('docker images | awk \'{r=$1":"$2; print r}\'', $out);
+        foreach ($out as $image) {
+            $search = "processmaker4/executor-${language}-";
+            $found = strpos($image, $search) !== false;
+            if ($found) {
+                $useImage = $image;
+                break;
+            }
+        }
+        if (!$useImage) {
+            throw new \Exception("No matching docker image for $language");
+        }
+        config(["script-runners.${language}.image" => $useImage]);
     }
 }
