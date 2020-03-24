@@ -11,9 +11,12 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class ScreenController extends Controller
 {
+    use HasControllerAddons;
+
     /**
      * Get the list of screens
      *
@@ -63,7 +66,8 @@ class ScreenController extends Controller
      */
     public function edit(Screen $screen)
     {
-        return view('processes.screens.edit', compact('screen'));
+        $addons = $this->getPluginAddons('edit', compact(['screen']));
+        return view('processes.screens.edit', compact('screen', 'addons'));
     }
 
     /**
