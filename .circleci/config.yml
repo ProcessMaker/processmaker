@@ -94,6 +94,8 @@ jobs:
       # Temporary until packages are deployed
       - run:
           command: |
+            rm -rf composer.lock
+            composer global config minimum-stability dev
             composer config repositories.docker-executor-php vcs https://github.com/ProcessMaker/docker-executor-php
             composer config repositories.docker-executor-lua vcs https://github.com/ProcessMaker/docker-executor-lua
             composer config repositories.docker-executor-node vcs https://github.com/ProcessMaker/docker-executor-node
@@ -122,22 +124,22 @@ jobs:
 
       - setup_remote_docker
 
-      # - run:
-      #     name: setup SDKs
-      #     command: |
-      #       php artisan l5:generate
-      #       mkdir -p /tmp/processmaker-sdk-php
-      #       php artisan processmaker:sdk php /tmp/processmaker-sdk-php
-      #       mkdir -p /tmp/processmaker-sdk-node
-      #       php artisan processmaker:sdk javascript /tmp/processmaker-sdk-node
-      #       mkdir -p /tmp/processmaker-sdk-lua
-      #       php artisan processmaker:sdk lua /tmp/processmaker-sdk-lua
+      - run:
+          name: setup SDKs
+          command: |
+            php artisan l5:generate
+            mkdir -p /tmp/processmaker-sdk-php
+            php artisan processmaker:sdk php /tmp/processmaker-sdk-php
+            mkdir -p /tmp/processmaker-sdk-node
+            php artisan processmaker:sdk javascript /tmp/processmaker-sdk-node
+            mkdir -p /tmp/processmaker-sdk-lua
+            php artisan processmaker:sdk lua /tmp/processmaker-sdk-lua
       - run:
           name: Configure scripts executor
           command: |
-            php artisan docker-executor-php:install
-            php artisan docker-executor-lua:install
-            php artisan docker-executor-node:install
+            docker pull processmaker4/executor-php:latest
+            docker pull processmaker4/executor-lua:latest
+            docker pull processmaker4/executor-node:latest
             docker pull jbergknoff/sass:latest
             sudo mkdir -m777 /opt/executor
       #- run: sudo docker-php-ext-enable xdebug

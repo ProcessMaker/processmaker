@@ -149,7 +149,7 @@ class ScriptExecutor extends Model
         $useImage = null;
         exec('docker images | awk \'{r=$1":"$2; print r}\'', $out);
         foreach ($out as $image) {
-            $search = "processmaker4/executor-${language}-";
+            $search = "processmaker4/executor-${language}";
             $found = strpos($image, $search) !== false;
             if ($found) {
                 $useImage = $image;
