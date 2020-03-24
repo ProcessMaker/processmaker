@@ -91,6 +91,13 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-npm-dependencies-
 
+      # Temporary until packages are deployed
+      - run:
+          command: |
+            composer config repositories.foo vcs https://github.com/ProcessMaker/docker-executor-php
+            composer config repositories.foo vcs https://github.com/ProcessMaker/docker-executor-lua
+            composer config repositories.foo vcs https://github.com/ProcessMaker/docker-executor-node
+
       - run: composer install -n --prefer-dist
 
       - run:
