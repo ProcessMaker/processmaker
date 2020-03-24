@@ -6,11 +6,15 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Nayra\Contracts\Bpmn\EventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
+use Reflection;
+use ReflectionClass;
 
 /**
  * Execution Instance Repository.
@@ -93,14 +97,14 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      *
      * @return mixed
      */
-    public function persistInstanceCreated(ExecutionInstanceInterface $instance)
+    public function persistInstanceCreated(ExecutionInstanceInterface $instance, EventInterface $event = null, TokenInterface $source = null)
     {
         //Get instance data
         $data = $instance->getDataStore()->getData();
         //Get the process
         $process = $instance->getProcess();
         //Get process definition
-        $definition = $process->getEngine()->getProcess();
+        $definition = $process->getOwnerDocument()->getModel();
 
         //Save the row
         $instance->callable_id = $process->getId();
@@ -113,6 +117,25 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->data = $data;
         $instance->saveOrFail();
         $instance->setId($instance->getKey());
+
+        if ($source) {
+            $participant = $this->findParticipantFor($instance);
+            $sourcePartisipant = $this->findParticipantFor($source->getInstance());
+            $this->persistInstanceCollaboration($instance, $participant, $source->getInstance(), $sourcePartisipant);
+        }
+    }
+
+    private function findParticipantFor(ExecutionInstanceInterface $instance)
+    {
+        $collaboration = $instance->getProcess()->getEngine()->getEventDefinitionBus()->getCollaboration();
+        if (!$collaboration) {
+            return;
+        }
+        foreach ($collaboration->getParticipants() as $participant) {
+            if ($participant->getProcess()->getId() === $instance->getProcess()->getId()) {
+                return $participant;
+            }
+        }
     }
 
     /**
@@ -175,7 +198,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      * @param ExecutionInstanceInterface $source Source instance
      * @param ParticipantInterface $sourceParticipant
      */
-    public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant)
+    public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant = null, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant = null)
     {
         if ($source->process_collaboration_id === null) {
             $collaboration = new ProcessCollaboration();

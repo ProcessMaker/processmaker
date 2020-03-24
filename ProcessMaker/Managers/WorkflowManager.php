@@ -20,8 +20,11 @@ use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
 use ProcessMaker\Jobs\BoundaryEvent;
+use ProcessMaker\Jobs\CatchSignalEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 
 class WorkflowManager
 {
@@ -161,6 +164,18 @@ class WorkflowManager
         $instance = $token->processRequest;
         $process = $instance->process;
         RunServiceTask::dispatch($process, $instance, $token, []);
+    }
+
+    /**
+     * Catch a signal event.
+     *
+     * @param ServiceTaskInterface $serviceTask
+     * @param Token $token
+     */
+    public function catchSignalEvent(ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    {
+        Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
+        CatchSignalEvent::dispatch($source, $sourceEventDefinition, $token);
     }
 
     /**

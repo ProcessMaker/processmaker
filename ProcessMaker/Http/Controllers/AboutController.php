@@ -14,11 +14,12 @@ class AboutController extends Controller
      */
     public function index()
     {
+        $root = base_path('');
         $vendor_path = base_path('vendor/processmaker');
-        $node_path = base_path('node_modules/@processmaker');
-        
+        $package_json_path = json_decode(file_get_contents($root . '/package.json'));
+        $dependencies = $package_json_path->dependencies;
         $vendor_directories = \File::directories($vendor_path);
-        $node_directories = \File::directories($node_path);
+        $string = '@processmaker';
         
         $packages = array();
 
@@ -26,10 +27,17 @@ class AboutController extends Controller
             $content = json_decode(file_get_contents($vendor_path . '/' . basename($directory) . '/composer.json'));
             array_push($packages, $content);
         }
-        foreach($node_directories as $directory) {
-            $content = json_decode(file_get_contents($node_path . '/' . basename($directory) . '/package.json'));
-            array_push($packages, $content);
+
+        foreach($dependencies as $key => $value) {
+            if (strpos($key, $string) !== false) {
+                $value = str_replace('^', '', $value);
+                $content = new \stdClass();
+                $content->name = $key;
+                $content->version = $value;
+                array_push($packages, $content);
+            }
         }
+        
         return view('about.index', compact('packages'));
     }
 }
