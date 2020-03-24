@@ -52,6 +52,7 @@ APP_DEBUG=TRUE
 Optionally, trust the self-signed certificate on your host machine so you don't get the "Not Secure" warnings in chrome and postman.
 
 For macOS: 
+
 1. In `your-repository-root/storage/ssl`, double-click on `processmaker.local.processmaker.com.crt` 
 2. Click on "Add" to add it to your login keychain 
 3. In the Keychain Access window click on the Certificates category on the bottom left. 

@@ -157,5 +157,20 @@ return [
 
     ],
 
+    'debug_blacklist' => [
+        '_ENV' => [
+            'DB_USERNAME',
+            'DB_PASSWORD',
+            'DATA_DB_PASSWORD',
+            'DATA_DB_USERNAME'
+        ],
+        '_SERVER' => [
+            'DB_USERNAME',
+            'DB_PASSWORD',
+            'DATA_DB_PASSWORD',
+            'DATA_DB_USERNAME'
+        ]
+    ]
+
 
 ];

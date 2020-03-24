@@ -10,10 +10,6 @@ class RequestUserPermission extends Model
 {
     protected $table = "request_user_permissions";
 
-    protected $primaryKey = ['request_id', 'user_id'];
-
-    public $incrementing = false;
-
     protected $connection = 'data';
 
     protected $fillable = [
