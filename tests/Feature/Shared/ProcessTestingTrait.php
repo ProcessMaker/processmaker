@@ -100,7 +100,16 @@ trait ProcessTestingTrait
             'status' => 'COMPLETED',
             'data' => $data,
         ]);
-        return $return === 'response' ? $response : ProcessRequestToken::find($response->json()['id']);
+        if ($return === 'response') {
+            return $response;
+        } else {
+            $json = $response->json();
+            if ($json && isset($json['id'])) {
+                return ProcessRequestToken::find($response->json()['id']);
+            } else {
+                throw new \Exception($response->getContents());
+            }
+        }
     }
 
     /**

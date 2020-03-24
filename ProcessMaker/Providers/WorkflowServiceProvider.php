@@ -5,17 +5,22 @@ namespace ProcessMaker\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
+use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
+use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
+use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
-use ProcessMaker\Nayra\Storage\BpmnDocument;
+use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
 
 class WorkflowServiceProvider extends ServiceProvider
@@ -57,16 +62,27 @@ class WorkflowServiceProvider extends ServiceProvider
 
             //Initialize the BpmnEngine
             $engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
+            $eventDefinitionBus = new EventDefinitionBus;
+            $engine->setEventDefinitionBus($eventDefinitionBus);
+
+            // Catch the signal events
+            if ($params['globalEvents']) {
+                $eventDefinitionBus->attachEvent(
+                    SignalEventDefinition::class,
+                    function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
+                        WorkflowManagerFacade::catchSignalEvent($source, $sourceEventDefinition, $token);
+                    }
+                );
+            }
 
             $engine->setJobManager(new TaskSchedulerManager());
 
             //Initialize BpmnDocument repository (REQUIRES $engine $factory)
-            $bpmnRepository = new BpmnDocument();
+            $bpmnRepository = new BpmnDocument($params['process']);
             $bpmnRepository->setEngine($engine);
             $bpmnRepository->setFactory($repository);
             $bpmnRepository->setSkipElementsNotImplemented(true);
             $mapping = $bpmnRepository->getBpmnElementsMapping();
-            $engine->setProcess($params['process']);
 
             //Initialize custom properties for ProcessMaker
             $bpmnRepository->setBpmnElementMapping(self::PROCESS_MAKER_NS, '', []);
