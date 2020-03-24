@@ -94,9 +94,9 @@ jobs:
       # Temporary until packages are deployed
       - run:
           command: |
-            composer config repositories.foo vcs https://github.com/ProcessMaker/docker-executor-php
-            composer config repositories.foo vcs https://github.com/ProcessMaker/docker-executor-lua
-            composer config repositories.foo vcs https://github.com/ProcessMaker/docker-executor-node
+            composer config repositories.docker-executor-php vcs https://github.com/ProcessMaker/docker-executor-php
+            composer config repositories.docker-executor-lua vcs https://github.com/ProcessMaker/docker-executor-lua
+            composer config repositories.docker-executor-node vcs https://github.com/ProcessMaker/docker-executor-node
 
       - run: composer install -n --prefer-dist
 
