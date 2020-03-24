@@ -79,7 +79,7 @@ class ProcessVersion extends Model
     }
 
     /**
-     * Get the associated screen
+     * Get the associated process
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
