@@ -8,11 +8,10 @@ use ProcessMaker\Models\FormalExpression;
 use Tests\TestCase;
 
 /**
- * Test friendly enough expression language evaluator working together with mustache expressions
+ * Test FELL expressions that uses Mustache syntax
  */
 class MustacheFEELTest extends TestCase
 {
-
     /**
      * Test basic mustache templating
      */
