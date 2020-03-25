@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\ProcessTrait;
@@ -21,7 +22,7 @@ use ProcessMaker\Traits\ProcessTrait;
  * @property \Carbon\Carbon $created_at
  *
  */
-class ProcessVersion extends Model
+class ProcessVersion extends Model implements ProcessModelInterface
 {
     use HasSelfServiceTasks;
     use HasCategories;
@@ -45,6 +46,7 @@ class ProcessVersion extends Model
         'start_events' => 'array',
         'warnings' => 'array',
         'self_service_tasks' => 'array',
+        'signal_events' => 'array',
     ];
 
     /**
