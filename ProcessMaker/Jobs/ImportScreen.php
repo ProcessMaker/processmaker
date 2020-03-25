@@ -1,7 +1,7 @@
 <?php
 namespace ProcessMaker\Jobs;
 
-
+use Exception;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 
@@ -18,21 +18,19 @@ class ImportScreen extends ImportProcess
     private function saveScreens($screen)
     {
         try {
-            $this->new['screens'] = [];
+            $this->new[Screen::class] = [];
             $this->prepareStatus('screens', true);
 
             $new = new Screen();
             $new->fill((array)$screen);
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
             $new->created_at = $this->formatDate($screen->created_at);
-            if (property_exists($screen, 'watchers')) {
-                $new->watchers =  $this->watcherScriptsToSave($screen);
-            }
+            $new->watchers =  $this->watcherScriptsToSave($screen);
 
             $new->save();
 
             $this->finishStatus('screens');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->finishStatus('screens', true);
         }
     }
@@ -47,7 +45,6 @@ class ImportScreen extends ImportProcess
         $this->saveScreens($this->file->screens);
         return $this->status;
     }
-
 
     /**
      * Execute the job.

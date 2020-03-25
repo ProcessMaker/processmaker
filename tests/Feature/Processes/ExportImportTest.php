@@ -438,4 +438,87 @@ class ExportImportTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonStructure(['message']);
     }
+
+    /**
+     * Test import process with multiple multilevel assets.
+     *
+     * @return void
+     */
+    public function testImportMultipleAssets()
+    {
+        // Create a pre-existing screen and script
+        factory(Screen::class, 2)->create(['title' => 'Existing Screen']);
+        factory(Script::class, 2)->create(['title' => 'Existing Script']);
+
+        // Assert that they now exist
+        $this->assertDatabaseHas('screens', ['title' => 'Existing Screen']);
+        $this->assertDatabaseHas('scripts', ['title' => 'Existing Script']);
+
+        // Set path and name of file to import
+        $filePath = 'tests/storage/process/';
+        $fileName = 'test_process_multiple_assets.json';
+
+        // Load file to import
+        $file = new UploadedFile(base_path($filePath) . $fileName, $fileName, null, null, null, true);
+
+        // Import process
+        $response = $this->apiCall('POST', '/processes/import', [
+            'file' => $file,
+        ]);
+
+        $processes = Process::pluck('id', 'name');
+        $this->assertArrayHasKey('Exporting Assets', $processes);
+
+        // Assertion: all screens of the file were imported
+        $screens = Screen::pluck('id', 'title');
+        $this->assertArrayHasKey('Nested Screen', $screens);
+        $this->assertArrayHasKey('Task Screen', $screens);
+        $this->assertArrayHasKey('Task Intestitial Screen', $screens);
+        $this->assertArrayHasKey('Start Intestitial Screen', $screens);
+        $this->assertArrayHasKey('Summary Screen', $screens);
+        $this->assertArrayHasKey('Details Screen', $screens);
+        $this->assertArrayHasKey('Cancel Screen', $screens);
+        $this->assertArrayHasKey('Manual Screen', $screens);
+
+        // Assertion: all scritps of the file were imported
+        $scripts = Script::pluck('id', 'title');
+        $this->assertArrayHasKey('Script for Task', $scripts);
+        $this->assertArrayHasKey('Script for Watcher', $scripts);
+
+        $process = Process::find($processes['Exporting Assets']);
+        $definitions = $process->getDefinitions();
+        $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
+
+        // Assertion: Verify references for screens used in tasks
+        $ref = $definitions->findElementById('node_3')->getAttributeNS($ns, 'screenRef');
+        $this->assertEquals($screens['Task Screen'], $ref);
+        $ref = $definitions->findElementById('node_6')->getAttributeNS($ns, 'screenRef');
+        $this->assertEquals($screens['Manual Screen'], $ref);
+
+        // Assertion: Verify references for screens used as interstitial
+        $ref = $definitions->findElementById('node_1')->getAttributeNS($ns, 'interstitialScreenRef');
+        $this->assertEquals($screens['Start Intestitial Screen'], $ref);
+        $ref = $definitions->findElementById('node_3')->getAttributeNS($ns, 'interstitialScreenRef');
+        $this->assertEquals($screens['Task Intestitial Screen'], $ref);
+        $ref = $definitions->findElementById('node_6')->getAttributeNS($ns, 'interstitialScreenRef');
+        $this->assertEquals($screens['Task Intestitial Screen'], $ref);
+
+        // Assertion: Verify references for screens used in process cancel and details
+        $this->assertEquals($screens['Cancel Screen'], $process->cancel_screen_id);
+        $this->assertEquals($screens['Details Screen'], $process->request_detail_screen_id);
+
+        // Assertion: Verify references for scripts used in process
+        $ref = $definitions->findElementById('node_4')->getAttributeNS($ns, 'scriptRef');
+        $this->assertEquals($scripts['Script for Task'], $ref);
+
+        // Verify reference of nested screen
+        $screen = Screen::find($screens['Task Screen']);
+        $this->assertEquals($screens['Nested Screen'], $screen->config[0]['items'][0]['config']['screen']);
+
+        // Verify reference of watcher in nested screen
+        $nested = Screen::find($screens['Nested Screen']);
+        //$this->assertEquals($screens['Nested Screen'], $screen->config[0]['items'][0]['config']['screen']);
+        $this->assertEquals('script-' . $scripts['Script for Watcher'], $nested->watchers[0]['script']['id']);
+        $this->assertEquals($scripts['Script for Watcher'], $nested->watchers[0]['script_id']);
+    }
 }

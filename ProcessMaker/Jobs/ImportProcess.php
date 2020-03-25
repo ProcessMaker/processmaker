@@ -16,8 +16,10 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Traits\PluginServiceProviderTrait;
+use Illuminate\Support\Facades\Log;
 
 class ImportProcess implements ShouldQueue
 {
@@ -282,7 +284,7 @@ class ImportProcess implements ShouldQueue
      */
     private function parseAssignableScripts()
     {
-        foreach ($this->new['scripts'] as $script) {
+        foreach ($this->new[Script::class] as $script) {
             $this->assignable->push((object)[
                 'type' => 'script',
                 'id' => $script->id,
@@ -316,36 +318,6 @@ class ImportProcess implements ShouldQueue
     }
 
     /**
-    * Pass an old screen ID and a new screen ID, then replace any references
-    * within the BPMN to the old ID with the new ID.
-    *
-    * @param string|integer $oldId
-    * @param string|integer $newId
-    * @param Process $process
-    *
-    * @return void
-    */
-    private function updateScreenRefs($oldId, $newId, $process)
-    {
-        $humanTasks = ['task', 'userTask', 'endEvent', 'manualTask'];
-        foreach ($humanTasks as $humanTask) {
-            $tasks = $this->definitions->getElementsByTagName($humanTask);
-            foreach ($tasks as $task) {
-                $screenRef = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRef');
-                if ($screenRef == $oldId) {
-                    $task->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'screenRefNew', $newId);
-                }
-            }
-        }
-
-        //Update id screen cancel process
-        if ($process->cancel_screen_id && $process->cancel_screen_id === $oldId) {
-            $this->new['process']->cancel_screen_id = $newId;
-            $this->new['process']->save();
-        }
-    }
-
-    /**
      * Complete the process of updating screen refs.
      *
      * @return void
@@ -375,18 +347,15 @@ class ImportProcess implements ShouldQueue
     private function saveScreens($screens, $process)
     {
         try {
-            $this->new['screens'] = [];
+            $this->new[Screen::class] = [];
             $this->prepareStatus('screens', count($screens) > 0);
             foreach ($screens as $screen) {
                 $new = $this->saveScreen($screen);
-                $this->updateScreenRefs($screen->id, $new->id, $process);
-
-                $this->new['screens'][] = $new;
+                $this->new[Screen::class][$screen->id] = $new;
             }
-            $this->completeScreenRefs();
             $this->finishStatus('screens');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::info('*** Error: '. $e->getMessage());
+            Log::info('*** Error: '. $e->getMessage());
             $this->finishStatus('screens', true);
         }
     }
@@ -409,9 +378,7 @@ class ImportProcess implements ShouldQueue
             $new->description = $screen->description;
             $new->title = $this->formatName($screen->title, 'title', Screen::class);
             $new->type = $screen->type;
-            if (property_exists($screen, 'watchers')) {
-                $new->watchers =  $this->watcherScriptsToSave($screen);
-            }
+            $new->watchers =  $this->watcherScriptsToSave($screen);
             $new->save();
 
             // save categories
@@ -474,7 +441,7 @@ class ImportProcess implements ShouldQueue
     private function saveScripts($scripts)
     {
         try {
-            $this->new['scripts'] = [];
+            $this->new[Script::class] = [];
             $this->prepareStatus('scripts', count($scripts) > 0);
             foreach ($scripts as $script) {
                 $new = new Script;
@@ -493,11 +460,8 @@ class ImportProcess implements ShouldQueue
                     }
                 }
 
-                $this->updateScriptRefs($script->id, $new->id);
-
-                $this->new['scripts'][] = $new;
+                $this->new[Script::class][$script->id] = $new;
             }
-            $this->completeScriptRefs();
             $this->finishStatus('scripts');
         } catch (\Exception $e) {
             $this->finishStatus('scripts', true);
@@ -668,9 +632,18 @@ class ImportProcess implements ShouldQueue
      *
      * @return void
      */
-    private function saveBpmn()
+    private function saveBpmn($process)
     {
         $this->new['process']->bpmn = $this->definitions->saveXML();
+        if (isset($process->cancel_screen_id)) {
+            $this->new['process']->cancel_screen_id = $process->cancel_screen_id;
+        }
+        if (isset($process->request_detail_screen_id)) {
+            $this->new['process']->request_detail_screen_id = $process->request_detail_screen_id;
+        }
+
+        $manager = app(ExportManager::class);
+        $manager->updateReferences($this->new);
         $this->new['process']->save();
     }
 
@@ -702,7 +675,7 @@ class ImportProcess implements ShouldQueue
         $this->saveScripts($this->file->scripts);
         $this->saveScreens($this->file->screens, $this->file->process);
         $this->parseAssignables();
-        $this->saveBpmn();
+        $this->saveBpmn($this->file->process);
 
         return (object)[
             'status' => collect($this->status),
@@ -813,32 +786,15 @@ class ImportProcess implements ShouldQueue
      */
     protected function watcherScriptsToSave($screen)
     {
-        if (!$screen->watchers) {
+        if (empty($screen->watchers)) {
             return null;
         }
 
         $watcherList =[];
         foreach($screen->watchers as $watcher) {
             $script = $watcher->script;
-            $newScript = new Script;
-            $newScript->title = $this->formatName($script->title, 'title', Script::class);
-            $newScript->description = $script->description;
-            $newScript->language = $script->language;
-            $newScript->code = $script->code;
-            $newScript->created_at = $this->formatDate($script->created_at);
-
-            // save categories
-            if (isset($script->categories)) {
-                foreach ($script->categories as $categoryDef) {
-                    $category = $this->saveCategory('script', $categoryDef);
-                    $newScript->categories()->save($category);
-                }
-            }
-
-            $newScript->save();
-
-            $watcher->script_id = $newScript->id;
-            $watcher->script->title = $newScript->title;
+            $watcher->script_id = $script->id;
+            $watcher->script->title = $script->title;
             $watcherList[] = $watcher;
         }
         return $watcherList;

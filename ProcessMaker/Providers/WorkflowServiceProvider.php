@@ -3,11 +3,16 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use ProcessMaker\Assets\ScreensInProcess;
+use ProcessMaker\Assets\ScreensInScreen;
+use ProcessMaker\Assets\ScriptsInProcess;
+use ProcessMaker\Assets\ScriptsInScreen;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
 use ProcessMaker\Listeners\BpmnSubscriber;
 use ProcessMaker\Listeners\CommentsSubscriber;
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
@@ -161,6 +166,17 @@ class WorkflowServiceProvider extends ServiceProvider
                 ]
             );
             return $bpmnRepository;
+        });
+        /**
+         * Export Manager
+         */
+        $this->app->singleton(ExportManager::class, function () {
+            $instance = new ExportManager;
+            $instance->addDependencieManager(ScreensInProcess::class);
+            $instance->addDependencieManager(ScreensInScreen::class);
+            $instance->addDependencieManager(ScriptsInProcess::class);
+            $instance->addDependencieManager(ScriptsInScreen::class);
+            return $instance;
         });
     }
 }
