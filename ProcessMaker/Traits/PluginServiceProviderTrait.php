@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\ModelerStarting;
+use ProcessMaker\Events\ScriptBuilderStarting;
 use Illuminate\Support\Facades\Event;
 use ProcessMaker\Managers\PackageManager;
 
@@ -17,6 +18,8 @@ trait PluginServiceProviderTrait
 {
 
     private $modelerScripts = [];
+
+    private $scriptBuilderScripts = [];
 
     /**
      * Boot the PM plug-in.
@@ -32,6 +35,7 @@ trait PluginServiceProviderTrait
             $this->registerPackage(static::name);
         }
         Event::listen(ModelerStarting::class, [$this, 'modelerStarting']);
+        Event::listen(ScriptBuilderStarting::class, [$this, 'scriptBuilderStarting']);
     }
 
     /**
@@ -116,5 +120,30 @@ trait PluginServiceProviderTrait
     public function removePackage($package)
     {
         App::make(PackageManager::class)->remove($package);
+    }
+
+    /**
+     * Executed during script builder starting
+     *
+     * @param \ProcessMaker\Events\ScriptBuilderStarting $event
+     */
+    public function scriptBuilderStarting(ScriptBuilderStarting $event)
+    {
+        foreach ($this->scriptBuilderScripts as $path => $public) {
+            if (File::exists(public_path() . '/' . $public)) {
+                $event->manager->addScript(mix($path, $public));
+            }
+        }
+    }
+
+    /**
+     * Register a custom javascript for the script builder
+     *
+     * @param string $path
+     * @param string $public
+     */
+    protected function registerJsToScriptBuilder($path, $public)
+    {
+        $this->scriptBuilderScripts[$path] = $public;
     }
 }

@@ -190,6 +190,7 @@ export default {
     MenuScript,
   },
   mounted() {
+    ProcessMaker.EventBus.$emit("script-builder-init", this);
     ProcessMaker.EventBus.$on("save-script", (resolve, reject) => {
       this.save(resolve, reject);
     });
