@@ -65,9 +65,9 @@ class FormalExpression implements FormalExpressionInterface
      *
      * @return string
      */
-    private function evaluate(array $data)
+    private function evaluate($expression, array $data)
     {
-        $body = $this->mustacheExpression($this->getBody(), $data);
+        $body = $this->mustacheExpression($expression, $data);
         if (!trim($body)) {
             return true;
         }
@@ -165,6 +165,6 @@ class FormalExpression implements FormalExpressionInterface
      */
     public function __invoke($data)
     {
-        return $this->evaluate($data);
+        return $this->evaluate($this->getBody(),$data);
     }
 }
