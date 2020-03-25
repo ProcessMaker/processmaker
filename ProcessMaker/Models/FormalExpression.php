@@ -140,7 +140,7 @@ class FormalExpression implements FormalExpressionInterface
     }
 
     /**
-     *      * Evaluate an expression using an specific template engine
+     *  Evaluate an expression using an specific template engine
 
      * @param \ProcessMaker\Contracts\TemplateExpressionInterface $templateEngine
      * @param string $expression
