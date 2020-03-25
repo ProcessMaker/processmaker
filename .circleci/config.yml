@@ -156,7 +156,11 @@ jobs:
       # run tests!
       - run:
           name: 'PHPUnit'
-          command: './vendor/bin/phpunit -v -d memory_limit=-1'
+          command: |
+            composer clearcache
+            COMPOSER_MEMORY_LIMIT=-1 composer require processmaker/docker-executor-php:dev-feature/5
+            COMPOSER_MEMORY_LIMIT=-1 composer require processmaker/docker-executor-lua:dev-feature/3
+            ./vendor/bin/phpunit -v -d memory_limit=-1
           environment:
             DB_DATABASE: 'circle_test'
             DB_PASSWORD: 'P4ssW0rd1!'
