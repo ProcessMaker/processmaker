@@ -91,14 +91,6 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-npm-dependencies-
 
-      # Temporary until packages are deployed
-      - run:
-          command: |
-            composer global config minimum-stability dev
-            composer config repositories.docker-executor-php vcs https://github.com/ProcessMaker/docker-executor-php
-            composer config repositories.docker-executor-lua vcs https://github.com/ProcessMaker/docker-executor-lua
-            composer config repositories.docker-executor-node vcs https://github.com/ProcessMaker/docker-executor-node
-
       - run: composer install -n --prefer-dist
 
       - run:
@@ -121,7 +113,8 @@ jobs:
       # Enable xdebug to support code coverage
       #- run: sudo docker-php-ext-enable xdebug
 
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
 
       # - run:
       #     name: setup SDKs
@@ -156,11 +149,7 @@ jobs:
       # run tests!
       - run:
           name: 'PHPUnit'
-          command: |
-            composer clearcache
-            COMPOSER_MEMORY_LIMIT=-1 composer require processmaker/docker-executor-php:dev-feature/5
-            COMPOSER_MEMORY_LIMIT=-1 composer require processmaker/docker-executor-lua:dev-feature/3
-            ./vendor/bin/phpunit -v -d memory_limit=-1
+          command: './vendor/bin/phpunit -v -d memory_limit=-1'
           environment:
             DB_DATABASE: 'circle_test'
             DB_PASSWORD: 'P4ssW0rd1!'
