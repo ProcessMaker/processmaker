@@ -28,8 +28,6 @@ class MustacheFEELTest extends TestCase
     /**
      * Test the use of strings
      *
-     * "hello world"
-     * 'hello world'
      */
     public function testStrings()
     {
@@ -40,6 +38,26 @@ class MustacheFEELTest extends TestCase
         $expresion->setBody("'hello world'");
         $response = $expresion([]);
         $this->assertSame('hello world', $response);
+    }
+
+    /**
+     * Test formulas
+     * Weight = 2 * Height
+     */
+    public function testCalculatedFields()
+    {
+        $expresion = new FormalExpression();
+        $expresion->setLanguage('FEEL');
+
+        // When calculation is true
+        $expresion->setBody("Height == 2 * Weight");
+        $response = $expresion( [ "Height" => 120, "Weight" => 60]);
+        $this->assertSame(true, $response);
+
+        // When calculation is false
+        $expresion->setBody("Height == 1 * Weight");
+        $response = $expresion( [ "Height" => 120, "Weight" => 60]);
+        $this->assertSame(false, $response);
     }
 
 }
