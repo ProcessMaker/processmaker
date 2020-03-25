@@ -10,6 +10,7 @@ use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\ScriptExecutor;
 
 // Bootstrap laravel
 app()->make(Kernel::class)->bootstrap();
@@ -91,4 +92,8 @@ if (env('RUN_MSSQL_TESTS')) {
 // THIS IS FOR STANDARD PROCESSMAKER TABLES
 if (env('POPULATE_DATABASE')) {
     Artisan::call('migrate:fresh', []);
+}
+
+if (!ScriptExecutor::imageForLanguage('php')) {
+    \Artisan::call('docker-executor-php:install');
 }

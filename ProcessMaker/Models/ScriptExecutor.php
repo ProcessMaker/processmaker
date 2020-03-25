@@ -146,19 +146,25 @@ class ScriptExecutor extends Model
      */
     public static function setTestConfig($language)
     {
-        $useImage = null;
-        exec('docker images | awk \'{r=$1":"$2; print r}\'', $out);
-        foreach ($out as $image) {
-            $search = "processmaker4/executor-${language}";
-            $found = strpos($image, $search) !== false;
-            if ($found) {
-                $useImage = $image;
-                break;
-            }
-        }
+        $useImage = self::imageForLanguage($language);
         if (!$useImage) {
             throw new \Exception("No matching docker image for $language");
         }
         config(["script-runners.${language}.image" => $useImage]);
+    }
+
+    public static function imageForLanguage($language)
+    {
+        $foundImage = false;
+        exec('docker images | awk \'{r=$1":"$2; print r}\'', $out);
+        foreach ($out as $image) {
+            $search = "processmaker4/executor-${language}-";
+            $found = strpos($image, $search) !== false;
+            if ($found) {
+                $foundImage = $image;
+                break;
+            }
+        }
+        return $foundImage;
     }
 }

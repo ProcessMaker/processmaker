@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15317a1affa8c0fdb27c2ee60597e778",
+    "content-hash": "577ddd9c5ce819f0ef92712a7bf4b2c9",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -2591,16 +2591,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.31.0",
+            "version": "2.32.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "bbc0ab53f41a4c6f223c18efcdbd9bc725eb5d2d"
+                "reference": "7410a349613bf32d02d8aaed1c669698ddd2b718"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/bbc0ab53f41a4c6f223c18efcdbd9bc725eb5d2d",
-                "reference": "bbc0ab53f41a4c6f223c18efcdbd9bc725eb5d2d",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/7410a349613bf32d02d8aaed1c669698ddd2b718",
+                "reference": "7410a349613bf32d02d8aaed1c669698ddd2b718",
                 "shasum": ""
             },
             "require": {
@@ -2609,6 +2609,7 @@
                 "symfony/translation": "^3.4 || ^4.0 || ^5.0"
             },
             "require-dev": {
+                "doctrine/orm": "^2.7",
                 "friendsofphp/php-cs-fixer": "^2.14 || ^3.0",
                 "kylekatarnls/multi-tester": "^1.1",
                 "phpmd/phpmd": "^2.8",
@@ -2657,7 +2658,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2020-03-01T11:11:58+00:00"
+            "time": "2020-03-24T16:01:47+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -3237,12 +3238,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/laravel-chunk-upload.git",
-                "reference": "8b49e88f5e7ac238d1366e63bace7f189b1082ef"
+                "reference": "388df281c1da2dcd2908fb7e0f763c678d7f1e92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/laravel-chunk-upload/zipball/8b49e88f5e7ac238d1366e63bace7f189b1082ef",
-                "reference": "8b49e88f5e7ac238d1366e63bace7f189b1082ef",
+                "url": "https://api.github.com/repos/ProcessMaker/laravel-chunk-upload/zipball/388df281c1da2dcd2908fb7e0f763c678d7f1e92",
+                "reference": "388df281c1da2dcd2908fb7e0f763c678d7f1e92",
                 "shasum": ""
             },
             "require": {
@@ -3336,11 +3337,17 @@
         },
         {
             "name": "processmaker/docker-executor-lua",
-            "version": "1.0.0",
+            "version": "dev-feature/3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
+                "reference": "78e304775b72af78e7a458d5078816982b2b514e"
+            },
             "dist": {
-                "type": "path",
-                "url": "/home/vagrant/packages/ProcessMaker/docker-executor-lua",
-                "reference": "30e9e2cb2c238519dc9eaa29842e5c48d12a61e4"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/78e304775b72af78e7a458d5078816982b2b514e",
+                "reference": "78e304775b72af78e7a458d5078816982b2b514e",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -3357,17 +3364,25 @@
                 }
             },
             "description": "Lua script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true
-            }
+            "support": {
+                "source": "https://github.com/ProcessMaker/docker-executor-lua/tree/feature/3",
+                "issues": "https://github.com/ProcessMaker/docker-executor-lua/issues"
+            },
+            "time": "2020-03-24T22:22:26+00:00"
         },
         {
             "name": "processmaker/docker-executor-node",
-            "version": "1.0.0",
+            "version": "dev-feature/2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-node.git",
+                "reference": "c0fa210b98bae8368244d8011ef827672821a852"
+            },
             "dist": {
-                "type": "path",
-                "url": "/home/vagrant/packages/ProcessMaker/docker-executor-node",
-                "reference": "2c0e8759446d5b0c5ce5521dacb468f378875fc5"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/c0fa210b98bae8368244d8011ef827672821a852",
+                "reference": "c0fa210b98bae8368244d8011ef827672821a852",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -3384,17 +3399,25 @@
                 }
             },
             "description": "Javascript script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true
-            }
+            "support": {
+                "source": "https://github.com/ProcessMaker/docker-executor-node/tree/feature/2",
+                "issues": "https://github.com/ProcessMaker/docker-executor-node/issues"
+            },
+            "time": "2020-03-24T22:22:47+00:00"
         },
         {
             "name": "processmaker/docker-executor-php",
-            "version": "0.0.1",
+            "version": "dev-feature/5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-php.git",
+                "reference": "1d754a531302b244eac58e4403c551eefa8df84e"
+            },
             "dist": {
-                "type": "path",
-                "url": "/home/vagrant/packages/ProcessMaker/docker-executor-php",
-                "reference": "cc49fb466c470ea523865457d304399f4541dfe4"
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/1d754a531302b244eac58e4403c551eefa8df84e",
+                "reference": "1d754a531302b244eac58e4403c551eefa8df84e",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -3411,17 +3434,25 @@
                 }
             },
             "description": "PHP script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true
-            }
+            "support": {
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/feature/5",
+                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues"
+            },
+            "time": "2020-03-24T22:22:16+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
             "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "/home/vagrant/packages/ProcessMaker/laravel-i18next",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/laravel-i18next.git",
                 "reference": "a22fb92dd56b7173a3df78d374d93516f8748a72"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/laravel-i18next/zipball/a22fb92dd56b7173a3df78d374d93516f8748a72",
+                "reference": "a22fb92dd56b7173a3df78d374d93516f8748a72",
+                "shasum": ""
             },
             "require-dev": {
                 "phpunit/phpunit": "^7.2"
@@ -3443,11 +3474,7 @@
                     "src/helpers.php"
                 ]
             },
-            "scripts": {
-                "test": [
-                    "vendor/bin/phpunit --configuration phpunit.xml"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -3462,9 +3489,7 @@
                 }
             ],
             "description": "Transform Laravel localization files into i18next compatible format. Provides routes for i18next-xhr-backend.",
-            "transport-options": {
-                "symlink": true
-            }
+            "time": "2019-01-29T15:38:58+00:00"
         },
         {
             "name": "processmaker/nayra",
@@ -3498,16 +3523,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "f3ff2e428b4ec88dd208791c0aa88b9f47661dcc"
+                "reference": "d28ab70c72537c51a47a91458a39de5b0ffc4cdf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/f3ff2e428b4ec88dd208791c0aa88b9f47661dcc",
-                "reference": "f3ff2e428b4ec88dd208791c0aa88b9f47661dcc",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/d28ab70c72537c51a47a91458a39de5b0ffc4cdf",
+                "reference": "d28ab70c72537c51a47a91458a39de5b0ffc4cdf",
                 "shasum": ""
             },
             "require": {
@@ -3528,18 +3553,15 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
                     "email": "taylor@processmaker.com"
                 }
             ],
-            "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent"
+            "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
+            "time": "2020-03-24T04:07:55+00:00"
         },
         {
             "name": "psr/cache",
@@ -3688,16 +3710,16 @@
         },
         {
             "name": "psr/log",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801"
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/446d54b4cb6bf489fc9d75f55843658e6f25d801",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/0f73288fd15629204f9d42b7055f72dacbe811fc",
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc",
                 "shasum": ""
             },
             "require": {
@@ -3731,7 +3753,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2019-11-01T11:05:21+00:00"
+            "time": "2020-03-23T09:12:05+00:00"
         },
         {
             "name": "psr/simple-cache",
@@ -6814,16 +6836,16 @@
         },
         {
             "name": "laravel/dusk",
-            "version": "v5.10.0",
+            "version": "v5.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/dusk.git",
-                "reference": "38776592d7c427a10eff69b15ba911f629a69ed8"
+                "reference": "e07cc46a1e39767739e8197189780b4c2639806d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/dusk/zipball/38776592d7c427a10eff69b15ba911f629a69ed8",
-                "reference": "38776592d7c427a10eff69b15ba911f629a69ed8",
+                "url": "https://api.github.com/repos/laravel/dusk/zipball/e07cc46a1e39767739e8197189780b4c2639806d",
+                "reference": "e07cc46a1e39767739e8197189780b4c2639806d",
                 "shasum": ""
             },
             "require": {
@@ -6878,7 +6900,7 @@
                 "testing",
                 "webdriver"
             ],
-            "time": "2020-03-17T17:00:25+00:00"
+            "time": "2020-03-24T16:21:49+00:00"
         },
         {
             "name": "laravel/homestead",
