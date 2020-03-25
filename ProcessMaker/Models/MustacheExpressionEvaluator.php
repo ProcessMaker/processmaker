@@ -4,19 +4,11 @@ namespace ProcessMaker\Models;
 
 use Mustache_Engine;
 use ProcessMaker\Contracts\TemplateExpressionInterface;
-use ProcessMaker\Exception\ExpressionFailedException;
-use ProcessMaker\Exception\ScriptLanguageNotSupported;
-use ProcessMaker\Exception\SyntaxErrorException;
-use ProcessMaker\Nayra\Bpmn\BaseTrait;
-use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\ExpressionLanguage\SyntaxError;
 use Throwable;
 
 /**
- *
- *
- * @package ProcessMaker\Model
+ * Class MustacheExpressionEvaluator
+ * @package ProcessMaker\Models
  */
 class MustacheExpressionEvaluator implements TemplateExpressionInterface
 {
@@ -27,6 +19,14 @@ class MustacheExpressionEvaluator implements TemplateExpressionInterface
         $this->engine = new Mustache_Engine();
     }
 
+    /**
+     * Evaluates the template using the mustache engine, if some error is generated an empty string
+     * is returned
+     *
+     * @param string $template
+     * @param string $data
+     * @return string
+     */
     public function render($template, $data)
     {
         try {
