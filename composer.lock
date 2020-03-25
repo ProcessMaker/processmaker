@@ -883,23 +883,23 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v5.1.0",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "4566062c68f76f43d44f1643f4970fe89757d4c6"
+                "reference": "feb0e820b8436873675fd3aca04f3728eb2185cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/4566062c68f76f43d44f1643f4970fe89757d4c6",
-                "reference": "4566062c68f76f43d44f1643f4970fe89757d4c6",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/feb0e820b8436873675fd3aca04f3728eb2185cb",
+                "reference": "feb0e820b8436873675fd3aca04f3728eb2185cb",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8|^5"
+                "phpunit/phpunit": ">=4.8 <=9"
             },
             "type": "library",
             "autoload": {
@@ -925,7 +925,11 @@
             ],
             "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
             "homepage": "https://github.com/firebase/php-jwt",
-            "time": "2020-02-24T23:15:03+00:00"
+            "keywords": [
+                "jwt",
+                "php"
+            ],
+            "time": "2020-03-25T18:49:23+00:00"
         },
         {
             "name": "fzaninotto/faker",
@@ -3341,12 +3345,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
-                "reference": "78e304775b72af78e7a458d5078816982b2b514e"
+                "reference": "0f5a4402f9160ca06b69ac3f1cea8fc0511e2005"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/78e304775b72af78e7a458d5078816982b2b514e",
-                "reference": "78e304775b72af78e7a458d5078816982b2b514e",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/0f5a4402f9160ca06b69ac3f1cea8fc0511e2005",
+                "reference": "0f5a4402f9160ca06b69ac3f1cea8fc0511e2005",
                 "shasum": ""
             },
             "type": "library",
@@ -3368,7 +3372,7 @@
                 "source": "https://github.com/ProcessMaker/docker-executor-lua/tree/feature/3",
                 "issues": "https://github.com/ProcessMaker/docker-executor-lua/issues"
             },
-            "time": "2020-03-24T22:22:26+00:00"
+            "time": "2020-03-25T14:29:32+00:00"
         },
         {
             "name": "processmaker/docker-executor-node",
@@ -3411,12 +3415,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/docker-executor-php.git",
-                "reference": "1d754a531302b244eac58e4403c551eefa8df84e"
+                "reference": "0b071553272fc414bd2505bcae990e145d7c1520"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/1d754a531302b244eac58e4403c551eefa8df84e",
-                "reference": "1d754a531302b244eac58e4403c551eefa8df84e",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/0b071553272fc414bd2505bcae990e145d7c1520",
+                "reference": "0b071553272fc414bd2505bcae990e145d7c1520",
                 "shasum": ""
             },
             "type": "library",
@@ -3438,7 +3442,7 @@
                 "source": "https://github.com/ProcessMaker/docker-executor-php/tree/feature/5",
                 "issues": "https://github.com/ProcessMaker/docker-executor-php/issues"
             },
-            "time": "2020-03-24T22:22:16+00:00"
+            "time": "2020-03-25T14:27:47+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
