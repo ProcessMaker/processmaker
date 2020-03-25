@@ -1079,5 +1079,20 @@
   "Deleted Users": "Deleted Users", 
   "Restore User": "Restore User",
   "Are you sure you want to restore the user {{item}}?": "Are you sure you want to restore the user {{item}}?",
-  "The user was restored": "The user was restored"
+  "The user was restored": "The user was restored",
+  "Existing Request Data Variable": "Existing Request Data Variable",
+  "Enter the request data variable to populate values of the select list. This variable must contain an array or an array of objects.": "Enter the request data variable to populate values of the select list. This variable must contain an array or an array of objects.",
+  "Option Label Shown": "Option Label Shown",
+  "Enter the property name from the Request data variable that displays to the user on the screen.": "Enter the property name from the Request data variable that displays to the user on the screen.",
+  "Show Control As": "Show Control As",
+  "Allow Multiple Selections": "Allow Multiple Selections",
+  "Type of Value Returned": "Type of Value Returned",
+  "Select whether to return a Single Value or an Object containing all properties from the Request Variable Object.": "Select whether to return a Single Value or an Object containing all properties from the Request Variable Object.",
+  "Variable Data Property": "Variable Data Property",
+  "Enter the property name from the Request data variable that will be passes as the value when selected.": "Enter the property name from the Request data variable that will be passes as the value when selected.",
+  "Dropdown/Multiselect": "Dropdown/Multiselect",
+  "Radio/Checkbox Group": "Radio/Checkbox Group",
+  "Single Value": "Single Value",
+  "Object": "Object",
+  "Advanced data search": "Advanced data search"
 }
