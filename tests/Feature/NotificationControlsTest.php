@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Facades\Request;
-use ProcessMaker\Models\Notification;
-use ProcessMaker\Models\ProcessRequestToken;
-use Tests\TestCase;
 use Illuminate\Database\Seeder;
-use ProcessMaker\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Request;
+use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessNotificationSetting;
-use ProcessMaker\Models\Permission;
-use ProcessMaker\Facades\WorkflowManager;
-use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
-use Illuminate\Http\UploadedFile;
+use Tests\TestCase;
 
 class NotificationControlsTest extends TestCase
 {
