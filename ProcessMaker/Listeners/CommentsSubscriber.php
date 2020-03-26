@@ -51,7 +51,10 @@ class CommentsSubscriber
 
         $flowSource = $incomingFlow->getProperties()["source"];
         if ($flowSource instanceof GatewayInterface) {
-            $flowLabel = $incomingFlow->getProperties()['name'] ? $incomingFlow->getProperties()['name'] : __('Label Undefined');
+            $properties = $incomingFlow->getProperties();
+            $flowLabel = array_key_exists('name', $properties) && $properties['name']
+                        ? $properties['name']
+                        : __('Label Undefined');
             Comment::create([
                 'type' => 'LOG',
                 'user_id' => $user_id,
