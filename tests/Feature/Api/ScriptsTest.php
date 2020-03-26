@@ -73,6 +73,8 @@ class ScriptsTest extends TestCase
 
     public function testCreateCategoryRequired()
     {
+        factory(ScriptExecutor::class)->create(['language' => 'php']);
+
         $url = route('api.scripts.store');
         $params = [
             'title' => 'Title',

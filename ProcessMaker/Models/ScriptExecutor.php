@@ -7,6 +7,8 @@ use ProcessMaker\Traits\HasVersioning;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+class ScriptExecutorNotFoundException extends \Exception {};
+
 class ScriptExecutor extends Model
 {
     use HasVersioning;
@@ -20,7 +22,7 @@ class ScriptExecutor extends Model
         $language = $params['language'];
         try {
             $initialExecutor = self::initialExecutor($language);
-        } catch(ModelNotFoundException $e) {
+        } catch(ScriptExecutorNotFoundException $e) {
             $initialExecutor = null;
         }
 
@@ -37,9 +39,15 @@ class ScriptExecutor extends Model
 
     public static function initialExecutor($language)
     {
-        return self::where('language', $language)
+        $initialExecutor = self::where('language', $language)
             ->orderBy('created_at', 'asc')
-            ->firstOrFail();
+            ->first();
+        if (!$initialExecutor) {
+            throw new ScriptExecutorNotFoundException(
+                'ScriptExecutor not found for language: ' . $language
+            );
+        }
+        return $initialExecutor;
     }
 
     public function versions()

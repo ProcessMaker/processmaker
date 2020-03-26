@@ -76,6 +76,9 @@ class ProcessScriptsTest extends TestCase
                 'This test requires docker'
             );
         }
+        factory(ScriptExecutor::class)->create([
+            'language' => 'php',
+        ]);
         ScriptExecutor::setTestConfig('php');
 
         //Start a process request

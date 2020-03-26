@@ -15,15 +15,15 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/mysql:5.7-ram
         environment:
-          - MYSQL_ROOT_PASSWORD: P4ssW0rd1!
-          - MYSQL_DATABASE: circle_test
+          MYSQL_ROOT_PASSWORD: P4ssW0rd1!
+          MYSQL_DATABASE: circle_test
 
       # Add support for Microsoft SQL Server Testing
       - image: microsoft/mssql-server-linux:2017-GA
         environment:
           # Needed for MS SQL Docker install
-          - ACCEPT_EULA: 'Y'
-          - SA_PASSWORD: 'P4ssW0rd1!'
+          ACCEPT_EULA: 'Y'
+          SA_PASSWORD: 'P4ssW0rd1!'
 
     working_directory: ~/repo
 
@@ -149,7 +149,13 @@ jobs:
       # run tests!
       - run:
           name: 'PHPUnit'
-          command: './vendor/bin/phpunit -v -d memory_limit=-1'
+          command: |
+            composer clearcache	
+            composer global config minimum-stability dev	
+            composer config repositories.docker-executor-php vcs https://github.com/ProcessMaker/docker-executor-php	
+            composer config repositories.docker-executor-lua vcs https://github.com/ProcessMaker/docker-executor-lua	
+            COMPOSER_MEMORY_LIMIT=-1 composer require processmaker/docker-executor-php:dev-feature/5 processmaker/docker-executor-lua:dev-feature/3
+            ./vendor/bin/phpunit -v -d memory_limit=-1
           environment:
             DB_DATABASE: 'circle_test'
             DB_PASSWORD: 'P4ssW0rd1!'

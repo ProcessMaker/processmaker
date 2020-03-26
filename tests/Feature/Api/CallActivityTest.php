@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -21,6 +22,9 @@ class CallActivityTest extends TestCase
      */
     public function testCallActivity()
     {
+        factory(ScriptExecutor::class)->create(['language' => 'php']);
+        ScriptExecutor::setTestConfig('php');
+
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install',['-vvv' => true]);
 
