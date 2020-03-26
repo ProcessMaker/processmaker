@@ -38,8 +38,8 @@ class TaskController extends Controller
     {
         $this->authorize('update', $task);
         //Mark as unread any not read notification for the task
-        Notification::where('data->url', Request::path())
-            ->whereNotNull('read_at')
+        Notification::where('data->url', '/' . Request::path())
+            ->whereNull('read_at')
             ->update(['read_at' => Carbon::now()]);
 
         $manager = new ScreenBuilderManager();
