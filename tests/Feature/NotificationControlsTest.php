@@ -120,7 +120,6 @@ class NotificationControlsTest extends TestCase
         // Create a request token to simulate that a new task is created for the user
         $token = factory(ProcessRequestToken::class)->create();
 
-
         //url to edit the task
         $taskUrl = route('tasks.edit', ['taks' => $token->id], false);
 
