@@ -1,6 +1,7 @@
 /* eslint-disable func-names */
 // Our initial node types to register with our modeler
 import {
+  signalStartEvent,
   association,
   endEvent,
   exclusiveGateway,
@@ -300,5 +301,17 @@ ProcessMaker.EventBus.$on(
           name: 'whitelist',
       },
     });
+    registerInspectorExtension(
+      signalStartEvent,
+      {
+        component: 'FormInput',
+        config: {
+          label: 'Signal Name',
+          name: 'signalName',
+          helper: 'Enter the signal name that is unique from all other elements in the diagram'
+        }
+      },
+      'inspector-accordion'
+    );
   }
 );
