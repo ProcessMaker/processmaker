@@ -19,8 +19,11 @@ use Throwable;
  */
 class FormalExpression implements FormalExpressionInterface
 {
-
     use BaseTrait;
+
+    const defaultLanguage = 'FEEL';
+
+    const templateEngine = 'Mustache';
 
     /**
      * Languages supported for expressions
@@ -29,9 +32,9 @@ class FormalExpression implements FormalExpressionInterface
         'FEEL' => ['feelExpression', 'feelEncode'],
     ];
 
-    const defaultLanguage = 'FEEL';
 
     /**
+     * FEEL expression object to be used to evaluate
      * @var \Symfony\Component\ExpressionLanguage\ExpressionLanguage $expressionLanguage
      */
     private $feelExpression;
@@ -44,49 +47,7 @@ class FormalExpression implements FormalExpressionInterface
         $this->feelExpression = new ExpressionLanguage();
     }
 
-    /**
-     * Parse mustache syntax
-     *
-     * @param string $expression
-     * @param array $data
-     *
-     * @return mixed
-     */
-    private function mustacheExpression($expression, $data)
-    {
-        $mustache = new Mustache_Engine();
-        return $mustache->render($expression, $data);
-    }
 
-    /**
-     * Evaluate the format expression.
-     *
-     * @param array $data
-     *
-     * @return string
-     */
-    private function evaluate(array $data)
-    {
-        $body = $this->mustacheExpression($this->getBody(), $data);
-        if (!trim($body)) {
-            return true;
-        }
-
-        $language = $this->getLanguage() ?: self::defaultLanguage;
-        if (!isset(self::languages[$language])) {
-            throw new ScriptLanguageNotSupported($language);
-        }
-        $evaluator = self::languages[$language][0];
-        $encoder = isset(self::languages[$language][1]) ? self::languages[$language][1] : null;
-        try {
-            $values = $encoder ? $this->$encoder($data) : $data;
-            return $this->$evaluator->evaluate($body, $values);
-        } catch (SyntaxError $syntaxError) {
-            throw new SyntaxErrorException($syntaxError, $body);
-        } catch (Throwable $error) {
-            throw new ExpressionFailedException($error);
-        }
-    }
 
     /**
      * Prepare the data for the FEEL evaluator
@@ -98,6 +59,16 @@ class FormalExpression implements FormalExpressionInterface
     private function feelEncode(array $data)
     {
         return (array) json_decode(json_encode($data));
+    }
+
+    private function getTemplateEngine()
+    {
+        if (self::templateEngine == 'Mustache') {
+            return new MustacheExpressionEvaluator();
+        }
+        else {
+            throw new \Exception("Template engine not supported");
+        }
     }
 
     /**
@@ -165,6 +136,43 @@ class FormalExpression implements FormalExpressionInterface
      */
     public function __invoke($data)
     {
-        return $this->evaluate($data);
+        return $this->evaluate($this->getTemplateEngine(), $this->getBody(),$data);
+    }
+
+    /**
+     *  Evaluate an expression using an specific template engine
+
+     * @param \ProcessMaker\Contracts\TemplateExpressionInterface $templateEngine
+     * @param string $expression
+     * @param array $data
+     *
+     * @return bool
+     *
+     * @throws ExpressionFailedException
+     * @throws ScriptLanguageNotSupported
+     * @throws SyntaxErrorException
+     */
+    private function evaluate($templateEngine, $expression, array $data)
+    {
+        $body = $templateEngine->render($expression, $data);
+
+        if (!trim($body)) {
+            return true;
+        }
+
+        $language = $this->getLanguage() ?: self::defaultLanguage;
+        if (!isset(self::languages[$language])) {
+            throw new ScriptLanguageNotSupported($language);
+        }
+        $evaluator = self::languages[$language][0];
+        $encoder = isset(self::languages[$language][1]) ? self::languages[$language][1] : null;
+        try {
+            $values = $encoder ? $this->$encoder($data) : $data;
+            return $this->$evaluator->evaluate($body, $values);
+        } catch (SyntaxError $syntaxError) {
+            throw new SyntaxErrorException($syntaxError, $body);
+        } catch (Throwable $error) {
+            throw new ExpressionFailedException($error);
+        }
     }
 }
