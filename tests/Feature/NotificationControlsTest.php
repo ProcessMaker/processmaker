@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\Request;
+use ProcessMaker\Models\Notification;
+use ProcessMaker\Models\ProcessRequestToken;
 use Tests\TestCase;
 use Illuminate\Database\Seeder;
 use ProcessMaker\Models\User;
@@ -34,7 +37,7 @@ class NotificationControlsTest extends TestCase
 
         // Seed the processes table.
         Artisan::call('db:seed', ['--class' => 'ProcessSeeder']);
-        
+
         // Assert that our database has the process we need
         $this->assertDatabaseHas('processes', ['name' => 'Leave Absence Request']);
 
@@ -50,16 +53,16 @@ class NotificationControlsTest extends TestCase
 
         // Assert that our database currently has no notifications
         $this->assertDatabaseMissing('notifications', ['type' => 'ProcessMaker\Notifications\ProcessCreatedNotification']);
-        
+
         // Trigger the process start event
         $url = route('api.process_events.trigger', [$process->id, 'event' => 'node_2']);
         $response = $this->apiCall('POST', $url);
         $response->assertStatus(201);
-        
+
         // Assert that our database now has a notification
         $this->assertDatabaseHas('notifications', ['type' => 'ProcessMaker\Notifications\ProcessCreatedNotification']);
     }
-    
+
     /**
      * Test that we do not receive notifications when they are disabled
      *
@@ -75,7 +78,7 @@ class NotificationControlsTest extends TestCase
 
         // Seed the processes table.
         Artisan::call('db:seed', ['--class' => 'ProcessSeeder']);
-        
+
         // Assert that our database has the process we need
         $this->assertDatabaseHas('processes', ['name' => 'Leave Absence Request']);
 
@@ -88,7 +91,7 @@ class NotificationControlsTest extends TestCase
             'notifiable_type' => 'requester',
             'notification_type' => 'started',
         ]);
-        
+
         // Remove the notification settings
         ProcessNotificationSetting::where('process_id', $process->id)->delete();
 
@@ -99,13 +102,50 @@ class NotificationControlsTest extends TestCase
 
         // Assert that our database currently has no notifications
         $this->assertDatabaseMissing('notifications', ['type' => 'ProcessMaker\Notifications\ProcessCreatedNotification']);
-        
+
         // Trigger the process start event
         $url = route('api.process_events.trigger', [$process->id, 'event' => 'node_2']);
         $response = $this->apiCall('POST', $url);
         $response->assertStatus(201);
-        
+
         // Assert that our database still has no notifications
         $this->assertDatabaseMissing('notifications', ['type' => 'ProcessMaker\Notifications\ProcessCreatedNotification']);
+    }
+
+    /**
+     * Verify that a notification is marked as read when the user edits the related task
+     */
+    public function testNotificationMarkedAsReadWhenTaskIsVisited()
+    {
+        // Create a request token to simulate that a new task is created for the user
+        $token = factory(ProcessRequestToken::class)->create();
+
+
+        //url to edit the task
+        $taskUrl = route('tasks.edit', ['taks' => $token->id], false);
+
+        //Create a new notification for the task created above
+        $response = $this->apiCall('POST', '/notifications', [
+            'type' => 'TEST',
+            'notifiable_type' => 'NOTIFIABLE/TEST',
+            'data' => json_encode(['url' => $taskUrl]),
+            'notifiable_id' => 1
+        ]);
+        $response->assertStatus(201);
+
+        // Verify that there is one notification for the tasK:
+        $beforeCount = Notification::where('data->url', $taskUrl)
+                    ->whereNull('read_at')
+                    ->get()
+                    ->count();
+        $this->assertEquals(1, $beforeCount);
+
+        // Goto to the edit task screen and verify that the notification is read
+        $response = $this->webCall('GET', $taskUrl);
+        $afterCount = Notification::where('data->url', $taskUrl)
+            ->whereNull('read_at')
+            ->get()
+            ->count();
+        $this->assertEquals(0, $afterCount);
     }
 }
