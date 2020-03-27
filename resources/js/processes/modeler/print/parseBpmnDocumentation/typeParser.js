@@ -10,10 +10,10 @@ const hasChildNode = (node, childType) => {
 };
 
 const hasSubType = (subType) => (parentNode) => hasChildNode(parentNode, subType);
-const hasTimerEventDefinition = hasSubType('bpmn:timerEventDefinition');
-const hasMessageEventDefinition = hasSubType('bpmn:messageEventDefinition');
-const hasErrorEventDefinition = hasSubType('bpmn:errorEventDefinition');
-const hasSignalEventDefinition = hasSubType('bpmn:signalEventDefinition');
+const hasTimerEventDefinition = hasSubType('timerEventDefinition');
+const hasMessageEventDefinition = hasSubType('messageEventDefinition');
+const hasErrorEventDefinition = hasSubType('errorEventDefinition');
+const hasSignalEventDefinition = hasSubType('signalEventDefinition');
 
 const prependBpmnNamespace = (nodeTagName) => {
   if (nodeTagName.includes('bpmn:'))
