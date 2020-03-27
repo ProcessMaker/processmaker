@@ -16,8 +16,7 @@ const hasErrorEventDefinition = hasSubType('errorEventDefinition');
 const hasSignalEventDefinition = hasSubType('signalEventDefinition');
 
 const prependBpmnNamespace = (nodeTagName) => {
-  if (nodeTagName.includes('bpmn:'))
-  {
+  if (nodeTagName.startsWith('bpmn')) {
     return nodeTagName;
   }
   return `bpmn:${nodeTagName}`;
@@ -25,7 +24,6 @@ const prependBpmnNamespace = (nodeTagName) => {
 
 const getFullyQualifiedNodeType = (node) => {
   const tagName = prependBpmnNamespace(node.tagName);
-
   if (hasTimerEventDefinition(node)) {
     return `${tagName}:timerEventDefinition`;
   }
