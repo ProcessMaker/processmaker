@@ -13,21 +13,30 @@ const hasMessageEventDefinition = hasSubType('bpmn:messageEventDefinition');
 const hasErrorEventDefinition = hasSubType('bpmn:errorEventDefinition');
 const hasSignalEventDefinition = hasSubType('bpmn:signalEventDefinition');
 
+const prependBpmnNamespace = (nodeTagName) => {
+  if (nodeTagName.includes('bpmn:'))
+  {
+    return nodeTagName;
+  }
+  return `bpmn:${nodeTagName}`;
+};
+
 const getFullyQualifiedNodeType = (node) => {
-  console.log(node);
+  const tagName = prependBpmnNamespace(node.tagName);
+
   if (hasTimerEventDefinition(node)) {
-    return `${node.tagName}:timerEventDefinition`;
+    return `${tagName}:timerEventDefinition`;
   }
   if (hasMessageEventDefinition(node)) {
-    return `${node.tagName}:messageEventDefinition`;
+    return `${tagName}:messageEventDefinition`;
   }
   if (hasErrorEventDefinition(node)) {
-    return `${node.tagName}:errorEventDefinition`;
+    return `${tagName}:errorEventDefinition`;
   }
   if (hasSignalEventDefinition(node)) {
-    return `${node.tagName}:signalEventDefinition`;
+    return `${tagName}:signalEventDefinition`;
   }
-  return node.tagName;
+  return tagName;
 };
 
 export default getFullyQualifiedNodeType;
