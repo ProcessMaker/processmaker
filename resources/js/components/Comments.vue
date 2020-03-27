@@ -2,7 +2,10 @@
   <div v-if="comments.length > 0" class="px-3 mb-2 timeline">
     <template>
       <div class="px-2 py-3" v-for="value in comments">
-        <avatar-image v-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
+        <div v-if="value.subject=='Gateway'" class="float-left" style="transform:rotate(45deg); width:20px; margin-left:7px">
+          <i class="far fa-square" ></i>
+        </div>
+        <avatar-image v-else-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
         <img v-else src="/img/systemAvatar.png" id="systemAvatar">
         <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
         &nbsp;-
