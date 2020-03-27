@@ -3,9 +3,9 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Query\SyntaxError;
 use ProcessMaker\Repositories\BpmnDocument;
 
 class SignalController extends Controller
@@ -15,24 +15,35 @@ class SignalController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //$until = now()->addMinutes(1);
-        //$signals = Cache::remember('signals', $until, function () {
-            $signals = [];
-            $processes = Process::all();
-            foreach($processes as $process) {
-                $document = $process->getDomDocument();
-                $nodes = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
-                foreach($nodes as $node) {
-                    $signals[] = [
-                        'id' => $node->getAttribute('id'),
-                        'name' => $node->getAttribute('name'),
-                    ];
-                }
+        $query = Process::query();
+        $pmql = $request->input('pmql', '');
+        if (!empty($pmql)) {
+            try {
+                $query->pmql($pmql);
+            } catch (SyntaxError $e) {
+                return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
-            //return $signals;
-        //});
+        }
+        $processes = $query->get();
+        $signals = [];
+        foreach($processes as $process) {
+            $document = $process->getDomDocument();
+            $nodes = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
+            foreach($nodes as $node) {
+                $signals[] = [
+                    'id' => $node->getAttribute('id'),
+                    'name' => $node->getAttribute('name'),
+                ];
+            }
+        }
+        $filter = $request->input('filter', '');
+        if ($filter) {
+            array_filter($signals, function ($signal) use($filter) {
+                return mb_stripos($signal['name'], $filter) !== false;
+            });
+        }
         return response()->json(['data' => $signals]);
     }
 

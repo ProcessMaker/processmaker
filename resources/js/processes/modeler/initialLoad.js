@@ -309,8 +309,8 @@ ProcessMaker.EventBus.$on(
         component: 'SignalSelect',
         config: {
           label: 'Signal',
-          name: 'signalName',
-          helper: 'Enter the signal name that is unique from all other elements in the diagram'
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
         }
       },
       'inspector-accordion'
