@@ -229,7 +229,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function assignableUsers()
     {
-        $query = $this->newQuery();
+        $query = $this->newQuery()->where('id', $this->getKey());
         return new TokenAssignableUsers($query, $this);
     }
 
@@ -451,7 +451,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function valueAliasRequest($value, $expression)
     {
         return function($query) use($expression, $value) {
-            $processRequests = ProcessRequest::where('name', $value)->get();
+            $processRequests = ProcessRequest::where('name', $expression->operator, $value)->get();
             $query->whereIn('process_request_tokens.process_request_id', $processRequests->pluck('id'));
         };
     }
@@ -467,7 +467,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function valueAliasTask($value, $expression)
     {
         return function($query) use($expression, $value) {
-            $query->where('process_request_tokens.element_name', $value);
+            $query->where('process_request_tokens.element_name', $expression->operator, $value);
         };
     }
     

@@ -100,7 +100,16 @@ trait ProcessTestingTrait
             'status' => 'COMPLETED',
             'data' => $data,
         ]);
-        return $return === 'response' ? $response : ProcessRequestToken::find($response->json()['id']);
+        if ($return === 'response') {
+            return $response;
+        } else {
+            $json = $response->json();
+            if ($json && isset($json['id'])) {
+                return ProcessRequestToken::find($response->json()['id']);
+            } else {
+                throw new \Exception($response->getContents());
+            }
+        }
     }
 
     /**
@@ -133,7 +142,7 @@ trait ProcessTestingTrait
     {
         $schedule = app()->make(Schedule::class);
         $scheduleManager = new TaskSchedulerManager();
-        $scheduleManager->scheduleTasks($schedule);
+        $scheduleManager->scheduleTasks();
         ///
         $events = collect($schedule->events());
         $events->each(function (Event $event) {

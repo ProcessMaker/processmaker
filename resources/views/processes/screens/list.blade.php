@@ -53,7 +53,7 @@
                     @if ($config->countCategories !== 0)
                         <div class="modal-body">
                             <div class="form-group">
-                                {!! Form::label('title', __('Name')) !!}
+                                {!! Form::label('title', __('Name')) !!}<small class="ml-1">*</small>
                                 {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                                 'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
                                 <small class="form-text text-muted" v-if="! errors.title">
@@ -62,13 +62,13 @@
                                 <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('type', __('Type')) !!}
+                                {!! Form::label('type', __('Type')) !!}<small class="ml-1">*</small>
                                 {!! Form::select('type', [null => __('Select')] + $config->types, '', ['id' => 'type','class'=> 'form-control', 'v-model' => 'formData.type',
                                 'v-bind:class' => '{"form-control":true, "is-invalid":errors.type}']) !!}
                                 <div class="invalid-feedback" v-for="type in errors.type">@{{type}}</div>
                             </div>
                             <div class="form-group">
-                                {!! Form::label('description', __('Description')) !!}
+                                {!! Form::label('description', __('Description')) !!}<small class="ml-1">*</small>
                                 {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                                 'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
                                 <div class="invalid-feedback" v-for="description in errors.description">@{{description}}

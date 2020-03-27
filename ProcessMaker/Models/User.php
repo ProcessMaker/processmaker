@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
+use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Query\Traits\PMQL;
 use ProcessMaker\Traits\HasAuthorization;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -100,6 +101,7 @@ class User extends Authenticatable implements HasMedia
         'timezone',
         'datetime_format',
         'language',
+        'meta',
     ];
 
     protected $appends = [
@@ -108,7 +110,8 @@ class User extends Authenticatable implements HasMedia
     ];
 
     protected $casts = [
-        'is_administrator' => 'bool'
+        'is_administrator' => 'bool',
+        'meta' => 'object',
     ];
 
     /**
@@ -122,7 +125,7 @@ class User extends Authenticatable implements HasMedia
     {
         $unique = Rule::unique('users')->ignore($existing);
 
-        $checkUserIsDeleted = function($attribute, $value, $fail) use ($existing) {
+        $checkUserIsDeleted = function ($attribute, $value, $fail) use ($existing) {
             if (!$existing) {
                 $user = User::withTrashed()->where($attribute, $value)->first();
                 if ($user) {
@@ -190,7 +193,7 @@ class User extends Authenticatable implements HasMedia
             $perms = collect(session('permissions'));
         }
 
-        $filtered = $perms->filter(function($value) use($resource) {
+        $filtered = $perms->filter(function ($value) use ($resource) {
             $match = preg_match("/(.+)-{$resource}/", $value);
             if ($match === 1) {
                 return true;
@@ -309,8 +312,9 @@ class User extends Authenticatable implements HasMedia
      * Check if the user can do any of the listed permissions.
      * If so, return the permission name, otherwise false
      */
-    public function canAny($permissions) {
-        foreach(explode("|", $permissions) as $permission) {
+    public function canAny($permissions)
+    {
+        foreach (explode("|", $permissions) as $permission) {
             if ($this->can($permission)) {
                 return $permission;
             }
@@ -346,5 +350,40 @@ class User extends Authenticatable implements HasMedia
             ->intersect(
                 $this->groups()->pluck('groups.id')
             )->count() > 0;
+    }
+
+    /**
+     * Update one request_user_permissions
+     *
+     * @param ProcessRequest $request
+     *
+     * @return void
+     */
+    public function updatePermissionToRequest(ProcessRequest $request)
+    {
+        $permission = RequestUserPermission::firstOrNew(['request_id' => $request->getKey(), 'user_id' => $this->getKey()]);
+        $permission->can_view = $this->can('view', $request);
+        $permission->save();
+    }
+
+    public function updatePermissionsToRequests()
+    {
+        // Update existing request_user_permissions
+        $permissions = RequestUserPermission::with('request')->whereHas('request', function ($query) {
+            $query->where('request_user_permissions.user_id', $this->getKey());
+            $query->whereRaw('process_requests.updated_at > request_user_permissions.updated_at');
+        })->get();
+        foreach ($permissions as $permission) {
+            $permission->can_view = $this->can('view', $permission->request);
+            $permission->save();
+        }
+        // Add new request_user_permissions
+        $requests = ProcessRequest::whereRaw(
+            'id not in (select request_id from request_user_permissions where user_id=?)',
+            [$this->getKey()]
+        )->get();
+        foreach($requests as $request) {
+            $this->updatePermissionToRequest($request);
+        }
     }
 }

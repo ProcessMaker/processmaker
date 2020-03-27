@@ -189,9 +189,8 @@ class IntermediateTimerEventTest extends TestCase
         Carbon::setTestNow(Carbon::now()->addMinute(5));
 
         // Re-schedule events for artisan call
-        $schedule = app()->make(\Illuminate\Console\Scheduling\Schedule::class);
         $scheduleManager = new TaskSchedulerManager();
-        $scheduleManager->scheduleTasks($schedule);
+        $scheduleManager->scheduleTasks();
         \Artisan::call('schedule:run');
 
         $iteToken = $request->tokens()->where('element_id', '_5')->firstOrFail();
@@ -201,7 +200,7 @@ class IntermediateTimerEventTest extends TestCase
         Carbon::setTestNow(Carbon::now()->addMinute(5));
 
         // Re-schedule events for artisan call
-        $scheduleManager->scheduleTasks($schedule);
+        $scheduleManager->scheduleTasks();
         \Artisan::call('schedule:run');
 
         $iteToken->refresh();

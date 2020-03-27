@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Mustache_Engine;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
+use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
@@ -55,7 +57,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   @OA\Property(property="pause_timer_start", type="integer"),
  *   @OA\Property(property="cancel_screen_id", type="integer"),
  *   @OA\Property(property="has_timer_start_events", type="boolean"),
- *   @OA\Property(property="start_events", type="string", format="json"),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -121,7 +122,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   }
  * )
  */
-class Process extends Model implements HasMedia
+class Process extends Model implements HasMedia, ProcessModelInterface
 {
     use HasMediaTrait;
     use SerializeToIso8601;
@@ -206,6 +207,7 @@ class Process extends Model implements HasMedia
         'start_events' => 'array',
         'warnings' => 'array',
         'self_service_tasks' => 'array',
+        'signal_events' => 'array',
     ];
 
     /**
@@ -681,6 +683,11 @@ class Process extends Model implements HasMedia
                         case 'self_service':
                             $user = null;
                             break;
+                        case 'user_by_id':
+                            $mustache = new Mustache_Engine();
+                            $assigneeId = $mustache->render($item->assignee, $instanceData);
+                            $user = $assigneeId;
+                            break;
                         case 'script':
                         default:
                             $user = null;
@@ -1086,5 +1093,23 @@ class Process extends Model implements HasMedia
     public function isValidForExecution()
     {
         return empty($this->warnings) && !empty($this->getLatestVersion());
+    }
+
+    /**
+     * Get the start events with signal events
+     *
+     * @return array
+     */
+    public function getUpdatedStartEventsSignalEvents()
+    {
+        $response = [];
+        foreach($this->start_events as $event) {
+            foreach($event['eventDefinitions'] as $eventDefinition) {
+                if ($eventDefinition['$type'] === 'signalEventDefinition') {
+                    $response[] = $eventDefinition['signalRef'];
+                }
+            }
+        }
+        return $response;
     }
 }

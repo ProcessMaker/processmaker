@@ -21,14 +21,14 @@
             <div class="col">
                 <div class="card card-body">
                     <div class="form-group">
-                        {!! Form::label('title', __('Name')) !!}
+                        {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
                         {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                         'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
                         <small class="form-text text-muted" v-if="! errors.title">{{__('The screen name must be distinct.') }}</small>
                         <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('description', __('Description')) !!}
+                        {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
                         {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
                         'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
                         <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>

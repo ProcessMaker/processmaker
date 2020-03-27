@@ -55,7 +55,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('name', __('Name'))!!}
+                            {!!Form::label('name', __('Name'))!!}<small class="ml-1">*</small>
                             {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                             <small class="form-text text-muted"
@@ -63,7 +63,7 @@
                             <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                         </div>
                         <div class="form-group">
-                            {!!Form::label('description', __('Description'))!!}
+                            {!!Form::label('description', __('Description'))!!}<small class="ml-1">*</small>
                             {!!Form::textArea('description', null, ['class'=> 'form-control', 'v-model'=> 'description',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}','rows'=>3])!!}
                             <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
@@ -71,7 +71,7 @@
                         </div>
                         <div class="form-group">
                             {!!Form::label('value', __('Value'))!!}
-                            {!!Form::text('value', null, ['class'=> 'form-control', 'v-model'=> 'value',
+                            {!!Form::textArea('value', null, ['class'=> 'form-control', 'v-model'=> 'value',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.value}'])!!}
                             <div class="invalid-feedback" v-for="value in errors.value">@{{value}}</div>
                         </div>

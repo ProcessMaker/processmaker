@@ -36,7 +36,7 @@
                                 variant="link"
                                 @click="onAction('remove-item', props.rowData, props.rowIndex)"
                                 v-b-tooltip.hover
-                                :title="$t('Remove')"
+                                :title="$t('Delete')"
                                 v-if="permissions.delete && props.rowData[count] == 0"
                             >
                                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>

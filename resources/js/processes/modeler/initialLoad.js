@@ -66,18 +66,13 @@ let nodeTypes = [
   messageFlow,
   serviceTask,
   textAnnotation,
+  intermediateMessageCatchEvent,
+  eventBasedGateway,
 ];
 
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
 
-// Set default properties for task
-task.definition = function definition(moddle) {
-  return moddle.create('bpmn:Task', {
-    name: window.ProcessMaker.events.$t('New Task'),
-    assignment: 'requester'
-  });
-};
 ProcessMaker.EventBus.$on('modeler-init', registerNodes);
 
 ProcessMaker.EventBus.$on(
@@ -122,6 +117,7 @@ ProcessMaker.EventBus.$on(
         label: 'Screen for Input',
         helper: 'Select Screen to display this Task',
         name: 'screenRef',
+        required: true,
         type: 'FORM'
       }
     });
@@ -187,7 +183,8 @@ ProcessMaker.EventBus.$on(
       config: {
         label: 'Script',
         helper: 'Select the Script this element runs',
-        name: 'scriptRef'
+        name: 'scriptRef',
+        required: true,
       }
     });
 
@@ -217,7 +214,8 @@ ProcessMaker.EventBus.$on(
         helper:
           'Select Screen to display this Task',
         name: 'screenRef',
-        params: { type: 'DISPLAY' }
+        params: { type: 'DISPLAY' },
+        required: true,
       }
     });
     registerInspectorExtension(manualTask, {
