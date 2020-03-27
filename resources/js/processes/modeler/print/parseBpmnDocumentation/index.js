@@ -4,7 +4,6 @@ import {nodeDocumentation, nodeText} from './documentationParser';
 
 function documentableBpmnNodes(bpmnString) {
   const bpmnDoc = new DOMParser().parseFromString(bpmnString, 'text/xml');
-
   const nodesWithNonEmptyId = Array.from(bpmnDoc.querySelectorAll('*[id]:not([id=""])'));
 
   const withNonEmptyNames = nodesWithNonEmptyId.filter((bpmnNode) => {
