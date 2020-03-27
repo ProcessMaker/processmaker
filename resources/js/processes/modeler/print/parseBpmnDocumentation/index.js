@@ -1,6 +1,6 @@
 import getFullyQualifiedNodeType from './typeParser';
-import {getNodeName, hasNonEmptyName} from './nameParser';
-import {nodeDocumentation, nodeText} from './documentationParser';
+import { getNodeName, hasNonEmptyName } from './nameParser';
+import { nodeDocumentation, nodeText } from './documentationParser';
 
 function documentableBpmnNodes(bpmnString) {
   const bpmnDoc = new DOMParser().parseFromString(bpmnString, 'text/xml');
@@ -16,7 +16,7 @@ function documentableBpmnNodes(bpmnString) {
   });
 
   const documentableNodes = withNonEmptyNames.filter((bpmnNode) => {
-    const nodesThatCannotBeDocumented = ['bpmn:process', 'bpmn:error', 'bpmn:message'];
+    const nodesThatCannotBeDocumented = ['bpmn:process', 'bpmn:error', 'bpmn:message', 'bpmn:signal'];
     return !nodesThatCannotBeDocumented.includes(bpmnNode.tagName);
   });
 

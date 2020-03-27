@@ -11,8 +11,10 @@ const hasSubType = (subType) => (parentNode) => hasChildNode(parentNode, subType
 const hasTimerEventDefinition = hasSubType('bpmn:timerEventDefinition');
 const hasMessageEventDefinition = hasSubType('bpmn:messageEventDefinition');
 const hasErrorEventDefinition = hasSubType('bpmn:errorEventDefinition');
+const hasSignalEventDefinition = hasSubType('bpmn:signalEventDefinition');
 
 const getFullyQualifiedNodeType = (node) => {
+  console.log(node);
   if (hasTimerEventDefinition(node)) {
     return `${node.tagName}:timerEventDefinition`;
   }
@@ -21,6 +23,9 @@ const getFullyQualifiedNodeType = (node) => {
   }
   if (hasErrorEventDefinition(node)) {
     return `${node.tagName}:errorEventDefinition`;
+  }
+  if (hasSignalEventDefinition(node)) {
+    return `${node.tagName}:signalEventDefinition`;
   }
   return node.tagName;
 };
