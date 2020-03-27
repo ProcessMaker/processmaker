@@ -119,21 +119,9 @@
         ProcessMaker.alert(message, 'danger');
       };
 
-      const saveToApi = (processId, data, successHandler, errorHandler) => {
-        ProcessMaker.apiClient.put('/processes/' + processId, data)
-                .then(successHandler)
-                .catch(errorHandler);
-      };
-
-      saveToApi(
-        this.process.id,
-        data,
-        savedSuccessfully,
-        saveFailed
-      );
-      // ProcessMaker.apiClient.put('/processes/' + this.process.id, data)
-      //         .then(savedSuccessfully)
-      //         .catch(saveFailed);
+      ProcessMaker.apiClient.put('/processes/' + this.process.id, data)
+              .then(savedSuccessfully)
+              .catch(saveFailed);
     }
   },
   mounted() {
