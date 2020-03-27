@@ -1,8 +1,8 @@
 <template>
     <div class="card mb-3 mr-2 ml-2">
         <div class="card-header">
-            <bpmn-type-image v-if="icon.type === 'image'" :icon="icon" height="14"/>
-            <bpmn-type-icon v-else-if="icon.type === 'icon'" :icon="icon"/>
+            <img v-if="icon.type === 'image'" v-bind="icon" height="14" />
+            <i v-else-if="icon.type === 'icon'" v-bind="icon"></i>
             <!-- [{{ bpmnNode.type }}]:-->
             <strong>{{ bpmnNode.name }}</strong>
             ({{ bpmnNode.id }})
@@ -16,8 +16,6 @@
 </template>
 
 <script>
-  import BpmnTypeImage from './BpmnTypeImage';
-  import BpmnTypeIcon from './BpmnTypeIcon';
   import icons from '../icons';
 
   export default {
@@ -35,6 +33,5 @@
         return {type: 'unknown'};
       },
     },
-    components: {BpmnTypeImage, BpmnTypeIcon},
   };
 </script>
