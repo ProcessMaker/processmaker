@@ -5,6 +5,7 @@ namespace ProcessMaker\Traits;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
+use ProcessMaker\Repositories\BpmnDocument;
 
 trait ProcessTrait
 {
@@ -44,5 +45,17 @@ trait ProcessTrait
             }
         }
         return $this->bpmnDefinitions;
+    }
+
+    /**
+     * Get BPMN DOM Document
+     *
+     * @return BpmnDocument
+     */
+    public function getDomDocument()
+    {
+        $document = new BpmnDocument($this);
+        $document->loadXML($this->bpmn);
+        return $document;
     }
 }

@@ -21,6 +21,7 @@ import {
   eventBasedGateway,
   intermediateMessageCatchEvent
 } from '@processmaker/modeler';
+import SignalSelect from './components/inspector/SignalSelect';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
 import GroupSelect from './components/inspector/GroupSelect';
@@ -39,6 +40,7 @@ import SelectUserGroup from "../../components/SelectUserGroup";
 Vue.component('UserSelect', UserSelect);
 Vue.component('UserById', UserById);
 Vue.component('GroupSelect', GroupSelect);
+Vue.component('SignalSelect', SignalSelect);
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('TaskNotifications', TaskNotifications);
 Vue.component('ExpressionEditor', ExpressionEditor);
@@ -304,9 +306,9 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(
       signalStartEvent,
       {
-        component: 'FormInput',
+        component: 'SignalSelect',
         config: {
-          label: 'Signal Name',
+          label: 'Signal',
           name: 'signalName',
           helper: 'Enter the signal name that is unique from all other elements in the diagram'
         }
