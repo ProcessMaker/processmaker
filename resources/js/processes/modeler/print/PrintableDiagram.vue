@@ -2,7 +2,7 @@
     <div class="page-content ml-2" id="processPrint">
         <h1>{{processName}}</h1>
         <p><i class="far fa-clock"></i> Updated {{updatedAt}} by {{author}}</p>
-        <div id="diagramContainer" class="printable-svg bg-white w-50 m-auto mb-5">
+        <div id="diagramContainer" class="printable-svg bg-white w-75 m-auto mb-5">
             <div v-html="svg"/>
         </div>
 
