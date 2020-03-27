@@ -1,10 +1,12 @@
 const hasChildNode = (node, childType) => {
-  for (let entry of node.childNodes.entries()) {
-    if (!entry.length > 1 || entry[1].tagName === childType) {
-      return true;
-    }
-  }
-  return false;
+  let found = false;
+  node.childNodes.forEach(
+      function(childNode, currentIndex, listObj) {
+        if (childNode.tagName && childNode.tagName.includes(childType)) {
+          found = true;
+        }
+      });
+  return found;
 };
 
 const hasSubType = (subType) => (parentNode) => hasChildNode(parentNode, subType);
