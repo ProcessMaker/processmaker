@@ -1,4 +1,5 @@
 import annotations from './annotations';
+import boundaries from './boundaries';
 import endEvents from './endEvents';
 import flows from './flows';
 import gateways from './gateways';
@@ -9,6 +10,7 @@ import tasks from './tasks';
 
 const icons = {
   ...annotations,
+  ...boundaries,
   ...endEvents,
   ...flows,
   ...gateways,
