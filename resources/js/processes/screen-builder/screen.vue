@@ -68,8 +68,6 @@
               :watchers="watchers"
               v-on:css-errors="cssErrors = $event"
               :mock-magic-variables="mockMagicVariables"
-              :json-schema="jsonSchema"
-              @json-schema-valid="jsonSchemaValid"
             />
           </b-col>
 
@@ -78,31 +76,8 @@
               <b-card-body class="p-0 overflow-auto">
 
                 <div v-for="(component, index) in previewComponents" :key="index">
-                  <component :is="component" :data="previewData"></component>
+                  <component :is="component" :data="previewData" @input="previewData = $event"></component>
                 </div>
-
-                <b-button variant="outline"
-                  v-b-toggle.schema-validator
-                  class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
-                  >
-                  <i class="fas fa-file-import mr-2"></i>
-                    {{ $t('JSON Schema') }}
-                  <i class="fas ml-auto" :class="showSv ? 'fa-angle-right' : 'fa-angle-down'"></i>
-                </b-button>
-                <b-collapse id="schema-validator" v-model="showSv">
-                  <div class="p-2">
-                    <b-form-file @change="loadSchema" placeholder="JSON Schema File"></b-form-file>
-
-                    <div class="alert mt-2 mb-0" v-if="jsonSchema || jsonSchemaErrors" :class="{'alert-success': !jsonSchemaErrors, 'alert-danger': jsonSchemaErrors}">
-                      <span v-if="!jsonSchemaErrors">{{ $t('Valid for JSON Schema') }}</span>
-                      <div v-else>
-                        <template v-if="jsonSchemaErrors">
-                          <span v-for="(error, i) of jsonSchemaErrors" :key="i">{{ formatDataPath(error.dataPath) }} {{ error.message }}</span>
-                        </template>
-                      </div>
-                    </div>
-                  </div>
-                </b-collapse>
 
                 <b-button variant="outline"
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
@@ -203,12 +178,6 @@
 import Validator from "validatorjs";
 import formTypes from "./formTypes";
 
-const ajvLocalize = {
-    de: require('ajv-i18n/localize/de'),
-    es: require('ajv-i18n/localize/es'),
-    fr: require('ajv-i18n/localize/fr'),
-};
-
   // To include another language in the Validator with variable processmaker
   if (window.ProcessMaker && window.ProcessMaker.user && window.ProcessMaker.user.lang) {
     Validator.useLang(window.ProcessMaker.user.lang);
@@ -256,10 +225,6 @@ const ajvLocalize = {
         },
         mockMagicVariables,
         validationWarnings: [],
-        showSv: false,
-        jsonSchema: null,
-        jsonSchemaErrors: null,
-        language: null,
         previewComponents: [],
       };
     },
@@ -337,47 +302,8 @@ const ajvLocalize = {
       this.updatePreview(new Object());
       this.previewInput = "{}";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
-      this.setLanguage();
     },
     methods: {
-      loadSchema(e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-          try {
-            const text = e.target.result;
-            this.jsonSchema = JSON.parse(text);
-          } catch(error) {
-            this.jsonSchemaErrors = [error];
-          }
-        };
-        reader.readAsText(file);
-      },
-      jsonSchemaValid(schemaValid, errors) {
-        if (_.get(errors, '0.message', '').startsWith('schema is invalid')) {
-          errors[0].message = errors[0].message.replace(
-            'schema is invalid',
-            this.$t('Not a valid JSON Schema')
-          );
-        }
-        if (this.language && this.language !== 'en') {
-          ajvLocalize[this.language](errors);
-        }
-        this.jsonSchemaErrors = errors;
-      },
-      setLanguage() {
-        try {
-          this.language = document.documentElement.lang;
-        } catch(e) {}
-      },
-      formatDataPath(dataPath) {
-        if (!dataPath) {
-          return '';
-        }
-        const rep = /^\./;
-        return dataPath.replace(rep, '');
-      },
       onUpdate(data) {
         ProcessMaker.EventBus.$emit('form-data-updated', data);
       },
