@@ -29,7 +29,7 @@
     components: {
       ElementDoc,
     },
-    data: function() {
+    data() {
       return {
         bpmnString: this.bpmn,
         documentNodes: documentableBpmnNodes(this.bpmn),
