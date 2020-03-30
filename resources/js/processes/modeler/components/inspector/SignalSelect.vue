@@ -23,9 +23,14 @@
           <slot name="noOptions">{{ $t('No Data Available') }}</slot>
         </template>
       </multiselect>
-      <button type="button" class="btn btn-secondary btn-sm ml-1" @click="showAddSignal">
-        <i class="fa fa-plus"></i>
-      </button>
+      <div class="btn-group ml-1" role="group">
+        <button type="button" class="btn btn-secondary btn-sm" @click="showAddSignal">
+          <i class="fa fa-plus"></i>
+        </button>
+        <button v-if="value" type="button" class="btn btn-secondary btn-sm" @click="showEditSignal">
+          <i class="fa fa-pen"></i>
+        </button>
+      </div>
     </div>
     <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
     <div v-if="showNewSignal" class="card">
@@ -74,6 +79,9 @@ export default {
     };
   },
   methods: {
+    showEditSignal() {
+
+    },
     change (value) {
       let signal = ProcessMaker.$modeler.definitions.rootElements.find(element => element.id === value.signalRef);
       if (!signal) {
