@@ -1,6 +1,9 @@
 /* eslint-disable func-names */
 // Our initial node types to register with our modeler
 import {
+  signalEndEvent,
+  intermediateSignalCatchEvent,
+  intermediateSignalThrowEvent,
   signalStartEvent,
   association,
   endEvent,
@@ -305,6 +308,43 @@ ProcessMaker.EventBus.$on(
     });
     registerInspectorExtension(
       signalStartEvent,
+      {
+        component: 'SignalSelect',
+        config: {
+          label: 'Signal',
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
+        }
+      },
+      'inspector-accordion'
+    );
+    window.abc = intermediateSignalThrowEvent;
+    registerInspectorExtension(
+      intermediateSignalThrowEvent,
+      {
+        component: 'SignalSelect',
+        config: {
+          label: 'Signal',
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
+        }
+      },
+      'inspector-accordion'
+    );
+    registerInspectorExtension(
+      intermediateSignalCatchEvent,
+      {
+        component: 'SignalSelect',
+        config: {
+          label: 'Signal',
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
+        }
+      },
+      'inspector-accordion'
+    );
+    registerInspectorExtension(
+      signalEndEvent,
       {
         component: 'SignalSelect',
         config: {
