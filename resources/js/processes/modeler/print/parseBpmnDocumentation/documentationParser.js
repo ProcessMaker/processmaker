@@ -1,15 +1,15 @@
 /**
- * Extract the .textContent of the first child of bpmnNode
- * that has type childType. Returns '' if no such child exists.
+ * Extract the .textContent of the children of bpmnNode
+ * that has tagName == childType. Returns '' if no such child exists.
  */
-const extractTextContentOfFirstChildWithType = (bpmnNode, childType) => {
-  for (let entry of bpmnNode.childNodes.entries()) {
-    if (!entry.length > 1 || entry[1].tagName !== childType) {
-      continue;
+const extractTextContentOfChildren = (bpmnNode, childType) => {
+  let textContent = '';
+  bpmnNode.childNodes.forEach(function(childNode) {
+    if (childNode.tagName === childType) {
+      textContent += childNode.textContent;
     }
-    return entry[1].textContent;
-  }
-  return '';
+  });
+  return textContent;
 };
 
 const isTextAnnotationElement = (node) => {
@@ -20,7 +20,7 @@ const isTextAnnotationElement = (node) => {
  * Return the documentation of a node, if it exists.
  */
 const nodeDocumentation = (bpmnNode) => {
-  return extractTextContentOfFirstChildWithType(bpmnNode, 'bpmn:documentation');
+  return extractTextContentOfChildren(bpmnNode, 'bpmn:documentation');
 };
 
 /**
@@ -29,7 +29,7 @@ const nodeDocumentation = (bpmnNode) => {
  */
 const nodeText = (bpmnNode) => {
   if (isTextAnnotationElement(bpmnNode)) {
-    return extractTextContentOfFirstChildWithType(bpmnNode, 'bpmn:text');
+    return extractTextContentOfChildren(bpmnNode, 'bpmn:text');
   }
   return '';
 };
