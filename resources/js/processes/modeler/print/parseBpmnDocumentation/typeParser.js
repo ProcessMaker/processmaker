@@ -1,7 +1,7 @@
 const hasChildNode = (node, childType) => {
   let found = false;
   node.childNodes.forEach(
-      function(childNode, currentIndex, listObj) {
+      function(childNode) {
         if (childNode.tagName && childNode.tagName.includes(childType)) {
           found = true;
         }
