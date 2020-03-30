@@ -7,7 +7,7 @@
       :empty-desc="$t('')"
       empty-icon="noData"
     />
-    <div v-show="!shouldShowLoader"  class="card card-body table-card"> 
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
       <vuetable
         :dataManager="dataManager"
         :sortOrder="sortOrder"
@@ -15,7 +15,7 @@
         :api-mode="false"
         @vuetable:pagination-data="onPaginationData"
         :fields="fields"
-        :data="vuetableData"
+        :data="data"
         data-path="data"
         :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
@@ -74,7 +74,7 @@ export default {
     return {
       localLoadOnStart: true,
       orderBy: "username",
-      vuetableData: [],
+      data: [],
       // Our listing of users
       sortOrder: [
         {
@@ -193,7 +193,7 @@ export default {
     },
     fetch() {
       if (!this.localLoadOnStart) {
-        this.vuetableData = [];
+        //this.data = [];
         return;
       }
       this.loading = true;
@@ -214,7 +214,7 @@ export default {
             this.orderDirection
         )
         .then(response => {
-          this.vuetableData = this.transform(response.data);
+          this.data = this.transform(response.data);
           this.loading = false;
         });
     }
