@@ -1,7 +1,12 @@
 <template>
   <b-container class="h-100">
     <b-card no-body class="h-100">
-      <menu-script ref="menuScript" :options="optionsMenu"></menu-script>
+      <b-card-header class="text-right">
+        <b-button title="Save Script" @click="save" size="sm">
+          <i class="fas fa-save" />
+          {{ $t('Save') }}
+        </b-button>
+      </b-card-header>
 
       <b-card-body class="overflow-hidden p-4">
         <b-row class="h-100">
@@ -135,25 +140,10 @@
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 import customFilters from "../customFilters";
-import MenuScript from "../../../components/Menu";
 
 export default {
   props: ["process", "script", "scriptExecutor", "testData"],
   data() {
-    const options = [
-      {
-        id: "button_script_save",
-        section: "right",
-        type: "button",
-        title: this.$t("Save Script"),
-        name: this.$t("Save"),
-        icon: "fas fa-save",
-        action: () => {
-          ProcessMaker.EventBus.$emit("save-script");
-        }
-      }
-    ];
-
     return {
       executionKey: null,
       resizing: false,
@@ -174,7 +164,6 @@ export default {
         failure: false
       },
       outputOpen: true,
-      optionsMenu: options,
       boilerPlateTemplate: this.$t(` \r Welcome to ProcessMaker 4 Script Editor \r To access Environment Variables use {accessEnvVar} \r To access Request Data use {dataVariable} \r To access Configuration Data use {configVariable} \r To preview your script, click the Run button using the provided input and config data \r Return an array and it will be merged with the processes data \r Example API to retrieve user email by their ID {apiExample} \r API Documentation {apiDocsUrl} \r `),
     };
   },
@@ -186,8 +175,7 @@ export default {
     }
   },
   components: {
-    MonacoEditor,
-    MenuScript,
+    MonacoEditor
   },
   computed: {
     language() {
@@ -195,11 +183,6 @@ export default {
     }
   },
   mounted() {
-    ProcessMaker.EventBus.$emit("script-builder-init", this);
-    ProcessMaker.EventBus.$on("save-script", (resolve, reject) => {
-      this.save(resolve, reject);
-    });
-
     window.addEventListener("resize", this.handleResize);
     let userID = document.head.querySelector('meta[name="user-id"]');
     window.Echo.private(
@@ -263,7 +246,7 @@ export default {
     onClose() {
       window.location.href = "/designer/scripts";
     },
-    save(resolve, reject) {
+    save() {
       ProcessMaker.apiClient
         .put("scripts/" + this.script.id, {
           code: this.code,
@@ -276,13 +259,6 @@ export default {
         })
         .then(response => {
           ProcessMaker.alert(this.$t("The script was saved."), "success");
-          if (typeof resolve === "function") {
-            resolve(response);
-          }
-        }).catch(err => {
-          if (typeof reject === "function") {
-            reject(err);
-          }
         });
     },
     loadBoilerplateTemplate() {

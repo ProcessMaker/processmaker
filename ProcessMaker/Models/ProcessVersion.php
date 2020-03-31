@@ -79,14 +79,4 @@ class ProcessVersion extends Model implements ProcessModelInterface
     {
         return $this->belongsTo(Process::class);
     }
-
-    /**
-     * Get the associated process
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function parent()
-    {
-        return $this->belongsTo(Process::class, 'process_id', 'id');
-    }
 }
