@@ -27,7 +27,7 @@
         <button type="button" class="btn btn-secondary btn-sm" @click="showAddSignal">
           <i class="fa fa-plus"></i>
         </button>
-        <button v-if="value" type="button" class="btn btn-secondary btn-sm" @click="showEditSignal">
+        <button v-if="value" type="button" class="btn btn-secondary btn-sm" @click="editSignal">
           <i class="fa fa-pen"></i>
         </button>
       </div>
@@ -43,6 +43,19 @@
           Cancel
         </button>
         <button :disabled="!valid" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="addSignal">
+          Save
+        </button>
+      </div>
+    </div>
+    <div v-if="showEditSignal" class="card">
+      <div class="card-body p-2">
+        <form-input :label="$t('Name')" v-model="signalName"></form-input>
+      </div>
+      <div class="card-footer text-right p-2">
+        <button type="button" class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm" @click="cancelAddSignal">
+          Cancel
+        </button>
+        <button :disabled="!valid" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="updateSignal">
           Save
         </button>
       </div>
@@ -74,16 +87,23 @@ export default {
     return {
       pmql: 'id!=' + ProcessMaker.modeler.process.id,
       showNewSignal: false,
+      showEditSignal: false,
       signalId: '',
       signalName: '',
     };
   },
   methods: {
-    showEditSignal() {
-
+    editSignal() {
+      const signal = this.getSignalById(this.value);
+      this.signalId = signal.id;
+      this.signalName = signal.name;
+      this.showEditSignal = true;
+    },
+    getSignalById(id) {
+      return ProcessMaker.$modeler.definitions.rootElements.find(element => element.id === id);
     },
     change (value) {
-      let signal = ProcessMaker.$modeler.definitions.rootElements.find(element => element.id === value.signalRef);
+      let signal = this.getSignalById(value.signalRef);
       if (!signal) {
         signal = ProcessMaker.$modeler.moddle.create('bpmn:Signal', {
           id: value.id,
@@ -98,6 +118,11 @@ export default {
     },
     cancelAddSignal() {
       this.showNewSignal = false;
+      this.showEditSignal = false;
+    },
+    updateSignal() {
+      this.getSignalById(this.signalId).name = this.signalName;
+      this.showEditSignal = false;
     },
     addSignal() {
       const signal = ProcessMaker.$modeler.moddle.create('bpmn:Signal', {
