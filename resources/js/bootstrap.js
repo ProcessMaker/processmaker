@@ -200,19 +200,19 @@ if (userID) {
 
 if (window.Processmaker && window.Processmaker.broadcasting) {
     let config = window.Processmaker.broadcasting;
-    
+
     if (config.broadcaster == 'pusher') {
       window.Pusher = require('pusher-js');
       window.Pusher.logToConsole = config.debug;
     }
-    
+
     window.Echo = new Echo(config);
 }
 
 if (userID) {
     // Session timeout
     let timeoutScript = document.head.querySelector("meta[name=\"timeout-worker\"]").content;
-    window.ProcessMaker.AccountTimeoutLength = parseInt(document.head.querySelector("meta[name=\"timeout-length\"]").content);
+    window.ProcessMaker.AccountTimeoutLength = parseInt(eval(document.head.querySelector("meta[name=\"timeout-length\"]").content));
     window.ProcessMaker.AccountTimeoutWarnSeconds = parseInt(document.head.querySelector("meta[name=\"timeout-warn-seconds\"]").content);
     window.ProcessMaker.AccountTimeoutWorker = new Worker(timeoutScript);
     window.ProcessMaker.AccountTimeoutWorker.addEventListener('message', function (e) {
@@ -244,7 +244,7 @@ if (userID) {
             ProcessMaker.pushNotification(token);
         })
         .listen('.SessionStarted', (e) => {
-            let lifetime = parseInt(e.lifetime);
+            let lifetime = parseInt(eval(e.lifetime));
             window.ProcessMaker.AccountTimeoutWorker.postMessage({
                 method: 'start',
                 data: {

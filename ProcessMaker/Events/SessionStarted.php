@@ -10,11 +10,12 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Session;
 
 class SessionStarted implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+
     public $user;
 
     /**
@@ -36,7 +37,7 @@ class SessionStarted implements ShouldBroadcastNow
     {
         return new PrivateChannel("ProcessMaker.Models.User.{$this->user->id}");
     }
-    
+
     /**
      * Set the event name
      *
@@ -50,8 +51,11 @@ class SessionStarted implements ShouldBroadcastNow
      * Set the data to broadcast with this event
      *
      * @return array
-     */    
+     */
     public function broadcastWith() {
-        return ['lifetime' => config('session.lifetime')];
+        $lifetime = Session::has('rememberme') && Session::get('rememberme')
+                        ? "Number.MAX_SAFE_INTEGER"
+                        : config('session.lifetime');
+        return ['lifetime' => $lifetime];
     }
 }
