@@ -15,7 +15,7 @@
         :api-mode="false"
         @vuetable:pagination-data="onPaginationData"
         :fields="fields"
-        :data="vuetableData"
+        :data="data"
         data-path="data"
         :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
@@ -64,7 +64,7 @@ export default {
     return {
       localLoadOnStart: false,
       orderBy: "username",
-      vuetableData: [],
+      data: [],
       // Our listing of users
       sortOrder: [
         {
@@ -169,9 +169,9 @@ export default {
         }
       );
     },
-    fetch() {      
+    fetch() {
       if (!this.localLoadOnStart) {
-        this.vuetableData = [];
+        this.data = [];
         return;
       }
       this.loading = true;
@@ -192,7 +192,7 @@ export default {
             this.orderDirection
         )
         .then(response => {
-          this.vuetableData = this.transform(response.data);
+          this.data = this.transform(response.data);
           this.loading = false;
         });
     }
