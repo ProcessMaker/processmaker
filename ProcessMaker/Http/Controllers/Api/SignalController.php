@@ -48,9 +48,9 @@ class SignalController extends Controller
         });
         $filter = $request->input('filter', '');
         if ($filter) {
-            $signals = array_filter($signals, function ($signal) use($filter) {
+            $signals = array_values(array_filter($signals, function ($signal) use($filter) {
                 return mb_stripos($signal['name'], $filter) !== false;
-            });
+            }));
         }
         return response()->json(['data' => $signals]);
     }

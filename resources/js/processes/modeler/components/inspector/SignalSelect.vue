@@ -13,7 +13,7 @@
         :searchable="true"
         :internal-search="false"
         label="name"
-        @search-change="loadOptions"
+        @search-change="loadOptionsDebounced"
         @open="loadOptions"
       >
         <template slot="noResult">
@@ -88,6 +88,7 @@ export default {
       pmql: 'id!=' + ProcessMaker.modeler.process.id,
       showNewSignal: false,
       showEditSignal: false,
+      globalSignals: [],
       signalId: '',
       signalName: '',
     };
@@ -132,23 +133,27 @@ export default {
       ProcessMaker.$modeler.definitions.rootElements.push(signal);
       this.showNewSignal = false;
     },
+    updateOptions() {
+      this.options = this.globalSignals;
+      ProcessMaker.$modeler.definitions.rootElements.forEach((element) => {
+        const localSignal = this.options.find(option => option.id === element.id);
+        if (element.$type === 'bpmn:Signal' &&!localSignal) {
+          this.options.push({
+            id: element.id,
+            name: element.name
+          });
+        } else if (localSignal) {
+          localSignal.name = element.name;
+        }
+      });
+    },
     loadOptions(filter) {
       const pmql = this.pmql;
       window.ProcessMaker.apiClient
         .get(this.api, { params: { filter, pmql } })
         .then(response => {
-          this.options = response.data.data || [];
-          ProcessMaker.$modeler.definitions.rootElements.forEach((element) => {
-            if (
-              element.$type === 'bpmn:Signal' &&
-              !this.options.find(option => option.id === element.id)
-            ) {
-              this.options.push({
-                id: element.id,
-                name: element.name
-              });
-            }
-          });
+          this.globalSignals = response.data.data || [];
+          this.updateOptions();
         });
     },
     loadSelected (value) {
