@@ -8,7 +8,7 @@
           :decorations="decorations" 
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
-          @saveBpmn="actionSaveBpmn"
+          @saveBpmn="saveBpmn"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
@@ -21,12 +21,7 @@
         :xml-manager="xmlManager"
       >
         <component v-for="(component, index) in validationBar" :key="`validation-status-${index}`" :is="component" :owner="self" />
-
       </validation-status>
-
-      <component v-for="(component, index) in external" :key="`external-${index}`" :is="component.type" :options="component.options"/>
-
-
     </b-card>
   </b-container>
 </template>
@@ -44,9 +39,6 @@ export default {
     return {
       self: this,
       validationBar: [],
-      external: [],
-      externalEmit : [],
-      saveEmitDefault: true,
       decorations: {
         borderOutline: {},
       },
@@ -101,16 +93,7 @@ export default {
       });
       return notifications;
     },
-    actionSaveBpmn () {
-      this.externalEmit.forEach(item => {
-        window.ProcessMaker.EventBus.$emit(item);
-      })
-
-      if (this.saveEmitDefault) {
-        window.ProcessMaker.EventBus.$emit('modeler-save');
-      }
-    },
-    saveBpmn(resolve, reject) {
+    saveBpmn() {
       this.$refs.modeler.toXML((err, xml) => {
         if(err) {
           ProcessMaker.alert("There was an error saving: " + err, 'danger');
@@ -133,18 +116,11 @@ export default {
             if (response.data.warnings && response.data.warnings.length > 0) {
               this.$refs.validationStatus.autoValidate = true;
             }
-            if (typeof resolve === 'function') {
-              resolve(response);
-            }
           })
           .catch((err) => {
             const message = err.response.data.message;
             const errors = err.response.data.errors;
             ProcessMaker.alert(message, 'danger');
-
-            if (typeof reject === 'function') {
-              reject(err);
-            }
           })
         }
       });
@@ -153,10 +129,8 @@ export default {
   mounted() {
     ProcessMaker.$modeler = this.$refs.modeler;
 
-    window.ProcessMaker.EventBus.$emit('modeler-app-init', this);
-
-    window.ProcessMaker.EventBus.$on('modeler-save', (resolve, reject) => {
-      this.saveBpmn(resolve, reject);
+    window.ProcessMaker.EventBus.$on('modeler-save', () => {
+      this.saveBpmn();
     });
 
     window.ProcessMaker.EventBus.$on('modeler-change', () => {
