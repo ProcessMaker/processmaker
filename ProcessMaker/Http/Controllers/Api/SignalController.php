@@ -17,7 +17,7 @@ class SignalController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Process::query();
+        $query = Process::query()->orderBy('updated_at', 'desc');
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
@@ -32,15 +32,23 @@ class SignalController extends Controller
             $document = $process->getDomDocument();
             $nodes = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
             foreach($nodes as $node) {
-                $signals[] = [
-                    'id' => $node->getAttribute('id'),
-                    'name' => $node->getAttribute('name'),
-                ];
+                $filter = array_filter($signals, function ($signal) use ($node) {
+                    return $signal['id'] === $node->getAttribute('id');
+                });
+                if (count($filter) === 0) {
+                    $signals[] = [
+                        'id' => $node->getAttribute('id'),
+                        'name' => $node->getAttribute('name'),
+                    ];
+                }
             }
         }
+        usort($signals, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
         $filter = $request->input('filter', '');
         if ($filter) {
-            array_filter($signals, function ($signal) use($filter) {
+            $signals = array_filter($signals, function ($signal) use($filter) {
                 return mb_stripos($signal['name'], $filter) !== false;
             });
         }
