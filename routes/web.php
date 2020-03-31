@@ -93,7 +93,6 @@ Broadcast::routes();
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@loginWithIntendedCheck');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
-Route::get('validated-logout', 'Auth\LoginController@validatedLogout');
 
 // Password Reset Routes...
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
