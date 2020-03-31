@@ -32,14 +32,4 @@ class ScriptVersion extends Model
     {
         return $this->setMultipleCategories($value, 'script_category_id');
     }
-
-    /**
-     * Get the associated script
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function parent()
-    {
-        return $this->belongsTo(Script::class, 'script_id', 'id');
-    }
 }
