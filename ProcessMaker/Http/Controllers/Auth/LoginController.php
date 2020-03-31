@@ -41,6 +41,23 @@ class LoginController extends Controller
         $this->middleware('guest')->except(['logout', 'keepAlive']);
     }
 
+    public function validatedLogout(Request $request)
+    {
+        $guard = \Auth::guard();
+        $recallerName = $guard->getRecallerName();
+        $token = explode('|', $request->cookies->get($recallerName))[1];
+        if(hash_equals(\Auth::user()->getRememberToken(), $token)) {
+            dd('with remember me');
+        }
+        else {
+            dd('without');
+        }
+
+        return null;
+    }
+
+
+
     public function loginWithIntendedCheck(Request $request) {
         $intended = redirect()->intended()->getTargetUrl();
         if ($intended) {
@@ -55,7 +72,7 @@ class LoginController extends Controller
             // Getting intended deletes it, so put in back
             $request->session()->put('url.intended', $intended);
         }
-        
+
         // Check the status of the user
         $user = User::where('username', $request->input('username'))->firstOrFail();
         if ($user->status === 'INACTIVE') {
@@ -87,5 +104,5 @@ class LoginController extends Controller
     {
         return response('', 204);
     }
-    
+
 }
