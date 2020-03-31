@@ -10,12 +10,14 @@ use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\ModelerStarting;
+use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\ProcessRequest as Request;
 use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
 use ProcessMaker\Managers\ModelerManager as Modeler;
+use ProcessMaker\Managers\ScriptBuilderManager as ScriptBuilder;
 use Illuminate\Foundation\Testing\WithFaker;
 
 
@@ -148,5 +150,17 @@ class BroadcastTest extends TestCase
         
         $this->assertLogContainsText('SessionStarted');
         $this->assertBroadcastEventSizeLessThan('SessionStarted', 10000);
+    }
+
+    /**
+     * Asserts that the ScreenBuilderStarting broadcast event works.
+     *
+     * @return void
+     */
+    public function testScriptBuilderStartingBroadcast()
+    {
+        $this->markTestSkipped('Will implement later');
+        $manager = new ScriptBuilder();
+        event(new ScreenBuilderStarting($manager));
     }
 }
