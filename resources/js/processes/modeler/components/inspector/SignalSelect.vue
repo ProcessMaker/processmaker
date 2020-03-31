@@ -104,7 +104,7 @@ export default {
       return ProcessMaker.$modeler.definitions.rootElements.find(element => element.id === id);
     },
     change (value) {
-      let signal = this.getSignalById(value.signalRef);
+      let signal = this.getSignalById(value.id);
       if (!signal) {
         signal = ProcessMaker.$modeler.moddle.create('bpmn:Signal', {
           id: value.id,
