@@ -4,15 +4,20 @@ namespace ProcessMaker\Http\Controllers\Process;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\ScriptBuilderManager;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class ScriptController extends Controller
 {
+    use HasControllerAddons;
+
      /**
      * Get the list of environment variables
      *
@@ -51,11 +56,12 @@ class ScriptController extends Controller
     {
         $selectedUser = $script->runAsUser;
         $scriptExecutors = ScriptExecutor::list($script->language);
+        $addons = $this->getPluginAddons('edit', compact(['script']));
 
-        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptExecutors'));
+        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptFormats', 'addons', 'scriptExecutors'));
     }
 
-    public function builder(Request $request, Script $script)
+    public function builder(ScriptBuilderManager $manager, Request $request, Script $script)
     {
         $processRequestAttributes = $this->getProcessRequestAttributes();
         $processRequestAttributes['user_id'] = $request->user()->id;
@@ -63,7 +69,15 @@ class ScriptController extends Controller
         $testData = [
             '_request' => $processRequestAttributes
         ];
-        return view('processes.scripts.builder', compact('script', 'testData'));
+
+        /**
+         * Emit the ScriptBuilderStarting event, passing in our ScriptBuilderManager instance. This will 
+         * allow packages to add additional javascript for Script Builder initialization which
+         * can customize the Script Builder controls list.
+         */
+        event(new ScriptBuilderStarting($manager));
+
+        return view('processes.scripts.builder', compact('script', 'testData', 'manager'));
     }
 
     private function getProcessRequestAttributes()

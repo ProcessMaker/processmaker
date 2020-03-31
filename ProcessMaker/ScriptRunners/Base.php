@@ -77,6 +77,10 @@ abstract class Base
         } else {
             $parameters = '';
         }
+
+        // Set docker shared memory size
+        $parameters .= ' --shm-size=' . env('DOCKER_SHARED_MEMORY', '256m');
+
         $dockerConfig = $this->config($code, [
             'timeout' => $timeout,
             'parameters' => $parameters,
