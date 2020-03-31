@@ -93,7 +93,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Start Permissions',
         icon: 'user-shield',
-        name: 'inspector-accordion',
+        name: 'permissions-accordion',
       },
       items: [
         {
@@ -143,7 +143,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Assignment Rules',
         icon: 'users',
-        name: 'inspector-accordion',
+        name: 'assignments-accordion',
       },
       items: [
         {
@@ -163,7 +163,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Notifications',
         icon: 'bell',
-        name: 'inspector-accordion',
+        name: 'notifications-accordion',
       },
       items: [
         {
@@ -240,7 +240,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Assignment Rules',
         icon: 'users',
-        name: 'inspector-accordion',
+        name: 'assignments-accordion',
       },
       items: [
         {
@@ -260,7 +260,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Notifications',
         icon: 'bell',
-        name: 'inspector-accordion',
+        name: 'notifications-accordion',
       },
       items: [
         {
@@ -319,7 +319,6 @@ ProcessMaker.EventBus.$on(
       },
       'inspector-accordion'
     );
-    window.abc = intermediateSignalThrowEvent;
     registerInspectorExtension(
       intermediateSignalThrowEvent,
       {
