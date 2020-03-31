@@ -82,7 +82,7 @@
                         </div>
                         @isset($addons)
                             @foreach ($addons as $addon)
-                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel" :aria-labelledby="'nav-tab-'+ {{$addon['id']}}">
+                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel" aria-labelledby="'nav-tab-'+ {{$addon['id']}}">
                                     {!! $addon['content'] !!}
                                 </div>
                             @endforeach

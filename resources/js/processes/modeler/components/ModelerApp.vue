@@ -133,7 +133,7 @@ export default {
             if (response.data.warnings && response.data.warnings.length > 0) {
               this.$refs.validationStatus.autoValidate = true;
             }
-            if (typeof resolve === "function") {
+            if (typeof resolve === 'function') {
               resolve(response);
             }
           })
@@ -142,7 +142,7 @@ export default {
             const errors = err.response.data.errors;
             ProcessMaker.alert(message, 'danger');
 
-            if (typeof reject === "function") {
+            if (typeof reject === 'function') {
               reject(err);
             }
           })

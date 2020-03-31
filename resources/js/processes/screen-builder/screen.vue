@@ -150,7 +150,7 @@ import formTypes from "./formTypes";
   }, 'Must be letters, numbers, underscores or dashes');
 
   export default {
-    props: ["process", "screen", 'permission'],
+    props: ['process', 'screen', 'permission'],
     data() {
       const defaultConfig = [{
         name: "Default",
@@ -160,96 +160,96 @@ import formTypes from "./formTypes";
 
       const options = [
         {
-          id: "group_design",
-          type: "group",
-          section: "left",
+          id: 'group_design',
+          type: 'group',
+          section: 'left',
           items: [
             {
-              id: "button_design",
-              type: "button",
-              title: this.$t("Design Screen"),
-              name: this.$t("Design"),
-              variant: "secondary",
-              icon: "fas fa-drafting-compass pr-1",
+              id: 'button_design',
+              type: 'button',
+              title: this.$t('Design Screen'),
+              name: this.$t('Design'),
+              variant: 'secondary',
+              icon: 'fas fa-drafting-compass pr-1',
               action: () => {
-                ProcessMaker.EventBus.$emit("change_mode", "editor");
+                ProcessMaker.EventBus.$emit('change_mode', 'editor');
               }
             },
             {
-              id: "button_preview",
-              type: "button",
-              title: this.$t("Preview Screen"),
-              name: this.$t("Preview"),
-              variant: "outline-secondary",
-              icon: "fas fa-cogs pr-1",
+              id: 'button_preview',
+              type: 'button',
+              title: this.$t('Preview Screen'),
+              name: this.$t('Preview'),
+              variant: 'outline-secondary',
+              icon: 'fas fa-cogs pr-1',
               action: () => {
-                ProcessMaker.EventBus.$emit("change_mode", "preview");
+                ProcessMaker.EventBus.$emit('change_mode', 'preview');
               }
             }
           ]
         },
         {
-          id: "group_properties",
-          type: "group",
-          section: "right",
+          id: 'group_properties',
+          type: 'group',
+          section: 'right',
           items: [
             {
-              id: "button_calcs",
-              type: "button",
-              title: this.$t("Calculated Properties"),
-              name: this.$t("Calcs"),
-              variant: "secondary",
-              icon: "fas fa-flask",
+              id: 'button_calcs',
+              type: 'button',
+              title: this.$t('Calculated Properties'),
+              name: this.$t('Calcs'),
+              variant: 'secondary',
+              icon: 'fas fa-flask',
               action: () => {
-                ProcessMaker.EventBus.$emit("open-computed-properties");
+                ProcessMaker.EventBus.$emit('open-computed-properties');
               }
             },
             {
-              id: "button_custom_css",
-              type: "button",
-              title: this.$t("Custom CSS"),
-              name: this.$t("CSS"),
-              variant: "secondary",
-              icon: "fab fa-css3",
+              id: 'button_custom_css',
+              type: 'button',
+              title: this.$t('Custom CSS'),
+              name: this.$t('CSS'),
+              variant: 'secondary',
+              icon: 'fab fa-css3',
               action: () => {
-                ProcessMaker.EventBus.$emit("open-custom-css");
+                ProcessMaker.EventBus.$emit('open-custom-css');
               }
             },
             {
-              id: "button_watchers",
-              type: "button",
-              title: this.$t("Watchers"),
-              name: this.$t("Watchers"),
-              variant: "secondary",
-              icon: "fas fa-mask",
+              id: 'button_watchers',
+              type: 'button',
+              title: this.$t('Watchers'),
+              name: this.$t('Watchers'),
+              variant: 'secondary',
+              icon: 'fas fa-mask',
               action: () => {
-                ProcessMaker.EventBus.$emit("open-form-watchers");
+                ProcessMaker.EventBus.$emit('open-form-watchers');
               }
             }
           ]
         },
         {
-          id: "button_export",
-          section: "right",
-          type: "button",
-          title: this.$t("Export Screen"),
-          name: "",
-          variant: "secondary",
-          icon: "fas fa-file-export",
+          id: 'button_export',
+          section: 'right',
+          type: 'button',
+          title: this.$t('Export Screen'),
+          name: '',
+          variant: 'secondary',
+          icon: 'fas fa-file-export',
           action: () => {
-            ProcessMaker.EventBus.$emit("export-screen");
+            ProcessMaker.EventBus.$emit('export-screen');
           }
         },
         {
-          id: "button_save",
-          section: "right",
-          type: "button",
-          title: this.$t("Save Screen"),
-          name: "",
-          variant: "secondary",
-          icon: "fas fa-save",
+          id: 'button_save',
+          section: 'right',
+          type: 'button',
+          title: this.$t('Save Screen'),
+          name: '',
+          variant: 'secondary',
+          icon: 'fas fa-save',
           action: () => {
-            ProcessMaker.EventBus.$emit("save-screen", false);
+            ProcessMaker.EventBus.$emit('save-screen', false);
           }
         }
       ];
