@@ -34,6 +34,9 @@ class ExportImportTest extends TestCase
      */
     public function testProcessImportRefs()
     {
+        factory(ScriptExecutor::class)->create(['language' => 'php']);
+        factory(ScriptExecutor::class)->create(['language' => 'lua']);
+
         // Create a pre-existing screen and script
         factory(Screen::class, 1)->create(['title' => 'Existing Screen']);
         factory(Script::class, 1)->create(['title' => 'Existing Script']);
@@ -450,6 +453,9 @@ class ExportImportTest extends TestCase
      */
     public function testImportMultipleAssets()
     {
+        factory(ScriptExecutor::class)->create(['language' => 'php']);
+        factory(ScriptExecutor::class)->create(['language' => 'lua']);
+
         // Create a pre-existing screen and script
         factory(Screen::class, 2)->create(['title' => 'Existing Screen']);
         factory(Script::class, 2)->create(['title' => 'Existing Script']);

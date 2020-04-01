@@ -112,7 +112,7 @@ jobs:
 
       # Enable xdebug to support code coverage
       #- run: sudo docker-php-ext-enable xdebug
-
+      
       - setup_remote_docker:
           docker_layer_caching: true
 
@@ -166,7 +166,7 @@ jobs:
             MSSQL_DATABASE: 'test'
             MSSQL_USERNAME: 'sa'
             MSSQL_PASSWORD: 'P4ssW0rd1!'
-            PROCESSMAKER_SCRIPTS_HOME: '/opt/executor'
+            PROCESSMAKER_SCRIPTS_HOME: '/tmp'
             PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
             TELESCOPE_ENABLED: 'false'
       - run:
