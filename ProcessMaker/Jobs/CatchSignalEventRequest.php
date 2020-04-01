@@ -8,6 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
+use ProcessMaker\Repositories\BpmnDocument;
 
 class CatchSignalEventRequest implements ShouldQueue
 {
@@ -44,7 +46,7 @@ class CatchSignalEventRequest implements ShouldQueue
         $mainRequest = ProcessRequest::find($this->requestId);
         $definitions = ($mainRequest->processVersion ?? $mainRequest->process)->getDefinitions(true);
         $throwEvent = $definitions->findElementById($this->throwEvent)->getBpmnElementInstance();
-        $eventDefinition = $definitions->findElementById($this->eventDefinition)->getBpmnElementInstance();
+        $eventDefinition = $this->getEventDefinitionBySignalRef($definitions);
         $token = ProcessRequestToken::find($this->tokenId);
         foreach ($this->chunck as $requestId) {
             $request = ProcessRequest::find($requestId);
@@ -57,6 +59,23 @@ class CatchSignalEventRequest implements ShouldQueue
                 $token
             );
             $engine->runToNextState();
+        }
+    }
+
+    /**
+     * Get event definition for the signal event
+     *
+     * @param BpmnDocument $definitions
+     *
+     * @return SignalEventDefinitionInterface
+     */
+    private function getEventDefinitionBySignalRef(BpmnDocument $definitions)
+    {
+        $eventDefinitions = $definitions->findElementById($this->throwEvent)->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signalEventDefinition');
+        foreach ($eventDefinitions as $node) {
+            if ($node->getAttribute('signalRef') === $this->signalRef) {
+                return $node->getBpmnElementInstance();
+            }
         }
     }
 }
