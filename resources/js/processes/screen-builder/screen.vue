@@ -540,6 +540,14 @@
               }
               ProcessMaker.alert(this.$t("Successfully saved"), "success");
               ProcessMaker.EventBus.$emit("save-changes");
+              if (typeof resolve === "function") {
+                resolve(response);
+              }
+            })
+            .catch((err) => {
+              if (typeof reject === "function") {
+                reject(err);
+              }
             });
         }
       }
