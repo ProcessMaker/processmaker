@@ -115,6 +115,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->status = 'ACTIVE';
         $instance->initiated_at = Carbon::now();
         $instance->data = $data;
+        if ($source) {
+            // copy requester from source request
+            $instance->user_id = $source->getInstance()->user_id;
+        }
         $instance->saveOrFail();
         $instance->setId($instance->getKey());
 
