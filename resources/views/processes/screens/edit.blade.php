@@ -18,34 +18,55 @@
 @section('content')
     <div class="container" id="editGroup">
         <div class="row">
-            <div class="col">
-                <div class="card card-body">
-                    <div class="form-group">
-                        {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
-                        {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
-                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
-                        <small class="form-text text-muted" v-if="! errors.title">{{__('The screen name must be distinct.') }}</small>
-                        <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
+            <div class="col-12">
+            <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-config"
+                           role="tab" aria-controls="nav-config" aria-selected="true">
+                           {{__('Configuration')}}
+                        </a>
+                        @isset($addons)
+                            @foreach ($addons as $addon)
+                                <a class="nav-item nav-link" id="{{$addon['id'] . '-tab'}}" data-toggle="tab"
+                                   href="{{'#' . $addon['id']}}" role="tab" aria-controls="nav-notifications" aria-selected="true">
+                                   {{ __($addon['title']) }}
+                                </a>
+                            @endforeach
+                        @endisset
                     </div>
-                    <div class="form-group">
-                        {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
-                        {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
-                        'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
-                        <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
-                    </div>
-                    {{--<div class="form-group">
-                        {!! Form::label('category', __('Category')) !!}
-                        {!! Form::text('category', null, ['id' => 'category','class'=> 'form-control', 'v-model' => 'formData.category',
-                        'v-bind:class' => '{"form-control":true, "is-invalid":errors.category}']) !!}
-                        <small class="form-text text-muted" v-if="! errors.category">{{__('The screen name must be distinct.') }}</small>
-                        <div class="invalid-feedback" v-if="errors.category">@{{errors.category[0]}}</div>
-                    </div>--}}
-                    <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
-                    </category-select>
-                    <br>
-                    <div class="text-right">
-                        {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                </nav>
+
+                <div class="card card-body card-body-nav-tabs">
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-config" role="tabpanel" aria-labelledby="nav-config-tab">
+                            <div class="form-group">
+                                {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
+                                {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
+                                'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
+                                <small class="form-text text-muted" v-if="! errors.title">{{__('The screen name must be distinct.') }}</small>
+                                <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
+                                {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
+                                'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
+                                <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                            </div>
+                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
+                            </category-select>
+                            <br>
+                            <div class="text-right">
+                                {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
+                            </div>
+                        </div>
+                        @isset($addons)
+                            @foreach ($addons as $addon)
+                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel" aria-labelledby="'nav-tab-'+ {{$addon['id']}}">
+                                    {!! $addon['content'] !!}
+                                </div>
+                            @endforeach
+                        @endisset
                     </div>
                 </div>
             </div>
@@ -58,6 +79,7 @@
     <script>
         new Vue({
             el: '#editGroup',
+            mixins: addons,
             data() {
                 return {
                     formData: @json($screen),
