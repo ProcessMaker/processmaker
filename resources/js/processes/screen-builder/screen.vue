@@ -2,41 +2,7 @@
   <div class="h-100">
     <b-card no-body class="h-100 bg-white border-top-0" id="app">
       <!-- Card Header -->
-      <b-card-header>
-        <b-row>
-          <b-col>
-            <b-button-group size="sm">
-              <b-button :variant="displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'editor'" class="text-capitalize">
-                <i class="fas fa-drafting-compass pr-1"></i>{{ $t('Design') }}
-              </b-button>
-              <b-button :variant="!displayBuilder? 'secondary' : 'outline-secondary'" @click="mode = 'preview'" class="text-capitalize">
-                <i class="fas fa-cogs pr-1"></i>{{ $t('Preview') }}
-              </b-button>
-            </b-button-group>
-          </b-col>
-
-          <b-col class="text-right" v-if="displayBuilder && !displayPreview">
-            <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-              <button type="button" class="btn btn-secondary text-capitalize" :title="$t('Calculated Properties')" @click="openComputedProperties">
-                <i class="fas fa-flask"></i>
-                {{ $t('Calcs') }}
-              </button>
-              <button type="button" class="btn btn-secondary text-capitalize" :title="$t('Custom CSS')" @click="openCustomCSS">
-                <i class="fab fa-css3"></i>
-                {{ $t('CSS') }}
-              </button>
-              <button type="button" class="btn btn-secondary mr-2 text-capitalize" :title="$t('Watchers')" @click="openWatchersPopup">
-                <i class="fas fa-mask"></i>
-                {{ $t('Watchers') }}
-              </button>
-            </div>
-
-            <button v-if="permission.includes('export-screens')" type="button" :title="$t('Export Screen')" @click="beforeExportScreen" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-file-export"></i></button>
-            <button @click="saveScreen(false)" type="button" class="btn btn-secondary btn-sm ml-1"><i class="fas fa-save"></i></button>
-          </b-col>
-
-        </b-row>
-      </b-card-header>
+      <menu-screen ref="menuScreen" :options="optionsMenu"></menu-screen>
 
       <!-- Card Body -->
       <b-card-body class="overflow-auto p-0 h-100" id="screen-builder-container">
@@ -165,13 +131,14 @@
   import VueJsonPretty from 'vue-json-pretty';
   import MonacoEditor from "vue-monaco";
   import mockMagicVariables from './mockMagicVariables';
+  import MenuScreen from "../../components/Menu";
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/screen-builder/src/global-properties";
   import _ from "lodash";
 
-import Validator from "validatorjs";
-import formTypes from "./formTypes";
+  import Validator from "validatorjs";
+  import formTypes from "./formTypes";
 
   // To include another language in the Validator with variable processmaker
   if (window.ProcessMaker && window.ProcessMaker.user && window.ProcessMaker.user.lang) {
@@ -190,6 +157,102 @@ import formTypes from "./formTypes";
         computed: [],
         items: []
       }];
+
+      const options = [
+        {
+          id: 'group_design',
+          type: 'group',
+          section: 'left',
+          items: [
+            {
+              id: 'button_design',
+              type: 'button',
+              title: this.$t('Design Screen'),
+              name: this.$t('Design'),
+              variant: 'secondary',
+              icon: 'fas fa-drafting-compass pr-1',
+              action: () => {
+                ProcessMaker.EventBus.$emit('change_mode', 'editor');
+              }
+            },
+            {
+              id: 'button_preview',
+              type: 'button',
+              title: this.$t('Preview Screen'),
+              name: this.$t('Preview'),
+              variant: 'outline-secondary',
+              icon: 'fas fa-cogs pr-1',
+              action: () => {
+                ProcessMaker.EventBus.$emit('change_mode', 'preview');
+              }
+            }
+          ]
+        },
+        {
+          id: 'group_properties',
+          type: 'group',
+          section: 'right',
+          items: [
+            {
+              id: 'button_calcs',
+              type: 'button',
+              title: this.$t('Calculated Properties'),
+              name: this.$t('Calcs'),
+              variant: 'secondary',
+              icon: 'fas fa-flask',
+              action: () => {
+                ProcessMaker.EventBus.$emit('open-computed-properties');
+              }
+            },
+            {
+              id: 'button_custom_css',
+              type: 'button',
+              title: this.$t('Custom CSS'),
+              name: this.$t('CSS'),
+              variant: 'secondary',
+              icon: 'fab fa-css3',
+              action: () => {
+                ProcessMaker.EventBus.$emit('open-custom-css');
+              }
+            },
+            {
+              id: 'button_watchers',
+              type: 'button',
+              title: this.$t('Watchers'),
+              name: this.$t('Watchers'),
+              variant: 'secondary',
+              icon: 'fas fa-mask',
+              action: () => {
+                ProcessMaker.EventBus.$emit('open-form-watchers');
+              }
+            }
+          ]
+        },
+        {
+          id: 'button_export',
+          section: 'right',
+          type: 'button',
+          title: this.$t('Export Screen'),
+          name: '',
+          variant: 'secondary',
+          icon: 'fas fa-file-export',
+          action: () => {
+            ProcessMaker.EventBus.$emit('export-screen');
+          }
+        },
+        {
+          id: 'button_save',
+          section: 'right',
+          type: 'button',
+          title: this.$t('Save Screen'),
+          name: '',
+          variant: 'secondary',
+          icon: 'fas fa-save',
+          action: () => {
+            ProcessMaker.EventBus.$emit('save-screen', false);
+          }
+        }
+      ];
 
       return {
         watchers_config: {
@@ -220,6 +283,7 @@ import formTypes from "./formTypes";
         },
         mockMagicVariables,
         validationWarnings: [],
+        optionsMenu: options,
       };
     },
     components: {
@@ -229,7 +293,8 @@ import formTypes from "./formTypes";
       ComputedProperties,
       CustomCSS,
       WatchersPopup,
-      MonacoEditor
+      MonacoEditor,
+      MenuScreen,
     },
     watch: {
       mode(mode) {
@@ -296,8 +361,41 @@ import formTypes from "./formTypes";
       this.updatePreview(new Object());
       this.previewInput = "{}";
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
+
+      //actions buttons
+      ProcessMaker.EventBus.$on("change_mode", (value) => {
+        if (value === "editor") {
+          this.$refs.menuScreen.changeItem("button_design", { "variant": "secondary"});
+          this.$refs.menuScreen.changeItem("button_preview", { "variant": "outline-secondary"});
+          this.$refs.menuScreen.sectionRight = true;
+        }
+        if (value === "preview") {
+          this.$refs.menuScreen.changeItem("button_design", { "variant": "outline-secondary"});
+          this.$refs.menuScreen.changeItem("button_preview", { "variant": "secondary"});
+          this.$refs.menuScreen.sectionRight = false;
+        }
+        this.setMode(value);
+      });
+      ProcessMaker.EventBus.$on('open-computed-properties',  () => {
+        this.openComputedProperties();
+      });
+      ProcessMaker.EventBus.$on('open-custom-css',  () => {
+        this.openCustomCSS();
+      });
+      ProcessMaker.EventBus.$on('open-form-watchers',  () => {
+        this.openWatchersPopup();
+      });
+      ProcessMaker.EventBus.$on('export-screen',  () => {
+        this.beforeExportScreen();
+      });
+      ProcessMaker.EventBus.$on('save-screen',  (value, resolve, reject) => {
+        this.saveScreen(value, resolve, reject);
+      });
     },
     methods: {
+      setMode (value) {
+        this.mode = value;
+      },
       onUpdate(data) {
         ProcessMaker.EventBus.$emit('form-data-updated', data);
       },
@@ -419,7 +517,7 @@ import formTypes from "./formTypes";
             ProcessMaker.alert(error.response.data.error, 'danger');
           });
       },
-      saveScreen(exportScreen) {
+      saveScreen(exportScreen, resolve, reject) {
         if (this.allErrors !== 0) {
           ProcessMaker.alert(this.$t("This screen has validation errors."), "danger");
         } else {
