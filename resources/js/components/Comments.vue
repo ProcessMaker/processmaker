@@ -2,7 +2,12 @@
   <div v-if="comments.length > 0" class="px-3 mb-2 timeline">
     <template>
       <div class="px-2 py-3" v-for="value in comments">
-        <avatar-image v-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
+        <div v-if="value.subject=='Gateway'" class="badge badge-secondary timeline-badge">
+          <div class="text-secondary timeline-gateway">
+            <i class="far fa-square" ></i>
+          </div>
+        </div>
+        <avatar-image v-else-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
         <img v-else src="/img/systemAvatar.png" id="systemAvatar">
         <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
         &nbsp;-
@@ -104,5 +109,19 @@ export default {
     transparent 40px,
     transparent 100%
   );
+}
+
+.timeline-badge {
+  background-color: rgb(225, 228, 232);
+  width: 24px;
+  height: 22px;
+  margin-left:2px;
+  padding:0;
+}
+.timeline-gateway {
+  transform: rotate(45deg);
+  width: 20px;
+  margin: 0 auto;
+  margin-top:7px;
 }
 </style>
