@@ -39,6 +39,11 @@ class SessionStarted
     {
         $guard = \Auth::guard();
 
+        // Remember me is validate only in user session guards
+        if (!is_a($guard, \Illuminate\Auth\SessionGuard::class)) {
+            return false;
+        }
+
         // recallerName is the name of the cookie that stores the remember me token
         $recallerName = $guard->getRecallerName();
 
