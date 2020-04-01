@@ -5,7 +5,7 @@
         <modeler
           ref="modeler"
           :owner="self"
-          :decorations="decorations" 
+          :decorations="decorations"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           @saveBpmn="saveBpmn"
@@ -27,9 +27,9 @@
 </template>
 
 <script>
-import { Modeler, ValidationStatus } from "@processmaker/modeler";
+  import {Modeler, ValidationStatus} from "@processmaker/modeler";
 
-export default {
+  export default {
   name: 'ModelerApp',
   components: {
     Modeler,
@@ -93,37 +93,35 @@ export default {
       });
       return notifications;
     },
-    saveBpmn() {
-      this.$refs.modeler.toXML((err, xml) => {
-        if(err) {
-          ProcessMaker.alert("There was an error saving: " + err, 'danger');
-        } else {
-          // lets save
-          // Call process update
-          var data = {
-            name: this.process.name,
-            description: this.process.description,
-            task_notifications: this.getTaskNotifications(),
-            bpmn: xml
-          };
-          ProcessMaker.apiClient.put('/processes/' + this.process.id, data)
-          .then((response) => {
-            this.process.updated_at = response.data.updated_at;
-            // Now show alert
-            ProcessMaker.alert(this.$t('The process was saved.'), 'success');
-            window.ProcessMaker.EventBus.$emit('save-changes');
-            this.$set(this, 'warnings', response.data.warnings || []);
-            if (response.data.warnings && response.data.warnings.length > 0) {
-              this.$refs.validationStatus.autoValidate = true;
-            }
-          })
-          .catch((err) => {
-            const message = err.response.data.message;
-            const errors = err.response.data.errors;
-            ProcessMaker.alert(message, 'danger');
-          })
+    saveBpmn({xml, svg}) {
+      const data = {
+        name: this.process.name,
+        description: this.process.description,
+        task_notifications: this.getTaskNotifications(),
+        bpmn: xml,
+        svg
+      };
+
+      const savedSuccessfully = (response) => {
+        this.process.updated_at = response.data.updated_at;
+        // Now show alert
+        ProcessMaker.alert(this.$t('The process was saved.'), 'success');
+        window.ProcessMaker.EventBus.$emit('save-changes');
+        this.$set(this, 'warnings', response.data.warnings || []);
+        if (response.data.warnings && response.data.warnings.length > 0) {
+          this.$refs.validationStatus.autoValidate = true;
         }
-      });
+      };
+
+      const saveFailed = (err) => {
+        const message = err.response.data.message;
+        const errors = err.response.data.errors;
+        ProcessMaker.alert(message, 'danger');
+      };
+
+      ProcessMaker.apiClient.put('/processes/' + this.process.id, data)
+              .then(savedSuccessfully)
+              .catch(saveFailed);
     }
   },
   mounted() {
