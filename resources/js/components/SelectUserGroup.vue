@@ -35,6 +35,15 @@
 
 <script>
   import MultiSelect from "vue-multiselect";
+
+  const addUsernameToFullName = (user) => {
+    if (!user.fullname || ! user.username)
+    {
+      return user;
+    }
+    return {...user, fullname: `${user.fullname} (${user.username})`};
+  };
+
   export default {
     components: {
       MultiSelect
@@ -81,7 +90,7 @@
             return [];
           }
           return this.selected.users.map(uid => {
-            return this.results.find(item => item.id === uid);
+            return addUsernameToFullName(this.results.find(item => item.id === uid));
           })
             .concat(this.selected.groups.map(gid => {
               return this.results.find(item => item.id === "group-" + gid);
@@ -167,11 +176,13 @@
         ProcessMaker.apiClient
           .get("users" + (typeof filter === "string" ? "?filter=" + filter : ""))
           .then(response => {
-            this.users = response.data.data;
+            const users = response.data.data.map(user => addUsernameToFullName(user));
+            this.users = users;
+
             if (response.data.data) {
               this.options.push({
                 "type": this.labelUsers,
-                "items": response.data.data
+                "items": users,
               });
             }
           });
