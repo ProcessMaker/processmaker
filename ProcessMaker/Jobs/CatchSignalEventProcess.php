@@ -2,12 +2,13 @@
 
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Repositories\BpmnDocument;
 
 class CatchSignalEventProcess implements ShouldQueue
@@ -48,10 +49,8 @@ class CatchSignalEventProcess implements ShouldQueue
         $throwEvent = $definitions->findElementById($this->throwEvent)->getBpmnElementInstance();
         $eventDefinition = $this->getEventDefinitionBySignalRef($definitions);
         $instance = $engine->loadProcessRequest($mainRequest);
-        $token = $instance->getTokens()->find(function ($token) {
-            return $token->getId() == $this->tokenId;
-        })->item(0);
-
+        $token = ProcessRequestToken::find($this->tokenId);
+        $token->setInstance($instance);
         $version = Process::find($this->processId)->getLatestVersion();
         $definitions = $version->getDefinitions(true, null, false);
         $engine = $definitions->getEngine();
