@@ -15,15 +15,15 @@ jobs:
       # documented at https://circleci.com/docs/2.0/circleci-images/
       - image: circleci/mysql:5.7-ram
         environment:
-          - MYSQL_ROOT_PASSWORD: P4ssW0rd1!
-          - MYSQL_DATABASE: circle_test
+          MYSQL_ROOT_PASSWORD: P4ssW0rd1!
+          MYSQL_DATABASE: circle_test
 
       # Add support for Microsoft SQL Server Testing
       - image: microsoft/mssql-server-linux:2017-GA
         environment:
           # Needed for MS SQL Docker install
-          - ACCEPT_EULA: 'Y'
-          - SA_PASSWORD: 'P4ssW0rd1!'
+          ACCEPT_EULA: 'Y'
+          SA_PASSWORD: 'P4ssW0rd1!'
 
     working_directory: ~/repo
 
@@ -112,27 +112,28 @@ jobs:
 
       # Enable xdebug to support code coverage
       #- run: sudo docker-php-ext-enable xdebug
+      
+      - setup_remote_docker:
+          docker_layer_caching: true
 
-      - setup_remote_docker
-
-      - run:
-          name: setup SDKs
-          command: |
-            php artisan l5:generate
-            mkdir -p /tmp/processmaker-sdk-php
-            php artisan processmaker:sdk php /tmp/processmaker-sdk-php
-            mkdir -p /tmp/processmaker-sdk-node
-            php artisan processmaker:sdk javascript /tmp/processmaker-sdk-node
-            mkdir -p /tmp/processmaker-sdk-lua
-            php artisan processmaker:sdk lua /tmp/processmaker-sdk-lua
-      - run:
-          name: Configure scripts executor
-          command: |
-            docker pull processmaker4/executor-php:latest
-            docker pull processmaker4/executor-lua:latest
-            docker pull processmaker4/executor-node:latest
-            docker pull jbergknoff/sass:latest
-            sudo mkdir -m777 /opt/executor
+      # - run:
+      #     name: setup SDKs
+      #     command: |
+      #       php artisan l5:generate
+      #       mkdir -p /tmp/processmaker-sdk-php
+      #       php artisan processmaker:sdk php /tmp/processmaker-sdk-php
+      #       mkdir -p /tmp/processmaker-sdk-node
+      #       php artisan processmaker:sdk javascript /tmp/processmaker-sdk-node
+      #       mkdir -p /tmp/processmaker-sdk-lua
+      #       php artisan processmaker:sdk lua /tmp/processmaker-sdk-lua
+      # - run:
+      #     name: Configure scripts executor
+      #     command: |
+      #       docker pull processmaker4/executor-php:latest
+      #       docker pull processmaker4/executor-lua:latest
+      #       docker pull processmaker4/executor-node:latest
+      #       docker pull jbergknoff/sass:latest
+      #       sudo mkdir -m777 /opt/executor
       #- run: sudo docker-php-ext-enable xdebug
 
       # Build frontend assets for production
@@ -165,7 +166,7 @@ jobs:
             MSSQL_DATABASE: 'test'
             MSSQL_USERNAME: 'sa'
             MSSQL_PASSWORD: 'P4ssW0rd1!'
-            PROCESSMAKER_SCRIPTS_HOME: '/opt/executor'
+            PROCESSMAKER_SCRIPTS_HOME: '/tmp'
             PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
             TELESCOPE_ENABLED: 'false'
       - run:

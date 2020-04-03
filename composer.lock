@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a862d3231722b7511a4a9e18ebca98f7",
+    "content-hash": "577ddd9c5ce819f0ef92712a7bf4b2c9",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -3338,6 +3338,111 @@
                 "redis"
             ],
             "time": "2016-06-16T16:22:20+00:00"
+        },
+        {
+            "name": "processmaker/docker-executor-lua",
+            "version": "dev-feature/3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
+                "reference": "0f5a4402f9160ca06b69ac3f1cea8fc0511e2005"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/0f5a4402f9160ca06b69ac3f1cea8fc0511e2005",
+                "reference": "0f5a4402f9160ca06b69ac3f1cea8fc0511e2005",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorLua\\DockerExecutorLuaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "description": "Lua script executor for processmaker 4",
+            "support": {
+                "source": "https://github.com/ProcessMaker/docker-executor-lua/tree/feature/3",
+                "issues": "https://github.com/ProcessMaker/docker-executor-lua/issues"
+            },
+            "time": "2020-03-25T14:29:32+00:00"
+        },
+        {
+            "name": "processmaker/docker-executor-node",
+            "version": "dev-feature/2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-node.git",
+                "reference": "c0fa210b98bae8368244d8011ef827672821a852"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/c0fa210b98bae8368244d8011ef827672821a852",
+                "reference": "c0fa210b98bae8368244d8011ef827672821a852",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorNode\\DockerExecutorNodeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "description": "Javascript script executor for processmaker 4",
+            "support": {
+                "source": "https://github.com/ProcessMaker/docker-executor-node/tree/feature/2",
+                "issues": "https://github.com/ProcessMaker/docker-executor-node/issues"
+            },
+            "time": "2020-03-24T22:22:47+00:00"
+        },
+        {
+            "name": "processmaker/docker-executor-php",
+            "version": "dev-feature/5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-php.git",
+                "reference": "0b071553272fc414bd2505bcae990e145d7c1520"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/0b071553272fc414bd2505bcae990e145d7c1520",
+                "reference": "0b071553272fc414bd2505bcae990e145d7c1520",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorPhp\\DockerExecutorPhpServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "description": "PHP script executor for processmaker 4",
+            "support": {
+                "source": "https://github.com/ProcessMaker/docker-executor-php/tree/feature/5",
+                "issues": "https://github.com/ProcessMaker/docker-executor-php/issues"
+            },
+            "time": "2020-03-25T14:27:47+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
@@ -8519,6 +8624,9 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "pion/laravel-chunk-upload": 20,
+        "processmaker/docker-executor-lua": 20,
+        "processmaker/docker-executor-node": 20,
+        "processmaker/docker-executor-php": 20,
         "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,

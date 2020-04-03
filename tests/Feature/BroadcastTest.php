@@ -10,6 +10,8 @@ use ProcessMaker\Events\ProcessCompleted;
 use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Events\ModelerStarting;
+use ProcessMaker\Events\BuildScriptExecutor;
+use ProcessMaker\Events\ScriptBuilderStarting;
 use ProcessMaker\Events\SessionStarted as SessionStartedEvent;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\ProcessRequestToken as Task;
@@ -148,5 +150,32 @@ class BroadcastTest extends TestCase
         
         $this->assertLogContainsText('SessionStarted');
         $this->assertBroadcastEventSizeLessThan('SessionStarted', 10000);
+    }
+
+    /**
+     * Asserts that the BuildScriptExecutor event works.
+     *
+     * @return void
+     */
+    public function testBuildScriptExecutorBroadcast()
+    {
+        $user = factory(User::class)->create();
+        event(new BuildScriptExecutor('output-text', $user->id, 'output-status'));
+        
+        $this->assertLogContainsText('output-text');
+        $this->assertLogContainsText((string) $user->id);
+        $this->assertLogContainsText('output-status');
+    }
+
+    /**
+     * Asserts that the ScreenBuilderStarting broadcast event works.
+     *
+     * @return void
+     */
+    public function testScriptBuilderStartingBroadcast()
+    {
+        $this->markTestSkipped('Will implement later');
+        $manager = new ScriptBuilder();
+        event(new ScreenBuilderStarting($manager));
     }
 }

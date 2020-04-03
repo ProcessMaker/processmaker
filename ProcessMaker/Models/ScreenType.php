@@ -16,8 +16,13 @@ use Illuminate\Database\Eloquent\Model;
  * ),
  * @OA\Schema(
  *   schema="ScreenType",
- *   allOf={@OA\Schema(ref="#/components/schemas/ScreenTypeEditable")},
- *   @OA\Property(property="id", type="string", format="id"),
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/ScreenTypeEditable"),
+ *       @OA\Schema(
+ *          type="object",
+ *          @OA\Property(property="id", type="string", format="id"),
+ *       )
+ *   },
  * )
  */
 class ScreenType extends Model

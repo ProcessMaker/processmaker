@@ -166,6 +166,14 @@ Route::group(
     //UI customization
     Route::post('customize-ui', 'CssOverrideController@store')->name('customize-ui.store');
 
+    // Rebuild Script Executors
+    Route::get('script-executors', 'ScriptExecutorController@index')->name('script-executors.index');
+    Route::get('script-executors/available-languages', 'ScriptExecutorController@availableLanguages')->name('script-executors.available-languages');
+    Route::put('script-executors/{script_executor}', 'ScriptExecutorController@update')->name('script-executors.update');
+    Route::post('script-executors', 'ScriptExecutorController@store')->name('script-executors.store');
+    Route::post('script-executors/cancel', 'ScriptExecutorController@cancel')->name('script-executors.cancel');
+    Route::delete('script-executors/{script_executor}', 'ScriptExecutorController@delete')->name('script-executors.delete');
+
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
 

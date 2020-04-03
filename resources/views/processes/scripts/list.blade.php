@@ -24,7 +24,7 @@
 
         <div class="container-fluid">
             <script-listing :filter="filter"
-                            :script-formats='@json($config->scriptFormats)'
+                            :script-executors='@json($config->scriptExecutors)'
                             :permission="{{ \Auth::user()->hasPermissionsFor('scripts') }}"
                             ref="listScript"
                             @delete="deleteScript">
@@ -65,11 +65,11 @@
                                              :errors="addError.script_category_id">
                             </category-select>
                             <div class="form-group">
-                                {!!Form::label('language', __('Language'))!!}<small class="ml-1">*</small>
-                                {!!Form::select('language', [''=>__('Select')] + $config->scriptFormats, null, ['class'=>
-                                'form-control', 'v-model'=> 'language', 'v-bind:class' => '{\'form-control\':true,
-                                \'is-invalid\':addError.language}']);!!}
-                                <div class="invalid-feedback" v-for="language in addError.language">@{{language}}</div>
+                                {!!Form::label('script_executor_id', __('Language'))!!}<small class="ml-1">*</small>
+                                {!!Form::select('script_executor_id', [''=>__('Select')] + $config->scriptExecutors, null, ['class'=>
+                                'form-control', 'v-model'=> 'script_executor_id', 'v-bind:class' => '{\'form-control\':true,
+                                \'is-invalid\':addError.script_executor_id}']);!!}
+                                <div class="invalid-feedback" v-for="error in addError.script_executor_id">@{{error}}</div>
                             </div>
 
                             <div class="form-group">
@@ -130,6 +130,7 @@
             data: {
               title: '',
               language: '',
+              script_executor_id: null,
               description: '',
               script_category_id: '',
               code: '',
@@ -143,6 +144,7 @@
               onClose() {
                 this.title = '';
                 this.language = '';
+                this.script_executor_id = null;
                 this.description = '';
                 this.script_category_id = '';
                 this.code = '';
@@ -163,7 +165,7 @@
                 this.disabled = true;
                 ProcessMaker.apiClient.post("/scripts", {
                   title: this.title,
-                  language: this.language,
+                  script_executor_id: this.script_executor_id,
                   description: this.description,
                   script_category_id: this.script_category_id,
                   run_as_user_id: this.selectedUser ? this.selectedUser.id : null,

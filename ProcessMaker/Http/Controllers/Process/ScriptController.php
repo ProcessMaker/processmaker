@@ -8,6 +8,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
@@ -39,7 +40,7 @@ class ScriptController extends Controller
         ];
 
         $listConfig = (object) [
-            'scriptFormats' => Script::scriptFormatList(),
+            'scriptExecutors' => ScriptExecutor::list(),
             'countCategories' => ScriptCategory::where(['status' => 'ACTIVE', 'is_system' => false])->count()
         ];
 
@@ -49,21 +50,21 @@ class ScriptController extends Controller
     public function edit(Script $script, User $users)
     {
         $selectedUser = $script->runAsUser;
-        $scriptFormats = Script::scriptFormatList();
+        $scriptExecutors = ScriptExecutor::list($script->language);
+        $addons = $this->getPluginAddons('edit', compact(['script']));
 
-        return view('processes.scripts.edit', compact('script', 'selectedUser', 'scriptFormats'));
+        return view('processes.scripts.edit', compact('script', 'selectedUser', 'addons', 'scriptExecutors'));
     }
 
     public function builder(Request $request, Script $script)
     {
-        $scriptFormat = $script->language_name;
         $processRequestAttributes = $this->getProcessRequestAttributes();
         $processRequestAttributes['user_id'] = $request->user()->id;
         
         $testData = [
             '_request' => $processRequestAttributes
         ];
-        return view('processes.scripts.builder', compact('script', 'scriptFormat', 'testData'));
+        return view('processes.scripts.builder', compact('script', 'testData'));
     }
 
     private function getProcessRequestAttributes()

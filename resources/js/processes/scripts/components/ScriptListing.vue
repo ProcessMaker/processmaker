@@ -121,7 +121,7 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "id", "permission", "scriptFormats"],
+  props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
     return {
       dupScript: {
@@ -247,11 +247,7 @@ export default {
       }
     },
     formatLanguage(language) {
-      if (this.scriptFormats[language] !== undefined) {
-        return this.scriptFormats[language];
-      } else {
-        return language.toUpperCase();
-      }
+      return language;
     },
     fetch() {
       this.loading = true;
