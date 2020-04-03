@@ -74,6 +74,11 @@
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
             <b-card no-body class="p-0 h-100 rounded-0 border-top-0 border-right-0 border-bottom-0">
               <b-card-body class="p-0 overflow-auto">
+
+                <div v-for="(component, index) in previewComponents" :key="index">
+                  <component :is="component" :data="previewData" @input="previewData = $event"></component>
+                </div>
+
                 <b-button variant="outline"
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
                   @click="showDataInput = !showDataInput">
@@ -220,6 +225,7 @@ import formTypes from "./formTypes";
         },
         mockMagicVariables,
         validationWarnings: [],
+        previewComponents: [],
       };
     },
     components: {
@@ -395,6 +401,9 @@ import formTypes from "./formTypes";
         this.$refs.renderer.$options.components[rendererBinding] = rendererComponent;
         // Add it to the form builder
         this.$refs.builder.addControl(control, builderComponent, builderBinding)
+      },
+      addPreviewComponent(component) {
+        this.previewComponents.push(component);
       },
       refreshSession: _.throttle(function() {
         ProcessMaker.apiClient({
