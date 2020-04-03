@@ -1,6 +1,11 @@
 /* eslint-disable func-names */
 // Our initial node types to register with our modeler
 import {
+  boundarySignalEvent,
+  signalEndEvent,
+  intermediateSignalCatchEvent,
+  intermediateSignalThrowEvent,
+  signalStartEvent,
   association,
   endEvent,
   exclusiveGateway,
@@ -20,6 +25,7 @@ import {
   eventBasedGateway,
   intermediateMessageCatchEvent
 } from '@processmaker/modeler';
+import SignalSelect from './components/inspector/SignalSelect';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
 import GroupSelect from './components/inspector/GroupSelect';
@@ -38,6 +44,7 @@ import SelectUserGroup from "../../components/SelectUserGroup";
 Vue.component('UserSelect', UserSelect);
 Vue.component('UserById', UserById);
 Vue.component('GroupSelect', GroupSelect);
+Vue.component('SignalSelect', SignalSelect);
 Vue.component('ModelerScreenSelect', ModelerScreenSelect);
 Vue.component('TaskNotifications', TaskNotifications);
 Vue.component('ExpressionEditor', ExpressionEditor);
@@ -86,7 +93,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Start Permissions',
         icon: 'user-shield',
-        name: 'inspector-accordion',
+        name: 'permissions-accordion',
       },
       items: [
         {
@@ -136,7 +143,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Assignment Rules',
         icon: 'users',
-        name: 'inspector-accordion',
+        name: 'assignments-accordion',
       },
       items: [
         {
@@ -156,7 +163,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Notifications',
         icon: 'bell',
-        name: 'inspector-accordion',
+        name: 'notifications-accordion',
       },
       items: [
         {
@@ -233,7 +240,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Assignment Rules',
         icon: 'users',
-        name: 'inspector-accordion',
+        name: 'assignments-accordion',
       },
       items: [
         {
@@ -253,7 +260,7 @@ ProcessMaker.EventBus.$on(
         initiallyOpen: false,
         label: 'Notifications',
         icon: 'bell',
-        name: 'inspector-accordion',
+        name: 'notifications-accordion',
       },
       items: [
         {
@@ -300,5 +307,65 @@ ProcessMaker.EventBus.$on(
           name: 'whitelist',
       },
     });
+    registerInspectorExtension(
+      signalStartEvent,
+      {
+        component: 'SignalSelect',
+        config: {
+          label: 'Signal',
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
+        }
+      },
+      'inspector-accordion'
+    );
+    registerInspectorExtension(
+      intermediateSignalThrowEvent,
+      {
+        component: 'SignalSelect',
+        config: {
+          label: 'Signal',
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
+        }
+      },
+      'inspector-accordion'
+    );
+    registerInspectorExtension(
+      intermediateSignalCatchEvent,
+      {
+        component: 'SignalSelect',
+        config: {
+          label: 'Signal',
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
+        }
+      },
+      'inspector-accordion'
+    );
+    registerInspectorExtension(
+      signalEndEvent,
+      {
+        component: 'SignalSelect',
+        config: {
+          label: 'Signal',
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
+        }
+      },
+      'inspector-accordion'
+    );
+    registerInspectorExtension(
+      boundarySignalEvent,
+      {
+        component: 'SignalSelect',
+        config: {
+          label: 'Signal',
+          name: 'signalRef',
+          helper: 'Signal that will trigger this start event'
+        }
+      },
+      'inspector-accordion'
+    );
   }
 );
