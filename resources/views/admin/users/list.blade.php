@@ -14,7 +14,7 @@
             </div>
             @can('create-users')
                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                    <b-button @click="showModal()"> 
+                    <b-button @click="showModal()">
                         <i class="fas fa-plus"></i>
                         {{__('User')}}
                     </b-button>
@@ -23,9 +23,9 @@
         </div>
     </div>
     <div class="container-fluid">
-        <users-listing 
-            ref="listing" 
-            :filter="filter" 
+        <users-listing
+            ref="listing"
+            :filter="filter"
             :permission="{{ \Auth::user()->hasPermissionsFor('users') }}"
             v-on:reload="reload">
         </users-listing>
@@ -38,8 +38,8 @@
                     {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'config.username', 'v-bind:class'
                     => '{\'form-control\':true, \'is-invalid\':config.addError.username}', 'autocomplete' => 'off']) !!}
                     <div class="invalid-feedback" v-for="username in config.addError.username">
-                        <div v-if="username !== 'userExists'"> 
-                            @{{username}} 
+                        <div v-if="username !== 'userExists'">
+                            @{{username}}
                         </div>
                     </div>
                 </div>
@@ -156,6 +156,13 @@
 
         .multiselect__tag-icon:after {
             color: white !important;
+        }
+
+        .fas.fa-angle-left,
+        .fas.fa-angle-double-left,
+        .fas.fa-angle-right,
+        .fas.fa-angle-double-right {
+            line-height: unset;
         }
     </style>
 @endsection
