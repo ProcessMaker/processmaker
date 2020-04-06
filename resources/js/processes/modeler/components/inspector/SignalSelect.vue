@@ -24,11 +24,8 @@
         </template>
       </multiselect>
       <div class="btn-group ml-1" role="group">
-        <button type="button" class="btn btn-secondary btn-sm" @click="showAddSignal">
-          <i class="fa fa-plus"></i>
-        </button>
-        <button v-if="value" type="button" class="btn btn-secondary btn-sm" @click="editSignal">
-          <i class="fa fa-pen"></i>
+        <button type="button" class="btn btn-secondary btn-sm" @click="toggleConfigSignal">
+          <i class="fa fa-ellipsis-h"></i>
         </button>
       </div>
     </div>
@@ -60,6 +57,31 @@
         </button>
       </div>
     </div>
+    <template v-if="showListSignals && !showNewSignal && !showEditSignal">
+      <table class="table table-sm table-striped" width="100%">
+        <thead>
+          <tr>
+            <td colspan="2" align="right">
+              <button type="button" class="btn btn-secondary btn-sm p-1 font-xs" @click="showAddSignal">
+                <i class="fa fa-plus"></i> Signal
+              </button>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="signal in localSignals" :key="`signal-${signal.id}`">
+            <td>
+              <b-badge variant="secondary">{{ signal.id }}</b-badge>
+              {{ signal.name }}
+            </td>
+            <td align="right">
+              <a href="javascript:void(0)" @click="editSignal(signal)"><i class="fa fa-pen ml-1"></i></a>
+              <a href="javascript:void(0)" @click="removeSignal(signal)"><i class="fa fa-trash ml-1"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
   </div>
 </template>
 
@@ -79,6 +101,18 @@ export default {
     },
   },
   computed: {
+    localSignals() {
+      const signals = [];
+      ProcessMaker.$modeler.definitions.rootElements.forEach((element) => {
+        if (element.$type === 'bpmn:Signal') {
+          signals.push({
+            id: element.id,
+            name: element.name
+          });
+        }
+      });
+      return signals;
+    },
     valid() {
       return String(this.signalId) !== '' && String(this.signalName) !== '';
     },
@@ -86,6 +120,7 @@ export default {
   data() {
     return {
       pmql: 'id!=' + ProcessMaker.modeler.process.id,
+      showListSignals: false,
       showNewSignal: false,
       showEditSignal: false,
       globalSignals: [],
@@ -94,8 +129,16 @@ export default {
     };
   },
   methods: {
-    editSignal() {
-      const signal = this.getSignalById(this.value);
+    removeSignal(signal) {
+      const index = ProcessMaker.$modeler.definitions.rootElements.findIndex(element => element.id === signal.id);
+      if (index) {
+        ProcessMaker.$modeler.definitions.rootElements.splice(index, 1);
+      }
+    },
+    toggleConfigSignal() {
+      this.showListSignals = !this.showListSignals;
+    },
+    editSignal(signal) {
       this.signalId = signal.id;
       this.signalName = signal.name;
       this.showEditSignal = true;
@@ -174,3 +217,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+  .font-xs {
+    font-size: 0.75rem;
+  }
+</style>
