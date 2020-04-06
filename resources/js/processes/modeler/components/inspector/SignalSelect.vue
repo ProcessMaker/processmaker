@@ -58,8 +58,8 @@
       </div>
     </div>
     <div v-else-if="showConfirmDelete" class="card mb-3 bg-danger text-white">
-      <div v-if="deleteSignalUsage" class="card-body p-2">
-        {{ deleteSignalUsage }}
+      <div v-if="deleteSignalUsage(deleteSignal.id)" class="card-body p-2">
+        {{ deleteSignalUsage(deleteSignal.id) }}
       </div>
       <div v-else class="card-body p-2">
         {{ $t('Are you sure you want to delete this item?') }}
@@ -69,7 +69,7 @@
         <button type="button" class="btn btn-sm btn-light mr-2 p-1 font-xs" @click="showConfirmDelete=false">
           Cancel
         </button>
-        <button v-if="!deleteSignalUsage" type="button" class="btn btn-sm btn-danger p-1 font-xs" @click="confirmDeleteSignal">
+        <button v-if="!deleteSignalUsage(deleteSignal.id)" type="button" class="btn btn-sm btn-danger p-1 font-xs" @click="confirmDeleteSignal">
           Delete
         </button>
       </div>
@@ -118,12 +118,6 @@ export default {
     },
   },
   computed: {
-    deleteSignalUsage() {
-      const usage = this.signalUsage(this.deleteSignal.id);
-      const labels = [];
-      usage.forEach(element => labels.push(element.name || element.id));
-      return labels.length ? (this.$t('This signal cannot be removed, it is used by') + ': ' + labels.join(', ')) : '';
-    },
     localSignals() {
       const signals = [];
       ProcessMaker.$modeler.definitions.rootElements.forEach((element) => {
@@ -158,6 +152,12 @@ export default {
     };
   },
   methods: {
+    deleteSignalUsage(id) {
+      const usage = this.signalUsage(id);
+      const labels = [];
+      usage.forEach(element => labels.push(element.name || element.id));
+      return labels.length ? (this.$t('This signal cannot be removed, it is used by') + ': ' + labels.join(', ')) : '';
+    },
     signalUsage(signalId) {
       const definitions = ProcessMaker.$modeler.definitions;
       const usage = [];
