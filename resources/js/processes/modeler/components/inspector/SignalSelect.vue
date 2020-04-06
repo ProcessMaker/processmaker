@@ -234,6 +234,11 @@ export default {
       return ProcessMaker.$modeler.definitions.rootElements.find(element => element.id === id);
     },
     change (value) {
+      if (!value) {
+        this.$emit('input', '');
+        this.fixUnrefreshedVueFormRender();
+        return;
+      }
       let signal = this.getSignalById(value.id);
       if (!signal) {
         signal = ProcessMaker.$modeler.moddle.create('bpmn:Signal', {
@@ -243,6 +248,18 @@ export default {
         ProcessMaker.$modeler.definitions.rootElements.push(signal);
       }
       this.$emit('input', this.storeId ? get(value, this.trackBy) : value);
+      this.fixUnrefreshedVueFormRender();
+    },
+    fixUnrefreshedVueFormRender() {
+      this.$nextTick(() => {
+        let form = this;
+        while (form && form.$options._componentTag !== 'vue-form-renderer') {
+          form = form.$parent;
+        }
+        if (form) {
+          form.$emit('update', form.transientData);
+        }
+      });
     },
     showAddSignal() {
       this.showNewSignal = true;
