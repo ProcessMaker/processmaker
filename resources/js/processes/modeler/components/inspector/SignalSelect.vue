@@ -57,7 +57,21 @@
         </button>
       </div>
     </div>
-    <template v-if="showListSignals && !showNewSignal && !showEditSignal">
+    <div v-else-if="showConfirmDelete" class="card mb-3 bg-danger text-white">
+      <div class="card-body p-2">
+        {{ $t('Are you sure you want to delete this item?') }}
+        ({{ deleteSignal.id }}) {{ deleteSignal.name }}
+      </div>
+      <div class="card-footer text-right p-2">
+        <button type="button" class="btn btn-sm btn-light mr-2 p-1 font-xs" @click="showConfirmDelete=false">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-sm btn-danger p-1 font-xs" @click="confirmDeleteSignal">
+          Delete
+        </button>
+      </div>
+    </div>
+    <template v-else-if="showListSignals && !showNewSignal && !showEditSignal">
       <table class="table table-sm table-striped" width="100%">
         <thead>
           <tr>
@@ -123,17 +137,24 @@ export default {
       showListSignals: false,
       showNewSignal: false,
       showEditSignal: false,
+      showConfirmDelete: false,
+      deleteSignal: null,
       globalSignals: [],
       signalId: '',
       signalName: '',
     };
   },
   methods: {
-    removeSignal(signal) {
-      const index = ProcessMaker.$modeler.definitions.rootElements.findIndex(element => element.id === signal.id);
+    confirmDeleteSignal() {
+      this.showConfirmDelete = false;
+      const index = ProcessMaker.$modeler.definitions.rootElements.findIndex(element => element.id === this.deleteSignal.id);
       if (index) {
         ProcessMaker.$modeler.definitions.rootElements.splice(index, 1);
       }
+    },
+    removeSignal(signal) {
+      this.showConfirmDelete = true;
+      this.deleteSignal = signal;
     },
     toggleConfigSignal() {
       this.showListSignals = !this.showListSignals;
