@@ -58,7 +58,10 @@
       </div>
     </div>
     <div v-else-if="showConfirmDelete" class="card mb-3 bg-danger text-white">
-      <div class="card-body p-2">
+      <div v-if="deleteSignalUsage" class="card-body p-2">
+        {{ deleteSignalUsage }}
+      </div>
+      <div v-else class="card-body p-2">
         {{ $t('Are you sure you want to delete this item?') }}
         ({{ deleteSignal.id }}) {{ deleteSignal.name }}
       </div>
@@ -66,7 +69,7 @@
         <button type="button" class="btn btn-sm btn-light mr-2 p-1 font-xs" @click="showConfirmDelete=false">
           Cancel
         </button>
-        <button type="button" class="btn btn-sm btn-danger p-1 font-xs" @click="confirmDeleteSignal">
+        <button v-if="!deleteSignalUsage" type="button" class="btn btn-sm btn-danger p-1 font-xs" @click="confirmDeleteSignal">
           Delete
         </button>
       </div>
@@ -115,6 +118,12 @@ export default {
     },
   },
   computed: {
+    deleteSignalUsage() {
+      const usage = this.signalUsage(this.deleteSignal.id);
+      const labels = [];
+      usage.forEach(element => labels.push(element.name || element.id));
+      return labels.length ? (this.$t('Can not delete this signal, it is used by') + ': ' + labels.join(', ')) : '';
+    },
     localSignals() {
       const signals = [];
       ProcessMaker.$modeler.definitions.rootElements.forEach((element) => {
@@ -149,6 +158,25 @@ export default {
     };
   },
   methods: {
+    signalUsage(signalId) {
+      const definitions = ProcessMaker.$modeler.definitions;
+      const usage = [];
+      definitions.rootElements.forEach(node => {
+        if (node.$type === 'bpmn:Process') {
+          node.flowElements.forEach(element => {
+            if (element.eventDefinitions) {
+              element.eventDefinitions.forEach(event => {
+                if (event.$type === 'bpmn:SignalEventDefinition'
+                  && event.signalRef && event.signalRef.id === signalId) {
+                  usage.push(element);
+                }
+              });
+            }
+          });
+        }
+      });
+      return usage;
+    },
     validateNewId(id) {
       if (!id) {
         return this.$t('Signal ID is required');
