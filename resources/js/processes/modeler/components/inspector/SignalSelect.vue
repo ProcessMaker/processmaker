@@ -122,7 +122,7 @@ export default {
       const usage = this.signalUsage(this.deleteSignal.id);
       const labels = [];
       usage.forEach(element => labels.push(element.name || element.id));
-      return labels.length ? (this.$t('Can not delete this signal, it is used by') + ': ' + labels.join(', ')) : '';
+      return labels.length ? (this.$t('This signal cannot be removed, it is used by') + ': ' + labels.join(', ')) : '';
     },
     localSignals() {
       const signals = [];
@@ -313,11 +313,8 @@ export default {
           name: signal.name,
         };
       } else {
-        window.ProcessMaker.apiClient
-          .get(`${this.api}/${value}`)
-          .then((response) => {
-            this.selectedOption = response.data;
-          });
+        this.$emit('input', '');
+        this.fixUnrefreshedVueFormRender();
       }
     },
   },
