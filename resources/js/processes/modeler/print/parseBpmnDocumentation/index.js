@@ -1,6 +1,6 @@
 import getFullyQualifiedNodeType from './typeParser';
-import { getNodeName, hasNonEmptyName } from './nameParser';
-import { nodeDocumentation, nodeText } from './documentationParser';
+import {getNodeName, hasNonEmptyName} from './nameParser';
+import {nodeDocumentation, nodeText} from './documentationParser';
 
 const allowedName = (bpmnNode) => {
   const nodesToIncludeAnyway = [
@@ -30,12 +30,20 @@ const undocumentableNodes = (bpmnNode) => {
   return !nodesThatCannotBeDocumented.includes(bpmnNode.tagName);
 };
 
+const nodeSort = (a, b) => {
+  if (a.id === b.id) {
+    return a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'});
+  }
+  return a.id.localeCompare(b.id, undefined, {numeric: true, sensitivity: 'base'});
+};
+
 function documentableBpmnNodes(bpmnString) {
   const bpmnDoc = new DOMParser().parseFromString(bpmnString, 'text/xml');
   return Array.from(bpmnDoc.querySelectorAll('*[id]:not([id=""])'))
       .filter(allowedName)
       .filter(editorSpecificNodes)
       .filter(undocumentableNodes)
+      .sort(nodeSort)
       .map((bpmnNode) => {
         return {
           id: bpmnNode.attributes.getNamedItem('id').textContent,
