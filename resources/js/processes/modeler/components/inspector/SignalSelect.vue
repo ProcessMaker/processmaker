@@ -32,27 +32,27 @@
     <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
     <div v-if="showNewSignal" class="card">
       <div class="card-body p-2">
-        <form-input :label="$t('ID')" v-model="signalId"></form-input>
-        <form-input :label="$t('Name')" v-model="signalName"></form-input>
+        <form-input :label="$t('ID')" v-model="signalId" :error="validateNewId(signalId)"></form-input>
+        <form-input :label="$t('Name')" v-model="signalName" :error="validateNewName(signalName)"></form-input>
       </div>
       <div class="card-footer text-right p-2">
         <button type="button" class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm" @click="cancelAddSignal">
           Cancel
         </button>
-        <button :disabled="!valid" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="addSignal">
+        <button :disabled="!validNew" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="addSignal">
           Save
         </button>
       </div>
     </div>
     <div v-if="showEditSignal" class="card">
       <div class="card-body p-2">
-        <form-input :label="$t('Name')" v-model="signalName"></form-input>
+        <form-input :label="$t('Name')" v-model="signalName" :error="validateName(signalName)"></form-input>
       </div>
       <div class="card-footer text-right p-2">
         <button type="button" class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm" @click="cancelAddSignal">
           Cancel
         </button>
-        <button :disabled="!valid" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="updateSignal">
+        <button :disabled="!validUpdate" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="updateSignal">
           Save
         </button>
       </div>
@@ -127,8 +127,12 @@ export default {
       });
       return signals;
     },
-    valid() {
-      return String(this.signalId) !== '' && String(this.signalName) !== '';
+    validNew() {
+      return this.validateNewId(this.signalId) === ''
+        && this.validateNewName(this.signalName) === '';
+    },
+    validUpdate() {
+      return this.validateName(this.signalName) === '';
     },
   },
   data() {
@@ -145,6 +149,40 @@ export default {
     };
   },
   methods: {
+    validateNewId(id) {
+      if (!id) {
+        return this.$t('Signal ID is required');
+      }
+      const exists = ProcessMaker.$modeler.definitions.rootElements.find((element) => {
+        return element.id === id;
+      });
+      if (exists) {
+        return this.$t('Signal ID is duplicated');
+      }
+      const validId = id.match(/^[a-zA-Z_][\w.-]*$/);
+      if (!validId) {
+        return this.$t('Signal ID is not a valid xsd:ID');
+      }
+      return '';
+    },
+    validateNewName(name) {
+      if (!name) {
+        return this.$t('Signal Name is required');
+      }
+      const exists = ProcessMaker.$modeler.definitions.rootElements.find((element) => {
+        return element.$type === 'bpmn:Signal' && element.name === name;
+      });
+      if (exists) {
+        return this.$t('Signal Name is duplicated');
+      }
+      return '';
+    },
+    validateName(name) {
+      if (!name) {
+        return this.$t('Signal Name is required');
+      }
+      return '';
+    },
     confirmDeleteSignal() {
       this.showConfirmDelete = false;
       const index = ProcessMaker.$modeler.definitions.rootElements.findIndex(element => element.id === this.deleteSignal.id);
@@ -180,6 +218,8 @@ export default {
     },
     showAddSignal() {
       this.showNewSignal = true;
+      this.signalId = '';
+      this.signalName = '';
     },
     cancelAddSignal() {
       this.showNewSignal = false;
