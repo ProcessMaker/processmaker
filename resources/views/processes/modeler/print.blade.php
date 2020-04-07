@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-    <div id="printable-view">
+    <div id="documentation-view">
     </div>
 @endsection
 

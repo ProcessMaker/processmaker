@@ -2,10 +2,10 @@ import Vue from 'vue';
 import PrintableDiagram from './PrintableDiagram';
 
 new Vue({
-  el: '#printable-view',
+  el: '#documentation-view',
   components: {PrintableDiagram},
   template: `
-      <div id="printable-view">
+      <div id="documentation-view">
           <PrintableDiagram
                   :processName="processName"
                   :updatedAt="updatedAt"
