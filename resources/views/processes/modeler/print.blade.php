@@ -26,17 +26,17 @@
         author: @json($process->user->username),
         svg:  @json($process->svg),
         bpmn: @json($process->bpmn),
-      }
+      };
     </script>
 
     <script src="{{ mix('js/processes/modeler/print/index.js') }}"></script>
 
     <script>
-           const diagramContainer = document.getElementById('diagramContainer');
-           const diagram = document.getElementById('v-8');
-           const {width, height} = diagram.getBBox();
-           const paddingMultiplier = 1.20;
-           const viewBox = `0 0 ${width * paddingMultiplier} ${height * paddingMultiplier}`;
-           diagram.setAttribute('viewBox', viewBox);
+      const diagramContainer = document.getElementById('diagramContainer');
+      const diagram = document.getElementById('v-8');
+      const {width, height} = diagram.getBBox();
+      const paddingMultiplier = 1.20;
+      const viewBox = `0 0 ${width * paddingMultiplier} ${height * paddingMultiplier}`;
+      diagram.setAttribute('viewBox', viewBox);
     </script>
 @endsection
