@@ -24,42 +24,81 @@
         </template>
       </multiselect>
       <div class="btn-group ml-1" role="group">
-        <button type="button" class="btn btn-secondary btn-sm" @click="showAddSignal">
-          <i class="fa fa-plus"></i>
-        </button>
-        <button v-if="value" type="button" class="btn btn-secondary btn-sm" @click="editSignal">
-          <i class="fa fa-pen"></i>
+        <button type="button" class="btn btn-secondary btn-sm" @click="toggleConfigSignal">
+          <i class="fa fa-ellipsis-h"></i>
         </button>
       </div>
     </div>
     <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
     <div v-if="showNewSignal" class="card">
       <div class="card-body p-2">
-        <form-input :label="$t('ID')" v-model="signalId"></form-input>
-        <form-input :label="$t('Name')" v-model="signalName"></form-input>
+        <form-input :label="$t('ID')" v-model="signalId" :error="validateNewId(signalId)"></form-input>
+        <form-input :label="$t('Name')" v-model="signalName" :error="validateNewName(signalName)"></form-input>
       </div>
       <div class="card-footer text-right p-2">
         <button type="button" class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm" @click="cancelAddSignal">
           Cancel
         </button>
-        <button :disabled="!valid" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="addSignal">
+        <button :disabled="!validNew" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="addSignal">
           Save
         </button>
       </div>
     </div>
     <div v-if="showEditSignal" class="card">
       <div class="card-body p-2">
-        <form-input :label="$t('Name')" v-model="signalName"></form-input>
+        <form-input :label="$t('Name')" v-model="signalName" :error="validateName(signalName)"></form-input>
       </div>
       <div class="card-footer text-right p-2">
         <button type="button" class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm" @click="cancelAddSignal">
           Cancel
         </button>
-        <button :disabled="!valid" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="updateSignal">
+        <button :disabled="!validUpdate" type="button" class="btn-special-assignment-action btn btn-secondary btn-sm" @click="updateSignal">
           Save
         </button>
       </div>
     </div>
+    <div v-else-if="showConfirmDelete" class="card mb-3 bg-danger text-white">
+      <div v-if="deleteSignalUsage(deleteSignal.id)" class="card-body p-2">
+        {{ deleteSignalUsage(deleteSignal.id) }}
+      </div>
+      <div v-else class="card-body p-2">
+        {{ $t('Are you sure you want to delete this item?') }}
+        ({{ deleteSignal.id }}) {{ deleteSignal.name }}
+      </div>
+      <div class="card-footer text-right p-2">
+        <button type="button" class="btn btn-sm btn-light mr-2 p-1 font-xs" @click="showConfirmDelete=false">
+          Cancel
+        </button>
+        <button v-if="!deleteSignalUsage(deleteSignal.id)" type="button" class="btn btn-sm btn-danger p-1 font-xs" @click="confirmDeleteSignal">
+          Delete
+        </button>
+      </div>
+    </div>
+    <template v-else-if="showListSignals && !showNewSignal && !showEditSignal">
+      <table class="table table-sm table-striped" width="100%">
+        <thead>
+          <tr>
+            <td colspan="2" align="right">
+              <button type="button" class="btn btn-secondary btn-sm p-1 font-xs" @click="showAddSignal">
+                <i class="fa fa-plus"></i> Signal
+              </button>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="signal in localSignals" :key="`signal-${signal.id}`">
+            <td>
+              <b-badge variant="secondary">{{ signal.id }}</b-badge>
+              {{ signal.name }}
+            </td>
+            <td align="right">
+              <a href="javascript:void(0)" @click="editSignal(signal)"><i class="fa fa-pen ml-1"></i></a>
+              <a href="javascript:void(0)" @click="removeSignal(signal)"><i class="fa fa-trash ml-1"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
   </div>
 </template>
 
@@ -79,23 +118,114 @@ export default {
     },
   },
   computed: {
-    valid() {
-      return String(this.signalId) !== '' && String(this.signalName) !== '';
+    localSignals() {
+      const signals = [];
+      ProcessMaker.$modeler.definitions.rootElements.forEach((element) => {
+        if (element.$type === 'bpmn:Signal') {
+          signals.push({
+            id: element.id,
+            name: element.name
+          });
+        }
+      });
+      return signals;
+    },
+    validNew() {
+      return this.validateNewId(this.signalId) === ''
+        && this.validateNewName(this.signalName) === '';
+    },
+    validUpdate() {
+      return this.validateName(this.signalName) === '';
     },
   },
   data() {
     return {
       pmql: 'id!=' + ProcessMaker.modeler.process.id,
+      showListSignals: false,
       showNewSignal: false,
       showEditSignal: false,
+      showConfirmDelete: false,
+      deleteSignal: null,
       globalSignals: [],
       signalId: '',
       signalName: '',
     };
   },
   methods: {
-    editSignal() {
-      const signal = this.getSignalById(this.value);
+    deleteSignalUsage(id) {
+      const usage = this.signalUsage(id);
+      const labels = [];
+      usage.forEach(element => labels.push(element.name || element.id));
+      return labels.length ? (this.$t('This signal cannot be removed, it is used by') + ': ' + labels.join(', ')) : '';
+    },
+    signalUsage(signalId) {
+      const definitions = ProcessMaker.$modeler.definitions;
+      const usage = [];
+      definitions.rootElements.forEach(node => {
+        if (node.$type === 'bpmn:Process') {
+          node.flowElements.forEach(element => {
+            if (element.eventDefinitions) {
+              element.eventDefinitions.forEach(event => {
+                if (event.$type === 'bpmn:SignalEventDefinition'
+                  && event.signalRef && event.signalRef.id === signalId) {
+                  usage.push(element);
+                }
+              });
+            }
+          });
+        }
+      });
+      return usage;
+    },
+    validateNewId(id) {
+      if (!id) {
+        return this.$t('Signal ID is required');
+      }
+      const exists = ProcessMaker.$modeler.definitions.rootElements.find((element) => {
+        return element.id === id;
+      });
+      if (exists) {
+        return this.$t('Signal ID is duplicated');
+      }
+      const validId = id.match(/^[a-zA-Z_][\w.-]*$/);
+      if (!validId) {
+        return this.$t('Signal ID is not a valid xsd:ID');
+      }
+      return '';
+    },
+    validateNewName(name) {
+      if (!name) {
+        return this.$t('Signal Name is required');
+      }
+      const exists = ProcessMaker.$modeler.definitions.rootElements.find((element) => {
+        return element.$type === 'bpmn:Signal' && element.name === name;
+      });
+      if (exists) {
+        return this.$t('Signal Name is duplicated');
+      }
+      return '';
+    },
+    validateName(name) {
+      if (!name) {
+        return this.$t('Signal Name is required');
+      }
+      return '';
+    },
+    confirmDeleteSignal() {
+      this.showConfirmDelete = false;
+      const index = ProcessMaker.$modeler.definitions.rootElements.findIndex(element => element.id === this.deleteSignal.id);
+      if (index) {
+        ProcessMaker.$modeler.definitions.rootElements.splice(index, 1);
+      }
+    },
+    removeSignal(signal) {
+      this.showConfirmDelete = true;
+      this.deleteSignal = signal;
+    },
+    toggleConfigSignal() {
+      this.showListSignals = !this.showListSignals;
+    },
+    editSignal(signal) {
       this.signalId = signal.id;
       this.signalName = signal.name;
       this.showEditSignal = true;
@@ -104,6 +234,11 @@ export default {
       return ProcessMaker.$modeler.definitions.rootElements.find(element => element.id === id);
     },
     change (value) {
+      if (!value) {
+        this.$emit('input', '');
+        this.fixUnrefreshedVueFormRender();
+        return;
+      }
       let signal = this.getSignalById(value.id);
       if (!signal) {
         signal = ProcessMaker.$modeler.moddle.create('bpmn:Signal', {
@@ -113,9 +248,23 @@ export default {
         ProcessMaker.$modeler.definitions.rootElements.push(signal);
       }
       this.$emit('input', this.storeId ? get(value, this.trackBy) : value);
+      this.fixUnrefreshedVueFormRender();
+    },
+    fixUnrefreshedVueFormRender() {
+      this.$nextTick(() => {
+        let form = this;
+        while (form && form.$options._componentTag !== 'vue-form-renderer') {
+          form = form.$parent;
+        }
+        if (form) {
+          form.$emit('update', form.transientData);
+        }
+      });
     },
     showAddSignal() {
       this.showNewSignal = true;
+      this.signalId = '';
+      this.signalName = '';
     },
     cancelAddSignal() {
       this.showNewSignal = false;
@@ -164,13 +313,16 @@ export default {
           name: signal.name,
         };
       } else {
-        window.ProcessMaker.apiClient
-          .get(`${this.api}/${value}`)
-          .then((response) => {
-            this.selectedOption = response.data;
-          });
+        this.$emit('input', '');
+        this.fixUnrefreshedVueFormRender();
       }
     },
   },
 };
 </script>
+
+<style scoped>
+  .font-xs {
+    font-size: 0.75rem;
+  }
+</style>
