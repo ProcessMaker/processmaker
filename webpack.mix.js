@@ -70,7 +70,6 @@ mix.extract([
 mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
-  .js("resources/js/processes/modeler/print/index.js", "public/js/processes/modeler/print/index.js")
   .js("resources/js/admin/users/index.js", "public/js/admin/users")
   .js("resources/js/admin/users/edit.js", "public/js/admin/users/edit.js")
   .js("resources/js/admin/groups/index.js", "public/js/admin/groups")
