@@ -15,9 +15,10 @@ $factory->define(Script::class, function (Faker $faker) {
         'script_category_id' => function () {
             return factory(ScriptCategory::class)->create()->getKey();
         },
-        'script_executor_id' => function($script) {
-            $scriptExecutor = factory(ScriptExecutor::class)->create(['language' => $script['language']]);
-            return $scriptExecutor->id;
-        }
+        'script_executor_id' => null,
+        // 'script_executor_id' => function($script) {
+        //     $scriptExecutor = factory(ScriptExecutor::class)->create(['language' => $script['language']]);
+        //     return $scriptExecutor->id;
+        // }
     ];
 });

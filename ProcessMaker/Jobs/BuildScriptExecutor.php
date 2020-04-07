@@ -40,6 +40,6 @@ class BuildScriptExecutor implements ShouldQueue
      */
     public function handle()
     {
-        \Artisan::call('processmaker:build-script-executor ' . $this->lang . ' ' . $this->userId);
+        \Artisan::call('processmaker:build-script-executor ' . $this->lang . ' ' . $this->userId . ' --rebuild');
     }
 }

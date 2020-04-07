@@ -158,7 +158,7 @@ export default {
             return this.$t("Add New Script Executor");
         },
         isRunning() {
-            return ['started', 'saving', 'running'].includes(this.status);
+            return ['started', 'starting', 'saving', 'running'].includes(this.status);
         },
         showClose() {
             return !this.isRunning;
@@ -301,7 +301,6 @@ export default {
         },
         loadLanguages() {
             ProcessMaker.apiClient.get('/script-executors/available-languages').then(result => {
-                console.log("AL", result);
                 this.languages = result.data.languages;
             });
         }

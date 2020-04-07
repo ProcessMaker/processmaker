@@ -81,6 +81,7 @@ class ScriptExecutor extends Model
 
     public static function config($language) {
         $config = config('script-runners');
+        $language = strtolower($language);
         if (!isset($config[$language])) {
             throw new \ErrorException("Language not in config: " . $language);
         }
@@ -143,6 +144,12 @@ class ScriptExecutor extends Model
         return $this->scripts()->count();
     }
 
+    public function dockerImageExists()
+    {
+        $images = self::listOfExecutorImages();
+        return in_array($this->dockerImageName(), $images);
+    }
+
     /**
      * If we need to run a docker image in a test, chances are the Executor IDs wont
      * match up with the docker image names. To prevent errors, lets just grab the first
@@ -154,25 +161,23 @@ class ScriptExecutor extends Model
      */
     public static function setTestConfig($language)
     {
-        $useImage = self::imageForLanguage($language);
-        if (!$useImage) {
+        $images = self::listOfExecutorImages($language);
+        if (count($images) === 0) {
             throw new \Exception("No matching docker image for $language");
         }
-        config(["script-runners.${language}.image" => $useImage]);
+        config(["script-runners.${language}.image" => $useImage[0]]);
     }
 
-    public static function imageForLanguage($language)
+    public static function listOfExecutorImages($filterByLanguage = null)
     {
-        $foundImage = false;
-        exec('docker images | awk \'{r=$1":"$2; print r}\'', $out);
-        foreach ($out as $image) {
-            $search = "processmaker4/executor-${language}-";
-            $found = strpos($image, $search) !== false;
-            if ($found) {
-                $foundImage = $image;
-                break;
+        exec('docker images | awk \'{r=$1":"$2; print r}\'', $result);
+
+        return array_values(array_filter($result, function($image) use ($filterByLanguage) {
+            $filter = "processmaker4/executor-";
+            if ($filterByLanguage) {
+                $filter .= $filterByLanguage . '-';
             }
-        }
-        return $foundImage;
+            return strpos($image, $filter) !== false;
+        }));
     }
 }
