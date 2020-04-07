@@ -15,6 +15,13 @@
 
 @section('css')
     <style>
+        @media print {
+            body, html, #app-container, .overflow-auto, .overflow-hidden {
+                overflow-x: visible !important;
+                overflow-y: visible !important;
+                overflow: visible !important;
+            }
+        }
     </style>
 @endsection
 
