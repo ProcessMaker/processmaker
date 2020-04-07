@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a862d3231722b7511a4a9e18ebca98f7",
+    "content-hash": "8243fa85d7da410df81e6bd34257678c",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -224,20 +224,21 @@
         },
         {
             "name": "doctrine/annotations",
-            "version": "v1.8.0",
+            "version": "1.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/annotations.git",
-                "reference": "904dca4eb10715b92569fbcd79e201d5c349b6bc"
+                "reference": "5eb79f3dbdffed6544e1fc287572c0f462bd29bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/annotations/zipball/904dca4eb10715b92569fbcd79e201d5c349b6bc",
-                "reference": "904dca4eb10715b92569fbcd79e201d5c349b6bc",
+                "url": "https://api.github.com/repos/doctrine/annotations/zipball/5eb79f3dbdffed6544e1fc287572c0f462bd29bb",
+                "reference": "5eb79f3dbdffed6544e1fc287572c0f462bd29bb",
                 "shasum": ""
             },
             "require": {
                 "doctrine/lexer": "1.*",
+                "ext-tokenizer": "*",
                 "php": "^7.1"
             },
             "require-dev": {
@@ -247,7 +248,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.7.x-dev"
+                    "dev-master": "1.9.x-dev"
                 }
             },
             "autoload": {
@@ -288,7 +289,7 @@
                 "docblock",
                 "parser"
             ],
-            "time": "2019-10-01T18:55:10+00:00"
+            "time": "2020-04-02T12:33:25+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -1339,6 +1340,7 @@
                     "email": "jakub.onderka@gmail.com"
                 }
             ],
+            "abandoned": "php-parallel-lint/php-console-color",
             "time": "2018-09-29T17:23:10+00:00"
         },
         {
@@ -1385,6 +1387,7 @@
                 }
             ],
             "description": "Highlight PHP code in terminal",
+            "abandoned": "php-parallel-lint/php-console-highlighter",
             "time": "2018-09-29T18:48:56+00:00"
         },
         {
@@ -3146,16 +3149,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.26",
+            "version": "2.0.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "09655fcc1f8bab65727be036b28f6f20311c126c"
+                "reference": "34620af4df7d1988d8f0d7e91f6c8a3bf931d8dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/09655fcc1f8bab65727be036b28f6f20311c126c",
-                "reference": "09655fcc1f8bab65727be036b28f6f20311c126c",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/34620af4df7d1988d8f0d7e91f6c8a3bf931d8dc",
+                "reference": "34620af4df7d1988d8f0d7e91f6c8a3bf931d8dc",
                 "shasum": ""
             },
             "require": {
@@ -3234,7 +3237,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2020-03-13T04:15:39+00:00"
+            "time": "2020-04-04T23:17:33+00:00"
         },
         {
             "name": "pion/laravel-chunk-upload",
@@ -3338,6 +3341,102 @@
                 "redis"
             ],
             "time": "2016-06-16T16:22:20+00:00"
+        },
+        {
+            "name": "processmaker/docker-executor-lua",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/2278b68b63bbce34ce37cf538b43a724304f9562",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorLua\\DockerExecutorLuaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorLua\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lua script executor for processmaker 4",
+            "time": "2020-03-31T21:45:44+00:00"
+        },
+        {
+            "name": "processmaker/docker-executor-node",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-node.git",
+                "reference": "853dbc8a317a42c6adcd6f8be87a7a8691255691"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/853dbc8a317a42c6adcd6f8be87a7a8691255691",
+                "reference": "853dbc8a317a42c6adcd6f8be87a7a8691255691",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorNode\\DockerExecutorNodeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Javascript script executor for processmaker 4",
+            "time": "2020-03-31T21:45:52+00:00"
+        },
+        {
+            "name": "processmaker/docker-executor-php",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-php.git",
+                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/7a67c6aaa79d8ce4004b1c0600229317aab15c81",
+                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\DockerExecutorPhp\\DockerExecutorPhpServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
+                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "PHP script executor for processmaker 4",
+            "time": "2020-03-31T21:45:33+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",

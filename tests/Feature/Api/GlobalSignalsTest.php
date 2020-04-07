@@ -26,7 +26,7 @@ class GlobalSignalsTest extends TestCase
         ]);
 
         // Start a parent process instance
-        $instance = $this->startProcess($parent, '_3');
+        $instance = $this->startProcess($parent, 'node_3');
 
         // Assertion: Active Task = Task 1
         $activeTask = $instance->tokens()->where('status', 'ACTIVE')->first();
@@ -96,7 +96,7 @@ class GlobalSignalsTest extends TestCase
         ]);
 
         // Start a parent process instance
-        $instance = $this->startProcess($parent, '_2');
+        $instance = $this->startProcess($parent, 'node_1');
 
         // Assertion: Active Task = Task 1
         $activeTask = $instance->tokens()->where('status', 'ACTIVE')->first();
@@ -166,7 +166,7 @@ class GlobalSignalsTest extends TestCase
         ]);
 
         // Start a parent process instance
-        $instance = $this->startProcess($parent, '_2');
+        $instance = $this->startProcess($parent, 'node_1');
 
         // Assertion: Active Task = Task 1
         $activeTask = $instance->tokens()->where('status', 'ACTIVE')->first();
@@ -175,7 +175,7 @@ class GlobalSignalsTest extends TestCase
         $this->completeTask($activeTask, []);
 
         // Start the second process
-        $childRequest = $this->startProcess($target, '_2');
+        $childRequest = $this->startProcess($target, 'node_1');
 
         // Assertion: There are 2 Requests started
         $this->assertEquals(2, ProcessRequest::count());

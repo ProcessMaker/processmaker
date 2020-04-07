@@ -9,6 +9,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -33,6 +34,9 @@ class ExportImportTest extends TestCase
      */
     public function testProcessImportRefs()
     {
+        factory(ScriptExecutor::class)->create(['language' => 'php']);
+        factory(ScriptExecutor::class)->create(['language' => 'lua']);
+
         // Create a pre-existing screen and script
         factory(Screen::class, 1)->create(['title' => 'Existing Screen']);
         factory(Script::class, 1)->create(['title' => 'Existing Script']);
@@ -236,6 +240,9 @@ class ExportImportTest extends TestCase
      */
     public function test_assignmets_after_import()
     {
+        factory(ScriptExecutor::class)->create(['language' => 'php']);
+        factory(ScriptExecutor::class)->create(['language' => 'lua']);
+
         // Load file to import
         $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.json', 'test_process_import.json', null, null, null, true);
 
@@ -446,6 +453,9 @@ class ExportImportTest extends TestCase
      */
     public function testImportMultipleAssets()
     {
+        factory(ScriptExecutor::class)->create(['language' => 'php']);
+        factory(ScriptExecutor::class)->create(['language' => 'lua']);
+
         // Create a pre-existing screen and script
         factory(Screen::class, 2)->create(['title' => 'Existing Screen']);
         factory(Script::class, 2)->create(['title' => 'Existing Script']);

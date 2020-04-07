@@ -24,10 +24,14 @@ use ProcessMaker\Traits\SerializeToIso8601;
  * ),
  * @OA\Schema(
  *   schema="ScriptCategory",
- *   allOf={@OA\Schema(ref="#/components/schemas/ScriptCategoryEditable")},
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   allOf={
+ *       @OA\Schema(ref="#/components/schemas/ScriptCategoryEditable"),
+ *       @OA\Schema(
+ *           @OA\Property(property="id", type="string", format="id"),
+ *           @OA\Property(property="created_at", type="string", format="date-time"),
+ *           @OA\Property(property="updated_at", type="string", format="date-time"),
+ *       )
+ *   },
  * )
  */
 class ScriptCategory extends Model

@@ -8,6 +8,7 @@ use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
@@ -60,10 +61,12 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                 if (empty($code)) {
                     throw new ScriptException(__('No code or script assigned to ":name"', ['name' => $element->getName()]));
                 }
+                $language = Script::scriptFormat2Language($element->getProperty('scriptFormat', 'application/x-php'));
                 $script = new Script([
                     'code' => $code,
-                    'language' => Script::scriptFormat2Language($element->getProperty('scriptFormat', 'application/x-php')),
+                    'language' => $language,
                     'run_as_user_id' => Script::defaultRunAsUser()->id,
+                    'script_executor_id' => ScriptExecutor::initialExecutor($language)->id,
                 ]);
             } else {
                 $script = Script::find($scriptRef);

@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 use Tests\TestCase;
 use Tests\Feature\Shared\BenchmarkHelper;
 use Tests\Feature\Shared\LoggingHelper;
@@ -32,6 +33,9 @@ class TimeoutsTest extends TestCase
         if (!file_exists(config('app.processmaker_scripts_home')) || !file_exists(config('app.processmaker_scripts_docker'))) {
             return $this->markTestSkipped('This test requires docker');
         }
+
+        ScriptExecutor::setTestConfig('lua');
+        ScriptExecutor::setTestConfig('php');
     }
     
     /**
@@ -133,6 +137,9 @@ class TimeoutsTest extends TestCase
             'language' => 'lua',
             'timeout' => self::TIMEOUT_LENGTH
         ]);
+
+        ScriptExecutor::setTestConfig('lua');
+        ScriptExecutor::setTestConfig('php');
     }
 
     /**

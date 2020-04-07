@@ -2,7 +2,7 @@
   <div class="h-100">
     <b-card no-body class="h-100 bg-white border-top-0" id="app">
       <!-- Card Header -->
-      <menu-screen ref="menuScreen" :options="optionsMenu"></menu-screen>
+      <menu ref="menuScreen" :options="optionsMenu"></menu>
 
       <!-- Card Body -->
       <b-card-body class="overflow-auto p-0 h-100" id="screen-builder-container">
@@ -40,6 +40,11 @@
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
             <b-card no-body class="p-0 h-100 rounded-0 border-top-0 border-right-0 border-bottom-0">
               <b-card-body class="p-0 overflow-auto">
+
+                <div v-for="(component, index) in previewComponents" :key="index">
+                  <component :is="component" :data="previewData" @input="previewData = $event"></component>
+                </div>
+
                 <b-button variant="outline"
                   class="text-left card-header d-flex align-items-center w-100 shadow-none text-capitalize"
                   @click="showDataInput = !showDataInput">
@@ -131,7 +136,7 @@
   import VueJsonPretty from 'vue-json-pretty';
   import MonacoEditor from "vue-monaco";
   import mockMagicVariables from './mockMagicVariables';
-  import MenuScreen from "../../components/Menu";
+  import Menu from "../../components/Menu";
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -283,6 +288,7 @@
         },
         mockMagicVariables,
         validationWarnings: [],
+        previewComponents: [],
         optionsMenu: options,
       };
     },
@@ -294,7 +300,7 @@
       CustomCSS,
       WatchersPopup,
       MonacoEditor,
-      MenuScreen,
+      Menu,
     },
     watch: {
       mode(mode) {
@@ -493,6 +499,9 @@
         this.$refs.renderer.$options.components[rendererBinding] = rendererComponent;
         // Add it to the form builder
         this.$refs.builder.addControl(control, builderComponent, builderBinding)
+      },
+      addPreviewComponent(component) {
+        this.previewComponents.push(component);
       },
       refreshSession: _.throttle(function() {
         ProcessMaker.apiClient({

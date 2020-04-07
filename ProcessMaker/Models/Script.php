@@ -72,6 +72,21 @@ class Script extends Model
     protected $casts = [
         'timeout' => 'integer',
     ];
+    
+    /**
+     * Override the default boot method to allow access to lifecycle hooks 
+     *
+     * @return null
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::saving(function($script) {
+            // If a script executor has not been set, choose one
+            // automatically based on the scripts set language
+            $script->setDefaultExecutor();
+        });
+    }
 
     /**
      * Validation rules
@@ -88,9 +103,10 @@ class Script extends Model
             'key' => 'unique:scripts,key',
             'title' => ['required', 'string', $unique, 'alpha_spaces'],
             'language' => [
-                'required',
+                'required_without:script_executor_id',
                 Rule::in(static::scriptFormatValues())
             ],
+            'script_executor_id' => 'required_without:language|exists:script_executors,id',
             'description' => 'required',
             'run_as_user_id' => 'required',
             'timeout' => 'integer|min:0|max:65535',
@@ -106,7 +122,7 @@ class Script extends Model
      */
     public function runScript(array $data, array $config)
     {
-        $runner = new ScriptRunner($this->language);
+        $runner = new ScriptRunner($this->scriptExecutor);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
             throw new \RuntimeException("A user is required to run scripts");
@@ -263,5 +279,26 @@ class Script extends Model
     public function getScriptCategoryIdAttribute($value)
     {
         return implode(',', $this->categories()->pluck('category_id')->toArray()) ?: $value;
+    }
+
+    /**
+     * Get the associated executor
+     */
+    public function scriptExecutor()
+    {
+        return $this->belongsTo(ScriptExecutor::class, 'script_executor_id');
+    }
+
+    /**
+     * Save the default executor when only a language is specified
+     */
+    private function setDefaultExecutor()
+    {
+        if (empty($this->script_executor_id)) {
+            $this->script_executor_id = ScriptExecutor::initialExecutor($this->language)->id;
+        }
+        if (empty($this->language)) {
+            $this->language = $this->scriptExecutor->language;
+        }
     }
 }

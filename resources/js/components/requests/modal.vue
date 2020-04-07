@@ -30,11 +30,13 @@
                         {{index}}
                         <span class="badge badge-pill badge-secondary">{{category.length}}</span>
                     </h5>
-                    <process-card v-for="(process,index) in category"
-                                  :filter="filter"
-                                  :key="index"
-                                  :process="process">
-                    </process-card>
+                    <template v-for="(process,index) in category">
+                      <process-card v-if="hasEmptyStartEvents(process)"
+                                    :filter="filter"
+                                    :key="index"
+                                    :process="process">
+                      </process-card>
+                    </template>
                 </div>
             </div>
 
@@ -95,6 +97,9 @@
       };
     },
     methods: {
+      hasEmptyStartEvents(process) {
+        return !!process.events.find(event => !event.eventDefinitions || event.eventDefinitions.length === 0);
+      },
       showRequestModal() {
         this.loaded = true;
         // Perform initial load of requests from backend

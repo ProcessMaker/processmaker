@@ -74,6 +74,13 @@ class GenerateMenus
                     'icon' => 'fa-infinity',
                 ]);
             }
+            
+            if (\Auth::check() && \Auth::user()->is_administrator) {
+                $submenu->add(__('Script Executors'), [
+                    'route' => 'script-executors.index',
+                    'icon' => 'fa-code',
+                ]);
+            }
         });
         Menu::make('sidebar_task', function ($menu) {
             $submenu = $menu->add(__('Tasks'));

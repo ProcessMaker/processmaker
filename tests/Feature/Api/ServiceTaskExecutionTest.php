@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -76,6 +77,8 @@ class ServiceTaskExecutionTest extends TestCase
      */
     public function testExecuteAProcess()
     {
+        ScriptExecutor::setTestConfig('php');
+
         //Start a process request
         $route = route('api.process_events.trigger',
             [$this->process->id, 'event' => self::START_EVENT_ID]);
