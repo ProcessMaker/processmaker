@@ -11,7 +11,12 @@ class ScriptExecutorSeeder extends Seeder
             if ($key === 'javascript') {
                 $key = 'node';
             }
-            \Artisan::call("docker-executor-{$key}:install");
+            try {
+                \Artisan::call("docker-executor-{$key}:install");
+            } catch(\Predis\Connection\ConnectionException $e) {
+                // horizon:terminate command when redis is not configured
+                // this happens in CircleCI
+            }
         }
     }
 }
