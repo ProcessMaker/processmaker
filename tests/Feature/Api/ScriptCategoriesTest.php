@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptCategory;
+use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
@@ -425,7 +426,8 @@ class ScriptCategoriesTest extends TestCase
      */
     public function testDeleteFailScriptCategory()
     {
-        $script = factory(Script::class)->create();
+        ScriptExecutor::setTestConfig('lua');
+        $script = factory(Script::class)->create(['language'=>'lua']);
         $route = route($this->resource . '.destroy', [$script->script_category_id]);
         $response = $this->apiCall('DELETE', $route);
         $response->assertStatus(422);

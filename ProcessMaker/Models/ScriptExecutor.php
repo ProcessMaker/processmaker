@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\HasVersioning;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
-class ScriptExecutorNotFoundException extends \Exception {};
+use ProcessMaker\Exception\ScriptLanguageNotSupported;
 
 class ScriptExecutor extends Model
 {
@@ -22,7 +21,7 @@ class ScriptExecutor extends Model
         $language = $params['language'];
         try {
             $initialExecutor = self::initialExecutor($language);
-        } catch(ScriptExecutorNotFoundException $e) {
+        } catch(ScriptLanguageNotSupported $e) {
             $initialExecutor = null;
         }
 
@@ -43,9 +42,7 @@ class ScriptExecutor extends Model
             ->orderBy('created_at', 'asc')
             ->first();
         if (!$initialExecutor) {
-            throw new ScriptExecutorNotFoundException(
-                'ScriptExecutor not found for language: ' . $language
-            );
+            throw new ScriptLanguageNotSupported($language);
         }
         return $initialExecutor;
     }
@@ -161,11 +158,16 @@ class ScriptExecutor extends Model
      */
     public static function setTestConfig($language)
     {
+        ScriptExecutor::firstOrCreate(
+            ['language' => $language],
+            ['title' => 'Test Executor']
+        );
+
         $images = self::listOfExecutorImages($language);
         if (count($images) === 0) {
             throw new \Exception("No matching docker image for $language");
         }
-        config(["script-runners.${language}.image" => $useImage[0]]);
+        config(["script-runners.${language}.image" => $images[0]]);
     }
 
     public static function listOfExecutorImages($filterByLanguage = null)

@@ -26,6 +26,11 @@ class ExportImportTest extends TestCase
 
     private $definitions, $process, $screen01, $screen02, $script01, $script02;
 
+    protected function setUpExecutors() {
+        ScriptExecutor::setTestConfig('php');
+        ScriptExecutor::setTestConfig('lua');
+    }
+
     /**
      * Test to ensure screens and scripts are referenced
      * by the proper nodes upon process import.
@@ -34,9 +39,6 @@ class ExportImportTest extends TestCase
      */
     public function testProcessImportRefs()
     {
-        factory(ScriptExecutor::class)->create(['language' => 'php']);
-        factory(ScriptExecutor::class)->create(['language' => 'lua']);
-
         // Create a pre-existing screen and script
         factory(Screen::class, 1)->create(['title' => 'Existing Screen']);
         factory(Script::class, 1)->create(['title' => 'Existing Script']);
@@ -240,9 +242,6 @@ class ExportImportTest extends TestCase
      */
     public function test_assignmets_after_import()
     {
-        factory(ScriptExecutor::class)->create(['language' => 'php']);
-        factory(ScriptExecutor::class)->create(['language' => 'lua']);
-
         // Load file to import
         $file = new UploadedFile(base_path('tests/storage/process/') . 'test_process_import.json', 'test_process_import.json', null, null, null, true);
 
@@ -453,9 +452,6 @@ class ExportImportTest extends TestCase
      */
     public function testImportMultipleAssets()
     {
-        factory(ScriptExecutor::class)->create(['language' => 'php']);
-        factory(ScriptExecutor::class)->create(['language' => 'lua']);
-
         // Create a pre-existing screen and script
         factory(Screen::class, 2)->create(['title' => 'Existing Screen']);
         factory(Script::class, 2)->create(['title' => 'Existing Script']);
