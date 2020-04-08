@@ -1149,5 +1149,7 @@
   "Check this box to allow task assignee to add additional loops": "Check this box to allow task assignee to add additional loops",
   "Type Button": "Type Button",
   "Determine execution of button": "Determine execution of button",
-  "Select a screen to nest": "Select a screen to nest"
+  "Select a screen to nest": "Select a screen to nest",
+  "Minimum Date": "Minimum Date",
+  "Maximum Date": "Maximum Date"
 }
