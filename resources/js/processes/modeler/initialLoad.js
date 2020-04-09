@@ -121,6 +121,18 @@ ProcessMaker.EventBus.$on(
         type: 'FORM'
       }
     });
+    ProcessMaker.EventBus.$on('modeler-validate', (node, reporter) => {
+      if (node.$type !== 'bpmn:Task') {
+        return;
+      }
+
+      if (node.screenRef != null) {
+        return;
+      }
+
+      reporter.report(node.id, 'Select a screen yo!');
+    });
+
     registerInspectorExtension(task, {
       component: 'TaskDueIn',
       config: {
