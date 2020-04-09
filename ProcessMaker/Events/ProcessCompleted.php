@@ -47,4 +47,14 @@ class ProcessCompleted implements ShouldBroadcastNow
     {
         return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequest->getKey());
     }
+    
+    /**
+     * Return the process request.
+     *
+     * @return \ProcessMaker\Models\ProcessRequest
+     */    
+    public function getProcessRequest()
+    {
+        return $this->processRequest;
+    }
 }
