@@ -369,18 +369,18 @@
       ProcessMaker.EventBus.$emit("screen-builder-start", this);
 
       //actions buttons
-      ProcessMaker.EventBus.$on("change_mode", (value) => {
-        if (value === "editor") {
+      ProcessMaker.EventBus.$on("change_mode", (mode) => {
+        if (mode === "editor") {
           this.$refs.menuScreen.changeItem("button_design", { "variant": "secondary"});
           this.$refs.menuScreen.changeItem("button_preview", { "variant": "outline-secondary"});
           this.$refs.menuScreen.sectionRight = true;
         }
-        if (value === "preview") {
+        if (mode === "preview") {
           this.$refs.menuScreen.changeItem("button_design", { "variant": "outline-secondary"});
           this.$refs.menuScreen.changeItem("button_preview", { "variant": "secondary"});
           this.$refs.menuScreen.sectionRight = false;
         }
-        this.setMode(value);
+        this.mode= mode;
       });
       ProcessMaker.EventBus.$on('open-computed-properties',  () => {
         this.openComputedProperties();
@@ -394,14 +394,11 @@
       ProcessMaker.EventBus.$on('export-screen',  () => {
         this.beforeExportScreen();
       });
-      ProcessMaker.EventBus.$on('save-screen',  (value, resolve, reject) => {
-        this.saveScreen(value, resolve, reject);
+      ProcessMaker.EventBus.$on('save-screen',  (value, onSuccess, onError) => {
+        this.saveScreen(value, onSuccess, onError);
       });
     },
     methods: {
-      setMode (value) {
-        this.mode = value;
-      },
       onUpdate(data) {
         ProcessMaker.EventBus.$emit('form-data-updated', data);
       },
@@ -526,7 +523,7 @@
             ProcessMaker.alert(error.response.data.error, 'danger');
           });
       },
-      saveScreen(exportScreen, resolve, reject) {
+      saveScreen(exportScreen, onSuccess, onError) {
         if (this.allErrors !== 0) {
           ProcessMaker.alert(this.$t("This screen has validation errors."), "danger");
         } else {
@@ -549,13 +546,13 @@
               }
               ProcessMaker.alert(this.$t("Successfully saved"), "success");
               ProcessMaker.EventBus.$emit("save-changes");
-              if (typeof resolve === "function") {
-                resolve(response);
+              if (typeof onSuccess === "function") {
+                onSuccess(response);
               }
             })
             .catch((err) => {
-              if (typeof reject === "function") {
-                reject(err);
+              if (typeof onError === "function") {
+                onError(err);
               }
             });
         }
