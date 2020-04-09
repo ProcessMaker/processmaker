@@ -130,7 +130,7 @@ ProcessMaker.EventBus.$on(
         return;
       }
 
-      reporter.report(node.id, 'Please select an Input Screen');
+      reporter.report(node.id, 'Please select an input screen');
     });
 
     registerInspectorExtension(task, {
