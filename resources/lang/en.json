@@ -1198,5 +1198,7 @@
   "List of columns to display in the record list": "List of columns to display in the record list",
   "Select a screen": "Select a screen",
   "Not found": "Not found",
-  "Are you sure you want to delete this?": "Are you sure you want to delete this?"
+  "Are you sure you want to delete this?": "Are you sure you want to delete this?",
+  "Signal that will trigger this start event": "Signal that will trigger this start event",
+  "Are you sure you want to reset all of your translations?": "Are you sure you want to reset all of your translations?"
 }
