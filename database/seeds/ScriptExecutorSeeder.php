@@ -12,6 +12,9 @@ class ScriptExecutorSeeder extends Seeder
                 $key = 'node';
             }
             try {
+                if (isset($this->command)) {
+                    $this->command->line("Running docker-executor-{$key}:install");
+                }
                 \Artisan::call("docker-executor-{$key}:install");
             } catch(\Predis\Connection\ConnectionException $e) {
                 // horizon:terminate command when redis is not configured
