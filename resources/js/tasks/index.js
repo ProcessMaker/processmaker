@@ -28,7 +28,7 @@ new Vue({
         status = "In Progress";
         break;
     }
-    
+
     this.status.push({
       name: this.$t(status),
       value: status
@@ -42,8 +42,8 @@ new Vue({
       this.$refs.taskList.fetch(true);
     },
     setInOverdueMessage(inOverdue) {
-      let taskText = (inOverdue > 1) ? "tasks" : "task";
-      this.inOverdueMessage = this.$t("You have ") + inOverdue + this.$t(" overdue ") + taskText + this.$t(" pending");
+      let taskText = (inOverdue > 1) ? this.$t("Tasks").toLowerCase() : this.$t("Task").toLowerCase();
+      this.inOverdueMessage = this.$t("You have {{ inOverDue }} overdue {{ taskText }} pending", {inOverDue: inOverdue, taskText: taskText});
     }
   }
 });
