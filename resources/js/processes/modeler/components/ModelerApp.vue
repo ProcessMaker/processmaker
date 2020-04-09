@@ -8,7 +8,7 @@
           :decorations="decorations"
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
-          @saveBpmn="actionSaveBpmn"
+          @saveBpmn="emitRegisteredEvents"
           @set-xml-manager="xmlManager = $event"
         />
       </b-card-body>
@@ -100,18 +100,18 @@
       });
       return notifications;
     },
-    actionSaveBpmn ({xml, svg}) {
+    emitRegisteredEvents ({xml, svg}) {
       this.dataXmlSvg.xml = xml;
       this.dataXmlSvg.svg = svg;
 
       this.externalEmit.forEach(item => {
         window.ProcessMaker.EventBus.$emit(item);
       })
-      if (this.saveEmitDefault) {
+      if (!this.externalEmit) {
         window.ProcessMaker.EventBus.$emit('modeler-save');
       }
     },
-    saveBpmn(resolve, reject) {
+    saveProcess(onSuccess, onError) {
       const data = {
         name: this.process.name,
         description: this.process.description,
@@ -129,8 +129,8 @@
         if (response.data.warnings && response.data.warnings.length > 0) {
           this.$refs.validationStatus.autoValidate = true;
         }
-        if (typeof resolve === 'function') {
-          resolve(response);
+        if (typeof onSuccess === 'function') {
+          onSuccess(response);
         }
       };
 
@@ -139,8 +139,8 @@
         const errors = err.response.data.errors;
         ProcessMaker.alert(message, 'danger');
 
-        if (typeof reject === 'function') {
-          reject(err);
+        if (typeof onError === 'function') {
+          onError(err);
         }
       };
 
@@ -154,8 +154,8 @@
 
     window.ProcessMaker.EventBus.$emit('modeler-app-init', this);
 
-    window.ProcessMaker.EventBus.$on('modeler-save', (resolve, reject) => {
-      this.saveBpmn(resolve, reject);
+    window.ProcessMaker.EventBus.$on('modeler-save', (onSuccess, onError) => {
+      this.saveProcess(onSuccess, onError);
     });
     window.ProcessMaker.EventBus.$on('modeler-change', () => {
       this.refreshSession();

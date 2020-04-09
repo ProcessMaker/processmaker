@@ -2,7 +2,7 @@
   <div class="h-100">
     <b-card no-body class="h-100 bg-white border-top-0" id="app">
       <!-- Card Header -->
-      <menu ref="menuScreen" :options="optionsMenu"></menu>
+      <top-menu ref="menuScreen" :options="optionsMenu"/>
 
       <!-- Card Body -->
       <b-card-body class="overflow-auto p-0 h-100" id="screen-builder-container">
@@ -136,7 +136,7 @@
   import VueJsonPretty from 'vue-json-pretty';
   import MonacoEditor from "vue-monaco";
   import mockMagicVariables from './mockMagicVariables';
-  import Menu from "../../components/Menu";
+  import TopMenu from "../../components/Menu";
 
   // Bring in our initial set of controls
   import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -300,7 +300,7 @@
       CustomCSS,
       WatchersPopup,
       MonacoEditor,
-      Menu,
+      TopMenu,
     },
     watch: {
       mode(mode) {

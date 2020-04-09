@@ -1,7 +1,7 @@
 <template>
   <b-container class="h-100">
     <b-card no-body class="h-100">
-      <menu-script ref="menuScript" :options="optionsMenu"></menu-script>
+      <top-menu ref="menuScript" :options="optionsMenu"/>
 
       <b-card-body class="overflow-hidden p-4">
         <b-row class="h-100">
@@ -135,7 +135,7 @@
 import MonacoEditor from "vue-monaco";
 import _ from "lodash";
 import customFilters from "../customFilters";
-import MenuScript from "../../../components/Menu";
+import TopMenu from "../../../components/Menu";
 
 export default {
   props: ["process", "script", "scriptExecutor", "testData"],
@@ -187,7 +187,7 @@ export default {
   },
   components: {
     MonacoEditor,
-    MenuScript,
+    TopMenu,
   },
   computed: {
     language() {
@@ -196,8 +196,8 @@ export default {
   },
   mounted() {
     ProcessMaker.EventBus.$emit("script-builder-init", this);
-    ProcessMaker.EventBus.$on("save-script", (resolve, reject) => {
-      this.save(resolve, reject);
+    ProcessMaker.EventBus.$on("save-script", (onSuccess, onError) => {
+      this.save(onSuccess, onError);
     });
 
     window.addEventListener("resize", this.handleResize);
@@ -263,7 +263,7 @@ export default {
     onClose() {
       window.location.href = "/designer/scripts";
     },
-    save(resolve, reject) {
+    save(onSuccess, onError) {
       ProcessMaker.apiClient
         .put("scripts/" + this.script.id, {
           code: this.code,
@@ -276,12 +276,12 @@ export default {
         })
         .then(response => {
           ProcessMaker.alert(this.$t("The script was saved."), "success");
-          if (typeof resolve === "function") {
-            resolve(response);
+          if (typeof onSuccess === "function") {
+            onSuccess(response);
           }
         }).catch(err => {
-          if (typeof reject === "function") {
-            reject(err);
+          if (typeof onError === "function") {
+            onError(err);
           }
         });
     },
