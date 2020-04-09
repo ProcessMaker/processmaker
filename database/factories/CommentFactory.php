@@ -12,17 +12,17 @@ use ProcessMaker\Models\User;
  */
 $factory->define(Comment::class, function (Faker $faker) {
 
-    $model = factory($faker->randomElement([
+    $model = $faker->randomElement([
         ProcessRequestToken::class,
         ProcessRequest::class,
-    ]))->create();
+    ]);
 
     return [
         'user_id' => function () {
             return factory(User::class)->create()->getKey();
         },
-        'commentable_id' => $model->getKey(),
-        'commentable_type' => get_class($model),
+        'commentable_id' => factory($model),
+        'commentable_type' => $model,
         'subject' => $faker->sentence,
         'body' => $faker->sentence,
         'hidden' => $faker->randomElement([true, false]),

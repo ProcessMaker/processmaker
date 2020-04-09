@@ -44,6 +44,7 @@ class ServiceTaskExecutionTest extends TestCase
      */
     protected function withUserSetUp()
     {
+        ScriptExecutor::setTestConfig('php');
         factory(Script::class)->create([
             'key' => 'EchoConnector',
             'language' => 'php',
@@ -77,8 +78,6 @@ class ServiceTaskExecutionTest extends TestCase
      */
     public function testExecuteAProcess()
     {
-        ScriptExecutor::setTestConfig('php');
-
         //Start a process request
         $route = route('api.process_events.trigger',
             [$this->process->id, 'event' => self::START_EVENT_ID]);

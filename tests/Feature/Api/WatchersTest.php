@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
@@ -29,6 +30,7 @@ class WatchersTest extends TestCase
     public function testExecuteWatcherScript()
     {
         Notification::fake();
+        ScriptExecutor::setTestConfig('php');
         $script = factory(Script::class)->create([
             'language' => 'PHP',
             'code' => '<?php return ["language"=>"PHP","data"=>$data,"config"=>$config];',
