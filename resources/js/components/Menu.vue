@@ -10,7 +10,7 @@
               class="text-capitalize"
               :title="button.title"
               :key="indexButton"
-              @click="button.action"
+              @click="executeFunction(button.action)"
               v-if="button.hide !== true"
             >
               <i :class="button.icon"></i>
@@ -25,7 +25,7 @@
             class="text-capitalize"
             :title="item.title"
             :key="index"
-            @click="item.action"
+            @click="executeFunction(item.action)"
           >
             <i :class="item.icon"></i>
             {{ item.name }}
@@ -49,7 +49,7 @@
               class="text-capitalize"
               :title="button.title"
               :key="`group-${indexButton}`"
-              @click="button.action"
+              @click="executeFunction(button.action)"
               v-if="button.hide !== true"
             >
               <i :class="button.icon"></i>
@@ -64,7 +64,7 @@
             class="text-capitalize"
             :title="item.title"
             :key="index"
-            @click="item.action"
+            @click="executeFunction(item.action)"
           >
             <i :class="item.icon"></i>
             {{ item.name }}
@@ -85,7 +85,7 @@
 
 <script>
 export default {
-  props: ['options'],
+  props: ["options", "environment"],
   data() {
     return {
       changeItems: {},
@@ -103,7 +103,7 @@ export default {
       this.items = [];
 
       this.options.forEach(item => {
-        if (item.type === 'group') {
+        if (item.type === "group") {
           item.items.forEach(sub => {
             this.items.push(sub.id);
             return Object.assign(sub, this.changeItems[sub.id]);
@@ -124,6 +124,13 @@ export default {
     }
   },
   methods: {
+    executeFunction(callback) {
+      if (typeof callback === "function") {
+        callback();
+      } else {
+        eval(`this.environment.${callback}`);
+      }
+    },
     isVisible(item, type) {
       return item.type === type && item.hide !== true;
     },
@@ -135,7 +142,7 @@ export default {
     changeOptions(data) {
       data.forEach(item => {
         item = Object.assign(item, this.changeItems[item.id]);
-        if (item.type === 'group') {
+        if (item.type === "group") {
           this.changeOptions(item.items);
         }
       });
