@@ -84,7 +84,7 @@ class BuildScriptExecutors extends Command
     public function buildExecutor()
     {
         $this->savePid();
-        $this->info($this->pidFilePath, 'starting');
+        $this->sendEvent($this->pidFilePath, 'starting');
         
         $langArg = $this->argument('lang');
         if (is_numeric($langArg)) {
@@ -170,7 +170,7 @@ class BuildScriptExecutors extends Command
         if ($this->userId) {
             event(new BuildScriptExecutor($output, $this->userId, $status));
         } else {
-            $this->info("$status - $text");
+            $this->info("$status - $output");
         }
     }
     
