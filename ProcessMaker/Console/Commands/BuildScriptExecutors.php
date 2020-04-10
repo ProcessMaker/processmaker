@@ -208,8 +208,9 @@ class BuildScriptExecutors extends Command
     private function associateWithExistingImage($executor)
     {
         $images = ScriptExecutor::listOfExecutorImages($executor->language);
+        $instance = config('app.instance');
         foreach ($images as $image) {
-            if (!preg_match('/executor-.+-(\d+):/', $image, $match)) {
+            if (!preg_match('/executor-' . $instance . '-.+-(\d+):/', $image, $match)) {
                 throw new \Exception('Not a valid image:' . (string) $image);
             }
             $id = intval($match[1]);
