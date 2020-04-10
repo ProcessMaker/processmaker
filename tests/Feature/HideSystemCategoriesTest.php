@@ -5,6 +5,7 @@ use Tests\TestCase;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ScreenCategory;
@@ -14,6 +15,12 @@ use Illuminate\Support\Str;
 class HideSystemCategoriesTest extends TestCase
 {
     use RequestHelper;
+
+    protected function setUpExecutor()
+    {
+        ScriptExecutor::setTestConfig('php');
+        ScriptExecutor::setTestConfig('lua');
+    }
 
     private function categoryFiltered($model) {
         $prefix = strtolower(substr(strrchr($model, '\\'), 1));

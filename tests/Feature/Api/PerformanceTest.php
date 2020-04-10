@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\ScriptExecutor;
 use ReflectionObject;
 use Tests\Feature\Shared\PerformanceReportTrait;
 use Tests\Feature\Shared\RequestHelper;
@@ -87,6 +88,9 @@ class PerformanceTest extends TestCase
      */
     public function testFactories($model, $baseTime)
     {
+        ScriptExecutor::setTestConfig('php');
+        ScriptExecutor::setTestConfig('lua');
+
         $baseCount = $this->getTotalRecords();
         $t = microtime(true);
         $times = 1;
