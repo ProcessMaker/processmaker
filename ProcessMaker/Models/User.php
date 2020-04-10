@@ -112,6 +112,7 @@ class User extends Authenticatable implements HasMedia
     protected $casts = [
         'is_administrator' => 'bool',
         'meta' => 'object',
+        'active_at' => 'datetime',
     ];
 
     /**
