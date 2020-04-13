@@ -37,7 +37,7 @@
 
         <template slot="status" slot-scope="props">
           <i class="fas fa-circle small" :class="statusColor(props.rowData)"></i>
-          {{ (statusLabel(props.rowData)) }}
+          {{ $t((statusLabel(props.rowData))) }}
         </template>
 
         <template slot="assignee" slot-scope="props">
@@ -132,7 +132,7 @@ export default {
       
       columns.forEach(column => {    
         let field = {
-          title: this.$t(column.label)
+          title: () => this.$t(column.label)
         };
         
         switch (column.field) {
