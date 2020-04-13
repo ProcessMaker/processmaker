@@ -116,7 +116,8 @@
                 </b-button>
 
                 <b-button v-if="showSave" :disabled="isRunning" variant="primary" @click="save()">
-                    {{ $t('Save And Rebuild')}}
+                    <template v-if="formData.id">{{ $t('Save And Rebuild')}}</template>
+                    <template v-else>{{ $t('Save And Build')}}</template>
                 </b-button>
             </template>
         </b-modal>
@@ -235,12 +236,12 @@ export default {
             this.commandOutput += text;
         },
         cancel(e) {
-            // e.preventDefault();
             if (this.pidFile) {
                 ProcessMaker.apiClient.post('/script-executors/cancel', {
                     pidFile: this.pidFile
                 }).then((result) => {
                     if (_.get(result, 'data.status') === 'canceled') {
+                        this.status = 'idle';
                         this.$refs.edit.hide();
                     }
                 });
