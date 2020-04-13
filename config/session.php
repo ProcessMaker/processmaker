@@ -29,9 +29,21 @@ return [
     |
     */
 
-    'lifetime' => 120,
+    'lifetime' => env('SESSION_LIFETIME', 120),
 
     'expire_on_close' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Expiration Warning
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the number of seconds to give the user to preserve
+    | their session prior to its expiration.
+    |
+    */
+
+    'expire_warning' => env('SESSION_EXPIRE_WARNING', 180),
 
     /*
     |--------------------------------------------------------------------------
