@@ -118,7 +118,8 @@ class ScriptExecutor extends Model
         $lang = strtolower($this->language);
         $id = $this->id;
         $tag = $this->imageTag();
-        return "processmaker4/executor-${lang}-${id}:${tag}";
+        $instance = config('app.instance');
+        return "processmaker4/executor-${instance}-${lang}-${id}:${tag}";
     }
 
     public function imageTag()
@@ -174,8 +175,9 @@ class ScriptExecutor extends Model
     {
         exec('docker images | awk \'{r=$1":"$2; print r}\'', $result);
 
-        return array_values(array_filter($result, function($image) use ($filterByLanguage) {
-            $filter = "processmaker4/executor-";
+        $instance = config('app.instance');
+        return array_values(array_filter($result, function($image) use ($filterByLanguage, $instance) {
+            $filter = "processmaker4/executor-${instance}-";
             if ($filterByLanguage) {
                 $filter .= $filterByLanguage . '-';
             }

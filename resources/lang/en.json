@@ -1149,5 +1149,13 @@
   "Check this box to allow task assignee to add additional loops": "Check this box to allow task assignee to add additional loops",
   "Type Button": "Type Button",
   "Determine execution of button": "Determine execution of button",
-  "Select a screen to nest": "Select a screen to nest"
+  "Select a screen to nest": "Select a screen to nest",
+  "Script Executor": "Script Executor",
+  "Select a language": "Select a language",
+  "Save And Rebuild": "Save And Rebuild",
+  "Save And Build": "Save And Build",
+  "Add New Script Executor": "Add New Script Executor",
+  "Build Command Output": "Build Command Output",
+  "Executor Successfully Built. You can now close this window.": "Executor Successfully Built. You can now close this window.",
+  "Error Building Executor. See Output Above.": "Error Building Executor. See Output Above."
 }
