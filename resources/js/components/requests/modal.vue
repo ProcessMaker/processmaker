@@ -9,6 +9,7 @@
                  class="requests-modal modal-dialog-scrollable"
                  ref="requestModalAdd"
                  :title="$t('New Request')"
+                 header-close-content="&times;"
                  hide-footer>
             <b-row no-gutters>
                 <b-col cols="8">

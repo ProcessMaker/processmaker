@@ -1,5 +1,5 @@
 <template>
-    <b-modal id="addUserModal" :title="title">
+    <b-modal id="addUserModal" :title="title" header-close-content="&times;">
         <template v-slot:default>
             <slot name="default"></slot>
         </template>
@@ -92,7 +92,7 @@ export default {
                     this.showMsgBox(messageVNode, restoreData);
                 }
             });
-    
+
         }
     },
 }
