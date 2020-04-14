@@ -16,7 +16,7 @@ class BuildScriptExecutors extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:build-script-executor {lang} {user?}';
+    protected $signature = 'processmaker:build-script-executor {lang} {user?} {--rebuild}';
 
     /**
      * The console command description.
@@ -70,7 +70,7 @@ class BuildScriptExecutors extends Command
             if ($this->userId) {
                 event(new BuildScriptExecutor($e->getMessage(), $this->userId, 'error'));
             }
-            throw new \Exception($e->getMessage());
+            throw $e;
         } finally {
             if ($this->packagePath && file_exists($this->packagePath . '/Dockerfile.custom')) {
                 unlink($this->packagePath . '/Dockerfile.custom');
@@ -94,22 +94,45 @@ class BuildScriptExecutors extends Command
         }
         $lang = $scriptExecutor->language;
 
-        $this->info("Building for language: $lang");
-        $this->info("Generating SDK json document");
-        $this->artisan('l5-swagger:generate');
+        if (!$this->option('rebuild')) {
+            $this->info("Attempting to use an existing docker image");
+            if ($scriptExecutor->dockerImageExists()) {
+                $this->info("Already associated with a docker image");
+                return;
+            }
 
-        $this->packagePath = $packagePath =
-            ScriptExecutor::packagePath($lang);
-
-        $sdkDir = $packagePath . "/sdk";
-
-        if (!is_dir($sdkDir)) {
-            mkdir($sdkDir, 0755, true);
+            $success = $this->associateWithExistingImage($scriptExecutor);
+            if ($success) {
+                $this->info("Docker Image Associated");
+                // we associated with an existing image, no need to build
+                return;
+            } else {
+                $this->info("Could not associate with an existing docker image. Building image now.");
+            }
         }
 
-        $this->info("Building the SDK");
-        $this->artisan("processmaker:sdk $lang $sdkDir --clean");
-        $this->info("SDK is at ${sdkDir}");
+        $this->packagePath = $packagePath = ScriptExecutor::packagePath($lang);
+
+        $sdkLanguage = $scriptExecutor->language;
+        $config = ScriptExecutor::config($scriptExecutor->language);
+        if (isset($config['sdk'])) {
+            $sdkLanguage = $config['sdk'];
+        }
+        if ($sdkLanguage) {
+            $this->info("Building for language: $sdkLanguage");
+            $this->info("Generating SDK json document");
+            $this->artisan('l5-swagger:generate');
+
+            $sdkDir = $packagePath . "/sdk";
+
+            if (!is_dir($sdkDir)) {
+                mkdir($sdkDir, 0755, true);
+            }
+
+            $this->info("Building the SDK");
+            $this->artisan("processmaker:sdk $sdkLanguage $sdkDir --clean");
+            $this->info("SDK is at ${sdkDir}");
+        }
 
         $dockerfile = ScriptExecutor::initDockerfile($lang) . "\n" . $scriptExecutor->config;
 
@@ -150,7 +173,11 @@ class BuildScriptExecutors extends Command
 
     private function sendEvent($output, $status)
     {
-        event(new BuildScriptExecutor($output, $this->userId, $status));
+        if ($this->userId) {
+            event(new BuildScriptExecutor($output, $this->userId, $status));
+        } else {
+            $this->info("$status - $output");
+        }
     }
     
     private function artisan($cmd)
@@ -182,5 +209,32 @@ class BuildScriptExecutors extends Command
         
         $exitCode = proc_close($process);
         $done($exitCode);
+    }
+
+    private function associateWithExistingImage($executor)
+    {
+        $images = ScriptExecutor::listOfExecutorImages($executor->language);
+        $instance = config('app.instance');
+        foreach ($images as $image) {
+            if (!preg_match('/executor-' . $instance . '-.+-(\d+):/', $image, $match)) {
+                throw new \Exception('Not a valid image:' . (string) $image);
+            }
+            $id = intval($match[1]);
+            $existingExecutor = ScriptExecutor::find($id);
+            if ($existingExecutor && $existingExecutor->id !== $id) {
+                // Already associated with another script executor
+                continue;
+            }
+            // Rename unassociated image with this executor's id
+            $this->renameDockerImage($image, $executor->dockerImageName());
+            return true;
+        }
+        return false;
+    }
+
+    private function renameDockerImage($old, $new)
+    {
+        system("docker tag $old $new");
+        system("docker rmi $old");
     }
 }

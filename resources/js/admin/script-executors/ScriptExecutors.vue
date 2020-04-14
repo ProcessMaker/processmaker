@@ -24,7 +24,7 @@
                     <i class="fas fa-pen-square fa-lg fa-fw"></i>
                 </b-btn>
             </template>
-            
+
             <template v-slot:cell(delete)="data">
                 <b-btn
                     variant="link"
@@ -37,7 +37,7 @@
             </template>
         </b-table>
 
-        <b-modal ref="edit" id="edit" :title="modalTitle" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
+        <b-modal ref="edit" id="edit" :title="modalTitle" @hidden="reset()" @hide="doNotHideIfRunning" size="lg" header-close-content="&times;">
 
             <b-container class="mb-2">
                 <b-row>
@@ -64,7 +64,7 @@
                     </b-col>
                 </b-row>
             </b-container>
-                
+
             <p class="mb-0">Dockerfile</i></p>
 
             <div class="d-flex flex-row mb-1">
@@ -116,7 +116,8 @@
                 </b-button>
 
                 <b-button v-if="showSave" :disabled="isRunning" variant="primary" @click="save()">
-                    {{ $t('Save And Rebuild')}}
+                    <template v-if="formData.id">{{ $t('Save And Rebuild')}}</template>
+                    <template v-else>{{ $t('Save And Build')}}</template>
                 </b-button>
             </template>
         </b-modal>
@@ -158,7 +159,7 @@ export default {
             return this.$t("Add New Script Executor");
         },
         isRunning() {
-            return ['started', 'saving', 'running'].includes(this.status);
+            return ['started', 'starting', 'saving', 'running'].includes(this.status);
         },
         showClose() {
             return !this.isRunning;
@@ -214,7 +215,7 @@ export default {
                     });
                 }
             );
-            
+
         },
         getError(name) {
             return _.get(this.errors, name + '.0', false);
@@ -235,12 +236,12 @@ export default {
             this.commandOutput += text;
         },
         cancel(e) {
-            // e.preventDefault();
             if (this.pidFile) {
                 ProcessMaker.apiClient.post('/script-executors/cancel', {
                     pidFile: this.pidFile
                 }).then((result) => {
                     if (_.get(result, 'data.status') === 'canceled') {
+                        this.status = 'idle';
                         this.$refs.edit.hide();
                     }
                 });
@@ -301,7 +302,6 @@ export default {
         },
         loadLanguages() {
             ProcessMaker.apiClient.get('/script-executors/available-languages').then(result => {
-                console.log("AL", result);
                 this.languages = result.data.languages;
             });
         }

@@ -28,6 +28,11 @@ class ScriptsTest extends TestCase
         'description'
     ];
 
+    protected function setUpExecutors() {
+        ScriptExecutor::setTestConfig('php');
+        ScriptExecutor::setTestConfig('lua');
+    }
+
     public function setUpWithPersonalAccessClient()
     {
         $this->withPersonalAccessClient();
@@ -54,13 +59,12 @@ class ScriptsTest extends TestCase
         $faker = Faker::create();
         $user = factory(User::class)->create(['is_administrator' => true]);
         $category = factory(ScriptCategory::class)->create(['status' => 'ACTIVE']);
-        $executor = factory(ScriptExecutor::class)->create();
 
         //Post saved correctly
         $url = self::API_TEST_SCRIPT;
         $response = $this->apiCall('POST', $url, [
             'title' => 'Script Title',
-            'script_executor_id' => $executor->id,
+            'script_executor_id' => ScriptExecutor::initialExecutor('php')->id,
             'code' => '123',
             'description' => 'Description',
             'script_category_id' => $category->getkey(),
@@ -73,7 +77,7 @@ class ScriptsTest extends TestCase
 
     public function testCreateCategoryRequired()
     {
-        factory(ScriptExecutor::class)->create(['language' => 'php']);
+        ScriptExecutor::setTestConfig('php');
 
         $url = route('api.scripts.store');
         $params = [
@@ -376,9 +380,6 @@ class ScriptsTest extends TestCase
             );
         }
 
-        ScriptExecutor::setTestConfig('lua');
-        ScriptExecutor::setTestConfig('php');
-
         $url = route('api.scripts.preview', $this->getScript('lua')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);
         $response->assertStatus(200);
@@ -404,7 +405,13 @@ class ScriptsTest extends TestCase
     public function testPreviewScriptFail()
     {
         Notification::fake();
-        $url = route('api.scripts.preview', $this->getScript('foo')->id);
+        $script = $this->getScript('php');
+        // manually override language
+        $script->language = 'foo';
+        $script->script_executor_id = 123;
+        $script->saveOrFail();
+
+        $url = route('api.scripts.preview', $script->id);
         $response = $this->apiCall('POST', $url, ['data' => 'foo', 'config' => 'foo', 'code' => 'foo']);
 
         // Assertion: An exception is notified to usr through broadcast channel

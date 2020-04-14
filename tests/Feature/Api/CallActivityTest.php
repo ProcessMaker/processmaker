@@ -22,7 +22,6 @@ class CallActivityTest extends TestCase
      */
     public function testCallActivity()
     {
-        factory(ScriptExecutor::class)->create(['language' => 'php']);
         ScriptExecutor::setTestConfig('php');
 
         // Script task requires passport installed (oauth token)

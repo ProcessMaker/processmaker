@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\UploadedFile;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -15,6 +16,11 @@ class ExportImportScreenTest extends TestCase
     use RequestHelper;
 
     public $withPermissions = true;
+
+    protected function setUpExecutor()
+    {
+        ScriptExecutor::setTestConfig('php');
+    }
 
     /**
      * Test to ensure we can export and import

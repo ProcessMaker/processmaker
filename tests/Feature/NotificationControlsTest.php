@@ -10,6 +10,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
@@ -29,6 +30,8 @@ class NotificationControlsTest extends TestCase
      */
     public function testRequestWithNotifications()
     {
+        ScriptExecutor::setTestConfig('php');
+        
         // Create a user
         $adminUser = factory(User::class)->create([
             'username' => 'admin',
@@ -70,6 +73,8 @@ class NotificationControlsTest extends TestCase
      */
     public function testRequestWithoutNotifications()
     {
+        ScriptExecutor::setTestConfig('php');
+
         // Create a user
         $adminUser = factory(User::class)->create([
             'username' => 'admin',

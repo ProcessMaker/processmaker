@@ -6,6 +6,7 @@ use ProcessMaker\Models\User;
 use Tests\TestCase;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\RequestHelper;
 
 class SanitizationTest extends TestCase
@@ -34,6 +35,8 @@ class SanitizationTest extends TestCase
             'code' => $code,
             'run_as_user_id' => $user->id,
         ]);
+
+        ScriptExecutor::setTestConfig($script->language);
 
         // Post the process to the API
         $response = $this->apiCall('POST', '/scripts', $script->toArray());

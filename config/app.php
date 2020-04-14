@@ -64,6 +64,9 @@ return [
     // Allows our script executors to ignore invalid SSL. This should only be set to false for development.
     'api_ssl_verify' => env('API_SSL_VERIFY', "true"),
 
+    // Unique name on multi-tenant installations. Just use the DB name for now
+    'instance' => env('DB_DATABASE'),
+
     'providers' => [
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,

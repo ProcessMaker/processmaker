@@ -13,6 +13,7 @@ use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Validation\CategoryRule;
+use ProcessMaker\Exception\ScriptLanguageNotSupported;
 
 /**
  * Represents an Eloquent model of a Script
@@ -122,6 +123,9 @@ class Script extends Model
      */
     public function runScript(array $data, array $config)
     {
+        if (!$this->scriptExecutor) {
+            throw new ScriptLanguageNotSupported($this->language);
+        }
         $runner = new ScriptRunner($this->scriptExecutor);
         $user = User::find($this->run_as_user_id);
         if (!$user) {
