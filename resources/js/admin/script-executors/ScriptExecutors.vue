@@ -24,7 +24,7 @@
                     <i class="fas fa-pen-square fa-lg fa-fw"></i>
                 </b-btn>
             </template>
-            
+
             <template v-slot:cell(delete)="data">
                 <b-btn
                     variant="link"
@@ -37,7 +37,7 @@
             </template>
         </b-table>
 
-        <b-modal ref="edit" id="edit" :title="modalTitle" @hidden="reset()" @hide="doNotHideIfRunning" size="lg">
+        <b-modal ref="edit" id="edit" :title="modalTitle" @hidden="reset()" @hide="doNotHideIfRunning" size="lg" header-close-content="&times;">
 
             <b-container class="mb-2">
                 <b-row>
@@ -64,7 +64,7 @@
                     </b-col>
                 </b-row>
             </b-container>
-                
+
             <p class="mb-0">Dockerfile</i></p>
 
             <div class="d-flex flex-row mb-1">
@@ -215,7 +215,7 @@ export default {
                     });
                 }
             );
-            
+
         },
         getError(name) {
             return _.get(this.errors, name + '.0', false);

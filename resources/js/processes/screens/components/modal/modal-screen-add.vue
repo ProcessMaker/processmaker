@@ -1,6 +1,6 @@
 <template>
     <b-modal v-model="opened" size="md" centered @hidden="onClose" @show="onReset" @close="onClose"
-             title="Create New Screen" v-cloak>
+             title="Create New Screen" v-cloak header-close-content="&times;">
         <create-screen ref="fieldsScreen" v-on:save="afterSave"></create-screen>
 
         <div slot="modal-footer">
