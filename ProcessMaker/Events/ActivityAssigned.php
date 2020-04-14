@@ -15,7 +15,7 @@ class ActivityAssigned implements ShouldBroadcastNow
 
     public $payloadUrl;
     
-    private $processRequest;
+    private $processRequest, $processRequestToken;
 
     /**
      * Create a new event instance.
@@ -26,6 +26,7 @@ class ActivityAssigned implements ShouldBroadcastNow
     {
         $this->payloadUrl = route('api.tasks.show', ['task' => $token->id]);
         $this->processRequest = $token->processRequest;
+        $this->processRequestToken = $token;
     }
 
     /**
@@ -46,5 +47,15 @@ class ActivityAssigned implements ShouldBroadcastNow
     public function broadcastOn()
     {
         return new PrivateChannel('ProcessMaker.Models.ProcessRequest.' . $this->processRequest->getKey());
+    }
+    
+    /**
+     * Return the process request.
+     *
+     * @return \ProcessMaker\Models\ProcessRequestToken
+     */    
+    public function getProcessRequestToken()
+    {
+        return $this->processRequestToken;
     }
 }

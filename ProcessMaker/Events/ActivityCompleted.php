@@ -47,4 +47,14 @@ class ActivityCompleted implements ShouldBroadcastNow
     {
         return new PrivateChannel('ProcessMaker.Models.ProcessRequestToken.' . $this->processRequestToken->getKey());
     }
+    
+    /**
+     * Return the process request.
+     *
+     * @return \ProcessMaker\Models\ProcessRequestToken
+     */    
+    public function getProcessRequestToken()
+    {
+        return $this->processRequestToken;
+    }
 }
