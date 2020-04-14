@@ -661,3 +661,7 @@ h1.page-title {
     max-width: 350px;
   }  
 }
+
+button.close:empty::before {
+  content: "×";
+}
