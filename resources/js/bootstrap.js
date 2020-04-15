@@ -277,7 +277,11 @@ Vue.use({
                     // only run on root
                     return;
                 }
-                clickTab();
+
+                // Run after component mounted
+                this.$nextTick(() => {
+                    clickTab();
+                });
             },
         })
     }
