@@ -45,7 +45,6 @@
       external: [],
       externalEmit : [],
       dataXmlSvg: {},
-      saveEmitDefault: true,
       decorations: {
         borderOutline: {},
       },
@@ -107,7 +106,7 @@
       this.externalEmit.forEach(item => {
         window.ProcessMaker.EventBus.$emit(item);
       })
-      if (!this.externalEmit) {
+      if (!this.externalEmit.length) {
         window.ProcessMaker.EventBus.$emit('modeler-save');
       }
     },
