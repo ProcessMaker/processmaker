@@ -80,7 +80,7 @@
         ref="pagination"
       ></pagination>
     </div>
-    <b-modal ref="myModalRef" :title="$t('Copy Script')" centered>
+    <b-modal ref="myModalRef" :title="$t('Copy Script')" centered  header-close-content="&times;" >
       <form>
         <div class="form-group">
           <label for="title">{{ $t('Name') }}<small class="ml-1">*</small></label>

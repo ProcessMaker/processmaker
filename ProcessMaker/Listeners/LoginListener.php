@@ -17,6 +17,7 @@ class LoginListener
         // Grab our user that was logged in
         $user = $event->user;
         // Update the last_login
+        $user->timestamps = false;
         $user->loggedin_at = Carbon::now();
         $user->save();
     }

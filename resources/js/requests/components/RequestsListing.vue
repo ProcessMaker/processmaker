@@ -96,7 +96,7 @@ export default {
       
       columns.forEach(column => {
         let field = {
-          title: this.$t(column.label)
+          title: () => this.$t(column.label)
         };
         
         switch (column.field) {

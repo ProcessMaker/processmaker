@@ -155,6 +155,7 @@
                                 </button>
                               <b-modal v-model="showReassignment" size="md" centered title="{{__('Reassign to')}}"
                                       @hide="cancelReassign"
+                                      header-close-content="&times;"
                                       v-cloak>
                                 <div class="form-group">
                                     {!!Form::label('user', __('User'))!!}

@@ -84,7 +84,7 @@ class BuildScriptExecutors extends Command
     public function buildExecutor()
     {
         $this->savePid();
-        $this->info($this->pidFilePath, 'starting');
+        $this->sendEvent($this->pidFilePath, 'starting');
         
         $langArg = $this->argument('lang');
         if (is_numeric($langArg)) {
@@ -111,22 +111,28 @@ class BuildScriptExecutors extends Command
             }
         }
 
-        $this->info("Building for language: $lang");
-        $this->info("Generating SDK json document");
-        $this->artisan('l5-swagger:generate');
+        $this->packagePath = $packagePath = ScriptExecutor::packagePath($lang);
 
-        $this->packagePath = $packagePath =
-            ScriptExecutor::packagePath($lang);
-
-        $sdkDir = $packagePath . "/sdk";
-
-        if (!is_dir($sdkDir)) {
-            mkdir($sdkDir, 0755, true);
+        $sdkLanguage = $scriptExecutor->language;
+        $config = ScriptExecutor::config($scriptExecutor->language);
+        if (isset($config['sdk'])) {
+            $sdkLanguage = $config['sdk'];
         }
+        if ($sdkLanguage) {
+            $this->info("Building for language: $sdkLanguage");
+            $this->info("Generating SDK json document");
+            $this->artisan('l5-swagger:generate');
 
-        $this->info("Building the SDK");
-        $this->artisan("processmaker:sdk $lang $sdkDir --clean");
-        $this->info("SDK is at ${sdkDir}");
+            $sdkDir = $packagePath . "/sdk";
+
+            if (!is_dir($sdkDir)) {
+                mkdir($sdkDir, 0755, true);
+            }
+
+            $this->info("Building the SDK");
+            $this->artisan("processmaker:sdk $sdkLanguage $sdkDir --clean");
+            $this->info("SDK is at ${sdkDir}");
+        }
 
         $dockerfile = ScriptExecutor::initDockerfile($lang) . "\n" . $scriptExecutor->config;
 
@@ -170,7 +176,7 @@ class BuildScriptExecutors extends Command
         if ($this->userId) {
             event(new BuildScriptExecutor($output, $this->userId, $status));
         } else {
-            $this->info("$status - $text");
+            $this->info("$status - $output");
         }
     }
     
@@ -208,8 +214,9 @@ class BuildScriptExecutors extends Command
     private function associateWithExistingImage($executor)
     {
         $images = ScriptExecutor::listOfExecutorImages($executor->language);
+        $instance = config('app.instance');
         foreach ($images as $image) {
-            if (!preg_match('/executor-.+-(\d+):/', $image, $match)) {
+            if (!preg_match('/executor-' . $instance . '-.+-(\d+):/', $image, $match)) {
                 throw new \Exception('Not a valid image:' . (string) $image);
             }
             $id = intval($match[1]);
