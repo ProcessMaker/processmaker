@@ -37,3 +37,16 @@ function lavaryMenuJson($menu)
 {
     return json_encode(lavaryMenuArray($menu, true));
 }
+
+/**
+ * Check if a package exists based on its provider name
+ * 
+ * @param string $name
+ * 
+ * @return bool
+ */
+function hasPackage($name)
+{
+    $class = '\\ProcessMaker\\Package\\' . $name . '\\' . $name . 'ServiceProvider';
+    return class_exists($class);
+}

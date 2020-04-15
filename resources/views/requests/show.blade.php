@@ -59,12 +59,25 @@
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
                             </li>
-                            @if(count($files) > 0 )
+                            @if(count($files) > 0 && !hasPackage('Files'))
                                 <li class="nav-item">
                                     <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
                                        aria-controls="files" aria-selected="false">{{__('Files')}}</a>
                                 </li>
                             @endif
+
+                            <template v-for="{ tab } in packages">
+                              <li class="nav-item">
+                                  <a class="nav-link"
+                                    :id="tab.id"
+                                    data-toggle="tab"
+                                    :href="'#' + tab.target"
+                                    role="tab">
+                                      @{{ tab.name }}
+                                    </a>
+                              </li>
+                            </template>
+
                                 <li class="nav-item" v-show="canViewPrint">
                                     <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms"
                                        role="tab" aria-controls="forms" aria-selected="false">
@@ -152,6 +165,13 @@
                             <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
                             </request-detail>
                         </div>
+
+                        <template v-for="{ tab, component } in packages">
+                          <div class="tab-pane fade card card-body border-top-0 p-3" :id="tab.target" role="tabpanel">
+                            <component :is="component"></component>
+                          </div>
+                        </template>
+
                         <div class="tab-pane fade card card-body border-top-0 p-3" id="files" role="tabpanel" aria-labelledby="files-tab">
                             <div class="card">
                                 <div>
@@ -299,6 +319,11 @@
         <script src="{{$script}}"></script>
     @endforeach
 
+    @if(hasPackage('Files'))
+      <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
+      <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
+    @endif
+
     <script src="{{mix('js/requests/show.js')}}"></script>
     <script>
       new Vue({
@@ -325,7 +350,8 @@
             status: 'ACTIVE',
             userRequested: [],
             errorLogs: @json(['data'=>$request->errors]),
-            disabled: false
+            disabled: false,
+            packages: [],
           };
         },
         computed: {
@@ -565,6 +591,7 @@
           }
         },
         mounted() {
+          this.packages = window.ProcessMaker.requestShowPackages;
           this.listenRequestUpdates();
           this.cleanScreenButtons();
           this.editJsonData();

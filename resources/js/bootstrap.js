@@ -255,3 +255,30 @@ if (userID) {
             window.ProcessMaker.closeSessionModal();
         });
 }
+
+const clickTab = () => {
+    const hash = window.location.hash;
+    if (!hash) { 
+        return;
+    }
+    const tab = $('[role="tab"][href="'+ hash + '"]');
+    if (tab.length) {
+        tab.tab('show');
+    }
+};
+window.addEventListener("hashchange", clickTab);
+
+// click an active tab after all components have mounted
+Vue.use({
+    install(vue) {
+        vue.mixin({
+            mounted() {
+                if (this.$parent) {
+                    // only run on root
+                    return;
+                }
+                clickTab();
+            },
+        })
+    }
+});
