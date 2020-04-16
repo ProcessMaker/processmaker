@@ -39,4 +39,14 @@ class ScreenVersion extends Model
         return $this->setMultipleCategories($value, 'screen_category_id');
     }
 
+    /**
+     * Get the associated screen
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function parent()
+    {
+        return $this->belongsTo(Screen::class, 'screen_id', 'id');
+    }
+
 }
