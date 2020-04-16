@@ -1097,20 +1097,20 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     }
 
     /**
-     * Get the start events with signal events
+     * Get the unique Signal References for the Signal Start Events.
      *
      * @return array
      */
-    public function getUpdatedStartEventsSignalEvents()
+    public function getUpdatedStartEventsSignalEvents(): array
     {
-        $response = [];
-        foreach($this->start_events as $event) {
-            foreach($event['eventDefinitions'] as $eventDefinition) {
-                if ($eventDefinition['$type'] === 'signalEventDefinition') {
-                    $response[] = $eventDefinition['signalRef'];
-                }
-            }
-        }
-        return $response;
+        $eventDefinitions = collect($this->start_events)->pluck('eventDefinitions')->flatten(1);
+
+        $signalEventDefinitions = $eventDefinitions->filter(function ($eventDefinition) {
+            return $eventDefinition['$type'] === 'signalEventDefinition';
+        });
+
+        $signalReferences = $signalEventDefinitions->pluck('signalRef')->unique();
+
+        return $signalReferences->toArray();
     }
 }
