@@ -15,12 +15,14 @@ use ProcessMaker\Models\Process;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class RequestController extends Controller
 {
     use HasMediaTrait;
     use SearchAutocompleteTrait;
+    use HasControllerAddons;
 
     /**
      * Get the list of requests.
@@ -139,8 +141,10 @@ class RequestController extends Controller
         $manager = new ScreenBuilderManager();
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
+        $addons = $this->getPluginAddons('edit', compact(['request']));
+
         return view('requests.show', compact(
-            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager', 'canPrintScreens', 'screenRequested'
+            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager', 'canPrintScreens', 'screenRequested', 'addons'
         ));
     }
 

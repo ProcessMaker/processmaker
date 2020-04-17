@@ -71,6 +71,16 @@
                                         {{__('Forms')}}
                                     </a>
                                 </li>
+                            @isset($addons)
+                                @foreach ($addons as $addon)
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="{{$addon['id'] . '-tab'}}" data-toggle="tab" href="{{'#' . $addon['id']}}"
+                                        role="tab" aria-controls="{{ $addon['id'] }}" aria-selected="false">
+                                            {{ __($addon['title']) }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            @endisset
                         </template>
                     </ul>
                     <div class="tab-content" id="requestTabContent">
@@ -182,6 +192,14 @@
                             <request-screens :id="requestId" :information="dataSummary" :screens="screenRequested" ref="forms">
                             </request-screens>
                         </div>
+
+                        @isset($addons)
+                            @foreach ($addons as $addon)
+                                <div class="tab-pane fade show" id="{{$addon['id']}}" role="tabpanel" aria-labelledby="{{ $addon['id'] }}">
+                                    {!! $addon['content'] !!}
+                                </div>
+                            @endforeach
+                        @endisset
                     </div>
                 </div>
                 @if($canViewComments === true)
@@ -303,6 +321,7 @@
     <script>
       new Vue({
         el: "#request",
+        mixins: addons,
         data() {
           return {
             showCancelRequest: false,
