@@ -6,7 +6,7 @@ import TaskForm from '../tasks/components/TaskForm';
 import RequestErrors from './components/RequestErrors';
 import MonacoEditor from "vue-monaco";
 import debounce from 'lodash/debounce';
-import Comments from '../components/Comments'
+import Timeline from '../components/Timeline'
 import RequestScreens from '../requests/components/RequestScreens';
 
 Vue.component('data-summary', DataSummary);
@@ -15,6 +15,6 @@ Vue.component('avatar-image', AvatarImage);
 Vue.component('task-screen', TaskForm);
 Vue.component('request-errors', RequestErrors);
 Vue.component('monaco-editor', MonacoEditor);
-Vue.component('comments', Comments);
+Vue.component('timeline', Timeline);
 Vue.component('request-screens', RequestScreens);
 window.debounce = debounce;
