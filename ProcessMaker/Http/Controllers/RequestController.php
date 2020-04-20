@@ -136,7 +136,7 @@ class RequestController extends Controller
         $canPrintScreens = $this->canUserPrintScreen($request);
         $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];
 
-        $manager = new ScreenBuilderManager();
+        $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
         return view('requests.show', compact(
