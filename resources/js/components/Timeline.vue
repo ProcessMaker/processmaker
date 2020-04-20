@@ -2,23 +2,21 @@
   <div v-if="comments.length > 0" class="px-3 mb-2 timeline">
     <template v-for="(item,index) in comments">
       <component 
-        v-bind:is="item.component || 'timeline-item'"
+        v-bind:is="component(item)"
         v-bind:key="`timeline-item-${index}`"
         v-bind:value="item"
-        v-bind:icon="icon(item.subject)"
+        v-bind:icon="icon(item)"
       />
     </template>
   </div>
 </template>
 
 <script>
-import TimelineItem from './TimelineItem';
 const SubjectIcons = {
   'Task Complete': 'far fa-square',
   'Gateway': 'far fa-square fa-rotate-45',
 };
 export default {
-  components: {TimelineItem},
   props: ["commentable_id", "commentable_type", "type", "hidden"],
   data() {
     return {
@@ -44,8 +42,12 @@ export default {
     }
   },
   methods: {
-    icon(subject) {
-      return SubjectIcons[subject] || '';
+    component(item) {
+      const component = `timeline-${item.type.toLowerCase()}`;
+      return component in Vue.options.components ? component : 'timeline-item';
+    },
+    icon(item) {
+      return SubjectIcons[item.subject] || '';
     },
     emptyForm() {
       this.form.subject = "";
@@ -115,17 +117,14 @@ export default {
 }
 
 .timeline-badge {
-  background-color: rgb(225, 228, 232);
   width: 28px;
   height: 24px;
   margin-left:0px;
-  padding:0;
+  padding: 0;
 }
-.timeline-gateway {
-  transform: rotate(45deg);
-  width: 20px;
-  margin: 0 auto;
-  margin-top:7px;
+.timeline-icon {
+  background-color: rgb(225, 228, 232);
+  color: #788793;
 }
 .fa-rotate-45 {
   -moz-transform: rotate(45deg);
