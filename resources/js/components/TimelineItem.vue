@@ -9,7 +9,7 @@
     <div>
       <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
       &nbsp;
-      <slot v-if="hasBodySlot" name="icon"></slot>
+      <slot v-if="hasBodySlot" name="body"></slot>
       <template v-else>
         {{value.body}}
       </template>
