@@ -365,8 +365,10 @@ class TokenRepository implements TokenRepositoryInterface
      */
     private function addRequestToData(Instance $instance)
     {
-        $instance->getDataStore()->putData('_request', $instance);
-        $this->instanceRepository->persistInstanceUpdated($instance);
+        if (!$instance->getDataStore()->getData('_request')) {
+            $instance->getDataStore()->putData('_request', $instance);
+            $this->instanceRepository->persistInstanceUpdated($instance);
+        }
     }
 
     /**
