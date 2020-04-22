@@ -102,6 +102,9 @@
 <script src="{{ mix('js/vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
+@foreach(GlobalScripts::getScripts() as $script)
+  <script src="{{$script}}"></script>
+@endforeach
     <!--javascript!-->
     @yield('js')
 </body>
