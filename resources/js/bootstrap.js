@@ -87,6 +87,12 @@ window.ProcessMaker = {
      */
     EventBus: new Vue(),
     /**
+     * A general use global router that can be used
+     */
+    Router: new VueRouter({
+      mode: 'history'
+    }),
+    /**
      * ProcessMaker Notifications
      */
     notifications: [],
