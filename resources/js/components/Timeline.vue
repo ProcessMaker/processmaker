@@ -1,23 +1,21 @@
 <template>
   <div v-if="comments.length > 0" class="px-3 mb-2 timeline">
-    <template>
-      <div class="px-2 py-3" v-for="value in comments">
-        <div v-if="value.subject=='Gateway'" class="badge badge-secondary timeline-badge">
-          <div class="text-secondary timeline-gateway">
-            <i class="far fa-square" ></i>
-          </div>
-        </div>
-        <avatar-image v-else-if="value.user" size="24" :input-data="value.user" hide-name="true"></avatar-image>
-        <img v-else src="/img/systemAvatar.png" id="systemAvatar">
-        <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
-        &nbsp;-
-        {{value.body}}
-      </div>
+    <template v-for="(item,index) in comments">
+      <component 
+        v-bind:is="component(item)"
+        v-bind:key="`timeline-item-${index}`"
+        v-bind:value="item"
+        v-bind:icon="icon(item)"
+      />
     </template>
   </div>
 </template>
 
 <script>
+const SubjectIcons = {
+  'Task Complete': 'far fa-square',
+  'Gateway': 'far fa-square fa-rotate-45',
+};
 export default {
   props: ["commentable_id", "commentable_type", "type", "hidden"],
   data() {
@@ -44,6 +42,13 @@ export default {
     }
   },
   methods: {
+    component(item) {
+      const component = `timeline-${item.type.toLowerCase()}`;
+      return component in Vue.options.components ? component : 'timeline-item';
+    },
+    icon(item) {
+      return SubjectIcons[item.subject] || '';
+    },
     emptyForm() {
       this.form.subject = "";
       this.form.body = "";
@@ -112,16 +117,20 @@ export default {
 }
 
 .timeline-badge {
-  background-color: rgb(225, 228, 232);
-  width: 24px;
-  height: 22px;
-  margin-left:2px;
-  padding:0;
+  width: 28px;
+  height: 24px;
+  margin-left:0px;
+  padding: 0;
 }
-.timeline-gateway {
+.timeline-icon {
+  background-color: rgb(225, 228, 232);
+  color: #788793;
+}
+.fa-rotate-45 {
+  -moz-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
   transform: rotate(45deg);
-  width: 20px;
-  margin: 0 auto;
-  margin-top:7px;
 }
 </style>

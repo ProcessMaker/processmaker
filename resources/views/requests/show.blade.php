@@ -204,7 +204,7 @@
                 </div>
                 @if($canViewComments === true)
                     <div>
-                        <comments commentable_id="{{ $request->getKey() }}"
+                        <timeline commentable_id="{{ $request->getKey() }}"
                                   commentable_type="{{ get_class($request) }}"/>
                     </div>
                 @endif

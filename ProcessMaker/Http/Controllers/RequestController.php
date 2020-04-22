@@ -138,7 +138,7 @@ class RequestController extends Controller
         $canPrintScreens = $this->canUserPrintScreen($request);
         $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];
 
-        $manager = new ScreenBuilderManager();
+        $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
         $addons = $this->getPluginAddons('edit', compact(['request']));
