@@ -16,7 +16,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Requests') => route('requests.index'),
         $request->name . ' #'. $request->getKey() => null,
-    ]])
+    ], 'dynamic' => true])
 @endsection
 @section('content')
     <div id="request" class="container-fluid px-3">
