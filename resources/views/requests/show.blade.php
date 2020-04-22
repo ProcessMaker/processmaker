@@ -167,7 +167,7 @@
                         </div>
 
                         <template v-for="{ tab, component } in packages">
-                          <div class="tab-pane fade card card-body border-top-0 p-3" :id="tab.target" role="tabpanel">
+                          <div class="tab-pane fade card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
                             <component :is="component" :process-request-id="requestId"></component>
                           </div>
                         </template>
