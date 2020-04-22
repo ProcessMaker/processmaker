@@ -145,6 +145,10 @@ window.ProcessMaker = {
     },
 
     RequestChannel,
+
+    $notifications: {
+        icons: {},
+    },
 };
 
 /**

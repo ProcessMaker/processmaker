@@ -18,7 +18,7 @@
           {{$t('No Notifications Found')}}
           <hr>
         </li>
-        <li v-for="(task, index) in messages" v-if="index <= 5">
+        <li v-for="(task, index) in messages" v-if="index <= 5" :key="`message-${index}`">
           <div class="d-flex align-items-end flex-column float-right">
             <small class="float-right muted" v-b-tooltip.hover :title="moment(task.created_at).format()">{{ moment(task.created_at).fromNow() }}</small>
             <div
@@ -31,6 +31,7 @@
           </div>
 
           <h3>
+            <i :class="icon(task)"></i>
             <a class="text-info" v-bind:href="task.url" @click.stop="remove(task)">{{task.name}}</a>
           </h3>
           <div class="muted">
@@ -84,6 +85,9 @@ export default {
     };
   },
   methods: {
+    icon(task) {
+      return ProcessMaker.$notifications.icons[task.type];
+    },
     updateTotalMessages() {
       this.incrementTotalMessages = false;
       ProcessMaker.apiClient
