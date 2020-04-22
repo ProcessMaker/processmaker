@@ -16,7 +16,7 @@
     @include('shared.breadcrumbs', ['routes' => [
         __('Requests') => route('requests.index'),
         $request->name . ' #'. $request->getKey() => null,
-    ]])
+    ], 'dynamic' => true])
 @endsection
 @section('content')
     <div id="request" class="container-fluid px-3">
@@ -28,18 +28,18 @@
                             @if($request->status === 'ERROR')
                                 <li class="nav-item">
                                     <a class="nav-link active" id="errors-tab" data-toggle="tab" href="#errors"
-                                       role="tab"
+                                       role="tab" @click="switchTab('errors')"
                                        aria-controls="errors" aria-selected="false">{{__('Errors')}}</a>
                                 </li>
                             @endif
                             <li class="nav-item" v-if="!showSummary">
                                 <a class="nav-link" :class="{ active: activePending }" id="pending-tab"
-                                   data-toggle="tab" href="#pending" role="tab"
+                                   data-toggle="tab" @click="switchTab('pending')" href="#pending" role="tab"
                                    aria-controls="pending" aria-selected="true">{{__('Tasks')}}</a>
                             </li>
                             <li class="nav-item">
                                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
-                                   aria-controls="summary" aria-selected="false"
+                                   aria-controls="summary" @click="switchTab('summary')" aria-selected="false"
                                    v-bind:class="{ 'nav-link':true, active: showSummary }">
                                     {{__('Summary')}}
                                 </a>
@@ -49,7 +49,7 @@
                                     <li class="nav-item">
                                         <a id="editdata-tab" data-toggle="tab" href="#editdata" role="tab"
                                            aria-controls="editdata" aria-selected="false"
-                                           class="nav-link">
+                                           class="nav-link"  @click="switchTab('editdata')">
                                             {{__('Data')}}
                                         </a>
                                     </li>
@@ -57,12 +57,12 @@
                             @endif
                             <li class="nav-item">
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
-                                   aria-controls="completed" aria-selected="false">{{__('Completed')}}</a>
+                                   aria-controls="completed" aria-selected="false" @click="switchTab('completed')">{{__('Completed')}}</a>
                             </li>
                             @if(count($files) > 0 && !hasPackage('Files'))
                                 <li class="nav-item">
                                     <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
-                                       aria-controls="files" aria-selected="false">{{__('Files')}}</a>
+                                       aria-controls="files" aria-selected="false" @click="switchTab('files')">{{__('Files')}}</a>
                                 </li>
                             @endif
 
@@ -72,7 +72,8 @@
                                     :id="tab.id"
                                     data-toggle="tab"
                                     :href="'#' + tab.target"
-                                    role="tab">
+                                    role="tab"
+                                    @click="switchTab(tab.target)">
                                       @{{ tab.name }}
                                     </a>
                               </li>
@@ -80,7 +81,7 @@
 
                                 <li class="nav-item" v-show="canViewPrint">
                                     <a class="nav-link" id="forms-tab" data-toggle="tab" href="#forms"
-                                       role="tab" aria-controls="forms" aria-selected="false">
+                                       role="tab" aria-controls="forms" aria-selected="false" @click="switchTab('forms')">
                                         {{__('Forms')}}
                                     </a>
                                 </li>
@@ -167,7 +168,7 @@
                         </div>
 
                         <template v-for="{ tab, component } in packages">
-                          <div class="tab-pane fade card card-body border-top-0 p-3" :id="tab.target" role="tabpanel">
+                          <div class="tab-pane fade card card-body border-top-0 p-0" :id="tab.target" role="tabpanel">
                             <component :is="component" :process-request-id="requestId"></component>
                           </div>
                         </template>
@@ -460,6 +461,9 @@
           },
         },
         methods: {
+          switchTab(tab) {
+            ProcessMaker.EventBus.$emit('tab-switched', tab);  
+          },
           requestStatusClass(status) {
             status = status.toLowerCase();
             let bubbleColor = {
