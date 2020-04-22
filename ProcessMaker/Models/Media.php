@@ -109,4 +109,24 @@ class Media extends Model
         'model_id',
     ];
 
+    /**
+     * Override the default boot method to allow access to lifecycle hooks 
+     *
+     * @return null
+     */
+    public static function boot()
+    {
+        parent::boot();
+        self::creating(function($media) {
+            $user = pmUser();
+            if (!$media->hasCustomProperty('createdBy')) {
+                $media->setCustomProperty('createdBy', $user ? $user->id : null);
+            }
+            $media->setCustomProperty('updatedBy', $user ? $user->id : null);
+        });
+        self::saving(function($media) {
+            $media->setCustomProperty('updatedBy', pmUser() ? pmUser()->id : null);
+        });
+    }
+
 }

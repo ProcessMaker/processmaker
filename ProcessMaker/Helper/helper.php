@@ -50,3 +50,19 @@ function hasPackage($name)
     $class = '\\ProcessMaker\\Package\\' . $name . '\\' . $name . 'ServiceProvider';
     return class_exists($class);
 }
+
+/**
+ * Check both the web and api middleware for an existing user
+ * 
+ * @return User
+ */
+function pmUser()
+{
+    if (Auth::user()) {
+        return Auth::user();
+    }
+    if (Auth::guard('api')->user()) {
+        return Auth::guard('api')->user();
+    }
+    return null;
+}
