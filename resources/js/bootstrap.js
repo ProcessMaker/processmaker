@@ -30,6 +30,7 @@ window.$ = window.jQuery = require("jquery");
  */
 
 window.Vue = require("vue");
+window.VueRouter = VueRouter;
 
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
