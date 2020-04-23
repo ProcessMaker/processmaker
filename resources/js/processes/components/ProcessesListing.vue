@@ -72,6 +72,15 @@
               </b-btn>
               <b-btn
                       variant="link"
+                      @click="onAction('action-todo', props.rowData, props.rowIndex)"
+                      v-b-tooltip.hover
+                      :title="$t('Documentation')"
+                      v-if="permission.includes('view-processes') && isDocumenterInstalled"
+              >
+                <i class="fas fa-map-signs fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                      variant="link"
                       @click="onAction('export-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Export')"
