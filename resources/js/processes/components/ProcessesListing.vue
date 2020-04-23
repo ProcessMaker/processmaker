@@ -120,7 +120,7 @@
 
   export default {
     mixins: [datatableMixin, dataLoadingMixin],
-    props: ["filter", "id", "status", "permission"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
     data() {
       return {
         orderBy: "name",
