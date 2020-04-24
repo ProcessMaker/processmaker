@@ -72,7 +72,7 @@
               </b-btn>
               <b-btn
                       variant="link"
-                      @click="onAction('action-todo', props.rowData, props.rowIndex)"
+                      @click="onAction('view-documentation', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Documentation')"
                       v-if="permission.includes('view-processes') && isDocumenterInstalled"
@@ -189,6 +189,9 @@
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
       },
+      goToDocumentation(processId) {
+        window.location = `/modeler/${processId}/print`;
+      },
       goToDesigner(data) {
         window.location = "/modeler/" + data;
       },
@@ -233,6 +236,9 @@
             break;
           case "edit-item":
             this.goToEdit(data.id);
+            break;
+          case "view-documentation":
+            this.goToDocumentation(data.id);
             break;
           case "export-item":
             this.goToExport(data.id);
