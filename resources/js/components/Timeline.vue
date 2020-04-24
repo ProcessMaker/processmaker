@@ -6,12 +6,14 @@
         v-bind:key="`timeline-item-${index}`"
         v-bind:value="item"
         v-bind:icon="icon(item)"
+        @refresh="load"
       />
     </template>
     <comment-editor
       v-model="newComment"
-      :commentable_id="commentable_id"
-      :commentable_type="commentable_type"
+      class="mt-2"
+      v-bind:commentable_id="commentable_id"
+      v-bind:commentable_type="commentable_type"
       @refresh="load"
     />
   </div>
