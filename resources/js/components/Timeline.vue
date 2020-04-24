@@ -1,5 +1,5 @@
 <template>
-  <div v-if="comments.length > 0" class="px-3 mb-2 timeline">
+  <div class="px-3 mb-2 timeline">
     <template v-for="(item,index) in comments">
       <component 
         v-bind:is="component(item)"
@@ -8,6 +8,7 @@
         v-bind:icon="icon(item)"
       />
     </template>
+    <comment-editor v-model="newComment" />
   </div>
 </template>
 
@@ -20,6 +21,7 @@ export default {
   props: ["commentable_id", "commentable_type", "type", "hidden"],
   data() {
     return {
+      newComment: '',
       form: {
         subject: "",
         body: "",

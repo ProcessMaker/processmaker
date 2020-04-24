@@ -14,8 +14,7 @@ class GlobalScriptsManager
      */
     public function addScript($script)
     {
-        $time = filemtime(public_path($script));
-        $this->javascriptRegistry[] = $script . ($time ? "?t=$time" : '');
+        $this->javascriptRegistry[] = $script;
     }
 
     /**
@@ -26,6 +25,12 @@ class GlobalScriptsManager
      */
     public function getScripts()
     {
+        $scripts = [];
+        foreach($this->javascriptRegistry as $script) {
+            $path = public_path($script);
+            $time = file_exists($path) ? filemtime($path) : 0;
+            $scripts[] = $script . ($time ? "?t=$time" : '');
+        }
         return $this->javascriptRegistry;
     }
 }
