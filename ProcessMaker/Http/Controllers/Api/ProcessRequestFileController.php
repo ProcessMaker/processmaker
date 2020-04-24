@@ -171,7 +171,8 @@ class ProcessRequestFileController extends Controller
             // check if the upload has finished (in chunk mode it will send smaller files)
             if ($save->isFinished()) {
 
-                $originalCreatedBy = null;
+                $user = pmUser();
+                $originalCreatedBy = $user ? $user->id : null;
                 foreach($request->getMedia() as $mediaItem) {
                     if($mediaItem->getCustomProperty('data_name') == $data_name) {
                         $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
