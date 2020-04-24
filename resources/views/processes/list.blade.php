@@ -41,7 +41,7 @@
             v-on:edit="edit"
             v-on:reload="reload"
             :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
-            :is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
+            is-documenter-installed="{{\ProcessMaker\PackageHelper::isPmPackageProcessDocumenterInstalled()}}"
         ></processes-listing>
     </div>
 </div>
