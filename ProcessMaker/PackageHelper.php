@@ -2,9 +2,7 @@
 
 namespace ProcessMaker;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Symfony\Component\ErrorHandler\Error\UndefinedFunctionError;
 
 /**
  * A way to check if a package is installed by seeing if its service provider
@@ -22,10 +20,16 @@ use Symfony\Component\ErrorHandler\Error\UndefinedFunctionError;
  *  - passing your own service provider class string:
  *      e.g. PackageHelper::isPackageInstalled('ProcessMaker\Package\WebEntry\WebEntryServiceProvider')
  *
- * We don't use the ::class way to get the classname string, since that would fail if the class is not
- * installed.
+ * We don't use the ::class way to get the service provider's classname string, since
+ * that would fail if the class is not installed.
  *
  * @package ProcessMaker
+ *
+ * @method static bool isPmDockerExecutorLuaInstalled()
+ * @method static bool isPmDockerExecutorNodeInstalled()
+ * @method static bool isPmDockerExecutorPhpInstalled()
+ * @method static bool isPmPackageProcessDocumenterInstalled()
+ * @method static bool isPmPackageWebentryInstalled()
  */
 class PackageHelper
 {
@@ -52,38 +56,28 @@ class PackageHelper
      * @return bool
      * @throws \Exception
      */
-    public static function __callStatic($methodName, $parameters): bool
+    public static function __callStatic(string $methodName, array $parameters): bool
     {
         $matches = [];
         $matchesMagicMethodSignature = preg_match('/^is(.+)Installed$/', $methodName, $matches);
         if ($matchesMagicMethodSignature) {
             $constantName = self::magicNameToConstantName($matches[1]);
-            if (! self::isConstantDefined($constantName)) {
+            if (! defined('self::' . $constantName)) {
                 throw new \Exception(
                     sprintf('%s: No constant named \'%s\' defined.', self::class, $constantName)
                 );
             }
-            return self::getInstalledStatusForConstant($constantName);
+            return self::isPackageInstalled(constant('self::' . $constantName));
         }
 
         throw new \Exception(sprintf('%s: No function named \'%s\' defined.', self::class, $methodName));
-    }
-
-    private static function getInstalledStatusForConstant(string $constantName)
-    {
-        return self::isPackageInstalled(constant('self::' . $constantName));
-    }
-
-    private static function isConstantDefined($constantName)
-    {
-        return defined('self::' . $constantName);
     }
 
     /**
      * Turns the inside of a magic method invocation into its
      * symbolic constant form (i.e. ALL_UPPER_SNAKE).
      */
-    private static function magicNameToConstantName($magicName): string
+    private static function magicNameToConstantName(string $magicName): string
     {
         return strtoupper(Str::snake($magicName));
     }
