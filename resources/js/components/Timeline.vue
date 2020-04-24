@@ -8,7 +8,12 @@
         v-bind:icon="icon(item)"
       />
     </template>
-    <comment-editor v-model="newComment" />
+    <comment-editor
+      v-model="newComment"
+      :commentable_id="commentable_id"
+      :commentable_type="commentable_type"
+      @refresh="load"
+    />
   </div>
 </template>
 
