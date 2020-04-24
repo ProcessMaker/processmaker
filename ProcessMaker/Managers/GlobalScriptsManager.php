@@ -31,6 +31,6 @@ class GlobalScriptsManager
             $time = file_exists($path) ? filemtime($path) : 0;
             $scripts[] = $script . ($time ? "?t=$time" : '');
         }
-        return $this->javascriptRegistry;
+        return $scripts;
     }
 }
