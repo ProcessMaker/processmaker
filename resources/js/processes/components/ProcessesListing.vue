@@ -74,7 +74,7 @@
                       variant="link"
                       @click="onAction('view-documentation', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
-                      :title="$t('Documentation')"
+                      :title="$t('View Documentation')"
                       v-if="permission.includes('view-processes') && isDocumenterInstalled"
               >
                 <i class="fas fa-map-signs fa-lg fa-fw"></i>
