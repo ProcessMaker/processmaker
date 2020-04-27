@@ -34,6 +34,7 @@ import StartPermission from './components/inspector/StartPermission';
 import {registerNodes} from "@processmaker/modeler";
 import Interstitial from "./components/inspector/Interstitial";
 import SelectUserGroup from "../../components/SelectUserGroup";
+import validateScreenRef from './validateScreenRef';
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('UserById', UserById);
@@ -120,17 +121,6 @@ ProcessMaker.EventBus.$on(
         required: true,
         type: 'FORM'
       }
-    });
-    ProcessMaker.EventBus.$on('modeler-validate', (node, reporter) => {
-      if (node.$type !== 'bpmn:Task') {
-        return;
-      }
-
-      if (node.screenRef != null) {
-        return;
-      }
-
-      reporter.report(node.id, 'Please select an input screen');
     });
 
     registerInspectorExtension(task, {
@@ -314,3 +304,5 @@ ProcessMaker.EventBus.$on(
     });
   }
 );
+
+validateScreenRef();
