@@ -72,6 +72,15 @@
               </b-btn>
               <b-btn
                       variant="link"
+                      @click="onAction('view-documentation', props.rowData, props.rowIndex)"
+                      v-b-tooltip.hover
+                      :title="$t('View Documentation')"
+                      v-if="permission.includes('view-processes') && isDocumenterInstalled"
+              >
+                <i class="fas fa-map-signs fa-lg fa-fw"></i>
+              </b-btn>
+              <b-btn
+                      variant="link"
                       @click="onAction('export-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Export')"
@@ -120,7 +129,7 @@
 
   export default {
     mixins: [datatableMixin, dataLoadingMixin],
-    props: ["filter", "id", "status", "permission"],
+    props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
     data() {
       return {
         orderBy: "name",
@@ -180,6 +189,9 @@
       goToEdit(data) {
         window.location = "/processes/" + data + "/edit";
       },
+      goToDocumentation(processId) {
+        window.location = `/modeler/${processId}/print`;
+      },
       goToDesigner(data) {
         window.location = "/modeler/" + data;
       },
@@ -224,6 +236,9 @@
             break;
           case "edit-item":
             this.goToEdit(data.id);
+            break;
+          case "view-documentation":
+            this.goToDocumentation(data.id);
             break;
           case "export-item":
             this.goToExport(data.id);
