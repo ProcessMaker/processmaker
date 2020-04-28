@@ -34,6 +34,7 @@ import StartPermission from './components/inspector/StartPermission';
 import {registerNodes} from "@processmaker/modeler";
 import Interstitial from "./components/inspector/Interstitial";
 import SelectUserGroup from "../../components/SelectUserGroup";
+import validateScreenRef from './validateScreenRef';
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('UserById', UserById);
@@ -121,6 +122,7 @@ ProcessMaker.EventBus.$on(
         type: 'FORM'
       }
     });
+
     registerInspectorExtension(task, {
       component: 'TaskDueIn',
       config: {
@@ -302,3 +304,5 @@ ProcessMaker.EventBus.$on(
     });
   }
 );
+
+validateScreenRef();
