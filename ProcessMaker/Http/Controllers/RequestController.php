@@ -178,9 +178,12 @@ class RequestController extends Controller
         return false;
     }
 
-    public function downloadFiles(ProcessRequest $requestID, Media $fileID)
+    public function downloadFiles(ProcessRequest $request, Media $media)
     {
-        $requestID->getMedia();
-        return response()->download($fileID->getPath(), $fileID->file_name);
+        $ids = $request->getMedia()->pluck('id');
+        if (!$ids->contains($media->id)) {
+            abort(403);
+        }
+        return response()->download($media->getPath(), $media->file_name);
     }
 }
