@@ -20,9 +20,6 @@
         pagination-path="meta"
         ref="vuetable"
       >
-        <template slot="ids" slot-scope="props">
-          <b-link :href="onAction('edit', props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
-        </template>
         <template slot="name" slot-scope="props">
           <b-link
             :href="onAction('edit', props.rowData, props.rowIndex)"
@@ -136,10 +133,6 @@ export default {
         };
         
         switch (column.field) {
-          case 'id':
-            field.name = '__slot:ids';
-            field.title = '#';
-            break;
           case 'task':
             field.name = '__slot:name';
             field.field = 'element_name';
@@ -193,12 +186,6 @@ export default {
         return this.$props.columns;
       } else {
         let columns = [
-          {
-            "label": "#",
-            "field": "id",
-            "sortable": true,
-            "default": true
-          },
           {
             "label": "Task",
             "field": "task",
