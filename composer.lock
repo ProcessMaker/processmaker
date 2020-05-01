@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8243fa85d7da410df81e6bd34257678c",
+    "content-hash": "237e937f68e4bf0254766d0218383371",
     "packages": [
         {
             "name": "cakephp/chronos",
@@ -3290,7 +3290,7 @@
                 }
             ],
             "description": "Service for chunked upload with several js providers",
-            "time": "2019-11-05T21:38:31+00:00"
+            "time": "2018-11-28T19:48:49+00:00"
         },
         {
             "name": "predis/predis",
@@ -3491,16 +3491,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "c6813b180c1fd3098a686d12554c5bdbfcdec9d5"
+                "reference": "42b108b47afc5b361c8fc292dc8d3a4946893805"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/c6813b180c1fd3098a686d12554c5bdbfcdec9d5",
-                "reference": "c6813b180c1fd3098a686d12554c5bdbfcdec9d5",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/42b108b47afc5b361c8fc292dc8d3a4946893805",
+                "reference": "42b108b47afc5b361c8fc292dc8d3a4946893805",
                 "shasum": ""
             },
             "require-dev": {
@@ -3517,7 +3517,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2020-02-04T19:53:41+00:00"
+            "time": "2020-04-28T15:10:35+00:00"
         },
         {
             "name": "processmaker/pmql",

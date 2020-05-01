@@ -18,6 +18,7 @@ use ProcessMaker\Models\ProcessRequestToken as Task;
 use ProcessMaker\Models\ProcessRequest as Request;
 use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
 use ProcessMaker\Managers\ModelerManager as Modeler;
+use ProcessMaker\Managers\ScriptBuilderManager as ScriptBuilder;
 use Illuminate\Foundation\Testing\WithFaker;
 
 
