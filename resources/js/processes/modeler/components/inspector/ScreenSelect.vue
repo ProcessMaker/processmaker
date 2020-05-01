@@ -2,6 +2,7 @@
     <div class="form-group">
         <label>{{ $t(label) }}</label>
         <multiselect v-model="content"
+                     ref="screen-select"
                      track-by="id"
                      label="title"
                      :class="{'is-invalid':error}"
@@ -61,6 +62,7 @@
           if (this.content) {
             this.error = '';
             this.$emit('input', this.content.id);
+            this.$refs['screen-select'].$el.focus();
           }
         }
       },
