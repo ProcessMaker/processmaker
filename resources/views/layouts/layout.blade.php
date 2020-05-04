@@ -102,6 +102,9 @@
 <script src="{{ mix('js/vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
 <script src="{{ mix('js/app-layout.js') }}"></script>
+<script>
+  window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
+</script>
     <!--javascript!-->
     @yield('js')
 </body>
