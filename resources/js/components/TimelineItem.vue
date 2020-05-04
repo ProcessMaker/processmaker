@@ -8,7 +8,7 @@
     <img v-else class="default-user mr-1" src="/img/systemAvatar.png">
     <div class="flex-grow-1">
       <strong :title="value.updated_at">{{moment(value.updated_at).format()}}</strong>
-      &nbsp;
+      <br>
       <slot v-if="hasBodySlot" name="body"></slot>
       <template v-else>
         {{value.body}}
