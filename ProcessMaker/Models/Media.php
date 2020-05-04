@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\Models\Media as Model;
 
 /**
@@ -129,4 +130,36 @@ class Media extends Model
         });
     }
 
+    public function isPublicFile()
+    {
+        if ($this->model instanceof ProcessRequest) {
+            if ($this->model->process && $this->model->process->package_key == 'package-files/public-files') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getManagerNameAttribute()
+    {
+        if (isset($this->custom_properties['data_name'])) {
+            return last(explode('/', $this->custom_properties['data_name']));
+        } else {
+            return $this->name;
+        }
+    }
+
+    public function getManagerUrlAttribute()
+    {
+        if ($this->isPublicFile()) {
+            $route = route('file-manager.index');
+            return $route . '#/public/' . $this->custom_properties['data_name'];
+        } else {
+            return route('requests.show.files.viewer', [
+                'request' => $this->model,
+                'filePath' => $this->custom_properties['data_name'],
+            ]);
+        }
+    }
 }
