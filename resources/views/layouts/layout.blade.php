@@ -105,6 +105,9 @@
 <script>
   window.ProcessMaker.packages = @json(\App::make(ProcessMaker\Managers\PackageManager::class)->listPackages());
 </script>
+@foreach(GlobalScripts::getScripts() as $script)
+  <script src="{{$script}}"></script>
+@endforeach
     <!--javascript!-->
     @yield('js')
 </body>

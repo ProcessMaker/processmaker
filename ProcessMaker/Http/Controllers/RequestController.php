@@ -15,12 +15,14 @@ use ProcessMaker\Models\Process;
 use Spatie\MediaLibrary\Models\Media;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class RequestController extends Controller
 {
     use HasMediaTrait;
     use SearchAutocompleteTrait;
+    use HasControllerAddons;
 
     /**
      * Get the list of requests.
@@ -128,7 +130,7 @@ class RequestController extends Controller
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
 
         $canCancel = Auth::user()->can('cancel', $request->process);
-        $canViewComments = Auth::user()->hasPermissionsFor('comments')->count() > 0;
+        $canViewComments = true; //Auth::user()->hasPermissionsFor('comments')->count() > 0;
         $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
 
         $files = $request->getMedia();
@@ -136,11 +138,13 @@ class RequestController extends Controller
         $canPrintScreens = $this->canUserPrintScreen($request);
         $screenRequested = $canPrintScreens ? $request->getScreensRequested() : [];
 
-        $manager = new ScreenBuilderManager();
+        $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
 
+        $addons = $this->getPluginAddons('edit', compact(['request']));
+
         return view('requests.show', compact(
-            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager', 'canPrintScreens', 'screenRequested'
+            'request', 'files', 'canCancel', 'canViewComments', 'canManuallyComplete', 'manager', 'canPrintScreens', 'screenRequested', 'addons'
         ));
     }
 

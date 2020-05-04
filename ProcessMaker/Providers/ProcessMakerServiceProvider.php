@@ -97,6 +97,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return new ScriptBuilderManager();
         });
 
+        $this->app->singleton(GlobalScriptsManager::class, function($app) {
+            return new GlobalScriptsManager();
+        });
+
         // Listen to the events for our core screen types and add our javascript
         Event::listen(ScreenBuilderStarting::class, function($event) {
             // Add any extensions to form builder/renderer from packages

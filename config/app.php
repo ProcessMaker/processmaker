@@ -148,6 +148,7 @@ return [
         /**
          * ProcessMaker specific Facades
          */
+        'GlobalScripts' => ProcessMaker\Facades\GlobalScripts::class,
         'WorkspaceManager' => ProcessMaker\Facades\WorkspaceManager::class,
         'SkinManager' => ProcessMaker\Facades\SkinManager::class,
 
