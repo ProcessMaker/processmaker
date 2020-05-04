@@ -10,6 +10,7 @@ import SelectUser from "./components/SelectUser";
 import CategorySelect from "./processes/categories/components/CategorySelect";
 import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
+import TimelineItem from './components/TimelineItem';
 
 import { FileUpload, FileDownload } from './processes/screen-builder/components'
 
@@ -45,6 +46,7 @@ Vue.component("select-from-api", SelectFromApi);
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
 Vue.component("Breadcrumbs", Breadcrumbs);
+Vue.component("timeline-item", TimelineItem);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
