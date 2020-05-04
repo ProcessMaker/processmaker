@@ -47,8 +47,9 @@ function lavaryMenuJson($menu)
  */
 function hasPackage($name)
 {
-    $class = '\\ProcessMaker\\Package\\' . $name . '\\' . $name . 'ServiceProvider';
-    return class_exists($class);
+    $list = \App::make(ProcessMaker\Managers\PackageManager::class)->listPackages();
+
+    return in_array($name, $list);
 }
 
 /**

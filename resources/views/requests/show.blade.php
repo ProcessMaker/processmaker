@@ -59,7 +59,7 @@
                                 <a class="nav-link" id="completed-tab" data-toggle="tab" href="#completed" role="tab"
                                    aria-controls="completed" aria-selected="false" @click="switchTab('completed')">{{__('Completed')}}</a>
                             </li>
-                            @if(count($files) > 0 && !hasPackage('Files'))
+                            @if(count($files) > 0 && !hasPackage('package-files'))
                                 <li class="nav-item">
                                     <a class="nav-link" id="files-tab" data-toggle="tab" href="#files" role="tab"
                                        aria-controls="files" aria-selected="false" @click="switchTab('files')">{{__('Files')}}</a>
@@ -320,7 +320,7 @@
         <script src="{{$script}}"></script>
     @endforeach
 
-    @if(hasPackage('Files'))
+    @if(hasPackage('package-files'))
       <!-- TODO: Replace with script injector like we do for modeler and screen builder -->
       <script src="{{ mix('js/manager.js', 'vendor/processmaker/packages/package-files') }}"></script>
     @endif
