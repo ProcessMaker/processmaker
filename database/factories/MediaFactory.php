@@ -1,17 +1,13 @@
 <?php
-
 use Faker\Generator as Faker;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\User;
-
-
 /**
  * Model factory for Media
  */
-
 $factory->define(Media::class, function (Faker $faker) {
     return [
-        'model_id' => $faker->unique()->randomNumber(1),
+        'model_id' => 1,
         'model_type' => $faker->randomElement(['ProcessMaker\Models\ProcessRequest']),
         'collection_name' => 'default',
         'name' => $faker->randomElement(['name1', 'name2', 'name3']),
@@ -22,6 +18,6 @@ $factory->define(Media::class, function (Faker $faker) {
         'manipulations' => [],
         'custom_properties' => [],
         'responsive_images' => 'image',
-        'order_column' => $faker->unique()->randomNumber(1)
+        'order_column' => 1
     ];
 });
