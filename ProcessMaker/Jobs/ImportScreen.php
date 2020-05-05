@@ -8,41 +8,15 @@ use ProcessMaker\Models\Script;
 class ImportScreen extends ImportProcess
 {
     /**
-     * Create a new Screen model for each screen object in the imported file,
-     * then save it to the database.
-     *
-     * @param Screen $screen
-     *
-     * @return void
-     */
-    private function saveScreens($screen)
-    {
-        try {
-            $this->new[Screen::class] = [];
-            $this->prepareStatus('screens', true);
-
-            $new = new Screen();
-            $new->fill((array)$screen);
-            $new->title = $this->formatName($screen->title, 'title', Screen::class);
-            $new->created_at = $this->formatDate($screen->created_at);
-            $new->watchers =  $this->watcherScriptsToSave($screen);
-
-            $new->save();
-
-            $this->finishStatus('screens');
-        } catch (Exception $e) {
-            $this->finishStatus('screens', true);
-        }
-    }
-
-    /**
      * Parse files with version 1
      *
      * @return array
      */
     private function parseFileV1()
     {
-        $this->saveScreens($this->file->screens);
+        $this->prepareStatus('screens', 1);
+        $this->saveScreen($this->file->screens);
+        $this->finishStatus('screens');
         return $this->status;
     }
 
