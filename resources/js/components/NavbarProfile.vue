@@ -26,7 +26,7 @@
               {{$t('Edit')}} {{username}} {{$t('Profile')}}
             </a>
           </li>
-          <li class="list-group-item px-2">
+          <li v-if="displayMyFilesLink" class="list-group-item px-2">
             <a href="/file-manager">
               <i class="fas fa-folder fa-fw fa-lg mr-1"></i>
               {{$t('My Files')}}
@@ -76,6 +76,11 @@ export default {
     };
   },
   props: ["info", "items"],
+  computed: {
+    displayMyFilesLink() {
+      return window.ProcessMaker.packages.includes('package-files');
+    }
+  },
   methods: {
     __(variable) {
       return __(variable);
@@ -117,6 +122,8 @@ export default {
   mounted() {
     this.formatData(this.info);
     window.ProcessMaker.events.$on("update-profile-avatar", this.updateAvatar);
+    console.log('ProcessMaker', window.ProcessMaker);
+    console.log('packages', window.ProcessMaker.packages);
   }
 };
 </script>
