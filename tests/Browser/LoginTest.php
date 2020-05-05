@@ -18,7 +18,9 @@ class LoginTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs(User::find(1))
                     ->visit('/requests')
-                    ->assertSee('My Requests');
+                    ->assertSee('My Requests')
+                    ->logout()
+                    ->assertGuest();
         });
     }
     
