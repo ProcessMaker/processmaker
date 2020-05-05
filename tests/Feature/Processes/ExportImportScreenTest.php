@@ -150,7 +150,7 @@ class ExportImportScreenTest extends TestCase
         ]);
         $response->assertStatus(200);
 
-        //Unable to import the screen.
-        $this->assertFalse($response->json('status')['screens']['success']);
+        //Able to import the screen.
+        $this->assertTrue($response->json('status')['screens']['success']);
     }
 }
