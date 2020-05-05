@@ -105,6 +105,7 @@
     "setupFiles": [
       "<rootDir>/jest/globals.js"
     ],
+    "roots": ["<rootDir>/resources/assets/js/"],   
     "testURL": "http://localhost",
     "moduleFileExtensions": [
       "vue",

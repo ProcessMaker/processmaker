@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             ScreenTypeSeeder::class,
             CategorySystemSeeder::class,
             ScreenSystemSeeder::class,
-            ScriptExecutorSeeder::class,
+            // ScriptExecutorSeeder::class,
         ]);
         $this->callPluginSeeders();
     }

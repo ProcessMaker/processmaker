@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1540498901315" clover="3.2.0">
-  <project timestamp="1540498901316" name="All files">
-    <metrics statements="79" coveredstatements="34" conditionals="24" coveredconditionals="5" methods="6" coveredmethods="1" elements="109" coveredelements="40" complexity="0" loc="79" ncloc="79" packages="5" files="6" classes="6">
+<coverage generated="1588713562973" clover="3.2.0">
+  <project timestamp="1588713562973" name="All files">
+    <metrics statements="130" coveredstatements="39" conditionals="60" coveredconditionals="7" methods="17" coveredmethods="0" elements="207" coveredelements="46" complexity="0" loc="130" ncloc="130" packages="5" files="8" classes="8">
       <package name="jest">
         <metrics statements="7" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <file name="globals.js" path="/opt/github/pm4/jest/globals.js">
+        <file name="globals.js" path="/Users/alanbollinger/dev/processmaker/jest/globals.js">
           <metrics statements="7" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
           <line num="1" count="3" type="stmt"/>
           <line num="2" count="0" type="stmt"/>
@@ -17,28 +17,28 @@
       </package>
       <package name="resources.js.components">
         <metrics statements="21" coveredstatements="20" conditionals="6" coveredconditionals="5" methods="0" coveredmethods="0"/>
-        <file name="Confirm.vue" path="/opt/github/pm4/resources/js/components/Confirm.vue">
+        <file name="Confirm.vue" path="/Users/alanbollinger/dev/processmaker/resources/js/components/Confirm.vue">
           <metrics statements="18" coveredstatements="17" conditionals="4" coveredconditionals="3" methods="0" coveredmethods="0"/>
-          <line num="32" count="7" type="stmt"/>
-          <line num="40" count="0" type="stmt"/>
+          <line num="28" count="7" type="stmt"/>
+          <line num="36" count="0" type="stmt"/>
+          <line num="41" count="7" type="stmt"/>
+          <line num="42" count="7" type="stmt"/>
+          <line num="43" count="7" type="stmt"/>
+          <line num="44" count="7" type="cond" truecount="1" falsecount="1"/>
           <line num="45" count="7" type="stmt"/>
           <line num="46" count="7" type="stmt"/>
           <line num="47" count="7" type="stmt"/>
-          <line num="48" count="7" type="cond" truecount="1" falsecount="1"/>
-          <line num="49" count="7" type="stmt"/>
-          <line num="50" count="7" type="stmt"/>
-          <line num="51" count="7" type="stmt"/>
-          <line num="55" count="4" type="stmt"/>
+          <line num="51" count="4" type="stmt"/>
+          <line num="54" count="2" type="stmt"/>
+          <line num="55" count="2" type="cond" truecount="2" falsecount="0"/>
+          <line num="56" count="1" type="stmt"/>
           <line num="58" count="2" type="stmt"/>
-          <line num="59" count="2" type="cond" truecount="2" falsecount="0"/>
-          <line num="60" count="1" type="stmt"/>
-          <line num="62" count="2" type="stmt"/>
-          <line num="65" count="1" type="stmt"/>
-          <line num="66" count="1" type="stmt"/>
-          <line num="70" count="7" type="stmt"/>
-          <line num="71" count="7" type="stmt"/>
+          <line num="61" count="1" type="stmt"/>
+          <line num="62" count="1" type="stmt"/>
+          <line num="66" count="7" type="stmt"/>
+          <line num="67" count="7" type="stmt"/>
         </file>
-        <file name="FilterBar.vue" path="/opt/github/pm4/resources/js/components/FilterBar.vue">
+        <file name="FilterBar.vue" path="/Users/alanbollinger/dev/processmaker/resources/js/components/FilterBar.vue">
           <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="2" methods="0" coveredmethods="0"/>
           <line num="14" count="3" type="stmt"/>
           <line num="20" count="2" type="cond" truecount="2" falsecount="0"/>
@@ -46,72 +46,129 @@
         </file>
       </package>
       <package name="resources.js.components.common">
-        <metrics statements="6" coveredstatements="2" conditionals="2" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <file name="Pagination.vue" path="/opt/github/pm4/resources/js/components/common/Pagination.vue">
-          <metrics statements="6" coveredstatements="2" conditionals="2" coveredconditionals="0" methods="0" coveredmethods="0"/>
-          <line num="54" count="1" type="stmt"/>
-          <line num="67" count="1" type="stmt"/>
-          <line num="73" count="0" type="cond" truecount="0" falsecount="2"/>
+        <metrics statements="30" coveredstatements="1" conditionals="28" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <file name="DataLoading.vue" path="/Users/alanbollinger/dev/processmaker/resources/js/components/common/DataLoading.vue">
+          <metrics statements="24" coveredstatements="0" conditionals="26" coveredconditionals="0" methods="3" coveredmethods="0"/>
+          <line num="41" count="0" type="stmt"/>
+          <line num="50" count="0" type="stmt"/>
+          <line num="53" count="0" type="stmt"/>
+          <line num="58" count="0" type="stmt"/>
+          <line num="59" count="0" type="cond" truecount="0" falsecount="4"/>
+          <line num="60" count="0" type="stmt"/>
+          <line num="61" count="0" type="stmt"/>
+          <line num="62" count="0" type="stmt"/>
+          <line num="65" count="0" type="stmt"/>
+          <line num="66" count="0" type="cond" truecount="0" falsecount="5"/>
+          <line num="67" count="0" type="cond" truecount="0" falsecount="5"/>
+          <line num="68" count="0" type="stmt"/>
+          <line num="70" count="0" type="stmt"/>
+          <line num="73" count="0" type="stmt"/>
           <line num="74" count="0" type="stmt"/>
-          <line num="76" count="0" type="stmt"/>
-          <line num="81" count="0" type="stmt"/>
+          <line num="75" count="0" type="stmt"/>
+          <line num="80" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="83" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="86" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="89" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="92" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="95" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="98" count="0" type="stmt"/>
+          <line num="101" count="0" type="stmt"/>
+        </file>
+        <file name="Pagination.vue" path="/Users/alanbollinger/dev/processmaker/resources/js/components/common/Pagination.vue">
+          <metrics statements="6" coveredstatements="1" conditionals="2" coveredconditionals="0" methods="0" coveredmethods="0"/>
+          <line num="72" count="1" type="stmt"/>
+          <line num="77" count="0" type="stmt"/>
+          <line num="83" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="84" count="0" type="stmt"/>
+          <line num="86" count="0" type="stmt"/>
+          <line num="91" count="0" type="stmt"/>
         </file>
       </package>
       <package name="resources.js.components.common.mixins">
-        <metrics statements="29" coveredstatements="3" conditionals="14" coveredconditionals="0" methods="2" coveredmethods="1"/>
-        <file name="datatable.js" path="/opt/github/pm4/resources/js/components/common/mixins/datatable.js">
-          <metrics statements="29" coveredstatements="3" conditionals="14" coveredconditionals="0" methods="2" coveredmethods="1"/>
-          <line num="17" count="1" type="stmt"/>
-          <line num="21" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="22" count="0" type="stmt"/>
+        <metrics statements="38" coveredstatements="6" conditionals="18" coveredconditionals="1" methods="3" coveredmethods="0"/>
+        <file name="apiDataLoading.js" path="/Users/alanbollinger/dev/processmaker/resources/js/components/common/mixins/apiDataLoading.js">
+          <metrics statements="6" coveredstatements="4" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="0"/>
+          <line num="8" count="1" type="stmt"/>
+          <line num="15" count="1" type="cond" truecount="1" falsecount="1"/>
+          <line num="19" count="1" type="stmt"/>
+          <line num="20" count="0" type="stmt"/>
+          <line num="22" count="1" type="stmt"/>
+          <line num="23" count="0" type="stmt"/>
+        </file>
+        <file name="datatable.js" path="/Users/alanbollinger/dev/processmaker/resources/js/components/common/mixins/datatable.js">
+          <metrics statements="32" coveredstatements="2" conditionals="16" coveredconditionals="0" methods="1" coveredmethods="0"/>
+          <line num="16" count="1" type="stmt"/>
+          <line num="20" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="21" count="0" type="stmt"/>
+          <line num="28" count="0" type="cond" truecount="0" falsecount="2"/>
           <line num="29" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="30" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="31" count="0" type="stmt"/>
+          <line num="30" count="0" type="stmt"/>
           <line num="33" count="0" type="stmt"/>
+          <line num="37" count="0" type="cond" truecount="0" falsecount="2"/>
           <line num="38" count="0" type="stmt"/>
-          <line num="39" count="0" type="stmt"/>
           <line num="40" count="0" type="stmt"/>
-          <line num="44" count="0" type="stmt"/>
-          <line num="45" count="0" type="stmt"/>
-          <line num="50" count="0" type="stmt"/>
-          <line num="51" count="0" type="stmt"/>
-          <line num="52" count="0" type="stmt"/>
+          <line num="42" count="0" type="stmt"/>
+          <line num="43" count="0" type="stmt"/>
+          <line num="47" count="0" type="stmt"/>
+          <line num="48" count="0" type="stmt"/>
           <line num="53" count="0" type="stmt"/>
-          <line num="57" count="0" type="stmt"/>
-          <line num="61" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="62" count="0" type="stmt"/>
-          <line num="63" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="64" count="0" type="stmt"/>
-          <line num="66" count="0" type="stmt"/>
-          <line num="68" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="54" count="0" type="stmt"/>
+          <line num="55" count="0" type="stmt"/>
+          <line num="56" count="0" type="stmt"/>
+          <line num="60" count="0" type="stmt"/>
+          <line num="64" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="65" count="0" type="stmt"/>
+          <line num="66" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="67" count="0" type="stmt"/>
           <line num="69" count="0" type="stmt"/>
           <line num="71" count="0" type="cond" truecount="0" falsecount="2"/>
           <line num="72" count="0" type="stmt"/>
-          <line num="74" count="0" type="stmt"/>
-          <line num="79" count="1" type="stmt"/>
-          <line num="105" count="3" type="stmt"/>
+          <line num="74" count="0" type="cond" truecount="0" falsecount="2"/>
+          <line num="75" count="0" type="stmt"/>
+          <line num="77" count="0" type="stmt"/>
+          <line num="90" count="1" type="stmt"/>
+          <line num="116" count="0" type="stmt"/>
+          <line num="119" count="0" type="stmt"/>
         </file>
       </package>
       <package name="resources.js.processes.categories.components">
-        <metrics statements="16" coveredstatements="4" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <file name="CategoriesListing.vue" path="/opt/github/pm4/resources/js/processes/categories/components/CategoriesListing.vue">
-          <metrics statements="16" coveredstatements="4" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
-          <line num="23" count="1" type="stmt"/>
-          <line num="29" count="1" type="stmt"/>
-          <line num="64" count="1" type="stmt"/>
-          <line num="67" count="1" type="stmt"/>
-          <line num="81" count="0" type="stmt"/>
-          <line num="82" count="0" type="stmt"/>
-          <line num="87" count="0" type="stmt"/>
-          <line num="88" count="0" type="stmt"/>
-          <line num="93" count="0" type="stmt"/>
-          <line num="95" count="0" type="stmt"/>
+        <metrics statements="34" coveredstatements="7" conditionals="8" coveredconditionals="1" methods="9" coveredmethods="0"/>
+        <file name="CategoriesListing.vue" path="/Users/alanbollinger/dev/processmaker/resources/js/processes/categories/components/CategoriesListing.vue">
+          <metrics statements="34" coveredstatements="7" conditionals="8" coveredconditionals="1" methods="9" coveredmethods="0"/>
+          <line num="61" count="1" type="stmt"/>
+          <line num="62" count="1" type="stmt"/>
+          <line num="68" count="1" type="stmt"/>
+          <line num="80" count="0" type="stmt"/>
+          <line num="85" count="0" type="stmt"/>
+          <line num="91" count="0" type="stmt"/>
           <line num="96" count="0" type="stmt"/>
-          <line num="98" count="0" type="stmt"/>
-          <line num="101" count="0" type="stmt"/>
-          <line num="104" count="0" type="stmt"/>
-          <line num="108" count="0" type="stmt"/>
-          <line num="109" count="0" type="stmt"/>
+          <line num="102" count="0" type="stmt"/>
+          <line num="115" count="1" type="stmt"/>
+          <line num="116" count="0" type="stmt"/>
+          <line num="117" count="0" type="stmt"/>
+          <line num="118" count="0" type="stmt"/>
+          <line num="119" count="0" type="stmt"/>
+          <line num="124" count="1" type="cond" truecount="1" falsecount="1"/>
+          <line num="125" count="1" type="stmt"/>
+          <line num="126" count="1" type="stmt"/>
+          <line num="128" count="0" type="stmt"/>
+          <line num="131" count="0" type="stmt"/>
+          <line num="146" count="0" type="cond" truecount="0" falsecount="4"/>
+          <line num="147" count="0" type="stmt"/>
+          <line num="150" count="0" type="stmt"/>
+          <line num="151" count="0" type="stmt"/>
+          <line num="152" count="0" type="stmt"/>
+          <line num="157" count="0" type="stmt"/>
+          <line num="159" count="0" type="stmt"/>
+          <line num="160" count="0" type="stmt"/>
+          <line num="162" count="0" type="stmt"/>
+          <line num="171" count="0" type="stmt"/>
+          <line num="173" count="0" type="stmt"/>
+          <line num="174" count="0" type="stmt"/>
+          <line num="179" count="0" type="stmt"/>
+          <line num="183" count="0" type="stmt"/>
+          <line num="184" count="0" type="stmt"/>
+          <line num="190" count="0" type="stmt"/>
         </file>
       </package>
     </metrics>
