@@ -122,8 +122,6 @@ export default {
   mounted() {
     this.formatData(this.info);
     window.ProcessMaker.events.$on("update-profile-avatar", this.updateAvatar);
-    console.log('ProcessMaker', window.ProcessMaker);
-    console.log('packages', window.ProcessMaker.packages);
   }
 };
 </script>
