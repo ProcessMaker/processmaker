@@ -831,7 +831,6 @@
   "The value being submitted": "The value being submitted",
   "The variant determines the appearance of the button": "The variant determines the appearance of the button",
   "The weight of the text": "The weight of the text",
-  "There is no records in this list or the data is invalid.": "There is no records in this list or the data is invalid.",
   "These credentials do not match our records.": "These credentials do not match our records.",
   "This application installs a new version of ProcessMaker.": "This application installs a new version of ProcessMaker.",
   "This control is hidden until this expression is true": "This control is hidden until this expression is true",
@@ -1201,5 +1200,6 @@
   "Are you sure you want to delete this?": "Are you sure you want to delete this?",
   "Signal that will trigger this start event": "Signal that will trigger this start event",
   "Are you sure you want to reset all of your translations?": "Are you sure you want to reset all of your translations?",
-  "Save And Build": "Save And Build"
+  "Save And Build": "Save And Build",
+  "This record list is empty or contains no data.": "This record list is empty or contains no data."
 }
