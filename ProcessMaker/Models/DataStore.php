@@ -18,6 +18,10 @@ class DataStore implements DataStoreInterface
 
     private $data = [];
 
+    private $updated = [];
+
+    private $removed = [];
+
     /**
      *
      * @var \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface
@@ -89,6 +93,8 @@ class DataStore implements DataStoreInterface
     public function putData($name, $data)
     {
         $this->data[$name] = $data;
+        $this->updated[$name] = $name;
+        unset($this->removed[$name]);
         return $this;
     }
 
@@ -112,6 +118,42 @@ class DataStore implements DataStoreInterface
     public function removeData($name)
     {
         unset($this->data[$name]);
+        $this->removed[$name] = $name;
+        unset($this->updated[$name]);
         return $this;
+    }
+
+    /**
+     * Get the value of updated
+     */ 
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
+     * Get the value of removed
+     */ 
+    public function getRemoved()
+    {
+        return $this->removed;
+    }
+
+    /**
+     * Update the data of an array based on the changes made in the data store
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    public function updateArray(array $array)
+    {
+        foreach($this->updated as $name) {
+            $array[$name] = $this->data[$name];
+        }
+        foreach($this->removed as $name) {
+            unset($array[$name]);
+        }
+        return $array;
     }
 }
