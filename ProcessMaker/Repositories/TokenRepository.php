@@ -3,9 +3,12 @@
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Events\ProcessUpdated;
+use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequestToken as Token;
-use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
 use ProcessMaker\Nayra\Bpmn\Models\EndEvent;
@@ -13,18 +16,15 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CollectionInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
-use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use ProcessMaker\Events\ProcessUpdated;
+use ProcessMaker\Nayra\Contracts\Repositories\TokenRepositoryInterface;
 
 /**
  * Execution Instance Repository.
@@ -426,6 +426,7 @@ class TokenRepository implements TokenRepositoryInterface
             $source->process_collaboration_id = $collaboration->getKey();
             $source->saveOrFail();
         }
+        $subprocess->user_id = $token->user_id;
         $subprocess->process_collaboration_id = $source->process_collaboration_id;
         $subprocess->parent_request_id = $source->getKey();
         $subprocess->saveOrFail();
@@ -447,5 +448,4 @@ class TokenRepository implements TokenRepositoryInterface
     {
         Log::info('persistEventBasedGatewayActivated');
     }
-
 }
