@@ -15,6 +15,7 @@ use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -567,7 +568,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $users = $this->getAssignableUsers($processTaskUuid);
         }
         if (empty($users)) {
-            throw new TaskDoesNotHaveUsersException($processTaskUuid);
+            throw new UserOrGroupAssignmentEmptyException($processTaskUuid);
         }
         sort($users);
         if ($last) {
@@ -644,6 +645,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $assignmentRules = $activity->getProperty('assignmentRules', null);
 
         $instanceData = $token->getInstance()->getDataStore()->getData();
+
         if ($assignmentRules && $instanceData) {
             $list = json_decode($assignmentRules);
             $list = ($list === null) ? [] : $list;
