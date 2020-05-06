@@ -302,6 +302,28 @@ ProcessMaker.EventBus.$on(
           name: 'whitelist',
       },
     });
+
+    registerInspectorExtension(callActivity, {
+      component: 'FormAccordion',
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: 'Assignment Rules',
+        icon: 'users',
+        name: 'assignments-accordion',
+      },
+      items: [
+        {
+          component: 'TaskAssignment',
+          config: {
+            label: 'Task Assignment',
+            helper: '',
+            name: 'taskAssignment',
+            configurables: [],
+          }
+        },
+      ],
+    });
   }
 );
 
