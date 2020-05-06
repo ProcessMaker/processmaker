@@ -153,4 +153,37 @@ class ExportImportScreenTest extends TestCase
         //Able to import the screen.
         $this->assertTrue($response->json('status')['screens']['success']);
     }
+
+    public function testImportNestedScreen()
+    {
+        // Load the file to test
+        $fileName = __DIR__ . '/../../Fixtures/nested_screens.json';
+        $file = new UploadedFile($fileName, 'nested_screens.json', null, null, null, true);
+
+        // Import the file
+        $response = $this->apiCall('POST', '/screens/import', [
+            'file' => $file,
+        ]);
+
+        // Assert that the import was successful
+        $response->assertStatus(200);
+        $this->assertTrue($response->json('status')['screens']['success']);
+
+        // Find the imported screens
+        $screens = Screen::latest()->take(2)->get();
+        $parent = $screens->where('title', 'Parent Screen')->first();
+        $child = $screens->where('title', 'Child Screen')->first();
+        
+        // Assert that we found our parent & child screens
+        $this->assertNotNull($parent);
+        $this->assertNotNull($child);
+        
+        // Assert that the child screen has been properly referenced in the parent
+        $this->assertArraySubset([
+            'label' => 'Nested Screen',
+            'config' => [
+                'screen' => $child->id,
+            ]
+        ], $parent->config[0]['items'][1]);        
+    }
 }
