@@ -9,6 +9,8 @@ import Multiselect from "vue-multiselect/src/Multiselect";
 import SelectUser from "./components/SelectUser";
 import CategorySelect from "./processes/categories/components/CategorySelect";
 import SelectFromApi from "./components/SelectFromApi";
+import Breadcrumbs from "./components/Breadcrumbs";
+import TimelineItem from './components/TimelineItem';
 
 import { FileUpload, FileDownload } from './processes/screen-builder/components'
 
@@ -43,6 +45,8 @@ Vue.component("category-select", CategorySelect);
 Vue.component("select-from-api", SelectFromApi);
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
+Vue.component("Breadcrumbs", Breadcrumbs);
+Vue.component("timeline-item", TimelineItem);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
@@ -58,9 +62,20 @@ window.ProcessMaker.nodeTypes.get = function (id) {
 if (document.getElementById("breadcrumbs")) {
   window.ProcessMaker.breadcrumbs = new Vue({
     el: '#breadcrumbs',
-    data() {
-      return {
-        taskTitle: '',
+    methods: {
+      getRoutes() {
+        if (this.$refs.breadcrumbs) {
+          return this.$refs.breadcrumbs.list;
+        } else {
+          return [];
+        }
+      },
+      setRoutes(routes) {
+        if (this.$refs.breadcrumbs) {
+          return this.$refs.breadcrumbs.updateRoutes(routes);
+        } else {
+          return false;
+        }
       }
     }
   });

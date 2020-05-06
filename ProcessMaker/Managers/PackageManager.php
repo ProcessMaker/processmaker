@@ -22,6 +22,17 @@ class PackageManager
     }
 
     /**
+     * List packages
+     *
+     */
+    public function listPackages()
+    {
+        $list = array_keys($this->packages);
+        sort($list);
+        return $list;
+    }
+
+    /**
      * Verify if package is registered
      * @param $name
      * @return bool

@@ -103,4 +103,13 @@ class Comment extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Children comments with user
+     */
+    public function children()
+    {
+        return $this->hasMany(Comment::class, 'commentable_id', 'id')
+            ->where('commentable_type', Comment::class)
+            ->with('user');
+    }
 }

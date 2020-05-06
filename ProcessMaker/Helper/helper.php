@@ -37,3 +37,33 @@ function lavaryMenuJson($menu)
 {
     return json_encode(lavaryMenuArray($menu, true));
 }
+
+/**
+ * Check if a package exists based on its provider name
+ * 
+ * @param string $name
+ * 
+ * @return bool
+ */
+function hasPackage($name)
+{
+    $list = \App::make(ProcessMaker\Managers\PackageManager::class)->listPackages();
+
+    return in_array($name, $list);
+}
+
+/**
+ * Check both the web and api middleware for an existing user
+ * 
+ * @return User
+ */
+function pmUser()
+{
+    if (Auth::user()) {
+        return Auth::user();
+    }
+    if (Auth::guard('api')->user()) {
+        return Auth::guard('api')->user();
+    }
+    return null;
+}

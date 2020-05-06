@@ -30,6 +30,7 @@ window.$ = window.jQuery = require("jquery");
  */
 
 window.Vue = require("vue");
+window.VueRouter = VueRouter;
 
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
@@ -86,6 +87,12 @@ window.ProcessMaker = {
      * A general use global event bus that can be used
      */
     EventBus: new Vue(),
+    /**
+     * A general use global router that can be used
+     */
+    Router: new VueRouter({
+      mode: 'history'
+    }),
     /**
      * ProcessMaker Notifications
      */
@@ -145,6 +152,10 @@ window.ProcessMaker = {
     },
 
     RequestChannel,
+
+    $notifications: {
+        icons: {},
+    },
 };
 
 /**
@@ -255,3 +266,34 @@ if (userID) {
             window.ProcessMaker.closeSessionModal();
         });
 }
+
+const clickTab = () => {
+    const hash = window.location.hash;
+    if (!hash) { 
+        return;
+    }
+    const tab = $('[role="tab"][href="'+ hash + '"]');
+    if (tab.length) {
+        tab.tab('show');
+    }
+};
+window.addEventListener("hashchange", clickTab);
+
+// click an active tab after all components have mounted
+Vue.use({
+    install(vue) {
+        vue.mixin({
+            mounted() {
+                if (this.$parent) {
+                    // only run on root
+                    return;
+                }
+
+                // Run after component mounted
+                this.$nextTick(() => {
+                    clickTab();
+                });
+            },
+        })
+    }
+});
