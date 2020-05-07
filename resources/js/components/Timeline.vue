@@ -9,6 +9,7 @@
         @refresh="load"
       />
     </template>
+    <template v-if="isDefined('comment-editor')">
     <comment-editor
       v-model="newComment"
       class="mt-2"
@@ -16,6 +17,7 @@
       v-bind:commentable_type="commentable_type"
       @refresh="load"
     />
+    </template>
   </div>
 </template>
 
@@ -51,6 +53,9 @@ export default {
     }
   },
   methods: {
+    isDefined(component) {
+      return component in Vue.options.components;
+    },
     component(item) {
       const component = `timeline-${item.type.toLowerCase()}`;
       return component in Vue.options.components ? component : 'timeline-item';

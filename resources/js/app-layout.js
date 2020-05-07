@@ -62,6 +62,11 @@ window.ProcessMaker.nodeTypes.get = function (id) {
 if (document.getElementById("breadcrumbs")) {
   window.ProcessMaker.breadcrumbs = new Vue({
     el: '#breadcrumbs',
+    data () {
+      return {
+        taskTitle: '',
+      };
+    },
     methods: {
       getRoutes() {
         if (this.$refs.breadcrumbs) {

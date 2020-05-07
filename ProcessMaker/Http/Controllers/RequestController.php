@@ -17,6 +17,7 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
+use ProcessMaker\Package\PackageComments\PackageServiceProvider;
 
 class RequestController extends Controller
 {
@@ -130,7 +131,7 @@ class RequestController extends Controller
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
 
         $canCancel = Auth::user()->can('cancel', $request->process);
-        $canViewComments = true; //Auth::user()->hasPermissionsFor('comments')->count() > 0;
+        $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
         $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
 
         $files = $request->getMedia();
