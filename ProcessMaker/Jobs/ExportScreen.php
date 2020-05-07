@@ -3,6 +3,7 @@
 namespace ProcessMaker\Jobs;
 
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Managers\ExportManager;
 
 class ExportScreen extends ExportProcess
 {
@@ -12,7 +13,7 @@ class ExportScreen extends ExportProcess
      *
      * @var object
      */
-    private $screen;
+    public $screen;
 
     /**
      * Create a new job instance, set the screen, and
@@ -27,16 +28,6 @@ class ExportScreen extends ExportProcess
     }
 
     /**
-     * Package any screens referred to in our BPMN.
-     *
-     * @return void
-     */
-    private function packageScreens()
-    {
-        $this->package['screens'] = $this->screen->toArray();
-    }
-
-    /**
      * Run through each step of the packaging process. We specify a file type
      * and a file version in case of future changes to the file format.
      *
@@ -45,7 +36,7 @@ class ExportScreen extends ExportProcess
     private function packageFile()
     {
         $this->package['type'] = 'screen_package';
-        $this->package['version'] = '1';
+        $this->package['version'] = '2';
         $this->packageScreens();
     }
 
@@ -56,6 +47,8 @@ class ExportScreen extends ExportProcess
      */
     public function handle()
     {
+        $this->manager = app(ExportManager::class);
+
         // Package up our process
         $this->packageFile();
 

@@ -57,7 +57,7 @@ class ExportProcess implements ShouldQueue
     /**
      * @var ExportManager
      */
-    private $manager;
+    public $manager;
 
 
     /**
@@ -127,21 +127,30 @@ class ExportProcess implements ShouldQueue
      *
      * @return void
      */
-    private function packageScreens()
+    public function packageScreens()
     {
         $this->package['screens'] = [];
         $this->package['screen_categories'] = [];
 
-        $screenIds = $this->manager->getDependenciesOfType(Screen::class, $this->process, []);
+        if (! isset($this->screen)) {
+            $screenIds = $this->manager->getDependenciesOfType(Screen::class, $this->process, []);
+        } else {
+            $screenIds = array_merge([$this->screen->id], $this->manager->getDependenciesOfType(Screen::class, $this->screen, []));
+        }
 
         if (count($screenIds)) {
             $screens = Screen::whereIn('id', $screenIds)->get();
             $screens->each(function ($screen) {
-                $screenArray = $screen->toArray();
-                $screenArray['categories'] = $screen->categories->toArray();
-                $this->package['screens'][] = $screenArray;
+                $this->packageScreen($screen);
             });
         }
+    }
+
+    private function packageScreen(Screen $screen)
+    {
+        $screenArray = $screen->toArray();
+        $screenArray['categories'] = $screen->categories->toArray();
+        $this->package['screens'][] = $screenArray;
     }
 
     /**
