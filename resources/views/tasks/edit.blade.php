@@ -110,7 +110,7 @@
                                 </div>
                               </div>
                             </template>
-                            <div>
+                            <div v-if="taskHasComments">
                                 <timeline :commentable_id="task.id"
                                           commentable_type="ProcessMaker\Models\ProcessRequestToken"/>
                             </div>
@@ -288,6 +288,10 @@
           }
         },
         computed: {
+          taskHasComments() {
+            const commentsPackage = 'comments-editor' in Vue.options.components;
+            return commentsPackage && this.task.config && this.task.config.comments;
+          },
           dueLabel() {
             const dueLabels = {
               'open': 'Due',
