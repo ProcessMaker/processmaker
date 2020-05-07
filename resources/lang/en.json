@@ -1146,8 +1146,6 @@
   "Number of times to show the loop. Value must be greater than zero.": "Number of times to show the loop. Value must be greater than zero.",
   "Allow additional loops": "Allow additional loops",
   "Check this box to allow task assignee to add additional loops": "Check this box to allow task assignee to add additional loops",
-  "Type Button": "Type Button",
-  "Determine execution of button": "Determine execution of button",
   "Select a screen to nest": "Select a screen to nest",
   "Advanced Mode": "Advanced Mode",
   "Basic Mode": "Basic Mode",
@@ -1201,5 +1199,7 @@
   "Signal that will trigger this start event": "Signal that will trigger this start event",
   "Are you sure you want to reset all of your translations?": "Are you sure you want to reset all of your translations?",
   "Save And Build": "Save And Build",
-  "This record list is empty or contains no data.": "This record list is empty or contains no data."
+  "This record list is empty or contains no data.": "This record list is empty or contains no data.",
+  "Choose whether the button should submit the form": "Choose whether the button should submit the form",
+  "Regular Button": "Regular Button"
 }
