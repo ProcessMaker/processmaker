@@ -22,7 +22,7 @@
         </div>
         <div class="d-flex justify-content-end mt-3">
             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
+            {!! Form::button(__('Save'), ['id'=>'save_profile','class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
         </div>
     </div>
 
@@ -58,7 +58,7 @@
                         <button type="button" @click="hideModal" class="btn btn-outline-secondary">
                             {{__('Cancel')}}
                         </button>
-                        <button type="button" @click="saveAvatar" class="btn btn-secondary ml-2">
+                        <button type="button" id="save" @click="saveAvatar" class="btn btn-secondary ml-2">
                             {{__('Save')}}
                         </button>
                     </div>

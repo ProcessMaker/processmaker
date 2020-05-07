@@ -48,7 +48,7 @@
                             </div>
                             <div class="d-flex justify-content-end mt-3">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
+                                {!! Form::button(__('Save'), ['id'=>'save_user','class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
                             </div>
                         </div>
                         <div class="tab-pane fade show" id="nav-groups" role="tabpanel"
