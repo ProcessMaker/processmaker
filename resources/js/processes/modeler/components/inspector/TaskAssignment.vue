@@ -145,31 +145,36 @@
           return ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT', 'ASSIGN_BY_EXPRESSION'];
         },
       },
+      assignmentTypes: {
+        type: Array,
+        default() {
+          return [
+            {
+              value: "requester",
+              label: "Requester"
+            },
+            {
+              value: "user_group",
+              label: "Users / Groups"
+            },
+            {
+              value: "previous_task_assignee",
+              label: "Previous Task Assignee"
+            },
+            {
+              value: "user_by_id",
+              label: "By User ID"
+            },
+            {
+              value: "self_service",
+              label: "Self Service"
+            },
+          ];
+        },
+      },
     },
     data () {
       return {
-        assignmentTypes: [
-          {
-            value: "requester",
-            label: "Requester"
-          },
-          {
-            value: "user_group",
-            label: "Users / Groups"
-          },
-          {
-            value: "previous_task_assignee",
-            label: "Previous Task Assignee"
-          },
-          {
-            value: "user_by_id",
-            label: "By User ID"
-          },
-          {
-            value: "self_service",
-            label: "Self Service"
-          },
-        ],
         specialAssignments: [],
         addingSpecialAssignment: false,
         assignmentExpression: "",
