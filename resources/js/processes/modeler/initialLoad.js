@@ -302,6 +302,50 @@ ProcessMaker.EventBus.$on(
           name: 'whitelist',
       },
     });
+
+    registerInspectorExtension(callActivity, {
+      component: 'FormAccordion',
+      container: true,
+      config: {
+        initiallyOpen: false,
+        label: 'Assignment Rules',
+        icon: 'users',
+        name: 'assignments-accordion',
+      },
+      items: [
+        {
+          component: 'TaskAssignment',
+          config: {
+            label: 'Task Assignment',
+            helper: '',
+            name: 'taskAssignment',
+            configurables: [],
+            assignmentTypes: [
+              {
+                value: '',
+                label: ''
+              },
+              {
+                value: 'requester',
+                label: 'Requester'
+              },
+              {
+                value: 'user_group',
+                label: 'Users / Groups'
+              },
+              {
+                value: 'previous_task_assignee',
+                label: 'Previous Task Assignee'
+              },
+              {
+                value: 'user_by_id',
+                label: 'By User ID'
+              }
+            ]
+          }
+        },
+      ],
+    });
   }
 );
 
