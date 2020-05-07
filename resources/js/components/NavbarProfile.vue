@@ -26,6 +26,12 @@
               {{$t('Edit')}} {{username}} {{$t('Profile')}}
             </a>
           </li>
+          <li v-if="displayMyFilesLink" class="list-group-item px-2">
+            <a href="/file-manager">
+              <i class="fas fa-folder fa-fw fa-lg mr-1"></i>
+              {{$t('My Files')}}
+            </a>
+          </li>
           <li class="list-group-item px-2">
             <a href="https://processmaker.gitbook.io/processmaker/" target="_blank">
               <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg mr-1"></i>
@@ -70,6 +76,11 @@ export default {
     };
   },
   props: ["info", "items"],
+  computed: {
+    displayMyFilesLink() {
+      return window.ProcessMaker.packages.includes('package-files');
+    }
+  },
   methods: {
     __(variable) {
       return __(variable);

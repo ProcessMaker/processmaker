@@ -171,8 +171,11 @@ class ProcessRequestFileController extends Controller
             // check if the upload has finished (in chunk mode it will send smaller files)
             if ($save->isFinished()) {
 
+                $user = pmUser();
+                $originalCreatedBy = $user ? $user->id : null;
                 foreach($request->getMedia() as $mediaItem) {
                     if($mediaItem->getCustomProperty('data_name') == $data_name) {
+                        $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
                         $mediaItem->delete();
                     }
                 }
@@ -180,7 +183,7 @@ class ProcessRequestFileController extends Controller
                 // save the file and return any response you need
                 $file = $request
                     ->addMedia($save->getFile())
-                    ->withCustomProperties(['data_name' => $data_name]) // photo_1
+                    ->withCustomProperties(['data_name' => $data_name, 'createdBy' => $originalCreatedBy])
                     ->toMediaCollection();
                 // $identifier = ['_type' => 'file', 'id' => $file->id];
                 return new JsonResponse(['message' => 'The file was uploaded.','fileUploadId' => $file->id], 200);
