@@ -170,7 +170,14 @@ jobs:
           background: true
       - run:
           name: Run Laravel Dusk Tests
-          command: php artisan dusk        
+          command: php artisan dusk   
+          environment:
+            DB_DATABASE: 'circle_test'
+            DB_PASSWORD: 'P4ssW0rd1!'
+            DB_USERNAME: 'root'
+            PROCESSMAKER_SCRIPTS_HOME: '/tmp'
+            PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
+            TELESCOPE_ENABLED: 'false'               
       - run:
           name: 'PHPUnit'
           command: './vendor/bin/phpunit -v -d memory_limit=-1'
