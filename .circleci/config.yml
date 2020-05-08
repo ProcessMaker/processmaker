@@ -164,27 +164,27 @@ jobs:
           name: Start Chrome Driver
           command: ./vendor/laravel/dusk/bin/chromedriver-linux
           background: true
-      - run:
-          name: Run Laravel Server
-          command: |
-            mv .env.dusk.testing .env
-            php artisan cache:clear 
-            php artisan clear-compiled
-            php artisan migrate:fresh --seed            
-          background: true  
-          environment:
-            DB_HOST: '127.0.0.1'
-            DB_DATABASE: 'circle_test'
-            DB_PASSWORD: 'P4ssW0rd1!'
-            DB_USERNAME: 'root'
-            DATA_DB_HOST: '127.0.0.1'
-            DATA_DB_DATABASE: 'circle_test'
-            DATA_DB_PASSWORD: 'P4ssW0rd1!'
-            DATA_DB_USERNAME: 'root'
-            PROCESSMAKER_SCRIPTS_HOME: '/tmp'
-            PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
-            TELESCOPE_ENABLED: 'false' 
-            RUN_MSSQL_TESTS: 'false'            
+      # - run:
+      #     name: Run Laravel Server
+      #     command: |
+      #       mv .env.dusk.testing .env
+      #       php artisan cache:clear 
+      #       php artisan clear-compiled
+      #       php artisan migrate:fresh --seed            
+      #     background: true  
+      #     environment:
+      #       DB_HOST: '127.0.0.1'
+      #       DB_DATABASE: 'circle_test'
+      #       DB_PASSWORD: 'P4ssW0rd1!'
+      #       DB_USERNAME: 'root'
+      #       DATA_DB_HOST: '127.0.0.1'
+      #       DATA_DB_DATABASE: 'circle_test'
+      #       DATA_DB_PASSWORD: 'P4ssW0rd1!'
+      #       DATA_DB_USERNAME: 'root'
+      #       PROCESSMAKER_SCRIPTS_HOME: '/tmp'
+      #       PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
+      #       TELESCOPE_ENABLED: 'false' 
+      #       RUN_MSSQL_TESTS: 'false'            
       - run:
           name: Run Laravel Dusk Tests
           command: |
