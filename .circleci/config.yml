@@ -170,6 +170,9 @@ jobs:
             PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
             TELESCOPE_ENABLED: 'false'
       - run:
+          name: 'Dusk'
+          command: 'php artisan dusk'
+      - run:
           name: 'Jest'
           command: 'npm run test'
 
