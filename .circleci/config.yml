@@ -78,6 +78,10 @@ jobs:
             echo "deb http://deb.debian.org/debian jessie main" | sudo tee -a /etc/apt/sources.list
             sudo apt-get update
             sudo apt-get install libssl1.0.0
+      - run:
+          name: 'Chromium Selenium Update'
+          command: |            
+            sudo apt upgrade chromium-browser            
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -148,6 +152,9 @@ jobs:
 
       # run tests!
       - run:
+          name: 'Dusk'
+          command: 'php artisan dusk'      
+      - run:
           name: 'PHPUnit'
           command: './vendor/bin/phpunit -v -d memory_limit=-1'
           environment:
@@ -169,9 +176,6 @@ jobs:
             PROCESSMAKER_SCRIPTS_HOME: '/tmp'
             PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
             TELESCOPE_ENABLED: 'false'
-      - run:
-          name: 'Dusk'
-          command: 'php artisan dusk'
       - run:
           name: 'Jest'
           command: 'npm run test'
