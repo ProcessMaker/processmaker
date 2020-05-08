@@ -177,6 +177,7 @@ jobs:
             php artisan config:clear
             php artisan dusk   
           environment:
+            DB_HOST: '127.0.0.1'
             DB_DATABASE: 'circle_test'
             DB_PASSWORD: 'P4ssW0rd1!'
             DB_USERNAME: 'root'
