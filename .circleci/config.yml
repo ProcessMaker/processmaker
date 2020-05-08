@@ -106,10 +106,10 @@ jobs:
           command: |
             sudo php artisan config:clear
 
-      - run:
-          name: 'Publish Laravel Telescope assets'
-          command: |
-            sudo php artisan vendor:publish --tag=telescope-assets --force
+      # - run:
+      #     name: 'Publish Laravel Telescope assets'
+      #     command: |
+      #       sudo php artisan vendor:publish --tag=telescope-assets --force
 
       - run: sudo npm install -g npm@6.4.1 && npm ci
 
