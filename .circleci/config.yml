@@ -175,6 +175,7 @@ jobs:
             php artisan cache:clear 
             php artisan clear-compiled
             php artisan migrate:fresh --seed
+            php artisan serve
             php artisan dusk   
           environment:
             DB_HOST: '127.0.0.1'
