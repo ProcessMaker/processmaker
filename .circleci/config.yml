@@ -111,7 +111,7 @@ jobs:
       #     command: |
       #       sudo php artisan vendor:publish --tag=telescope-assets --force
 
-      - run: sudo npm install -g npm@6.4.1 && npm ci
+      - run: sudo npm install -g npm@6.14.4 && npm ci
 
       - save_cache:
           paths:
@@ -170,8 +170,7 @@ jobs:
             mv .env.dusk.testing .env
             php artisan cache:clear 
             php artisan clear-compiled
-            php artisan migrate:fresh --seed
-            php artisan serve
+            php artisan migrate:fresh --seed            
           background: true  
           environment:
             DB_HOST: '127.0.0.1'
