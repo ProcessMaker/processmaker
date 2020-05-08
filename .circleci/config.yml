@@ -167,10 +167,11 @@ jobs:
       - run:
           name: Run Laravel Server
           command: php artisan serve
-          background: true
+          background: true  
       - run:
           name: Run Laravel Dusk Tests
           command: |
+            mv .env.dusk.testing .env
             php artisan key:generate
             php artisan migrate:fresh --seed
             php artisan config:clear
