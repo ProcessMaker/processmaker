@@ -188,6 +188,8 @@ jobs:
       - run:
           name: Run Laravel Dusk Tests
           command: |
+            mv .env.dusk.testing .env
+            php artisan migrate:fresh --seed             
             php artisan dusk   
           environment:
             DB_HOST: '127.0.0.1'
