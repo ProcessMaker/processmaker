@@ -3,10 +3,9 @@
 namespace ProcessMaker\Traits;
 
 use DOMElement;
-use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
-use ProcessMaker\Models\Group;
 use ProcessMaker\Providers\WorkflowServiceProvider as PM;
 
 /**
@@ -43,6 +42,9 @@ trait ProcessTaskAssignmentsTrait
             foreach ($definitions->getElementsByTagName('manualTask') as $node) {
                 $assignments = static::setAssignments($node, $assignments);
             }
+            foreach ($definitions->getElementsByTagName('callActivity') as $node) {
+                $assignments = static::setAssignments($node, $assignments);
+            }
             $process->assignments()->createMany($assignments);
         }
     }
@@ -57,12 +59,12 @@ trait ProcessTaskAssignmentsTrait
      */
     private static function setAssignments(DOMElement $node, array $assignments)
     {
-
         $assignment = $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignment');
         if ($assignment === 'user' || $assignment === 'group' || $assignment === 'user_group' || $assignment === 'self_service') {
-
-            $users = explode(',',
-                $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedUsers'));
+            $users = explode(
+                ',',
+                $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedUsers')
+            );
             if ($users) {
                 foreach ($users as $user) {
                     if (!empty($user)) {
@@ -75,8 +77,10 @@ trait ProcessTaskAssignmentsTrait
                 }
             }
 
-            $groups = explode(',',
-                $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedGroups'));
+            $groups = explode(
+                ',',
+                $node->getAttributeNS(PM::PROCESS_MAKER_NS, 'assignedGroups')
+            );
             if ($groups) {
                 foreach ($groups as $group) {
                     if (!empty($group)) {

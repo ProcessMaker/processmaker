@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
@@ -110,7 +111,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->callable_id = $process->getId();
         $instance->process_id = $definition->getKey();
         $instance->process_version_id = $definition->getLatestVersion()->getKey();
-        $instance->user_id = Auth::user() ? Auth::user()->getKey() : null;
+        $instance->user_id = pmUser() ? pmUser()->getKey() : null;
         $instance->name = $definition->name;
         $instance->status = 'ACTIVE';
         $instance->initiated_at = Carbon::now();
@@ -151,11 +152,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceError(ExecutionInstanceInterface $instance)
     {
-        //Get instance data
-        $data = $instance->getDataStore()->getData();
         //Save instance
         $instance->status = 'ERROR';
-        $instance->data = $data;
+        $instance->mergeLatestStoredData();
         $instance->saveOrFail();
     }
 
@@ -168,11 +167,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceUpdated(ExecutionInstanceInterface $instance)
     {
-        //Get instance data
-        $data = $instance->getDataStore()->getData();
         //Save instance
         $instance->status = 'ACTIVE';
-        $instance->data = $data;
+        $instance->mergeLatestStoredData();
         $instance->saveOrFail();
     }
 
@@ -185,12 +182,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCompleted(ExecutionInstanceInterface $instance)
     {
-        //Get instance data
-        $data = $instance->getDataStore()->getData();
         //Save instance
         $instance->status = 'COMPLETED';
         $instance->completed_at = Carbon::now();
-        $instance->data = $data;
+        $instance->mergeLatestStoredData();
         $instance->saveOrFail();
     }
 

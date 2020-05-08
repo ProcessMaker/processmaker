@@ -41,6 +41,7 @@ mix.webpackConfig({
 
 mix.extract([
   "vue",
+  "vue-router",
   "jquery",
   "bootstrap-vue",
   "axios",

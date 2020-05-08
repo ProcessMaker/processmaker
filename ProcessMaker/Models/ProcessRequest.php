@@ -635,4 +635,17 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
        $this->signal_events = $signalEvents;
        $this->save();
     }
+
+    /**
+     * Update and merge with the latest stored data
+     *
+     * @return array
+     */
+    public function mergeLatestStoredData()
+    {
+        $store = $this->getDataStore();
+        $latest = ProcessRequest::find($this->getId());
+        $this->data = $store->updateArray($latest->data);
+        return $this->data;
+    }
 }

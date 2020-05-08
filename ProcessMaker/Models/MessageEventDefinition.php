@@ -30,11 +30,9 @@ class MessageEventDefinition extends Base
         $sourceRequest = $token->processRequest;
         $payloadData = $this->getPayload()->getData($sourceRequest);
         $storage = $targetRequest->getDataStore();
-        $data = $storage->getData();
         foreach ($payloadData as $key => $value) {
-            $data[$key] = $value;
+            $storage->putData($key, $value);
         }
-        $storage->setData($data);
         return $this;
     }
 }

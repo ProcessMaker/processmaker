@@ -34,7 +34,8 @@ class CommentController extends Controller
     public function index(Request $request)
     {
         $query = Comment::query()
-            ->with('user');
+            ->with('user')
+            ->with('children');
 
         $flag = 'visible';
         if (\Auth::user()->is_administrator) {

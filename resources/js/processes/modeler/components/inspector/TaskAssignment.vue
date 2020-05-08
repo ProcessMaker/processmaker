@@ -25,6 +25,7 @@
         ></user-by-id>
 
         <form-checkbox
+            v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
             :label="$t('Lock task assignment to user')"
             :checked="assignmentLockGetter"
             toggle="true"
@@ -32,6 +33,7 @@
         </form-checkbox>
 
         <form-checkbox
+            v-if="configurables.includes('ALLOW_REASSIGNMENT')"
             :label="$t('Allow Reassignment')"
             :helper="$t('Allows the Task assignee to reassign this Task')"
             :checked="allowReassignmentGetter"
@@ -39,7 +41,7 @@
             @change="allowReassignmentSetter">
         </form-checkbox>
 
-        <div class="form-group">
+        <div v-if="configurables.includes('ASSIGN_BY_EXPRESSION')" class="form-group">
 
             <div class="form-group special-assignment-header">
                 <label>{{ $t("Assign by Expression Use a rule to assign this Task conditionally") }}</label>
@@ -132,31 +134,47 @@
 
 <script>
   export default {
-    props: ["value", "label", "helper", "property"],
+    props: {
+      value: null,
+      label: null,
+      helper: null,
+      property: null,
+      configurables: {
+        type: Array,
+        default() {
+          return ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT', 'ASSIGN_BY_EXPRESSION'];
+        },
+      },
+      assignmentTypes: {
+        type: Array,
+        default() {
+          return [
+            {
+              value: "requester",
+              label: "Requester"
+            },
+            {
+              value: "user_group",
+              label: "Users / Groups"
+            },
+            {
+              value: "previous_task_assignee",
+              label: "Previous Task Assignee"
+            },
+            {
+              value: "user_by_id",
+              label: "By User ID"
+            },
+            {
+              value: "self_service",
+              label: "Self Service"
+            },
+          ];
+        },
+      },
+    },
     data () {
       return {
-        assignmentTypes: [
-          {
-            value: "requester",
-            label: "Requester"
-          },
-          {
-            value: "user_group",
-            label: "Users / Groups"
-          },
-          {
-            value: "previous_task_assignee",
-            label: "Previous Task Assignee"
-          },
-          {
-            value: "user_by_id",
-            label: "By User ID"
-          },
-          {
-            value: "self_service",
-            label: "Self Service"
-          },
-        ],
         specialAssignments: [],
         addingSpecialAssignment: false,
         assignmentExpression: "",

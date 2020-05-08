@@ -110,6 +110,10 @@
                                 </div>
                               </div>
                             </template>
+                            <div v-if="taskHasComments">
+                                <timeline :commentable_id="task.id"
+                                          commentable_type="ProcessMaker\Models\ProcessRequestToken"/>
+                            </div>
                         </div>
                         @can('editData', $task->processRequest)
                             <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
@@ -284,6 +288,10 @@
           }
         },
         computed: {
+          taskHasComments() {
+            const commentsPackage = 'comments-editor' in Vue.options.components;
+            return commentsPackage && this.task.config && this.task.config.comments;
+          },
           dueLabel() {
             const dueLabels = {
               'open': 'Due',
