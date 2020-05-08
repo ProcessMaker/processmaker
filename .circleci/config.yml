@@ -81,7 +81,7 @@ jobs:
       - run:
           name: 'Chromium Selenium Update'
           command: |            
-            sudo apt upgrade chromium-browser            
+            sudo apt upgrade chromium            
       # Download and cache dependencies
       - restore_cache:
           keys:
