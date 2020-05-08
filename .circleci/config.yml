@@ -170,7 +170,11 @@ jobs:
           background: true
       - run:
           name: Run Laravel Dusk Tests
-          command: php artisan migrate:fresh | php artisan dusk   
+          command: |
+            php artisan key:generate
+            php artisan migrate:fresh --seed
+            php artisan config:clear
+            php artisan dusk   
           environment:
             DB_DATABASE: 'circle_test'
             DB_PASSWORD: 'P4ssW0rd1!'
