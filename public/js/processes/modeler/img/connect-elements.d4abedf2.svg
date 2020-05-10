@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="20px" viewBox="0 0 19 20" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>connect-elements</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="custom/connect-elements" transform="translate(-3.000000, -2.000000)" fill="#fff">
+            <path fill="#fff"
+                  d="M18.5,20 L13,20 L13,5 L8,5 L8,7 L3,7 L3,2 L8,2 L8,4 L14,4 L14,19 L18.5,19 L18.5,17 L21.5,19.5 L18.5,22 L18.5,20 Z M4,3 L4,6 L7,6 L7,3 L4,3 Z"
+                  id="connect-elements"/>
+        </g>
+    </g>
+</svg>

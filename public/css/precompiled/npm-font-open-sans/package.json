@@ -1,0 +1,62 @@
+{
+  "_args": [
+    [
+      "npm-font-open-sans@1.1.0",
+      "/home/cievoloth/Documents/pm4.0.3/processmaker-4.0.3"
+    ]
+  ],
+  "_from": "npm-font-open-sans@1.1.0",
+  "_id": "npm-font-open-sans@1.1.0",
+  "_inBundle": false,
+  "_integrity": "sha512-t1y5ShWm6a8FSLwBdINT47XYMcuKY2rkTBsTdz/76YB2MtX0YD89RUkY2eSS2/XOmlZfBe1HFBAwD+b9+/UfmQ==",
+  "_location": "/npm-font-open-sans",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "npm-font-open-sans@1.1.0",
+    "name": "npm-font-open-sans",
+    "escapedName": "npm-font-open-sans",
+    "rawSpec": "1.1.0",
+    "saveSpec": null,
+    "fetchSpec": "1.1.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/npm-font-open-sans/-/npm-font-open-sans-1.1.0.tgz",
+  "_spec": "1.1.0",
+  "_where": "/home/cievoloth/Documents/pm4.0.3/processmaker-4.0.3",
+  "author": {
+    "name": "Steve Matteson"
+  },
+  "bugs": {
+    "url": "https://github.com/dasrick/npm-font-open-sans/issues"
+  },
+  "contributors": [
+    {
+      "name": "Enrico Hoffmann",
+      "email": "dasrick@gmail.com"
+    }
+  ],
+  "description": "Open Sans font family - incl. usage of CSS, SCSS, LESS",
+  "homepage": "https://github.com/dasrick/npm-font-open-sans#readme",
+  "keywords": [
+    "font",
+    "fontface",
+    "open",
+    "sans",
+    "css",
+    "sass",
+    "scss",
+    "less"
+  ],
+  "license": "Apache-2.0",
+  "main": "./open-sans.css",
+  "name": "npm-font-open-sans",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dasrick/npm-font-open-sans.git"
+  },
+  "version": "1.1.0"
+}

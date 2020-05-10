@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="18px" viewBox="0 0 26 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>custom/processbuilder/pool-above</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="custom/processbuilder/pool-above" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" stroke="#FFFFFF" fill="#FFFFFF" x="0.5" y="0.5" width="25" height="11"></rect>
+        <polygon id="Path-3" fill="#FFFFFF" points="0 16 1 16 1 17 2 17 2 18 0 18"></polygon>
+        <path d="M6,17 L8,17 L8,18 C6.66666667,18 6,18 6,18 C6,18 6,17.6666667 6,17 Z" id="Path-5-Copy"
+              fill="#FFFFFF"></path>
+        <path d="M9,17 L11,17 L11,18 C9.66666667,18 9,18 9,18 C9,18 9,17.6666667 9,17 Z" id="Path-5-Copy-2"
+              fill="#FFFFFF"></path>
+        <path d="M12,17 L14,17 L14,18 C12.6666667,18 12,18 12,18 C12,18 12,17.6666667 12,17 Z" id="Path-5-Copy-3"
+              fill="#FFFFFF"></path>
+        <path d="M15,17 L17,17 L17,18 C15.6666667,18 15,18 15,18 C15,18 15,17.6666667 15,17 Z" id="Path-5-Copy-4"
+              fill="#FFFFFF"></path>
+        <path d="M18,17 L20,17 L20,18 C18.6666667,18 18,18 18,18 C18,18 18,17.6666667 18,17 Z" id="Path-5-Copy-4"
+              fill="#FFFFFF"></path>
+        <path d="M21,17 L23,17 L23,18 C21.6666667,18 21,18 21,18 C21,18 21,17.6666667 21,17 Z" id="Path-5-Copy-4"
+              fill="#FFFFFF"></path>
+        <rect id="Rectangle-2" fill="#FFFFFF" x="25" y="13" width="1" height="2"></rect>
+        <rect id="Rectangle-2-Copy" fill="#FFFFFF" x="0" y="13" width="1" height="2"></rect>
+        <polygon id="Path-4" fill="#FFFFFF" points="25 17 25 16 26 16 26 18 24 18 24 17"></polygon>
+        <path d="M3,17 L5,17 L5,18 C3.66666667,18 3,18 3,18 C3,18 3,17.6666667 3,17 Z" id="Path-5"
+              fill="#FFFFFF"></path>
+    </g>
+</svg>

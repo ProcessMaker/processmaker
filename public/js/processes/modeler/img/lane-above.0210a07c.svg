@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="18px" viewBox="0 0 26 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+    <title>custom/processbuilder/pool-below</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="custom/processbuilder/pool-below" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" stroke="#fff" fill="#FFFFFF" x="0.5" y="6.5" width="25" height="11"></rect>
+        <polygon id="Path-3" fill="#fff"
+                 transform="translate(1.000000, 1.000000) scale(1, -1) translate(-1.000000, -1.000000) "
+                 points="0 0 1 0 1 1 2 1 2 2 0 2"></polygon>
+        <path d="M6,0 L8,0 L8,1 C6.66666667,1 6,1 6,1 C6,1 6,0.666666667 6,0 Z" id="Path-5-Copy" fill="#fff"></path>
+        <path d="M9,0 L11,0 L11,1 C9.66666667,1 9,1 9,1 C9,1 9,0.666666667 9,0 Z" id="Path-5-Copy-2" fill="#fff"></path>
+        <path d="M12,0 L14,0 L14,1 C12.6666667,1 12,1 12,1 C12,1 12,0.666666667 12,0 Z" id="Path-5-Copy-3"
+              fill="#fff"></path>
+        <path d="M15,0 L17,0 L17,1 C15.6666667,1 15,1 15,1 C15,1 15,0.666666667 15,0 Z" id="Path-5-Copy-4"
+              fill="#fff"></path>
+        <path d="M18,0 L20,0 L20,1 C18.6666667,1 18,1 18,1 C18,1 18,0.666666667 18,0 Z" id="Path-5-Copy-4"
+              fill="#fff"></path>
+        <path d="M21,0 L23,0 L23,1 C21.6666667,1 21,1 21,1 C21,1 21,0.666666667 21,0 Z" id="Path-5-Copy-4"
+              fill="#fff"></path>
+        <polygon id="Path-4" fill="#fff"
+                 transform="translate(25.000000, 1.000000) scale(1, -1) translate(-25.000000, -1.000000) "
+                 points="25 1 25 0 26 0 26 2 24 2 24 1"></polygon>
+        <path d="M3,0 L5,0 L5,1 C3.66666667,1 3,1 3,1 C3,1 3,0.666666667 3,0 Z" id="Path-5" fill="#fff"></path>
+        <rect id="Rectangle-2" fill="#fff" x="25" y="3" width="1" height="2"></rect>
+        <rect id="Rectangle-2-Copy" fill="#fff" x="0" y="3" width="1" height="2"></rect>
+    </g>
+</svg>

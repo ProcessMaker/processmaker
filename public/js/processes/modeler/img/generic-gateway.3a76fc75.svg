@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="21px" height="22px" viewBox="0 0 21 22" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>icons/processbuilder/exlusive-gateway</title>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Build/Applications/Processes/ProcessBuilder" transform="translate(-19.000000, -76.000000)">
+            <g id="3" transform="translate(0.000000, 70.000000)">
+                <g id="icons/processbuilder/exlusive-gateway" transform="translate(19.000000, 6.000000)">
+                    <path d="M0.625628427,10.6725043 C0.458127928,10.8493013 0.458171241,11.1511931 0.625436542,11.3272938 L10.1747502,21.3788402 C10.3282145,21.5403866 10.5717855,21.5403866 10.7252498,21.3788402 L20.274552,11.3266381 C20.441816,11.1505655 20.441816,10.8487669 20.2745635,10.6727062 L10.7252498,0.621159773 C10.5717855,0.459613409 10.3282145,0.459613409 10.1747387,0.621171796 L0.625628427,10.6725043 Z"
+                          id="3" stroke="#788793"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
