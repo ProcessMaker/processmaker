@@ -154,9 +154,22 @@ jobs:
           name: 'Media Storage Link'
           command: 'php artisan storage:link'
 
-      # run tests!
+      # run dusk tests!
       #circleCI enable chrome driver
-      - run: php artisan dusk:chrome-driver 72
+      # Note, we're overriding values in the phpunit.xml in order to satisfy running dusk tests locally
+      - run: 
+          name: Running PHP Artisan Serve for Dusk
+          command: php artisan serve
+          background: true
+      - run:
+          name: Dusk Tests
+          command: |
+            export APP_URL=http://127.0.0.1:8000
+            export DB_HOSTNAME=127.0.0.1
+            export DB_DATABASE=circle_test
+            export DB_USERNAME=root
+            export TELESCOPE_ENABLED=false
+            php artisan dusk:chrome-driver 72
 
       # run tests!
       - run: php ./vendor/bin/phpunit
