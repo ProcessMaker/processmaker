@@ -157,26 +157,26 @@ jobs:
       # run dusk tests!
       #circleCI enable chrome driver
       # Note, we're overriding values in the phpunit.xml in order to satisfy running dusk tests locally
-      - run: 
-          name: Running PHP Artisan Serve for Dusk
-          command: php artisan serve
-          background: true
-      - run:
-          name: Dusk Tests
-          command: |
-            export APP_URL=http://127.0.0.1:8000
-            export DB_HOSTNAME=127.0.0.1
-            export DB_DATABASE=circle_test
-            export DB_USERNAME=root
-            export TELESCOPE_ENABLED=false
-            php artisan dusk:chrome-driver 72
+      # - run: 
+      #     name: Running PHP Artisan Serve for Dusk
+      #     command: php artisan serve
+      #     background: true
+      # - run:
+      #     name: Dusk Tests
+      #     command: |
+      #       export APP_URL=http://127.0.0.1:8000
+      #       export DB_HOSTNAME=127.0.0.1
+      #       export DB_DATABASE=circle_test
+      #       export DB_USERNAME=root
+      #       export TELESCOPE_ENABLED=false
+      #       php artisan dusk:chrome-driver 72
 
       # run tests!
-      - run: php ./vendor/bin/phpunit
-      - run:
-          name: Start Chrome Driver
-          command: ./vendor/laravel/dusk/bin/chromedriver-linux
-          background: true
+      # - run: php ./vendor/bin/phpunit
+      # - run:
+      #     name: Start Chrome Driver
+      #     command: ./vendor/laravel/dusk/bin/chromedriver-linux
+      #     background: true
       # - run:
       #     name: Run Laravel Server
       #     command: |
@@ -198,25 +198,25 @@ jobs:
       #       PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
       #       TELESCOPE_ENABLED: 'false'
       #       RUN_MSSQL_TESTS: 'false'
-      - run:
-          name: Run Laravel Dusk Tests
-          command: |
-            mv .env.dusk.testing .env
-            php artisan migrate:fresh --seed
-            php artisan dusk
-          environment:
-            DB_HOST: '127.0.0.1'
-            DB_DATABASE: 'circle_test'
-            DB_PASSWORD: 'P4ssW0rd1!'
-            DB_USERNAME: 'root'
-            DATA_DB_HOST: '127.0.0.1'
-            DATA_DB_DATABASE: 'circle_test'
-            DATA_DB_PASSWORD: 'P4ssW0rd1!'
-            DATA_DB_USERNAME: 'root'
-            PROCESSMAKER_SCRIPTS_HOME: '/tmp'
-            PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
-            TELESCOPE_ENABLED: 'false'
-            RUN_MSSQL_TESTS: 'false'
+      # - run:
+      #     name: Run Laravel Dusk Tests
+      #     command: |
+      #       mv .env.dusk.testing .env
+      #       php artisan migrate:fresh --seed
+      #       php artisan dusk
+      #     environment:
+      #       DB_HOST: '127.0.0.1'
+      #       DB_DATABASE: 'circle_test'
+      #       DB_PASSWORD: 'P4ssW0rd1!'
+      #       DB_USERNAME: 'root'
+      #       DATA_DB_HOST: '127.0.0.1'
+      #       DATA_DB_DATABASE: 'circle_test'
+      #       DATA_DB_PASSWORD: 'P4ssW0rd1!'
+      #       DATA_DB_USERNAME: 'root'
+      #       PROCESSMAKER_SCRIPTS_HOME: '/tmp'
+      #       PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
+      #       TELESCOPE_ENABLED: 'false'
+      #       RUN_MSSQL_TESTS: 'false'
       - run:
           name: 'PHPUnit'
           command: './vendor/bin/phpunit -v -d memory_limit=-1 --coverage-html build/coverage-report'
