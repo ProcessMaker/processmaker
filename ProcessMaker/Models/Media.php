@@ -55,6 +55,8 @@ class Media extends Model
 {
     protected $connection = 'processmaker';
 
+    protected $table = 'media';
+
     /**
      * The attributes that are mass assignable.
      *
