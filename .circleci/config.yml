@@ -84,8 +84,8 @@ jobs:
             wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
             sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
             sudo apt-get update
-            sudo apt-get install google-chrome-stable      
-            
+            sudo apt-get install google-chrome-stable
+
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -120,7 +120,7 @@ jobs:
 
       # Enable xdebug to support code coverage
       #- run: sudo docker-php-ext-enable xdebug
-      
+
       - setup_remote_docker:
           docker_layer_caching: true
 
@@ -168,10 +168,10 @@ jobs:
       #     name: Run Laravel Server
       #     command: |
       #       mv .env.dusk.testing .env
-      #       php artisan cache:clear 
+      #       php artisan cache:clear
       #       php artisan clear-compiled
-      #       php artisan migrate:fresh --seed            
-      #     background: true  
+      #       php artisan migrate:fresh --seed
+      #     background: true
       #     environment:
       #       DB_HOST: '127.0.0.1'
       #       DB_DATABASE: 'circle_test'
@@ -183,14 +183,14 @@ jobs:
       #       DATA_DB_USERNAME: 'root'
       #       PROCESSMAKER_SCRIPTS_HOME: '/tmp'
       #       PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
-      #       TELESCOPE_ENABLED: 'false' 
-      #       RUN_MSSQL_TESTS: 'false'            
+      #       TELESCOPE_ENABLED: 'false'
+      #       RUN_MSSQL_TESTS: 'false'
       - run:
           name: Run Laravel Dusk Tests
           command: |
             mv .env.dusk.testing .env
-            php artisan migrate:fresh --seed             
-            php artisan dusk   
+            php artisan migrate:fresh --seed
+            php artisan dusk
           environment:
             DB_HOST: '127.0.0.1'
             DB_DATABASE: 'circle_test'
@@ -202,11 +202,11 @@ jobs:
             DATA_DB_USERNAME: 'root'
             PROCESSMAKER_SCRIPTS_HOME: '/tmp'
             PROCESSMAKER_SCRIPTS_DOCKER_MODE: 'copying'
-            TELESCOPE_ENABLED: 'false' 
-            RUN_MSSQL_TESTS: 'false'              
+            TELESCOPE_ENABLED: 'false'
+            RUN_MSSQL_TESTS: 'false'
       - run:
           name: 'PHPUnit'
-          command: './vendor/bin/phpunit -v -d memory_limit=-1'
+          command: './vendor/bin/phpunit -v -d memory_limit=-1 --coverage-html build/coverage-report'
           environment:
             DB_DATABASE: 'circle_test'
             DB_PASSWORD: 'P4ssW0rd1!'
@@ -231,7 +231,8 @@ jobs:
       #     command: 'npm run test'
 
       - store_artifacts:
-          path: coverage
+          path:  build/coverage-report
+
 
       #- store_artifacts:
       #    path: tests/js/coverage
