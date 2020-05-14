@@ -120,8 +120,8 @@ class FileController extends Controller
      *             @OA\Property(
      *                property="file",
      *                description="save a new media file",
-     *                type="file",
-     *                @OA\Items(type="string", format="binary")
+     *                type="string",
+     *                format="binary",
      *              ),
      *            ),
      *         ),
