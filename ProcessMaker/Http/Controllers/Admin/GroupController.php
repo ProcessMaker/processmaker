@@ -34,7 +34,7 @@ class GroupController extends Controller
         $all_permissions = Permission::all();
         $permissionGroups = $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
 
-        $addons = $this->getPluginAddons('edit', []);
+        $addons = $this->getPluginAddons('edit', compact(['group']));
         return view('admin.groups.edit', compact(
             'group',
             'permissionNames',
