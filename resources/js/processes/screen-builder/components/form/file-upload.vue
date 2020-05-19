@@ -6,7 +6,6 @@
     </b-card>
     <uploader
       v-else
-      :key="renderKey"
       :options="options"
       :attrs="attrs"
       ref="uploader"
@@ -27,7 +26,7 @@
         <template slot-scope="{ fileList }">
           <ul>
             <li v-if="fileList.length === 0 && value">
-              <i class="fas fa-paperclip"></i> {{ value }}
+              <i class="fas fa-paperclip"></i> {{ displayName }}
             </li>
             <li v-for="file in fileList" :key="file.id">
               <uploader-file :file="file" :list="true"></uploader-file>
@@ -71,10 +70,39 @@ export default {
       const prefix = recordList.name + "." + index.toString() + ".";
       this.setFileUploadNameForChildren(recordList.$children, prefix);
     })
+
+    let parent = this.$parent;
+    let i = 0;
+    while(!parent.loopContext) {
+      parent = parent.$parent;
+
+      if (parent === this.$root) {
+        parent = null;
+        break;
+      }
+
+      i++;
+      if (i > 100) {
+        throw "Loop Error";
+      }
+    }
+    console.log("PARENT is", parent);
+
+    if (parent && parent.loopContext) {
+      console.log("SETTING PREFIX FOR LOOP TO", parent.loopContext + '.');
+      this.prefix = parent.loopContext + '.';
+    }
   },
   computed: {
-    renderKey() {
-      return this.prefix + this.name;
+    displayName() {
+      const requestFiles = _.get(window, 'PM4ConfigOverrides.requestFiles', {});
+      // console.log("Got request files", requestFiles);
+      const fileInfo = requestFiles[this.prefix + this.name];
+      console.log("Got fileinof", fileInfo, this.prefix + this.name);
+      if (fileInfo) {
+        return fileInfo.file_name;
+      }
+      return this.value;
     },
     mode() {
       return this.$root.$children[0].mode;
@@ -104,12 +132,14 @@ export default {
   watch: {
     name: {
       handler() {
+        console.log("Name changed", this.name);
         this.options.query.data_name = this.prefix + this.name;
       },
       immediate: true,
     },
     prefix: {
       handler() {
+        console.log("Prefix changed", this.prefix);
         this.options.query.data_name = this.prefix + this.name;
       },
       immediate: true,
@@ -215,6 +245,10 @@ export default {
       };
     },
     getTargetUrl() {
+      if (_.has(window, 'PM4ConfigOverrides.postFileEndpoint')) {
+        return window.PM4ConfigOverrides.postFileEndpoint;
+      }
+      
       if (this.endpoint) {
         return this.endpoint;
       }
