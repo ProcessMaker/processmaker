@@ -35,6 +35,7 @@
         requestId: null,
         collectionId: null,
         recordId: null,
+        prefix: '',
       };
     },
     props: ['name', 'endpoint', 'requestFiles'],
@@ -55,6 +56,8 @@
         this.loading = false;
         return;
       }
+
+      this.setPrefix();
 
       if (this.fileType == 'request') {
         this.getRequestFiles();
@@ -96,11 +99,32 @@
         }
 
         if (endpoint && this.fileInfo) {
-          const query = '?name=' + encodeURIComponent(this.name) + '&token=' + this.fileInfo.token;
+          const query = '?name=' + encodeURIComponent(this.prefix + this.name) + '&token=' + this.fileInfo.token;
           return endpoint + query;
         }
 
         return "/request/" + this.requestId + "/files/" + this.fileInfo.id;
+      },
+      setPrefix() {
+        let parent = this.$parent;
+        let i = 0;
+        while(!parent.loopContext) {
+          parent = parent.$parent;
+
+          if (parent === this.$root) {
+            parent = null;
+            break;
+          }
+
+          i++;
+          if (i > 100) {
+            throw "Loop Error";
+          }
+        }
+
+        if (parent && parent.loopContext) {
+          this.prefix = parent.loopContext + '.';
+        }
       },
       downloadRequestFile() {
         ProcessMaker.apiClient({
@@ -172,9 +196,9 @@
           requestFiles = window.PM4ConfigOverrides.requestFiles;
         }
 
-        if (requestFiles && requestFiles[this.name]) {
+        if (requestFiles && requestFiles[this.prefix + this.name]) {
           this.loading = false;
-          this.fileInfo = requestFiles[this.name];
+          this.fileInfo = requestFiles[this.prefix + this.name];
           return;
         }
 
@@ -183,7 +207,7 @@
           return;
         }
         ProcessMaker.apiClient
-          .get("requests/" + this.requestId + "/files?name=" + this.name)
+          .get("requests/" + this.requestId + "/files?name=" + this.prefix + this.name)
           .then(response => {
             this.fileInfo = _.get(response, 'data.data.0', null);
             this.loading = false;
@@ -200,8 +224,8 @@
         ProcessMaker.apiClient
           .get("collections/" + this.collectionId + '/records/' + this.recordId)
           .then(response => {
-            if (response.data.data[this.name]) {
-              let id = response.data.data[this.name].id;
+            if (response.data.data[this.prefix + this.name]) {
+              let id = response.data.data[this.prefix + this.name].id;
               ProcessMaker.apiClient
                 .get("files/" + id)
                 .then(response => {
