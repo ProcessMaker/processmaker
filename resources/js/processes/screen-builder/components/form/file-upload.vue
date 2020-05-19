@@ -72,7 +72,9 @@ export default {
     })
 
     this.setPrefix();
-    this.$refs['uploader'].$forceUpdate();
+    if (this.$refs['uploader']) {
+      this.$refs['uploader'].$forceUpdate();
+    }
   },
   computed: {
     displayName() {
