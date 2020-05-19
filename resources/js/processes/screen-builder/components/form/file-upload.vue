@@ -71,38 +71,17 @@ export default {
       this.setFileUploadNameForChildren(recordList.$children, prefix);
     })
 
-    let parent = this.$parent;
-    let i = 0;
-    while(!parent.loopContext) {
-      parent = parent.$parent;
-
-      if (parent === this.$root) {
-        parent = null;
-        break;
-      }
-
-      i++;
-      if (i > 100) {
-        throw "Loop Error";
-      }
-    }
-    console.log("PARENT is", parent);
-
-    if (parent && parent.loopContext) {
-      console.log("SETTING PREFIX FOR LOOP TO", parent.loopContext + '.');
-      this.prefix = parent.loopContext + '.';
-    }
+    this.setPrefix();
+    this.$refs['uploader'].$forceUpdate();
   },
   computed: {
     displayName() {
       const requestFiles = _.get(window, 'PM4ConfigOverrides.requestFiles', {});
-      // console.log("Got request files", requestFiles);
       const fileInfo = requestFiles[this.prefix + this.name];
-      console.log("Got fileinof", fileInfo, this.prefix + this.name);
       if (fileInfo) {
         return fileInfo.file_name;
       }
-      return this.value;
+      return this.value.name ? this.value.name : this.value;
     },
     mode() {
       return this.$root.$children[0].mode;
@@ -132,14 +111,12 @@ export default {
   watch: {
     name: {
       handler() {
-        console.log("Name changed", this.name);
         this.options.query.data_name = this.prefix + this.name;
       },
       immediate: true,
     },
     prefix: {
       handler() {
-        console.log("Prefix changed", this.prefix);
         this.options.query.data_name = this.prefix + this.name;
       },
       immediate: true,
@@ -176,6 +153,27 @@ export default {
     };
   },
   methods: {
+    setPrefix() {
+      let parent = this.$parent;
+      let i = 0;
+      while(!parent.loopContext) {
+        parent = parent.$parent;
+
+        if (parent === this.$root) {
+          parent = null;
+          break;
+        }
+
+        i++;
+        if (i > 100) {
+          throw "Loop Error";
+        }
+      }
+
+      if (parent && parent.loopContext) {
+        this.prefix = parent.loopContext + '.';
+      }
+    },
     setFileUploadNameForChildren(children, prefix) {
       children.forEach(child => {
         if (_.get(child, '$options.name') === 'FileUpload') {
