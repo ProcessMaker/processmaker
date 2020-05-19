@@ -213,6 +213,12 @@
             this.loading = false;
           });
       },
+      setFileInfoFromCache() {
+        const info = _.get(ProcessMaker.CollectionData, this.prefix + this.name, null);
+        if (info) {
+          this.fileInfo = { ...info, file_name: info.name }
+        }
+      },
       getCollectionFiles() {
         if (this.collectionId === null || this.recordId === null) {
           this.loading = false;
@@ -221,23 +227,20 @@
 
         let id = null;
 
-        ProcessMaker.apiClient
-          .get("collections/" + this.collectionId + '/records/' + this.recordId)
-          .then(response => {
-            if (response.data.data[this.prefix + this.name]) {
-              let id = response.data.data[this.prefix + this.name].id;
-              ProcessMaker.apiClient
-                .get("files/" + id)
-                .then(response => {
-                  this.fileInfo = response.data;
-                  this.loading = false;
-                });
-            } else {
-              this.loading = false;
-              return;
-            }
-          });
+        ProcessMaker.EventBus.$on('got-collection-data', () => {
+          this.setFileInfoFromCache();
+          this.loading = false;
+        });
 
+        if (!ProcessMaker.CollectionData) {
+          ProcessMaker.CollectionData = {};
+          ProcessMaker.apiClient
+            .get("collections/" + this.collectionId + '/records/' + this.recordId)
+            .then(response => {
+              ProcessMaker.CollectionData = response.data.data;
+              ProcessMaker.EventBus.$emit('got-collection-data');
+            });
+        }
       }
     }
   };
