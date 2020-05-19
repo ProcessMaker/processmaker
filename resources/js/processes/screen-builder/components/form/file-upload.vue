@@ -6,7 +6,6 @@
     </b-card>
     <uploader
       v-else
-      :key="renderKey"
       :options="options"
       :attrs="attrs"
       ref="uploader"
@@ -27,7 +26,7 @@
         <template slot-scope="{ fileList }">
           <ul>
             <li v-if="fileList.length === 0 && value">
-              <i class="fas fa-paperclip"></i> {{ value }}
+              <i class="fas fa-paperclip"></i> {{ displayName }}
             </li>
             <li v-for="file in fileList" :key="file.id">
               <uploader-file :file="file" :list="true"></uploader-file>
@@ -71,10 +70,18 @@ export default {
       const prefix = recordList.name + "." + index.toString() + ".";
       this.setFileUploadNameForChildren(recordList.$children, prefix);
     })
+
+    this.setPrefix();
+    this.$refs['uploader'].$forceUpdate();
   },
   computed: {
-    renderKey() {
-      return this.prefix + this.name;
+    displayName() {
+      const requestFiles = _.get(window, 'PM4ConfigOverrides.requestFiles', {});
+      const fileInfo = requestFiles[this.prefix + this.name];
+      if (fileInfo) {
+        return fileInfo.file_name;
+      }
+      return this.value.name ? this.value.name : this.value;
     },
     mode() {
       return this.$root.$children[0].mode;
@@ -146,6 +153,27 @@ export default {
     };
   },
   methods: {
+    setPrefix() {
+      let parent = this.$parent;
+      let i = 0;
+      while(!parent.loopContext) {
+        parent = parent.$parent;
+
+        if (parent === this.$root) {
+          parent = null;
+          break;
+        }
+
+        i++;
+        if (i > 100) {
+          throw "Loop Error";
+        }
+      }
+
+      if (parent && parent.loopContext) {
+        this.prefix = parent.loopContext + '.';
+      }
+    },
     setFileUploadNameForChildren(children, prefix) {
       children.forEach(child => {
         if (_.get(child, '$options.name') === 'FileUpload') {
@@ -215,6 +243,10 @@ export default {
       };
     },
     getTargetUrl() {
+      if (_.has(window, 'PM4ConfigOverrides.postFileEndpoint')) {
+        return window.PM4ConfigOverrides.postFileEndpoint;
+      }
+      
       if (this.endpoint) {
         return this.endpoint;
       }

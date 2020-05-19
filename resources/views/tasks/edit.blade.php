@@ -247,6 +247,8 @@
         console.warn('Screen builder version does not have watchers');
       }
     });
+
+    window.PM4ConfigOverrides = { requestFiles: @json($files) };
   </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
