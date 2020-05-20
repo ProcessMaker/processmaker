@@ -15,10 +15,8 @@ class ImportScreen extends ImportProcess
      */
     private function parseFileV1()
     {
-        $this->prepareStatus('screens', 1);
-        $this->saveScreen($this->file->screens);
-        $this->finishStatus('screens');
-        return $this->status;
+        $this->file->screens = [$this->file->screens];
+        return $this->parseFileV2();
     }
 
     /**
