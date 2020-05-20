@@ -48,11 +48,23 @@ class ImportScreen extends ImportProcess
         foreach ($this->file->screens as $screen) {
             $new[Screen::class][$screen->id] = $this->saveScreen($screen);
         }
+        $this->finishStatus('screens');
+
+        if (! isset($this->file->scripts)) {
+            $this->findWatcherScripts($new[Screen::class]);
+        }
+
+        if (isset($this->file->scripts)) {
+            $this->prepareStatus('scripts', count($this->file->screens));
+            foreach ($this->file->scripts as $script) {
+                $new[Script::class][$script->id] = $this->saveScript($script);
+            }
+            $this->finishStatus('scripts');
+        }
 
         $manager = app(ExportManager::class);
         $manager->updateReferences($new);
 
-        $this->finishStatus('screens');
         return $this->status;
     }
 
