@@ -158,11 +158,16 @@ class ExportProcess implements ShouldQueue
      *
      * @return void
      */
-    private function packageScripts()
+    public function packageScripts()
     {
         $this->package['scripts'] = [];
 
-        $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->process, []);
+        if (! isset($this->screen)) {
+             $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->process, []);
+        } else {
+            $scriptIds = $this->manager->getDependenciesOfType(Script::class, $this->screen, []);
+        }
+        
         if (count($scriptIds)) {
             $scripts = Script::whereIn('id', $scriptIds)->get();
 

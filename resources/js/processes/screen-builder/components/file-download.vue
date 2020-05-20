@@ -9,13 +9,11 @@
         {{$t('Loading...')}}
       </div>
       <div v-else>
-        <template v-if="! loading && files.data && files.data.length !== 0">
-          <div v-for="file in files.data">
-            <b-btn v-show="!isReadOnly" class="mb-2 d-print-none" variant="primary" @click="onClick(file)">
+        <template v-if="!loading && fileInfo">
+            <b-btn v-show="!isReadOnly" class="mb-2 d-print-none" variant="primary" @click="onClick(fileInfo)">
               <i class="fas fa-file-download"></i> {{$t('Download')}}
             </b-btn>
-            {{file.file_name}}
-          </div>
+            {{fileInfo.file_name}}
         </template>
         <div v-else>
           {{$t('No files available for download')}}
@@ -33,10 +31,11 @@
       return {
         fileType: null,
         loading: true,
-        files: {},
+        fileInfo: null,
         requestId: null,
         collectionId: null,
         recordId: null,
+        prefix: '',
       };
     },
     props: ['name', 'endpoint', 'requestFiles'],
@@ -52,6 +51,14 @@
       }
     },
     mounted() {
+      if (!this.fileType) {
+        // Not somewhere we can download anything (like web entry start event)
+        this.loading = false;
+        return;
+      }
+
+      this.setPrefix();
+
       if (this.fileType == 'request') {
         this.getRequestFiles();
       }
@@ -75,27 +82,54 @@
       },
     },
     methods: {
-      onClick(file) {
+      onClick() {
         if (this.fileType == 'request') {
-          this.downloadRequestFile(file);
+          this.downloadRequestFile();
         }
 
         if (this.fileType == 'collection') {
-          this.downloadCollectionFile(file);
+          this.downloadCollectionFile();
         }
       },
-      requestEndpoint(file) {
-        if (this.endpoint && this.requestFiles) {
-          const info = this.requestFiles[this.name];
-          const query = '?name=' + encodeURIComponent(this.name) + '&token=' + info.token;
-          return this.endpoint + query;
+      requestEndpoint() {
+        let endpoint = this.endpoint;
+
+        if (_.has(window, 'PM4ConfigOverrides.getFileEndpoint')) {
+          endpoint = window.PM4ConfigOverrides.getFileEndpoint;
         }
-        return "/request/" + this.requestId + "/files/" + file.id;
+
+        if (endpoint && this.fileInfo) {
+          const query = '?name=' + encodeURIComponent(this.prefix + this.name) + '&token=' + this.fileInfo.token;
+          return endpoint + query;
+        }
+
+        return "/request/" + this.requestId + "/files/" + this.fileInfo.id;
       },
-      downloadRequestFile(file) {
+      setPrefix() {
+        let parent = this.$parent;
+        let i = 0;
+        while(!parent.loopContext) {
+          parent = parent.$parent;
+
+          if (parent === this.$root) {
+            parent = null;
+            break;
+          }
+
+          i++;
+          if (i > 100) {
+            throw "Loop Error";
+          }
+        }
+
+        if (parent && parent.loopContext) {
+          this.prefix = parent.loopContext + '.';
+        }
+      },
+      downloadRequestFile() {
         ProcessMaker.apiClient({
           baseURL: "/",
-          url: this.requestEndpoint(file),
+          url: this.requestEndpoint(),
           method: "GET",
           responseType: "blob" // important
         }).then(response => {
@@ -103,14 +137,14 @@
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
-          link.setAttribute("download", file.file_name);
+          link.setAttribute("download", this.fileInfo.file_name);
           document.body.appendChild(link);
           link.click();
         });
       },
-      downloadCollectionFile(file) {
+      downloadCollectionFile() {
         ProcessMaker.apiClient({
-          url: "/files/" + file.id + "/contents",
+          url: "/files/" + this.fileInfo.id + "/contents",
           method: "GET",
           responseType: "blob" // important
         }).then(response => {
@@ -118,7 +152,7 @@
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
-          link.setAttribute("download", file.file_name);
+          link.setAttribute("download", this.fileInfo.file_name);
           document.body.appendChild(link);
           link.click();
         });
@@ -156,21 +190,34 @@
         this.recordId = recordNode.content;
       },
       getRequestFiles() {
-        if (this.requestFiles) {
+        let requestFiles = this.requestFiles;
+
+        if (_.has(window, 'PM4ConfigOverrides.requestFiles')) {
+          requestFiles = window.PM4ConfigOverrides.requestFiles;
+        }
+
+        if (requestFiles && requestFiles[this.prefix + this.name]) {
           this.loading = false;
-          this.files = { data: [this.requestFiles[this.name]] };
+          this.fileInfo = requestFiles[this.prefix + this.name];
           return;
         }
+
         if (this.requestId === null) {
           this.loading = false;
           return;
         }
         ProcessMaker.apiClient
-          .get("requests/" + this.requestId + "/files?name=" + this.name)
+          .get("requests/" + this.requestId + "/files?name=" + this.prefix + this.name)
           .then(response => {
-            this.files = response.data;
+            this.fileInfo = _.get(response, 'data.data.0', null);
             this.loading = false;
           });
+      },
+      setFileInfoFromCache() {
+        const info = _.get(ProcessMaker.CollectionData, this.prefix + this.name, null);
+        if (info) {
+          this.fileInfo = { ...info, file_name: info.name }
+        }
       },
       getCollectionFiles() {
         if (this.collectionId === null || this.recordId === null) {
@@ -180,23 +227,20 @@
 
         let id = null;
 
-        ProcessMaker.apiClient
-          .get("collections/" + this.collectionId + '/records/' + this.recordId)
-          .then(response => {
-            if (response.data.data[this.name]) {
-              let id = response.data.data[this.name].id;
-              ProcessMaker.apiClient
-                .get("files/" + id)
-                .then(response => {
-                  this.files = {data: [response.data]};
-                  this.loading = false;
-                });
-            } else {
-              this.loading = false;
-              return;
-            }
-          });
+        ProcessMaker.EventBus.$on('got-collection-data', () => {
+          this.setFileInfoFromCache();
+          this.loading = false;
+        });
 
+        if (!ProcessMaker.CollectionData) {
+          ProcessMaker.CollectionData = {};
+          ProcessMaker.apiClient
+            .get("collections/" + this.collectionId + '/records/' + this.recordId)
+            .then(response => {
+              ProcessMaker.CollectionData = response.data.data;
+              ProcessMaker.EventBus.$emit('got-collection-data');
+            });
+        }
       }
     }
   };

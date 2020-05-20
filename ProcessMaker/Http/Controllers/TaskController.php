@@ -60,6 +60,14 @@ class TaskController extends Controller
         $task->requestor = $task->processRequest->user;
         $element = $task->getDefinition(true);
 
+        $files = [];
+        foreach ($task->processRequest->getMedia() as $file) {
+            $files[$file->getCustomProperty('data_name')] = [
+                'id' => $file->id,
+                'file_name' => $file->file_name,
+            ];
+        }
+
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
@@ -67,7 +75,8 @@ class TaskController extends Controller
                 'task' => $task,
                 'dueLabels' => self::$dueLabels,
                 'manager' => $manager,
-                'submitUrl' => $submitUrl
+                'submitUrl' => $submitUrl,
+                'files' => $files,
                 ]);
         }
     }
