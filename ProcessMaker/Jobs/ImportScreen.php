@@ -15,10 +15,24 @@ class ImportScreen extends ImportProcess
      */
     private function parseFileV1()
     {
-        $this->prepareStatus('screens', 1);
-        $this->saveScreen($this->file->screens);
-        $this->finishStatus('screens');
-        return $this->status;
+        $this->file->screens = [$this->file->screens];
+        return $this->parseFileV2();
+    }
+
+    private function findWatcherScripts($screens)
+    {
+        foreach ($screens as $screen) {
+            if (isset($screen->watchers) && is_array($screen->watchers)) {
+                foreach ($screen->watchers as $watcher) {
+                    if (is_array($watcher)) {
+                        if (isset($watcher['script_id']) && is_array($watcher['script'])) {
+                            $watcher['script']['id'] = explode('-', $watcher['script']['id'])[1];
+                            $this->file->scripts[] = (object) $watcher['script'];
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -34,11 +48,23 @@ class ImportScreen extends ImportProcess
         foreach ($this->file->screens as $screen) {
             $new[Screen::class][$screen->id] = $this->saveScreen($screen);
         }
+        $this->finishStatus('screens');
+
+        if (! isset($this->file->scripts)) {
+            $this->findWatcherScripts($new[Screen::class]);
+        }
+
+        if (isset($this->file->scripts)) {
+            $this->prepareStatus('scripts', count($this->file->screens));
+            foreach ($this->file->scripts as $script) {
+                $new[Script::class][$script->id] = $this->saveScript($script);
+            }
+            $this->finishStatus('scripts');
+        }
 
         $manager = app(ExportManager::class);
         $manager->updateReferences($new);
 
-        $this->finishStatus('screens');
         return $this->status;
     }
 
