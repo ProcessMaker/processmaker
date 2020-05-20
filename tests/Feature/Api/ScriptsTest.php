@@ -385,7 +385,11 @@ class ScriptsTest extends TestCase
         $response->assertStatus(200);
 
         $url = route('api.scripts.preview', $this->getScript('php')->id);
-        $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => '<?php return ["response"=>1];']);
+        $response = $this->apiCall('POST', $url, [
+            'data' => '{}',
+            'code' => '<?php return ["response"=>1];',
+            'nonce' => '123abc',
+        ]);
         $response->assertStatus(200);
 
         // Assertion: The script output is sent to usr through broadcast channel
@@ -394,7 +398,8 @@ class ScriptsTest extends TestCase
             ScriptResponseNotification::class,
             function ($notification, $channels) {
                 $response = $notification->getResponse();
-                return $response['output'] === ['response' => 1];
+                $nonce = $notification->getNonce();
+                return $response['output'] === ['response' => 1] && $nonce === '123abc';
             }
         );
     }

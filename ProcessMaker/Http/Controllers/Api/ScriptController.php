@@ -151,8 +151,9 @@ class ScriptController extends Controller
         $data = json_decode($request->get('data'), true) ?: [];
         $config = json_decode($request->get('config'), true) ?: [];
         $code = $request->get('code');
+        $nonce = $request->get('nonce');
 
-        TestScript::dispatch($script, $request->user(), $code, $data, $config);
+        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce);
         return ['status' => 'success'];
     }
 

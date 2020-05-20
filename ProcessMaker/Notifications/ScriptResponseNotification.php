@@ -17,17 +17,19 @@ class ScriptResponseNotification extends Notification
     protected $status;
     protected $response;
     protected $watcher;
+    protected $nonce;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($status, array $response, $watcher = null)
+    public function __construct($status, array $response, $watcher = null, $nonce = null)
     {
         $this->status = $status;
         $this->response = $response;
         $this->watcher = $watcher;
+        $this->nonce = $nonce;
     }
 
     /**
@@ -58,6 +60,7 @@ class ScriptResponseNotification extends Notification
             'status' => $this->status,
             'watcher' => $this->watcher,
             'response' => $response,
+            'nonce' => $this->nonce,
         ];
     }
 
@@ -87,6 +90,14 @@ class ScriptResponseNotification extends Notification
     public function getResponse()
     {
         return $this->response;
+    }
+    
+    /**
+     * Get the value of nonce
+     */
+    public function getNonce()
+    {
+        return $this->nonce;
     }
 
     /**
