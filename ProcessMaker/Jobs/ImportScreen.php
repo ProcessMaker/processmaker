@@ -19,6 +19,22 @@ class ImportScreen extends ImportProcess
         return $this->parseFileV2();
     }
 
+    private function findWatcherScripts($screens)
+    {
+        foreach ($screens as $screen) {
+            if (isset($screen->watchers) && is_array($screen->watchers)) {
+                foreach ($screen->watchers as $watcher) {
+                    if (is_array($watcher)) {
+                        if (isset($watcher['script_id']) && is_array($watcher['script'])) {
+                            $watcher['script']['id'] = explode('-', $watcher['script']['id'])[1];
+                            $this->file->scripts[] = (object) $watcher['script'];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Parse files with version 2
      *
