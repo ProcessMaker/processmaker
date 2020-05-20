@@ -444,27 +444,44 @@ class ImportProcess implements ShouldQueue
             $this->new[Script::class] = [];
             $this->prepareStatus('scripts', count($scripts) > 0);
             foreach ($scripts as $script) {
-                $new = new Script;
-                $new->title = $this->formatName($script->title, 'title', Script::class);
-                $new->description = $script->description;
-                $new->language = $script->language;
-                $new->code = $script->code;
-                $new->created_at = $this->formatDate($script->created_at);
-                $new->save();
-
-                // save categories
-                if (isset($script->categories)) {
-                    foreach ($script->categories as $categoryDef) {
-                        $category = $this->saveCategory('script', $categoryDef);
-                        $new->categories()->save($category);
-                    }
-                }
-
+                $new = $this->saveScript($script);
                 $this->new[Script::class][$script->id] = $new;
             }
             $this->finishStatus('scripts');
         } catch (\Exception $e) {
             $this->finishStatus('scripts', true);
+        }
+    }
+
+    /**
+     * Create a new Script model for an individual screen, then save it.
+     *
+     * @param object[] $scripts
+     *
+     * @return Script
+     */
+    public function saveScript($script)
+    {
+        try {
+            $new = new Script;
+            $new->title = $this->formatName($script->title, 'title', Script::class);
+            $new->description = $script->description;
+            $new->language = $script->language;
+            $new->code = $script->code;
+            $new->created_at = $this->formatDate($script->created_at);
+            $new->save();
+
+            // save categories
+            if (isset($script->categories)) {
+                foreach ($script->categories as $categoryDef) {
+                    $category = $this->saveCategory('script', $categoryDef);
+                    $new->categories()->save($category);
+                }
+            }
+
+            return $new;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 
