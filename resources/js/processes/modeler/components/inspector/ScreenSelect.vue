@@ -62,8 +62,6 @@
           if (this.content) {
             this.error = '';
             this.$emit('input', this.content.id);
-            this.$refs['screen-select'].activate();
-            this.$refs['screen-select'].deactivate();
           }
         }
       },
