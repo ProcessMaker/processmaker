@@ -9,30 +9,12 @@
   "license": "GAGPL-3.0-or-later",
   "minimum-stability": "dev",
   "prefer-stable": true,
-
-"repositories": [
- {
-   "type": "vcs",
-   "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
- },
- {
-   "type": "vcs",
-   "url": "https://github.com/ProcessMaker/packages"
- },
- {
-   "type": "path",
-   "url": "/home/dante/desa/package-data-sources"
- },
- {
-   "type": "path",
-   "url": "/home/dante/desa/package-vocabularies"
- },
- {
-   "type": "vcs",
-   "url": "https://github.com/ProcessMaker/connector-send-email"
- }
-],
-
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
+    }
+  ],
   "require": {
     "php": ">=7.2.0",
     "darkaonline/l5-swagger": "5.8.*",
@@ -58,13 +40,6 @@
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "1.0.2",
     "processmaker/pmql": "1.1.2",
-
-"processmaker/packages": "*",
-"processmaker/package-data-sources": "*",
-"processmaker/package-vocabularies": "*",
-"processmaker/connector-send-email": "*",
-
-
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
@@ -130,4 +105,3 @@
     "optimize-autoloader": true
   }
 }
-
