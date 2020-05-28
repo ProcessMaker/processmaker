@@ -128,7 +128,7 @@ class User extends Authenticatable implements HasMedia
 
         $checkUserIsDeleted = function ($attribute, $value, $fail) use ($existing) {
             if (!$existing) {
-                $user = User::withTrashed()->where($attribute, $value)->first();
+                $user = User::onlyTrashed()->where($attribute, $value)->first();
                 if ($user) {
                     $fail(
                         __(
@@ -139,6 +139,23 @@ class User extends Authenticatable implements HasMedia
                 }
             }
         };
+
+//        $checkEmailExists = function ($attribute, $value, $fail) use ($existing) {
+//            if (!$existing) {
+//                $userActive = User::where($attribute, $value)->first();
+//                $userDeleted = User::withTrashed()->where($attribute, $value)->first();
+//                $user = $userActive ?: $userDeleted;
+//                if ($user) {
+//                    $fail(
+//                        __(
+//                            'The user ":username" has the same email ":email" configured.',
+//                            ['username' => $user->username, 'email' => $user->email]
+//                        )
+//                    );
+//                }
+//            }
+//        };
+
 
         return [
             'username' => ['required', 'alpha_spaces', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],

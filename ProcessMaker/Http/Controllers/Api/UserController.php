@@ -224,7 +224,7 @@ class UserController extends Controller
         }
         return response([], 204);
     }
-    
+
     /**
      * Update a user's groups
      *
@@ -334,7 +334,7 @@ class UserController extends Controller
         if (filter_var($data['avatar'], FILTER_VALIDATE_URL)) {
             return;
         }
-        
+
         if ($data['avatar'] === false) {
             $user->clearMediaCollection(User::COLLECTION_PROFILE);
             return;
@@ -402,13 +402,20 @@ class UserController extends Controller
     public function restore(Request $request) {
         $email = $request->input('email');
         $username = $request->input('username');
-        if ($email) {
-            User::withTrashed()->where('email', $email)->firstOrFail()->restore();
-        }
+
+        $userByName =  $userByEmail = null;
         if ($username) {
-            User::withTrashed()->where('username', $username)->firstOrFail()->restore();
+            $userByName = User::withTrashed()->where('username', $username)->first();
         }
-        return response([], 200);  
+        if ($email) {
+            $userByEmail = User::withTrashed()->where('email', $email)->first();
+        }
+
+        $user = $userByName ?: $userByEmail;
+
+        $user->restore();
+
+        return response([], 200);
     }
 
     public function deletedUsers(Request $request) {
@@ -443,7 +450,7 @@ class UserController extends Controller
             )
             ->paginate($request->input('per_page', 10));
 
-        
+
         // return $deletedUsers;
         return new ApiCollection($response);
     }

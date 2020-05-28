@@ -35,7 +35,7 @@ export default {
                 cancelVariant: 'outline-secondary'
             }).then(value => {
                 if (value) {
-                    ProcessMaker.apiClient.put('/users/restore', restoreData).then(response => {
+                    ProcessMaker.apiClient.put('users/restore', restoreData).then(response => {
                         ProcessMaker.alert(this.$t("The user was restored."), "success");
                         location.reload();
                     }).catch(error => {
