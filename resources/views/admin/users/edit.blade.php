@@ -194,6 +194,7 @@
     <script>
       var modalVueInstance = new Vue({
         el: '#updateAvatarModal',
+        mixins:addons,
         data() {
           return {
             image: "",

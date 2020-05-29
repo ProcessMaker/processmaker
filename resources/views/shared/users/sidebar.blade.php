@@ -51,6 +51,13 @@
             <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" v-if="errors.password">@{{errors.password[0]}}</div>
         </div>
     </div>
+
+    @isset($addons)
+        @foreach ($addons as $addon)
+            {!! __($addon['content']) !!}
+        @endforeach
+    @endisset
+
     <div class="card card-body mt-3">
         <h5 class="mb-3 font-weight-bold">{{__('Settings')}}</h5>
             <div class="form-group">
@@ -87,9 +94,4 @@
                 </div>
             </div>
     </div>
-    @isset($addons)
-        @foreach ($addons as $addon)
-            {!! __($addon['content']) !!}
-        @endforeach
-    @endisset
 </div>

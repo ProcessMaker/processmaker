@@ -64,6 +64,11 @@
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.status}']) !!}
                             <div class="invalid-feedback" v-if="errors.status">@{{errors.status[0]}}</div>
                         </div>
+                        @isset($addons)
+                            @foreach ($addons as $addon)
+                                {!! __($addon['content']) !!}
+                            @endforeach
+                        @endisset
                         <br>
                         <div class="d-flex justify-content-end mt-3">
                             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
@@ -179,6 +184,7 @@
     <script>
       new Vue({
         el: '#editGroup',
+        mixins:addons,
         data() {
           return {
             showAddUserModal: false,

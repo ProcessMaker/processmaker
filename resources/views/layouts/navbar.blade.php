@@ -22,9 +22,20 @@
         <b-navbar-nav class="d-flex align-items-center">
             @foreach(Menu::get('topnav')->items as $item)
                 <b-nav-item href="{{ $item->url() }}" {{$item->isActive !== false ? 'active': ''}}>
-                    {{$item->title}}
+                    {!! $item->title !!}
                 </b-nav-item>
             @endforeach
+
+            @if(Menu::get('customtopnav'))
+            @foreach(Menu::get('customtopnav')->items as $item)
+                <li class="nav-item">
+                    <a  target="{{ $item->attributes['target'] }}" href="{{ $item->url() }}" class="nav-link {{ $item->isActive === true ? 'active': ''}} {{ $item->attributes['class_link'] }} " >
+                    {!! $item->title !!}
+                    </a>
+                </li>
+            @endforeach
+            @endif
+
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
