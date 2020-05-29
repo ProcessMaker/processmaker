@@ -24,6 +24,7 @@ class TestScript implements ShouldQueue
     protected $code;
     protected $data;
     protected $configuration;
+    protected $nonce;
 
     /**
      * Create a new job instance to execute a script.
@@ -34,13 +35,14 @@ class TestScript implements ShouldQueue
      * @param array $data
      * @param array $configuration
      */
-    public function __construct(Script $script, User $current_user, $code, array $data, array $configuration)
+    public function __construct(Script $script, User $current_user, $code, array $data, array $configuration, $nonce = null)
     {
         $this->script = $script;
         $this->current_user = $current_user;
         $this->code = $code;
         $this->data = $data;
         $this->configuration = $configuration;
+        $this->nonce = $nonce;
     }
 
     /**
@@ -71,6 +73,6 @@ class TestScript implements ShouldQueue
      */
     private function sendResponse($status, array $response)
     {
-        $this->current_user->notify(new ScriptResponseNotification($status, $response));
+        $this->current_user->notify(new ScriptResponseNotification($status, $response, null, $this->nonce));
     }
 }
