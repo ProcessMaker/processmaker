@@ -128,7 +128,7 @@ class User extends Authenticatable implements HasMedia
 
         $checkUserIsDeleted = function ($attribute, $value, $fail) use ($existing) {
             if (!$existing) {
-                $user = User::withTrashed()->where($attribute, $value)->first();
+                $user = User::onlyTrashed()->where($attribute, $value)->first();
                 if ($user) {
                     $fail(
                         __(
