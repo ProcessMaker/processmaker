@@ -101,7 +101,7 @@
                 <button type="button" class="btn btn-outline-secondary" @click="hideModal">
                     {{__('Cancel')}}
                 </button>
-                <button type="button" class="btn btn-secondary" @click="onSubmit" :disabled="config.disabled">
+                <button type="button" class="btn btn-secondary" @click="onSubmit" id="saveUser" :disabled="config.disabled">
                     {{__('Save')}}
                 </button>
             </template>
