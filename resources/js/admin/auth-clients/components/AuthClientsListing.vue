@@ -126,6 +126,18 @@ export default {
         });
     },
     transform(data) {
+      if (this.filter) {
+        //Manual filter
+        data = data.filter((item) => {
+          return (
+            item.name.toLowerCase().indexOf(this.filter) > -1 ||
+            item.redirect.toLowerCase().indexOf(this.filter) > -1 ||
+            item.secret.toLowerCase().indexOf(this.filter) > -1
+          );
+        });
+      }
+
+      //Pagination
       let meta = {};
       meta.total = data.length;
       meta.current_page = this.page;

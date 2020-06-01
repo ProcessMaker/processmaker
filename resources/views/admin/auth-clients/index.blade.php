@@ -68,16 +68,29 @@
         </div>
 
         <div class="px-3 page-content">
-            <div class="row mb-3">
-                <div class="col" align="right">
-                    <button id="create_authclients" class="btn btn-secondary" type="button" data-toggle="modal"
-                            data-target="#createEditAuthClient">
-                        <i class="fas fa-plus"></i>
-                        {{__('Auth Client')}}</a>
-                    </button>
+            <div id="search-bar" class="search mb-3" vcloak>
+                <div class="d-flex flex-column flex-md-row">
+                    <div class="flex-grow-1">
+                        <div id="search" class="mb-3 mb-md-0">
+                            <div class="input-group w-100">
+                                <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex ml-md-2 flex-column flex-md-row">
+                        <a href="#" id="create_authclients" class="btn btn-secondary" data-toggle="modal" data-target="#createEditAuthClient">
+                            <i class="fas fa-plus"></i>
+                            {{__('Auth Client')}}
+                        </a>
+                    </div>
                 </div>
             </div>
-            <auth-clients-listing ref="authClientList" @edit="edit"/>
+            <div class="container-fluid">
+                <auth-clients-listing ref="authClientList" :filter="filter" @edit="edit"/>
+            </div>
         </div>
 
     </div>
@@ -97,6 +110,7 @@
             redirect: "",
             secret: "",
           },
+          filter: "",
           errors: null,
           disabled: false,
           title:'',
