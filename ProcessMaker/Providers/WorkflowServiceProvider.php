@@ -172,10 +172,10 @@ class WorkflowServiceProvider extends ServiceProvider
          */
         $this->app->singleton(ExportManager::class, function () {
             $instance = new ExportManager;
-            $instance->addDependencieManager(ScreensInProcess::class);
-            $instance->addDependencieManager(ScreensInScreen::class);
-            $instance->addDependencieManager(ScriptsInProcess::class);
-            $instance->addDependencieManager(ScriptsInScreen::class);
+            $instance->addDependencyManager(ScreensInProcess::class);
+            $instance->addDependencyManager(ScreensInScreen::class);
+            $instance->addDependencyManager(ScriptsInProcess::class);
+            $instance->addDependencyManager(ScriptsInScreen::class);
             return $instance;
         });
     }
