@@ -60,16 +60,8 @@ export default {
   },
   mounted() {
     this.removeDefaultClasses();
-
-    // If we're in a record list, this will fire to give us the prefix
-    this.$root.$on('set-upload-data-name', (recordList, index) => {
-      if (index === null) {
-        // Adding new record
-        index = recordList.value ? recordList.value.length : 0;
-      }
-      const prefix = recordList.name + "." + index.toString() + ".";
-      this.setFileUploadNameForChildren(recordList.$children, prefix);
-    })
+    
+    this.checkIfInRecordList();
 
     this.setPrefix();
     if (this.$refs['uploader']) {
@@ -273,6 +265,14 @@ export default {
             '&collection=' +
             'collection'
           : null;
+      }
+    },
+    checkIfInRecordList() {
+      const parent =  this.$parent.$parent.$parent;
+      if (parent.$options._componentTag == 'FormRecordList') {
+        const recordList = parent;
+        const prefix = recordList.name + '.';
+        this.setFileUploadNameForChildren(recordList.$children, prefix);
       }
     }
   }
