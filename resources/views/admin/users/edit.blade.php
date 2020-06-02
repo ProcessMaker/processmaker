@@ -48,7 +48,7 @@
                             </div>
                             <div class="d-flex justify-content-end mt-3">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate']) !!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate','id'=>'saveUser']) !!}
                             </div>
                         </div>
                         <div class="tab-pane fade show" id="nav-groups" role="tabpanel"
@@ -69,7 +69,7 @@
                             </div>
                             <div class="d-flex justify-content-end mt-3">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onSaveGroups']) !!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onSaveGroups','id'=>'saveGroups']) !!}
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -85,7 +85,7 @@
                                 @include('admin.shared.permissions')
                                 <div class="d-flex justify-content-end mt-3">
                                     {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
-                                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'permissionUpdate'])!!}
+                                    {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'permissionUpdate','id'=>'savePermissions'])!!}
                                 </div>
                             </div>
                         </div>

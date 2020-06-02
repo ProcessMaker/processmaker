@@ -72,7 +72,7 @@
                         <br>
                         <div class="d-flex justify-content-end mt-3">
                             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate']) !!}
+                            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveGroup']) !!}
                         </div>
                     </div>
                     <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
@@ -89,7 +89,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                                    <button type="button" class="btn btn-secondary" data-toggle="modal"
+                                    <button type="button" class="btn btn-secondary" data-toggle="modal" id="addUserModal"
                                             data-target="#addUser" @click="loadUsers">
                                         <i class="fas fa-plus"></i>
                                         {{__('User')}}
@@ -108,7 +108,7 @@
                             @include('admin.shared.permissions')
                             <div class="d-flex justify-content-end mt-3">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose'])!!}
-                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'permissionUpdate'])!!}
+                                {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'permissionUpdate','id'=>'savePermissions'])!!}
                             </div>
                         </div>
                     </div>
@@ -170,7 +170,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary"
                                     data-dismiss="modal" @click="onCloseAddUser">{{__('Cancel')}}</button>
-                            <button type="button" class="btn btn-secondary ml-2" @click="onSave">{{__('Save')}}</button>
+                            <button type="button" class="btn btn-secondary ml-2" @click="onSave" id="saveMembers">{{__('Save')}}</button>
                         </div>
                     </div>
                 </div>
