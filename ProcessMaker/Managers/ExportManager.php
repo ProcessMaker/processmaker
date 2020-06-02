@@ -29,9 +29,9 @@ class ExportManager
         return $this;
     }
 
-    public function addDependencie(array $dependencie)
+    public function addDependency(array $dependency)
     {
-        $this->dependencies[] = $dependencie;
+        $this->dependencies[] = $dependency;
     }
 
     /**
@@ -119,10 +119,10 @@ class ExportManager
         }
     }
 
-    public function addDependencieManager($class)
+    public function addDependencyManager($class)
     {
         $instance = new $class;
-        $this->addDependencie([
+        $this->addDependency([
             'type' => $instance->type,
             'owner' => $instance->owner,
             'referencesToExport' => [$instance, 'referencesToExport'],
