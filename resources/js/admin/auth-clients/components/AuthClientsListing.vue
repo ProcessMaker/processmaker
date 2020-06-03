@@ -139,6 +139,10 @@ export default {
 
       //Pagination
       let meta = {};
+      if (this.perPage >= data.length) {
+        this.page = 1;
+      }
+
       meta.total = data.length;
       meta.current_page = this.page;
       meta.per_page = this.perPage;
@@ -149,7 +153,6 @@ export default {
       if (meta.to > meta.total) {
         meta.to = meta.total;
       }
-
       let rows = data.slice(meta.from, meta.to);
       meta.count = rows.length;
 
