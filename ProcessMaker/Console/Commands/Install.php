@@ -50,6 +50,7 @@ class Install extends Command
             {--data-password=                   : The data database password}
             {--data-schema=                     : The data database schema (if pgsql)}
             {--redis-client=predis              : The Redis client (predis or phpredis)}
+            {--redis-host=                      : The Redis host, default is 127.0.0.1}
             {--redis-prefix=                    : The prefix to be appended to Redis entries}
             {--horizon-prefix=horizon:          : The prefix to be appended to Horizon queue entries}
             {--broadcast-debug                  : Enable broadcast debugging}
@@ -124,6 +125,10 @@ class Install extends Command
             'REDIS_PREFIX' => $this->option('redis-prefix'),
             'HORIZON_PREFIX' => $this->option('horizon-prefix'),
         ];
+
+        if ($this->option('redis-host')) {
+            $this->env['REDIS_HOST'] = $this->option('redis-host');
+        }
 
         // Configure the filesystem to be local
         config(['filesystems.disks.install' => [
@@ -246,8 +251,9 @@ class Install extends Command
             $this->info(__("Installing database..."));
 
             // Install migrations
-            $this->callSilent('migrate:fresh', [
+            $this->call('migrate:fresh', [
                 '--seed' => true,
+                '--force' => true,
             ]);
 
             $this->info(__("ProcessMaker database installed successfully."));
