@@ -56,7 +56,7 @@ abstract class BpmnAction implements ShouldQueue
             }
             throw $exception;
         } finally {
-            if ($this->instanceId) {
+            if (isset($this->instanceId)) {
                 $this->unlockInstance($this->instanceId);
             };
         }
@@ -147,8 +147,10 @@ abstract class BpmnAction implements ShouldQueue
             $unlockTime = Carbon::now()->subSeconds($seconds);
             $instance = ProcessRequest::findOrFail($instanceId);
             $ready = !$instance->locked_at || $instance->locked_at->lt($unlockTime);
-            foreach ($instance->collaboration->requests as $request) {
-                $ready &= !$request->locked_at || $request->locked_at->lt($unlockTime);
+            if ($instance->collaboration) {
+                foreach ($instance->collaboration->requests as $request) {
+                    $ready &= !$request->locked_at || $request->locked_at->lt($unlockTime);
+                }
             }
             if ($ready) {
                 usleep(500);
@@ -158,10 +160,12 @@ abstract class BpmnAction implements ShouldQueue
         $instance->locked_at = $now;
         $instance->locked_by_token_id = $this->tokenId ?? null;
         $instance->save();
-        foreach ($instance->collaboration->requests as $request) {
-            $request->locked_at = $now;
-            $request->locked_by_token_id = $this->tokenId ?? null;
-            $request->save();
+        if ($instance->collaboration) {
+            foreach ($instance->collaboration->requests as $request) {
+                $request->locked_at = $now;
+                $request->locked_by_token_id = $this->tokenId ?? null;
+                $request->save();
+            }
         }
         return $instance;
     }
@@ -180,10 +184,12 @@ abstract class BpmnAction implements ShouldQueue
             $instance->locked_at = null;
             $instance->locked_by_token_id = null;
             $instance->save();
-            foreach ($instance->collaboration->requests as $request) {
-                $request->locked_at = null;
-                $request->locked_by_token_id = null;
-                $request->save();
+            if ($instance->collaboration) {
+                foreach ($instance->collaboration->requests as $request) {
+                    $request->locked_at = null;
+                    $request->locked_by_token_id = null;
+                    $request->save();
+                }
             }
         }
         return $instance;

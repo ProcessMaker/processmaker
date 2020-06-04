@@ -119,6 +119,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         'data' => 'array',
         'errors' => 'array',
         'signal_events' => 'array',
+        'locked_at' => 'datetime:c',
     ];
 
     /**
