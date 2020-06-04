@@ -9,9 +9,9 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use Throwable;
 
 class RunScriptTask extends BpmnAction implements ShouldQueue
@@ -44,6 +44,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function action(ProcessRequestToken $token, ScriptTaskInterface $element, ProcessRequest $instance)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
         $scriptRef = $element->getProperty('scriptRef');
         Log::info('Script started: ' . $scriptRef);
         $configuration = json_decode($element->getProperty('config'), true);
