@@ -20,20 +20,31 @@
         </div>
 
         <b-navbar-nav class="d-flex align-items-center">
-            @foreach(Menu::get('topnav')->items as $item)
-                <b-nav-item href="{{ $item->url() }}" {{$item->isActive !== false ? 'active': ''}}>
-                    {!! $item->title !!}
-                </b-nav-item>
-            @endforeach
-
             @if(Menu::get('customtopnav'))
-            @foreach(Menu::get('customtopnav')->items as $item)
-                <li class="nav-item">
-                    <a  target="{{ $item->attributes['target'] }}" href="{{ $item->url() }}" class="nav-link {{ $item->isActive === true ? 'active': ''}} {{ $item->attributes['class_link'] }} " >
-                    {!! $item->title !!}
-                    </a>
-                </li>
-            @endforeach
+                @foreach(Menu::get('customtopnav')->items as $item)
+                    <li class="nav-item">
+                        <a  target="{{ $item->attributes['target'] }}" href="{{ $item->url() }}" class="nav-link {{ $item->isActive === true ? 'active': ''}} {{ $item->attributes['class_link'] }} " >
+                        {!! $item->title !!}
+                        </a>
+                    </li>
+                @endforeach
+
+                @foreach(Menu::get('topnav')->items as $item)
+                    @php
+                        $itemRoute = Route::getRoutes()->match(Request::create($item->url()))
+                    @endphp
+                    @if(!$itemRoute->isFallBack && strpos($itemRoute->action['controller'], "ProcessMaker\\Http\\") !== 0)
+                        <b-nav-item href="{{ $item->url() }}" {{$item->isActive !== false ? 'active': ''}}>
+                            {!! $item->title !!}
+                        </b-nav-item>
+                    @endif
+                @endforeach
+            @else
+                @foreach(Menu::get('topnav')->items as $item)
+                    <b-nav-item href="{{ $item->url() }}" {{$item->isActive !== false ? 'active': ''}}>
+                        {!! $item->title !!}
+                    </b-nav-item>
+                @endforeach
             @endif
 
         </b-navbar-nav>
