@@ -142,31 +142,17 @@ abstract class BpmnAction implements ShouldQueue
      */
     protected function lockInstance($instanceId)
     {
-        $seconds = config('app.bpmn_actions_max_lock_time');
+        $instance = ProcessRequest::findOrFail($instanceId);
+        $lock = $instance->lock($this->tokenId ?? null);
         do {
-            $unlockTime = Carbon::now()->subSeconds($seconds);
-            $instance = ProcessRequest::findOrFail($instanceId);
-            $ready = !$instance->locked_at || $instance->locked_at->lt($unlockTime);
-            if ($instance->collaboration) {
-                foreach ($instance->collaboration->requests as $request) {
-                    $ready &= !$request->locked_at || $request->locked_at->lt($unlockTime);
-                }
-            }
+            $ready = $instance->hasLock($lock);
             if ($ready) {
+                $instance = ProcessRequest::findOrFail($instanceId);
+                $lock->save();
+            } else {
                 usleep(500);
             }
         } while (!$ready);
-        $now = Carbon::now();
-        $instance->locked_at = $now;
-        $instance->locked_by_token_id = $this->tokenId ?? null;
-        $instance->save();
-        if ($instance->collaboration) {
-            foreach ($instance->collaboration->requests as $request) {
-                $request->locked_at = $now;
-                $request->locked_by_token_id = $this->tokenId ?? null;
-                $request->save();
-            }
-        }
         return $instance;
     }
 
@@ -180,18 +166,7 @@ abstract class BpmnAction implements ShouldQueue
     protected function unlockInstance($instanceId)
     {
         $instance = ProcessRequest::find($instanceId);
-        if ($instance) {
-            $instance->locked_at = null;
-            $instance->locked_by_token_id = null;
-            $instance->save();
-            if ($instance->collaboration) {
-                foreach ($instance->collaboration->requests as $request) {
-                    $request->locked_at = null;
-                    $request->locked_by_token_id = null;
-                    $request->save();
-                }
-            }
-        }
+        $instance->unlock();
         return $instance;
     }
 }
