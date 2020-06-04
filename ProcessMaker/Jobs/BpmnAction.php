@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Jobs;
 
-use Exception;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -42,7 +42,6 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
-        set_time_limit(0);
         extract($this->loadContext());
         $this->engine = $engine;
         $this->instance = $instance;
@@ -60,6 +59,10 @@ abstract class BpmnAction implements ShouldQueue
                 $request->logError($exception, $element);
             }
             throw $exception;
+        } finally {
+            if ($this->instanceId) {
+                $this->unlockInstance($this->instanceId);
+            };
         }
 
         return $response;
@@ -135,5 +138,61 @@ abstract class BpmnAction implements ShouldQueue
     {
         $context = $this->loadContext();
         return App::call($callable, $context);
+    }
+
+    /**
+     * Lock the instance and its collaborators
+     *
+     * @param int $instanceId
+     *
+     * @return ProcessRequest
+     */
+    protected function lockInstance($instanceId)
+    {
+        $seconds = config('app.bpmn_actions_max_lock_time');
+        do {
+            $unlockTime = Carbon::now()->subSeconds($seconds);
+            $instance = ProcessRequest::findOrFail($instanceId);
+            $ready = !$instance->locked_at || $instance->locked_at->lt($unlockTime);
+            foreach ($instance->collaboration->requests as $request) {
+                $ready &= !$request->locked_at || $request->locked_at->lt($unlockTime);
+            }
+            if ($ready) {
+                usleep(500);
+            }
+        } while (!$ready);
+        $now = Carbon::now();
+        $instance->locked_at = $now;
+        $instance->locked_by_token_id = $this->tokenId ?? null;
+        $instance->save();
+        foreach ($instance->collaboration->requests as $request) {
+            $request->locked_at = $now;
+            $request->locked_by_token_id = $this->tokenId ?? null;
+            $request->save();
+        }
+        return $instance;
+    }
+
+    /**
+     * Lock the instance and its collaborators
+     *
+     * @param int $instanceId
+     *
+     * @return ProcessRequest
+     */
+    protected function unlockInstance($instanceId)
+    {
+        $instance = ProcessRequest::find($instanceId);
+        if ($instance) {
+            $instance->locked_at = null;
+            $instance->locked_by_token_id = null;
+            $instance->save();
+            foreach ($instance->collaboration->requests as $request) {
+                $request->locked_at = null;
+                $request->locked_by_token_id = null;
+                $request->save();
+            }
+        }
+        return $instance;
     }
 }
