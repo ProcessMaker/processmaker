@@ -7,16 +7,15 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process as Definitions;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Throwable;
 
 class RunScriptTask extends BpmnAction implements ShouldQueue
 {
-
     public $definitionsId;
     public $instanceId;
     public $tokenId;
@@ -24,13 +23,13 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
 
     /**
      * Create a new job instance.
-     * 
+     *
      * @param \ProcessMaker\Models\Process $definitions
-     * @param \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface $instance
+     * @param \ProcessMaker\Models\ProcessRequest $instance
      * @param \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $token
      * @param array $data
      */
-    public function __construct(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
+    public function __construct(Definitions $definitions, ProcessRequest $instance, TokenInterface $token, array $data)
     {
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
@@ -45,6 +44,8 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
      */
     public function action(TokenInterface $token, ScriptTaskInterface $element, Definitions $processModel)
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
         $scriptRef = $element->getProperty('scriptRef');
         Log::info('Script started: ' . $scriptRef);
         $configuration = json_decode($element->getProperty('config'), true);
@@ -73,15 +74,21 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             }
 
             $response = $script->runScript($data, $configuration);
-            // Update data
-            if (is_array($response['output'])) {
-                // Validate data
-                WorkflowManager::validateData($response['output'], $processModel, $element);
-                foreach ($response['output'] as $key => $value) {
-                    $dataStore->putData($key, $value);
+
+            $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
+                $dataStore = $token->getInstance()->getDataStore();
+                // Update data
+                if (is_array($response['output'])) {
+                    // Validate data
+                    WorkflowManager::validateData($response['output'], $processModel, $element);
+                    foreach ($response['output'] as $key => $value) {
+                        $dataStore->putData($key, $value);
+                    }
                 }
-            }
-            $element->complete($token);
+                $element->complete($token);
+                $this->engine = $engine;
+                $this->instance = $instance;
+            });
             Log::info('Script completed: ' . $scriptRef);
         } catch (Throwable $exception) {
             // Change to error status
