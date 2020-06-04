@@ -41,29 +41,4 @@ class ProcessRequestLock extends Model
     {
         return $this->belongsTo(ProcessRequest::class);
     }
-
-    /**
-     * Active block that did not overcome.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeWhereNotDue($query)
-    {
-        return $query->where(function ($query) {
-            $numSeconds = config('app.bpmn_actions_max_lock_time', 1) ?: 60;
-            return $query->whereNull('due_at')
-            ->whereOr('due_at', '<', now()->modify("+{$numSeconds} seconds"));
-        });
-    }
-
-    /**
-     * @return void
-     */
-    public function activate()
-    {
-        $numSeconds = config('app.bpmn_actions_max_lock_time', 1) ?: 60;
-        $this->due_at = now()->modify(now()->modify("+{$numSeconds} seconds"));
-        $this->save();
-    }
 }

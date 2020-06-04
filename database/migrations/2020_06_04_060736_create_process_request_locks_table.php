@@ -20,6 +20,7 @@ class CreateProcessRequestLocksTable extends Migration
             $table->unsignedInteger('process_request_id')->nullable();
             $table->unsignedInteger('process_request_token_id')->nullable();
             $table->timestamps();
+            $table->foreign('process_request_id')->references('id')->on('process_requests')->onDelete('cascade');
         });
     }
 

@@ -656,6 +656,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     private function valueAliasRequester($value, $expression)
     {
         $user = User::where('username', $value)->get()->first();
+        $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
 
         if ($user) {
             $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
@@ -784,40 +785,22 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @return ProcessRequestLock
      */
-    public function requestLock($tokenId)
+    public function lock($tokenId)
     {
         return $this->locks()->create(['process_request_token_id' => $tokenId]);
     }
 
-    /**
-     * @return void
-     */
     public function unlock()
     {
-        $this->locks()->whereNotNull('due_at')->delete();
+        $first = $this->locks()->orderBy('id')->first();
+        if ($first) {
+            $first->delete();
+        }
     }
 
-    /**
-     * Get current lock for $this request
-     *
-     * @return ProcessRequestLock
-     */
-    public function currentLock()
+    public function hasLock(ProcessRequestLock $lock)
     {
-        return $this->locks()->whereNotDue()->orderBy('id')->limit(1)->first();
-    }
-
-    /**
-     * Get the BPMN definitions version of the process that is running.
-     *
-     * @param boolean $forceParse
-     * @param mixed $engine
-     *
-     * @return BpmnDocument
-     */
-    public function getVersionDefinitions($forceParse = false, $engine = null)
-    {
-        $processVersion = $this->processVersion ?: $this->process;
-        return $processVersion->getDefinitions($forceParse, $engine);
+        $first = $this->locks()->orderBy('id')->first();
+        return !$first || $first->getKey() === $lock->getKey();
     }
 }
