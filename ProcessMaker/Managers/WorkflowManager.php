@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
+use ProcessMaker\Jobs\CatchSignalEvent;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
@@ -27,7 +28,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-
 
 class WorkflowManager
 {
