@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
@@ -43,6 +44,7 @@ class Comment extends Model
 {
     use SerializeToIso8601;
     use SqlsrvSupportTrait;
+    use SoftDeletes;
 
     protected $connection = 'data';
 
