@@ -139,17 +139,20 @@ export default {
 
       //Pagination
       let meta = {};
-      if (this.perPage >= data.length) {
+      if (parseInt(this.perPage) >= data.length) {
         this.page = 1;
       }
 
       meta.total = data.length;
-      meta.current_page = this.page;
-      meta.per_page = this.perPage;
-      meta.from = (meta.current_page - 1) * meta.per_page;
+      meta.per_page = parseInt(this.perPage);
       meta.total_pages = Math.floor(meta.total / meta.per_page) + 1;
+      if (this.page > meta.total_pages) {
+        this.page = meta.total_pages;
+      }
+      meta.current_page = this.page;
+      meta.from = (meta.current_page - 1) * meta.per_page;
       meta.last_page = meta.total_pages;
-      meta.to = meta.from + this.perPage;
+      meta.to = meta.from + meta.per_page;
       if (meta.to > meta.total) {
         meta.to = meta.total;
       }
