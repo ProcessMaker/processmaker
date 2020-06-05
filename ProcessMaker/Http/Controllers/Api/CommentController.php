@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Comment as GlobalComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
@@ -131,6 +132,11 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
+        //delete related comments
+        Comment::where('commentable_id', $comment->getKey())
+            ->where('commentable_type', Comment::class)
+            ->delete();
+
         $comment->delete();
         return response([], 204);
     }
