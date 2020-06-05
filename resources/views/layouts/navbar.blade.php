@@ -19,23 +19,36 @@
             <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade @dismissed="alertDismissed(item)" @dismiss-count-down="alertDownChanged($event, item)" style="white-space:pre-line">@{{item.alertText}}</b-alert>
         </div>
 
+        @php
+            $menuItems = [];
+            $existsMenuProvider = Menu::get('customtopnav') !== null;
+            $customNav = $existsMenuProvider ? Menu::get('customtopnav')->items->all() : [];
+            $defaultNav = Menu::get('topnav')->items->all();
+            foreach(array_merge($customNav, $defaultNav) as $item) {
+                $newItem = (array) $item;
+                $newItem['link'] = $item->url();
+                $newItem['isCustom'] = in_array($item, $customNav);
+                $menuItems[] = $newItem;
+            }
+            // If a menu provider is installed, remove menu items from ProcessMaker but preserve any other (from packages, for example)
+            if ($existsMenuProvider) {
+                $menuItems = array_filter($menuItems, function ($item) use($customNav) {
+                    $itemRoute = Route::getRoutes()->match(Request::create($item['link']));
+                    $isCoreLink =  !$itemRoute->isFallBack && isset($itemRoute->action['controller']) && strpos($itemRoute->action['controller'], "ProcessMaker\\Http\\") === 0;
+                    return !$isCoreLink || $item['isCustom'];
+                });
+            }
+        @endphp
+
         <b-navbar-nav class="d-flex align-items-center">
-            @foreach(Menu::get('topnav')->items as $item)
-                <b-nav-item href="{{ $item->url() }}" {{$item->isActive !== false ? 'active': ''}}>
-                    {!! $item->title !!}
+                <b-nav-item v-for="item in {{ json_encode ($menuItems) }}"
+                            :href="item.link"
+                            :link-classes="item.attributes.class_link"
+                            :target="item.attributes.target"
+                            :active="item.isActive"
+                >
+                    <span v-html="item.title"></span>
                 </b-nav-item>
-            @endforeach
-
-            @if(Menu::get('customtopnav'))
-            @foreach(Menu::get('customtopnav')->items as $item)
-                <li class="nav-item">
-                    <a  target="{{ $item->attributes['target'] }}" href="{{ $item->url() }}" class="nav-link {{ $item->isActive === true ? 'active': ''}} {{ $item->attributes['class_link'] }} " >
-                    {!! $item->title !!}
-                    </a>
-                </li>
-            @endforeach
-            @endif
-
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
