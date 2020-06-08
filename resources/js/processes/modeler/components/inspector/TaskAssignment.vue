@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="form-group">
-            <label>{{ $t("Task Assignment") }}</label>
+            <label>{{ $t( label ) }}</label>
             <select
                 ref="assignmentsDropDownList"
                 class="form-control"
