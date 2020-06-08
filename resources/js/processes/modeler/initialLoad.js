@@ -326,6 +326,10 @@ ProcessMaker.EventBus.$on(
                 label: ''
               },
               {
+                value: '',
+                label: 'Anonymous'
+              },
+              {
                 value: 'requester',
                 label: 'Requester'
               },
