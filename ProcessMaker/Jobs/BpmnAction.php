@@ -150,6 +150,9 @@ abstract class BpmnAction implements ShouldQueue
     protected function lockInstance($instanceId)
     {
         $instance = ProcessRequest::findOrFail($instanceId);
+        if (config('queue.default') === 'sync') {
+            return $instance;
+        }
         $lock = $instance->lock($this->tokenId ?? null);
         do {
             $ready = $instance->hasLock($lock);
