@@ -316,7 +316,7 @@ ProcessMaker.EventBus.$on(
         {
           component: 'TaskAssignment',
           config: {
-            label: 'Task Assignment',
+            label: 'Start Sub Process As',
             helper: '',
             name: 'taskAssignment',
             configurables: [],
@@ -324,6 +324,10 @@ ProcessMaker.EventBus.$on(
               {
                 value: '',
                 label: ''
+              },
+              {
+                value: '',
+                label: 'Anonymous'
               },
               {
                 value: 'requester',
