@@ -92,7 +92,7 @@ class ProcessScriptsTest extends TestCase
             ->where('element_type', '=', 'scriptTask')
             ->where('status', '=', 'CLOSED')
             ->get();
-        $this->assertEquals(count($tasks), 2);
+        $this->assertEquals(2, count($tasks));
 
         //Get process instance
         $processInstance = ProcessRequest::where('id', $tasks[0]['process_request_id'])->firstOrFail();
