@@ -110,9 +110,14 @@
                                 </div>
                               </div>
                             </template>
-                            <div v-if="taskHasComments">
+                            <div v-if="taskHasComments && taskHasComments.comments">
                                 <timeline :commentable_id="task.id"
-                                          commentable_type="ProcessMaker\Models\ProcessRequestToken"/>
+                                          commentable_type="ProcessMaker\Models\ProcessRequestToken"
+                                          :reactions="taskHasComments.reactions"
+                                          :voting="taskHasComments.voting"
+                                          :edit="taskHasComments.edit_comments"
+                                          :remove="taskHasComments.remove_comments"
+                                          />
                             </div>
                         </div>
                         @can('editData', $task->processRequest)
@@ -291,8 +296,12 @@
         },
         computed: {
           taskHasComments() {
-            const commentsPackage = 'comments-editor' in Vue.options.components;
-            return commentsPackage && this.task.config && this.task.config.comments;
+            const commentsPackage = 'comment-editor' in Vue.options.components;
+            let config = {};
+            if (commentsPackage && this.task.definition && this.task.definition.config) {
+              config = JSON.parse(this.task.definition.config);
+            }
+            return config;
           },
           dueLabel() {
             const dueLabels = {

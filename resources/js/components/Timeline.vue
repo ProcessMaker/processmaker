@@ -6,6 +6,10 @@
         v-bind:key="`timeline-item-${index}`"
         v-bind:value="item"
         v-bind:icon="icon(item)"
+        :allow-reactions="reactions"
+        :allow-edit="edit"
+        :allow-remove="remove"
+        :allow-voting="voting"
         @refresh="load"
       />
     </template>
@@ -27,7 +31,7 @@ const SubjectIcons = {
   'Gateway': 'far fa-square fa-rotate-45',
 };
 export default {
-  props: ["commentable_id", "commentable_type", "type", "hidden"],
+  props: ["commentable_id", "commentable_type", "type", "hidden", "reactions", "voting", "edit", "remove"],
   data() {
     return {
       newComment: '',
@@ -68,6 +72,7 @@ export default {
       this.form.body = "";
     },
     load() {
+      this.comments = [];
       ProcessMaker.apiClient
         .get("comments", {
           params: {
