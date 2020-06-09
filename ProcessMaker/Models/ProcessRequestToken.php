@@ -61,6 +61,8 @@ use Throwable;
  *       )
  *   }
  * )
+ *
+ * @method ProcessRequest getInstance()
  */
 class ProcessRequestToken extends Model implements TokenInterface
 {

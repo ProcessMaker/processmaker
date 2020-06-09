@@ -7,15 +7,14 @@ use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Process as Definitions;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
-use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use Throwable;
 
 class RunServiceTask extends BpmnAction implements ShouldQueue
 {
-
     public $definitionsId;
     public $instanceId;
     public $tokenId;
@@ -23,13 +22,13 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
 
     /**
      * Create a new job instance.
-     * 
+     *
      * @param \ProcessMaker\Models\Process $definitions
-     * @param \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface $instance
-     * @param \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $token
+     * @param \ProcessMaker\Models\ProcessRequest $instance
+     * @param \ProcessMaker\Models\ProcessRequestToken $token
      * @param array $data
      */
-    public function __construct(Definitions $definitions, ExecutionInstanceInterface $instance, TokenInterface $token, array $data)
+    public function __construct(Definitions $definitions, ProcessRequest $instance, ProcessRequestToken $token, array $data)
     {
         $this->definitionsId = $definitions->getKey();
         $this->instanceId = $instance->getKey();
@@ -42,7 +41,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
      *
      * @return void
      */
-    public function action(TokenInterface $token, ServiceTaskInterface $element, Definitions $processModel)
+    public function action(ProcessRequestToken $token, ServiceTaskInterface $element, Definitions $processModel, ProcessRequest $instance)
     {
         $implementation = $element->getImplementation();
         Log::info('Service task started: ' . $implementation);
@@ -65,15 +64,24 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 Log::error('Service task not implemented: ' . $implementation);
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
+
+            $this->unlockInstance($instance->getKey());
             $response = $script->runScript($data, $configuration);
-            if (is_array($response['output'])) {
-                // Validate data
-                WorkflowManager::validateData($response['output'], $processModel, $element);
-                foreach ($response['output'] as $key => $value) {
-                    $dataStore->putData($key, $value);
+
+            $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
+                $dataStore = $token->getInstance()->getDataStore();
+                // Update data
+                if (is_array($response['output'])) {
+                    // Validate data
+                    WorkflowManager::validateData($response['output'], $processModel, $element);
+                    foreach ($response['output'] as $key => $value) {
+                        $dataStore->putData($key, $value);
+                    }
                 }
-            }
-            $element->complete($token);
+                $element->complete($token);
+                $this->engine = $engine;
+                $this->instance = $instance;
+            });
             Log::info('Service task completed: ' . $implementation);
         } catch (Throwable $exception) {
             // Change to error status

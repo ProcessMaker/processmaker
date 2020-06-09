@@ -3,28 +3,27 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
+use ProcessMaker\Jobs\CatchSignalEvent;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken as Token;
+use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
-use Illuminate\Support\Facades\Validator;
-use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
-use ProcessMaker\Jobs\BoundaryEvent;
-use ProcessMaker\Jobs\CatchSignalEvent;
-use ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 
 class WorkflowManager
 {
@@ -198,9 +197,10 @@ class WorkflowManager
      *
      * @return void
      */
-    public function validateData(array $data, Definitions $Definitions, EntityInterface $element) {
+    public function validateData(array $data, Definitions $Definitions, EntityInterface $element)
+    {
         $this->validator = Validator::make($data, []);
-        foreach($this->validations as $validation) {
+        foreach ($this->validations as $validation) {
             call_user_func($validation, $this->validator, $Definitions, $element);
         }
         $this->validator->validate($data);

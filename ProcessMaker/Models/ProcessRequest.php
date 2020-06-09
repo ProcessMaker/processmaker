@@ -6,8 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Log;
-use ProcessMaker\Nayra\Bpmn\Models\IntermediateCatchEvent;
-use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -37,6 +35,7 @@ use Throwable;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  * @property Process $process
+ * @property ProcessRequestLock[] $locks
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -119,6 +118,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         'data' => 'array',
         'errors' => 'array',
         'signal_events' => 'array',
+        'locked_at' => 'datetime:c',
     ];
 
     /**
@@ -553,7 +553,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     private function valueAliasRequester($value, $expression)
     {
         $user = User::where('username', $value)->get()->first();
-        $requests = ProcessRequest::where('user_id', $expression->operator,$user->id)->get();
+        $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
 
         return function ($query) use ($requests) {
             $query->whereIn('id', $requests->pluck('id'));
@@ -621,19 +621,19 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function updateCatchEvents()
     {
-       $signalEvents = [];
-       foreach ($this->tokens as $token) {
-           $element = $token->getDefinition(true);
-           if ($element instanceof IntermediateCatchEventInterface) {
-               foreach ($element->getEventDefinitions() as $eventDefinition) {
-                   if ($eventDefinition instanceof SignalEventDefinitionInterface) {
-                       $signalEvents[]= $eventDefinition->getProperty('signal')->getId();
-                   }
-               }
-           }
-       }
-       $this->signal_events = $signalEvents;
-       $this->save();
+        $signalEvents = [];
+        foreach ($this->tokens as $token) {
+            $element = $token->getDefinition(true);
+            if ($element instanceof IntermediateCatchEventInterface) {
+                foreach ($element->getEventDefinitions() as $eventDefinition) {
+                    if ($eventDefinition instanceof SignalEventDefinitionInterface) {
+                        $signalEvents[]= $eventDefinition->getProperty('signal')->getId();
+                    }
+                }
+            }
+        }
+        $this->signal_events = $signalEvents;
+        $this->save();
     }
 
     /**
@@ -647,5 +647,41 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $latest = ProcessRequest::find($this->getId());
         $this->data = $store->updateArray($latest->data);
         return $this->data;
+    }
+
+    /**
+     * Locks required to the request
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function locks()
+    {
+        return $this->hasMany(ProcessRequestLock::class);
+    }
+
+    /**
+     * Request a lock
+     *
+     * @param int $tokenId
+     *
+     * @return ProcessRequestLock
+     */
+    public function lock($tokenId)
+    {
+        return $this->locks()->create(['process_request_token_id' => $tokenId]);
+    }
+
+    public function unlock()
+    {
+        $first = $this->locks()->orderBy('id')->first();
+        if ($first) {
+            $first->delete();
+        }
+    }
+
+    public function hasLock(ProcessRequestLock $lock)
+    {
+        $first = $this->locks()->orderBy('id')->first();
+        return !$first || $first->getKey() === $lock->getKey();
     }
 }
