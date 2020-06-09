@@ -223,13 +223,15 @@
                         @endisset
                     </div>
                 </div>
-                @if($canViewComments === true)
-                    <div>
-                        <timeline commentable_id="{{ $request->getKey() }}"
-                                  commentable_type="{{ get_class($request) }}"/>
-                    </div>
-                @endif
-
+                <div v-if="configurationComments.comments">
+                    <timeline commentable_id="{{ $request->getKey() }}"
+                              commentable_type="{{ get_class($request) }}"
+                              :reactions="configurationComments.reactions"
+                              :voting="configurationComments.voting"
+                              :edit="configurationComments.edit"
+                              :remove="configurationComments.remove"
+                              />
+                </div>
             </div>
             <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="statusLabel">
@@ -372,6 +374,14 @@
             errorLogs: @json(['data'=>$request->errors]),
             disabled: false,
             packages: [],
+            canViewComments: @json($canViewComments),
+            configurationComments : {
+              comments: false,
+              reactions: false,
+              edit: false,
+              voting: false,
+              remove: false,
+            },
           };
         },
         computed: {
@@ -611,9 +621,28 @@
                   location.reload()
                 })
               })
-          }
+          },
+          getConfigurationComments() {
+            const commentsPackage = 'comment-editor' in Vue.options.components;
+            if (commentsPackage) {
+              ProcessMaker.apiClient.get(`comments/configuration`, {
+                params: {
+                  id: this.requestId,
+                  type: 'Process',
+                }
+              })
+                .then(response => {
+                  this.configurationComments.comments = !!response.data.comments;
+                  this.configurationComments.reactions = !!response.data.reactions;
+                  this.configurationComments.voting = !!response.data.voting;
+                  this.configurationComments.edit = !!response.data.edit;
+                  this.configurationComments.remove = !!response.data.remove;
+                });
+            }
+          },
         },
         mounted() {
+          this.getConfigurationComments();
           this.packages = window.ProcessMaker.requestShowPackages;
           this.listenRequestUpdates();
           this.cleanScreenButtons();
