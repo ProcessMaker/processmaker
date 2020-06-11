@@ -29,7 +29,7 @@
           <li v-if="displayMyFilesLink" class="list-group-item px-2">
             <a href="/file-manager">
               <i class="fas fa-folder fa-fw fa-lg mr-1"></i>
-              {{$t('My Files')}}
+              {{$t('Files')}}
             </a>
           </li>
           <li class="list-group-item px-2">
