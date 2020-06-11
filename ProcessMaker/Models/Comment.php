@@ -56,6 +56,11 @@ class Comment extends Model
         'user_id', 'commentable_id', 'commentable_type', 'subject', 'body', 'hidden', 'type'
     ];
 
+    protected $casts = [
+        'up' => 'array',
+        'down' => 'array',
+    ];
+
     public static function rules()
     {
         return [

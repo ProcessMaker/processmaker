@@ -16,8 +16,8 @@ class AddSoftDeleteComments extends Migration
     {
         $model = new Comment();
         Schema::connection($model->getConnectionName())->table('comments', function (Blueprint $table) {
-            $table->integer('up')->nullable()->after('commentable_type');
-            $table->integer('down')->nullable()->after('commentable_type');
+            $table->json('up')->nullable()->after('commentable_type');
+            $table->json('down')->nullable()->after('commentable_type');
             $table->softDeletes();
         });
     }
