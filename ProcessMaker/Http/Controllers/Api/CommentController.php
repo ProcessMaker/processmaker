@@ -56,7 +56,7 @@ class CommentController extends Controller
 
         $response =
             $query->orderBy(
-                $request->input('order_by', 'updated_at'),
+                $request->input('order_by', 'created_at'),
                 $request->input('order_direction', 'ASC')
             )->paginate($request->input('per_page', 100));
 
