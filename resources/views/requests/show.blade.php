@@ -374,6 +374,7 @@
             errorLogs: @json(['data'=>$request->errors]),
             disabled: false,
             packages: [],
+            processId: @json($request->process->id),
             canViewComments: @json($canViewComments),
             configurationComments : {
               comments: false,
@@ -623,21 +624,23 @@
               })
           },
           getConfigurationComments() {
-            const commentsPackage = 'comment-editor' in Vue.options.components;
-            if (commentsPackage) {
-              ProcessMaker.apiClient.get(`comments/configuration`, {
-                params: {
-                  id: this.requestId,
-                  type: 'Process',
-                }
-              })
-                .then(response => {
-                  this.configurationComments.comments = !!response.data.comments;
-                  this.configurationComments.reactions = !!response.data.reactions;
-                  this.configurationComments.voting = !!response.data.voting;
-                  this.configurationComments.edit = !!response.data.edit;
-                  this.configurationComments.remove = !!response.data.remove;
-                });
+            if (this.canViewComments) {
+              const commentsPackage = 'comment-editor' in Vue.options.components;
+              if (commentsPackage) {
+                ProcessMaker.apiClient.get(`comments/configuration`, {
+                  params: {
+                    id: this.processId,
+                    type: 'Process',
+                  }
+                })
+                  .then(response => {
+                    this.configurationComments.comments = !!response.data.comments;
+                    this.configurationComments.reactions = !!response.data.reactions;
+                    this.configurationComments.voting = !!response.data.voting;
+                    this.configurationComments.edit = !!response.data.edit;
+                    this.configurationComments.remove = !!response.data.remove;
+                  });
+              }
             }
           },
         },
