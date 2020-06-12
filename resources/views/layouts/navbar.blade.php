@@ -27,7 +27,10 @@
             foreach(array_merge($customNav, $defaultNav) as $item) {
                 $newItem = (array) $item;
                 $newItem['link'] = $item->url();
-                $newItem['isCustom'] = in_array($item, $customNav);
+                $itemsInCustom = array_filter($customNav, function ($el) use($item) {
+                    return $el === $item;
+                });
+                $newItem['isCustom'] = count($itemsInCustom) > 0;
                 $menuItems[] = $newItem;
             }
             // If a menu provider is installed, remove menu items from ProcessMaker but preserve any other (from packages, for example)
