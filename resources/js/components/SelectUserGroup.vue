@@ -119,6 +119,7 @@
       },
       value: {
         immediate: true,
+        deep: true,
         handler (value) {
           if (!value) {
             return
