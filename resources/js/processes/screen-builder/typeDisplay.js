@@ -12,6 +12,7 @@ const TableControl = FormBuilderControls.find(control => control.rendererBinding
 const RichTextControl = FormBuilderControls.find(control => control.rendererBinding === "FormHtmlEditor");
 let FormRecordList = FormBuilderControls.find(control => control.rendererBinding === "FormRecordList");
 const FormImage = FormBuilderControls.find(control => control.rendererBinding === "FormImage");
+const FormLoop = FormBuilderControls.find(control => control.rendererBinding === "FormLoop");
 
 // Remove editable inspector props
 FormRecordList.control.inspector = FormRecordList.control.inspector.filter(prop => prop.field !== "editable" && prop.field !== "form");
@@ -20,7 +21,8 @@ let controlsDisplay = [
   RichTextControl,
   TableControl,
   FormRecordList,
-  FormImage
+  FormImage,
+  FormLoop,
 ];
 
 controlsDisplay.push(FileDownloadControl);
