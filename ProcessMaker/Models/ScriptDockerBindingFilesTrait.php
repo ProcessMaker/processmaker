@@ -86,7 +86,11 @@ trait ScriptDockerBindingFilesTrait
                 );
             }
             Log::error('Script threw return code ' . $returnCode . 'Message: ' . implode("\n", $output));
-            throw new ScriptException(implode("\n", $output));
+            
+            $message = implode("\n", $output);
+            $message .= "\n\nProcessMaker Stack:\n";
+            $message .= (new \Exception)->getTraceAsString();
+            throw new ScriptException($message);
         }
         $outputs = $this->getOutputFilesContent();
         $this->removeTemporalFiles();

@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Log;
 use RuntimeException;
 use ProcessMaker\Exception\ScriptTimeoutException;
+use ProcessMaker\Exception\ScriptException;
 
 /**
  * Execute a docker container copying files to interchange information.
@@ -51,7 +52,7 @@ trait ScriptDockerCopyingFilesTrait
     {
         $cidfile = tempnam(config('app.processmaker_scripts_home'), 'cid');
         unlink($cidfile);
-        $cmd = config('app.processmaker_scripts_docker') . sprintf(' create %s --cidfile %s %s %s 2>&1', $parameters, $cidfile, $image, $command);
+        $cmd = config('app.processmaker_scripts_docker') . sprintf(' create --network=host %s --cidfile %s %s %s 2>&1', $parameters, $cidfile, $image, $command);
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
             throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
@@ -150,7 +151,10 @@ trait ScriptDockerCopyingFilesTrait
                 throw new ScriptTimeoutException(implode("\n", $output));
             }
             Log::error('Script threw return code ' . $returnCode);
-            throw new ScriptException(implode("\n", $output));
+            $message = implode("\n", $output);
+            $message .= "\n\nProcessMaker Stack:\n";
+            $message .= (new \Exception)->getTraceAsString();
+            throw new ScriptException($message);
         }
         return compact('line', 'output', 'returnCode');
     }
