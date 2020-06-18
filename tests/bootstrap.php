@@ -94,10 +94,10 @@ if (env('POPULATE_DATABASE')) {
     Artisan::call('migrate:fresh', []);
 }
 
-if (count(ScriptExecutor::listOfExecutorImages('php')) === 0) {
+if (ScriptExecutor::where('language', 'php')->count() === 0) {
     Artisan::call('docker-executor-php:install');
 }
 
-if (count(ScriptExecutor::listOfExecutorImages('lua')) === 0) {
+if (ScriptExecutor::where('language', 'lua')->count() === 0) {
     Artisan::call('docker-executor-lua:install');
 }
