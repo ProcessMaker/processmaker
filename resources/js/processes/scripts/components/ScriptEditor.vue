@@ -159,6 +159,7 @@ export default {
       executionKey: null,
       resizing: false,
       monacoOptions: {
+        automaticLayout: true
       },
       code: this.script.code,
       preview: {
