@@ -110,13 +110,14 @@
                                 </div>
                               </div>
                             </template>
-                            <div v-if="taskHasComments && taskHasComments.comments">
+                            <div v-if="taskHasComments">
                                 <timeline :commentable_id="task.id"
                                           commentable_type="ProcessMaker\Models\ProcessRequestToken"
                                           :reactions="taskHasComments.reactions"
                                           :voting="taskHasComments.voting"
                                           :edit="taskHasComments.edit_comments"
                                           :remove="taskHasComments.remove_comments"
+                                          :adding="taskHasComments.comments"
                                           />
                             </div>
                         </div>
