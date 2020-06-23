@@ -104,9 +104,16 @@
     },
     methods: {
       load(filter) {
+        let params = Object.assign({
+          order_direction: 'asc',
+          selectList: true,
+          filter:(typeof filter === 'string' ? filter : '')
+        });
         this.loading = true;
         ProcessMaker.apiClient
-          .get("scripts?order_direction=asc" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+          .get('scripts', {
+            params: params
+          })
           .then(response => {
             this.loading = false;
             this.scripts = response.data.data;
