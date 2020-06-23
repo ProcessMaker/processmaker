@@ -223,15 +223,14 @@
                         @endisset
                     </div>
                 </div>
-                <div v-if="configurationComments.comments">
                     <timeline commentable_id="{{ $request->getKey() }}"
                               commentable_type="{{ get_class($request) }}"
                               :reactions="configurationComments.reactions"
                               :voting="configurationComments.voting"
                               :edit="configurationComments.edit"
                               :remove="configurationComments.remove"
+                              :adding="configurationComments.comments"
                               />
-                </div>
             </div>
             <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="statusLabel">

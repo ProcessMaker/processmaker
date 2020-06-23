@@ -13,7 +13,7 @@
         @refresh="load"
       />
     </template>
-    <template v-if="isDefined('comment-editor')">
+    <template v-if="isDefined('comment-editor') && adding">
     <comment-editor
       v-model="newComment"
       class="mt-2"
@@ -31,7 +31,15 @@ const SubjectIcons = {
   'Gateway': 'far fa-square fa-rotate-45',
 };
 export default {
-  props: ["commentable_id", "commentable_type", "type", "hidden", "reactions", "voting", "edit", "remove"],
+  props: ["commentable_id", 
+            "commentable_type", 
+            "type", 
+            "hidden", 
+            "reactions", 
+            "voting", 
+            "edit", 
+            "remove",
+            "adding"],
   data() {
     return {
       newComment: '',
