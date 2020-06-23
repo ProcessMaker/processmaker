@@ -149,11 +149,11 @@ class GlobalSignalsTest extends TestCase
     }
 
     /**
-     * Test send signals from two diffetent processes
+     * Test process with undefined signals
      *
      * @group process_tests
      */
-    public function testProcessWithGlobalThrowWithoutSignal()
+    public function testProcessWithUndefinedSignals()
     {
         // Create the processes
         $parent = $this->createProcess([
