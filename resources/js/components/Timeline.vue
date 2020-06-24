@@ -1,5 +1,5 @@
 <template>
-  <div class="px-3 mb-2 timeline">
+  <div class="px-4 mb-2 timeline">
     <template v-for="(item,index) in comments">
       <component 
         v-bind:is="component(item)"
