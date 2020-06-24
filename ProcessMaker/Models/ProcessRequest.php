@@ -18,6 +18,7 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -569,7 +570,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     private function valueAliasParticipant($value, $expression)
     {
-        $user = User::where('username', $value)->get()->first();
+        $user = User::where('username', $value)->firstOrFail();
         $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
 
         return function ($query) use ($tokens) {
