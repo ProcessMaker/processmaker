@@ -10,6 +10,7 @@
         :allow-edit="edit"
         :allow-remove="remove"
         :allow-voting="voting"
+        :read-only="readonly"
         @refresh="load"
       />
     </template>
@@ -39,7 +40,9 @@ export default {
             "voting", 
             "edit", 
             "remove",
-            "adding"],
+            "adding",
+            "readonly"
+        ],
   data() {
     return {
       newComment: '',
