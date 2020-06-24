@@ -270,8 +270,10 @@ export default {
                 this.data = this.transform(response.data);
               }).catch(error => {
                 if (_.has(error, 'response.data.message')) {
-                  ProcessMaker.alert(error.response.data.message, 'danger');
-                } else {
+                  ProcessMaker.alert(error.response.data.message, 'danger');  
+                } else if(_.has(error, 'response.data.error')) {
+                  return;
+                }  else {
                   throw error;
                 }
               });
