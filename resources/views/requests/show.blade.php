@@ -230,7 +230,7 @@
                               :edit="configurationComments.edit"
                               :remove="configurationComments.remove"
                               :adding="configurationComments.comments"
-                              :readonly="'request.status' === 'COMPLETED'"
+                              :readonly="request.status === 'COMPLETED'"
                               />
             </div>
             <div class="ml-md-3 mt-3 mt-md-0">
