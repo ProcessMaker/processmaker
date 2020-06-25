@@ -20,6 +20,7 @@
       <uploader-drop id="uploaderMain" class="form-control-file">
         <p>{{ $t('Drop a file here to upload or') }}</p>
         <uploader-btn id="submitFile" class="btn btn-secondary text-white">{{ $t('select file') }}</uploader-btn>
+        <span v-if="validation === 'required' && !value" class="required">{{ $t('Required') }}</span>
       </uploader-drop>
 
       <uploader-list>
@@ -51,7 +52,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept"],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", "validation"],
   beforeMount() {
     this.getFileType();
   },
@@ -278,3 +279,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.required {
+  color: red;
+  font-size: 0.8em;
+}
+</style>

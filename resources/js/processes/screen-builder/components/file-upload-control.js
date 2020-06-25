@@ -38,6 +38,14 @@ export default {
           label: "Name",
           helper: "The name of the upload"
         }
+      },
+      {
+        type: 'RequiredCheckbox',
+        field: 'validation',
+        config: {
+          label: 'Required',
+          helper: 'Prevent form from being submitted unless a file is uploaded'
+        }
       }
     ]
   }

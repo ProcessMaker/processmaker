@@ -24,10 +24,12 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 | or another output device for the developers. Here goes nothing!
 |
 */
+$consoleOutput = new Symfony\Component\Console\Output\ConsoleOutput;
+$consoleOutput->setVerbosity(100);
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $status = $kernel->handle(
     $input = new Symfony\Component\Console\Input\ArgvInput,
-    new Symfony\Component\Console\Output\ConsoleOutput
+    $consoleOutput
 );
 /*
 |--------------------------------------------------------------------------
