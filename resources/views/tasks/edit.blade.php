@@ -118,6 +118,7 @@
                                           :edit="taskHasComments.edit_comments"
                                           :remove="taskHasComments.remove_comments"
                                           :adding="taskHasComments.comments"
+                                          :readonly="task.status === 'CLOSED'"
                                           />
                             </div>
                         </div>

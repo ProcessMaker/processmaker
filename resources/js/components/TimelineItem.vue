@@ -1,6 +1,6 @@
 <template>
-  <div class="px-2 py-3 d-flex">
-    <div class="badge timeline-badge mr-1 rounded d-flex justify-content-center align-items-center" :class="iconClass || 'timeline-icon'">
+  <div class="py-3 d-flex">
+    <div v-if="icon" class="badge timeline-badge mr-1 rounded d-flex justify-content-center align-items-center" :class="iconClass || 'timeline-icon'">
       <slot v-if="hasIconSlot" name="icon"></slot>
       <i v-else :class="icon"></i>
     </div>
