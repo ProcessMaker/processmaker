@@ -103,6 +103,7 @@
             type: this.type(),
             order_direction: 'asc',
             status: 'active',
+            selectList: true,
             filter: (typeof filter === 'string' ? filter : '')
           },
           this.params

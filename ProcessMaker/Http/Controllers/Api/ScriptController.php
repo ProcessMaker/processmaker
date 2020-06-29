@@ -87,14 +87,21 @@ class ScriptController extends Controller
         }
 
         $filter = $request->input('filter', '');
+        $isSelectList = $request->input('selectList', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->Where('title', 'like', $filter)
-                    ->orWhere('description', 'like', $filter)
-                    ->orWhere('language', 'like', $filter)
-                    ->orWhere('category.name', 'like', $filter);
-            });
+            if (!$isSelectList) {
+                $query->where(function ($query) use ($filter) {
+                    $query->Where('title', 'like', $filter)
+                        ->orWhere('description', 'like', $filter)
+                        ->orWhere('language', 'like', $filter)
+                        ->orWhere('category.name', 'like', $filter);
+                });    
+            } else  {
+                $query->where(function ($query) use ($filter) {
+                    $query->Where('title', 'like', $filter);
+                });
+            }
         }
 
 

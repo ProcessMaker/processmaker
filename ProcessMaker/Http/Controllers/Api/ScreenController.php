@@ -82,15 +82,22 @@ class ScreenController extends Controller
 
 
         $filter = $request->input('filter', '');
+        $isSelectList = $request->input('selectList', '');
         if (!empty($filter)) {
             $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->where('title', 'like', $filter)
-                    ->orWhere('description', 'like', $filter)
-                    ->orWhere('type', 'like', $filter)
-                    ->orWhere('config', 'like', $filter)
-                    ->orWhere('category.name', 'like', $filter);
-            });
+            if (!$isSelectList) {
+                $query->where(function ($query) use ($filter) {
+                    $query->where('title', 'like', $filter)
+                        ->orWhere('description', 'like', $filter)
+                        ->orWhere('type', 'like', $filter)
+                        ->orWhere('config', 'like', $filter)
+                        ->orWhere('category.name', 'like', $filter);
+                });
+            } else {
+                $query->where(function ($query) use ($filter) {
+                    $query->where('title', 'like', $filter);
+                });
+            }
         }
         if ($request->input('type')) {
             $types = explode(',', $request->input('type'));
