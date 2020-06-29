@@ -111,8 +111,7 @@ jobs:
           command: |
             sudo php artisan vendor:publish --tag=telescope-assets --force
 
-      # - run: sudo npm install -g npm@6.4.1 && npm ci
-      - run: npm -v
+      - run: npm ci
 
       - save_cache:
           paths:
