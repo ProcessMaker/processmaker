@@ -115,7 +115,7 @@ export default {
           field.field = column.field;
         }
         
-        if (column.sortable == true && !field.sortField) {
+        if (column.sortable === true && !field.sortField) {
           field.sortField = column.field;
         }
         
