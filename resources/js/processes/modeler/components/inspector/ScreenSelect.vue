@@ -28,7 +28,7 @@
         </div>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
         <a
-                v-if="content.id"
+                v-if="content && content.id"
                 :href="`/designer/screen-builder/${content.id}/edit`"
                 target="_blank"
         >
