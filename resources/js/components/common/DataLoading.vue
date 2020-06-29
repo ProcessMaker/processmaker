@@ -71,8 +71,12 @@
                 }
             })
             ProcessMaker.EventBus.$on('api-client-error', (error) => {
-                this.noResults = false
-                this.error = true
+                if (error && error.response.data.error == 'Not Found') {
+                    this.noResults = true;
+                } else {
+                    this.noResults = false
+                    this.error = true
+                }
             })
         },
         methods: {
