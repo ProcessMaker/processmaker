@@ -45,6 +45,9 @@ export default {
         // Handler to change what page of results we are on
         changePerPage(value) {
             this.perPage = value;
+            if (this.page*value > this.data.meta.total) {
+              this.page = Math.floor(this.data.meta.total / value) + 1;
+            }
             this.fetch();
         },
         // Transformers our API meta data to a format understood by vuetable 2
