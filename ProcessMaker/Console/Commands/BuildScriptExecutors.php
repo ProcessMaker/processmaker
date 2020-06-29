@@ -4,7 +4,6 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use ProcessMaker\Events\BuildScriptExecutor;
-use ProcessMaker\BuildSdk;
 use ProcessMaker\Models\ScriptExecutor;
 use \Exception;
 
@@ -130,7 +129,11 @@ class BuildScriptExecutors extends Command
             }
 
             $this->info("Building the SDK");
-            $this->artisan("processmaker:sdk $sdkLanguage $sdkDir --clean");
+            $cmd = "processmaker:sdk $sdkLanguage $sdkDir --clean";
+            if ($this->userId) {
+                $cmd .= ' --user-id=' . $this->userId;
+            }
+            $this->artisan($cmd);;
             $this->info("SDK is at ${sdkDir}");
         }
 
