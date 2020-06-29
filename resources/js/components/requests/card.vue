@@ -9,8 +9,8 @@
               <a href="#" @click="showRequestDetails">...</a>
             </div>
             <div class="col-2 text-right">
-              <a href="#" @click="newRequestLink(process, event)" class="btn btn-primary btn-sm">
-                <i class="fas fa-caret-square-right"></i> Start
+              <a :href="getNewRequestLinkHref(process, event)" @click.prevent="newRequestLink(process, event);" class="btn btn-primary btn-sm">
+                <i class="fas fa-caret-square-right"></i> {{$t('Start')}}
               </a>
             </div>
           </div>
@@ -59,6 +59,11 @@ export default {
       } else {
         this.showdetail = false;
       }
+    },
+    getNewRequestLinkHref(process, event) {
+      const id = process.id;
+      const startEventId = event.id;
+      return "/process_events/" + id + "?event=" + startEventId;
     }
   },
   computed: {
