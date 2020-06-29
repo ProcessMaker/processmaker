@@ -29,6 +29,14 @@ jobs:
 
     steps:
       - run:
+          name: Install node@14.4.0
+          command: |
+            set +e             
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+            echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+            echo 'nvm install v14.4.0' >> $BASH_ENV
+      - run:
           name: Set Build Name Environment Variable
           # Set BUILD_NAME environment variable to a filesystem friendly name and store it in our bash environment
           command: |
@@ -103,7 +111,8 @@ jobs:
           command: |
             sudo php artisan vendor:publish --tag=telescope-assets --force
 
-      - run: sudo npm install -g npm@6.4.1 && npm ci
+      # - run: sudo npm install -g npm@6.4.1 && npm ci
+      - run: npm -v
 
       - save_cache:
           paths:
