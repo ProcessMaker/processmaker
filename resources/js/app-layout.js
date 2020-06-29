@@ -14,6 +14,7 @@ import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from './components/TimelineItem';
 
 import { FileUpload, FileDownload } from './processes/screen-builder/components'
+import RequiredCheckbox from './processes/screen-builder/components/inspector/RequiredCheckbox'
 
 /******
  * Global adjustment parameters for moment.js.
@@ -47,6 +48,7 @@ Vue.component("category-select", CategorySelect);
 Vue.component("select-from-api", SelectFromApi);
 Vue.component("FileUpload", FileUpload);
 Vue.component("FileDownload", FileDownload);
+Vue.component("RequiredCheckbox", RequiredCheckbox);
 Vue.component("Breadcrumbs", Breadcrumbs);
 Vue.component("timeline-item", TimelineItem);
 
