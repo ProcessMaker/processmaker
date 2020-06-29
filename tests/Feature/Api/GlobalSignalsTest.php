@@ -149,74 +149,28 @@ class GlobalSignalsTest extends TestCase
     }
 
     /**
-     * Test send signals from two diffetent processes
+     * Test process with undefined signals
      *
      * @group process_tests
      */
-    public function testGlobalSignalIntermediateWithoutCollaboration()
+    public function testProcessWithUndefinedSignals()
     {
         // Create the processes
         $parent = $this->createProcess([
             'id' => 1,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/GlobalSignalSource.bpmn')
-        ]);
-        $target = $this->createProcess([
-            'id' => 2,
-            'bpmn' => file_get_contents(__DIR__ . '/processes/GlobalSignalIntermediate.bpmn')
+            'bpmn' => file_get_contents(__DIR__ . '/processes/GlobalSignalSourceMissing.bpmn')
         ]);
 
         // Start a parent process instance
-        $instance = $this->startProcess($parent, 'node_1');
+        $instance = $this->startProcess($parent, 'node_10');
 
-        // Assertion: Active Task = Task 1
-        $activeTask = $instance->tokens()->where('status', 'ACTIVE')->first();
-        $this->assertEquals('Task 1', $activeTask->element_name);
-        // Complete Parent Task
-        $this->completeTask($activeTask, []);
+        // Assertion: The process can be started without errors
+        $this->assertEquals('ACTIVE', $instance->status);
 
-        // Start the second process
-        $childRequest = $this->startProcess($target, 'node_1');
+        // Try update catch events
+        $instance->updateCatchEvents();
 
-        // Assertion: There are 2 Requests started
-        $this->assertEquals(2, ProcessRequest::count());
-
-        // Assertion: Active Task = Task 2 (in process two)
-        $activeTask = $childRequest->tokens()->where('status', 'ACTIVE')->first();
-        $this->assertEquals('Task 2', $activeTask->element_name);
-        // Complete Child Task
-        $this->completeTask($activeTask, []);
-
-        // Assertion: Active Task = Task 3 (process one)
-        $instance->refresh();
-        $activeTask = $instance->tokens()->where('status', 'ACTIVE')->first();
-        $this->assertEquals('Task 3', $activeTask->element_name);
-        // Complete Parent Task
-        $this->completeTask($activeTask, []);
-
-        // Assertion: Active Task = Task 4b (process two)
-        $childRequest->refresh();
-        $activeTask = $childRequest->tokens()->where('status', 'ACTIVE')->first();
-        $this->assertEquals('Task 4b', $activeTask->element_name);
-        // Complete Parent Task
-        $this->completeTask($activeTask, []);
-
-        // Assertion: Active Task = Task 4a (process one)
-        $instance->refresh();
-        $activeTask = $instance->tokens()->where('status', 'ACTIVE')->first();
-        $this->assertEquals('Task 4a', $activeTask->element_name);
-        // Complete Parent Task
-        $this->completeTask($activeTask, []);
-
-        // Get active tokens
-        $instance->refresh();
-        $childRequest->refresh();
-        $activeTokensParent = $instance->tokens()->where('status', 'ACTIVE')->get();
-        $activeTokensChild = $childRequest->tokens()->where('status', 'ACTIVE')->get();
-
-        // Assertion: All the request were completed
-        $this->assertCount(0, $activeTokensParent);
-        $this->assertCount(0, $activeTokensChild);
-        $this->assertEquals('COMPLETED', $instance->status);
-        $this->assertEquals('COMPLETED', $childRequest->status);
+        // Assertion: No signal events are registered
+        $this->assertCount(0, $instance->signal_events);
     }
 }
