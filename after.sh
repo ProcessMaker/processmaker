@@ -18,6 +18,11 @@ sudo add-apt-repository \
 sudo apt-get update
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+nvm install v14.4.0
+
 # Start the docker service and ensure it runs at startup
 sudo systemctl start docker
 sudo systemctl enable docker
