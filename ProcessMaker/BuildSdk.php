@@ -4,22 +4,21 @@ namespace ProcessMaker;
 use \Exception;
 use \ZipArchive;
 use function GuzzleHttp\json_decode;
+use ProcessMaker\Events\BuildScriptExecutor;
 
 class BuildSdk {
-    private $rebuild = false;
-    private $debug = false;
+    private $debug = true;
     private $image = "openapitools/openapi-generator-cli";
     private $tag = "v4.2.2";
     private $lang = null;
     private $outputPath = null;
     private $jsonPath = null;
     private $tmpfile = null;
+    private $userId = null;
 
-    public function __construct($jsonPath, $outputPath, $debug = false, $rebuild = false) {
+    public function __construct($jsonPath, $outputPath) {
         $this->jsonPath = $jsonPath;
         $this->outputPath = rtrim($outputPath, "/");
-        $this->debug = $debug;
-        $this->rebuild = $rebuild;
     }
 
     public function run()
@@ -43,6 +42,14 @@ class BuildSdk {
         $this->runCmd("cp -rf {$folder}/. {$this->outputDir()}");
 
         return "DONE. Api is at {$this->outputDir()}";
+    }
+
+    public function setUserId($userId)
+    {
+        if (!is_numeric($userId)) {
+            throw new \Exception("User id must be a number");
+        }
+        $this->userId = $userId;
     }
 
     private function cp($from, $to)
@@ -103,17 +110,9 @@ class BuildSdk {
             throw new Exception("Folder is not writeable: " . $this->outputPath);
         }
 
-        // if (is_dir($this->outputDir())) {
-        //     throw new Exception("Folder exists: {$this->outputDir()}. You must manually remove the destination folder before running this script.");
-        // }
-
         if (!is_file($this->jsonPath) || !is_readable($this->jsonPath)) {
             throw new Exception("Json file does not exist or can not be read: " . $this->jsonPath);
         }
-
-        // if (json_decode($this->apiJsonRaw()) === null) {
-        //     throw new Exception("File is not valid json: " . $this->jsonPath);
-        // }
 
     }
 
@@ -162,12 +161,41 @@ class BuildSdk {
 
     private function runCmd($cmd)
     {
-        $this->log("Running: $cmd");
-        exec($cmd . " 2>&1", $output, $returnVal);
-        $output = implode("\n", $output);
+        if ($this->userId) {
+            event(new BuildScriptExecutor("Running: $cmd\n", $this->userId, 'running'));
+        } else {
+            $this->log("Running: $cmd");
+        }
+
+        $dsc = [['pipe', 'r'], ['pipe', 'w'], ['pipe', 'w']];
+        $process = proc_open("($cmd) 2>&1", $dsc, $pipes);
+
+        $output = '';
+        while(!feof($pipes[1])) {
+            $line = fgets($pipes[1]);
+
+            if ($this->userId) {
+                event(new BuildScriptExecutor($line, $this->userId, 'running'));
+            }
+            
+            $output .= $line;
+        }
+
+        fclose($pipes[0]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $returnVal = proc_close($process);
+        
         if ($returnVal) {
             $this->stopContainer();
-            throw new Exception("Cmd returned: $returnVal " . $output);
+
+            $message = "Cmd returned: $returnVal " . $output;
+
+            if ($this->userId) {
+                event(new BuildScriptExecutor($message, $this->userId, 'error'));
+            }
+
+            throw new Exception($message);
         }
         $this->log("Got: '$output'");
         return $output;
