@@ -97,7 +97,7 @@ class PackageChecker {
         return $folders;
     }
 
-    private function packageProviders()
+    public function packageProviders()
     {
         return $this->packageComposer()->extra->laravel->providers;
     }
