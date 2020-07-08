@@ -36,8 +36,8 @@ Vue.filter('javascript', function(value) {
       format = line + '*/';
     } else {
       line = line.replace('{accessEnvVar}',  `process.env.ENV_VAR_NAME`);
-      line = line.replace('{dataVariable}',  `$data`);
-      line = line.replace('{configVariable}',  `$config`);
+      line = line.replace('{dataVariable}',  `data`);
+      line = line.replace('{configVariable}',  `config`);
       line = line.replace('{apiExample}',  `getUserById(id, (error, data, response) => {})`);
       line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-node#documentation-for-api-endpoints`);
       format = ' * ' + line;
