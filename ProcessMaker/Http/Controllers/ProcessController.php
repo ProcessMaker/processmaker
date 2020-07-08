@@ -12,6 +12,7 @@ use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use ProcessMaker\Traits\HasControllerAddons;
+use ProcessMaker\Http\Controllers\Api\ProcessController as ApiProcessController;
 
 class ProcessController extends Controller
 {
@@ -223,6 +224,14 @@ class ProcessController extends Controller
     {
         $process->delete();
         return redirect('/processes');
+    }
+
+    public function triggerStartEventApi(Process $process, Request $request) {
+        $api_request = new ApiProcessController();
+        $response = $api_request->triggerStartEvent($process, $request);
+        $instance_id = $response->data['_request']['id'];
+
+        return redirect('/requests/' . $instance_id);
     }
 
     private function checkAuth()
