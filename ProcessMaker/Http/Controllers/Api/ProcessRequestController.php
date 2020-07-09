@@ -141,6 +141,7 @@ class ProcessRequestController extends Controller
                 str_ireplace('.', '->', $request->input('order_by', 'name')),
                 $request->input('order_direction', 'ASC')
             )->paginate($request->input('per_page', 10));
+            $total = $response->total();
         } catch(QueryException $e) {
             throw $e;
             $rawMessage = $e->getMessage();
