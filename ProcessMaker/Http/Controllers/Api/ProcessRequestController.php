@@ -161,7 +161,8 @@ class ProcessRequestController extends Controller
         } else {
             $response = collect([]);
         }
-        return new ProcessRequestsCollection($response);
+
+        return new ProcessRequestsCollection($response, $total);
     }
 
     /**
