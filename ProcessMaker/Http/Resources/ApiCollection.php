@@ -33,7 +33,7 @@ class ApiCollection extends ResourceCollection
     
     protected $appended;
 
-    protected $total;
+    protected $totalCount;
     
     /**
      * Create a new resource instance.
@@ -45,8 +45,8 @@ class ApiCollection extends ResourceCollection
     {
         parent::__construct($resource);
 
-        if ($this->total !== null) {
-            $this->total = (int) $total;
+        if ($total !== null) {
+            $this->totalCount = (int) $total;
         }
         
         $this->appended = (object) [];
@@ -112,10 +112,10 @@ class ApiCollection extends ResourceCollection
      */
     public function collectionToPaginator(Collection $collection, Request $request)
     {
-        if ($this->total === null) {
+        if ($this->totalCount === null) {
             $count = $collection->count();
         } else {
-            $count = $this->total;
+            $count = $this->totalCount;
         }
 
         $page = (int) $request->input('page', 1);
