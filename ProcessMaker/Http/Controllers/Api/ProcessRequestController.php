@@ -140,8 +140,7 @@ class ProcessRequestController extends Controller
             $response = $query->orderBy(
                 str_ireplace('.', '->', $request->input('order_by', 'name')),
                 $request->input('order_direction', 'ASC')
-            )->get();//->paginate($request->input('per_page', 10));
-
+            )->paginate($request->input('per_page', 10));
         } catch(QueryException $e) {
             throw $e;
             $rawMessage = $e->getMessage();
