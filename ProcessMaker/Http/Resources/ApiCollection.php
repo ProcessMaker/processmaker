@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Resources;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\AbstractPaginator;
@@ -31,6 +32,8 @@ class ApiCollection extends ResourceCollection
     public $appends = [];
     
     protected $appended;
+
+    protected $total;
     
     /**
      * Create a new resource instance.
@@ -38,9 +41,13 @@ class ApiCollection extends ResourceCollection
      * @param  mixed  $resource
      * @return void
      */
-    public function __construct($resource)
+    public function __construct($resource, $total = null)
     {
         parent::__construct($resource);
+
+        if ($this->total !== null) {
+            $this->total = (int) $total;
+        }
         
         $this->appended = (object) [];
         
@@ -105,14 +112,21 @@ class ApiCollection extends ResourceCollection
      */
     public function collectionToPaginator(Collection $collection, Request $request)
     {
-        $count = $collection->count();
+        if ($this->total === null) {
+            $count = $collection->count();
+        } else {
+            $count = $this->total;
+        }
+
         $page = (int) $request->input('page', 1);
         $perPage = (int) $request->input('per_page', 10);
         
         $startIndex = ($page - 1) * $perPage;
         $limit = $perPage;
 
-        $this->collection = $collection->slice($startIndex, $limit)->values();
+        if ($this->collection->count() > $limit) {
+            $this->collection = $collection->slice($startIndex, $limit)->values();
+        }
         
         return new LengthAwarePaginator($this->collection, $count, $perPage);
     }    
