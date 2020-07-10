@@ -181,9 +181,16 @@ class ProcessTest extends TestCase
         $response = $this->apiCall('GET', route('api.processes.start', ['order_by' => 'category.name,name']));
         $this->assertStatus(200, $response);
 
+        $responseData = $response->getData()->data;
+        if (is_array($responseData)) {
+            $responseItem = $responseData[0];
+        } elseif (is_object($responseData)) {
+           $responseItem = $responseData->{'0'};
+        }
+
         // The returned list should be ordered category and then by process name, alphabetically
-        $this->assertEquals($cat2->id, $response->getData()->data[0]->process_category_id);
-        $this->assertEquals('BProcess', $response->getData()->data[0]->name);
+        $this->assertEquals($cat2->id, $responseItem->process_category_id);
+        $this->assertEquals('BProcess', $responseItem->name);
     }
 
 
