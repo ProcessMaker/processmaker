@@ -58,7 +58,7 @@ jobs:
       - run: sudo docker-php-ext-install gd zip pdo_mysql mysqli
       - run: sudo apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev
       - run: sudo docker-php-ext-install -j$(nproc) iconv
-      - run: sudo docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp
+      - run: sudo docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg
       - run: sudo docker-php-ext-install -j$(nproc) gd
       - run: sudo docker-php-ext-install -j$(nproc) pcntl
       - run: sudo docker-php-ext-install -j$(nproc) exif
