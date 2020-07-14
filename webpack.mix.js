@@ -1,8 +1,5 @@
-const {
-  mix
-} = require("laravel-mix");
+const mix = require('laravel-mix');
 const MonacoEditorPlugin = require("monaco-editor-webpack-plugin");
-const path = require("path");
 
 /*
  |--------------------------------------------------------------------------
@@ -19,23 +16,9 @@ mix.webpackConfig({
   plugins: [
     new MonacoEditorPlugin()
   ],
-  resolve: {
-    modules: [
-      path.resolve(__dirname, "node_modules"),
-      "node_modules"
-    ],
-    symlinks: false,
-    alias: {
-      // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
-      Horizon: path.resolve(__dirname, "vendor/laravel/horizon/resources/assets/js/")
-    }
-  },
-  resolveLoader: {
-    modules: [
-      path.resolve(__dirname, "node_modules"),
-      "node_modules"
-    ]
-  },
+  externals: [
+    'monaco-editor'
+  ],
   node: {fs: "empty"}
 });
 
@@ -107,6 +90,9 @@ mix.js("resources/js/app-layout.js", "public/js")
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js("resources/js/app.js", "public/js");
+
+
+mix.copy("node_modules/monaco-editor/min/vs", "public/vendor/monaco-editor/min/vs");
 
 mix.sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")

@@ -3542,16 +3542,10 @@
         {
             "name": "processmaker/docker-executor-lua",
             "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
-                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/2278b68b63bbce34ce37cf538b43a724304f9562",
-                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562",
-                "shasum": ""
+                "type": "path",
+                "url": "/var/packages/ProcessMaker/docker-executor-lua",
+                "reference": "92230ba9c283c5c1cc0bbab9252f78ade57f1843"
             },
             "type": "library",
             "extra": {
@@ -3567,23 +3561,22 @@
                     "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GAGPL-3.0-or-later"
+            ],
             "description": "Lua script executor for processmaker 4",
-            "time": "2020-03-31T21:45:44+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": false
+            }
         },
         {
             "name": "processmaker/docker-executor-node",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/docker-executor-node.git",
-                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6"
-            },
+            "version": "1.0.2",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/e61f24090422f890cb227bc94a4461438f3ec9a6",
-                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6",
-                "shasum": ""
+                "type": "path",
+                "url": "/var/packages/ProcessMaker/docker-executor-node",
+                "reference": "22331e08cf6353ee724a0f2dd983dc12cf750bc1"
             },
             "type": "library",
             "extra": {
@@ -3599,26 +3592,22 @@
                     "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "Javascript script executor for processmaker 4",
-            "time": "2020-07-02T22:53:17+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": false
+            }
         },
         {
             "name": "processmaker/docker-executor-php",
-            "version": "1.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ProcessMaker/docker-executor-php.git",
-                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81"
-            },
+            "version": "1.0.1",
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/7a67c6aaa79d8ce4004b1c0600229317aab15c81",
-                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81",
-                "shasum": ""
+                "type": "path",
+                "url": "/var/packages/ProcessMaker/docker-executor-php",
+                "reference": "af8769b5513ee642074e124a34c8b73a52a6c379"
             },
             "type": "library",
             "extra": {
@@ -3634,9 +3623,14 @@
                     "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GAGPL-3.0-or-later"
+            ],
             "description": "PHP script executor for processmaker 4",
-            "time": "2020-03-31T21:45:33+00:00"
+            "transport-options": {
+                "symlink": true,
+                "relative": false
+            }
         },
         {
             "name": "processmaker/laravel-i18next",
@@ -6122,16 +6116,16 @@
         },
         {
             "name": "symfony/polyfill-php72",
-            "version": "v1.17.0",
+            "version": "v1.17.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php72.git",
-                "reference": "f048e612a3905f34931127360bdd2def19a5e582"
+                "reference": "3d9c70ff1b9f6bb618f9954b2f7f760220c2b38a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/f048e612a3905f34931127360bdd2def19a5e582",
-                "reference": "f048e612a3905f34931127360bdd2def19a5e582",
+                "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/3d9c70ff1b9f6bb618f9954b2f7f760220c2b38a",
+                "reference": "3d9c70ff1b9f6bb618f9954b2f7f760220c2b38a",
                 "shasum": ""
             },
             "require": {
@@ -6141,6 +6135,10 @@
             "extra": {
                 "branch-alias": {
                     "dev-master": "1.17-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
                 }
             },
             "autoload": {
@@ -6187,7 +6185,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-05-12T16:47:27+00:00"
+            "time": "2020-06-06T08:46:27+00:00"
         },
         {
             "name": "symfony/polyfill-php73",
@@ -7152,22 +7150,22 @@
         },
         {
             "name": "vlucas/phpdotenv",
-            "version": "v3.6.6",
+            "version": "v3.6.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vlucas/phpdotenv.git",
-                "reference": "4669484ccbc38fe7c4e0c50456778f2010566aad"
+                "reference": "2065beda6cbe75e2603686907b2e45f6f3a5ad82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/4669484ccbc38fe7c4e0c50456778f2010566aad",
-                "reference": "4669484ccbc38fe7c4e0c50456778f2010566aad",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/2065beda6cbe75e2603686907b2e45f6f3a5ad82",
+                "reference": "2065beda6cbe75e2603686907b2e45f6f3a5ad82",
                 "shasum": ""
             },
             "require": {
                 "php": "^5.4 || ^7.0 || ^8.0",
                 "phpoption/phpoption": "^1.5.2",
-                "symfony/polyfill-ctype": "^1.16"
+                "symfony/polyfill-ctype": "^1.17"
             },
             "require-dev": {
                 "ext-filter": "*",
@@ -7221,7 +7219,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-06-02T14:08:54+00:00"
+            "time": "2020-07-14T19:04:52+00:00"
         },
         {
             "name": "watson/validating",

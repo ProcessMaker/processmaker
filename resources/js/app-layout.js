@@ -23,7 +23,7 @@ import moment from "moment";
 import moment_timezone from "moment-timezone";
 import __ from "./modules/lang";
 
-require("./bootstrap");
+// require("./bootstrap");
 
 let Vue = window.Vue;
 if (window.ProcessMaker && window.ProcessMaker.user) {

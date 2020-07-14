@@ -3,7 +3,7 @@
         $firstTab = $secondTab = 'nav-item nav-link';
         $firstContent = $secondContent = 'tab-pane fade show';
 
-        $catListWebRoute = str_replace_last('.edit', '.index', $catConfig->routes->editCategoryWeb);
+        $catListWebRoute = str_replace('.edit', '.index', $catConfig->routes->editCategoryWeb);
         $showCategoriesTab = $catListWebRoute === \Request::route()->getName() || $listConfig->countCategories === 0
                             ? true
                             : false;
