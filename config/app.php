@@ -40,6 +40,9 @@ return [
     // The fallback locale
     'fallback_locale' => 'en',
 
+    // The timeout length for API calls, in milliseconds (0 for no timeout)
+    'api_timeout' => env('API_TIMEOUT', 5000),
+
     'disable_php_upload_execution' => env('DISABLE_PHP_UPLOAD_EXECUTION', 0),
 
     //Option Fractal, Serializer
