@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -353,20 +354,6 @@ class User extends Authenticatable implements HasMedia
             )->count() > 0;
     }
 
-    /**
-     * Update one request_user_permissions
-     *
-     * @param ProcessRequest $request
-     *
-     * @return void
-     */
-    public function updatePermissionToRequest(ProcessRequest $request)
-    {
-        $permission = RequestUserPermission::firstOrNew(['request_id' => $request->getKey(), 'user_id' => $this->getKey()]);
-        $permission->can_view = $this->can('view', $request);
-        $permission->save();
-    }
-
     public function updatePermissionsToRequests()
     {
         // Update existing request_user_permissions
@@ -378,13 +365,44 @@ class User extends Authenticatable implements HasMedia
             $permission->can_view = $this->can('view', $permission->request);
             $permission->save();
         }
+
         // Add new request_user_permissions
-        $requests = ProcessRequest::whereRaw(
+
+        // Declare these variables once for the sake of speed
+        $timestamp = Carbon::now()->toDateTimeString();
+        $userId = $this->getKey();
+
+        // Find requests without permissions entries for this user
+        // while limiting the select clause to save memory
+        $query = ProcessRequest::whereRaw(
             'id not in (select request_id from request_user_permissions where user_id=?)',
             [$this->getKey()]
-        )->get();
-        foreach($requests as $request) {
-            $this->updatePermissionToRequest($request);
-        }
+        )->select(
+            'id', 'process_id', 'user_id', 'parent_request_id', 'callable_id'
+        );
+
+        // Process the results in chunks
+        $query->limit(500);
+        while ($query->count() > 0) {
+            // Retrieve this chunk
+            $requests = $query->get();
+            
+            // Declare our batch array
+            $batch = [];
+            
+            // Process each request
+            foreach ($requests as $request) {
+                $batch[] = [
+                    'request_id' => $request->id,
+                    'user_id' => $userId,
+                    'can_view' => $this->can('view', $request),
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
+                ];
+            }
+
+            // Batch insert the new permissions
+            RequestUserPermission::query()->insert($batch);
+        }        
     }
 }
