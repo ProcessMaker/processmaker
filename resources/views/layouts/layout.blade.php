@@ -38,6 +38,7 @@
         csrfToken: "{{csrf_token()}}",
         userId: "{{\Auth::user()->id}}",
         messages: @json(\Auth::user()->activeNotifications()),
+        apiTimeout: {{config('app.api_timeout')}}
       };
       @if(config('broadcasting.default') == 'redis')
         window.Processmaker.broadcasting = {
