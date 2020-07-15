@@ -11,7 +11,7 @@
               v-model="code"
               :language="language"
               class="h-100"
-              ref="editor"
+              @editorDidMount="setEditorReference"
               :class="{hidden: resizing}"
             />
           </b-col>
@@ -49,13 +49,13 @@
                     </b-row>
                   </b-list-group-item>
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                    <b-collapse id="configuration">
+                    <b-collapse id="configuration" @shown="editors.forEach(e => e.layout())">
                       <monaco-editor
                         :options="{ ...monacoOptions, minimap: { enabled: false } }"
                         v-model="preview.config"
                         language="json"
                         class="editor-inspector"
-                        :class="{hidden: resizing}"
+                        @editorDidMount="editors.push($event)"
                       />
                     </b-collapse>
                   </b-list-group-item>
@@ -72,13 +72,13 @@
                     </b-row>
                   </b-list-group-item>
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                    <b-collapse id="input">
+                    <b-collapse id="input" @shown="editors.forEach(e => e.layout())">
                       <monaco-editor
                         :options="{ ...monacoOptions, minimap: { enabled: false } }"
                         v-model="preview.data"
                         language="json"
                         class="editor-inspector"
-                        :class="{hidden: resizing}"
+                        @editorDidMount="editors.push($event)"
                       />
                     </b-collapse>
                   </b-list-group-item>
@@ -178,6 +178,7 @@ export default {
       optionsMenu: options,
       boilerPlateTemplate: this.$t(` \r Welcome to ProcessMaker 4 Script Editor \r To access Environment Variables use {accessEnvVar} \r To access Request Data use {dataVariable} \r To access Configuration Data use {configVariable} \r To preview your script, click the Run button using the provided input and config data \r Return an array and it will be merged with the processes data \r Example API to retrieve user email by their ID {apiExample} \r API Documentation {apiDocsUrl} \r `),
       editorReference: null,
+      editors: [],
       nonce: null,
     };
   },
@@ -210,18 +211,16 @@ export default {
     ).notification(response => {
       this.outputResponse(response);
     });
-    this.loadBoilerplateTemplate();
-
-    this.setEditorReference();
-    this.resizeEditor();
+    this.loadBoilerplateTemplate();    
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
   },
 
   methods: {
-    setEditorReference() {
-      this.editorReference = this.$refs.editor.getMonaco();
+    setEditorReference(editor) {
+      this.editorReference = editor;
+      this.resizeEditor();
     },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
