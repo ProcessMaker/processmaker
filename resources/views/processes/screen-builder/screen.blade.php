@@ -30,7 +30,6 @@
         // Registrar el EP para script, datasource y execute
         if (builder.watchers) {
           if (@json(route::has('api.scripts.index'))) {
-            console.log('hit in screen blade');
             builder.watchers_config.api.scripts.push((data) => {
               ProcessMaker.apiClient
                 .get(@json(route('api.scripts.index' )) + '?per_page=10000')

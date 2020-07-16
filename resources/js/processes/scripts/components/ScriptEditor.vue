@@ -11,7 +11,6 @@
               v-model="code"
               :language="language"
               class="h-100"
-              @editorDidMount="setEditorReference"
               :class="{hidden: resizing}"
             />
           </b-col>
@@ -49,13 +48,12 @@
                     </b-row>
                   </b-list-group-item>
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                    <b-collapse id="configuration" @shown="editors.forEach(e => e.layout())">
+                    <b-collapse id="configuration">
                       <monaco-editor
                         :options="{ ...monacoOptions, minimap: { enabled: false } }"
                         v-model="preview.config"
                         language="json"
                         class="editor-inspector"
-                        @editorDidMount="editors.push($event)"
                       />
                     </b-collapse>
                   </b-list-group-item>
@@ -72,13 +70,12 @@
                     </b-row>
                   </b-list-group-item>
                   <b-list-group-item class="p-0 border-left-0 border-right-0 border-top-0 mb-0">
-                    <b-collapse id="input" @shown="editors.forEach(e => e.layout())">
+                    <b-collapse id="input">
                       <monaco-editor
                         :options="{ ...monacoOptions, minimap: { enabled: false } }"
                         v-model="preview.data"
                         language="json"
                         class="editor-inspector"
-                        @editorDidMount="editors.push($event)"
                       />
                     </b-collapse>
                   </b-list-group-item>
@@ -177,8 +174,6 @@ export default {
       outputOpen: true,
       optionsMenu: options,
       boilerPlateTemplate: this.$t(` \r Welcome to ProcessMaker 4 Script Editor \r To access Environment Variables use {accessEnvVar} \r To access Request Data use {dataVariable} \r To access Configuration Data use {configVariable} \r To preview your script, click the Run button using the provided input and config data \r Return an array and it will be merged with the processes data \r Example API to retrieve user email by their ID {apiExample} \r API Documentation {apiDocsUrl} \r `),
-      editorReference: null,
-      editors: [],
       nonce: null,
     };
   },
@@ -218,15 +213,10 @@ export default {
   },
 
   methods: {
-    setEditorReference(editor) {
-      this.editorReference = editor;
-      this.resizeEditor();
-    },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
       const clientHeight =  this.$refs.editorContainer.clientHeight;
       domNode.style.height = clientHeight.toString() + 'px';
-      this.editorReference.layout();
     },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {

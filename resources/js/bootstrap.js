@@ -5,6 +5,7 @@ import VueRouter from "vue-router";
 import datetime_format from "../js/data/datetime_formats.json"
 import translator from "./modules/lang.js"
 import ScreenBuilder from '@processmaker/screen-builder';
+import * as VueDeepSet from "vue-deepset";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -35,6 +36,7 @@ window.VueRouter = VueRouter;
 window.Vue.use(BootstrapVue);
 window.Vue.use(VueRouter);
 window.Vue.use(ScreenBuilder);
+window.Vue.use(VueDeepSet);
 
 /**
  * Setup Translations

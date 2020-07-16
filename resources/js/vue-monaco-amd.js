@@ -9,13 +9,24 @@
 import MonacoEditor from '../../node_modules/vue-monaco';
 
 export default {
-  ...MonacoEditor,
+  extends: MonacoEditor,
   props: {
-    ...MonacoEditor.props,
     amdRequire: {
       default() { 
         return window.require;
       }
     }
   },
-};
+  mounted() {
+    // Workaround for https://github.com/microsoft/monaco-editor/issues/1855
+    const ro = new ResizeObserver(_.debounce(this.resize, 150));
+    ro.observe(this.$el);
+  },
+  methods: {
+    resize() {
+      if (this.editor) {
+        this.editor.layout();
+      }
+    }
+  }
+}

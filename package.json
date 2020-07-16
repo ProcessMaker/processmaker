@@ -43,6 +43,9 @@
     "laravel-mix": "^5.0.4",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.28",
+    "resolve-url-loader": "^3.1.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^8.0.2",
     "vue": "^2.6.11",
     "vue-jest": "^2.6.0",
     "vue-uniq-ids": "^1.0.0"
