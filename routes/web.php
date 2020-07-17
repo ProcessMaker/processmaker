@@ -70,7 +70,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::post('/keep-alive', 'Auth\LoginController@keepAlive')->name('keep-alive');
 
     Route::get('requests/search', 'RequestController@search')->name('requests.search');
-    Route::get('requests/{type}', 'RequestController@index')
+    Route::get('requests/{type?}', 'RequestController@index')
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
     Route::get('request/{request}/files/{media}', 'RequestController@downloadFiles')->middleware('can:participate,request');

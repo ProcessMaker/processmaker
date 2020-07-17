@@ -99,6 +99,7 @@ return [
         ProcessMaker\Providers\ProcessMakerServiceProvider::class,
         ProcessMaker\Providers\AuthServiceProvider::class,
         ProcessMaker\Providers\EventServiceProvider::class,
+        ProcessMaker\Providers\HorizonServiceProvider::class,
         ProcessMaker\Providers\TelescopeServiceProvider::class,
         ProcessMaker\Providers\RouteServiceProvider::class,
         ProcessMaker\Providers\BroadcastServiceProvider::class,

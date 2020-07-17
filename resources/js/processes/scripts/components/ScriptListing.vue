@@ -279,12 +279,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ th#_total_users {
+>>> th#_total_users {
   width: 150px;
   text-align: center;
 }
 
-/deep/ th#_description {
+>>> th#_description {
   width: 250px;
 }
 </style>

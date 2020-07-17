@@ -11,7 +11,6 @@
               v-model="code"
               :language="language"
               class="h-100"
-              ref="editor"
               :class="{hidden: resizing}"
             />
           </b-col>
@@ -55,7 +54,6 @@
                         v-model="preview.config"
                         language="json"
                         class="editor-inspector"
-                        :class="{hidden: resizing}"
                       />
                     </b-collapse>
                   </b-list-group-item>
@@ -78,7 +76,6 @@
                         v-model="preview.data"
                         language="json"
                         class="editor-inspector"
-                        :class="{hidden: resizing}"
                       />
                     </b-collapse>
                   </b-list-group-item>
@@ -177,7 +174,6 @@ export default {
       outputOpen: true,
       optionsMenu: options,
       boilerPlateTemplate: this.$t(` \r Welcome to ProcessMaker 4 Script Editor \r To access Environment Variables use {accessEnvVar} \r To access Request Data use {dataVariable} \r To access Configuration Data use {configVariable} \r To preview your script, click the Run button using the provided input and config data \r Return an array and it will be merged with the processes data \r Example API to retrieve user email by their ID {apiExample} \r API Documentation {apiDocsUrl} \r `),
-      editorReference: null,
       nonce: null,
     };
   },
@@ -210,24 +206,17 @@ export default {
     ).notification(response => {
       this.outputResponse(response);
     });
-    this.loadBoilerplateTemplate();
-
-    this.setEditorReference();
-    this.resizeEditor();
+    this.loadBoilerplateTemplate();    
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
   },
 
   methods: {
-    setEditorReference() {
-      this.editorReference = this.$refs.editor.getMonaco();
-    },
     resizeEditor() {
       const domNode = this.editorReference.getDomNode();
       const clientHeight =  this.$refs.editorContainer.clientHeight;
       domNode.style.height = clientHeight.toString() + 'px';
-      this.editorReference.layout();
     },
     outputResponse(response) {
       if (response.nonce !== this.nonce) {

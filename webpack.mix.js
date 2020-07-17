@@ -1,7 +1,4 @@
-const {
-  mix
-} = require("laravel-mix");
-const MonacoEditorPlugin = require("monaco-editor-webpack-plugin");
+const mix = require('laravel-mix');
 const path = require("path");
 
 /*
@@ -17,24 +14,14 @@ const path = require("path");
 
 mix.webpackConfig({
   plugins: [
-    new MonacoEditorPlugin()
+  ],
+  externals: [
+    'monaco-editor'
   ],
   resolve: {
-    modules: [
-      path.resolve(__dirname, "node_modules"),
-      "node_modules"
-    ],
-    symlinks: false,
     alias: {
-      // This is so we can override some of Laravel Horizon's javascript with our own so we can embed in our UI
-      Horizon: path.resolve(__dirname, "vendor/laravel/horizon/resources/assets/js/")
-    }
-  },
-  resolveLoader: {
-    modules: [
-      path.resolve(__dirname, "node_modules"),
-      "node_modules"
-    ]
+      'vue-monaco': path.resolve(__dirname, 'resources/js/vue-monaco-amd.js')
+    },
   },
   node: {fs: "empty"}
 });
@@ -61,7 +48,7 @@ mix.extract([
   .copy("node_modules/snapsvg/dist/snap.svg.js", "public/js")
   .copy("resources/js/components/CustomActions.vue", "public/js")
   .copy("resources/js/components/DetailRow.vue", "public/js")
-  .copy("resources/fonts/Open_Sans/", "public/fonts")
+  // .copy("resources/fonts/Open_Sans/", "public/fonts")
   .copy("resources/js/components/FilterBar.vue", "public/js")
   .copy("resources/js/timeout.js", "public/js")
   // Copy files necessary for images for the designer/modeler to it's own img directory
@@ -76,7 +63,7 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/admin/groups/index.js", "public/js/admin/groups")
   .js("resources/js/admin/groups/edit.js", "public/js/admin/groups/edit.js")
   .js("resources/js/admin/auth-clients/index.js", "public/js/admin/auth-clients/index.js")
-  .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
+  // .js("resources/js/admin/queues/index.js", "public/js/admin/queues")
   .js("resources/js/admin/profile/edit.js", "public/js/admin/profile/edit.js")
   .js("resources/js/admin/cssOverride/edit.js", "public/js/admin/cssOverride/edit.js")
   .js("resources/js/admin/script-executors/index.js", "public/js/admin/script-executors/index.js")
@@ -107,6 +94,26 @@ mix.js("resources/js/app-layout.js", "public/js")
   // Note, that this should go last for the extract to properly put the manifest and vendor in the right location
   // See: https://github.com/JeffreyWay/laravel-mix/issues/1118
   .js("resources/js/app.js", "public/js");
+
+// Monaco AMD modules. Copy only the files we need to make the build faster.
+const monacoSource = 'node_modules/monaco-editor/min/vs/';
+const monacoDestination = 'public/vendor/monaco-editor/min/vs/';
+const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r'];
+const monacoFiles = [
+  'loader.js',
+  'editor/editor.main.js',
+  'editor/editor.main.css',
+  'editor/editor.main.nls.js',
+  'base/browser/ui/codiconLabel/codicon/codicon.ttf',
+  'base/worker/workerMain.js',
+];
+monacoFiles.forEach(file => {
+  mix.copy(monacoSource + file, monacoDestination + file);
+});
+monacoLanguages.forEach(lang => {
+  const path = `basic-languages/${lang}/${lang}.js`;
+  mix.copy(monacoSource + path, monacoDestination + path);
+});
 
 mix.sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")

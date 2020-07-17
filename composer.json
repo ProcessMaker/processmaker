@@ -13,21 +13,25 @@
     {
       "type": "vcs",
       "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/pmql"
     }
   ],
   "require": {
     "php": ">=7.2.0",
-    "darkaonline/l5-swagger": "5.8.*",
+    "darkaonline/l5-swagger": "6.0.*",
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
     "fzaninotto/faker": "^1.4",
     "igaster/laravel-theme": "2.0.*",
-    "laravel/framework": "5.8.*",
-    "laravel/horizon": "^1.3",
+    "laravel/framework": "6.18.8",
+    "laravel/horizon": "~3.0",
     "laravel/passport": "^7.0",
-    "laravel/telescope": "^2.0",
-    "laravel/tinker": "^1.0",
-    "laravelcollective/html": "^5.4.0",
+    "laravel/telescope": "^3.0",
+    "laravel/tinker": "^2.0",
+    "laravelcollective/html": "^6.1.2",
     "lavary/laravel-menu": "^1.7",
     "moontoast/math": "^1.1",
     "mustache/mustache": "^2.12",
@@ -39,7 +43,7 @@
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "1.0.2",
-    "processmaker/pmql": "1.1.2",
+    "processmaker/pmql": "dev-laravel-upgrade",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
     "spatie/laravel-fractal": "^5.3",
