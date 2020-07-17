@@ -22,7 +22,7 @@
             return ['To Do Tasks', route('tasks.index')];
         },
         $task->processRequest->name =>
-            Auth::user()->can('view', $task->processRequest) ? route('requests.show', ['id' => $task->processRequest->id]) : null,
+            Auth::user()->can('view', $task->processRequest) ? route('requests.show', ['request' => $task->processRequest->id]) : null,
         '@{{taskTitle}}' => null,
       ], 'attributes' => 'v-cloak'])
 @endsection

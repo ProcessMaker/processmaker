@@ -303,16 +303,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ th#_total_users {
+>>> th#_total_users {
   width: 150px;
   text-align: center;
 }
 
-/deep/ th#_description {
+>>> th#_description {
   width: 250px;
 }
 
-/deep/ .rounded-user {
+>>> .rounded-user {
   border-radius: 50% !important;
   height: 1.5em;
   margin-right: 0.5em;
