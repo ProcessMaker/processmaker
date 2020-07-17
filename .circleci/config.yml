@@ -157,7 +157,7 @@ jobs:
       # run tests!
       - run:
           name: 'PHPUnit'
-          command: './vendor/bin/phpunit -v -d memory_limit=-1'
+          command: './vendor/bin/phpunit -v -d memory_limit=-1 --coverage-html ./tests/coverage-report'
           environment:
             DB_DATABASE: 'circle_test'
             DB_PASSWORD: 'P4ssW0rd1!'
@@ -181,8 +181,10 @@ jobs:
           name: 'Jest'
           command: 'npm run test'
 
+      - store_test_results:
+          path: tests/coverage-report
       - store_artifacts:
-          path: coverage
+          path: tests/coverage-report
 
       #- store_artifacts:
       #    path: tests/js/coverage
