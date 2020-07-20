@@ -56,7 +56,7 @@
     },
     computed: {
       node() {
-        return this.$parent.$parent.$parent.$parent.highlightedNode;
+        return this.$root.$children[0].$refs.modeler.highlightedNode;
       },
       definition() {
         return this.node.definition;
