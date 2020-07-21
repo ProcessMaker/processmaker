@@ -1,0 +1,14 @@
+{
+    "processmaker_branch": "4.1",
+    "phpunit": "enable",
+    "jest": "enable",
+    "dusk_chrome": "enable",
+    "dusk_firefox": "disable",
+    "dusk_edge": "enable",
+    "dusk_safari": "enable",
+
+    "packages":
+    [      
+     
+    ]
+}
