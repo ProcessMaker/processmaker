@@ -544,7 +544,7 @@ class ProcessController extends Controller
             }
         }
 
-        return new ApiCollection($processes); // TODO use existing resource class
+        return new ApiCollection($processes->values()); // TODO use existing resource class
     }
 
     /**
