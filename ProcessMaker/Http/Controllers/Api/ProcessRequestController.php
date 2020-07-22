@@ -136,6 +136,8 @@ class ProcessRequestController extends Controller
             }
         }
 
+        $query->requestsThatAreNotInSystemCategories();
+
         try {
             $response = $query->orderBy(
                 str_ireplace('.', '->', $request->input('order_by', 'name')),
