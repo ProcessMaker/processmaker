@@ -618,7 +618,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @param $query
      *
-     * @param $id User id
+     * @return void
      */
     public function scopeRequestsThatAreNotInSystemCategories($query)
     {
