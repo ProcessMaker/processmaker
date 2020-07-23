@@ -46,7 +46,7 @@ class ProcessRequestController extends Controller
      *
      * @param Request $request
      *
-     * @return ProcessRequestsCollection
+     * @return ApiCollection
      *
      * /**
      * @OA\Get(
