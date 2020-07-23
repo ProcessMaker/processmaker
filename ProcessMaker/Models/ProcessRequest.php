@@ -614,18 +614,30 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
-     * Filter processes in system categories
+     * Filter out processes in non-system categories
      *
      * @param $query
      *
      * @return void
      */
-    public function scopeRequestsThatAreNotInSystemCategories($query)
+    public function scopeSystem($query)
     {
         $query->whereHas('process', function ($query) {
-            $query->whereHas('category', function ($query) {
-                $query->where('is_system', false);
-            });
+            $query->system();
+        });
+    }
+
+    /**
+     * Filter out processes in system categories
+     *
+     * @param $query
+     *
+     * @return void
+     */
+    public function scopeNonSystem($query)
+    {
+        $query->whereDoesntHave('process', function ($query) {
+            $query->system();
         });
     }
 
