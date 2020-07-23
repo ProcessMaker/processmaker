@@ -1,7 +1,7 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
-import GlobalVueRouter from "vue-router";
+import Router from "vue-router";
 import datetime_format from "../js/data/datetime_formats.json"
 import translator from "./modules/lang.js"
 import ScreenBuilder from '@processmaker/screen-builder';
@@ -34,6 +34,7 @@ window.Vue = require("vue");
 window.Vue.use(BootstrapVue);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
+window.Vue.use(Router);
 
 /**
  * Setup Translations
@@ -89,7 +90,7 @@ window.ProcessMaker = {
     /**
      * A general use global router that can be used
      */
-    Router: new GlobalVueRouter({
+    Router: new Router({
       mode: 'history'
     }),
     /**
