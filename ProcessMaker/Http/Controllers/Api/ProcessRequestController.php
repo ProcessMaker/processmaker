@@ -136,7 +136,7 @@ class ProcessRequestController extends Controller
             }
         }
 
-        $query->requestsThatAreNotInSystemCategories();
+        $query->nonSystem();
 
         try {
             $response = $query->orderBy(
