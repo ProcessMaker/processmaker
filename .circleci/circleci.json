@@ -5,7 +5,7 @@
     "dusk_chrome": "enable",
     "dusk_firefox": "disable",
     "dusk_edge": "disable",
-    "dusk_safari": "enable",
+    "dusk_safari": "disable",
 
     "packages":
     [      
