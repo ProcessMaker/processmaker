@@ -1,5 +1,5 @@
 {
-    "processmaker_branch": "develop",
+    "processmaker_branch": "branchtoinstall",
     "phpunit": "enable",
     "jest": "enable",
     "dusk_chrome": "enable",
