@@ -36,6 +36,8 @@ window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
 window.Vue.use(Router);
 
+window.VueRouter = VueRouter;
+
 /**
  * Setup Translations
  */
