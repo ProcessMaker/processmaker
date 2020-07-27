@@ -109,7 +109,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         $scheduledTask->process_request_token_id = $token ? $token->id : null;
         $scheduledTask->configuration = json_encode($configuration);
         $scheduledTask->type = $types[get_class($element)];
-        $scheduledTask->last_execution = $this->today()
+        $scheduledTask->last_execution = $token && $token->created_at ? $token->created_at : $this->today()
             ->setTimezone(new DateTimeZone('UTC'))
             ->format('Y-m-d H:i:s');
         $scheduledTask->save();
