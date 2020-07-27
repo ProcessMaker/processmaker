@@ -21,12 +21,14 @@ class MigrateFresh extends FreshCommand
 
         foreach ($databases as $database) {
             if ($this->option('drop-views')) {
-                $this->dropAllViews($database);
-
+                $this->call('db:wipe', array_filter([
+                    '--database' => $database,
+                    '--drop-views' => true,
+                    '--drop-types' => true,
+                    '--force' => true,
+                ]));
                 $this->info('Dropped all views successfully.');
             }
-
-            $this->dropAllTables($database);
         }
 
         $this->info('Dropped all tables successfully.');
