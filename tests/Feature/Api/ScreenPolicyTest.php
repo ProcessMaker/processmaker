@@ -14,7 +14,7 @@ use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\ProcessTaskAssignment;
 
-class ScreenTest extends TestCase
+class ScreenPolicyTest extends TestCase
 {
     use RequestHelper;
 
