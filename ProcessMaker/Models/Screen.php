@@ -11,6 +11,7 @@ use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Validation\CategoryRule;
+use ProcessMaker\Assets\ScreensInScreen;
 
 /**
  * Class Screen
@@ -162,5 +163,20 @@ class Screen extends Model
     public function fieldAliasId()
     {
         return 'screens.id';
+    }
+
+    /**
+     * Get a recursive list of nested screens IDs in this screen
+     * 
+     * @return int[] nested screen IDs
+     */
+    public function nestedScreenIds()
+    {
+        $screenIds = [];
+        $screenFinder = new ScreensInScreen();
+        foreach($screenFinder->referencesToExport($this) as $screen) {
+            $screenIds[] = $screen[1];
+        }
+        return $screenIds;
     }
 }

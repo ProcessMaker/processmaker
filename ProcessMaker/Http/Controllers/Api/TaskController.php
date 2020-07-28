@@ -334,12 +334,6 @@ class TaskController extends Controller
         return $orderedTasks;
     }
 
-    // public function screens(Request $request, ProcessRequestToken $task)
-    // {
-    //     $screenIds = $task::getScreenAndNestedIds();
-    //     return new ApiCollection(Screen::findOrFail($screenIds));
-    // }
-
     public function getScreen(Request $request, ProcessRequestToken $task, Screen $screen)
     {
         // Authorized in policy

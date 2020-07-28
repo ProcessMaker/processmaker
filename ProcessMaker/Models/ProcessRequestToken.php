@@ -12,7 +12,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
-use ProcessMaker\Assets\ScreensInScreen;
 use Throwable;
 
 /**
@@ -281,15 +280,12 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function getScreenAndNestedIds()
     {
-        $screenIds = [];
         $taskScreen = $this->getScreen();
         if ($taskScreen) {
-            $screensIds[] = $taskScreen->id;
-
-            $screenFinder = new ScreensInScreen();
-            foreach($screenFinder->referencesToExport($taskScreen) as $screen) {
-                $screenIds[] = $screen[1];
-            }
+            $screenIds = $taskScreen->nestedScreenIds();
+            $screenIds[] = $taskScreen->id;
+        } else {
+            $screenIds = [];
         }
         return $screenIds;
     }
