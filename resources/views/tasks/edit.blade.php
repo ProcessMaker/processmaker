@@ -255,7 +255,10 @@
       }
     });
 
-    window.PM4ConfigOverrides = { requestFiles: @json($files) };
+    window.PM4ConfigOverrides = {
+      requestFiles: @json($files),
+      getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
+    };
   </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>

@@ -49,7 +49,7 @@ Route::group(
 
     // Screens
     Route::get('screens', 'ScreenController@index')->name('screens.index')->middleware('can:view-screens');
-    Route::get('screens/{screen}', 'ScreenController@show')->name('screens.show')->middleware('can:view,screen');
+    Route::get('screens/{screen}', 'ScreenController@show')->name('screens.show')->middleware('can:view-screens');
     Route::post('screens', 'ScreenController@store')->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', 'ScreenController@update')->name('screens.update')->middleware('can:edit-screens');
     Route::put('screens/{screen}/duplicate', 'ScreenController@duplicate')->name('screens.duplicate')->middleware('can:create-screens');
@@ -111,7 +111,8 @@ Route::group(
     Route::get('tasks', 'TaskController@index')->name('tasks.index'); //Already filtered in controller
     Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show')->middleware('can:view,task');
     Route::put('tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('can:update,task');
-
+    Route::get('tasks/{task}/screens/{screen}', 'TaskController@getScreen')->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
+    
     // Requests
     Route::get('requests', 'ProcessRequestController@index')->name('requests.index'); //Already filtered in controller
     Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:view,request');
