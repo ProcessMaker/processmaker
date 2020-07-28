@@ -395,7 +395,33 @@ class ScreenController extends Controller
      */
     public function import(Request $request)
     {
-        $success = ImportScreen::dispatchNow($request->file('file')->get());
-        return ['status' => $success];
+        $content = $request->file('file')->get();
+        if (!$this->validateImportedFile($content)) {
+            return response(
+                ['message' => __('Invalid Format')],
+                422
+            );
+        }
+
+        $import = ImportScreen::dispatchNow($content);
+        return ['status' => $import];
+    }
+
+    /**
+     * Verify if the file is valid to be imported
+     *
+     * @param string $content
+     *
+     * @return bool
+     */
+    private function validateImportedFile($content)
+    {
+        $decoded = substr($content, 0, 1) === '{' ? json_decode($content) : (($content = base64_decode($content)) && substr($content, 0, 1) === '{' ? json_decode($content) : null);
+        $isDecoded = $decoded && is_object($decoded);
+        $hasType = $isDecoded && isset($decoded->type) && is_string($decoded->type);
+        $validType = $hasType && $decoded->type === 'screen_package';
+        $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
+        $validVersion = $hasVersion && method_exists(ImportScreen::class, "parseFileV{$decoded->version}");
+        return $isDecoded && $validType && $validVersion;
     }
 }
