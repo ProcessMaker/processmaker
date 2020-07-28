@@ -22,6 +22,7 @@ class ScreenTest extends TestCase
     {
 
         $taskUser = factory(User::class)->create();
+        $otherUser = factory(User::class)->create();
 
         $grandChildScreen = factory(Screen::class)->create([
             'config' => json_decode(file_get_contents(__DIR__ . '/screens/child.json'))
@@ -62,9 +63,16 @@ class ScreenTest extends TestCase
         $response = $this->apiCall('POST', $route, []);
         $task = ProcessRequestToken::where('user_id', $taskUser->id)->first();
 
+        $url = route('api.tasks.get_screen', [$task, $grandChildScreen]);
+
+        // Try with unauthorized user
+        $this->user = $otherUser; 
+        $response = $this->apiCall('GET', $url);
+        $response->assertStatus(403);
+
         $this->user = $taskUser; 
-        $url = route('api.screens.show', [$grandChildScreen->id]);
-        $response = $this->apiCall('GET', $url, ['task' => $task->id]);
+        $response = $this->apiCall('GET', $url);
+        $response->assertStatus(200);
         $this->assertEquals('child', $response->json()['config'][0]['name']);
     }
 }
