@@ -22,6 +22,8 @@ use Laravel\Passport\Passport;
 use ProcessMaker\Models\Script;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Policies\UserPolicy;
+use ProcessMaker\Models\Screen;
+use ProcessMaker\Policies\ScreenPolicy;
 
 
 /**
@@ -43,6 +45,7 @@ class AuthServiceProvider extends ServiceProvider
         ProcessRequest::class => ProcessRequestPolicy::class,
         ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
         User::class => UserPolicy::class,
+        Screen::class => ScreenPolicy::class,
     ];
 
     /**
