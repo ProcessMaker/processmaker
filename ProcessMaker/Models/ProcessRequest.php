@@ -614,7 +614,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
-     * Filter out processes in non-system categories
+     * Filter out process requests with a process in a non-system category
      *
      * @param $query
      *
@@ -628,7 +628,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
-     * Filter out processes in system categories
+     * Filter out process requests with a process in a system category
      *
      * @param $query
      *
