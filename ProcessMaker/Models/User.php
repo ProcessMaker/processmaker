@@ -43,6 +43,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="firstname", type="string"),
      *   @OA\Property(property="lastname", type="string"),
      *   @OA\Property(property="username", type="string"),
+     *   @OA\Property(property="password", type="string"),
      *   @OA\Property(property="address", type="string"),
      *   @OA\Property(property="city", type="string"),
      *   @OA\Property(property="state", type="string"),
@@ -66,7 +67,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="fullname", type="string"),
      *   @OA\Property(property="avatar", type="string"),
      *   @OA\Property(property="media", type="array", @OA\Items(type="string")),
-     *   @OA\Property(property="birthdate", type="string"),
+     *   @OA\Property(property="birthdate", type="string", format="date"),
      * ),
      * @OA\Schema(
      *   schema="users",
