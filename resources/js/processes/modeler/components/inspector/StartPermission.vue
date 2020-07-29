@@ -74,7 +74,7 @@
         return this.type === 'user' ? this.userHelper : this.groupHelper;
       },
       assignmentGetter() {
-        const node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
+        const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
         const value = _.get(node, "assignment");
         this.type = value;
         return value;
@@ -124,7 +124,7 @@
           });
       },
       loadAssigned() {
-        let node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
+        let node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
         let value = _.get(node, "assignment");
         this.type = value;
         this.content = null;
@@ -176,14 +176,14 @@
       },
 
       assignedUserSetter(id) {
-        let node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
+        let node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
         let value = _.get(node, "assignedUsers");
         this.$set(node, "assignedUsers", id);
         value = _.get(node, "assignedGroups");
         this.$set(node, "assignedGroups", '');
       },
       assignedGroupSetter(id) {
-        let node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
+        let node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
         let value = _.get(node, "assignedUsers");
         this.$set(node, "assignedUsers", '');
         value = _.get(node, "assignedGroups");
@@ -192,7 +192,7 @@
       assignmentSetter(event) {
         this.type = event.target.value;
         this.content = null;
-        let node = this.$parent.$parent.$parent.$parent.highlightedNode.definition;
+        let node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
         this.$set(node, "assignment", this.type);
         this.load();
       },

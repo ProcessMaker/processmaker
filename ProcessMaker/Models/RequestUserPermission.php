@@ -15,6 +15,7 @@ class RequestUserPermission extends Model
     protected $fillable = [
         'request_id',
         'user_id',
+        'can_view',
     ];
 
     public function request()

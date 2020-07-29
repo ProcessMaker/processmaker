@@ -1,8 +1,8 @@
 <template>
-  <div class="row my-2 px-2" v-if="tablePagination && tablePagination.last_page > 1">
+  <div class="row my-2 px-2" v-if="tablePagination && tablePagination.last_page > 0">
     <div class="col-md-6 col-sm-12 pt-1 d-flex">
       <div
-        v-if="tablePagination && tablePagination.last_page > 1"
+        v-if="tablePagination"
         class="pagination"
       >{{tablePagination.from + 1}} - {{tablePagination.to}} of {{tablePagination.total}} {{title}}</div>
       <div
@@ -11,7 +11,7 @@
       >{{tablePagination.total}} {{title}}</div>
     </div>
     <div class="col-md-6 col-sm-12 d-flex justify-content-end button-pagination">
-      <div v-show="tablePagination && tablePagination.last_page > 1" :class="css.wrapperClass">
+      <div v-show="tablePagination" :class="css.wrapperClass">
         <div
           @click="loadPage(1)"
           :class="['pagination-nav-item', css.linkClass, isOnFirstPage ? css.disabledClass : '']"

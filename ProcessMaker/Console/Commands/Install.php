@@ -37,6 +37,7 @@ class Install extends Command
             {--first-name=                      : The default admin user's first name}
             {--last-name=                       : The default admin user's last name}
             {--telescope                        : Enable Telescope debugging}
+            {--api-timeout=                     : The length of the API timeout in milliseconds (0 for no timeout)}
             {--db-host=                         : The primary database host}
             {--db-port=                         : The primary database port}
             {--db-name=                         : The primary database name}
@@ -124,6 +125,7 @@ class Install extends Command
             'REDIS_CLIENT' => $this->option('redis-client'),
             'REDIS_PREFIX' => $this->option('redis-prefix'),
             'HORIZON_PREFIX' => $this->option('horizon-prefix'),
+            'API_TIMEOUT' => $this->option('api-timeout') ? $this->option('api-timeout') : 5000,
         ];
 
         if ($this->option('redis-host')) {
