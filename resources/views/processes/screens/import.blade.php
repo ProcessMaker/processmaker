@@ -115,7 +115,7 @@
             })
               .catch(error => {
                 this.submitted = false;
-                ProcessMaker.alert('{{__('Unable to import the screen.')}}', 'danger')
+                ProcessMaker.alert(this.$t('Unable to import the screen.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
               });
           }
         }
