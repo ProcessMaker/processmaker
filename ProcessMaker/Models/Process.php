@@ -51,20 +51,28 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *
  * @OA\Schema(
  *   schema="ProcessEditable",
- *   @OA\Property(property="process_category_id", type="string", format="id"),
+ *   @OA\Property(property="process_category_id", type="integer", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
  *   @OA\Property(property="pause_timer_start", type="integer"),
  *   @OA\Property(property="cancel_screen_id", type="integer"),
  *   @OA\Property(property="has_timer_start_events", type="boolean"),
+ *   @OA\Property(property="request_detail_screen_id", type="integer", format="id"),
+ *   @OA\Property(property="is_valid", type="integer"),
+ *   @OA\Property(property="package_key", type="string"),
+ *   @OA\Property(property="start_events", type="array", @OA\Items(ref="#/components/schemas/ProcessStartEvents")),
+ *   @OA\Property(property="warnings", type="string"),
+ *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
+ 
  * ),
  * @OA\Schema(
  *   schema="Process",
  *   allOf={
  *       @OA\Schema(ref="#/components/schemas/ProcessEditable"),
  *       @OA\Schema(
- *           @OA\Property(property="user_id", type="string", format="id"),
+ *           @OA\Property(property="user_id", type="integer", format="id"),
  *           @OA\Property(property="id", type="string", format="id"),
  *           @OA\Property(property="deleted_at", type="string", format="date-time"),
  *           @OA\Property(property="created_at", type="string", format="date-time"),
@@ -88,11 +96,6 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *     allOf={
  *         @OA\Schema(ref="#/components/schemas/Process"),
  *         @OA\Schema(
- *         @OA\Property(
- *             property="startEvents",
- *             type="array",
- *             @OA\Items(ref="#/components/schemas/ProcessStartEvents"),
- *         ),
  *         @OA\Property(
  *             property="events",
  *             type="array",
@@ -119,6 +122,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *       @OA\Schema(ref="#/components/schemas/Process"),
  *       @OA\Schema(
  *           @OA\Property(property="notifications", type="array", @OA\Items(type="string")),
+ *           @OA\Property(property="task_notifications", type="object"),
  *       )
  *   }
  * )
