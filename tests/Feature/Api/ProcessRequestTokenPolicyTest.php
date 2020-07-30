@@ -14,11 +14,11 @@ use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Models\ProcessTaskAssignment;
 
-class ScreenPolicyTest extends TestCase
+class ProcessRequestTokenPolicyTest extends TestCase
 {
     use RequestHelper;
 
-    public function testScreenPolicy()
+    public function testGetScreensFromToken()
     {
 
         $taskUser = factory(User::class)->create();

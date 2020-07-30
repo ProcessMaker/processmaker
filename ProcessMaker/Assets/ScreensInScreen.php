@@ -21,7 +21,7 @@ class ScreensInScreen
      *
      * @return array
      */
-    public function referencesToExport(Screen $screen, array &$screens = [])
+    public function referencesToExport(Screen $screen, array $screens = [])
     {
         $config = $screen->config;
         if (is_array($config)) {
@@ -29,7 +29,10 @@ class ScreensInScreen
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
                     $screen = Screen::findOrFail($item['config']['screen']);
-                    $this->referencesToExport($screen, $screens);
+                    $screens = array_merge(
+                        $screens,
+                        $this->referencesToExport($screen, $screens)
+                    );
                 }
             });
         }
