@@ -24,6 +24,17 @@ trait HideSystemResources
         return $item;
     }
 
+    public function scopeSystem($query)
+    {
+        if (substr(static::class, -8) === 'Category') {
+            return $query->where('is_system', true);
+        } else {
+            return $query->whereHas('categories', function ($query) {
+                $query->where('is_system', true);
+            });
+        }
+    }
+
     public function scopeNonSystem($query)
     {
         if (substr(static::class, -8) === 'Category') {
