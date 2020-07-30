@@ -127,13 +127,15 @@ class ExportImportScreenTest extends TestCase
         $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, null, true);
 
         // Test to ensure our admin user can import a other file
+        // file type process_package
         $this->user = $adminUser;
         $response = $this->apiCall('POST', '/screens/import', [
             'file' => $file,
         ]);
-        $response->assertStatus(200);
+        $response->assertStatus(422);
+
         //Unable to import the screen.
-        $this->assertFalse($response->json('status'));
+        $this->assertEquals('Invalid Format', $response->json('message'));
     }
 
     public function testImportScreenWithWatchers()
