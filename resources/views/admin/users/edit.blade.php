@@ -411,6 +411,9 @@
             })
               .then(response => {
                 ProcessMaker.alert('{{__('User Permissions Updated Successfully ')}}', 'success');
+                if (this.userId === this.currentUserId) {
+                  ProcessMaker.alert('{{__('Please logout and login again to reflect permission changes')}}', 'warning');
+                }
               })
           },
           hasPermission() {
