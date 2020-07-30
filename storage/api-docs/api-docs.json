@@ -5187,18 +5187,6 @@
                             "INACTIVE"
                         ]
                     },
-                    "group_id": {
-                        "description": "The attributes that are mass assignable.",
-                        "type": "string"
-                    },
-                    "member_type": {
-                        "description": "The attributes that are mass assignable.",
-                        "type": "string"
-                    },
-                    "member_id": {
-                        "description": "The attributes that are mass assignable.",
-                        "type": "string"
-                    },
                     "fullname": {
                         "description": "The attributes that are mass assignable.",
                         "type": "string"
