@@ -42,6 +42,8 @@ trait HideSystemResources
         if (substr(static::class, -8) === 'Category') {
             return $query->where('is_system', false);
         } else if (static::class == ProcessRequest::class) {
+            // ProcessRequests must be filtered this way since
+            // they could be in a separate database
             $systemProcessIds = Process::system()->pluck('id');
             $query->whereNotIn('process_id', $systemProcessIds);
         } else {
