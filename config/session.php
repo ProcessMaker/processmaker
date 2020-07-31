@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => env('SESSION_LIFETIME', 15),
 
     'expire_on_close' => false,
 
@@ -43,7 +43,7 @@ return [
     |
     */
 
-    'expire_warning' => env('SESSION_EXPIRE_WARNING', 180),
+    'expire_warning' => env('SESSION_EXPIRE_WARNING', 90),
 
     /*
     |--------------------------------------------------------------------------
