@@ -111,7 +111,8 @@ Route::group(
     Route::get('tasks', 'TaskController@index')->name('tasks.index'); //Already filtered in controller
     Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show')->middleware('can:view,task');
     Route::put('tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('can:update,task');
-
+    Route::get('tasks/{task}/screens/{screen}', 'TaskController@getScreen')->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
+    
     // Requests
     Route::get('requests', 'ProcessRequestController@index')->name('requests.index'); //Already filtered in controller
     Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:view,request');
