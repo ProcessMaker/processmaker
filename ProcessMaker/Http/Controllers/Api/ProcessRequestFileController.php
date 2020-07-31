@@ -273,23 +273,6 @@ class ProcessRequestFileController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param Media $file
-     *
-     * @return \Illuminate\Http\Response
-     *
-     */
-    public function update(Request $laravel_request, ProcessRequest $request)
-    {
-        $request->getMedia()[0]->delete();
-        $newFile = $laravel_request->file;
-        $request->addMedia($newFile)->toMediaCollection();
-        return new JsonResponse(['message' => 'file successfully updated'], 200);
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param Media $file

@@ -58,7 +58,8 @@ class RequestFileUploadTest extends TestCase
         $route = route('api.requests.files.store', [$request->id, 'event' => 'node_1']);
         $response = $this->actingAs($uploadTask->user, 'api')
             ->json('POST', $route, [
-                'file' => File::image('photo.jpg')
+                'file' => File::image('photo.jpg'),
+                'data_name' => 'photo'
             ]);
         // Check the user has access to upload a file
         $response->assertStatus(200);

@@ -29,7 +29,10 @@ class ProcessRequestFileTest extends TestCase
         $fileUpload = File::image('photo.jpg');
 
         //save the file with media lib
-        $process_request->addMedia($fileUpload)->toMediaCollection();
+        $process_request
+            ->addMedia($fileUpload)
+            ->withCustomProperties(['data_name' => 'test'])
+            ->toMediaCollection();
 
         $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files');
         $response->assertStatus(200);
@@ -49,36 +52,12 @@ class ProcessRequestFileTest extends TestCase
 
         //post photo id with the request
         $response = $this->apiCall('POST', '/requests/' . $process_request->id . '/files', [
-            'file' => File::image('photo.jpg')
+            'file' => File::image('photo.jpg'),
+            'data_name' => 'photo'
         ]);
         $response->assertStatus(200);
         $this->assertEquals($process_request->getMedia()[0]->file_name, 'photo.jpg');
 
-    }
-
-    /**
-     * test update of an existing file
-     */
-    public function testFileUpdate()
-    {
-        //create a request
-        $process_request = factory(ProcessRequest::class)->create();
-        // upload file
-        $fileUpload = File::image('photo.jpg');
-
-        $fileUploadUpdate= File::image('updatedFile.jpg');
-        //save the file with media lib
-        $process_request->addMedia($fileUpload)->toMediaCollection();
-        //update
-        $file = $process_request->getMedia()[0]->id;
-
-        $response = $this->apiCall('PUT', '/requests/' . $process_request->id . '/files/' . $file, [
-            'file' => $fileUploadUpdate
-        ]);
-        $process_request->refresh();
-        $response->assertStatus(200);
-
-        $this->assertEquals($process_request->getMedia()[0]->file_name, 'updatedFile.jpg');
     }
 
     /**
@@ -90,7 +69,10 @@ class ProcessRequestFileTest extends TestCase
         $process_request = factory(ProcessRequest::class)->create();
         // upload file
         $fileUpload = File::image('HEEEEy.jpg');
-        $process_request->addMedia($fileUpload)->toMediaCollection();
+        $process_request
+            ->addMedia($fileUpload)
+            ->withCustomProperties(['data_name' => 'test'])
+            ->toMediaCollection();
         //delete the file
         $process_request->refresh();
         $process_request->getMedia()[0]->delete();
@@ -112,8 +94,14 @@ class ProcessRequestFileTest extends TestCase
         $fileUpload2 = File::image('photo2.jpg');
 
         //save the file with media lib
-        $file1 = $process_request->addMedia($fileUpload1)->toMediaCollection();
-        $file2 = $process_request->addMedia($fileUpload2)->toMediaCollection();
+        $file1 = $process_request
+            ->addMedia($fileUpload1)
+            ->withCustomProperties(['data_name' => 'test'])
+            ->toMediaCollection();
+        $file2 = $process_request
+            ->addMedia($fileUpload2)
+            ->withCustomProperties(['data_name' => 'test'])
+            ->toMediaCollection();
 
         $response = $this->apiCall('GET', '/requests/' . $process_request->id . '/files/' . $file2->id);
         $response->assertStatus(200);
