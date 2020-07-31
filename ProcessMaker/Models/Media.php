@@ -129,8 +129,10 @@ class Media extends Model
             $media->setCustomProperty('updatedBy', $user ? $user->id : null);
         });
         self::saving(function($media) {
-            if (empty($media->getCustomProperty('data_name'))) {
-                throw ValidationException::withMessages(['data_name' => 'data_name is required']);
+            if ($media->model instanceof ProcessRequest) {
+                if (empty($media->getCustomProperty('data_name'))) {
+                    throw ValidationException::withMessages(['data_name' => 'data_name is required']);
+                }
             }
             $media->setCustomProperty('updatedBy', pmUser() ? pmUser()->id : null);
         });
