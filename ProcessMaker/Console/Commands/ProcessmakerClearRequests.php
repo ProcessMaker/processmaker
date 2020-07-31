@@ -14,6 +14,8 @@ use ProcessMaker\Models\ScheduledTask;
 
 class ProcessmakerClearRequests extends Command
 {
+    const message = 'Are you sure you\'d like to remove all requests and related data? Make sure you have backed up your database as this cannot be undone.';
+
     /**
      * The name and signature of the console command.
      *
@@ -35,14 +37,15 @@ class ProcessmakerClearRequests extends Command
      */
     public function handle()
     {
-        if ($this->confirm('Are you sure you\'d like to remove all requests and related data? Make sure you have backed up your database as this cannot be undone.')) {
+        if ($this->confirm(self::message, true)) {
             ScheduledTask::query()->truncate();
             ProcessRequestLock::query()->truncate();
-            ProcessRequestToken::query()->truncate();
+            ProcessRequestToken::query()->delete();
             Media::where('model_type', ProcessRequest::class)->delete();
             Comment::where('commentable_type', ProcessRequest::class)->delete();
+            Comment::where('commentable_type', ProcessRequestToken::class)->delete();
             RequestUserPermission::query()->truncate();
-            ProcessCollaboration::query()->trucate();
+            ProcessCollaboration::query()->truncate();
             ProcessRequest::query()->truncate();
         }
     }
