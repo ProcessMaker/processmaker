@@ -4,6 +4,7 @@
 /public/js
 /public/css
 /storage/*.key
+/storage/*.index
 /vendor
 /.idea
 /.vscode
