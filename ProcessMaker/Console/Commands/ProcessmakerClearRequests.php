@@ -37,7 +37,7 @@ class ProcessmakerClearRequests extends Command
      */
     public function handle()
     {
-        if ($this->confirm(self::message, true)) {
+        if ($this->confirm(self::message, false)) {
             ScheduledTask::query()->truncate();
             ProcessRequestLock::query()->truncate();
             ProcessRequestToken::query()->delete();
