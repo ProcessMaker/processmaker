@@ -19,6 +19,7 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -72,6 +73,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use HasMediaTrait;
     use ExtendedPMQL;
     use SqlsrvSupportTrait;
+    use HideSystemResources;
 
     protected $connection = 'data';
 
@@ -610,34 +612,6 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $query->whereHas('userPermissions', function ($query) use ($permission, $user) {
             $query->where('user_id', $user->getKey());
             $query->where($permission, true);
-        });
-    }
-
-    /**
-     * Filter out process requests with a process in a non-system category
-     *
-     * @param $query
-     *
-     * @return void
-     */
-    public function scopeSystem($query)
-    {
-        $query->whereHas('process', function ($query) {
-            $query->system();
-        });
-    }
-
-    /**
-     * Filter out process requests with a process in a system category
-     *
-     * @param $query
-     *
-     * @return void
-     */
-    public function scopeNonSystem($query)
-    {
-        $query->whereDoesntHave('process', function ($query) {
-            $query->system();
         });
     }
 

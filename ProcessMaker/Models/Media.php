@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use ProcessMaker\Models\ProcessRequest;
 use Spatie\MediaLibrary\Models\Media as Model;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Represents media files stored in the database
@@ -128,6 +129,11 @@ class Media extends Model
             $media->setCustomProperty('updatedBy', $user ? $user->id : null);
         });
         self::saving(function($media) {
+            if ($media->model instanceof ProcessRequest) {
+                if (empty($media->getCustomProperty('data_name'))) {
+                    throw ValidationException::withMessages(['data_name' => 'data_name is required']);
+                }
+            }
             $media->setCustomProperty('updatedBy', pmUser() ? pmUser()->id : null);
         });
     }

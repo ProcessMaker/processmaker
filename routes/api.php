@@ -111,7 +111,8 @@ Route::group(
     Route::get('tasks', 'TaskController@index')->name('tasks.index'); //Already filtered in controller
     Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show')->middleware('can:view,task');
     Route::put('tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('can:update,task');
-
+    Route::get('tasks/{task}/screens/{screen}', 'TaskController@getScreen')->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
+    
     // Requests
     Route::get('requests', 'ProcessRequestController@index')->name('requests.index'); //Already filtered in controller
     Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:view,request');
@@ -123,7 +124,6 @@ Route::group(
     Route::get('requests/{request}/files', 'ProcessRequestFileController@index')->name('requests.files.index')->middleware('can:participate,request');
     Route::get('requests/{request}/files/{file}', 'ProcessRequestFileController@show')->name('requests.files.show')->middleware('can:participate,request');
     Route::post('requests/{request}/files', 'ProcessRequestFileController@store')->name('requests.files.store')->middleware('can:participate,request');
-    Route::put('requests/{request}/files/{file}', 'ProcessRequestFileController@update')->name('requests.files.update')->middleware('can:participate,request');
     Route::delete('requests/{request}/files/{file}', 'ProcessRequestFileController@destroy')->name('requests.filesrequests.files.destroy')->middleware('can:participate,request');
 
     // Files

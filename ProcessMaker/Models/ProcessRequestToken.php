@@ -274,6 +274,23 @@ class ProcessRequestToken extends Model implements TokenInterface
     }
 
     /**
+     * Get the ID of the task screen (if set) and any nested screens
+     * 
+     * @return int[] Array of screen IDs
+     */
+    public function getScreenAndNestedIds()
+    {
+        $taskScreen = $this->getScreen();
+        if ($taskScreen) {
+            $screenIds = $taskScreen->nestedScreenIds();
+            $screenIds[] = $taskScreen->id;
+        } else {
+            $screenIds = [];
+        }
+        return $screenIds;
+    }
+
+    /**
      * Get the script assigned to the task.
      *
      * @return Screen

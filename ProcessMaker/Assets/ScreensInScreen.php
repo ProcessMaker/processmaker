@@ -28,6 +28,8 @@ class ScreensInScreen
             $this->findInArray($config, function ($item) use (&$screens) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
+                    $screen = Screen::findOrFail($item['config']['screen']);
+                    $screens = $this->referencesToExport($screen, $screens);
                 }
             });
         }

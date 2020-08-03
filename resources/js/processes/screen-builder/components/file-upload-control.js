@@ -36,7 +36,9 @@ export default {
         field: "name",
         config: {
           label: "Name",
-          helper: "The name of the upload"
+          name: 'Name',
+          helper: "The name of the upload",
+          validation: 'required'
         }
       },
       {
