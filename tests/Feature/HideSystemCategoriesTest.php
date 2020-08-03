@@ -3,6 +3,7 @@ namespace Tests\Model;
 
 use Tests\TestCase;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
@@ -93,6 +94,35 @@ class HideSystemCategoriesTest extends TestCase
         $this->resourceWithoutCategoryNotFiltered(Process::class);
         $this->resourceWithoutCategoryNotFiltered(Script::class);
         $this->resourceWithoutCategoryNotFiltered(Screen::class);
+    }
+
+    public function testProcessRequestFiltered() {
+        $category = factory(ProcessCategory::class)->create([
+            'is_system' => false,
+        ]);
+        $instance = factory(Process::class)->create([
+            'process_category_id' => $category->id
+        ]);
+        $hiddenCategory = factory(ProcessCategory::class)->create([
+            'is_system' => true,
+        ]);
+        $hiddenInstance = factory(Process::class)->create([
+            'process_category_id' => $hiddenCategory->id
+        ]);
+        $processRequest = factory(ProcessRequest::class)->create([
+            'process_id' => $instance->id
+        ]);
+        $hiddenProcessRequest = factory(ProcessRequest::class)->create([
+            'process_id' => $hiddenInstance->id
+        ]);
+
+        $response = $this->apiCall('GET', route('api.requests.index'));
+        $json = $response->json();
+        $ids = array_map(function($d) { return $d['id']; }, $json['data']);
+
+        $this->assertCount(1, $ids);
+        $this->assertNotContains($hiddenProcessRequest->id, $ids);
+        $this->assertContains($processRequest->id, $ids);
     }
 
 }
