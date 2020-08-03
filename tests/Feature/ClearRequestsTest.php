@@ -235,8 +235,9 @@ class ClearRequestsTest extends TestCase
   
         // We create a model (in this case a user) and associate to him the file
         $model = ProcessRequest::find(1);
-        $model->addMedia($fileUpload)->toMediaCollection('local');
-  
+        $model->addMedia($fileUpload)
+            ->withCustomProperties(['data_name' => 'test'])
+            ->toMediaCollection('local');  
   
         // Basic listing assertions
         $response = $this->apiCall('GET', self::API_TEST_URL);
@@ -266,7 +267,7 @@ class ClearRequestsTest extends TestCase
         $this->completeTask($token);
     }
   
-    public function testRegisterIntermediateTimerEvents()
+    public function testCommandClearRequests()
     {
         Artisan::call('migrate:fresh');
         // Run process with timers
