@@ -340,7 +340,7 @@ class TokenRepository implements TokenRepositoryInterface
         if (empty($user)) {
             $instance->getDataStore()->putData('_user', null);
         } else {
-            $userData = $user->toArray();
+            $userData = $user->attributesToArray();
             unset($userData['remember_token']);
             $instance->getDataStore()->putData('_user', $userData);
         }
@@ -366,7 +366,7 @@ class TokenRepository implements TokenRepositoryInterface
     private function addRequestToData(Instance $instance)
     {
         if (!$instance->getDataStore()->getData('_request')) {
-            $instance->getDataStore()->putData('_request', $instance);
+            $instance->getDataStore()->putData('_request', $instance->attributesToArray());
             $this->instanceRepository->persistInstanceUpdated($instance);
         }
     }
