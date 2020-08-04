@@ -112,7 +112,6 @@ export default {
     },
     parent: {
       handler() {
-        console.log(this.parent);
         this.options.query.parent = this.parent;
       },
       immediate: true,
