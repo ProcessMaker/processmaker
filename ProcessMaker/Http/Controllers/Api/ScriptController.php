@@ -160,7 +160,7 @@ class ScriptController extends Controller
         $code = $request->get('code');
         $nonce = $request->get('nonce');
 
-        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce);
+        TestScript::dispatch($script, $request->user(), $code, $data, $config, $nonce)->onQueue('bpmn');
         return ['status' => 'success'];
     }
 
@@ -204,7 +204,7 @@ class ScriptController extends Controller
         $watcher = $request->get('watcher', uniqid('scr', true));
         $code = $script->code;
 
-        ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config);
+        ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
         return ['status' => 'success', 'key' => $watcher];
     }
 
