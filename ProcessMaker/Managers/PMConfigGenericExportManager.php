@@ -12,12 +12,16 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
  */
 class PMConfigGenericExportManager
 {
-    private $tag, $class, $keys;
+    public $owner = Process::class;
+    public $type;
 
-    public function __construct(string $tag, string $class, array $keys)
+    private $tag;
+    private $keys;
+
+    public function __construct(string $tag, string $type, array $keys)
     {
         $this->tag = $tag;
-        $this->class = $class;
+        $this->type = $type;
         $this->keys = $keys;
     }
 
@@ -47,7 +51,7 @@ class PMConfigGenericExportManager
                     continue;
                 }
                 
-                $references[] = [$this->class, $config->$key];
+                $references[] = [$this->type, $config->$key];
             }
         }
 
@@ -82,7 +86,7 @@ class PMConfigGenericExportManager
                 }
 
                 $oldRef = $config->$key;
-                $newRef = $references[$this->class][$oldRef]->getKey();
+                $newRef = $references[$this->type][$oldRef]->getKey();
                 $config->$key = $newRef;
             }
             $node->setAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config', json_encode($config));
