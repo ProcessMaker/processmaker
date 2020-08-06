@@ -5,6 +5,11 @@ use DOMXPath;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
+/**
+ * Used to dry up common export code in packages by specifying keys
+ * used in a pm:config attribute in a bpmn tag. See Actions By Email
+ * package service provider for example.
+ */
 class PMConfigGenericExportManager
 {
     private $tag, $class, $keys;
