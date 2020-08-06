@@ -371,11 +371,8 @@
                                 "properties": {
                                     "file": {
                                         "description": "save a new media file",
-                                        "type": "file",
-                                        "items": {
-                                            "type": "string",
-                                            "format": "binary"
-                                        }
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -2221,19 +2218,10 @@
                 "operationId": "createRequestFile",
                 "parameters": [
                     {
-                        "name": "model_id",
+                        "name": "data_name",
                         "in": "query",
-                        "description": "ID of the model to which the file will be associated",
-                        "required": false,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "model",
-                        "in": "query",
-                        "description": "Name of the class of the model",
-                        "required": false,
+                        "description": "Variable name in the request data to use for the file name",
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -2256,11 +2244,8 @@
                                 "properties": {
                                     "file": {
                                         "description": "save a new media file",
-                                        "type": "file",
-                                        "items": {
-                                            "type": "string",
-                                            "format": "binary"
-                                        }
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -2275,21 +2260,13 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "id": {
+                                        "message": {
                                             "description": "Store a newly created resource in storage.",
                                             "type": "string"
                                         },
-                                        "model_id": {
+                                        "fileUploadId": {
                                             "description": "Store a newly created resource in storage.",
-                                            "type": "string"
-                                        },
-                                        "file_name": {
-                                            "description": "Store a newly created resource in storage.",
-                                            "type": "string"
-                                        },
-                                        "mime_type": {
-                                            "description": "Store a newly created resource in storage.",
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     },
                                     "type": "object"
@@ -3863,6 +3840,14 @@
                         "description": "Represents a business process definition.",
                         "type": "string"
                     },
+                    "up": {
+                        "description": "Represents a business process definition.",
+                        "type": "integer"
+                    },
+                    "down": {
+                        "description": "Represents a business process definition.",
+                        "type": "integer"
+                    },
                     "subject": {
                         "description": "Represents a business process definition.",
                         "type": "string"
@@ -4305,7 +4290,7 @@
                 "properties": {
                     "process_category_id": {
                         "description": "Represents a business process definition.",
-                        "type": "string",
+                        "type": "integer",
                         "format": "id"
                     },
                     "name": {
@@ -4335,6 +4320,44 @@
                     "has_timer_start_events": {
                         "description": "Represents a business process definition.",
                         "type": "boolean"
+                    },
+                    "request_detail_screen_id": {
+                        "description": "Represents a business process definition.",
+                        "type": "integer",
+                        "format": "id"
+                    },
+                    "is_valid": {
+                        "description": "Represents a business process definition.",
+                        "type": "integer"
+                    },
+                    "package_key": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "start_events": {
+                        "description": "Represents a business process definition.",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProcessStartEvents"
+                        }
+                    },
+                    "warnings": {
+                        "description": "Represents a business process definition.",
+                        "type": "string"
+                    },
+                    "self_service_tasks": {
+                        "description": "Represents a business process definition.",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "signal_events": {
+                        "description": "Represents a business process definition.",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
                     }
                 },
                 "type": "object"
@@ -4348,7 +4371,7 @@
                         "properties": {
                             "user_id": {
                                 "description": "Represents a business process definition.",
-                                "type": "string",
+                                "type": "integer",
                                 "format": "id"
                             },
                             "id": {
@@ -4384,13 +4407,6 @@
                     },
                     {
                         "properties": {
-                            "startEvents": {
-                                "description": "Represents a business process definition.",
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/components/schemas/ProcessStartEvents"
-                                }
-                            },
                             "events": {
                                 "description": "Represents a business process definition.",
                                 "type": "array",
@@ -4442,6 +4458,10 @@
                                 "items": {
                                     "type": "string"
                                 }
+                            },
+                            "task_notifications": {
+                                "description": "Represents a business process definition.",
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -5091,6 +5111,10 @@
                         "description": "The attributes that are mass assignable.",
                         "type": "string"
                     },
+                    "password": {
+                        "description": "The attributes that are mass assignable.",
+                        "type": "string"
+                    },
                     "address": {
                         "description": "The attributes that are mass assignable.",
                         "type": "string"
@@ -5163,18 +5187,6 @@
                             "INACTIVE"
                         ]
                     },
-                    "group_id": {
-                        "description": "The attributes that are mass assignable.",
-                        "type": "string"
-                    },
-                    "member_type": {
-                        "description": "The attributes that are mass assignable.",
-                        "type": "string"
-                    },
-                    "member_id": {
-                        "description": "The attributes that are mass assignable.",
-                        "type": "string"
-                    },
                     "fullname": {
                         "description": "The attributes that are mass assignable.",
                         "type": "string"
@@ -5192,7 +5204,8 @@
                     },
                     "birthdate": {
                         "description": "The attributes that are mass assignable.",
-                        "type": "string"
+                        "type": "string",
+                        "format": "date"
                     }
                 },
                 "type": "object"

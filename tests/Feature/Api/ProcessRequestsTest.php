@@ -492,8 +492,10 @@ class ProcessRequestsTest extends TestCase
         ]);
 
         // Add the file to the request
-        $addedMedia = $request->addMedia($fileUpload)->toMediaCollection('local');
-
+        $addedMedia = $request
+            ->addMedia($fileUpload)
+            ->withCustomProperties(['data_name' => 'test'])
+            ->toMediaCollection('local');
 
         $route = self::API_TEST_URL . '/'. $request->id . '/files/' . $addedMedia->id;
         $response = $this->apiCall('GET', $route);

@@ -223,6 +223,7 @@
                         @endisset
                     </div>
                 </div>
+                  @can('view-comments')
                     <timeline commentable_id="{{ $request->getKey() }}"
                               commentable_type="{{ get_class($request) }}"
                               :reactions="configurationComments.reactions"
@@ -232,6 +233,7 @@
                               :adding="configurationComments.comments"
                               :readonly="request.status === 'COMPLETED'"
                               />
+                  @endcan
             </div>
             <div class="ml-md-3 mt-3 mt-md-0">
                 <template v-if="statusLabel">

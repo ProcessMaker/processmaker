@@ -13,6 +13,7 @@ use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
@@ -20,6 +21,7 @@ use ProcessMaker\SanitizeHelper;
 use Illuminate\Support\Str;
 use ProcessMaker\Events\ActivityAssigned;
 use ProcessMaker\Models\User;
+use ProcessMaker\Http\Resources\ApiResource;
 
 class TaskController extends Controller
 {
@@ -325,5 +327,11 @@ class TaskController extends Controller
         }
 
         return $orderedTasks;
+    }
+
+    public function getScreen(Request $request, ProcessRequestToken $task, Screen $screen)
+    {
+        // Authorized in policy
+        return new ApiResource($screen);
     }
 }

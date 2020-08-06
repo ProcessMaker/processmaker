@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers\Api;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
@@ -165,28 +166,9 @@ class ProcessRequestFileController extends Controller
             // receive the file
             $save = $receiver->receive();
 
-            // This needs to be the unique uploader name
-            $data_name = $laravel_request->input('data_name');
-
             // check if the upload has finished (in chunk mode it will send smaller files)
             if ($save->isFinished()) {
-
-                $user = pmUser();
-                $originalCreatedBy = $user ? $user->id : null;
-                foreach($request->getMedia() as $mediaItem) {
-                    if($mediaItem->getCustomProperty('data_name') == $data_name) {
-                        $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
-                        $mediaItem->delete();
-                    }
-                }
-
-                // save the file and return any response you need
-                $file = $request
-                    ->addMedia($save->getFile())
-                    ->withCustomProperties(['data_name' => $data_name, 'createdBy' => $originalCreatedBy])
-                    ->toMediaCollection();
-                // $identifier = ['_type' => 'file', 'id' => $file->id];
-                return new JsonResponse(['message' => 'The file was uploaded.','fileUploadId' => $file->id], 200);
+                return $this->saveUploadedFile($save->getFIle(), $request, $laravel_request);
             }
             // we are in chunk mode, lets send the current progress
             /** @var AbstractHandler $handler */
@@ -209,17 +191,10 @@ class ProcessRequestFileController extends Controller
      *     tags={"Request Files"},
      *
      *      @OA\Parameter(
-     *         name="model_id",
+     *         name="data_name",
      *         in="query",
-     *         description="ID of the model to which the file will be associated",
-     *         required=false,
-     *         @OA\Schema(type="integer"),
-     *     ),
-     *      @OA\Parameter(
-     *         name="model",
-     *         in="query",
-     *         description="Name of the class of the model",
-     *         required=false,
+     *         description="Variable name in the request data to use for the file name",
+     *         required=true,
      *         @OA\Schema(type="string"),
      *     ),
      *      @OA\Parameter(
@@ -249,10 +224,8 @@ class ProcessRequestFileController extends Controller
      *         response=200,
      *         description="success",
      *         @OA\JsonContent(
-     *              @OA\Property(property="id", type="string"),
-     *              @OA\Property(property="model_id", type="string"),
-     *              @OA\Property(property="file_name", type="string"),
-     *              @OA\Property(property="mime_type", type="string")
+     *              @OA\Property(property="message", type="string"),
+     *              @OA\Property(property="fileUploadId", type="integer"),
      *             ),
      *         )
      *     ),
@@ -265,26 +238,38 @@ class ProcessRequestFileController extends Controller
             // Perform a chunk upload
             return $this->chunk($receiver, $request, $laravel_request);
         } else {
-            $file = $request->addMedia($laravel_request->file)->toMediaCollection();
-            return new JsonResponse(['message' => 'file successfully uploaded'], 200);
+            return $this->saveUploadedFile($laravel_request->file, $request, $laravel_request);
         }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Used by both store() and chunk() to associate the uploaded file to a request
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param Media $file
-     *
-     * @return \Illuminate\Http\Response
-     *
+     * @param UploadedFile $file
+     * @param ProcessRequest $processRequest
+     * @param Request $laravelRequest
+     * @return JsonResponse
      */
-    public function update(Request $laravel_request, ProcessRequest $request)
+    private function saveUploadedFile(UploadedFile $file, ProcessRequest $processRequest, Request $laravelRequest)
     {
-        $request->getMedia()[0]->delete();
-        $newFile = $laravel_request->file;
-        $request->addMedia($newFile)->toMediaCollection();
-        return new JsonResponse(['message' => 'file successfully updated'], 200);
+        $user = pmUser();
+        $originalCreatedBy = $user ? $user->id : null;
+
+        $data_name = $laravelRequest->input('data_name');
+
+        foreach($processRequest->getMedia() as $mediaItem) {
+            if($mediaItem->getCustomProperty('data_name') == $data_name) {
+                $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
+                $mediaItem->delete();
+            }
+        }
+
+        // save the file and return any response you need
+        $media = $processRequest
+            ->addMedia($file)
+            ->withCustomProperties(['data_name' => $data_name, 'createdBy' => $originalCreatedBy])
+            ->toMediaCollection();
+        return new JsonResponse(['message' => 'The file was uploaded.','fileUploadId' => $media->id], 200);
     }
 
     /**

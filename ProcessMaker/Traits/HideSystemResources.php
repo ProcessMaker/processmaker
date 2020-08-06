@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Traits;
 use Illuminate\Support\Str;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Process;
 
 trait HideSystemResources
 {
@@ -24,10 +26,26 @@ trait HideSystemResources
         return $item;
     }
 
+    public function scopeSystem($query)
+    {
+        if (substr(static::class, -8) === 'Category') {
+            return $query->where('is_system', true);
+        } else {
+            return $query->whereHas('categories', function ($query) {
+                $query->where('is_system', true);
+            });
+        }
+    }
+
     public function scopeNonSystem($query)
     {
         if (substr(static::class, -8) === 'Category') {
             return $query->where('is_system', false);
+        } else if (static::class == ProcessRequest::class) {
+            // ProcessRequests must be filtered this way since
+            // they could be in a separate database
+            $systemProcessIds = Process::system()->pluck('id');
+            $query->whereNotIn('process_id', $systemProcessIds);
         } else {
             return $query->whereDoesntHave('categories', function ($query) {
                 $query->where('is_system', true);

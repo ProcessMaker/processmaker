@@ -15,7 +15,7 @@ use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ProcessRequests as ProcessRequestResource;
-use ProcessMaker\Http\Resources\ProcessRequestsCollection;
+use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
@@ -46,7 +46,7 @@ class ProcessRequestController extends Controller
      *
      * @param Request $request
      *
-     * @return ProcessRequestsCollection
+     * @return ApiCollection
      *
      * /**
      * @OA\Get(
@@ -136,6 +136,8 @@ class ProcessRequestController extends Controller
             }
         }
 
+        $query->nonSystem();
+
         try {
             $response = $query->orderBy(
                 str_ireplace('.', '->', $request->input('order_by', 'name')),
@@ -162,7 +164,7 @@ class ProcessRequestController extends Controller
             $response = collect([]);
         }
 
-        return new ProcessRequestsCollection($response, $total);
+        return new ApiCollection($response, $total);
     }
 
     /**

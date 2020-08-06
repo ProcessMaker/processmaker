@@ -19,6 +19,7 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -72,6 +73,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use HasMediaTrait;
     use ExtendedPMQL;
     use SqlsrvSupportTrait;
+    use HideSystemResources;
 
     protected $connection = 'data';
 
