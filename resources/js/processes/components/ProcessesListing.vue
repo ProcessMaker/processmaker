@@ -199,13 +199,13 @@
         window.location = "/processes/" + data + "/export";
       },
       onAction(action, data, index) {
-        let putData;
+        let putData = {
+          name: data.name,
+          description: data.description,
+        };
         switch (action) {
           case "unpause-start-timer":
-            putData = Object.assign({}, data);
             putData.pause_timer_start = false;
-            delete putData.category;
-            delete putData.user;
             ProcessMaker.apiClient
                 .put("processes/" + data.id, putData)
                 .then(response => {
@@ -217,10 +217,7 @@
                 });
             break;
           case "pause-start-timer":
-            putData = Object.assign({}, data);
             putData.pause_timer_start = true;
-            delete putData.category;
-            delete putData.user;
             ProcessMaker.apiClient
                 .put("processes/" + data.id, putData)
                 .then(response => {
