@@ -27,10 +27,7 @@ new Vue({
             window.location = "/processes/import"
         },
         reload() {
-            this.$refs.processListing.dataManager([{
-                field: "updated_at",
-                direction: "desc"
-            }]);
+            this.$refs.processListing.fetch();
         }
     }
 });
