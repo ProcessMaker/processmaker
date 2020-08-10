@@ -38,7 +38,7 @@
                       variant="link"
                       @click="onAction('unpause-start-timer', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
-                      :title="$t('Play start timer events')"
+                      :title="$t('Unpause Start Timer Events')"
                       v-if="props.rowData.has_timer_start_events && props.rowData.pause_timer_start"
               >
                 <i class="fas fa-play fa-lg fa-fw"></i>
@@ -47,7 +47,7 @@
                       variant="link"
                       @click="onAction('pause-start-timer', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
-                      :title="$t('Pause start timer events')"
+                      :title="$t('Pause Start Timer Events')"
                       v-if="props.rowData.has_timer_start_events && !props.rowData.pause_timer_start"
               >
                 <i class="fas fa-pause fa-lg fa-fw"></i>
@@ -199,33 +199,30 @@
         window.location = "/processes/" + data + "/export";
       },
       onAction(action, data, index) {
-        let putData;
+        let putData = {
+          name: data.name,
+          description: data.description,
+        };
         switch (action) {
           case "unpause-start-timer":
-            putData = Object.assign({}, data);
             putData.pause_timer_start = false;
-            delete putData.category;
-            delete putData.user;
             ProcessMaker.apiClient
                 .put("processes/" + data.id, putData)
                 .then(response => {
                   ProcessMaker.alert(
-                      this.$t("The process was restored."),
+                      this.$t("The process was unpaused."),
                       "success"
                   );
                   this.$emit("reload");
                 });
             break;
           case "pause-start-timer":
-            putData = Object.assign({}, data);
             putData.pause_timer_start = true;
-            delete putData.category;
-            delete putData.user;
             ProcessMaker.apiClient
                 .put("processes/" + data.id, putData)
                 .then(response => {
                   ProcessMaker.alert(
-                      this.$t("The process was restored."),
+                      this.$t("The process was paused."),
                       "success"
                   );
                   this.$emit("reload");
