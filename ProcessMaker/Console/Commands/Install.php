@@ -253,6 +253,7 @@ class Install extends Command
             $this->info(__("Installing database..."));
 
             // Install migrations
+            $this->call('migrate:install');
             $this->call('migrate:fresh', [
                 '--seed' => true,
                 '--force' => true,
