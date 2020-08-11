@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:startEvent id="node_1" name="Start Event" pm:allowInterstitial="false" pm:assignment="user" pm:assignedUsers="1" pm:assignedGroups="">
+      <bpmn:outgoing>node_6</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:intermediateThrowEvent id="node_5" name="IT">
+      <bpmn:incoming>node_7</bpmn:incoming>
+      <bpmn:outgoing>node_17</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="node_5_message" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="node_16" name="IC">
+      <bpmn:incoming>node_17</bpmn:incoming>
+      <bpmn:outgoing>node_20</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="node_12_message" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="node_17" name="" sourceRef="node_5" targetRef="node_16" />
+    <bpmn:endEvent id="node_19" name="End Event">
+      <bpmn:incoming>node_20</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_20" name="" sourceRef="node_16" targetRef="node_19" />
+    <bpmn:scriptTask id="node_4" name="Script Task" pm:config="{&#34;foo&#34;:&#34;bar&#34;}" pm:scriptRef="[script_id]">
+      <bpmn:incoming>node_6</bpmn:incoming>
+      <bpmn:outgoing>node_7</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="node_6" sourceRef="node_1" targetRef="node_4" />
+    <bpmn:sequenceFlow id="node_7" sourceRef="node_4" targetRef="node_5" />
+    <bpmn:sequenceFlow id="node_13" sourceRef="node_10" targetRef="node_11" />
+    <bpmn:sequenceFlow id="node_15" sourceRef="node_11" targetRef="node_12" />
+  </bpmn:process>
+  <bpmn:message id="node_5_message" name="node_5_message" />
+  <bpmn:collaboration id="collaboration_0">
+    <bpmn:participant id="node_2" name="Pool" processRef="ProcessId" />
+    <bpmn:participant id="node_9" name="Pool" processRef="process_3" />
+    <bpmn:messageFlow id="node_14" name="aa" sourceRef="node_5" targetRef="node_10" />
+    <bpmn:messageFlow id="node_18" name="bb" sourceRef="node_12" targetRef="node_16" />
+  </bpmn:collaboration>
+  <bpmn:process id="process_3">
+    <bpmn:startEvent id="node_10" name="IS">
+      <bpmn:outgoing>node_13</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="node_5_message" />
+    </bpmn:startEvent>
+    <bpmn:endEvent id="node_12" name="IE">
+      <bpmn:incoming>node_15</bpmn:incoming>
+      <bpmn:messageEventDefinition messageRef="node_12_message" />
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="node_11" name="Script Task" pm:config="{&#34;bar&#34;:&#34;baz&#34;}" pm:scriptRef="[script_id]">
+      <bpmn:incoming>node_13</bpmn:incoming>
+      <bpmn:outgoing>node_15</bpmn:outgoing>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmn:message id="node_12_message" name="node_12_message" />
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="collaboration_0">
+      <bpmndi:BPMNShape id="node_1_di" bpmnElement="node_1">
+        <dc:Bounds x="200" y="110" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_5_di" bpmnElement="node_5">
+        <dc:Bounds x="490" y="160" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="150" y="90" width="900" height="216" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_9_di" bpmnElement="node_9">
+        <dc:Bounds x="370" y="340" width="360" height="206" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_10_di" bpmnElement="node_10">
+        <dc:Bounds x="430" y="370" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_12_di" bpmnElement="node_12">
+        <dc:Bounds x="650" y="370" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_14_di" bpmnElement="node_14">
+        <di:waypoint x="508" y="178" />
+        <di:waypoint x="448" y="388" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_16_di" bpmnElement="node_16">
+        <dc:Bounds x="700" y="160" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_17_di" bpmnElement="node_17">
+        <di:waypoint x="508" y="178" />
+        <di:waypoint x="718" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_18_di" bpmnElement="node_18">
+        <di:waypoint x="668" y="388" />
+        <di:waypoint x="718" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_19_di" bpmnElement="node_19">
+        <dc:Bounds x="900" y="160" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_20_di" bpmnElement="node_20">
+        <di:waypoint x="718" y="178" />
+        <di:waypoint x="918" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_4_di" bpmnElement="node_4">
+        <dc:Bounds x="250" y="210" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_6_di" bpmnElement="node_6">
+        <di:waypoint x="218" y="128" />
+        <di:waypoint x="308" y="248" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_7_di" bpmnElement="node_7">
+        <di:waypoint x="308" y="248" />
+        <di:waypoint x="508" y="178" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_11_di" bpmnElement="node_11">
+        <dc:Bounds x="530" y="450" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_13_di" bpmnElement="node_13">
+        <di:waypoint x="448" y="388" />
+        <di:waypoint x="588" y="488" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_15_di" bpmnElement="node_15">
+        <di:waypoint x="588" y="488" />
+        <di:waypoint x="668" y="388" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
