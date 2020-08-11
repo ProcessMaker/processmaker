@@ -8,7 +8,7 @@ use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Facades\WorkflowManager;
 
-class ScreenTest extends TestCase
+class MessageTest extends TestCase
 {
     use RequestHelper;
 
