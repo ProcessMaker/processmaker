@@ -14,6 +14,7 @@ use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Notifications\TaskReassignmentNotification;
@@ -106,12 +107,19 @@ class TaskController extends Controller
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $filter = '%' . mb_strtolower($filter) . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
-                      ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-            });
+            $setting = Setting::byKey('indexed-search');
+            if ($setting && $setting->config['enabled'] === true) {
+                $matches = ProcessRequestToken::search($filter)->take(5000)->get()->pluck('id');
+                $query->whereIn('id', $matches);
+            } else {
+                $filter = '%' . mb_strtolower($filter) . '%';
+                $query->where(function ($query) use ($filter) {
+                    $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
+                        ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
+                });            
+            }
         }
+        
         $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
         $parameters = $request->all();
         foreach ($parameters as $column => $filter) {
