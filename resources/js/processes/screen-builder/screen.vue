@@ -24,6 +24,7 @@
           <b-col class="overflow-auto h-100">
             <vue-form-renderer
               ref="renderer"
+              :key="rendererKey"
               v-model="previewData"
               class="p-3"
               @submit="previewSubmit"
@@ -34,6 +35,7 @@
               :custom-css="customCSS"
               :watchers="watchers"
               v-on:css-errors="cssErrors = $event"
+              :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
             />
           </b-col>
@@ -332,13 +334,6 @@ export default {
     TopMenu
   },
   watch: {
-    mode(mode) {
-      if (mode === "preview") {
-        this.previewData = this.previewInput
-          ? JSON.parse(this.previewInput)
-          : null;
-      }
-    },
     config() {
       // Reset the preview data with clean object to start
       this.previewData = {};
@@ -428,6 +423,10 @@ export default {
         this.$refs.menuScreen.sectionRight = false;
       }
       this.mode = mode;
+      this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
+      this.$nextTick(() => {
+        this.rendererKey++;
+      });
     },
     onUpdate(data) {
       ProcessMaker.EventBus.$emit("form-data-updated", data);
