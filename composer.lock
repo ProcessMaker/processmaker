@@ -3482,68 +3482,6 @@
             }
         },
         {
-            "name": "processmaker/docker-executor-node",
-            "version": "1.0.2",
-            "dist": {
-                "type": "path",
-                "url": "/var/packages/ProcessMaker/docker-executor-node",
-                "reference": "22331e08cf6353ee724a0f2dd983dc12cf750bc1"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Package\\DockerExecutorNode\\DockerExecutorNodeServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorNode\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
-                }
-            },
-            "license": [
-                "GAGPL-3.0-or-later"
-            ],
-            "description": "Javascript script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
-        },
-        {
-            "name": "processmaker/docker-executor-php",
-            "version": "1.0.1",
-            "dist": {
-                "type": "path",
-                "url": "/var/packages/ProcessMaker/docker-executor-php",
-                "reference": "af8769b5513ee642074e124a34c8b73a52a6c379"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "ProcessMaker\\Package\\DockerExecutorPhp\\DockerExecutorPhpServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "ProcessMaker\\Package\\DockerExecutorPhp\\": "src",
-                    "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
-                }
-            },
-            "license": [
-                "GAGPL-3.0-or-later"
-            ],
-            "description": "PHP script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
-        },
-        {
             "name": "processmaker/laravel-i18next",
             "version": "dev-master",
             "source": {
