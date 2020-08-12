@@ -121,7 +121,12 @@ class ExportManager
 
     public function addDependencyManager($class)
     {
-        $instance = new $class;
+        if (is_string($class)) {
+            $instance  = new $class;
+        } else {
+            $instance = $class;
+        }
+
         $this->addDependency([
             'type' => $instance->type,
             'owner' => $instance->owner,
