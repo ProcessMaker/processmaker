@@ -1,0 +1,314 @@
+<?php
+namespace Tests\Feature\Api;
+
+use Faker\Factory as Faker;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Console\Commands\ProcessmakerClearRequests;
+use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Models\Comment;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCollaboration;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestLock;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessTaskAssignment;
+use ProcessMaker\Models\ScheduledTask;
+use ProcessMaker\Models\User;
+use Tests\Feature\Shared\ProcessTestingTrait;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\Feature\Shared\ResourceAssertionsTrait;
+use Tests\TestCase;
+
+class ClearRequestsTest extends TestCase
+{
+    use ResourceAssertionsTrait;
+    use WithFaker;
+    use RequestHelper;
+    use ProcessTestingTrait;
+
+    /**
+     * @var Process $process
+     */
+    protected $process;
+    private $requestStructure = [
+        'id',
+        'process_id',
+        'user_id',
+        'status',
+        'name',
+        'initiated_at',
+        'created_at',
+        'updated_at'
+    ];
+
+    const API_TEST_URL = '/comments';
+
+    /**
+     * Create a single task process assigned to $this->user
+     */
+    private function createTestProcess(array $data = [])
+    {
+        $data['bpmn'] = Process::getProcessTemplate('IntermediateTimerEvent.bpmn');
+        $process = factory(Process::class)->create($data);
+        return $process;
+    }
+
+    /**
+     * Create a single task process assigned to $this->user
+     */
+    private function createTestCollaborationProcess()
+    {
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('Collaboration.bpmn')
+        ]);
+        //Assign the task to $this->user
+        factory(ProcessTaskAssignment::class)->create([
+            'process_id' => $process->id,
+            'process_task_id' => '_5',
+            'assignment_id' => $this->user->id,
+            'assignment_type' => 'user',
+        ]);
+        factory(ProcessTaskAssignment::class)->create([
+            'process_id' => $process->id,
+            'process_task_id' => '_10',
+            'assignment_id' => $this->user->id,
+            'assignment_type' => 'user',
+        ]);
+        factory(ProcessTaskAssignment::class)->create([
+            'process_id' => $process->id,
+            'process_task_id' => '_24',
+            'assignment_id' => $this->user->id,
+            'assignment_type' => 'user',
+        ]);
+        return $process;
+    }
+
+    private function runCollaborationProcess()
+    {
+        $process = $this->createTestCollaborationProcess();
+        //Start a process request
+        $route = route('api.process_events.trigger', [$process->id, 'event' => '_4']);
+        $data = [];
+        $response = $this->apiCall('POST', $route, $data);
+        //Verify status
+        $response->assertStatus(201);
+        //Verify the structure
+        $response->assertJsonStructure($this->requestStructure);
+        $request = $response->json();
+        //Get the active tasks of the request
+        $route = route('api.tasks.index');
+        $response = $this->apiCall('GET', $route);
+        $tasks = $response->json('data');
+        //Complete the task
+        $route = route('api.tasks.update', [$tasks[0]['id'], 'status' => 'COMPLETED']);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+        $task = $response->json();
+        //Get the list of tasks
+        $route = route('api.tasks.index');
+        $response = $this->apiCall('GET', $route);
+        $tasks = $response->json('data');
+        //Complete the task
+        $index = $this->findTaskByName($tasks, 'Process Order');
+        $route = route('api.tasks.update', [$tasks[$index]['id'], 'status' => 'COMPLETED']);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+        $task = $response->json();
+        //Get the list of tasks
+        $route = route('api.tasks.index');
+        $response = $this->apiCall('GET', $route);
+        $tasks = $response->json('data');
+        //Complete the Final task
+        $index = $this->findTaskByName($tasks, 'Finish');
+        $route = route('api.tasks.update', [$tasks[$index]['id'], 'status' => 'COMPLETED']);
+        $response = $this->apiCall('PUT', $route, ['data' => $data]);
+    }
+
+    /**
+     * Get the index of a task by name.
+     *
+     * @param array $tasks
+     * @param string $name
+     *
+     * @return integer
+     */
+    private function findTaskByName(array $tasks, $name)
+    {
+        foreach ($tasks as $index => $task) {
+            if ($task['element_name'] === $name) {
+                break;
+            }
+        }
+        return $index;
+    }
+
+    private function addSomeComments()
+    {
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+        $response->assertStatus(200);
+
+        $process = factory(Process::class)->create([
+            'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
+        ]);
+
+        // Add comments to Tokens
+        $model = factory(ProcessRequestToken::class)->create([
+            'process_id' => $process->id,
+            'process_request_id' => factory(ProcessRequest::class)->create([
+                'process_id' => $process->id,
+            ])->id,
+        ]);
+
+        factory(Comment::class, 5)->create([
+            'commentable_id' => $model->getKey(),
+            'commentable_type' => get_class($model),
+            'hidden' => false
+        ]);
+
+        factory(Comment::class, 5)->create([
+            'commentable_id' => $model->getKey(),
+            'commentable_type' => get_class($model),
+            'hidden' => true
+        ]);
+
+        // Add comments to Requests
+        $model = factory(ProcessRequest::class)->create([
+            'process_id' => $process->id,
+            'callable_id' => 'PROCESS_1',
+            'process_collaboration_id' => null,
+        ]);
+
+        factory(Comment::class, 5)->create([
+            'commentable_id' => $model->getKey(),
+            'commentable_type' => get_class($model),
+            'hidden' => false
+        ]);
+
+        factory(Comment::class, 5)->create([
+            'commentable_id' => $model->getKey(),
+            'commentable_type' => get_class($model),
+            'hidden' => true
+        ]);
+
+        // Add 3 comments to Process
+        $model = $process;
+        factory(Comment::class, 3)->create([
+            'commentable_id' => $model->getKey(),
+            'commentable_type' => get_class($model),
+            'hidden' => false
+        ]);
+    }
+
+    private function addUserMediaFiles()
+    {
+        // We create a fake file to upload
+        Storage::fake('public');
+        $fileUpload = UploadedFile::fake()->create('my_test_file123.txt', 1);
+  
+        // We create a model (in this case a user) and associate to him the file
+        $model = factory(User::class)->create();
+        $model->addMedia($fileUpload)->toMediaCollection('local');
+  
+  
+        // Basic listing assertions
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+  
+        // Validate the header status code
+        $response->assertStatus(200);
+  
+        // Filtered listing assertions
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=123');
+        $response->assertStatus(200);
+  
+        // Filtered listing assertions when filter string is not found
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=xyz9393');
+        $response->assertStatus(200);
+    }
+
+    private function addRequestMediaFiles()
+    {
+        // We create a fake file to upload
+        Storage::fake('public');
+        $fileUpload = UploadedFile::fake()->create('request_test_file456.txt', 1);
+  
+        // We create a model (in this case a user) and associate to him the file
+        $model = ProcessRequest::find(1);
+        $model->addMedia($fileUpload)
+            ->withCustomProperties(['data_name' => 'test'])
+            ->toMediaCollection('local');  
+  
+        // Basic listing assertions
+        $response = $this->apiCall('GET', self::API_TEST_URL);
+  
+        // Validate the header status code
+        $response->assertStatus(200);
+  
+        // Filtered listing assertions
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=456');
+        $response->assertStatus(200);
+  
+        // Filtered listing assertions when filter string is not found
+        $response = $this->apiCall('GET', self::API_TEST_URL . '?filter=xyz9393');
+        $response->assertStatus(200);
+    }
+
+    private function runProcessWithTimers()
+    {
+        $this->be($this->user);
+        $process = $this->createTestProcess();
+        $definitions = $process->getDefinitions();
+        $startEvent = $definitions->getEvent('_2');
+        $request = WorkflowManager::triggerStartEvent($process, $startEvent, []);
+
+        // Complete first task to active the intermediate timer events.
+        $token = $request->tokens()->where('element_id', '_3')->first();
+        $this->completeTask($token);
+    }
+  
+    public function testCommandClearRequests()
+    {
+        Artisan::call('migrate:fresh');
+        // Run process with timers
+        $this->runProcessWithTimers();
+
+        // Run a collaboration
+        $this->runCollaborationProcess();
+
+        // Add some media files
+        $this->addUserMediaFiles();
+        $this->addRequestMediaFiles();
+
+        // Add some comments
+        $this->addSomeComments();
+    
+        $this->assertEquals(4, ScheduledTask::count());
+        $this->assertEquals(5, ProcessRequest::count());
+        $this->assertEquals(1, ProcessCollaboration::count());
+        $this->assertEquals(28, Comment::count());
+        $this->assertEquals(2, Media::count());
+
+        $this->artisan('processmaker:clear-requests')
+            ->expectsQuestion(ProcessmakerClearRequests::message, 'yes')
+            ->assertExitCode(0)
+            ->run();
+        // Wait 
+        sleep(2);
+
+        $this->assertEquals(0, ProcessRequestToken::count());
+        $this->assertEquals(0, ProcessRequest::count());
+        $this->assertEquals(0, ProcessCollaboration::count());
+        // 3 comments about Process should remain
+        $this->assertEquals(3, Comment::count());
+        $this->assertEquals(1, Media::count());
+    }
+
+    /**
+     * Do not use transactions for this test
+     */
+    protected function connectionsToTransact()
+    {
+        return [];
+    }
+}
