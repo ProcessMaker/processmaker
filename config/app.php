@@ -55,7 +55,7 @@ return [
     'web_client_application_id' => env('PM_CLIENT_ID', 'x-pm-local-client'),
 
     // The processmaker BPM scripts configuration
-    'processmaker_scripts_home' => env('PROCESSMAKER_SCRIPTS_HOME', '/home/vagrant'),
+    'processmaker_scripts_home' => env('PROCESSMAKER_SCRIPTS_HOME', __DIR__ . '/../storage/app'),
     'processmaker_scripts_docker' => env('PROCESSMAKER_SCRIPTS_DOCKER', '/usr/bin/docker'),
     'processmaker_scripts_docker_mode' => env('PROCESSMAKER_SCRIPTS_DOCKER_MODE', 'binding'),
     'timer_events_seconds' => env('TIMER_EVENTS_SECONDS', 'truncate'),
