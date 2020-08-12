@@ -21,6 +21,7 @@ use ProcessMaker\Jobs\TerminateRequest;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
@@ -120,11 +121,17 @@ class ProcessRequestController extends Controller
         
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $filter = '%' . mb_strtolower($filter) . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->where(DB::raw('LOWER(name)'), 'like', $filter)
-                      ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-            });
+            $setting = Setting::byKey('indexed-search');
+            if ($setting && $setting->config['enabled'] === true) {
+                $matches = ProcessRequest::search($filter)->paginate(4000)->pluck('id');
+                $query->whereIn('id', $matches);            
+            } else {
+                $filter = '%' . mb_strtolower($filter) . '%';
+                $query->where(function ($query) use ($filter) {
+                    $query->where(DB::raw('LOWER(name)'), 'like', $filter)
+                        ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
+                });            
+            }
         }        
 
         $pmql = $request->input('pmql', '');

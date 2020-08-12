@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
@@ -74,6 +75,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     use ExtendedPMQL;
     use SqlsrvSupportTrait;
     use HideSystemResources;
+    use Searchable;
 
     protected $connection = 'data';
 
@@ -134,6 +136,20 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         'process',
         'participants',
     ];
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'data' => json_encode($this->data),
+        ];
+    }
 
     /**
      * Boot the model as a process instance.
