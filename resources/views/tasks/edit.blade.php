@@ -289,6 +289,7 @@
           statusCard: "card-header text-capitalize text-white bg-success",
           selectedUser: [],
           hasErrors: false,
+          redirectInProcess: false,
         },
         watch: {
           task: {
@@ -356,6 +357,10 @@
             this.loadTask(this.task.id);
           },
           loadTask(id) {
+            if (this.redirectInProcess) {
+              return;
+            }
+
             window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
               .then((response) => {
                 this.$set(this, 'task', response.data);
@@ -376,7 +381,7 @@
               });
           },
           redirectWhenProcessCompleted() {
-            window.location.href = `/requests/${this.task.process_request_id}`;
+            this.redirect(`/requests/${this.task.process_request_id}`);
           },
           refreshWhenProcessUpdated(data) {
             if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
@@ -390,28 +395,32 @@
           },
           closeTask() {
             if (this.hasErrors) {
-              window.location.href = `/requests/${this.task.process_request_id}`;
+              this.redirect(`/requests/${this.task.process_request_id}`);
               return;
             }
             if (!this.task.allow_interstitial) {
-              document.location.href = "/tasks";
+              this.redirect("/tasks");
             } else {
               this.redirectToNextAssignedTask();
             }
           },
           redirectToNextAssignedTask(redirect = false) {
+            if (this.redirectInProcess) {
+              return;
+            }
+
             if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
               window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user_id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
                 if (response.data.data.length > 0) {
                   const firstNextAssignedTask = response.data.data[0].id;
                   if (redirect) {
-                    window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+                    this.redirect(`/tasks/${firstNextAssignedTask}/edit`);
                   } else {
                     this.loadTask(firstNextAssignedTask);
                   }
                 } else if (this.task.process_request.status === 'COMPLETED') {
                   setTimeout(() => {
-                    window.location.href = `/requests/${this.task.process_request_id}`;
+                    this.redirect(`/requests/${this.task.process_request_id}`);
                   }, 500);
                 }
               });
@@ -464,12 +473,22 @@
                 .then(response => {
                   this.showReassignment = false;
                   this.selectedUser = [];
-                  window.location.href =
-                    "/requests/" + response.data.process_request_id;
+                  this.redirect('/tasks');
                 });
             }
           },
+          redirect(to) {
+            if (this.redirectInProcess) {
+              return;
+            }
+            this.redirectInProcess = true;
+            window.location.href = to;
+          },
           loadUsers (filter) {
+            if (this.redirectInProcess) {
+              return;
+            }
+
             filter = typeof filter === "string" ? "?filter=" + filter + "&" : "?";
             ProcessMaker.apiClient
               .get(
@@ -480,7 +499,7 @@
                 }
               )
               .then(response => {
-                this.usersList = response.data.assignable_users;
+                this.usersList = response.data.assignable_users.filter(u => u.id !== this.task.user_id);
               });
           },
           classHeaderCard (status) {
