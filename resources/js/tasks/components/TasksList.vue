@@ -112,7 +112,8 @@ export default {
           direction: "DESC"
         }
       ],
-      fields: []
+      fields: [],
+      previousFilter: ""
     };
   },
   mounted: function mounted() {
@@ -318,6 +319,12 @@ export default {
                 filter = query;
               }
             }
+
+            if (this.previousFilter !== filter) {
+              this.page = 1;
+            }
+
+            this.previousFilter = filter;
             
             // Load from our api client
             ProcessMaker.apiClient

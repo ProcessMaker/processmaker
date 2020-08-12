@@ -84,7 +84,8 @@ export default {
           direction: "desc"
         }
       ],
-      fields: []
+      fields: [],
+      previousFilter: ""
     };
   },
   mounted() {
@@ -228,10 +229,6 @@ export default {
     },
     fetch(query, resetPagination) {
         Vue.nextTick(() => {
-            if (resetPagination) {
-              this.page = 1;
-            }
-            
             let pmql = '';
             
             if (this.pmql !== undefined) {
@@ -247,6 +244,12 @@ export default {
                 filter = query;
               }
             }
+
+            if (resetPagination || this.previousFilter !== filter) {
+              this.page = 1;
+            }
+
+            this.previousFilter = filter;
 
             // Load from our api client
             ProcessMaker.apiClient
