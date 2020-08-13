@@ -52,7 +52,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", "validation"],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", "validation", "parent"],
   beforeMount() {
     this.getFileType();
   },
@@ -110,6 +110,12 @@ export default {
       },
       immediate: true,
     },
+    parent: {
+      handler() {
+        this.options.query.parent = this.parent;
+      },
+      immediate: true,
+    },
     prefix: {
       handler() {
         this.options.query.data_name = this.prefix + this.name;
@@ -132,7 +138,9 @@ export default {
         simultaneousUploads: 1,
         query: {
           chunk: true,
-          data_name: this.name
+          data_name: this.name,
+          parent: null,
+          marco: 'test',
         },
         testChunks: false,
         // Setup our headers to deal with API calls
@@ -190,6 +198,9 @@ export default {
         }
       }
       file.ignored = false;
+      if (!this.name) {
+        this.options.query.data_name = file.name
+      }
       return true;
     },
     removeDefaultClasses() {

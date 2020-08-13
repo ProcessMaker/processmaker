@@ -37,6 +37,11 @@ class SessionStarted
      */
     private function userHasValidRememberMe($request)
     {
+
+        if (\Auth::user() === null) {
+            return false;
+        }
+
         $guard = \Auth::guard();
 
         // Remember me is validate only in user session guards
@@ -57,8 +62,12 @@ class SessionStarted
 
         $token = $parts[1];
 
+        if ($token === null || $token === '') {
+            return false;
+        }
+
         // Validate the cookie's remember me token with the one stored in the database
-        if(hash_equals(\Auth::user()->getRememberToken(), $token)) {
+        if (hash_equals(\Auth::user()->getRememberToken(), $token)) {
             return true;
         }
 

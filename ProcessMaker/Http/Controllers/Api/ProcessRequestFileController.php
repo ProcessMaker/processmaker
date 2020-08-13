@@ -256,9 +256,11 @@ class ProcessRequestFileController extends Controller
         $originalCreatedBy = $user ? $user->id : null;
 
         $data_name = $laravelRequest->input('data_name');
+        $parent = (int)$laravelRequest->input('parent', null);
 
         foreach($processRequest->getMedia() as $mediaItem) {
-            if($mediaItem->getCustomProperty('data_name') == $data_name) {
+            if($mediaItem->getCustomProperty('data_name') == $data_name &&
+                $mediaItem->getCustomProperty('parent') == $parent) {
                 $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
                 $mediaItem->delete();
             }
@@ -267,7 +269,11 @@ class ProcessRequestFileController extends Controller
         // save the file and return any response you need
         $media = $processRequest
             ->addMedia($file)
-            ->withCustomProperties(['data_name' => $data_name, 'createdBy' => $originalCreatedBy])
+            ->withCustomProperties([
+                'data_name' => $data_name,
+                'parent' => $parent != 0 ? $parent : null,
+                'createdBy' => $originalCreatedBy
+            ])
             ->toMediaCollection();
         return new JsonResponse(['message' => 'The file was uploaded.','fileUploadId' => $media->id], 200);
     }

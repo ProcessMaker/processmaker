@@ -123,6 +123,14 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->saveOrFail();
         $instance->setId($instance->getKey());
 
+        /**
+         * NOTE: This will never be run since persistInstanceCreated is never called
+         * with $source or $event. Leaving here since it may be in a future versions
+         * of nayra.
+         * 
+         * Collaborations for message events are currently set in
+         * ProcessMaker/Models/MessageEventDefinition.php
+         */
         if ($source) {
             $participant = $this->findParticipantFor($instance);
             $sourcePartisipant = $this->findParticipantFor($source->getInstance());

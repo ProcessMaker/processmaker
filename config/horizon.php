@@ -76,32 +76,59 @@ return [
 
     'environments' => [
         'production' => [
+            'supervisor-bpmn' => [
+                'connection' => 'redis',
+                'queue' => ['bpmn'],
+                'balance' => 'simple',
+                'processes' => 5,
+                'tries' => 1,
+                'timeout' => 3600,
+            ],
             'supervisor-1' => [
                 'connection' => 'redis',
-                'queue' => ['default'],
+                'queue' => ['high', 'default', 'low'],
                 'balance' => 'simple',
-                'processes' => 10,
+                'processes' => 5,
                 'tries' => 3,
+                'timeout' => 600,
             ],
         ],
 
         'local' => [
+            'supervisor-bpmn' => [
+                'connection' => 'redis',
+                'queue' => ['bpmn'],
+                'balance' => 'false',
+                'processes' => 2,
+                'tries' => 1,
+                'timeout' => 3600,
+            ],
             'supervisor-1' => [
                 'connection' => 'redis',
-                'queue' => ['default'],
+                'queue' => ['high', 'default', 'low'],
                 'balance' => 'simple',
-                'processes' => 3,
+                'processes' => 2,
                 'tries' => 3,
+                'timeout' => 600,
             ],
         ],
         
         'staging' => [
+            'supervisor-bpmn' => [
+                'connection' => 'redis',
+                'queue' => ['bpmn'],
+                'balance' => 'false',
+                'processes' => 2,
+                'tries' => 1,
+                'timeout' => 3600,
+            ],
             'supervisor-1' => [
                 'connection' => 'redis',
-                'queue' => ['default'],
+                'queue' => ['high', 'default', 'low'],
                 'balance' => 'simple',
-                'processes' => 3,
+                'processes' => 2,
                 'tries' => 3,
+                'timeout' => 600,
             ],
         ],
     ],
