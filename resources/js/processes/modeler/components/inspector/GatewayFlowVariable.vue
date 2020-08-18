@@ -1,6 +1,6 @@
 <template>
     <div v-if="isConditionedFlow">
-      <h4>Flow Variable</h4>
+      <h5>Flow Variable</h5>
       <small class="form-text text-muted">{{$t("If the expression evaluates to true, create or update the following variable")}}</small>
       <div class="form-group">
           <label>{{ $t("Variable Name") }}</label>
