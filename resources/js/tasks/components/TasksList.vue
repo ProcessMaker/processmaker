@@ -296,7 +296,7 @@ export default {
       }
     },
 
-    fetch(query) {
+    fetch() {
         Vue.nextTick(() => {
             if (this.cancelToken) {
               this.cancelToken();
@@ -312,11 +312,10 @@ export default {
 
             let filter = this.filter;
             
-            if (query && query.length) {
-              if (query.isPMQL()) {
-                pmql = `(${pmql}) and (${query})`;
-              } else {
-                filter = query;
+            if (filter && filter.length) {
+              if (filter.isPMQL()) {
+                pmql = `(${pmql}) and (${filter})`;
+                filter = '';
               }
             }
 

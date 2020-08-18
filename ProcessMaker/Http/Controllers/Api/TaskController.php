@@ -109,7 +109,7 @@ class TaskController extends Controller
         if (!empty($filter)) {
             $setting = Setting::byKey('indexed-search');
             if ($setting && $setting->config['enabled'] === true) {
-                $matches = ProcessRequestToken::search($filter)->take(5000)->get()->pluck('id');
+                $matches = ProcessRequestToken::search($filter)->get()->pluck('id');
                 $query->whereIn('id', $matches);
             } else {
                 $filter = '%' . mb_strtolower($filter) . '%';
@@ -122,17 +122,17 @@ class TaskController extends Controller
         
         $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
         $parameters = $request->all();
-        foreach ($parameters as $column => $filter) {
+        foreach ($parameters as $column => $fieldFilter) {
             if (in_array($column, $filterByFields)) {
                 if ($column === 'user_id') {
                     $key = array_search($column, $filterByFields);
-                    $query->where(function($query) use ($key, $column, $filter){
+                    $query->where(function($query) use ($key, $column, $fieldFilter){
                         $userColumn = is_string($key) ? $key : $column;
-                        $query->where($userColumn, $filter);
-                        $query->orWhere(function ($query) use($userColumn, $filter) {
+                        $query->where($userColumn, $fieldFilter);
+                        $query->orWhere(function ($query) use($userColumn, $fieldFilter) {
                             $query->whereNull($userColumn);
                             $query->where('process_request_tokens.is_self_service', 1);
-                            $user = User::find($filter);
+                            $user = User::find($fieldFilter);
                             $query->where(function ($query) use ($user) {
                                 foreach($user->groups as $group) {
                                     $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey()));
@@ -142,7 +142,7 @@ class TaskController extends Controller
                     });
                 } else {
                     $key = array_search($column, $filterByFields);
-                    $query->where(is_string($key) ? $key : $column, 'like', $filter);
+                    $query->where(is_string($key) ? $key : $column, 'like', $fieldFilter);
                 }
             }
         }
@@ -182,7 +182,6 @@ class TaskController extends Controller
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
-        
         $response = $this->handleOrderByRequestName($request, $query->get());
 
         $response = $response->filter(function($processRequestToken) {
