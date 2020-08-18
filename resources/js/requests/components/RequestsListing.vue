@@ -227,7 +227,7 @@ export default {
       }
       return data;
     },
-    fetch(query, resetPagination) {
+    fetch() {
         Vue.nextTick(() => {
             let pmql = '';
             
@@ -237,15 +237,13 @@ export default {
                     
             let filter = this.filter;
             
-            if (query && query.length) {
-              if (query.isPMQL()) {
-                pmql = `(${pmql}) and (${query})`;
-              } else {
-                filter = query;
+            if (filter && filter.length) {
+              if (filter.isPMQL()) {
+                pmql = `(${pmql}) and (${filter})`;
               }
             }
 
-            if (resetPagination || this.previousFilter !== filter) {
+            if (this.previousFilter !== filter) {
               this.page = 1;
             }
 
