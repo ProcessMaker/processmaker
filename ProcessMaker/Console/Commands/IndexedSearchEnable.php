@@ -64,7 +64,7 @@ class IndexedSearchEnable extends Command
         }
 
         if ($confirmed) {
-            $this->line("The indexer will display its status every 1000 rows.");
+            $this->line("The indexer will occasionally display its status.");
 
             foreach ($this->manager->list() as $index) {
                 $this->info("\nBeginning index of {$index->name}...");
@@ -72,7 +72,7 @@ class IndexedSearchEnable extends Command
                     call_user_func($index->callback);
                     $this->info("All {$index->name} records have been imported.");
                 } else {
-                    $this->call("tntsearch:import", ['model' => $index->model]);
+                    $this->call("scout:import", ['model' => $index->model]);
                 }
             }
 
