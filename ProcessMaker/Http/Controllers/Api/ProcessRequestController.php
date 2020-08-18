@@ -123,7 +123,7 @@ class ProcessRequestController extends Controller
         if (!empty($filter)) {
             $setting = Setting::byKey('indexed-search');
             if ($setting && $setting->config['enabled'] === true) {
-                $matches = ProcessRequest::search($filter)->paginate(4000)->pluck('id');
+                $matches = ProcessRequest::search($filter)->get()->pluck('id');
                 $query->whereIn('id', $matches);            
             } else {
                 $filter = '%' . mb_strtolower($filter) . '%';
