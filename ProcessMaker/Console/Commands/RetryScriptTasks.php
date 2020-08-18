@@ -46,7 +46,7 @@ class RetryScriptTasks extends Command
     {
         $tasks = $this->retrieveTaskList();
 
-   	$requestIds = $tasks->pluck('process_request_id');
+   	    $requestIds = $tasks->pluck('process_request_id');
         ProcessRequestLock::whereIn('process_request_id', $requestIds)->delete();
 
         if (!$tasks->count()) {
@@ -69,8 +69,7 @@ class RetryScriptTasks extends Command
 
     private function retrieveTaskList()
     {
-        //$tasks = ProcessRequestToken::where('status', 'FAILING')->where('element_type', 'scriptTask');
-	$tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->where('element_type', 'scriptTask');
+	    $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->where('element_type', 'scriptTask');
 
         if ($this->option('process') && $this->option('request')) {
             exit($this->error('Please specify either a Process ID or a Request ID, not both.'));
