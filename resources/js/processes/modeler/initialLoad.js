@@ -28,6 +28,7 @@ import TaskNotifications from './components/inspector/TaskNotifications';
 import ExpressionEditor from './components/inspector/ExpressionEditor';
 import TaskAssignment from './components/inspector/TaskAssignment';
 import TaskDueIn from './components/inspector/TaskDueIn';
+import GatewayFlowVariable from './components/inspector/GatewayFlowVariable';
 import ConfigEditor from './components/inspector/ConfigEditor';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
@@ -44,6 +45,7 @@ Vue.component('TaskNotifications', TaskNotifications);
 Vue.component('ExpressionEditor', ExpressionEditor);
 Vue.component('TaskAssignment', TaskAssignment);
 Vue.component('TaskDueIn', TaskDueIn);
+Vue.component('GatewayFlowVariable', GatewayFlowVariable);
 Vue.component('ConfigEditor', ConfigEditor);
 Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
@@ -301,6 +303,15 @@ ProcessMaker.EventBus.$on(
           helper: 'IP/Domain whitelist',
           name: 'whitelist',
       },
+    });
+
+    registerInspectorExtension(sequenceFlow, {
+      component: 'GatewayFlowVariable',
+      config: {
+        label: 'Screen for Input',
+        helper: 'Select Screen to display this Task',
+        name: 'FlowVariable',
+      }
     });
 
     registerInspectorExtension(callActivity, {
