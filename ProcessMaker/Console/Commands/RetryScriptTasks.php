@@ -46,12 +46,12 @@ class RetryScriptTasks extends Command
     {
         $tasks = $this->retrieveTaskList();
 
-   	    $requestIds = $tasks->pluck('process_request_id');
-        ProcessRequestLock::whereIn('process_request_id', $requestIds)->delete();
-
         if (!$tasks->count()) {
             exit($this->error('No failing script tasks found.'));
         }
+
+   	    $requestIds = $tasks->pluck('process_request_id');
+        ProcessRequestLock::whereIn('process_request_id', $requestIds)->delete();
 
         $bar = $this->output->createProgressBar($tasks->count());
 
