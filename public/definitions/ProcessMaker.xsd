@@ -25,6 +25,7 @@
                 <xsd:attribute name="assignmentLock" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="allowReassignment" type="xsd:boolean" default="false"/>
                 <xsd:attribute name="config" type="xsd:string" use="optional"/>
+                <xsd:attribute name="dantexxx" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -119,6 +120,7 @@
     <xsd:complexType name="tPmSequenceFlow">
         <xsd:complexContent>
             <xsd:extension base="bpmn:tSequenceFlow">
+                <xsd:attribute name="config" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
