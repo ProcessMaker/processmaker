@@ -69,7 +69,7 @@ class RetryScriptTasks extends Command
 
     private function retrieveTaskList()
     {
-	    $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->where('element_type', 'scriptTask');
+        $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->where('element_type', 'scriptTask');
 
         if ($this->option('process') && $this->option('request')) {
             exit($this->error('Please specify either a Process ID or a Request ID, not both.'));
