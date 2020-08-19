@@ -61,7 +61,9 @@
         return this.highlightedNode.definition;
       },
       isConditionedFlow() {
-        return this.node.hasOwnProperty('conditionExpression');
+        return this.node.sourceRef
+            && this.node.sourceRef.$type
+            && this.node.sourceRef.$type.endsWith('ExclusiveGateway');
       },
     },
 
@@ -70,7 +72,7 @@
         if (!this.isConditionedFlow) {
           return;
         }
-        const config = JSON.parse(_.get(this.node, 'config'));
+        const config = JSON.parse(_.get(this.node, 'config', '{}'));
         Object.keys(config).forEach(key => {
           Vue.set(this.config, key, config[key]);
         });
