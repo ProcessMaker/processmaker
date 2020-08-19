@@ -145,7 +145,7 @@ class User extends Authenticatable implements HasMedia
             'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
             'status' => ['required', 'in:ACTIVE,INACTIVE'],
-            'password' => 'required|sometimes|min:6',
+            'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
             'birthdate' => 'date|nullable'
         ];
     }
