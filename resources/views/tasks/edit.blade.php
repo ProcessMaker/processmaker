@@ -363,12 +363,18 @@
 
             window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
               .then((response) => {
+                this.resetScreenState();
                 this.$set(this, 'task', response.data);
                 if (response.data.process_request.status === 'ERROR') {
                   this.hasErrors = true;
                 }
                 this.prepareTask();
               });
+          },
+          resetScreenState() {
+            if (this.$refs.taskScreen && this.$refs.taskScreen.$children[0]) {
+              this.$refs.taskScreen.$children[0].currentPage = 0;
+            }
           },
           claimTask() {
             ProcessMaker.apiClient
