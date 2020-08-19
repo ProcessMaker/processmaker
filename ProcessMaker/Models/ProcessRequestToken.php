@@ -150,7 +150,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         return [
             'id' => $this->id,
             'element_name' => $this->element_name,
-            'request' => $this->processRequest->name,
+            'request' => isset($this->processRequest->name) ? $this->processRequest->name : "",
             'data' => json_encode($this->data),
         ];
     }
