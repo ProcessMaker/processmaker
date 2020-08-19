@@ -50,7 +50,7 @@ class RetryScriptTasks extends Command
             exit($this->error('No failing script tasks found.'));
         }
 
-   	    $requestIds = $tasks->pluck('process_request_id');
+        $requestIds = $tasks->pluck('process_request_id');
         ProcessRequestLock::whereIn('process_request_id', $requestIds)->delete();
 
         $bar = $this->output->createProgressBar($tasks->count());
