@@ -152,7 +152,7 @@ class BpmnSubscriber
         }
     }
 
-    public function updateDataWithFlowTransition($gateway, $flow, $instance)
+    public function updateDataWithFlowTransition($transition, $flow, $instance)
     {
         // Exit job if flow doesn't have set a config attribute
         if (empty($flow->getProperties()['config'])) {
@@ -188,6 +188,7 @@ class BpmnSubscriber
             $instance->saveOrFail();
         } catch (\Exception $e) {
             Log::error('The expression used in the flow generated and error: ', $e->getMessage());
+            $instance->logError($e, $transition->getOwner());
         }
     }
 
