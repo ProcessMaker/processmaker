@@ -566,5 +566,10 @@ class UsersTest extends TestCase
         $payload['password'] = 'abc123';
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(204);
+        
+        // It's OK to update a user without the password
+        unset($payload['password']);
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
     }
 }
