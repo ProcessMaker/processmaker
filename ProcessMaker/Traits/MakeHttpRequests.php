@@ -53,6 +53,12 @@ trait MakeHttpRequests
             $url .= $separator . $config['queryString'];
         }
 
+        // If exists a filter string in the call, add it to the URL
+        if (array_key_exists('filter', $config)) {
+            $separator = strpos($url, '?') ? '&' : '?';
+            $url .= $separator . 'filter='. urlencode($config['filter']);
+        }
+
         $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
                             ? $this->credentials['verify_certificate']
                             : true;
