@@ -139,8 +139,14 @@ class ProcessRequestFileController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the media file",
-     *         @OA\JsonContent(ref="#/components/schemas/mediaExported")
+     *         description="File stream",
+     *         @OA\MediaType(
+     *             mediaType="application/octet-stream",
+     *             @OA\Schema(
+     *                 type="string",
+     *                 format="binary"
+     *             )
+     *         )
      *     ),
      * )
      */
