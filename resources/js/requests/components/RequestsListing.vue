@@ -84,7 +84,8 @@ export default {
           direction: "desc"
         }
       ],
-      fields: []
+      fields: [],
+      previousFilter: ""
     };
   },
   mounted() {
@@ -226,12 +227,8 @@ export default {
       }
       return data;
     },
-    fetch(query, resetPagination) {
+    fetch() {
         Vue.nextTick(() => {
-            if (resetPagination) {
-              this.page = 1;
-            }
-            
             let pmql = '';
             
             if (this.pmql !== undefined) {
@@ -240,13 +237,18 @@ export default {
                     
             let filter = this.filter;
             
-            if (query && query.length) {
-              if (query.isPMQL()) {
-                pmql = `(${pmql}) and (${query})`;
-              } else {
-                filter = query;
+            if (filter && filter.length) {
+              if (filter.isPMQL()) {
+                pmql = `(${pmql}) and (${filter})`;
+                filter = '';
               }
             }
+
+            if (this.previousFilter !== filter) {
+              this.page = 1;
+            }
+
+            this.previousFilter = filter;
 
             // Load from our api client
             ProcessMaker.apiClient
