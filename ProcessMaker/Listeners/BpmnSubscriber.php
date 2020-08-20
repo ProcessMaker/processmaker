@@ -187,7 +187,7 @@ class BpmnSubscriber
             $instance->getDataStore()->setData($instance->data);
             $instance->saveOrFail();
         } catch (\Exception $e) {
-            Log::error('The expression used in the flow generated and error: ', $e->getMessage());
+            Log::error('The expression used in the flow generated and error: ', [$e->getMessage()]);
             $instance->logError($e, $transition->getOwner());
         }
     }
