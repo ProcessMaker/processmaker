@@ -66,6 +66,7 @@ class PermissionSeeder extends Seeder
             'delete-users',
             'edit-users',
             'view-users',
+            'view-other-users-profiles',
         ],
         'Requests' => [
             'view-all_requests',
