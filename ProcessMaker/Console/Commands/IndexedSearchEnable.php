@@ -3,6 +3,7 @@
 namespace ProcessMaker\Console\Commands;
 
 use App;
+use Log;
 use Illuminate\Console\Command;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Models\Setting;
@@ -44,6 +45,17 @@ class IndexedSearchEnable extends Command
     {
         $items = $this->manager->list()->pluck('name')->implode(', ');
         return $this->description = "{$this->description} of {$items}";
+    }
+
+    private function addToIndex($items)
+    {
+        try {
+            $items->searchable();
+        } catch (\PDOException $e) {
+            Log::error('Encountered database lock when indexing records, trying again');
+            sleep(1);
+            $this->addToIndex($items);
+        }
     }
 
     /**
