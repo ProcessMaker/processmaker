@@ -3,6 +3,7 @@
 namespace ProcessMaker\Console\Commands;
 
 use App;
+use Log;
 use Illuminate\Console\Command;
 use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Models\Setting;
@@ -46,6 +47,17 @@ class IndexedSearchEnable extends Command
         return $this->description = "{$this->description} of {$items}";
     }
 
+    private function addToIndex($items)
+    {
+        try {
+            $items->searchable();
+        } catch (\PDOException $e) {
+            Log::error('Encountered database lock when indexing records, trying again');
+            sleep(1);
+            $this->addToIndex($items);
+        }
+    }
+
     /**
      * Execute the console command.
      *
@@ -64,15 +76,30 @@ class IndexedSearchEnable extends Command
         }
 
         if ($confirmed) {
-            $this->line("The indexer will occasionally display its status.");
-
             foreach ($this->manager->list() as $index) {
-                $this->info("\nBeginning index of {$index->name}...");
+                $this->line("\nIndexing {$index->name}...");
                 if ($index->callback && is_callable($index->callback)) {
                     call_user_func($index->callback);
                     $this->info("All {$index->name} records have been imported.");
                 } else {
-                    $this->call("scout:import", ['model' => $index->model]);
+                    if ($index->model == 'ProcessMaker\Models\ProcessRequestToken') {
+                        $query = $index->model::whereIn('element_type', ['task', 'userTask']);
+                    } else {
+                        $query = $index->model::query();
+                    }
+
+                    $bar = $this->output->createProgressBar($query->count());
+                    $bar->start();
+
+                    $query->chunk(50, function($items) use(&$bar, &$count) {
+                        $this->addToIndex($items);
+                        foreach ($items as $item) {
+                            $bar->advance();
+                        }
+                    });
+                    
+                    $bar->finish();
+                    $this->info("\nAll {$index->name} records have been imported.");
                 }
             }
 

@@ -156,6 +156,16 @@ class ProcessRequestToken extends Model implements TokenInterface
     }
 
     /**
+     * Determine whether the item should be indexed.
+     *
+     * @return boolean
+     */
+    public function shouldBeSearchable()
+    {
+        return in_array($this->element_type, ['task', 'userTask']);
+    }
+
+    /**
      * Boot application as a process instance.
      *
      * @param array $argument
