@@ -194,7 +194,7 @@ class ProcessRequestFileController extends Controller
      *         name="data_name",
      *         in="query",
      *         description="Variable name in the request data to use for the file name",
-     *         required=true,
+     *         required=false,
      *         @OA\Schema(type="string"),
      *     ),
      *      @OA\Parameter(
@@ -255,7 +255,7 @@ class ProcessRequestFileController extends Controller
         $user = pmUser();
         $originalCreatedBy = $user ? $user->id : null;
 
-        $data_name = $laravelRequest->input('data_name');
+        $data_name = $laravelRequest->input('data_name', $file->getClientOriginalName());
         $parent = (int)$laravelRequest->input('parent', null);
 
         foreach($processRequest->getMedia() as $mediaItem) {
