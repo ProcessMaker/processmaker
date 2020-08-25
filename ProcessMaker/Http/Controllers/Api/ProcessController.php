@@ -874,16 +874,6 @@ class ProcessController extends Controller
      *         required=false,
      *         @OA\JsonContent(
      *                 type="object",
-     *                 @OA\Property(
-     *                     property="stringField",
-     *                     type="string",
-     *                     example="string example"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="integerField",
-     *                     type="string",
-     *                     example="1"
-     *                 )
      *             )
      *     ),
      *     @OA\Response(
