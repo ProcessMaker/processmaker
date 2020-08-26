@@ -300,8 +300,6 @@ class ClearRequestsTest extends TestCase
             ->expectsQuestion(ProcessmakerClearRequests::message, 'yes')
             ->assertExitCode(0)
             ->run();
-        // Wait
-        sleep(2);
 
         $this->assertEquals(0, ProcessRequestToken::count());
         $this->assertEquals(0, ProcessRequest::count());
