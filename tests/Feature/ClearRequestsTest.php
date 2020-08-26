@@ -1,7 +1,6 @@
 <?php
 namespace Tests\Feature\Api;
 
-use Faker\Factory as Faker;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
@@ -13,11 +12,11 @@ use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\User;
+use ProcessMaker\Repositories\BpmnDocument;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
@@ -152,12 +151,20 @@ class ClearRequestsTest extends TestCase
         $process = factory(Process::class)->create([
             'bpmn' => Process::getProcessTemplate('SingleTask.bpmn')
         ]);
+        $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
+        $bpmnProcessId = $bpmnProcess->getAttribute('id');
 
         // Add comments to Tokens
         $model = factory(ProcessRequestToken::class)->create([
             'process_id' => $process->id,
-            'process_request_id' => factory(ProcessRequest::class)->create([
-                'process_id' => $process->id,
+            'process_request_id' => ProcessRequest::create([
+                'name' => $this->faker->sentence(3),
+                'data' => [],
+                'status' => $this->faker->randomElement(['DRAFT', 'ACTIVE', 'COMPLETED']),
+                'callable_id' => $bpmnProcessId,
+                'user_id' => $this->user->id,
+                'process_id' => $process->getKey(),
+                'process_collaboration_id' => null,
             ])->id,
         ]);
 
@@ -237,7 +244,7 @@ class ClearRequestsTest extends TestCase
         $model = ProcessRequest::find(1);
         $model->addMedia($fileUpload)
             ->withCustomProperties(['data_name' => 'test'])
-            ->toMediaCollection('local');  
+            ->toMediaCollection('local');
   
         // Basic listing assertions
         $response = $this->apiCall('GET', self::API_TEST_URL);
@@ -282,7 +289,7 @@ class ClearRequestsTest extends TestCase
 
         // Add some comments
         $this->addSomeComments();
-    
+
         $this->assertEquals(4, ScheduledTask::count());
         $this->assertEquals(5, ProcessRequest::count());
         $this->assertEquals(1, ProcessCollaboration::count());
@@ -293,7 +300,7 @@ class ClearRequestsTest extends TestCase
             ->expectsQuestion(ProcessmakerClearRequests::message, 'yes')
             ->assertExitCode(0)
             ->run();
-        // Wait 
+        // Wait
         sleep(2);
 
         $this->assertEquals(0, ProcessRequestToken::count());
