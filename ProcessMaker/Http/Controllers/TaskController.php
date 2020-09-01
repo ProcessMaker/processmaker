@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Notification;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -36,7 +37,15 @@ class TaskController extends Controller
 
     public function edit(ProcessRequestToken $task)
     {
-        $this->authorize('update', $task);
+        $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
+                                    ->where('commentable_id', $task->id)
+                                    ->where('body','like', '%@' . \Auth::user()->username . '%')
+                                    ->count() > 0;
+
+        if (!\Auth::user()->can('update', $task) && !$userHasComments) {
+            $this->authorize('update', $task);
+        }
+
         //Mark as unread any not read notification for the task
         Notification::where('data->url', '/' . Request::path())
             ->whereNull('read_at')
