@@ -1,19 +1,6 @@
 <template>
     <div>
-        <table class="vuetable table table-hover border-top-0 mb-0">
-            <thead v-if="showHead">
-                <tr>
-                    <th class="border-top-0" scope="col">{{ $t('Key') }}</th>
-                    <th class="border-top-0" scope="col">{{ $t('Value') }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(item, key) in formattedData" :key="key">
-                    <td>{{ key }}</td>
-                    <td>{{ item }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <b-table :items="formattedData" :fields="fields"></b-table>
     </div>
 </template>
 
@@ -21,11 +8,20 @@
 export default {
     props: {
         summary: [Object, Array],
-        showHead: { type: Boolean, default: true }
     },
     data() {
         return {
-            formattedData: {}
+            formattedData: [],
+            fields: [
+                {
+                    key: 'key',
+                    label: this.$t('Key'),
+                },
+                {
+                    key: 'value',
+                    label: this.$t('Value'),
+                }
+            ]
         }
     },
     mounted() {
@@ -38,7 +34,10 @@ export default {
                 if (this.isObject(item)) {
                     this.formatData(prefix + key + ".", item);
                 } else {
-                    this.formattedData[prefix + key] = item
+                    this.formattedData.push({
+                        key: prefix + key,
+                        value: item,
+                    });
                 }
             }
         },
