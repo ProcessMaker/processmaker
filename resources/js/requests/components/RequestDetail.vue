@@ -97,7 +97,7 @@
         return !row.user_id && row.is_self_service && assignable;
       },
       isEditable(row) {
-        return String(row.user_id) === String(window.ProcessMaker.user.id) || this.canClaim(row) || row.status !== "ACTIVE";
+        return String(row.user_id) === String(window.ProcessMaker.user.id) || this.canClaim(row) || row.status === "FAILING";
       },
       onAction(action, rowData, index) {
         switch (action) {
