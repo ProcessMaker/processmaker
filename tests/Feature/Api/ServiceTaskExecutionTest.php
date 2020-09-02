@@ -7,6 +7,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
+use ProcessMaker\Models\User;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -98,5 +99,21 @@ class ServiceTaskExecutionTest extends TestCase
 
         //Assertion: If the service task is executed it will return a pong
         $this->assertEquals($request->data['pong'], $ping);
+    }
+
+    public function testWithUserWithoutAuthorization()
+    {
+        // We'll test executing a process with someone that is not authenticated
+        $url = route('api.process_events.trigger',
+            [$this->process->id, 'event' => self::START_EVENT_ID]);
+        $ping = '1';
+        $data = [
+            'ping' => $ping,
+        ];
+
+        //The call is done without an authenticated user so it should return 401
+        $response = $this->actingAs(factory(User::class)->create())
+            ->json('GET', $url, []);
+        $response->assertStatus(401);
     }
 }

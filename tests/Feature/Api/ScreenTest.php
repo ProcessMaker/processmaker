@@ -468,4 +468,21 @@ class ScreenTest extends TestCase
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(204);
     }
+
+
+    public function testWithUserWithoutAuthorization() {
+        $screen = factory(Screen::class)->create();
+        $url = route('api.screens.update', $screen);
+        $params = [
+            'title' => 'Title Screen',
+            'type' => 'FORM',
+            'description' => 'Description.',
+            'screen_category_id' => factory(ScreenCategory::class)->create()->getKey() . ',' . factory(ScreenCategory::class)->create()->getKey()
+        ];
+
+        //The call is done without an authenticated user so it should return 401
+        $response = $this->actingAs(factory(User::class)->create())
+            ->json('PUT', $url, $params);
+        $response->assertStatus(401);
+    }
 }
