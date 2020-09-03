@@ -29,8 +29,7 @@ class CssOverrideTest extends TestCase
     {
         $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', []);
 
-        //Validate that the error does a redirection
-        $response->assertStatus(302);
+        $response->assertStatus(422);
     }
 
     /**
@@ -40,8 +39,7 @@ class CssOverrideTest extends TestCase
     {
         $response = $this->actingAs($this->user, 'api')->call('POST', '/api/1.0/customize-ui', ['wrongkey' => 'key']);
 
-        //Validate that the error does a redirection
-        $response->assertStatus(302);
+        $response->assertStatus(422);
     }
 
     private function cssValues($testColor)
