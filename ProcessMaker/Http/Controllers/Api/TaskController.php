@@ -188,7 +188,10 @@ class TaskController extends Controller
         }
         $response = $this->handleOrderByRequestName($request, $query->get());
 
-        $response = $response->filter(function($processRequestToken) {
+        $response = $response->filter(function($processRequestToken) use ($request) {
+            if ($request->input('status') === 'CLOSED') {
+                return Auth::user()->can('view', $processRequestToken->processRequest);
+            }
             return Auth::user()->can('view', $processRequestToken);
         })->values();
         
