@@ -44,6 +44,8 @@
           @endforeach
         </ul>
         @endif
+        <div><strong>{{ __('Indexed Search') }}</strong>: {{ $indexedSearch ? 'Enabled' : 'Disabled' }}</div>
+        <hr>
         &copy; {{date('Y')}} - {{__('All Rights Reserved')}}
       </div>
     </div>
