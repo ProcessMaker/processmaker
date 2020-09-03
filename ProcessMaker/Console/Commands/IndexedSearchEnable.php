@@ -108,7 +108,13 @@ class IndexedSearchEnable extends Command
         }
 
         $driver = mb_strtolower($driver);
-        $prefix = preg_replace("/[^A-Za-z0-9]/", '', $prefix) . '_';
+        $prefix = mb_strtolower(preg_replace("/[^A-Za-z0-9]/", '', $prefix));
+
+        if (empty($prefix)) {
+            $prefix = null;
+        } else {
+            $prefix .=  '_';
+        }
 
         switch ($driver) {
             case "elasticsearch":
