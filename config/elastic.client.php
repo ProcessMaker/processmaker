@@ -2,6 +2,6 @@
 
 return [
     'hosts' => [
-        env('ELASTIC_HOST'),
+        env('ELASTIC_HOST', 'http://localhost:9200'),
     ]
 ];
