@@ -7,6 +7,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -162,7 +163,12 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function shouldBeSearchable()
     {
-        return in_array($this->element_type, ['task', 'userTask']);
+        $setting = Setting::byKey('indexed-search');
+        if ($setting && $setting->config['enabled'] === true) {
+            return in_array($this->element_type, ['task', 'userTask']);
+        } else {
+            return false;
+        }
     }
 
     /**
