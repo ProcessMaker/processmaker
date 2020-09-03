@@ -126,7 +126,7 @@ class ProcessRequestController extends Controller
                 if (is_numeric($filter)) {
                     $query->whereIn('id', [$filter]);
                 } else {
-                    $matches = ProcessRequest::search($filter)->get()->pluck('id');
+                    $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
                     $query->whereIn('id', $matches);            
                 }
             } else {

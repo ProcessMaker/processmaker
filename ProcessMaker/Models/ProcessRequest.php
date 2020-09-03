@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -136,6 +137,21 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         'process',
         'participants',
     ];
+
+    /**
+     * Determine whether the item should be indexed.
+     *
+     * @return boolean
+     */
+    public function shouldBeSearchable()
+    {
+        $setting = Setting::byKey('indexed-search');
+        if ($setting && $setting->config['enabled'] === true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Get the indexable data array for the model.
