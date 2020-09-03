@@ -5,6 +5,7 @@ namespace ProcessMaker\Console\Commands;
 use Illuminate\Console\Command;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessRequestLock;
 
 class RetryScriptTasks extends Command
 {
@@ -48,6 +49,9 @@ class RetryScriptTasks extends Command
         if (!$tasks->count()) {
             exit($this->error('No failing script tasks found.'));
         }
+
+        $requestIds = $tasks->pluck('process_request_id');
+        ProcessRequestLock::whereIn('process_request_id', $requestIds)->delete();
 
         $bar = $this->output->createProgressBar($tasks->count());
 

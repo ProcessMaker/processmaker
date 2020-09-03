@@ -17,6 +17,7 @@
   ],
   "require": {
     "php": ">=7.2.0",
+    "babenkoivan/elastic-scout-driver": "^1.2",
     "darkaonline/l5-swagger": "5.8.*",
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",

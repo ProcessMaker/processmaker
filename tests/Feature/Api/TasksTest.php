@@ -382,4 +382,21 @@ class TasksTest extends TestCase
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
+
+    public function testWithUserWithoutAuthorization()
+    {
+        // We'll test viewing a new task with someone that is not authenticated
+        $request = factory(ProcessRequest::class)->create();
+
+        //Create a new process without category
+        $token = factory(ProcessRequestToken::class)->create([
+            'process_request_id' => $request->id
+        ]);
+        $url = route('api.' . $this->resource . '.show', [$token->id, 'include' => 'user,definition']);
+
+        //The call is done without an authenticated user so it should return 401
+        $response = $this->actingAs(factory(User::class)->create())
+            ->json('GET', $url, []);
+        $response->assertStatus(401);
+    }
 }

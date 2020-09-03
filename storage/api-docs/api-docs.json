@@ -487,9 +487,14 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully found the file",
+                        "description": "File stream",
                         "content": {
-                            "application/octet-stream": {}
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
                         }
                     }
                 }
@@ -1923,18 +1928,6 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "properties": {
-                                    "stringField": {
-                                        "description": "Trigger an start event within a process.",
-                                        "type": "string",
-                                        "example": "string example"
-                                    },
-                                    "integerField": {
-                                        "description": "Trigger an start event within a process.",
-                                        "type": "string",
-                                        "example": "1"
-                                    }
-                                },
                                 "type": "object"
                             }
                         }
@@ -2306,11 +2299,12 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully found the media file",
+                        "description": "File stream",
                         "content": {
-                            "application/json": {
+                            "application/octet-stream": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/mediaExported"
+                                    "type": "string",
+                                    "format": "binary"
                                 }
                             }
                         }

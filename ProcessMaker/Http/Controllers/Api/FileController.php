@@ -242,9 +242,14 @@ class FileController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the file",
+     *         description="File stream",
      *         @OA\MediaType(
-     *             mediaType="application/octet-stream")
+     *             mediaType="application/octet-stream",
+     *             @OA\Schema(
+     *                 type="string",
+     *                 format="binary"
+     *             )
+     *         )
      *     ),
      * )
      */
