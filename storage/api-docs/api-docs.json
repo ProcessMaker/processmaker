@@ -339,7 +339,7 @@
                         "name": "model_id",
                         "in": "query",
                         "description": "ID of the model to which the file will be associated",
-                        "required": false,
+                        "required": true,
                         "schema": {
                             "type": "integer"
                         }
@@ -348,7 +348,7 @@
                         "name": "model",
                         "in": "query",
                         "description": "Name of the class of the model",
-                        "required": false,
+                        "required": true,
                         "schema": {
                             "type": "string"
                         }
@@ -2214,7 +2214,7 @@
                         "name": "data_name",
                         "in": "query",
                         "description": "Variable name in the request data to use for the file name",
-                        "required": true,
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }

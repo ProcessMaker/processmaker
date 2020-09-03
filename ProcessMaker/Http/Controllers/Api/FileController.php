@@ -95,14 +95,14 @@ class FileController extends Controller
      *         name="model_id",
      *         in="query",
      *         description="ID of the model to which the file will be associated",
-     *         required=false,
+     *         required=true,
      *         @OA\Schema(type="integer"),
      *     ),
      *      @OA\Parameter(
      *         name="model",
      *         in="query",
      *         description="Name of the class of the model",
-     *         required=false,
+     *         required=true,
      *         @OA\Schema(type="string"),
      *     ),
      *      @OA\Parameter(
