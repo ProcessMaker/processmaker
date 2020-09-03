@@ -48,6 +48,7 @@
                     @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
+                            @can('update', $task)
                             <template v-if="taskIsOpenOrOverdue">
                                 <div class="card card-body border-top-0 h-100">
                                     <template v-if="task.component">
@@ -110,6 +111,7 @@
                                 </div>
                               </div>
                             </template>
+                            @endcan
                             @can('view-comments')
                               <div v-if="taskHasComments">
                                 <timeline :commentable_id="task.id"
@@ -118,7 +120,7 @@
                                           :voting="taskHasComments.voting"
                                           :edit="taskHasComments.edit_comments"
                                           :remove="taskHasComments.remove_comments"
-                                          :adding="taskHasComments.comments"
+                                          :adding="taskHasComments.comments && userHasAccessToTask"
                                           :readonly="task.status === 'CLOSED'"
                                           />
                               </div>
@@ -243,7 +245,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @section('js')
@@ -286,6 +287,7 @@
           showReassignment: false,
 
           task: @json($task->toArray()),
+          userHasAccessToTask: {{ Auth::user()->can('update', $task) ? "true": "false" }},
           statusCard: "card-header text-capitalize text-white bg-success",
           selectedUser: [],
           hasErrors: false,
