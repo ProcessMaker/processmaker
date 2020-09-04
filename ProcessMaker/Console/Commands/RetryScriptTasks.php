@@ -5,6 +5,7 @@ namespace ProcessMaker\Console\Commands;
 use Illuminate\Console\Command;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\ProcessRequestLock;
 
 class RetryScriptTasks extends Command
 {
@@ -49,6 +50,9 @@ class RetryScriptTasks extends Command
             exit($this->error('No failing script tasks found.'));
         }
 
+        $requestIds = $tasks->pluck('process_request_id');
+        ProcessRequestLock::whereIn('process_request_id', $requestIds)->delete();
+
         $bar = $this->output->createProgressBar($tasks->count());
 
         $bar->start();
@@ -65,7 +69,7 @@ class RetryScriptTasks extends Command
 
     private function retrieveTaskList()
     {
-        $tasks = ProcessRequestToken::where('status', 'FAILING')->where('element_type', 'scriptTask');
+        $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->where('element_type', 'scriptTask');
 
         if ($this->option('process') && $this->option('request')) {
             exit($this->error('Please specify either a Process ID or a Request ID, not both.'));

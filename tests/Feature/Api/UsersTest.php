@@ -528,6 +528,48 @@ class UsersTest extends TestCase
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $response->assertJsonFragment(['id' => $id]);
     }
-    
 
+    public function testCreateWithoutPassword()
+    {
+        $payload = [
+            "firstname" => "foo",
+            "lastname" => "bar",
+            "email" => "foobar@test.com",
+            "username" => "foobar",
+            "status" => "ACTIVE"
+        ];
+        $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
+        $response->assertStatus(422);
+        $json = $response->json();
+        $this->assertEquals('The password field is required.', $json['errors']['password'][0]);
+
+        $payload['password'] = 'abc';
+        $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
+        $response->assertStatus(422);
+        $json = $response->json();
+        $this->assertEquals('The password must be at least 6 characters.', $json['errors']['password'][0]);
+        
+        $payload['password'] = 'abc123';
+        $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
+        $response->assertStatus(201);
+        $json = $response->json();
+        $userId = $json['id'];
+
+        // Test updating the users's password
+
+        $payload['password'] = 'abc';
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(422);
+        $json = $response->json();
+        $this->assertEquals('The password must be at least 6 characters.', $json['errors']['password'][0]);
+        
+        $payload['password'] = 'abc123';
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
+        
+        // It's OK to update a user without the password
+        unset($payload['password']);
+        $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
+        $response->assertStatus(204);
+    }
 }

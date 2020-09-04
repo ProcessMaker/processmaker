@@ -242,7 +242,6 @@ class ImportProcess implements ShouldQueue
         $tasks = $this->definitions->getElementsByTagName('callActivity');
         foreach ($tasks as $task) {
             $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'calledElement');
-            
             // Do not ask to assign a target if this CallActivity is a package wrapper
             if ($this->isCallActivityFromPackage($task)) {
                 continue;
@@ -829,6 +828,7 @@ class ImportProcess implements ShouldQueue
      * @param $task
      * @return boolean
      */
+
     private function isCallActivityFromPackage($task)
     {
         $configString = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'config');

@@ -148,7 +148,7 @@ class WorkflowManager
         Log::info('Dispatch a script task: ' . $scriptTask->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
-        RunScriptTask::dispatch($process, $instance, $token, [])->delay(1);
+        RunScriptTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
     }
 
     /**
@@ -162,7 +162,7 @@ class WorkflowManager
         Log::info('Dispatch a service task: ' . $serviceTask->getId());
         $instance = $token->processRequest;
         $process = $instance->process;
-        RunServiceTask::dispatch($process, $instance, $token, []);
+        RunServiceTask::dispatch($process, $instance, $token, [])->onQueue('bpmn');
     }
 
     /**
@@ -174,7 +174,7 @@ class WorkflowManager
     public function catchSignalEvent(ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
         Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
-        CatchSignalEvent::dispatch($source, $sourceEventDefinition, $token);
+        CatchSignalEvent::dispatch($source, $sourceEventDefinition, $token)->onQueue('bpmn');
     }
 
     /**

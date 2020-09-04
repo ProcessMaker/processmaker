@@ -50,6 +50,8 @@ export default {
           .get(url)
           .then(response => {
             resolve(response.data);
+          }).catch(error => {
+            // User does not have access to the resource. Ignore.
           });
       });
     }

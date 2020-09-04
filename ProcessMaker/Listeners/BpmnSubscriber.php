@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Listeners;
 
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
@@ -20,6 +21,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Nayra\Contracts\Bpmn\TransitionInterface;
 use ProcessMaker\Notifications\ProcessCreatedNotification;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
 use ProcessMaker\Notifications\ActivityActivatedNotification;
@@ -150,6 +152,46 @@ class BpmnSubscriber
         }
     }
 
+    public function updateDataWithFlowTransition($transition, $flow, $instance)
+    {
+        // Exit job if flow doesn't have set a config attribute
+        if (empty($flow->getProperties()['config'])) {
+            return;
+        }
+
+        // Exit if config is not a valid json
+        if (empty(json_decode($flow->getProperties()['config']))) {
+            Log::error('Flow config attribut is not a valid json');
+            return;
+        }
+
+        // Exit if no variable or expression is set
+        $config = json_decode($flow->getProperties()['config'], true);
+        if ( empty($config['update_data'])
+            || empty($config['update_data']['variable'])
+            || empty($config['update_data']['expression'])
+        ) {
+            return;
+        }
+
+        try {
+            $variable = $config['update_data']['variable'];
+            $expression = $config['update_data']['expression'];
+
+            $formalExp = new FormalExpression();
+            $formalExp->setLanguage('FEEL');
+            $formalExp->setBody($expression);
+            $expressionResult = $formalExp($instance->data);
+            $data = array_merge($instance->data, [$variable => $expressionResult]);
+            $instance->data = $data;
+            $instance->getDataStore()->setData($instance->data);
+            $instance->saveOrFail();
+        } catch (\Exception $e) {
+            Log::error('The expression used in the flow generated and error: ', [$e->getMessage()]);
+            $instance->logError($e, $transition->getOwner());
+        }
+    }
+
     /**
      * Subscription.
      *
@@ -157,6 +199,9 @@ class BpmnSubscriber
      */
     public function subscribe($events)
     {
+        $events->listen(TransitionInterface::EVENT_CONDITIONED_TRANSITION, static::class . '@updateDataWithFlowTransition');
+
+
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_CREATED, static::class . '@onProcessCreated');
         $events->listen(ProcessInterface::EVENT_PROCESS_INSTANCE_COMPLETED, static::class . '@onProcessCompleted');
 
