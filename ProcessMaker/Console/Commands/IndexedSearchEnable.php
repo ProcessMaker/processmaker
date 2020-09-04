@@ -81,7 +81,7 @@ class IndexedSearchEnable extends Command
                 $bar = $this->output->createProgressBar($query->count());
                 $bar->start();
 
-                $query->chunk(25, function($items) use(&$bar, &$count) {
+                $query->chunk(5, function($items) use(&$bar, &$count) {
                     $this->addToIndex($items);
                     foreach ($items as $item) {
                         $bar->advance();
