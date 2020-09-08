@@ -91,6 +91,7 @@ if (env('RUN_MSSQL_TESTS')) {
 
 // THIS IS FOR STANDARD PROCESSMAKER TABLES
 if (env('POPULATE_DATABASE')) {
+    Artisan::call('db:wipe', ['--database' => \DB::connection()->getName()]);
     Artisan::call('migrate:fresh', []);
 }
 

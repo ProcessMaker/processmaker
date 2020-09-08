@@ -5,12 +5,13 @@ use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\User;
+use Illuminate\Support\Arr;
 
 /**
  * Model factory for a ProcessVersion
  */
 $factory->define(ProcessVersion::class, function (Faker $faker) {
-    $emptyProcess = array_random(glob(Process::getProcessTemplatesPath() . '/*.bpmn'));
+    $emptyProcess = Arr::random(glob(Process::getProcessTemplatesPath() . '/*.bpmn'));
     $process = factory(Process::class)->make();
     return [
         'bpmn' => file_get_contents($emptyProcess),
