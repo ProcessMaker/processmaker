@@ -48,7 +48,10 @@
                     @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
-                            @can('update', $task)
+                          @can('update', $task)
+                            <task :task="task" :csrf-token="'{{ csrf_token() }}'"></task>
+                          @endcan
+                            {{-- @can('update', $task)
                             <template v-if="taskIsOpenOrOverdue">
                                 <div class="card card-body border-top-0 h-100">
                                     <template v-if="task.component">
@@ -111,7 +114,7 @@
                                 </div>
                               </div>
                             </template>
-                            @endcan
+                            @endcan--}}
                             @can('view-comments')
                               <div v-if="taskHasComments">
                                 <timeline :commentable_id="task.id"
@@ -124,7 +127,7 @@
                                           :readonly="task.status === 'CLOSED'"
                                           />
                               </div>
-                            @endcan
+                            @endcan 
                         </div>
                         @can('editData', $task->processRequest)
                             <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
@@ -321,12 +324,6 @@
             };
             return dueLabels[this.task.advanceStatus] || '';
           },
-          taskIsCompleted() {
-            return this.task.advanceStatus === 'completed' || this.task.advanceStatus === 'triggered';
-          },
-          taskIsOpenOrOverdue() {
-            return this.task.advanceStatus === 'open' || this.task.advanceStatus === 'overdue';
-          },
           isSelfService() {
             return this.task.process_request.status === 'ACTIVE' && this.task.is_self_service;
           },
@@ -351,33 +348,6 @@
           }
         },
         methods: {
-          activityAssigned() {
-            this.checkTaskStatus();
-            this.redirectToNextAssignedTask(false);
-          },
-          reload() {
-            this.loadTask(this.task.id);
-          },
-          loadTask(id) {
-            if (this.redirectInProcess) {
-              return;
-            }
-
-            window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
-              .then((response) => {
-                this.resetScreenState();
-                this.$set(this, 'task', response.data);
-                if (response.data.process_request.status === 'ERROR') {
-                  this.hasErrors = true;
-                }
-                this.prepareTask();
-              });
-          },
-          resetScreenState() {
-            if (this.$refs.taskScreen && this.$refs.taskScreen.$children[0]) {
-              this.$refs.taskScreen.$children[0].currentPage = 0;
-            }
-          },
           claimTask() {
             ProcessMaker.apiClient
               .put("tasks/" + this.task.id, {
@@ -387,58 +357,6 @@
               .then(response => {
                 this.reload();
               });
-          },
-          redirectWhenProcessCompleted() {
-            this.redirect(`/requests/${this.task.process_request_id}`);
-          },
-          refreshWhenProcessUpdated(data) {
-            if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
-              this.reload();
-            }
-          },
-          checkTaskStatus(redirect=false) {
-            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
-              this.closeTask();
-            }
-          },
-          closeTask() {
-            if (this.hasErrors) {
-              this.redirect(`/requests/${this.task.process_request_id}`);
-              return;
-            }
-            if (!this.task.allow_interstitial) {
-              this.redirect("/tasks");
-            } else {
-              this.redirectToNextAssignedTask();
-            }
-          },
-          redirectToNextAssignedTask(redirect = false) {
-            if (this.redirectInProcess) {
-              return;
-            }
-
-            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
-              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user_id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
-                if (response.data.data.length > 0) {
-                  const firstNextAssignedTask = response.data.data[0].id;
-                  if (redirect) {
-                    this.redirect(`/tasks/${firstNextAssignedTask}/edit`);
-                  } else {
-                    this.loadTask(firstNextAssignedTask);
-                  }
-                } else if (this.task.process_request.status === 'COMPLETED') {
-                  setTimeout(() => {
-                    this.redirect(`/requests/${this.task.process_request_id}`);
-                  }, 500);
-                }
-              });
-            }
-          },
-          /**
-           * Submit the task screen
-           */
-          submitTaskScreen () {
-            this.$refs.taskScreen.submit();
           },
           // Data editor
           updateRequestData () {
@@ -510,18 +428,6 @@
                 this.usersList = response.data.assignable_users.filter(u => u.id !== this.task.user_id);
               });
           },
-          classHeaderCard (status) {
-            let header = "bg-success";
-            switch (status) {
-              case "completed":
-                header = "bg-secondary";
-                break;
-              case "overdue":
-                header = "bg-danger";
-                break;
-            }
-            return "card-header text-capitalize text-white " + header;
-          },
           assignedUserAvatar (user) {
             return [{
               src: user.avatar,
@@ -532,15 +438,16 @@
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
           },
-          prepareTask(redirect = false) {
-            this.statusCard = this.classHeaderCard(this.task.advanceStatus);
-            this.updateRequestData = debounce(this.updateRequestData, 1000);
-            this.editJsonData();
-            this.checkTaskStatus(redirect);
+          prepareData() {
+              this.updateRequestData = debounce(this.updateRequestData, 1000);
+              this.editJsonData();
           },
         },
-        mounted () {
-          this.prepareTask(true);
+        mounted() {
+          this.prepareData();
+          this.$on('updateTask', (val) => {
+              this.$set(this, 'task', val);
+          });
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
