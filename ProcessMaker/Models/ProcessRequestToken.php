@@ -5,7 +5,9 @@ namespace ProcessMaker\Models;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -69,6 +71,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     use ExtendedPMQL;
     use TokenTrait;
     use SerializeToIso8601;
+    use Searchable;
 
     protected $connection = 'processmaker';
 
@@ -137,6 +140,36 @@ class ProcessRequestToken extends Model implements TokenInterface
         'data' => 'array',
         'self_service_groups' => 'array',
     ];
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array
+     */
+    public function toSearchableArray()
+    {
+        return [
+            'id' => $this->id,
+            'element_name' => $this->element_name,
+            'request' => isset($this->processRequest->name) ? $this->processRequest->name : "",
+            'data' => json_encode($this->data),
+        ];
+    }
+
+    /**
+     * Determine whether the item should be indexed.
+     *
+     * @return boolean
+     */
+    public function shouldBeSearchable()
+    {
+        $setting = Setting::byKey('indexed-search');
+        if ($setting && $setting->config['enabled'] === true) {
+            return in_array($this->element_type, ['task', 'userTask']);
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Boot application as a process instance.

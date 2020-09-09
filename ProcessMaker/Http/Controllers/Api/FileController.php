@@ -95,14 +95,14 @@ class FileController extends Controller
      *         name="model_id",
      *         in="query",
      *         description="ID of the model to which the file will be associated",
-     *         required=false,
+     *         required=true,
      *         @OA\Schema(type="integer"),
      *     ),
      *      @OA\Parameter(
      *         name="model",
      *         in="query",
      *         description="Name of the class of the model",
-     *         required=false,
+     *         required=true,
      *         @OA\Schema(type="string"),
      *     ),
      *      @OA\Parameter(
@@ -242,9 +242,14 @@ class FileController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the file",
+     *         description="File stream",
      *         @OA\MediaType(
-     *             mediaType="application/octet-stream")
+     *             mediaType="application/octet-stream",
+     *             @OA\Schema(
+     *                 type="string",
+     *                 format="binary"
+     *             )
+     *         )
      *     ),
      * )
      */

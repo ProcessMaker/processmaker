@@ -191,4 +191,19 @@ class FilesTest extends TestCase
       // Validate that the media file has been removed from the user
       $this->assertEquals(0, $model->getMedia()->count());
   }
+
+  public function testUserWithoutPermission() {
+      // We create a fake file to upload
+      Storage::fake('public');
+      $fileUpload = UploadedFile::fake()->create('my_test_file123.txt', 1);
+
+      // We create a model (in this case a user) and associate to him the file
+      $model = factory(User::class)->create();
+      $model->addMedia($fileUpload)->toMediaCollection('local');
+
+      //The call is done without an authenticated user so it should return 401
+      $response = $this->actingAs(factory(User::class)->create())
+                    ->json('GET', '/api/1.0' . self::API_TEST_URL, ['']);
+      $response->assertStatus(401);
+  }
 }

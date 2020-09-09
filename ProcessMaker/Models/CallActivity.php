@@ -12,6 +12,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+use ProcessMaker\Jobs\CopyRequestFiles;
 
 /**
  * Call Activity model
@@ -79,6 +80,9 @@ class CallActivity implements CallActivityInterface
 
         $dataStore->setData($data);
         $instance = $callable->call($dataStore, $startEvent);
+
+        CopyRequestFiles::dispatch($token->getInstance(), $instance);
+
         return $instance;
     }
 
@@ -101,6 +105,9 @@ class CallActivity implements CallActivityInterface
             $dataStore->putData($key, $value);
         }
         $this->syncronizeInstances($instance, $token->getInstance());
+
+        CopyRequestFiles::dispatch($instance, $token->getInstance());
+        
         return $this;
     }
 

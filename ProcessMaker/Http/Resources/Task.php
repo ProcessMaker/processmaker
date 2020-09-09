@@ -59,6 +59,7 @@ class Task extends ApiResource
                 case 'self_service':
                 case 'cyclical':
                 case 'group':
+                case 'user_group':
                     $ids = $this->process->getAssignableUsers($this->element_id);
                     $users = User::where('status', 'ACTIVE')->whereIn('id', $ids)->get();
                     break;

@@ -48,6 +48,7 @@
                     @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
+                            @can('update', $task)
                             <template v-if="taskIsOpenOrOverdue">
                                 <div class="card card-body border-top-0 h-100">
                                     <template v-if="task.component">
@@ -110,6 +111,7 @@
                                 </div>
                               </div>
                             </template>
+                            @endcan
                             @can('view-comments')
                               <div v-if="taskHasComments">
                                 <timeline :commentable_id="task.id"
@@ -118,7 +120,7 @@
                                           :voting="taskHasComments.voting"
                                           :edit="taskHasComments.edit_comments"
                                           :remove="taskHasComments.remove_comments"
-                                          :adding="taskHasComments.comments"
+                                          :adding="taskHasComments.comments && userHasAccessToTask"
                                           :readonly="task.status === 'CLOSED'"
                                           />
                               </div>
@@ -243,7 +245,6 @@
             </div>
         </div>
     </div>
-
 @endsection
 
 @section('js')
@@ -286,9 +287,11 @@
           showReassignment: false,
 
           task: @json($task->toArray()),
+          userHasAccessToTask: {{ Auth::user()->can('update', $task) ? "true": "false" }},
           statusCard: "card-header text-capitalize text-white bg-success",
           selectedUser: [],
           hasErrors: false,
+          redirectInProcess: false,
         },
         watch: {
           task: {
@@ -356,14 +359,24 @@
             this.loadTask(this.task.id);
           },
           loadTask(id) {
+            if (this.redirectInProcess) {
+              return;
+            }
+
             window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
               .then((response) => {
+                this.resetScreenState();
                 this.$set(this, 'task', response.data);
                 if (response.data.process_request.status === 'ERROR') {
                   this.hasErrors = true;
                 }
                 this.prepareTask();
               });
+          },
+          resetScreenState() {
+            if (this.$refs.taskScreen && this.$refs.taskScreen.$children[0]) {
+              this.$refs.taskScreen.$children[0].currentPage = 0;
+            }
           },
           claimTask() {
             ProcessMaker.apiClient
@@ -376,7 +389,7 @@
               });
           },
           redirectWhenProcessCompleted() {
-            window.location.href = `/requests/${this.task.process_request_id}`;
+            this.redirect(`/requests/${this.task.process_request_id}`);
           },
           refreshWhenProcessUpdated(data) {
             if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
@@ -390,28 +403,32 @@
           },
           closeTask() {
             if (this.hasErrors) {
-              window.location.href = `/requests/${this.task.process_request_id}`;
+              this.redirect(`/requests/${this.task.process_request_id}`);
               return;
             }
             if (!this.task.allow_interstitial) {
-              document.location.href = "/tasks";
+              this.redirect("/tasks");
             } else {
               this.redirectToNextAssignedTask();
             }
           },
           redirectToNextAssignedTask(redirect = false) {
+            if (this.redirectInProcess) {
+              return;
+            }
+
             if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
               window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user_id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
                 if (response.data.data.length > 0) {
                   const firstNextAssignedTask = response.data.data[0].id;
                   if (redirect) {
-                    window.location.href = `/tasks/${firstNextAssignedTask}/edit`;
+                    this.redirect(`/tasks/${firstNextAssignedTask}/edit`);
                   } else {
                     this.loadTask(firstNextAssignedTask);
                   }
                 } else if (this.task.process_request.status === 'COMPLETED') {
                   setTimeout(() => {
-                    window.location.href = `/requests/${this.task.process_request_id}`;
+                    this.redirect(`/requests/${this.task.process_request_id}`);
                   }, 500);
                 }
               });
@@ -464,12 +481,22 @@
                 .then(response => {
                   this.showReassignment = false;
                   this.selectedUser = [];
-                  window.location.href =
-                    "/requests/" + response.data.process_request_id;
+                  this.redirect('/tasks');
                 });
             }
           },
+          redirect(to) {
+            if (this.redirectInProcess) {
+              return;
+            }
+            this.redirectInProcess = true;
+            window.location.href = to;
+          },
           loadUsers (filter) {
+            if (this.redirectInProcess) {
+              return;
+            }
+
             filter = typeof filter === "string" ? "?filter=" + filter + "&" : "?";
             ProcessMaker.apiClient
               .get(
@@ -480,7 +507,7 @@
                 }
               )
               .then(response => {
-                this.usersList = response.data.assignable_users;
+                this.usersList = response.data.assignable_users.filter(u => u.id !== this.task.user_id);
               });
           },
           classHeaderCard (status) {

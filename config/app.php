@@ -109,6 +109,8 @@ return [
         ProcessMaker\Providers\WorkflowServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
+        TeamTNT\Scout\TNTSearchScoutServiceProvider::class,
+        Laravel\Scout\ScoutServiceProvider::class,
 
     ],
 

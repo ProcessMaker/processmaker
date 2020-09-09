@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScriptBuilderStarting;
 use Illuminate\Support\Facades\Event;
+use ProcessMaker\Managers\IndexManager;
 use ProcessMaker\Managers\PackageManager;
 
 /**
@@ -99,6 +100,18 @@ trait PluginServiceProviderTrait
     protected function registerPackage($package)
     {
         App::make(PackageManager::class)->addPackage($package);
+    }
+
+    /**
+     * Register index
+     *
+     * @param $name string name of index
+     * @param $model string path of model
+     * @param $callback callback function to perform indexing
+     */
+    protected function registerIndex($name, $model, $callback)
+    {
+        App::make(IndexManager::class)->add($name, $model, $callback);
     }
 
     /**

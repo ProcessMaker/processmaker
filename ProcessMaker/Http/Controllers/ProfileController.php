@@ -57,8 +57,15 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Contracts\View
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        if (
+            $request->user()->id !== intval($id) &&
+            !$request->user()->can('view-other-users-profiles')
+        ){
+            abort(404);
+        }
+
         $user = User::findOrFail($id);
         return view('profile.show', compact('user'));
     }
