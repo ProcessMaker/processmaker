@@ -73,7 +73,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('requests/{type}', 'RequestController@index')
         ->where('type', 'all|in_progress|completed')
         ->name('requests_by_type');
-    Route::get('request/{request}/files/{media}', 'RequestController@downloadFiles')->middleware('can:participate,request');
+    Route::get('request/{request}/files/{media}', 'RequestController@downloadFiles')->middleware('can:view,request');
     Route::get('requests', 'RequestController@index')->name('requests.index');
     Route::get('requests/{request}', 'RequestController@show')->name('requests.show');
     Route::get('requests/{request}/screen/{screen}', 'RequestController@screenPreview')->name('requests.screen-preview');
