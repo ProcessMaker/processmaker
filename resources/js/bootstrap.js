@@ -17,6 +17,11 @@ window.Popper = require("popper.js").default;
 window.ProcessmakerComponents = require("../js/processes/screen-builder/components")
 
 /**
+ * Give node plugins access to our tasks components
+ */
+window.ProcessmakerTaskComponents = require("../js/tasks/components")
+
+/**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
