@@ -30,11 +30,11 @@ class TaskTest extends TestCase {
         $task = $processRequest->tokens()->where('status', 'ACTIVE')->firstOrFail();
 
         $url = route('api.tasks.show', [$task]);
-        $result = $this->apiCall('GET', $url, ['include'=>'allScreens']);
-        $screens = $result->json()['screens'];
+        $result = $this->apiCall('GET', $url, ['include'=>'screen']);
+        $json = $result->json();
 
-        $this->assertCount(2, $screens);
-        $this->assertEquals('main', $screens[0]['type']);
-        $this->assertEquals('nested', $screens[1]['type']);
+        $this->assertEquals('parent', $json['screen']['title']);
+        $this->assertCount(1, $json['screen']['nested']);
+        $this->assertEquals('child', $json['screen']['nested'][0]['title']);
     }
 }
