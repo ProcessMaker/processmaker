@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Resources;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Screen;
 use StdClass;
 
 class Task extends ApiResource
@@ -37,6 +38,9 @@ class Task extends ApiResource
         }
         if (in_array('screen', $include)) {
             $array['screen'] = $this->getScreen() ? $this->getScreen()->toArray() : null;
+        }
+        if (in_array('allScreens', $include)) {
+            $array['screens'] = $this->getAllScreens();
         }
         if (in_array('requestData', $include)) {
             $array['request_data'] = $this->processRequest->data ?: new StdClass();
@@ -73,5 +77,31 @@ class Task extends ApiResource
             $array['assignable_users'] = $users;
         }
         return $array;
+    }
+
+    private function getAllScreens()
+    {
+        $screen = $this->getScreen();
+        if (!$screen) {
+            return [];
+        }
+
+        $screens = [];
+        $screens[] = [
+            'type' => 'main',
+            'id' => $screen->id,
+            'screen' => $screen->toArray()
+        ];
+
+        foreach ($screen->nestedScreenIds() as $id) {
+            $screen = Screen::findOrFail($id);
+            $screens[] = [
+                'type' => 'nested',
+                'id' => $screen->id,
+                'screen' => $screen->toArray()
+            ];
+        }
+
+        return $screens;
     }
 }
