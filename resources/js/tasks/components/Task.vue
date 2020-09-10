@@ -98,7 +98,7 @@
                     this.resetScreenState();
                     this.$parent.$emit('updateTask', response.data);
                     if (response.data.process_request.status === 'ERROR') {
-                    this.hasErrors = true;
+                        this.hasErrors = true;
                     }
                     this.prepareTask();
                 });
@@ -113,12 +113,12 @@
             },
             refreshWhenProcessUpdated(data) {
                 if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
-                this.reload();
+                    this.reload();
                 }
             },
             checkTaskStatus(redirect=false) {
                 if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
-                this.closeTask();
+                    this.closeTask();
                 }
             },
             closeTask() {
