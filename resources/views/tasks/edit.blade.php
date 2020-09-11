@@ -49,7 +49,7 @@
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
                           @can('update', $task)
-                            <task :task="task" :csrf-token="'{{ csrf_token() }}'"></task>
+                            <task :task="task" :csrf-token="'{{ csrf_token() }}'" @task-updated="updateTask"></task>
                           @endcan
                             @can('view-comments')
                               <div v-if="taskHasComments">
@@ -378,12 +378,12 @@
               this.updateRequestData = debounce(this.updateRequestData, 1000);
               this.editJsonData();
           },
+          updateTask(val) {
+            this.$set(this, 'task', val);
+          }
         },
         mounted() {
           this.prepareData();
-          this.$on('updateTask', (val) => {
-              this.$set(this, 'task', val);
-          });
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)

@@ -96,7 +96,7 @@
                 window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
                 .then((response) => {
                     this.resetScreenState();
-                    this.$parent.$emit('updateTask', response.data);
+                    this.$emit('task-updated', response.data);
                     if (response.data.process_request.status === 'ERROR') {
                         this.hasErrors = true;
                     }
