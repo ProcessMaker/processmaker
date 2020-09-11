@@ -67,17 +67,28 @@
 
 <script>
     export default {
-        props: ['task', 'csrf_token'],
+        props: ['taskId', 'csrf_token'],
         data() {
             return {
+                task: null,
                 redirectInProcess: false,
+            }
+        },
+        watch: {
+            task: {
+                handler() {
+                    window.ProcessMaker.nestedScreens = _.get(this.task, 'screen.nested', null);
+                },
+                immediate: true,
             }
         },
         computed: {
             taskIsCompleted() {
+                if (!this.task) { return false; }
                 return this.task.advanceStatus === 'completed' || this.task.advanceStatus === 'triggered';
             },
             taskIsOpenOrOverdue() {
+                if (!this.task) { return false; }
                 return this.task.advanceStatus === 'open' || this.task.advanceStatus === 'overdue';
             },
         },
@@ -96,7 +107,9 @@
                 window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
                 .then((response) => {
                     this.resetScreenState();
-                    this.$parent.$emit('updateTask', response.data);
+                    this.task = response.data;
+                    // sets breadcrumbs, etc.
+                    this.$emit('task-updated', response.data);
                     if (response.data.process_request.status === 'ERROR') {
                         this.hasErrors = true;
                     }
@@ -185,7 +198,7 @@
             },
         },
         mounted () {
-            this.prepareTask(true);
+            this.loadTask(this.taskId);
         }
     }
 </script>

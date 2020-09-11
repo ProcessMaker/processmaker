@@ -49,7 +49,7 @@
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
                           @can('update', $task)
-                            <task :task="task" :csrf-token="'{{ csrf_token() }}'"></task>
+                            <task task-id="{{ $task->id }}" csrf-token="{{ csrf_token() }}" @task-updated="task = $event"></task>
                           @endcan
                             @can('view-comments')
                               <div v-if="taskHasComments">
@@ -201,6 +201,10 @@
       requestFiles: @json($files),
       getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
     };
+
+    const task = @json($task);
+    const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+
   </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
@@ -224,9 +228,8 @@
           usersList: [],
           filter: "",
           showReassignment: false,
-
-          task: @json($task->toArray()),
-          userHasAccessToTask: {{ Auth::user()->can('update', $task) ? "true": "false" }},
+          task,
+          userHasAccessToTask,
           statusCard: "card-header text-capitalize text-white bg-success",
           selectedUser: [],
           hasErrors: false,
@@ -381,9 +384,6 @@
         },
         mounted() {
           this.prepareData();
-          this.$on('updateTask', (val) => {
-              this.$set(this, 'task', val);
-          });
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
