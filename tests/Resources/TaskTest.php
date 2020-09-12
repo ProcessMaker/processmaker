@@ -34,7 +34,7 @@ class TaskTest extends TestCase {
         $json = $result->json();
 
         $this->assertEquals('parent', $json['screen']['title']);
-        $this->assertCount(1, $json['screen']['nested']);
+        $this->assertCount(3, $json['screen']['nested']);
         $this->assertEquals('child', $json['screen']['nested'][0]['title']);
     }
 }
