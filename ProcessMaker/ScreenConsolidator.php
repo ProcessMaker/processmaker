@@ -10,7 +10,7 @@ class ScreenConsolidator {
     private $computed = [];
     private $custom_css = '';
 
-    public function __construct(Screen $screen)
+    public function __construct($screen)
     {
         $this->screen = $screen;
     }
@@ -119,8 +119,10 @@ class ScreenConsolidator {
             return;
         }
 
+        $id = $this->computedMaxId();
         foreach ($screen->computed as $computed) {
-            // TODO check for duplicate ID
+            $id++;
+            $computed['id'] = $id;
             $this->computed[] = $computed;
         }
     }
@@ -130,6 +132,14 @@ class ScreenConsolidator {
         if ($screen->custom_css) {
             $this->custom_css .= "\n" . $screen->custom_css;
         }
+    }
+
+    private function computedMaxId()
+    {
+        if (!$this->computed) {
+            return 0;
+        }
+        return collect($this->computed)->max('id');
     }
 
 }

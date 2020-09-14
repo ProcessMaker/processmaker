@@ -40,8 +40,7 @@ class ScreenConsolidatorTest extends TestCase
         $this->assertEquals('child watcher', $result['watchers'][1]['name']);
 
         $this->assertEquals(1, $result['computed'][0]['id']);
-        // TODO: fix IDs
-        // $this->assertEquals(2, $result['computed'][1]['id']);
+        $this->assertEquals(2, $result['computed'][1]['id']);
         
         $this->assertEquals("* { color: blue }\n* { color: red }", $result['custom_css']);
     }
