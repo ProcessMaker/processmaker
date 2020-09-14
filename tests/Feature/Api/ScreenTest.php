@@ -485,4 +485,41 @@ class ScreenTest extends TestCase
             ->json('PUT', $url, $params);
         $response->assertStatus(401);
     }
+
+    public function testPreviewScreen()
+    {
+        $child = factory(Screen::class)->create([
+            'config' => json_decode(
+                file_get_contents(__DIR__ . "/../../Fixtures/simple_child_screen.json")
+            ),
+            'watchers' => [['name' => 'child1'], ['name' => 'child2']],
+            'computed' => [['id' => 1, 'name' => 'c1'], ['id' => 2, 'name' => 'c2']],
+            'custom_css' => 'foo',
+        ]);
+
+        $previewConfig = json_decode(
+            file_get_contents(__DIR__ . "/../../Fixtures/simple_parent_screen.json"),
+            true
+        );
+        $previewConfig[0]['items'][1]['config']['screen'] = $child->id;
+        $preview = [
+            'config' => $previewConfig,
+            'watchers' => [['name' => 'parent1'], ['name' => 'parent2']],
+            'computed' => [['id' => 1, 'name' => 'p1'], ['id' => 2, 'name' => 'p2']],
+            'custom_css' => 'bar',
+        ];
+
+        //Post saved success
+        $url = self::API_TEST_SCREEN . '/preview';
+        $response = $this->apiCall('POST', $url, $preview);
+
+        $screen = $response->json();
+        
+        $json = $response->json();
+        $this->assertEquals('<p>Parent</p>', $json['config'][0]['items'][0]['config']['content']);
+        $this->assertEquals('<p>Child</p>', $json['config'][0]['items'][1]['config']['content']);
+        $this->assertEquals('child1', $json['watchers'][2]['name']);
+        $this->assertEquals('c2', $json['computed'][3]['name']);
+        $this->assertEquals("bar\nfoo", $json['custom_css']);
+    }
 }

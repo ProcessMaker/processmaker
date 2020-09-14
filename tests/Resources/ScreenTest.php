@@ -2,14 +2,11 @@
 namespace Tests\Resources;
 
 use Tests\TestCase;
-use ProcessMaker\Models\User;
 use ProcessMaker\Jobs\ImportProcess;
 use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
 use Tests\Feature\Shared\RequestHelper;
 
-class TaskTest extends TestCase {
+class ScreenTest extends TestCase {
 
     use RequestHelper;
 
@@ -28,13 +25,14 @@ class TaskTest extends TestCase {
             []
         );
         $task = $processRequest->tokens()->where('status', 'ACTIVE')->firstOrFail();
+        $screen = $task->getScreen();
 
-        $url = route('api.tasks.show', [$task]);
-        $result = $this->apiCall('GET', $url, ['include'=>'screen']);
+        $url = route('api.screens.show', [$screen]);
+        $result = $this->apiCall('GET', $url);
         $json = $result->json();
 
-        $this->assertEquals('parent', $json['screen']['title']);
-        $this->assertCount(3, $json['screen']['nested']);
-        $this->assertEquals('child', $json['screen']['nested'][0]['title']);
+        $this->assertCount(5, $json['config'][0]['items']);
+        $this->assertEquals('FormHtmlViewer', $json['config'][0]['items'][2]['component']);
+        $this->assertEquals('FormHtmlViewer', $json['config'][0]['items'][3]['component']);
     }
 }
