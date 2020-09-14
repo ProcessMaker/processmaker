@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
@@ -588,11 +589,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     private function valueAliasRequester($value, $expression)
     {
         $user = User::where('username', $value)->get()->first();
-        $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
 
-        return function ($query) use ($requests) {
-            $query->whereIn('id', $requests->pluck('id'));
-        };
+        if ($user) {
+            $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
+            return function ($query) use ($requests) {
+                $query->whereIn('id', $requests->pluck('id'));
+            };
+        } else {
+            throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
+        }
     }
 
     /**
