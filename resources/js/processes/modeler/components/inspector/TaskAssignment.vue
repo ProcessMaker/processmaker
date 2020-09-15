@@ -200,7 +200,7 @@
        * @returns {object}
        */
       process () {
-        return this.$parent.$parent.$parent.process;
+        return this.$root.$children[0].process;
       },
       /**
        * Get the value of the edited property

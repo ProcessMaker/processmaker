@@ -13,12 +13,14 @@ const path = require("path");
 */
 
 mix.webpackConfig({
+
   plugins: [
   ],
   externals: [
     'monaco-editor'
   ],
   resolve: {
+    symlinks: false,
     alias: {
       'vue-monaco': path.resolve(__dirname, 'resources/js/vue-monaco-amd.js')
     },

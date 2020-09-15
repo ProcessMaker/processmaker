@@ -23,6 +23,7 @@
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
           <b-col class="overflow-auto h-100">
             <vue-form-renderer
+              v-if="preview"
               ref="renderer"
               :key="rendererKey"
               v-model="previewData"
@@ -30,14 +31,15 @@
               @submit="previewSubmit"
               @update="onUpdate"
               :mode="mode"
-              :config="config"
-              :computed="computed"
-              :custom-css="customCSS"
-              :watchers="watchers"
+              :config="preview.config"
+              :computed="preview.computed"
+              :custom-css="preview.custom_css"
+              :watchers="preview.watchers"
               v-on:css-errors="cssErrors = $event"
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
             />
+            <div v-else><h2>Preview Not Loaded Yet</h2></div>
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
@@ -169,6 +171,7 @@ import VueJsonPretty from "vue-json-pretty";
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
+import { cloneDeep } from 'lodash';
 
 // Bring in our initial set of controls
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -320,7 +323,9 @@ export default {
       mockMagicVariables,
       validationWarnings: [],
       previewComponents: [],
-      optionsMenu: options
+      optionsMenu: options,
+      preview: null,
+      rendererKey: 0,
     };
   },
   components: {
@@ -344,6 +349,11 @@ export default {
         this.previewData = JSON.parse(this.previewInput);
       } else {
         this.previewData = {};
+      }
+    },
+    mode() {
+      if (this.mode === 'preview') {
+        this.getPreviewValues();
       }
     }
   },
@@ -403,6 +413,17 @@ export default {
     });
   },
   methods: {
+    getPreviewValues() {
+      this.preview = null;
+      ProcessMaker.apiClient.post("/screens/preview", {
+          config: this.config,
+          computed: this.computed,
+          custom_css: this.customCSS,
+          watchers: this.watchers,
+      }).then(response => {
+        this.preview = response.data;
+      });
+    },
     changeMode(mode) {
       if (mode === "editor") {
         this.$refs.menuScreen.changeItem("button_design", {

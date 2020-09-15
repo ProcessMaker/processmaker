@@ -2,6 +2,7 @@
 
 namespace ProcessMaker;
 
+use ProcessMaker\Exception\MaximumRecursionException;
 use ProcessMaker\Models\Screen;
 
 class ScreenConsolidator {
@@ -9,6 +10,7 @@ class ScreenConsolidator {
     private $watchers = [];
     private $computed = [];
     private $custom_css = '';
+    private $recursion = 0;
 
     public function __construct($screen)
     {
@@ -60,6 +62,11 @@ class ScreenConsolidator {
 
     private function setNestedScreen($item, &$new)
     {
+        if ($this->recursion > 10) {
+            throw new MaximumRecursionException();
+        }
+        $this->recursion++;
+
         $screenId = $item['config']['screen'];
         $screen = Screen::findOrFail($screenId);
 
@@ -71,6 +78,7 @@ class ScreenConsolidator {
         foreach ($this->replace($screen->config[0]['items']) as $screenItem) {
             $new[] = $screenItem;
         }
+        $this->recursion = 0;
     }
 
     private function is($component, $item) {

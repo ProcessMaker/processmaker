@@ -60,7 +60,7 @@
                 ProcessMaker.alert('{{__('The screen was exported.')}}', 'success');
               })
               .catch(error => {
-                ProcessMaker.alert(error.response.data.error, 'danger');
+                ProcessMaker.alert(error.response.data.message, 'danger');
               });
           }
         }
