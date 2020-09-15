@@ -352,7 +352,7 @@ class ScreenController extends Controller
         if ($fileKey) {
             return ['url' => url("/designer/screens/{$screen->id}/download/{$fileKey}")];
         } else {
-            return response(['error' => __('Unable to Export Screen')], 500);
+            return response(['message' => __('Unable to Export Screen')], 500);
         }
     }
 
