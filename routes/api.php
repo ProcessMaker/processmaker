@@ -56,6 +56,7 @@ Route::group(
     Route::delete('screens/{screen}', 'ScreenController@destroy')->name('screens.destroy')->middleware('can:delete-screens');
     Route::post('screens/{screen}/export', 'ScreenController@export')->name('screens.export')->middleware('can:export-screens');
     Route::post('screens/import', 'ScreenController@import')->name('screens.import')->middleware('can:import-screens');
+    Route::post('screens/preview', 'ScreenController@preview')->name('screens.preview')->middleware('can:edit-screens');
 
     // Screen Categories
     Route::get('screen_categories', 'ScreenCategoryController@index')->name('screen_categories.index')->middleware('can:view-screen-categories');
