@@ -188,7 +188,7 @@
         },
         computed: {
           process() {
-            return this.$parent.$parent.$parent.$parent.$parent.$parent.process;
+            return this.$root.$children[0].process;
           },
           modelerId() {
             return this.$root.$children[0].$refs.modeler.highlightedNode._modelerId;
