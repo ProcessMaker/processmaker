@@ -2,10 +2,20 @@
     <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
         <template v-if="taskIsOpenOrOverdue">
             <div class="card card-body border-top-0 h-100">
-                <template v-if="task.component">
+                <div v-if="task.component === 'task-screen'">
+                    <vue-form-renderer 
+                        v-model="task.request_data" 
+                        :config="task.screen.config" 
+                        :computed="task.screen.computed" 
+                        :custom-css="task.screen.customCss" 
+                        :watchers="task.screen.watchers" 
+                        @update="onUpdate" 
+                        @submit="submit" 
+                    />
+                </div>
+                <div v-else>
                     <component
                         :is="task.component"
-                        ref="taskScreen"
                         :process-id="task.process_id"
                         :instance-id="task.process_request_id"
                         :token-id="task.id"
@@ -15,63 +25,46 @@
                         :custom-css="task.screen.custom_css"
                         :watchers="task.screen.watchers"
                         :data="task.request_data"
-                        @activity-assigned="activityAssigned"
-                        @process-completed="redirectWhenProcessCompleted"
-                        @process-updated="refreshWhenProcessUpdated"
                     >
                     </component>
-                </template>
-                <template v-else>
-                    <task-screen
-                        ref="taskScreen"
-                        :process-id="task.process_id"
-                        :instance-id="task.process_request_id"
-                        :token-id="task.id"
-                        :screen="[{items:[]}]"
-                        :data="task.request_data"
-                        @activity-assigned="activityAssigned"
-                        @process-completed="redirectWhenProcessCompleted"
-                        @process-updated="refreshWhenProcessUpdated"
-                    >
-                    </task-screen>
-                </template>
+                </div>
             </div>
             <div v-if="task.bpmn_tag_name === 'manualTask' || !task.screen" class="card-footer">
-                <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{ $t('Complete Task') }}</button>
+                <button type="button" class="btn btn-primary" @click="submit">{{ $t('Complete Task') }}</button>
             </div>
         </template>
         <template v-if="taskIsCompleted">
             <div class="card card-body border-top-0 h-100">
-            <task-screen
-                ref="taskWaitScreen"
-                v-if="task.allow_interstitial"
-                :process-id="task.process_id"
-                :instance-id="task.process_request_id"
-                :token-id="task.id"
-                :screen="task.interstitial_screen.config"
-                :computed="task.interstitial_screen.computed"
-                :custom-css="task.interstitial_screen.custom_css"
-                :watchers="task.interstitial_screen.watchers"
-                :data="task.request_data"
-                @activity-assigned="activityAssigned"
-                @process-completed="redirectWhenProcessCompleted"
-                @process-updated="refreshWhenProcessUpdated"
-            ></task-screen>
-            <div v-else class="card card-body text-center" v-cloak>
-                <h1>{{ $t('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
-            </div>
+                <vue-form-renderer 
+                    v-if="task.allow_interstitial"
+                    v-model="task.request_data" 
+                    :config="task.interstitial_screen.config"
+                    :computed="task.interstitial_screen.computed" 
+                    :custom-css="task.interstitial_screen.customCss" 
+                    :watchers="task.interstitial_screen.watchers" 
+                />
+                <div v-else class="card card-body text-center" v-cloak>
+                    <h1>{{ $t('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
+                </div>
             </div>
         </template>
     </div>
 </template>
 
 <script>
+    import { VueFormRenderer } from '@processmaker/screen-builder';
+
     export default {
-        props: ['taskId', 'csrf_token'],
+        components: {
+            VueFormRenderer
+        },
+        props: ['taskId', 'csrf_token', 'screen', 'data'],
         data() {
             return {
                 task: null,
                 redirectInProcess: false,
+                disabled: false,
+                socketListeners: [],
             }
         },
         watch: {
@@ -167,12 +160,6 @@
                     });
                 }
             },
-            /**
-             * Submit the task screen
-             */
-            submitTaskScreen() {
-                this.$refs.taskScreen.submit();
-            },
             classHeaderCard (status) {
                 let header = "bg-success";
                 switch (status) {
@@ -196,9 +183,83 @@
                 this.redirectInProcess = true;
                 window.location.href = to;
             },
+            submit() {
+                //single click
+                if (this.disabled) {
+                    return;
+                }
+                this.disabled = true;
+                this.$emit('submit', this.task);
+                console.log('HELLO EMIT');
+                this.$nextTick(() => {
+                    this.disabled = false;
+                });
+            },
+            onUpdate(data) {
+                ProcessMaker.EventBus.$emit('form-data-updated', data);
+            },
+            initSocketListeners() {
+                const request_id = document.head.querySelector('meta[name="request-id"]').content;
+                this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${request_id}`, ".ActivityAssigned", (data) => {
+                    if (data.payloadUrl) {
+                        this.obtainPayload(data.payloadUrl)
+                        .then(response => {
+                            this.activityAssigned(response);
+                        });        
+                    }
+                });
+
+                this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${request_id}`, ".ProcessCompleted", (data) => {
+                    if (data.payloadUrl) {
+                        this.obtainPayload(data.payloadUrl)
+                        .then(response => {
+                            this.redirectWhenProcessCompleted(response);
+                        });
+                    }
+                });
+
+                this.addSocketListener(`ProcessMaker.Models.ProcessRequest.${request_id}`, ".ProcessUpdated", (data) => {
+                    if (data.payloadUrl) {
+                        this.obtainPayload(data.payloadUrl)
+                        .then(response => {
+                            if (data.event) {
+                            response.event = data.event;
+                            }
+                            this.refreshWhenProcessUpdated(response);
+                        });
+                    }
+                });
+            },
+            addSocketListener(channel, event, callback) {
+                this.socketListeners.push({
+                    channel,
+                    event
+                });
+                window.Echo.private(channel).listen(
+                    event,
+                    callback
+                );
+            },
+            obtainPayload(url) {
+                return new Promise((resolve, reject) => {
+                    ProcessMaker.apiClient
+                    .get(url)
+                    .then(response => {
+                        resolve(response.data);
+                    }).catch(error => {
+                        // User does not have access to the resource. Ignore.
+                    });
+                });
+            },
         },
-        mounted () {
+        mounted() {
+            this.initSocketListeners();
             this.loadTask(this.taskId);
+        },
+        destroyed() {
+            this.socketListeners.forEach((element) => {
+                window.Echo.private(element.channel).stopListening(element.event);
+            });
         }
     }
 </script>

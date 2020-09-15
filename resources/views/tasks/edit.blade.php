@@ -48,8 +48,8 @@
                     @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
-                          @can('update', $task)
-                            <task task-id="{{ $task->id }}" csrf-token="{{ csrf_token() }}" @task-updated="task = $event"></task>
+                          @can('update', $task) 
+                            <task task-id="{{ $task->id }}" csrf-token="{{ csrf_token() }}" @task-updated="task = $event" @submit="submit"></task>
                           @endcan
                             @can('view-comments')
                               <div v-if="taskHasComments">
@@ -383,6 +383,21 @@
           },
           updateTask(val) {
             this.$set(this, 'task', val);
+          },
+          submit(task) {
+            let message = this.$t('Task Completed Successfully');
+            const taskId = task.id;
+            const formData = task.request_data;
+            ProcessMaker.apiClient
+            .put("tasks/" + taskId, {status:"COMPLETED", data: formData})
+            .then(() => {
+              window.ProcessMaker.alert(message, 'success', 5, true);
+            })
+            .catch(error => {
+              // If there are errors, the user will be redirected to the request page
+              // to view error details. This is done in loadTask in Task.vue
+            });
+            
           }
         },
         mounted() {
