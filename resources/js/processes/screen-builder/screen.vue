@@ -30,10 +30,10 @@
               @submit="previewSubmit"
               @update="onUpdate"
               :mode="mode"
-              :config="config"
-              :computed="computed"
-              :custom-css="customCSS"
-              :watchers="watchers"
+              :config="preview.config"
+              :computed="preview.computed"
+              :custom-css="preview.customCSS"
+              :watchers="preview.watchers"
               v-on:css-errors="cssErrors = $event"
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
@@ -169,6 +169,7 @@ import VueJsonPretty from "vue-json-pretty";
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
+import { cloneDeep } from 'lodash';
 
 // Bring in our initial set of controls
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -290,6 +291,18 @@ export default {
     ];
 
     return {
+      preview: {
+        config: [
+          {
+            name: 'Default',
+            computed: [],
+            items: [],
+          },
+        ],
+        computed: [],
+        customCSS: '',
+        watchers: [],
+      },
       self: this,
       watchers_config: {
         api: {
