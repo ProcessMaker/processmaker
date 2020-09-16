@@ -23,7 +23,6 @@
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
           <b-col class="overflow-auto h-100">
             <vue-form-renderer
-              v-if="preview"
               ref="renderer"
               :key="rendererKey"
               v-model="previewData"
@@ -39,7 +38,6 @@
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
             />
-            <div v-else><h2>Preview Not Loaded Yet</h2></div>
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
@@ -293,6 +291,18 @@ export default {
     ];
 
     return {
+      preview: {
+        config: [
+          {
+            name: 'Default',
+            computed: [],
+            items: [],
+          },
+        ],
+        computed: [],
+        custom_css: '',
+        watchers: [],
+      },
       self: this,
       watchers_config: {
         api: {
@@ -324,7 +334,6 @@ export default {
       validationWarnings: [],
       previewComponents: [],
       optionsMenu: options,
-      preview: null,
       rendererKey: 0,
     };
   },
@@ -414,7 +423,6 @@ export default {
   },
   methods: {
     getPreviewValues() {
-      this.preview = null;
       ProcessMaker.apiClient.post("/screens/preview", {
           config: this.config,
           computed: this.computed,
@@ -551,6 +559,7 @@ export default {
       builderBinding
     ) {
       // Add it to the renderer
+      if (!this.$refs.renderer) { return }
       this.$refs.renderer.$options.components[
         rendererBinding
       ] = rendererComponent;
