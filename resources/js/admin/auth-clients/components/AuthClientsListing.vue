@@ -162,6 +162,13 @@ export default {
       this.$refs.pagination.tablePagination = meta;
       return rows;
     },
+    changePerPage(value) {
+        this.perPage = value;
+        if (this.page * value > this.$refs.pagination.tablePagination.total) {
+            this.page = Math.floor(this.$refs.pagination.tablePagination.total / value) + 1;
+        }
+        this.fetch();
+    },
     onPageChange(page) {
       if (page == "next") {
         this.page = this.page + 1;
