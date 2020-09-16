@@ -3,7 +3,8 @@
         <template v-if="taskIsOpenOrOverdue">
             <div class="card card-body border-top-0 h-100">
                 <div v-if="task.component === 'task-screen'">
-                    <vue-form-renderer 
+                    <vue-form-renderer
+                        ref="renderer"
                         v-model="task.request_data" 
                         :config="task.screen.config" 
                         :computed="task.screen.computed" 
@@ -35,7 +36,8 @@
         </template>
         <template v-if="taskIsCompleted">
             <div class="card card-body border-top-0 h-100">
-                <vue-form-renderer 
+                <vue-form-renderer
+                    ref="renderer"
                     v-if="task.allow_interstitial"
                     v-model="task.request_data" 
                     :config="task.interstitial_screen.config"
@@ -110,8 +112,8 @@
                 });
             },
             resetScreenState() {
-                if (this.$refs.taskScreen && this.$refs.taskScreen.$children[0]) {
-                    this.$refs.taskScreen.$children[0].currentPage = 0;
+                if (this.$refs.renderer && this.$refs.renderer.$children[0]) {
+                    this.$refs.renderer.$children[0].currentPage = 0;
                 }
             },
             redirectWhenProcessCompleted() {
