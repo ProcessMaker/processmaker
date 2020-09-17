@@ -17,7 +17,7 @@ class RegenerateCss extends Command
      *
      * @var string
      */
-    protected $signature = 'processmaker:compile-css';
+    protected $signature = 'processmaker:regenerate-css';
 
     /**
      * The console command description.
