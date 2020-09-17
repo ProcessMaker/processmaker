@@ -140,7 +140,6 @@ export default {
           chunk: true,
           data_name: this.name,
           parent: null,
-          marco: 'test',
         },
         testChunks: false,
         // Setup our headers to deal with API calls
@@ -219,12 +218,12 @@ export default {
       }
     },
     fileUploaded(rootFile, file, message) {
+      message = JSON.parse(message);
       if (this.fileType == 'request') {
-        this.$emit("input", file.name);
+        this.$emit("input", message.fileUploadId);
       }
 
       if (this.fileType == 'collection') {
-        message = JSON.parse(message);
         this.$emit("input", {
           id: message.id,
           name: message.file_name
