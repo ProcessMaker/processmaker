@@ -10,14 +10,14 @@ use ProcessMaker\Jobs\CompileSass;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\PackageChecker;
 
-class Css extends Command
+class RegenerateCss extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'processmaker:css';
+    protected $signature = 'processmaker:compile-css';
 
     /**
      * The console command description.
@@ -74,7 +74,7 @@ class Css extends Command
             'user' => null
         ]);
 
-        $this->info("\nCss files have been compiled.");
+        $this->info("\nCSS files have been generated.");
     }
 
 
