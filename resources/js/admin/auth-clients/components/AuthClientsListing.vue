@@ -130,9 +130,9 @@ export default {
         //Manual filter
         data = data.filter((item) => {
           return (
-            item.name.toLowerCase().indexOf(this.filter) > -1 ||
-            item.redirect.toLowerCase().indexOf(this.filter) > -1 ||
-            item.secret.toLowerCase().indexOf(this.filter) > -1
+            item.name.toLowerCase().indexOf(this.filter.toLowerCase()) > -1 ||
+            item.redirect.toLowerCase().indexOf(this.filter.toLowerCase()) > -1 ||
+            item.secret.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
           );
         });
       }
