@@ -219,8 +219,12 @@ export default {
     },
     fileUploaded(rootFile, file, message) {
       if (this.fileType == 'request') {
-        message = JSON.parse(message);
-        this.$emit("input", message.fileUploadId);
+        let id = '';
+        if (message) {
+          message = JSON.parse(message);
+          id = message.fileUploadId;
+        }
+        this.$emit("input", id);
       }
 
       if (this.fileType == 'collection') {
