@@ -218,12 +218,13 @@ export default {
       }
     },
     fileUploaded(rootFile, file, message) {
-      message = JSON.parse(message);
       if (this.fileType == 'request') {
+        message = JSON.parse(message);
         this.$emit("input", message.fileUploadId);
       }
 
       if (this.fileType == 'collection') {
+        message = JSON.parse(message);
         this.$emit("input", {
           id: message.id,
           name: message.file_name
