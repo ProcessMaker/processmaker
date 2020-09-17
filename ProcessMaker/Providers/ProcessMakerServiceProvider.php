@@ -15,6 +15,7 @@ use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
@@ -56,6 +57,9 @@ class ProcessMakerServiceProvider extends ServiceProvider
             return preg_match('/^[\pL\s\-\_\d\.\']+$/u', $val);
         });
 
+        $this->app->singleton(AnonymousUser::class, function($app) {
+            return AnonymousUser::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
+        });
 
         parent::boot();
     }
