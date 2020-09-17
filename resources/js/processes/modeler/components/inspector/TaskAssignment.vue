@@ -5,43 +5,46 @@
             <select
                 ref="assignmentsDropDownList"
                 class="form-control"
-                v-model="assignment">
+                v-model="assignment"
+                :disabled="disabled">
                 <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{ $t(type.label) }}
                 </option>
             </select>
             <small class="form-text text-muted">{{$t("Select the Task assignee")}}</small>
         </div>
 
-        <select-user-group
-            v-if="showAssignments"
-            :label="$t('Assigned Users/Groups')"
-            v-model="assignments"
-            :hide-users="hideUsers"/>
+        <div v-if="!disabled">
+          <select-user-group
+              v-if="showAssignments"
+              :label="$t('Assigned Users/Groups')"
+              v-model="assignments"
+              :hide-users="hideUsers"/>
 
-        <user-by-id
-            v-if="showAssignUserById"
-            :label="$t('Variable Name of User ID Value')"
-            v-model="assigned"
-        ></user-by-id>
+          <user-by-id
+              v-if="showAssignUserById"
+              :label="$t('Variable Name of User ID Value')"
+              v-model="assigned"
+          ></user-by-id>
 
-        <form-checkbox
-            v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
-            :label="$t('Lock task assignment to user')"
-            :checked="assignmentLockGetter"
-            toggle="true"
-            @change="assignmentLockSetter">
-        </form-checkbox>
+          <form-checkbox
+              v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
+              :label="$t('Lock task assignment to user')"
+              :checked="assignmentLockGetter"
+              toggle="true"
+              @change="assignmentLockSetter">
+          </form-checkbox>
 
-        <form-checkbox
-            v-if="configurables.includes('ALLOW_REASSIGNMENT')"
-            :label="$t('Allow Reassignment')"
-            :helper="$t('Allows the Task assignee to reassign this Task')"
-            :checked="allowReassignmentGetter"
-            toggle="true"
-            @change="allowReassignmentSetter">
-        </form-checkbox>
+          <form-checkbox
+              v-if="configurables.includes('ALLOW_REASSIGNMENT')"
+              :label="$t('Allow Reassignment')"
+              :helper="$t('Allows the Task assignee to reassign this Task')"
+              :checked="allowReassignmentGetter"
+              toggle="true"
+              @change="allowReassignmentSetter">
+          </form-checkbox>
+        </div>
 
-        <div v-if="configurables.includes('ASSIGN_BY_EXPRESSION')" class="form-group">
+        <div v-if="configurables.includes('ASSIGN_BY_EXPRESSION') && !disabled" class="form-group">
 
             <div class="form-group special-assignment-header">
                 <label>{{ $t("Assign by Expression Use a rule to assign this Task conditionally") }}</label>
@@ -185,10 +188,15 @@
         hideUsers: false,
         hideUsersAssignmentExpression: false,
         specialAssignedUserID: null,
+        disabled: false,
       };
     },
     mounted () {
       this.loadSpecialAssignments();
+
+      this.$root.$on('disable-assignment-settings', (val) => {
+        this.disabled = val;
+      });
     },
     computed: {
       node () {
