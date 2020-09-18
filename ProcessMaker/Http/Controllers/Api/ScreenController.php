@@ -66,7 +66,7 @@ class ScreenController extends Controller
     {
         if (!(Auth::user()->can('view-screens') ||
             Auth::user()->can('create-processes') ||
-            Auth::user()->can('create-processes'))) {
+            Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view screens.'));
         }
 
@@ -157,7 +157,7 @@ class ScreenController extends Controller
     {
         if (!(Auth::user()->can('view-screens') ||
             Auth::user()->can('create-processes') ||
-            Auth::user()->can('create-processes'))) {
+            Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view screens.'));
         }
         return new ApiResource($screen);

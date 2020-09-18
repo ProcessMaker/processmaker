@@ -65,7 +65,7 @@ class GroupController extends Controller
     {
         if (!(Auth::user()->can('view-groups') ||
             Auth::user()->can('create-processes') ||
-            Auth::user()->can('create-processes'))) {
+            Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
         }
         $include = $request->input('include', '');
@@ -167,7 +167,7 @@ class GroupController extends Controller
     {
        if (!(Auth::user()->can('view-groups') ||
             Auth::user()->can('create-processes') ||
-            Auth::user()->can('create-processes'))) {
+            Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
         }
         return new GroupResource($group);
