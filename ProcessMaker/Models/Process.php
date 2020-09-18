@@ -926,17 +926,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     {
         $processRequest = $token->getInstance();
 
-        // Check for anonymous web entry
-        $startEvent = $processRequest->tokens()->where('element_type', 'startEvent')->firstOrFail();
-        $canBeAnonymous = false;
-        if (isset($startEvent->getDefinition()['config'])) {
-            $config = json_decode($startEvent->getDefinition()['config'], true);
-            if ($config && $config['web_entry'] && $config['web_entry']['mode'] === 'ANONYMOUS') {
-                $canBeAnonymous = true;
-            }
-        }
-
-        if (!$processRequest->user_id && !$canBeAnonymous) {
+        if (!$processRequest->user_id) {
             throw new TaskDoesNotHaveRequesterException();
         }
 

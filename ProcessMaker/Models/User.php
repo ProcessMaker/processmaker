@@ -3,17 +3,18 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
-use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Query\Traits\PMQL;
+use Illuminate\Session\Store as Session;
+use Illuminate\Notifications\Notifiable;
 use ProcessMaker\Traits\HasAuthorization;
-use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
+use ProcessMaker\Traits\SerializeToIso8601;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use ProcessMaker\Models\RequestUserPermission;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -31,6 +32,8 @@ class User extends Authenticatable implements HasMedia
     public const DISK_PROFILE = 'profile';
     //collection media library
     public const COLLECTION_PROFILE = 'profile';
+    // Session key to save request ids that the user started
+    public const REQUESTS_SESSION_KEY = 'web-entry-request-ids';
 
     /**
      * The attributes that are mass assignable.
@@ -402,5 +405,23 @@ class User extends Authenticatable implements HasMedia
             // Batch insert the new permissions
             RequestUserPermission::query()->insert($batch);
         }        
+    }
+
+    public static function addRequestToSession(Session $session, ProcessRequest $processRequest)
+    {
+        $requestIds = $session->get(self::REQUESTS_SESSION_KEY, []);
+        if (!in_array($processRequest->id, $requestIds)) {
+            $requestIds[] = $processRequest->id;
+        }
+        $session->put(self::REQUESTS_SESSION_KEY, $requestIds);
+    }
+
+    public static function hasRequestInSession(Session $session, ProcessRequest $processRequest)
+    {
+        $requestIds = $session->get(self::REQUESTS_SESSION_KEY, []);
+        if (in_array($processRequest->id, $requestIds)) {
+            return true;
+        }
+        return false;
     }
 }

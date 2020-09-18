@@ -51,12 +51,12 @@ class ProcessRequestTokenPolicy
      * @param  \ProcessMaker\Models\ProcessRequestToken  $processRequestToken
      * @return mixed
      */
-    public function update(Request $request, User $user, ProcessRequestToken $processRequestToken)
+    public function update(User $user, ProcessRequestToken $processRequestToken)
     {
         if ($processRequestToken->user_id == $user->id) {
             // Additional check to see if this specific anonymous user can edit the task
             if ($user->id === app(AnonymousUser::class)->id) {
-                return app(AnonymousUser::class)->canEdit($request->session(), $processRequestToken);
+                return app(AnonymousUser::class)->canEdit(request()->session(), $processRequestToken);
             }
             return true;
         }
