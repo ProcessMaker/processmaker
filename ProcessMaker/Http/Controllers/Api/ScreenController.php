@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -62,6 +64,12 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
+        if (!(Auth::user()->can('view-screens') ||
+            Auth::user()->can('create-processes') ||
+            Auth::user()->can('create-processes'))) {
+            throw new AuthorizationException(__('Not authorized to view screens.'));
+        }
+
         $query = Screen::nonSystem()
                     ->select('screens.*')
                     ->where('key', null)
@@ -147,6 +155,11 @@ class ScreenController extends Controller
      */
     public function show(Screen $screen)
     {
+        if (!(Auth::user()->can('view-screens') ||
+            Auth::user()->can('create-processes') ||
+            Auth::user()->can('create-processes'))) {
+            throw new AuthorizationException(__('Not authorized to view screens.'));
+        }
         return new ApiResource($screen);
     }
 
