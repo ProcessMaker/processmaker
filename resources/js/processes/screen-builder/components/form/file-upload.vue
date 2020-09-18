@@ -52,7 +52,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", "validation", "parent"],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", "validation", "parent", "index"],
   beforeMount() {
     this.getFileType();
   },
@@ -122,6 +122,12 @@ export default {
       },
       immediate: true,
     },
+    index: {
+      handler() {
+        this.options.query.index = this.index || 0;
+      },
+      immediate: true,
+    },
   },
   data() {
     return {
@@ -140,7 +146,7 @@ export default {
           chunk: true,
           data_name: this.name,
           parent: null,
-          marco: 'test',
+          index: 0
         },
         testChunks: false,
         // Setup our headers to deal with API calls
@@ -283,7 +289,7 @@ export default {
       const parent =  this.$parent.$parent.$parent;
       if (parent.$options._componentTag == 'FormRecordList') {
         const recordList = parent;
-        const prefix = recordList.name + '.';
+        const prefix = recordList.name + '.' + this.options.query.index + '.';
         this.setFileUploadNameForChildren(recordList.$children, prefix);
       }
     }
