@@ -60,6 +60,7 @@ export default {
     this.removeDefaultClasses();
   },
   mounted() {
+    this.$root.$on('set-upload-data-name', (a, b) => this.escuchando(a, b));
     this.removeDefaultClasses();
     
     this.checkIfInRecordList();
@@ -131,6 +132,7 @@ export default {
   },
   data() {
     return {
+      recordListIndex: null,
       content: "",
       fileType: null,
       validator: {
@@ -162,6 +164,20 @@ export default {
     };
   },
   methods: {
+    escuchando(obj, index) {
+      if (obj.value === null || typeof obj.value === 'undefined') {
+        this.recordListIndex =  0;
+        return;
+      }
+
+      if (index === null || typeof index === 'undefined') {
+        this.recordListIndex =  obj.value.length + 1;
+        return;
+      }
+
+      this.recordListIndex = index;
+      console.log('escuchando... ', obj,index);
+    },
     setPrefix() {
       let parent = this.$parent;
       let i = 0;
@@ -287,6 +303,7 @@ export default {
     },
     checkIfInRecordList() {
       const parent =  this.$parent.$parent.$parent;
+      console.log('record listttt', parent, ' index:', this.recordListIndex);
       if (parent.$options._componentTag == 'FormRecordList') {
         const recordList = parent;
         const prefix = recordList.name + '.' + this.options.query.index + '.';

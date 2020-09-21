@@ -262,14 +262,14 @@ class ProcessRequestFileController extends Controller
         $originalCreatedBy = $user ? $user->id : null;
 
         $data_name = $laravelRequest->input('data_name', $file->getClientOriginalName());
-        $index = $laravelRequest->input('index', null);
+        $rowId = $laravelRequest->input('row_id', null);
         $parent = (int)$laravelRequest->input('parent', null);
 
         foreach($processRequest->getMedia() as $mediaItem) {
             if(
                 $mediaItem->getCustomProperty('data_name') == $data_name &&
                 $mediaItem->getCustomProperty('parent') == $parent &&
-                $mediaItem->getCustomProperty('index') == $index
+                $mediaItem->getCustomProperty('row_id') == $rowId
             ) {
                 $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
                 $mediaItem->delete();
@@ -282,7 +282,7 @@ class ProcessRequestFileController extends Controller
             ->withCustomProperties([
                 'data_name' => $data_name,
                 'parent' => $parent != 0 ? $parent : null,
-                'index' => $index != null ? $index : 0,
+                'row_id' => $rowId,
                 'createdBy' => $originalCreatedBy
             ])
             ->toMediaCollection();
