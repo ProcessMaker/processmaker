@@ -13,46 +13,6 @@
     {
       "type": "vcs",
       "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/packages"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/package-files"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/package-collections"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/package-comments"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/package-versions"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/package-vocabularies"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/connector-send-email"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/package-webentry"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/connector-pdf-print"
-    },
-    {
-      "type": "path",
-      "url": "/opt/github/package-data-sources"
     }
   ],
   "require": {
@@ -76,17 +36,11 @@
     "phing/phing": "^2.16",
     "pion/laravel-chunk-upload": "dev-master",
     "predis/predis": "^1.1",
-    "processmaker/connector-pdf-print": "^1.0",
-    "processmaker/connector-send-email": "^1.2",
     "processmaker/docker-executor-lua": "^1.0",
     "processmaker/docker-executor-node": "^1.0",
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "1.0.3",
-    "processmaker/package-comments": "^1.0",
-    "processmaker/package-files": "^1.1",
-    "processmaker/package-versions": "^1.0",
-    "processmaker/package-vocabularies": "^2.2",
     "processmaker/pmql": "1.1.2",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
