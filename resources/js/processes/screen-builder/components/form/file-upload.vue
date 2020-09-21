@@ -60,7 +60,8 @@ export default {
     this.removeDefaultClasses();
   },
   mounted() {
-    this.$root.$on('set-upload-data-name', (a, b) => this.escuchando(a, b));
+    this.$root.$on('set-upload-data-name',
+        (recordList, index, id) => this.listenRecordList(recordList, index, id));
     this.removeDefaultClasses();
     
     this.checkIfInRecordList();
@@ -132,7 +133,6 @@ export default {
   },
   data() {
     return {
-      recordListIndex: null,
       content: "",
       fileType: null,
       validator: {
@@ -148,7 +148,8 @@ export default {
           chunk: true,
           data_name: this.name,
           parent: null,
-          index: 0
+          index: 0,
+          row_id: null
         },
         testChunks: false,
         // Setup our headers to deal with API calls
@@ -164,19 +165,8 @@ export default {
     };
   },
   methods: {
-    escuchando(obj, index) {
-      if (obj.value === null || typeof obj.value === 'undefined') {
-        this.recordListIndex =  0;
-        return;
-      }
-
-      if (index === null || typeof index === 'undefined') {
-        this.recordListIndex =  obj.value.length + 1;
-        return;
-      }
-
-      this.recordListIndex = index;
-      console.log('escuchando... ', obj,index);
+    listenRecordList(obj, index, id) {
+      this.options.query.row_id = id;
     },
     setPrefix() {
       let parent = this.$parent;
@@ -303,18 +293,15 @@ export default {
     },
     checkIfInRecordList() {
       const parent =  this.$parent.$parent.$parent;
-      console.log('record listttt', parent, ' index:', this.recordListIndex);
       if (parent.$options._componentTag == 'FormRecordList') {
         const recordList = parent;
-        const prefix = recordList.name + '.' + this.options.query.index + '.';
+        const prefix = recordList.name + '.';
         this.setFileUploadNameForChildren(recordList.$children, prefix);
       }
     }
   }
 };
-</script>
-
-<style scoped>
+</script<style scoped>
 .required {
   color: red;
   font-size: 0.8em;
