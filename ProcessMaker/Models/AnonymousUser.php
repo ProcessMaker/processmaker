@@ -4,7 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Contracts\Session\Session;
 use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Models\User;
 
 class AnonymousUser extends User
 {
@@ -16,10 +16,6 @@ class AnonymousUser extends User
 
     public function canEdit(Session $session, ProcessRequestToken $task)
     {
-        $node = $task->process->getDefinitions()->findElementById($task->element_id);
-        $assignment = $node->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-        if ($assignment === 'requester' || $assignment === 'previous_task_assignee') {
-            User::hasRequestIdInSession($session, $task->processRequest);
-        }
+        return User::hasRequestInSession($session, $task->processRequest);
     }
 }
