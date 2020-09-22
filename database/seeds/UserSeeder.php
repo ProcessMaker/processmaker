@@ -22,12 +22,11 @@ class UserSeeder extends Seeder
      */
     public function run(ClientRepository $clients)
     {
-        if (User::count() !== 0) {
-            return;
-        }
-
         //Create admin user
-        $user = factory(User::class)->create([
+        $user = User::updateOrCreate([
+            'username' => self::$INSTALLER_ADMIN_USERNAME,
+            'is_administrator' => true,
+        ],[
             'username' => self::$INSTALLER_ADMIN_USERNAME,
             'password' => Hash::make(self::$INSTALLER_ADMIN_PASSWORD),
             'email' => self::$INSTALLER_ADMIN_EMAIL,
@@ -47,7 +46,6 @@ class UserSeeder extends Seeder
             'datetime_format' => 'm/d/Y H:i',
             'language' => 'en',
             'status' => 'ACTIVE',
-            'is_administrator' => true,
         ]);
 
         // Create client so we can generate tokens

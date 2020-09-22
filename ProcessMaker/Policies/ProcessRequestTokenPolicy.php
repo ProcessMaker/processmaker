@@ -53,11 +53,10 @@ class ProcessRequestTokenPolicy
      */
     public function update(User $user, ProcessRequestToken $processRequestToken)
     {
-        if ($processRequestToken->user_id == $user->id) {
-            // Additional check to see if this specific anonymous user can edit the task
-            if ($user->id === app(AnonymousUser::class)->id) {
-                return app(AnonymousUser::class)->canEdit(request()->session(), $processRequestToken);
-            }
+        if (
+            $processRequestToken->user_id === $user->id || 
+            $processRequestToken->user_id === app(AnonymousUser::class)->id
+        ) {
             return true;
         }
         if ($user->canSelfServe($processRequestToken)) {
