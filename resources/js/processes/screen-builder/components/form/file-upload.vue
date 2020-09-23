@@ -60,7 +60,6 @@ export default {
     this.removeDefaultClasses();
   },
   mounted() {
-    console.log(this.fileList);
     this.$root.$on('set-upload-data-name',
         (recordList, index, id) => this.listenRecordList(recordList, index, id));
 
@@ -76,7 +75,7 @@ export default {
   computed: {
     displayName() {
       const requestFiles = _.get(window, 'PM4ConfigOverrides.requestFiles', {});
-      const fileInfo = requestFiles[this.fileKey];
+      const fileInfo = requestFiles[this.fileDataName];
       if (fileInfo) {
         return fileInfo.file_name;
       }
@@ -106,8 +105,8 @@ export default {
       });
       return accept;
     },
-    fileKey() {
-      // file identifier in PM4ConfigOverrides.requestFiles
+    // return  the file's identifier in PM4ConfigOverrides.requestFiles
+    fileDataName() {
       return this.prefix + this.name + (this.row_id ? '.' + this.row_id : '');
     }
 
@@ -115,7 +114,7 @@ export default {
   watch: {
     name: {
       handler() {
-        this.options.query.data_name = this.fileKey;
+        this.options.query.data_name = this.fileDataName;
       },
       immediate: true,
     },
@@ -127,7 +126,7 @@ export default {
     },
     prefix: {
       handler() {
-        this.options.query.data_name = this.fileKey;
+        this.options.query.data_name = this.fileDataName;
       },
       immediate: true,
     },
@@ -181,16 +180,11 @@ export default {
   },
   methods: {
     listenRecordList(recordList, index, id) {
-      console.log('escuchando', recordList, index, id);
       const parent =  this.$parent.$parent.$parent;
       if (parent === recordList) {
-        console.log('está en record list');
-        //this.options.query.row_id = id;
         this.row_id = id;
       }
       else {
-        console.log('está en otro lugar');
-        //this.options.query.row_id = null;
         this.row_id = null;
       }
     },
