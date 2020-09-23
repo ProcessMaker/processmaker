@@ -86,10 +86,6 @@
       },
     },
     methods: {
-      isIfInRecordList() {
-        const parent =  this.$parent.$parent.$parent;
-        return parent.$options._componentTag == 'FormRecordList';
-      },
       listenRecordList(recordList, index, id) {
         const parent =  this.$parent.$parent.$parent;
         if (parent === recordList) {
