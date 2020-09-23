@@ -253,13 +253,16 @@ export default {
     },
     fileUploaded(rootFile, file, message) {
       if (this.fileType == 'request') {
-        const msgObj = JSON.parse(message);
-        if (!_.has(window, 'PM4ConfigOverrides.requestFiles')) {
-          window.PM4ConfigOverrides.requestFiles = {};
+        let id = '';
+        if (message) {
+          const msgObj = JSON.parse(message);
+          if (!_.has(window, 'PM4ConfigOverrides.requestFiles')) {
+            window.PM4ConfigOverrides.requestFiles = {};
+          }
+          window.PM4ConfigOverrides.requestFiles[this.fileDataName] = { id:msgObj.fileUploadId, file_name:file.name };
+          id = msgObj.fileUploadId;
         }
-        window.PM4ConfigOverrides.requestFiles[this.fileDataName] = { id:msgObj.fileUploadId, file_name:file.name };
-
-        this.$emit("input", msgObj.fileUploadId);
+        this.$emit("input", id);
       }
 
       if (this.fileType == 'collection') {

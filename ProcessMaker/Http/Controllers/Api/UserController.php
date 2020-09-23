@@ -62,6 +62,11 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        if (!(Auth::user()->can('view-users') ||
+            Auth::user()->can('create-processes') ||
+            Auth::user()->can('edit-processes'))) {
+            throw new AuthorizationException(__('Not authorized to view users.'));
+        }
         $query = User::query();
 
         $filter = $request->input('filter', '');

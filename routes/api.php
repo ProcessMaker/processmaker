@@ -8,7 +8,7 @@ Route::group(
     ], function() {
 
     // Users
-    Route::get('users', 'UserController@index')->name('users.index')->middleware('can:view-users');
+    Route::get('users', 'UserController@index')->name('users.index');//Permissions handled in the controller
     Route::get('users/{user}', 'UserController@show')->name('users.show'); //Permissions handled in the controller
     Route::get('deleted_users', 'UserController@deletedUsers')->name('users.deletedUsers')->middleware('can:view-users'); 
     Route::post('users', 'UserController@store')->name('users.store')->middleware('can:create-users');
@@ -24,9 +24,9 @@ Route::group(
     Route::delete('users/{user}/tokens/{tokenId}', 'UserTokenController@destroy')->name('users.tokens.destroy'); // Permissions handled in the controller
 
 
-    // Groups
-    Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
-    Route::get('groups/{group}', 'GroupController@show')->name('groups.show')->middleware('can:view-groups');
+    // Groups//Permissions policy
+    Route::get('groups', 'GroupController@index')->name('groups.index');//Permissions handled in the controller
+    Route::get('groups/{group}', 'GroupController@show')->name('groups.show');//Permissions handled in the controller
     Route::post('groups', 'GroupController@store')->name('groups.store')->middleware('can:create-groups');
     Route::put('groups/{group}', 'GroupController@update')->name('groups.update')->middleware('can:edit-groups');
     Route::delete('groups/{group}', 'GroupController@destroy')->name('groups.destroy')->middleware('can:delete-groups');
@@ -48,8 +48,8 @@ Route::group(
     Route::delete('environment_variables/{environment_variable}', 'EnvironmentVariablesController@destroy')->name('environment_variables.destroy')->middleware('can:delete-environment_variables');
 
     // Screens
-    Route::get('screens', 'ScreenController@index')->name('screens.index')->middleware('can:view-screens');
-    Route::get('screens/{screen}', 'ScreenController@show')->name('screens.show')->middleware('can:view-screens');
+    Route::get('screens', 'ScreenController@index')->name('screens.index');//Permissions handled in the controller
+    Route::get('screens/{screen}', 'ScreenController@show')->name('screens.show');//Permissions handled in the controller
     Route::post('screens', 'ScreenController@store')->name('screens.store')->middleware('can:create-screens');
     Route::put('screens/{screen}', 'ScreenController@update')->name('screens.update')->middleware('can:edit-screens');
     Route::put('screens/{screen}/duplicate', 'ScreenController@duplicate')->name('screens.duplicate')->middleware('can:create-screens');
