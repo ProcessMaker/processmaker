@@ -51,6 +51,10 @@
       }
     },
     mounted() {
+
+      this.$root.$on('set-upload-data-name',
+          (recordList, index, id) => this.listenRecordList(recordList, index, id));
+
       if (!this.fileType) {
         // Not somewhere we can download anything (like web entry start event)
         this.loading = false;
@@ -82,6 +86,20 @@
       },
     },
     methods: {
+      isIfInRecordList() {
+        const parent =  this.$parent.$parent.$parent;
+        return parent.$options._componentTag == 'FormRecordList';
+      },
+      listenRecordList(recordList, index, id) {
+        const parent =  this.$parent.$parent.$parent;
+        if (parent === recordList) {
+          if (_.has(window, 'PM4ConfigOverrides.requestFiles')) {
+            const fileDataName = parent.name + '.' + this.name + (id ? '.' + id : '');
+            this.fileInfo = window.PM4ConfigOverrides.requestFiles[fileDataName];
+            this.loading  = false;
+          }
+        }
+      },
       onClick() {
         if (this.fileType == 'request') {
           this.downloadRequestFile();
