@@ -60,8 +60,10 @@ export default {
     this.removeDefaultClasses();
   },
   mounted() {
+    console.log(this.fileList);
     this.$root.$on('set-upload-data-name',
         (recordList, index, id) => this.listenRecordList(recordList, index, id));
+
     this.removeDefaultClasses();
     
     this.checkIfInRecordList();
@@ -74,7 +76,7 @@ export default {
   computed: {
     displayName() {
       const requestFiles = _.get(window, 'PM4ConfigOverrides.requestFiles', {});
-      const fileInfo = requestFiles[this.prefix + this.name];
+      const fileInfo = requestFiles[this.fileKey];
       if (fileInfo) {
         return fileInfo.file_name;
       }
@@ -103,12 +105,17 @@ export default {
         accept.push(item.trim())
       });
       return accept;
+    },
+    fileKey() {
+      // file identifier in PM4ConfigOverrides.requestFiles
+      return this.prefix + this.name + (this.row_id ? '.' + this.row_id : '');
     }
+
   },
   watch: {
     name: {
       handler() {
-        this.options.query.data_name = this.prefix + this.name;
+        this.options.query.data_name = this.fileKey;
       },
       immediate: true,
     },
@@ -120,13 +127,20 @@ export default {
     },
     prefix: {
       handler() {
-        this.options.query.data_name = this.prefix + this.name;
+        this.options.query.data_name = this.fileKey;
       },
       immediate: true,
     },
     index: {
       handler() {
         this.options.query.index = this.index || 0;
+      },
+      immediate: true,
+    },
+    row_id: {
+      handler() {
+        this.options.query.row_id = this.row_id;
+        this.options.query.data_name = this.prefix + this.name + (this.row_id ? '.' + this.row_id : '');
       },
       immediate: true,
     },
@@ -140,6 +154,7 @@ export default {
         errors: [],
       },
       prefix: '',
+      row_id: null,
       options: {
         target: this.getTargetUrl,
         // We cannot increase this until laravel chunk uploader handles this gracefully
@@ -165,8 +180,19 @@ export default {
     };
   },
   methods: {
-    listenRecordList(obj, index, id) {
-      this.options.query.row_id = id;
+    listenRecordList(recordList, index, id) {
+      console.log('escuchando', recordList, index, id);
+      const parent =  this.$parent.$parent.$parent;
+      if (parent === recordList) {
+        console.log('está en record list');
+        //this.options.query.row_id = id;
+        this.row_id = id;
+      }
+      else {
+        console.log('está en otro lugar');
+        //this.options.query.row_id = null;
+        this.row_id = null;
+      }
     },
     setPrefix() {
       let parent = this.$parent;
