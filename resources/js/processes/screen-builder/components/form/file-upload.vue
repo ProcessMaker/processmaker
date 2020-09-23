@@ -187,6 +187,7 @@ export default {
       else {
         this.row_id = null;
       }
+      this.$forceUpdate();
     },
     setPrefix() {
       let parent = this.$parent;
@@ -252,7 +253,13 @@ export default {
     },
     fileUploaded(rootFile, file, message) {
       if (this.fileType == 'request') {
-        this.$emit("input", file.name);
+        const msgObj = JSON.parse(message);
+        if (!_.has(window, 'PM4ConfigOverrides.requestFiles')) {
+          window.PM4ConfigOverrides.requestFiles = {};
+        }
+        window.PM4ConfigOverrides.requestFiles[this.fileDataName] = { id:msgObj.fileUploadId, file_name:file.name };
+
+        this.$emit("input", msgObj.fileUploadId);
       }
 
       if (this.fileType == 'collection') {
