@@ -227,8 +227,20 @@
         //do not preload if the control is inside a record list becaue
         // we don't know the specific row to which the control is associated
         if (!this.isInRecordList()) {
+
+          let endpoint = "requests/" + this.requestId + "/files?name=" + this.prefix + this.name;
+
+          if (_.has(window, 'PM4ConfigOverrides.getFileEndpoint')) {
+            endpoint = window.PM4ConfigOverrides.getFileEndpoint;
+          }
+
+          if (endpoint && this.fileInfo && this.fileInfo.token) {
+            const query = '?name=' + encodeURIComponent(this.prefix + this.name) + '&token=' + this.fileInfo.token;
+            return endpoint + query;
+          }
+
           ProcessMaker.apiClient
-              .get("requests/" + this.requestId + "/files?name=" + this.prefix + this.name)
+              .get(endpoint)
               .then(response => {
                 this.fileInfo = _.get(response, 'data.data.0', null);
                 this.loading = false;
