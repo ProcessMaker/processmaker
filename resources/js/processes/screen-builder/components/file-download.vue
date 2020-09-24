@@ -86,6 +86,10 @@
       },
     },
     methods: {
+      isInRecordList() {
+        const parent =  this.$parent.$parent.$parent;
+        return (parent.$options._componentTag == 'FormRecordList');
+      },
       listenRecordList(recordList, index, id) {
         const parent =  this.$parent.$parent.$parent;
         if (parent === recordList) {
@@ -220,12 +224,16 @@
           this.loading = false;
           return;
         }
-        ProcessMaker.apiClient
-          .get("requests/" + this.requestId + "/files?name=" + this.prefix + this.name)
-          .then(response => {
-            this.fileInfo = _.get(response, 'data.data.0', null);
-            this.loading = false;
-          });
+        //do not preload if the control is inside a record list becaue
+        // we don't know the specific row to which the control is associated
+        if (!this.isInRecordList()) {
+          ProcessMaker.apiClient
+              .get("requests/" + this.requestId + "/files?name=" + this.prefix + this.name)
+              .then(response => {
+                this.fileInfo = _.get(response, 'data.data.0', null);
+                this.loading = false;
+              });
+        }
       },
       setFileInfoFromCache() {
         const info = _.get(ProcessMaker.CollectionData, this.prefix + this.name, null);
