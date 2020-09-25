@@ -299,6 +299,7 @@ class TaskController extends Controller
                 $task->authorizeReassignment(Auth::user());
                 // Reassign user
                 $task->user_id = $userToAssign;
+                $task->persistUserData($userToAssign);
             }
             $task->save();
 
