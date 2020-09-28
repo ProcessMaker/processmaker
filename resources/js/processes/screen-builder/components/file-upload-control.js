@@ -38,7 +38,7 @@ export default {
           label: "Name",
           name: 'Name',
           helper: "The name of the upload",
-          validation: 'required'
+          validation: 'regex:/^(?:[A-Z_.a-z])(?:[0-9A-Z_. \/a-z])*$/|required'
         }
       },
       {
