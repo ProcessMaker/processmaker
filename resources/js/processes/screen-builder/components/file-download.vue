@@ -224,8 +224,9 @@
           this.loading = false;
           return;
         }
-        //do not preload if the control is inside a record list becaue
-        // we don't know the specific row to which the control is associated
+
+        //do not preload files if the control is inside a record list because
+        // we don't know the row to which the control is associated
         if (!this.isInRecordList()) {
 
           let endpoint = "requests/" + this.requestId + "/files?name=" + this.prefix + this.name;
