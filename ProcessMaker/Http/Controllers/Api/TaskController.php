@@ -293,11 +293,13 @@ class TaskController extends Controller
                 // Claim task
                 $task->is_self_service = 0;
                 $task->user_id = $userToAssign;
+                $task->persistUserData($userToAssign);
             } else {
                 // Validate if user can reassign
                 $task->authorizeReassignment(Auth::user());
                 // Reassign user
                 $task->user_id = $userToAssign;
+                $task->persistUserData($userToAssign);
             }
             $task->save();
 

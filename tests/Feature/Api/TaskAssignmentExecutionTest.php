@@ -197,4 +197,55 @@ class TaskAssignmentExecutionTest extends TestCase
         ]);
         $response->assertStatus(200);
     }
+    
+    public function testSelfServeUserPersistence()
+    {
+        $users = factory(User::class, 20)->create(['status'=>'ACTIVE']);
+        $userWithNoGroup = factory(User::class)->create(['status'=>'ACTIVE']);
+
+        $group = factory(Group::class)->create();
+        foreach ($users as $user) {
+            factory(GroupMember::class)->create([
+                'member_id' => $user->id,
+                'member_type' => User::class,
+                'group_id' => $group->id,
+            ]);
+        }
+
+        $screen = factory(Screen::class)->create();
+
+        $bpmn = file_get_contents(__DIR__ . '/processes/SelfServeAssignment.bpmn');
+        $bpmn = str_replace(
+            ['[SCREEN_ID]', '[GROUP_ID]'],
+            [$screen->id, $group->id],
+            $bpmn
+        );
+        $process = factory(Process::class)->create([
+            'bpmn' => $bpmn,
+            'user_id' => $this->user->id,
+        ]);
+
+        $event = $process->getDefinitions()->getEvent('node_4');
+        $processRequest = WorkflowManager::triggerStartEvent($process, $event, []);
+        $task = $processRequest->refresh()->tokens()->where('status', 'ACTIVE')->first();
+
+        $updateTaskUrl = route('api.tasks.update', [$task->id]);
+        
+        // Assert that the user magic variable is empty
+        $this->assertNull($processRequest->data['_user']);
+        
+        // Assert a group member can claim the task
+        $this->user = $users[1];
+        $response = $this->apiCall('put', $updateTaskUrl, [
+            'is_self_service' => false,
+            'user_id' => $this->user->id,
+        ]);
+        $response->assertStatus(200);
+        
+        // Assert that the user magic variable is now populated
+        $processRequest->refresh();
+        $this->assertIsArray($processRequest->data['_user']);
+        $this->assertArrayHasKey('id', $processRequest->data['_user']);
+        $this->assertEquals($this->user->id, $processRequest->data['_user']['id']);
+    }
 }
