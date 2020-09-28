@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2edb924a2db167c81e0385bf8fb3e84a",
+    "content-hash": "214e4ad46b90f2f7e6036c4f14e2ec91",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4113,16 +4113,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "d28ab70c72537c51a47a91458a39de5b0ffc4cdf"
+                "reference": "6c62cc59aa028c1e69d5d578b9b9adbaf08b6d60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/d28ab70c72537c51a47a91458a39de5b0ffc4cdf",
-                "reference": "d28ab70c72537c51a47a91458a39de5b0ffc4cdf",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/6c62cc59aa028c1e69d5d578b9b9adbaf08b6d60",
+                "reference": "6c62cc59aa028c1e69d5d578b9b9adbaf08b6d60",
                 "shasum": ""
             },
             "require": {
@@ -4151,7 +4151,7 @@
                 }
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
-            "time": "2020-03-24T04:07:55+00:00"
+            "time": "2020-04-17T18:01:19+00:00"
         },
         {
             "name": "psr/cache",
