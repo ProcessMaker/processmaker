@@ -126,6 +126,7 @@ class Install extends Command
             'REDIS_PREFIX' => $this->option('redis-prefix'),
             'HORIZON_PREFIX' => $this->option('horizon-prefix'),
             'API_TIMEOUT' => $this->option('api-timeout') ? $this->option('api-timeout') : 5000,
+            'PROXIES' => '*',
         ];
 
         if ($this->option('redis-host')) {
