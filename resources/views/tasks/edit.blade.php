@@ -49,7 +49,16 @@
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
                           @can('update', $task) 
-                            <task task-id="{{ $task->id }}" csrf-token="{{ csrf_token() }}" @task-updated="task = $event" @submit="submit"></task>
+                            <task
+                              v-model="formData"
+                              :task-id="{{ $task->id }}"
+                              csrf-token="{{ csrf_token() }}"
+                              @task-updated="taskUpdated"
+                              @submit="submit"
+                              @completed="completed"
+                              @@error="error"
+                              @closed="closed"
+                          ></task>
                           @endcan
                             @can('view-comments')
                               <div v-if="taskHasComments">
@@ -234,6 +243,7 @@
           selectedUser: [],
           hasErrors: false,
           redirectInProcess: false,
+          formData: {},
         },
         watch: {
           task: {
@@ -287,6 +297,18 @@
           }
         },
         methods: {
+          completed(processRequestId) {
+            console.log('completed', processRequestId);
+            this.redirect(`/requests/${processRequestId}`);
+          },
+          error(processRequestId) {
+            console.log('error', processRequestId);
+            this.redirect(`/requests/${this.task.process_request_id}`);
+          },
+          closed(taskId) {
+            console.log('closed', taskId);
+            this.redirect("/tasks");
+          },
           claimTask() {
             ProcessMaker.apiClient
               .put("tasks/" + this.task.id, {
@@ -387,9 +409,8 @@
           submit(task) {
             let message = this.$t('Task Completed Successfully');
             const taskId = task.id;
-            const formData = task.request_data;
             ProcessMaker.apiClient
-            .put("tasks/" + taskId, {status:"COMPLETED", data: formData})
+            .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
             .then(() => {
               window.ProcessMaker.alert(message, 'success', 5, true);
             })
@@ -398,6 +419,9 @@
               // to view error details. This is done in loadTask in Task.vue
             });
             
+          },
+          taskUpdated(task) {
+            this.task = task;
           }
         },
         mounted() {
