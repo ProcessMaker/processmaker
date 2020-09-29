@@ -39,8 +39,12 @@ class Task extends ApiResource
         if (in_array('screen', $include)) {
             $screen = $this->getScreen();
             if ($screen) {
-                $resource = new ScreenResource($screen);
-                $array['screen'] = $resource->toArray($request);
+                if ($screen->type === 'ADVANCED') {
+                    $array['screen'] = $screen;
+                } else {
+                    $resource = new ScreenResource($screen);
+                    $array['screen'] = $resource->toArray($request);
+                }
             } else {
                 $array['screen'] = null;
             }
