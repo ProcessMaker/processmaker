@@ -53,8 +53,9 @@ abstract class BpmnAction implements ShouldQueue
             $request = !$this->instance && $this instanceof StartEvent ? $response : $this->instance;
             if ($request) {
                 $request->logError($exception, $element);
+            } else {
+                throw $exception;
             }
-            throw $exception;
         } finally {
             if (isset($this->instanceId)) {
                 $this->unlockInstance($this->instanceId);
