@@ -173,7 +173,7 @@
                             @endcan
                         @endif
                         <div class="tab-pane fade card card-body border-top-0 p-0" id="completed" role="tabpanel" aria-labelledby="completed-tab">
-                            <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
+                            <request-detail ref="completed" :process-request-id="requestId" status="CLOSED" :is-admin="{{Auth::user()->is_administrator ? 'true' : 'false'}}">
                             </request-detail>
                         </div>
 
