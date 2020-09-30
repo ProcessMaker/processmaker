@@ -529,6 +529,17 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     }
 
     /**
+     * Evaluate processes with conditional start events
+     */
+    public function evaluateConditionals()
+    {
+        $processes = Process::where('conditional_events', '!=', '[]')->get();
+        foreach ($processes as $process) {
+            $process->getDefinitions()->getEngine()->runToNextState();
+        }
+    }
+
+    /**
      * Register an event listener with the dispatcher.
      *
      * @param  string|array $events

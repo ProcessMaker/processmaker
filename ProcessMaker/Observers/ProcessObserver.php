@@ -34,5 +34,6 @@ class ProcessObserver
         $process->start_events = $process->getUpdatedStartEvents();
         $process->self_service_tasks = $process->getUpdatedSelfServiceTasks();
         $process->signal_events = $process->getUpdatedStartEventsSignalEvents();
+        $process->conditional_events = $process->getUpdatedConditionalStartEvents();
     }
 }

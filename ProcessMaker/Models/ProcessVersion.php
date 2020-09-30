@@ -47,6 +47,7 @@ class ProcessVersion extends Model implements ProcessModelInterface
         'warnings' => 'array',
         'self_service_tasks' => 'array',
         'signal_events' => 'array',
+        'conditional_events' => 'array',
     ];
 
     /**

@@ -474,6 +474,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $errors[] = $error;
         $this->errors = $errors;
         $this->status = 'ERROR';
+        \Log::error($exception);
         $this->save();
     }
 
@@ -663,7 +664,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $signalEvents = [];
         foreach ($this->tokens as $token) {
-            $element = $token->getDefinition(true);
+            $element = $token->getDefinition(true, $this->tokens->toArray());
             if ($element instanceof IntermediateCatchEventInterface) {
                 foreach ($element->getEventDefinitions() as $eventDefinition) {
                     if ($eventDefinition instanceof SignalEventDefinitionInterface) {

@@ -17,7 +17,6 @@ use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
@@ -45,7 +44,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property string $description
  * @property string $name
  * @property string $status
- * @property string start_events
+ * @property array start_events
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
@@ -65,7 +64,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   @OA\Property(property="warnings", type="string"),
  *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
- 
+
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -215,6 +214,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'warnings' => 'array',
         'self_service_tasks' => 'array',
         'signal_events' => 'array',
+        'conditional_events' => 'array',
     ];
 
     /**
@@ -1119,5 +1119,19 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $signalReferences = $signalEventDefinitions->pluck('signalRef')->unique();
 
         return $signalReferences->toArray();
+    }
+
+    /**
+     * Get the unique Conditional Start Events.
+     *
+     * @return array
+     */
+    public function getUpdatedConditionalStartEvents()
+    {
+        return collect($this->start_events)->filter(function ($startEvent) {
+            return collect($startEvent['eventDefinitions'])->search(function ($event) {
+                return $event['$type'] === 'conditionalEventDefinition';
+            }) !== false;
+        })->pluck('id');
     }
 }
