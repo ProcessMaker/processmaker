@@ -18,6 +18,9 @@ Broadcast::channel('ProcessMaker.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('ProcessMaker.Models.ProcessRequest.{id}', function ($user, $id) {
+    if ($id === 'undefined' || $user === 'undefined') {
+        return;
+    }
     $request = ProcessRequest::find($id);
     return !empty($request->participants()->where('users.id', $user->getKey())->first());
 });

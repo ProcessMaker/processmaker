@@ -371,7 +371,10 @@
                   this.hasErrors = true;
                 }
                 this.prepareTask();
-              });
+              })
+              .catch(error => {
+                  this.hasErrors = true;
+              })
           },
           resetScreenState() {
             if (this.$refs.taskScreen && this.$refs.taskScreen.$children[0]) {

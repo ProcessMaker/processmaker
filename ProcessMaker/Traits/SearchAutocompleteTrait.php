@@ -68,14 +68,16 @@ trait SearchAutocompleteTrait
         $results = collect([]);
         $results->push(Auth::user());
 
-        if (empty($query)) {
-            $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
-        } else {
-            $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
-                return function($query) use($expression) {
-                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
-                };
-            })->where('id', '!=', Auth::user()->id)->limit(49)->get());
+        if (Auth::user()->can('view-users')) {
+            if (empty($query)) {
+                $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
+            } else {
+                $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
+                    return function($query) use($expression) {
+                        $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                    };
+                })->where('id', '!=', Auth::user()->id)->limit(49)->get());
+            }
         }
 
         return $results->map(function ($user) {
@@ -88,14 +90,16 @@ trait SearchAutocompleteTrait
         $results = collect([]);
         $results->push(Auth::user());
 
-        if (empty($query)) {
-            $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
-        } else {
-            $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
-                return function($query) use($expression) {
-                    $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
-                };
-            })->where('id', '!=', Auth::user()->id)->limit(49)->get());
+        if (Auth::user()->can('view-users')) {
+            if (empty($query)) {
+                $results = $results->merge(User::limit(49)->where('id', '!=', Auth::user()->id)->get());
+            } else {
+                $results = $results->merge(User::pmql('username = "' . $query . '" OR firstname = "' . $query . '"  OR lastname = "' . $query . '"', function($expression) {
+                    return function($query) use($expression) {
+                        $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
+                    };
+                })->where('id', '!=', Auth::user()->id)->limit(49)->get());
+            }
         }
 
         return $results->map(function ($user) {

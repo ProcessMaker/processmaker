@@ -15,8 +15,10 @@
     ]])
 @endsection
 @section('content')
-    <div id="script-executors">
-        <script-executors></script-executors>
+    <div id="script-executors" class="px-3">
+        <div class="card card-body">
+            <script-executors></script-executors>
+        </div>
     </div>
 @endsection
 

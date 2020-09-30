@@ -627,6 +627,20 @@ class ProcessRequestToken extends Model implements TokenInterface
             'interstitial_screen' => $interstitialScreen
         ];
     }
+    
+    public function persistUserData($user)
+    {
+        if (! is_a($user, User::class)) {
+            $user = User::find($user);
+        }
+        
+        $userData = $user->attributesToArray();
+        $data = $this->processRequest->data;
+        $data['_user'] = $userData;
+        
+        $this->processRequest->data = $data;
+        $this->processRequest->save();
+    }
 
     /**
      * Log an error when executing the token

@@ -81,7 +81,7 @@
           object.forEach(item => {
             this.findPagesInNavButtons(item, found);
           });
-        } else if (object.config && object.config.event === 'pageNavigate') {
+        } else if (object.config && object.config.event === 'pageNavigate' && object.config.eventData) {
           const page = parseInt(object.config.eventData);
           found.indexOf(page) === -1 ? found.push(page) : null;
         }

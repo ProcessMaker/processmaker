@@ -24,7 +24,7 @@
                 </b-alert>
             </div>
         </div>
-        <advanced-search ref="advancedSearch" type="tasks" :param-status="status" @change="onChange" @submit="onSearch"></advanced-search>
+        <advanced-search ref="advancedSearch" type="tasks" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" :param-status="status" @change="onChange" @submit="onSearch"></advanced-search>
         <div class="container-fluid">
             <tasks-list ref="taskList" :filter="filter" :pmql="pmql" @in-overdue="setInOverdueMessage"></tasks-list>
         </div>

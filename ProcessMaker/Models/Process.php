@@ -108,8 +108,9 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *     allOf={
  *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),
  *      @OA\Schema(
- *         @OA\Property( property="status", type="object"),
- *         @OA\Property( property="assignable", type="array", @OA\Items(type="string") )
+ *         @OA\Property(property="status", type="object"),
+ *         @OA\Property(property="assignable", type="array", @OA\Items(type="object")),
+ *         @OA\Property(property="process", type="object")
  *      )
  *    }
  * ),
