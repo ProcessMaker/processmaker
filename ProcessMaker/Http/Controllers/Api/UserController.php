@@ -62,7 +62,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::nonSystem();
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {

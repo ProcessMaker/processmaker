@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use ProcessMaker\Models\RequestUserPermission;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use ProcessMaker\Traits\HideSystemResources;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -25,6 +26,7 @@ class User extends Authenticatable implements HasMedia
     use HasAuthorization;
     use SerializeToIso8601;
     use SoftDeletes;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 
@@ -149,7 +151,7 @@ class User extends Authenticatable implements HasMedia
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
             'status' => ['required', 'in:ACTIVE,INACTIVE'],
             'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
-            'birthdate' => 'date|nullable'
+            'birthdate' => 'date|nullable' 
         ];
     }
 
