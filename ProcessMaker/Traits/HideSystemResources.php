@@ -12,6 +12,11 @@ trait HideSystemResources
     {
         $item = parent::resolveRouteBinding($value);
 
+        if (request() && request()->is('api/*')) {
+            // Allow the API to directly access hidden resources by ID
+            return $item;
+        }
+
         if (!$item) {
             abort(404);
         }

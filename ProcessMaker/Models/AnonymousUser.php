@@ -13,9 +13,4 @@ class AnonymousUser extends User
     protected $table = 'users';
 
     public $isAnonymous = true;
-
-    public function canEdit(Session $session, ProcessRequestToken $task)
-    {
-        return User::hasRequestInSession($session, $task->processRequest);
-    }
 }

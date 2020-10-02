@@ -40,14 +40,14 @@ class ProcessPolicy
         if ($process->groupsCanStart(request()->query('event'))->whereIn('id', $groupIds)->count()) {
             return true;
         }
-        
+
+        $usersCanStart = $process->usersCanStart(
+            request()->query('event')
+        )->pluck('id');
+
         if (
-            $process->usersCanStart(
-                request()->query('event')
-            )
-            ->where('id', $user->id)
-            ->orWhere('id', app(AnonymousUser::class)->id)
-            ->count()
+            $usersCanStart->contains($user->id) ||
+            $usersCanStart->contains(app(AnonymousUser::class)->id)
         ) {
             return true;
         }
