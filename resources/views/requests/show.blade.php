@@ -104,7 +104,7 @@
                         </div>
                         <div class="tab-pane fade show card card-body border-top-0 p-0" :class="{ active: activePending }" id="pending" role="tabpanel"
                              aria-labelledby="pending-tab" v-if="!showSummary">
-                            <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE">
+                            <request-detail ref="pending" :process-request-id="requestId" status="ACTIVE" :is-admin="{{Auth::user()->is_administrator ? 'true' : 'false'}}">
                             </request-detail>
                         </div>
                         <div class="card card-body border-top-0 p-0" v-bind:class="{ 'tab-pane':true, active: showSummary }" id="summary"
@@ -173,7 +173,7 @@
                             @endcan
                         @endif
                         <div class="tab-pane fade card card-body border-top-0 p-0" id="completed" role="tabpanel" aria-labelledby="completed-tab">
-                            <request-detail ref="completed" :process-request-id="requestId" status="CLOSED">
+                            <request-detail ref="completed" :process-request-id="requestId" status="CLOSED" :is-admin="{{Auth::user()->is_administrator ? 'true' : 'false'}}">
                             </request-detail>
                         </div>
 
