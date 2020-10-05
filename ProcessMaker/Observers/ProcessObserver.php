@@ -35,6 +35,6 @@ class ProcessObserver
         $process->self_service_tasks = $process->getUpdatedSelfServiceTasks();
         $process->signal_events = $process->getUpdatedStartEventsSignalEvents();
         $process->conditional_events = $process->getUpdatedConditionalStartEvents();
-        $process->validateBpmnExecution(true);
+        $process->validateBpmnDefinition(true);
     }
 }

@@ -1141,7 +1141,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      *
      * @return bool
      */
-    public function validateBpmnExecution($addWarnings = false, &$warning = [])
+    public function validateBpmnDefinition($addWarnings = false, &$warning = [])
     {
         try {
             $definitions = $this->getDefinitions();
