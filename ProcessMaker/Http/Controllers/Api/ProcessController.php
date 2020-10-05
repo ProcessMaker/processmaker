@@ -23,6 +23,7 @@ use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
 use ProcessMaker\Nayra\Storage\BpmnElement;
 use ProcessMaker\Rules\BPMNValidation;
+use Throwable;
 
 class ProcessController extends Controller
 {
@@ -898,8 +899,21 @@ class ProcessController extends Controller
         }
         $event = $definitions->getEvent($id);
         $data = request()->post();
-        //Trigger the start event
-        $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
+        // Validate if process is bpmn executable
+        $validation = [];
+        if (!$process->validateBpmnDefinition(false, $validation)) {
+            return response()->json([
+                'message' => $validation['title'],
+            ], 422);
+        }
+        // Trigger the start event
+        try {
+            $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
+        } catch (Throwable $exection) {
+            return response()->json([
+                'message' => __('Unable to start process'),
+            ], 422);
+        }
         return new ProcessRequests($processRequest);
     }
 
