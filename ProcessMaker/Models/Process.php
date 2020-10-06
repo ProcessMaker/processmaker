@@ -33,6 +33,7 @@ use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Throwable;
 
 /**
  * Represents a business process definition.
@@ -1133,5 +1134,35 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 return $event['$type'] === 'conditionalEventDefinition';
             }) !== false;
         })->pluck('id');
+    }
+
+    /**
+     * Check if the process is properly defined to run.
+     *
+     * @return bool
+     */
+    public function validateBpmnDefinition($addWarnings = false, &$warning = [])
+    {
+        try {
+            $definitions = $this->getDefinitions();
+            $engine = $definitions->getEngine();
+            $processes = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
+            foreach ($processes as $process) {
+                $process->getBpmnElementInstance()->getTransitions($engine->getRepository());
+            }
+            $this->getProcess()->getTransitions($engine->getRepository());
+        } catch (Throwable $exception) {
+            $warning = [
+                'title' => __('Process invalid for execution'),
+                'text' => __('Process invalid for execution'),
+            ];
+            if ($addWarnings) {
+                $warnings = $this->warnings;
+                $warnings[] = $warning;
+                $this->warnings = $warnings;
+            }
+            return false;
+        } 
+        return true;
     }
 }
