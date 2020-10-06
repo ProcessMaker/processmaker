@@ -51,7 +51,9 @@
                           @can('update', $task) 
                             <task
                               v-model="formData"
-                              :task-id="{{ $task->id }}"
+                              :initial-task-id="{{ $task->id }}"
+                              :initial-request-id="{{ $task->process_request_id }}"
+                              :user-id="{{ Auth::user()->id }}"
                               csrf-token="{{ csrf_token() }}"
                               @task-updated="taskUpdated"
                               @submit="submit"
@@ -298,15 +300,12 @@
         },
         methods: {
           completed(processRequestId) {
-            console.log('completed', processRequestId);
             this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
-            console.log('error', processRequestId);
             this.redirect(`/requests/${this.task.process_request_id}`);
           },
           closed(taskId) {
-            console.log('closed', taskId);
             this.redirect("/tasks");
           },
           claimTask() {
