@@ -13,4 +13,9 @@ class AnonymousUser extends User
     protected $table = 'users';
 
     public $isAnonymous = true;
+
+    public function receivesBroadcastNotificationsOn($notification) {
+        $class = str_replace('\\', '.', get_parent_class());
+        return $class.'.'.$this->getKey();
+    }
 }

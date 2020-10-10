@@ -26,6 +26,7 @@ use ProcessMaker\Observers\ProcessRequestObserver;
 use ProcessMaker\Observers\UserObserver;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Observers\ProcessRequestTokenObserver;
+use ProcessMaker\PolicyExtension;
 
 /**
  * Provide our ProcessMaker specific services
@@ -55,10 +56,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         //Custom validator for process, scripts, etc names (just alphanumeric, space, apostrophe or dash characters)
         Validator::extend('alpha_spaces', function ($attr, $val) {
             return preg_match('/^[\pL\s\-\_\d\.\']+$/u', $val);
-        });
-
-        $this->app->singleton(AnonymousUser::class, function($app) {
-            return AnonymousUser::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
         });
 
         parent::boot();
@@ -114,6 +111,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton(GlobalScriptsManager::class, function($app) {
             return new GlobalScriptsManager();
+        });
+        
+        $this->app->singleton(AnonymousUser::class, function($app) {
+            return AnonymousUser::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
+        });
+        
+        $this->app->singleton(PolicyExtension::class, function($app) {
+            return new PolicyExtension();
         });
 
         // Listen to the events for our core screen types and add our javascript
