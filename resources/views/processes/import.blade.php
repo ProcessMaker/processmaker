@@ -387,11 +387,14 @@
               ProcessMaker.apiClient
                 .get("processes?order_direction=asc&status=active&include=events" + (typeof filter === 'string' ? '&filter=' + filter : ''))
                 .then(response => {
-                  this.processes = response.data.data.map(item => {
-                    return {
-                      'id': item.events[0].ownerProcessId + '-' + item.id,
-                      'name': item.name
-                    }
+                  this.processes = [];
+                  response.data.data.forEach(item => {
+                    item.events.forEach(start => {
+                      this.processes.push({
+                        'id': `${start.ownerProcessId}-${item.id}`,
+                        'name': item.events.length > 1 ? `${item.name} (${start.ownerProcessId})` : item.name,
+                      });
+                    });
                   });
                 });
           },

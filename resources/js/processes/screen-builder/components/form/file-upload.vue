@@ -52,7 +52,7 @@ const uniqIdsMixin = createUniqIdsMixin();
 export default {
   components: uploader,
   mixins: [uniqIdsMixin],
-  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", "validation", "parent"],
+  props: ["label", "error", "helper", "name", "value", "controlClass", "endpoint", "accept", "validation", "parent", "index"],
   beforeMount() {
     this.getFileType();
   },
@@ -60,6 +60,9 @@ export default {
     this.removeDefaultClasses();
   },
   mounted() {
+    this.$root.$on('set-upload-data-name',
+        (recordList, index, id) => this.listenRecordList(recordList, index, id));
+
     this.removeDefaultClasses();
     
     this.checkIfInRecordList();
@@ -72,7 +75,7 @@ export default {
   computed: {
     displayName() {
       const requestFiles = _.get(window, 'PM4ConfigOverrides.requestFiles', {});
-      const fileInfo = requestFiles[this.prefix + this.name];
+      const fileInfo = requestFiles[this.fileDataName];
       if (fileInfo) {
         return fileInfo.file_name;
       }
@@ -101,12 +104,17 @@ export default {
         accept.push(item.trim())
       });
       return accept;
+    },
+    // return  the file's identifier in PM4ConfigOverrides.requestFiles
+    fileDataName() {
+      return this.prefix + this.name + (this.row_id ? '.' + this.row_id : '');
     }
+
   },
   watch: {
     name: {
       handler() {
-        this.options.query.data_name = this.prefix + this.name;
+        this.options.query.data_name = this.fileDataName;
       },
       immediate: true,
     },
@@ -118,7 +126,20 @@ export default {
     },
     prefix: {
       handler() {
-        this.options.query.data_name = this.prefix + this.name;
+        this.options.query.data_name = this.fileDataName;
+      },
+      immediate: true,
+    },
+    index: {
+      handler() {
+        this.options.query.index = this.index || 0;
+      },
+      immediate: true,
+    },
+    row_id: {
+      handler() {
+        this.options.query.row_id = this.row_id;
+        this.options.query.data_name = this.prefix + this.name + (this.row_id ? '.' + this.row_id : '');
       },
       immediate: true,
     },
@@ -132,6 +153,7 @@ export default {
         errors: [],
       },
       prefix: '',
+      row_id: null,
       options: {
         target: this.getTargetUrl,
         // We cannot increase this until laravel chunk uploader handles this gracefully
@@ -140,7 +162,8 @@ export default {
           chunk: true,
           data_name: this.name,
           parent: null,
-          marco: 'test',
+          index: 0,
+          row_id: null
         },
         testChunks: false,
         // Setup our headers to deal with API calls
@@ -156,6 +179,16 @@ export default {
     };
   },
   methods: {
+    listenRecordList(recordList, index, id) {
+      const parent =  this.$parent.$parent.$parent;
+      if (parent === recordList) {
+        this.row_id = id;
+      }
+      else {
+        this.row_id = null;
+      }
+      this.$forceUpdate();
+    },
     setPrefix() {
       let parent = this.$parent;
       let i = 0;
@@ -220,7 +253,16 @@ export default {
     },
     fileUploaded(rootFile, file, message) {
       if (this.fileType == 'request') {
-        this.$emit("input", file.name);
+        let id = '';
+        if (message) {
+          const msgObj = JSON.parse(message);
+          if (!_.has(window, 'PM4ConfigOverrides.requestFiles')) {
+            window.PM4ConfigOverrides.requestFiles = {};
+          }
+          window.PM4ConfigOverrides.requestFiles[this.fileDataName] = { id:msgObj.fileUploadId, file_name:file.name };
+          id = msgObj.fileUploadId;
+        }
+        this.$emit("input", id);
       }
 
       if (this.fileType == 'collection') {
@@ -289,9 +331,7 @@ export default {
     }
   }
 };
-</script>
-
-<style scoped>
+</script<style scoped>
 .required {
   color: red;
   font-size: 0.8em;

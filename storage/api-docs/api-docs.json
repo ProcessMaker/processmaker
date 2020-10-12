@@ -4428,8 +4428,12 @@
                                 "description": "Represents a business process definition.",
                                 "type": "array",
                                 "items": {
-                                    "type": "string"
+                                    "type": "object"
                                 }
+                            },
+                            "process": {
+                                "description": "Represents a business process definition.",
+                                "type": "object"
                             }
                         },
                         "type": "object"

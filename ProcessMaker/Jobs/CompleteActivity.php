@@ -40,7 +40,7 @@ class CompleteActivity extends BpmnAction implements ShouldQueue
         foreach ($data as $key => $value) {
             $dataStore->putData($key, $value);
         }
-
+        $this->engine->runToNextState();
         $element->complete($token);
     }
 }

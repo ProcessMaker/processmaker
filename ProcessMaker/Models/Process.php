@@ -17,7 +17,6 @@ use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
@@ -34,6 +33,7 @@ use ProcessMaker\Traits\ProcessTrait;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Throwable;
 
 /**
  * Represents a business process definition.
@@ -45,7 +45,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  * @property string $description
  * @property string $name
  * @property string $status
- * @property string start_events
+ * @property array start_events
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
@@ -65,7 +65,7 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   @OA\Property(property="warnings", type="string"),
  *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
- 
+
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -109,8 +109,9 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *     allOf={
  *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),
  *      @OA\Schema(
- *         @OA\Property( property="status", type="object"),
- *         @OA\Property( property="assignable", type="array", @OA\Items(type="string") )
+ *         @OA\Property(property="status", type="object"),
+ *         @OA\Property(property="assignable", type="array", @OA\Items(type="object")),
+ *         @OA\Property(property="process", type="object")
  *      )
  *    }
  * ),
@@ -214,6 +215,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'warnings' => 'array',
         'self_service_tasks' => 'array',
         'signal_events' => 'array',
+        'conditional_events' => 'array',
     ];
 
     /**
@@ -1118,5 +1120,48 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $signalReferences = $signalEventDefinitions->pluck('signalRef')->unique();
 
         return $signalReferences->toArray();
+    }
+
+    /**
+     * Get the unique Conditional Start Events.
+     *
+     * @return array
+     */
+    public function getUpdatedConditionalStartEvents()
+    {
+        return collect($this->start_events)->filter(function ($startEvent) {
+            return collect($startEvent['eventDefinitions'])->search(function ($event) {
+                return $event['$type'] === 'conditionalEventDefinition';
+            }) !== false;
+        })->pluck('id');
+    }
+
+    /**
+     * Check if the process is properly defined to run.
+     *
+     * @return bool
+     */
+    public function validateBpmnDefinition($addWarnings = false, &$warning = [])
+    {
+        try {
+            $definitions = $this->getDefinitions();
+            $engine = $definitions->getEngine();
+            $processes = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
+            foreach ($processes as $process) {
+                $process->getBpmnElementInstance()->getTransitions($engine->getRepository());
+            }
+        } catch (Throwable $exception) {
+            $warning = [
+                'title' => __('Process invalid for execution'),
+                'text' => __('Process invalid for execution'),
+            ];
+            if ($addWarnings) {
+                $warnings = $this->warnings;
+                $warnings[] = $warning;
+                $this->warnings = $warnings;
+            }
+            return false;
+        } 
+        return true;
     }
 }
