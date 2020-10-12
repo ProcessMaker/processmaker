@@ -76,16 +76,16 @@ class RequestController extends Controller
 
         switch ($type) {
             case 'allRequest':
-               $result = $query->count();
+               $result = $query->nonSystem()->count();
                break;
             case 'startedMe':
-                $result = ProcessRequest::startedMe(Auth::user()->id)->inProgress()->count();
+                $result = ProcessRequest::startedMe(Auth::user()->id)->nonSystem()->inProgress()->count();
                 break;
             case 'inProgress':
-                $result =$query->inProgress()->count();
+                $result =$query->inProgress()->nonSystem()->count();
                 break;
             case 'completed':
-                $result = $query->completed()->count();
+                $result = $query->completed()->nonSystem()->count();
                 break;
         }
         return $result;

@@ -190,7 +190,7 @@ class User extends Authenticatable implements HasMedia
         ]);
     }
 
-    public function hasPermissionsFor($resource)
+    public function hasPermissionsFor(...$resources)
     {
         if ($this->is_administrator) {
             $perms = Permission::all(['name'])->pluck('name');
@@ -198,12 +198,12 @@ class User extends Authenticatable implements HasMedia
             $perms = collect(session('permissions'));
         }
 
-        $filtered = $perms->filter(function ($value) use ($resource) {
-            $match = preg_match("/(.+)-{$resource}/", $value);
-            if ($match === 1) {
-                return true;
-            } else {
-                return false;
+        $filtered = $perms->filter(function ($value) use ($resources) {
+            foreach ($resources as $resource) {
+                $match = preg_match("/(.+)-{$resource}/", $value);
+                if ($match === 1) {
+                    return true;
+                }
             }
         });
 

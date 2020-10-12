@@ -167,7 +167,11 @@
                     <div class="search-bar-actions d-flex flex-shrink mt-3 mt-md-0">
                         <b-btn class="btn-search-toggle mr-2 mr-md-0" variant="secondary" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Advanced Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
                         <b-btn class="btn-search-run flex-grow-1" variant="primary" @click="runSearch()" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i><span class="d-md-none"> Search</span></b-btn>
-                        <div class="search-bar-additions"></div>
+                        <div class="search-bar-additions">
+                          <div v-for="addition in additions">
+                            <component :is="addition" :permission="permission"></component>
+                          </div>
+                        </div>
                     </div>
                 </div>
                 <div class="search-bar-advanced d-flex w-100" v-if="advanced">
@@ -177,7 +181,11 @@
                     <div class="search-bar-actions d-flex flex-shrink btn-search-advanced">
                         <b-btn class="btn-search-toggle" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>
                         <b-btn class="btn-search-run" variant="primary" @click="runSearch(true)" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>
-                        <div class="search-bar-additions"></div>
+                        <div class="search-bar-additions">
+                          <div v-for="addition in additions">
+                            <component :is="addition" :permission="permission"></component>
+                          </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -188,7 +196,7 @@
 
 <script>
 export default {
-  props: ["type", "paramProcess", "paramStatus", "paramRequester", "paramParticipants", "paramRequest", "paramName"],
+  props: ["type", "paramProcess", "paramStatus", "paramRequester", "paramParticipants", "paramRequest", "paramName", "permission"],
   data() {
     return {
         process: [],
@@ -203,6 +211,7 @@ export default {
         participantsOptions: [],
         requestOptions: [],
         nameOptions: [],
+        additions: [],
         advanced: false,
         pmql: '',
         isLoading: {
@@ -219,6 +228,11 @@ export default {
     pmql(query) {
         this.$emit('change', query);
     },
+  },
+  mounted() {
+    ProcessMaker.EventBus.$on('advanced-search-addition', (component) => {
+      this.additions.push(component);
+    });
   },
   methods: {
       toggleAdvanced() {

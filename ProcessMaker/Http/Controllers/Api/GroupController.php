@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Models\Group;
@@ -61,6 +63,11 @@ class GroupController extends Controller
      */
     public function index(Request $request)
     {
+        if (!(Auth::user()->can('view-groups') ||
+            Auth::user()->can('create-processes') ||
+            Auth::user()->can('edit-processes'))) {
+            throw new AuthorizationException(__('Not authorized to view groups.'));
+        }
         $include = $request->input('include', '');
         $query = Group::query();
         if ($include) {
@@ -158,6 +165,11 @@ class GroupController extends Controller
      */
     public function show(Group $group)
     {
+       if (!(Auth::user()->can('view-groups') ||
+            Auth::user()->can('create-processes') ||
+            Auth::user()->can('edit-processes'))) {
+            throw new AuthorizationException(__('Not authorized to view groups.'));
+        }
         return new GroupResource($group);
     }
 

@@ -17,11 +17,17 @@ class SyntaxErrorException extends Exception
     /**
      * @param Throwable $previous
      */
-    public function __construct(Throwable $previous, String $body)
+    public function __construct(Throwable $previous, String $body, $data)
     {
-        parent::__construct(__('The expression ":body" is invalid. Please contact the creator of this process to fix the issue. Original error: ":error"', [
-            'error' => $previous->getMessage(),
-            'body' => $body
-        ]), 0, $previous);
+        $message = $previous->getMessage();
+        if (preg_match('/Variable "(\w+)"/', $message, $match)) {
+            if (!isset($data[$match[1]])) {
+                $message = __('Undefined variable ":variable". :error', [
+                    'variable' => $match[1],
+                    'error' => $message,
+                ]);
+            }
+        }
+        parent::__construct($message, 0, $previous);
     }
 }

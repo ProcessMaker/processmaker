@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Mustache_Engine;
 use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Exception\SyntaxErrorException;
@@ -45,9 +44,83 @@ class FormalExpression implements FormalExpressionInterface
     private function initFormalExpression()
     {
         $this->feelExpression = new ExpressionLanguage();
+        $this->registerPMFunctions();
     }
 
-
+    /**
+     * Register system functions
+     *
+     */
+    private function registerPMFunctions()
+    {
+        // date($format, $timestamp)
+        $this->feelExpression->register(
+            'date',
+            function () {
+            },
+            function ($arguments, $a, $b = null) {
+                return date($a, $b ?: time());
+            }
+        );
+        // env($name)
+        $this->feelExpression->register(
+            'env',
+            function () {
+            },
+            function ($name) {
+                $env = EnvironmentVariable::where('name', $name)->first();
+                if ($env) {
+                    return $env->value;
+                }
+                return env($name);
+            }
+        );
+        // process($id)
+        $this->feelExpression->register(
+            'process',
+            function () {
+            },
+            function ($id) {
+                return Process::find($id);
+            }
+        );
+        // request($id)
+        $this->feelExpression->register(
+            'request',
+            function () {
+            },
+            function ($id) {
+                return ProcessRequest::find($id);
+            }
+        );
+        // user($id)
+        $this->feelExpression->register(
+            'user',
+            function () {
+            },
+            function ($id) {
+                return User::find($id);
+            }
+        );
+        // lowercase($str)
+        $this->feelExpression->register(
+            'lowercase',
+            function () {
+            },
+            function ($str) {
+                return strtolower($str);
+            }
+        );
+        // uppercase($str)
+        $this->feelExpression->register(
+            'uppercase',
+            function () {
+            },
+            function ($str) {
+                return strtoupper($str);
+            }
+        );
+    }
 
     /**
      * Prepare the data for the FEEL evaluator
@@ -65,8 +138,7 @@ class FormalExpression implements FormalExpressionInterface
     {
         if (self::templateEngine == 'Mustache') {
             return new MustacheExpressionEvaluator();
-        }
-        else {
+        } else {
             throw new \Exception("Template engine not supported");
         }
     }
@@ -136,7 +208,7 @@ class FormalExpression implements FormalExpressionInterface
      */
     public function __invoke($data)
     {
-        return $this->evaluate($this->getTemplateEngine(), $this->getBody(),$data);
+        return $this->evaluate($this->getTemplateEngine(), $this->getBody(), $data);
     }
 
     /**
@@ -166,11 +238,11 @@ class FormalExpression implements FormalExpressionInterface
         }
         $evaluator = self::languages[$language][0];
         $encoder = isset(self::languages[$language][1]) ? self::languages[$language][1] : null;
+        $values = $encoder ? $this->$encoder($data) : $data;
         try {
-            $values = $encoder ? $this->$encoder($data) : $data;
             return $this->$evaluator->evaluate($body, $values);
         } catch (SyntaxError $syntaxError) {
-            throw new SyntaxErrorException($syntaxError, $body);
+            throw new SyntaxErrorException($syntaxError, $body, $values);
         } catch (Throwable $error) {
             throw new ExpressionFailedException($error);
         }

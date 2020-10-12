@@ -77,6 +77,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                     foreach ($response['output'] as $key => $value) {
                         $dataStore->putData($key, $value);
                     }
+                    $engine->runToNextState();
                 }
                 $element->complete($token);
                 $this->engine = $engine;
