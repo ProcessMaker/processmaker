@@ -150,6 +150,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_name = $activity->getName();
         $token->process_id = $token->getInstance()->process_id;
         $token->process_request_id = $token->getInstance()->getKey();
+        $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
         event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_EXCEPTION'));
@@ -175,6 +176,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_id = $activity->getId();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
+        $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
         event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_COMPLETED'));
@@ -195,6 +197,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_id = $activity->getId();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->data = $token->getInstance()->getDataStore()->getData();
+        $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
     }
@@ -224,6 +227,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_id = $intermediateCatchEvent->getId();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
+        $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
     }
@@ -252,6 +256,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->element_id = $intermediateCatchEvent->getId();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
+        $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
     }
@@ -289,6 +294,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->completed_at = Carbon::now();
+        $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
     }

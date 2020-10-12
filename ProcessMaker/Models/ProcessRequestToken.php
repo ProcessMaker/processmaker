@@ -139,6 +139,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     protected $casts = [
         'data' => 'array',
         'self_service_groups' => 'array',
+        'token_properties' => 'array',
     ];
 
     /**
@@ -273,9 +274,10 @@ class ProcessRequestToken extends Model implements TokenInterface
      *
      * @return array
      */
-    public function getDefinition($asObject = false)
+    public function getDefinition($asObject = false, $par = null)
     {
-        $process = $this->processRequest->processVersion ?: $this->processRequest->process;
+        $request = $this->processRequest ?: $this->getInstance();
+        $process = $request->processVersion ?: $request->process;
         $definitions = $process->getDefinitions();
         $element = $definitions->findElementById($this->element_id);
         if (!$element) {
@@ -625,6 +627,20 @@ class ProcessRequestToken extends Model implements TokenInterface
             'interstitial_screen' => $interstitialScreen
         ];
     }
+    
+    public function persistUserData($user)
+    {
+        if (! is_a($user, User::class)) {
+            $user = User::find($user);
+        }
+        
+        $userData = $user->attributesToArray();
+        $data = $this->processRequest->data;
+        $data['_user'] = $userData;
+        
+        $this->processRequest->data = $data;
+        $this->processRequest->save();
+    }
 
     /**
      * Log an error when executing the token
@@ -635,5 +651,17 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function logError(Throwable $error, FlowElementInterface $bpmnElement)
     {
         $this->getInstance()->logError($error, $bpmnElement);
+    }
+
+    public function updateTokenProperties()
+    {
+        $allowed = ['conditionals'];
+        $this->token_properties = array_filter(
+            $this->getProperties(),
+            function ($key) use ($allowed) {
+                return in_array($key, $allowed);
+            },
+            ARRAY_FILTER_USE_KEY
+        );
     }
 }

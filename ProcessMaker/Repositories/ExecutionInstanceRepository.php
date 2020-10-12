@@ -68,13 +68,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
                 'index' => $token->element_index,
                 'element_ref' => $token->element_id,
             ];
-            $token->setProperties($tokenInfo);
+            $token->setProperties(array_merge($token->token_properties ?: [], $tokenInfo));
             $element = $storage->getElementInstanceById($tokenInfo['element_ref']);
             $element->addToken($instance, $token);
-        }
-        $mytokens2 = [];
-        foreach ($instance->getTokens() as $tt) {
-            $mytokens2[] = $tt->id;
         }
         return $instance;
     }

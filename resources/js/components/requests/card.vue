@@ -51,6 +51,8 @@ export default {
           this.spin = 0;
           var instance = response.data;
           window.location = "/requests/" + instance.id;
+        }).catch(() => {
+          this.disabled = false;
         });
     },
     showRequestDetails: function(id) {

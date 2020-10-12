@@ -130,9 +130,9 @@ export default {
         //Manual filter
         data = data.filter((item) => {
           return (
-            item.name.toLowerCase().indexOf(this.filter) > -1 ||
-            item.redirect.toLowerCase().indexOf(this.filter) > -1 ||
-            item.secret.toLowerCase().indexOf(this.filter) > -1
+            item.name.toLowerCase().indexOf(this.filter.toLowerCase()) > -1 ||
+            item.redirect.toLowerCase().indexOf(this.filter.toLowerCase()) > -1 ||
+            item.secret.toLowerCase().indexOf(this.filter.toLowerCase()) > -1
           );
         });
       }
@@ -161,6 +161,13 @@ export default {
 
       this.$refs.pagination.tablePagination = meta;
       return rows;
+    },
+    changePerPage(value) {
+        this.perPage = value;
+        if (this.page * value > this.$refs.pagination.tablePagination.total) {
+            this.page = Math.floor(this.$refs.pagination.tablePagination.total / value) + 1;
+        }
+        this.fetch();
     },
     onPageChange(page) {
       if (page == "next") {

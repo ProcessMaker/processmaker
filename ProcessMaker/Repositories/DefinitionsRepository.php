@@ -1,6 +1,7 @@
 <?php
 namespace ProcessMaker\Repositories;
 
+use ProcessMaker\Bpmn\Process;
 use ProcessMaker\Models\CallActivity;
 use ProcessMaker\Models\DataStore;
 use ProcessMaker\Models\FormalExpression;
@@ -9,8 +10,6 @@ use ProcessMaker\Models\MessageEventDefinition;
 use ProcessMaker\Models\TimerExpression;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
-use ProcessMaker\Repositories\ExecutionInstanceRepository;
-use ProcessMaker\Repositories\TokenRepository;
 
 /**
  * Definitions Repository
@@ -18,7 +17,6 @@ use ProcessMaker\Repositories\TokenRepository;
  */
 class DefinitionsRepository implements RepositoryInterface
 {
-
     use RepositoryTrait;
     
     private $tokenRepository = null;
@@ -56,7 +54,8 @@ class DefinitionsRepository implements RepositoryInterface
         return $this->tokenRepository;
     }
     
-    public function createDataStore() {
+    public function createDataStore()
+    {
         return new DataStore();
     }
 
@@ -68,5 +67,17 @@ class DefinitionsRepository implements RepositoryInterface
     public function createMessage()
     {
         return new Message();
+    }
+
+    /**
+     * Create instance of Process.
+     *
+     * @return \ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface
+     */
+    public function createProcess()
+    {
+        $process = new Process();
+        $process->setRepository($this);
+        return $process;
     }
 }

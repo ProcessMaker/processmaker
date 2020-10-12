@@ -97,13 +97,16 @@ class CallActivity implements CallActivityInterface
      */
     protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
     {
-        $this->completeSubprocessBase($token);
         // Copy data from subprocess to main process
         $dataStore = $token->getInstance()->getDataStore();
         $data = $closedInstance->getDataStore()->getData();
         foreach ($data as $key => $value) {
             $dataStore->putData($key, $value);
         }
+        $token->getInstance()->getProcess()->getEngine()->runToNextState();
+
+        // Complete the sub process call
+        $this->completeSubprocessBase($token);
         $this->syncronizeInstances($instance, $token->getInstance());
 
         CopyRequestFiles::dispatch($instance, $token->getInstance());

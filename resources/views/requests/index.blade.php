@@ -59,7 +59,7 @@
                     @endcan
 
                 </div>
-                <advanced-search ref="advancedSearch" type="requests" :param-status="status" :param-requester="requester" @change="onChange" @submit="onSearch"></advanced-search>
+                <advanced-search ref="advancedSearch" type="requests" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" :param-status="status" :param-requester="requester" @change="onChange" @submit="onSearch"></advanced-search>
             </template>
             <requests-listing ref="requestList" :filter="filter" :pmql="pmql"></requests-listing>
         </div>

@@ -48,6 +48,12 @@ return [
             'path' => storage_path('framework/cache/data'),
         ],
 
+        'global_variables' => [
+            'driver' => 'database',
+            'table' => 'global_variables',
+            'connection' => 'processmaker',
+        ],
+
         'memcached' => [
             'driver' => 'memcached',
             'persistent_id' => env('MEMCACHED_PERSISTENT_ID'),

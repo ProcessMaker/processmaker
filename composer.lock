@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "8cda8c44da5bcfc527b0ca6f706e631c",
+=======
+    "content-hash": "0fc02d337ba04e17d321fcb06b983c3e",
+>>>>>>> origin/develop
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -634,7 +638,11 @@
                 "sqlserver",
                 "sqlsrv"
             ],
+<<<<<<< HEAD
             "time": "2020-09-02T01:35:42+00:00"
+=======
+            "time": "2020-04-20T17:19:26+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "doctrine/event-manager",
@@ -2251,6 +2259,7 @@
                 "JWS",
                 "jwt"
             ],
+<<<<<<< HEAD
             "time": "2020-08-20T13:22:28+00:00"
         },
         {
@@ -2321,6 +2330,9 @@
                 "parser"
             ],
             "time": "2020-08-18T01:19:12+00:00"
+=======
+            "time": "2020-05-22T08:21:12+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "league/event",
@@ -2455,7 +2467,11 @@
                 "sftp",
                 "storage"
             ],
+<<<<<<< HEAD
             "time": "2020-08-23T07:39:11+00:00"
+=======
+            "time": "2020-08-18T10:57:55+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "league/fractal",
@@ -2840,7 +2856,11 @@
                 "logging",
                 "psr-3"
             ],
+<<<<<<< HEAD
             "time": "2020-07-23T08:41:23+00:00"
+=======
+            "time": "2020-07-23T08:35:51+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "moontoast/math",
@@ -3062,7 +3082,11 @@
                 "datetime",
                 "time"
             ],
+<<<<<<< HEAD
             "time": "2020-09-04T13:11:37+00:00"
+=======
+            "time": "2020-08-04T19:12:46+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "nikic/php-parser",
@@ -3721,7 +3745,11 @@
                 "predis",
                 "redis"
             ],
+<<<<<<< HEAD
             "time": "2020-08-29T22:15:08+00:00"
+=======
+            "time": "2020-08-18T21:00:59+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "processmaker/docker-executor-lua",
@@ -3861,16 +3889,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.0.3",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "9476e7dd91301cf28a41818517d7fbd39cf14041"
+                "reference": "86983f2fdbba03a9deb2f5e1ef73579b35a9ca9f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/9476e7dd91301cf28a41818517d7fbd39cf14041",
-                "reference": "9476e7dd91301cf28a41818517d7fbd39cf14041",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/86983f2fdbba03a9deb2f5e1ef73579b35a9ca9f",
+                "reference": "86983f2fdbba03a9deb2f5e1ef73579b35a9ca9f",
                 "shasum": ""
             },
             "require-dev": {
@@ -3887,10 +3915,11 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2020-08-19T19:21:02+00:00"
+            "time": "2020-10-02T23:27:29+00:00"
         },
         {
             "name": "processmaker/pmql",
+<<<<<<< HEAD
             "version": "dev-laravel-upgrade",
             "source": {
                 "type": "git",
@@ -3901,6 +3930,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/b28a3c3977917664a00d892b68b4c523f16b88aa",
                 "reference": "b28a3c3977917664a00d892b68b4c523f16b88aa",
+=======
+            "version": "1.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/pmql.git",
+                "reference": "6c62cc59aa028c1e69d5d578b9b9adbaf08b6d60"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/6c62cc59aa028c1e69d5d578b9b9adbaf08b6d60",
+                "reference": "6c62cc59aa028c1e69d5d578b9b9adbaf08b6d60",
+>>>>>>> origin/develop
                 "shasum": ""
             },
             "require": {
@@ -3933,11 +3974,15 @@
                 }
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
+<<<<<<< HEAD
             "support": {
                 "source": "https://github.com/ProcessMaker/pmql/tree/laravel-upgrade",
                 "issues": "https://github.com/ProcessMaker/pmql/issues"
             },
             "time": "2020-07-13T16:48:57+00:00"
+=======
+            "time": "2020-04-17T18:01:19+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "psr/cache",
@@ -5080,7 +5125,11 @@
                 "caching",
                 "psr6"
             ],
+<<<<<<< HEAD
             "time": "2020-09-01T05:52:18+00:00"
+=======
+            "time": "2020-07-23T17:22:30+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/cache-contracts",
@@ -5219,7 +5268,11 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-09-02T07:07:21+00:00"
+=======
+            "time": "2020-07-06T13:18:39+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/css-selector",
@@ -5329,7 +5382,11 @@
             ],
             "description": "Symfony Debug Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-08-10T07:47:39+00:00"
+=======
+            "time": "2020-07-23T08:31:43+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/error-handler",
@@ -5386,7 +5443,11 @@
             ],
             "description": "Symfony ErrorHandler Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-08-17T09:56:45+00:00"
+=======
+            "time": "2020-07-23T08:35:20+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/event-dispatcher",
@@ -5456,7 +5517,11 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-08-13T14:18:44+00:00"
+=======
+            "time": "2020-06-18T17:59:13+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/event-dispatcher-contracts",
@@ -5522,27 +5587,32 @@
         },
         {
             "name": "symfony/expression-language",
+<<<<<<< HEAD
             "version": "v4.4.13",
+=======
+            "version": "v5.1.6",
+>>>>>>> origin/develop
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/expression-language.git",
-                "reference": "89f0e2c82d8c12975180f993383decbb810ad73e"
+                "reference": "e16e66c309214143cc01dae6d1ff1ee13e7be4fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/expression-language/zipball/89f0e2c82d8c12975180f993383decbb810ad73e",
-                "reference": "89f0e2c82d8c12975180f993383decbb810ad73e",
+                "url": "https://api.github.com/repos/symfony/expression-language/zipball/e16e66c309214143cc01dae6d1ff1ee13e7be4fa",
+                "reference": "e16e66c309214143cc01dae6d1ff1ee13e7be4fa",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1.3",
-                "symfony/cache": "^3.4|^4.0|^5.0",
+                "php": ">=7.2.5",
+                "symfony/cache": "^4.4|^5.0",
+                "symfony/polyfill-php80": "^1.15",
                 "symfony/service-contracts": "^1.1|^2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.4-dev"
+                    "dev-master": "5.1-dev"
                 }
             },
             "autoload": {
@@ -5569,7 +5639,11 @@
             ],
             "description": "Symfony ExpressionLanguage Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-05-20T08:37:50+00:00"
+=======
+            "time": "2020-09-02T16:23:27+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/finder",
@@ -5618,7 +5692,11 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-08-17T09:56:45+00:00"
+=======
+            "time": "2020-07-05T09:39:30+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/http-foundation",
@@ -5673,7 +5751,11 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-08-17T07:39:58+00:00"
+=======
+            "time": "2020-07-23T09:48:09+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/http-kernel",
@@ -5764,7 +5846,11 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-09-02T08:09:29+00:00"
+=======
+            "time": "2020-07-24T04:10:09+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/mime",
@@ -5827,7 +5913,11 @@
                 "mime",
                 "mime-type"
             ],
+<<<<<<< HEAD
             "time": "2020-08-17T10:01:29+00:00"
+=======
+            "time": "2020-07-23T10:04:31+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -6593,7 +6683,11 @@
                 "uri",
                 "url"
             ],
+<<<<<<< HEAD
             "time": "2020-08-10T07:27:51+00:00"
+=======
+            "time": "2020-07-05T09:39:30+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/service-contracts",
@@ -6731,7 +6825,11 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-08-17T09:56:45+00:00"
+=======
+            "time": "2020-07-23T08:31:43+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/translation-contracts",
@@ -6869,7 +6967,11 @@
                 "debug",
                 "dump"
             ],
+<<<<<<< HEAD
             "time": "2020-08-17T07:31:35+00:00"
+=======
+            "time": "2020-06-24T13:34:53+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "symfony/var-exporter",
@@ -6989,7 +7091,11 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-08-26T08:30:46+00:00"
+=======
+            "time": "2020-05-20T08:37:50+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "teamtnt/laravel-scout-tntsearch-driver",
@@ -9404,7 +9510,11 @@
             ],
             "description": "Symfony DomCrawler Component",
             "homepage": "https://symfony.com",
+<<<<<<< HEAD
             "time": "2020-08-12T06:20:35+00:00"
+=======
+            "time": "2020-07-23T08:31:43+00:00"
+>>>>>>> origin/develop
         },
         {
             "name": "theseer/tokenizer",
