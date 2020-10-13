@@ -29,7 +29,7 @@
     "igaster/laravel-theme": "2.0.*",
     "laravel/framework": "^6.18.35",
     "laravel/horizon": "~3.0",
-    "laravel/passport": "^7.0",
+    "laravel/passport": "^9.0",
     "laravel/scout": "^7.2",
     "laravel/telescope": "^3.0",
     "laravel/tinker": "^2.0",
@@ -51,11 +51,9 @@
     "spatie/laravel-fractal": "^5.3",
     "spatie/laravel-medialibrary": "^7.0.0",
     "symfony/expression-language": "^5.1.6",
-    "symfony/psr-http-message-bridge": "1.*",
     "teamtnt/laravel-scout-tntsearch-driver": "^9.0",
     "typo3/class-alias-loader": "^1.0",
-    "watson/validating": "^3.1",
-    "zendframework/zend-diactoros": "1.*"
+    "watson/validating": "^3.1"
   },
   "require-dev": {
     "filp/whoops": "^2.0",
