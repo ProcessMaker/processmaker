@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Mustache_Engine;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
+use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
@@ -1145,12 +1146,13 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     {
         try {
             $definitions = $this->getDefinitions();
-            $engine = $definitions->getEngine();
+            $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
             $processes = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
             foreach ($processes as $process) {
                 $process->getBpmnElementInstance()->getTransitions($engine->getRepository());
             }
         } catch (Throwable $exception) {
+            throw $exception;
             $warning = [
                 'title' => __('Process invalid for execution'),
                 'text' => __('Process invalid for execution'),

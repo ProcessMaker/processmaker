@@ -24,6 +24,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
@@ -58,20 +59,18 @@ class WorkflowServiceProvider extends ServiceProvider
         $this->app->singleton('workflow.manager', function ($app) {
             return new WorkflowManager();
         });
-        /**
-         * BpmnDocument Process Context
-         */
-        $this->app->bind(BpmnDocumentInterface::class, function ($app, $params) {
-            $repository = new DefinitionsRepository();
-            $eventBus = app('events');
 
+        $this->app->bind(BpmnEngine::class, function ($app, $params) {
+            $definitions = $params['definitions'];
+            $globalEvents = true;
+            $repository = $definitions->getFactory();
+            $eventBus = app('events');
             //Initialize the BpmnEngine
-            $engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
+            $engine = new BpmnEngine($repository, $eventBus);
             $eventDefinitionBus = new EventDefinitionBus;
             $engine->setEventDefinitionBus($eventDefinitionBus);
-
             // Catch the signal events
-            if ($params['globalEvents']) {
+            if ($globalEvents) {
                 $eventDefinitionBus->attachEvent(
                     SignalEventDefinition::class,
                     function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
@@ -79,12 +78,47 @@ class WorkflowServiceProvider extends ServiceProvider
                     }
                 );
             }
-
             $engine->setJobManager(new TaskSchedulerManager());
+            $definitions->setEngine($engine);
+            $engine->loadProcessDefinitions($definitions);
+            return $engine;
+        });
+
+        /**
+         * BpmnDocument Process Context
+         */
+        $this->app->bind(BpmnDocumentInterface::class, function ($app, $params) {
+            $repository = new DefinitionsRepository();
+            $engine = $params['engine'] ?? new BpmnEngine($repository, app('events'));
+            //if (!empty($params['engine'])) {
+            //    $eventBus = app('events');
+//
+            //    //Initialize the BpmnEngine
+            //    $engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
+            //    $eventDefinitionBus = new EventDefinitionBus;
+            //    $engine->setEventDefinitionBus($eventDefinitionBus);
+    //
+            //    // Catch the signal events
+            //    if ($params['globalEvents']) {
+            //        $eventDefinitionBus->attachEvent(
+            //            SignalEventDefinition::class,
+            //            function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
+            //                WorkflowManagerFacade::catchSignalEvent($source, $sourceEventDefinition, $token);
+            //            }
+            //        );
+            //    }
+    //
+            //    $engine->setJobManager(new TaskSchedulerManager());
+            //} else {
+            //    $engine = null;
+            //}
 
             //Initialize BpmnDocument repository (REQUIRES $engine $factory)
             $bpmnRepository = new BpmnDocument($params['process']);
-            $bpmnRepository->setEngine($engine);
+            if ($engine) {
+                $bpmnRepository->setEngine($engine);
+            }
+            $bpmnRepository->getFactory();
             $bpmnRepository->setFactory($repository);
             $bpmnRepository->setSkipElementsNotImplemented(true);
             $mapping = $bpmnRepository->getBpmnElementsMapping();

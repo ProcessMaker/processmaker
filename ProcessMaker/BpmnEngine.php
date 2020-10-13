@@ -115,6 +115,7 @@ class BpmnEngine implements EngineInterface
         $key = $processVersion->getKey();
         if (!isset($this->definitions[$key])) {
             $this->definitions[$key] = $processVersion->getDefinitions(false, $this);
+            $this->loadProcessDefinitions($this->definitions[$key]);
         }
         return $this->definitions[$key];
     }

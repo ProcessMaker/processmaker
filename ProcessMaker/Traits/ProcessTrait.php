@@ -32,7 +32,7 @@ trait ProcessTrait
             $this->bpmnDefinitions = app(BpmnDocumentInterface::class, $options);
             if ($this->bpmn) {
                 $this->bpmnDefinitions->loadXML($this->bpmn);
-                try {
+                /*try {
                     $this->bpmnDefinitions->getEngine()->loadProcessDefinitions($this->bpmnDefinitions);
                 } catch (ElementNotFoundException $e) {
                     $warnings = is_array($this->warnings) ? $this->warnings : [];
@@ -41,7 +41,7 @@ trait ProcessTrait
                         'text' => $e->getMessage()
                     ];
                     $this->warnings = $warnings;
-                }
+                }*/
             }
         }
         return $this->bpmnDefinitions;

@@ -909,7 +909,8 @@ class ProcessController extends Controller
         // Trigger the start event
         try {
             $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
-        } catch (Throwable $exection) {
+        } catch (Throwable $exception) {
+            throw $exception;
             return response()->json([
                 'message' => __('Unable to start process'),
             ], 422);
