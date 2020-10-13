@@ -1,4 +1,5 @@
 *
 !public/
 !profile/
+!scripts/
 !.gitignore

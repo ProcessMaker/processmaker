@@ -92,7 +92,7 @@ class BroadcastTest extends TestCase
         ]);
         event(new ProcessCompleted($request));
         $this->assertLogContainsText('ProcessCompleted');
-        $this->assertLogContainsText(addcslashes(route('api.requests.show', ['task' => $request->id]), '/'));
+        $this->assertLogContainsText(addcslashes(route('api.requests.show', [$request->id]), '/'));
         $this->assertBroadcastEventSizeLessThan('ProcessCompleted', 10000);
     }
 
@@ -110,7 +110,7 @@ class BroadcastTest extends TestCase
         ]);
         event(new ProcessUpdated($request, 'ACTIVITY_COMPLETED'));
         $this->assertLogContainsText('ProcessUpdated');
-        $this->assertLogContainsText(addcslashes(route('api.requests.show', ['task' => $request->id]), '/'));
+        $this->assertLogContainsText(addcslashes(route('api.requests.show', [$request->id]), '/'));
         $this->assertBroadcastEventSizeLessThan('ProcessUpdated', 10000);
     }
 

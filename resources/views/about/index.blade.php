@@ -20,7 +20,7 @@
         <div class="card card-body">
         <img class="about-logo" src="/img/md-blk-logo.png">
         <hr>
-        <div>ProcessMaker 4 v4.0.13</div>
+        <div>ProcessMaker 4 v4.1 Alpha</div>
         <hr>
         <a href="https://github.com/ProcessMaker/processmaker/issues/new" target="_blank">{{__('Report Issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
@@ -44,8 +44,6 @@
           @endforeach
         </ul>
         @endif
-        <div><strong>{{ __('Indexed Search') }}</strong>: {{ $indexedSearch ? __('Enabled') : __('Disabled') }}</div>
-        <hr>
         &copy; {{date('Y')}} - {{__('All Rights Reserved')}}
       </div>
     </div>

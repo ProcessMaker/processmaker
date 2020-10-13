@@ -100,11 +100,6 @@ class TaskController extends Controller
         
         $query->with($include);
 
-        // Hide tasks for system processes
-        $query->whereHas('process', function($q) {
-            $q->nonSystem();
-        });
-
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $setting = Setting::byKey('indexed-search');

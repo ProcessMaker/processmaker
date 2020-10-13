@@ -9,6 +9,7 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use Illuminate\Support\Str;
 
 trait SearchAutocompleteTrait
 {
@@ -17,8 +18,8 @@ trait SearchAutocompleteTrait
         $type = $request->input('type');
         $query = $request->input('filter');
 
-        if (method_exists($this, camel_case("search $type"))) {
-            $method = camel_case("search $type");
+        if (method_exists($this, Str::camel("search $type"))) {
+            $method = Str::camel("search $type");
             $results = $this->$method($query);
             return response()->json($results);
         } else {

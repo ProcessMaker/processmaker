@@ -126,7 +126,7 @@ class NotificationControlsTest extends TestCase
         $token = factory(ProcessRequestToken::class)->create();
 
         //url to edit the task
-        $taskUrl = route('tasks.edit', ['taks' => $token->id], false);
+        $taskUrl = route('tasks.edit', [$token], false);
 
         //Create a new notification for the task created above
         $response = $this->apiCall('POST', '/notifications', [

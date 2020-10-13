@@ -192,7 +192,7 @@
     },
     computed: {
       node () {
-        return this.$parent.$parent.$parent.$parent.highlightedNode.definition;
+        return this.$root.$children[0].$refs.modeler.highlightedNode.definition;
       },
       /**
        * Get owner process.
@@ -200,7 +200,7 @@
        * @returns {object}
        */
       process () {
-        return this.$parent.$parent.$parent.process;
+        return this.$root.$children[0].process;
       },
       /**
        * Get the value of the edited property

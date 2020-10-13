@@ -24,16 +24,18 @@
           <b-col class="overflow-auto h-100">
             <vue-form-renderer
               ref="renderer"
+              :key="rendererKey"
               v-model="previewData"
               class="p-3"
               @submit="previewSubmit"
               @update="onUpdate"
               :mode="mode"
-              :config="config"
-              :computed="computed"
-              :custom-css="customCSS"
-              :watchers="watchers"
+              :config="preview.config"
+              :computed="preview.computed"
+              :custom-css="preview.customCSS"
+              :watchers="preview.watchers"
               v-on:css-errors="cssErrors = $event"
+              :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
             />
           </b-col>
@@ -167,6 +169,7 @@ import VueJsonPretty from "vue-json-pretty";
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
+import { cloneDeep } from 'lodash';
 
 // Bring in our initial set of controls
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -288,6 +291,18 @@ export default {
     ];
 
     return {
+      preview: {
+        config: [
+          {
+            name: 'Default',
+            computed: [],
+            items: [],
+          },
+        ],
+        computed: [],
+        customCSS: '',
+        watchers: [],
+      },
       self: this,
       watchers_config: {
         api: {
@@ -332,13 +347,6 @@ export default {
     TopMenu
   },
   watch: {
-    mode(mode) {
-      if (mode === "preview") {
-        this.previewData = this.previewInput
-          ? JSON.parse(this.previewInput)
-          : null;
-      }
-    },
     config() {
       // Reset the preview data with clean object to start
       this.previewData = {};
@@ -428,6 +436,10 @@ export default {
         this.$refs.menuScreen.sectionRight = false;
       }
       this.mode = mode;
+      this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
+      this.$nextTick(() => {
+        this.rendererKey++;
+      });
     },
     onUpdate(data) {
       ProcessMaker.EventBus.$emit("form-data-updated", data);

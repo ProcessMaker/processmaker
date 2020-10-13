@@ -193,23 +193,23 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/ th#_total_users {
+>>> th#_total_users {
   width: 150px;
   text-align: center;
 }
 
-/deep/ .vuetable-th-status {
+>>> .vuetable-th-status {
   min-width: 90px;
 }
 
-/deep/ .vuetable-th-members_count {
+>>> .vuetable-th-members_count {
   min-width: 90px;
 }
 
-/deep/ th#_updated_at {
+>>> th#_updated_at {
   width: 14%;
 }
-/deep/ th#_created_at {
+>>> th#_created_at {
   width: 14%;
 }
 </style>

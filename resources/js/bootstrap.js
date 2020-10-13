@@ -1,10 +1,11 @@
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
-import VueRouter from "vue-router";
+import Router from "vue-router";
 import datetime_format from "../js/data/datetime_formats.json"
 import translator from "./modules/lang.js"
 import ScreenBuilder from '@processmaker/screen-builder';
+import * as VueDeepSet from "vue-deepset";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -30,11 +31,12 @@ window.$ = window.jQuery = require("jquery");
  */
 
 window.Vue = require("vue");
-window.VueRouter = VueRouter;
-
 window.Vue.use(BootstrapVue);
-window.Vue.use(VueRouter);
 window.Vue.use(ScreenBuilder);
+window.Vue.use(VueDeepSet);
+window.Vue.use(Router);
+
+window.VueRouter = Router;
 
 /**
  * Setup Translations
@@ -90,7 +92,7 @@ window.ProcessMaker = {
     /**
      * A general use global router that can be used
      */
-    Router: new VueRouter({
+    Router: new Router({
       mode: 'history'
     }),
     /**
