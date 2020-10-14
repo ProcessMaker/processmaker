@@ -3989,11 +3989,16 @@
         {
             "name": "processmaker/docker-executor-lua",
             "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-lua.git",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/laradock-packages/ProcessMaker/docker-executor-lua",
-                "reference": "92230ba9c283c5c1cc0bbab9252f78ade57f1843",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-lua/zipball/2278b68b63bbce34ce37cf538b43a724304f9562",
+                "reference": "2278b68b63bbce34ce37cf538b43a724304f9562",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -4009,22 +4014,23 @@
                     "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
                 }
             },
-            "license": [
-                "GAGPL-3.0-or-later"
-            ],
+            "notification-url": "https://packagist.org/downloads/",
             "description": "Lua script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true
-            }
+            "time": "2020-03-31T21:45:44+00:00"
         },
         {
             "name": "processmaker/docker-executor-node",
-            "version": "1.0.2",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-node.git",
+                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/laradock-packages/ProcessMaker/docker-executor-node",
-                "reference": "22331e08cf6353ee724a0f2dd983dc12cf750bc1",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-node/zipball/e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "reference": "e61f24090422f890cb227bc94a4461438f3ec9a6",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -4040,22 +4046,26 @@
                     "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GAGPL-3.0-or-later"
             ],
             "description": "Javascript script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true
-            }
+            "time": "2020-07-02T22:53:17+00:00"
         },
         {
             "name": "processmaker/docker-executor-php",
             "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/docker-executor-php.git",
+                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/nolan/src/laradock-packages/ProcessMaker/docker-executor-php",
-                "reference": "41c2b6ec3d93b456b0c0fb7baa2bff3fcb2453ea",
-                "shasum": null
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/docker-executor-php/zipball/7a67c6aaa79d8ce4004b1c0600229317aab15c81",
+                "reference": "7a67c6aaa79d8ce4004b1c0600229317aab15c81",
+                "shasum": ""
             },
             "type": "library",
             "extra": {
@@ -4071,13 +4081,9 @@
                     "ProcessMaker\\ScriptRunners\\": "src/ScriptRunners"
                 }
             },
-            "license": [
-                "GAGPL-3.0-or-later"
-            ],
+            "notification-url": "https://packagist.org/downloads/",
             "description": "PHP script executor for processmaker 4",
-            "transport-options": {
-                "symlink": true
-            }
+            "time": "2020-03-31T21:45:33+00:00"
         },
         {
             "name": "processmaker/laravel-i18next",
