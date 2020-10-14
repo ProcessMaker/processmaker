@@ -61,6 +61,7 @@ class GlobalSignalsTest extends TestCase
         // Assertion: Active Task = Task 4a (process one)
         $instance->refresh();
         $activeTask = $instance->tokens()->where('status', 'ACTIVE')->first();
+        dd($instance->tokens()->where('status', 'ACTIVE')->get()->toArray());
         $this->assertEquals('Task 4a', $activeTask->element_name);
         // Complete Parent Task
         $this->completeTask($activeTask, []);

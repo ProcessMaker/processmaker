@@ -43,6 +43,7 @@ class CatchSignalEvent implements ShouldQueue
         $event = $sourceEventDefinition->getPayload();
         $this->signalRef = $event ? $event->getId() : $sourceEventDefinition->getProperty('signalRef') ;
         $this->throwEvent = $throwEvent->getId();
+        $token->saveToken();
         $this->tokenId = $token->getId();
         $this->processId = $token->getInstance()->process_id;
     }
