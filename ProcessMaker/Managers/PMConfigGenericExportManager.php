@@ -50,11 +50,6 @@ class PMConfigGenericExportManager
                 if (!is_numeric($config->$key)) {
                     continue;
                 }
-<<<<<<< HEAD
-                
-=======
-
->>>>>>> develop
                 $references[] = [$this->type, $config->$key];
             }
         }
@@ -99,8 +94,4 @@ class PMConfigGenericExportManager
         $process->bpmn = $definitions->saveXML();
         $process->save();
     }
-<<<<<<< HEAD
-}
-=======
 } 
->>>>>>> develop
