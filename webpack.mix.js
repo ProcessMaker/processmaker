@@ -114,6 +114,7 @@ monacoLanguages.forEach(lang => {
   const path = `basic-languages/${lang}/${lang}.js`;
   mix.copy(monacoSource + path, monacoDestination + path);
 });
+mix.copyDirectory(monacoSource + 'language', monacoDestination + 'language');
 
 mix.sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")
