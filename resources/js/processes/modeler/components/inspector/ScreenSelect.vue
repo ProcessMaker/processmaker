@@ -91,16 +91,9 @@
       }
     },
     methods: {
-      type() {
-        if (this.params && this.params.type) {
-          return this.params.type
-        }
-        return 'FORM'
-      },
       load(filter) {
         let params = Object.assign(
           {
-            type: this.type(),
             order_direction: 'asc',
             status: 'active',
             selectList: true,

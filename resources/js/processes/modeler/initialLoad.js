@@ -120,8 +120,7 @@ ProcessMaker.EventBus.$on(
         label: 'Screen for Input',
         helper: 'Select Screen to display this Task',
         name: 'screenRef',
-        required: true,
-        type: 'FORM'
+        required: true
       }
     });
 
