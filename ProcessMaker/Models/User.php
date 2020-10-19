@@ -408,22 +408,4 @@ class User extends Authenticatable implements HasMedia
             RequestUserPermission::query()->insert($batch);
         }        
     }
-
-    public static function addRequestToSession(Session $session, ProcessRequest $processRequest)
-    {
-        $requestIds = $session->get(self::REQUESTS_SESSION_KEY, []);
-        if (!in_array($processRequest->id, $requestIds)) {
-            $requestIds[] = $processRequest->id;
-        }
-        $session->put(self::REQUESTS_SESSION_KEY, $requestIds);
-    }
-
-    public static function hasRequestInSession(Session $session, ProcessRequest $processRequest)
-    {
-        $requestIds = $session->get(self::REQUESTS_SESSION_KEY, []);
-        if (in_array($processRequest->id, $requestIds)) {
-            return true;
-        }
-        return false;
-    }
 }

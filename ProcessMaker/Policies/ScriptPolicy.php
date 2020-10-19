@@ -5,7 +5,6 @@ namespace ProcessMaker\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Script;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\PolicyExtension;
 
 class ScriptPolicy
@@ -16,7 +15,7 @@ class ScriptPolicy
     {
         $policyExtension = app(PolicyExtension::class);
         
-        if ($policyExtension->has('execute', get_class($script))) {
+        if ($policyExtension->has('execute', Script::class)) {
             return $policyExtension->authorize('execute', $user, $script);
         }
         

@@ -51,7 +51,7 @@ class TaskController extends Controller
             ->whereNull('read_at')
             ->update(['read_at' => Carbon::now()]);
 
-        $manager = new ScreenBuilderManager();
+        $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, $task->getScreen() ? $task->getScreen()->type : 'FORM'));
 
         $submitUrl = route('api.tasks.update', $task->id);

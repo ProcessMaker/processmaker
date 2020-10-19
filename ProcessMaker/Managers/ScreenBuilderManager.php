@@ -27,7 +27,9 @@ class ScreenBuilderManager
      */
     public function addScript($script)
     {
-        $this->javascriptRegistry[] = $script;
+        if (!in_array($script, $this->javascriptRegistry)) {
+            $this->javascriptRegistry[] = $script;
+        }
     }
 
     /**

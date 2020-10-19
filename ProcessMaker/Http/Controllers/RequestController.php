@@ -157,7 +157,7 @@ class RequestController extends Controller
             return redirect('403');
         }
 
-        $manager = new ScreenBuilderManager();
+        $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
         return view('requests.preview', compact('request', 'screen', 'manager'));
     }
