@@ -12,6 +12,7 @@ use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Query\SyntaxError;
 
 class ScreenController extends Controller
@@ -106,7 +107,12 @@ class ScreenController extends Controller
                 });
             }
         }
-        if ($request->input('type')) {
+        $interactive = filter_var($request->input('interactive'), FILTER_VALIDATE_BOOLEAN);
+        if ($interactive) {
+            $screens = ScreenType::where('is_interactive', $interactive)->get('name');
+            $query->whereIn('type', $screens);
+        }
+        if (!$interactive  && $request->input('type')) {
             $types = explode(',', $request->input('type'));
             $query->whereIn('type', $types);
         }
