@@ -35,6 +35,7 @@ window.Vue.use(BootstrapVue);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
 window.Vue.use(Router);
+window.VueMonaco = require("vue-monaco");
 
 window.VueRouter = Router;
 
