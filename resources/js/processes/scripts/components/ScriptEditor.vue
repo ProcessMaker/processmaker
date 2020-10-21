@@ -204,6 +204,7 @@ export default {
     window.Echo.private(
       `ProcessMaker.Models.User.${userID.content}`
     ).notification(response => {
+      console.log(response);
       this.outputResponse(response);
     });
     this.loadBoilerplateTemplate();    
@@ -248,7 +249,7 @@ export default {
     },
     stopResizing: _.debounce(function() {
       this.resizing = false;
-      this.resizeEditor();
+      //this.resizeEditor();
     }, 50),
     handleResize() {
       this.resizing = true;
