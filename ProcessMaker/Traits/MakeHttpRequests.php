@@ -190,6 +190,11 @@ trait MakeHttpRequests
         switch (true) {
             case $status == 200:
                 $content = json_decode($response->getBody()->getContents(), true);
+
+                // if the response is not json, all the content is returned as it is
+                if ($content === null) {
+                    $content = $response->getBody()->__toString();
+                }
                 break;
             case $status > 200 && $status < 300:
                 $content = [];
