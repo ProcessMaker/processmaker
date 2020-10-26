@@ -661,3 +661,14 @@ h1.page-title {
     max-width: 350px;
   }  
 }
+
+@media print {
+  html, body {
+    overflow-x: visible!important;
+   }
+
+   div#app-container {
+     max-height: inherit!important;
+     height: auto!important;
+   }
+}
