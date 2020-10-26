@@ -21,6 +21,7 @@ class ProcessExecutionTest extends TestCase
 {
     use RequestHelper;
     use WithFaker;
+    use TestProcessExecutionTrait;
 
     /**
      * @var Process $process
@@ -366,4 +367,26 @@ class ProcessExecutionTest extends TestCase
         $this->assertEquals($tasks[0]['advanceStatus'], 'completed');
         $this->assertEquals($tasks[1]['advanceStatus'], 'open');
     }
+
+    public function testMagicVariablesRemovedAfterCompleted()
+    {
+        $bpmn = file_get_contents(__DIR__ . '/../../Fixtures/parallel_gateway_tasks.bpmn');
+        $this->loadTestProcess($bpmn);
+
+        \Auth::setUser($this->user);
+        $this->startTestProcess('node_2');
+        $this->completeTestTask('node_3');
+
+        $this->request->refresh();
+
+        $this->assertTrue(isset($this->request->data['_user']));
+        $this->assertTrue(isset($this->request->data['_request']));
+
+        $this->completeTestTask('node_8');
+        $this->request->refresh();
+
+        $this->assertFalse(isset($this->request->data['_user']));
+        $this->assertFalse(isset($this->request->data['_request']));
+    }
+    
 }

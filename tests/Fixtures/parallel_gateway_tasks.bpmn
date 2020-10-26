@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="ProcessId" name="ProcessName" isExecutable="true">
+    <bpmn:startEvent id="node_2" name="Start Event" pm:allowInterstitial="false" pm:config="{&#34;web_entry&#34;:{&#34;require_valid_session&#34;:false,&#34;mode&#34;:&#34;DISABLED&#34;,&#34;screen_id&#34;:null,&#34;completed_action&#34;:&#34;SCREEN&#34;,&#34;completed_screen_id&#34;:null,&#34;completed_url&#34;:null,&#34;authenticatable_type&#34;:&#34;ProcessMaker\\Models\\User&#34;,&#34;authenticatable_id&#34;:1,&#34;enable_query_params&#34;:false,&#34;password&#34;:null,&#34;enable_password_protect&#34;:false,&#34;exclude_data&#34;:[]}}">
+      <bpmn:outgoing>node_6</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="node_3" name="Form Task" pm:screenRef="4" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:{&#34;require_valid_session&#34;:false,&#34;mode&#34;:&#34;DISABLED&#34;,&#34;screen_id&#34;:null,&#34;completed_action&#34;:&#34;SCREEN&#34;,&#34;completed_screen_id&#34;:null,&#34;completed_url&#34;:null,&#34;authenticatable_type&#34;:&#34;ProcessMaker\\Models\\User&#34;,&#34;authenticatable_id&#34;:1,&#34;enable_query_params&#34;:false,&#34;password&#34;:null,&#34;enable_password_protect&#34;:false,&#34;exclude_data&#34;:[]},&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+      <bpmn:incoming>node_7</bpmn:incoming>
+      <bpmn:outgoing>node_10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="node_4" name="End Event">
+      <bpmn:incoming>node_10</bpmn:incoming>
+      <bpmn:incoming>node_11</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:parallelGateway id="node_5" name="Parallel Gateway" gatewayDirection="Diverging">
+      <bpmn:incoming>node_6</bpmn:incoming>
+      <bpmn:outgoing>node_7</bpmn:outgoing>
+      <bpmn:outgoing>node_9</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="node_6" sourceRef="node_2" targetRef="node_5" />
+    <bpmn:sequenceFlow id="node_7" sourceRef="node_5" targetRef="node_3" />
+    <bpmn:task id="node_8" name="Form Task" pm:screenRef="4" pm:allowInterstitial="false" pm:assignment="requester" pm:assignmentLock="false" pm:allowReassignment="false" pm:config="{&#34;web_entry&#34;:{&#34;require_valid_session&#34;:false,&#34;mode&#34;:&#34;DISABLED&#34;,&#34;screen_id&#34;:null,&#34;completed_action&#34;:&#34;SCREEN&#34;,&#34;completed_screen_id&#34;:null,&#34;completed_url&#34;:null,&#34;authenticatable_type&#34;:&#34;ProcessMaker\\Models\\User&#34;,&#34;authenticatable_id&#34;:1,&#34;enable_query_params&#34;:false,&#34;password&#34;:null,&#34;enable_password_protect&#34;:false,&#34;exclude_data&#34;:[]},&#34;email_notifications&#34;:{&#34;notifications&#34;:[]}}">
+      <bpmn:incoming>node_9</bpmn:incoming>
+      <bpmn:outgoing>node_11</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="node_9" sourceRef="node_5" targetRef="node_8" />
+    <bpmn:sequenceFlow id="node_10" sourceRef="node_3" targetRef="node_4" />
+    <bpmn:sequenceFlow id="node_11" sourceRef="node_8" targetRef="node_4" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="ProcessId">
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="120" y="90" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_3">
+        <dc:Bounds x="260" y="210" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_4_di" bpmnElement="node_4">
+        <dc:Bounds x="460" y="230" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_5_di" bpmnElement="node_5">
+        <dc:Bounds x="300" y="90" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_6_di" bpmnElement="node_6">
+        <di:waypoint x="138" y="108" />
+        <di:waypoint x="318" y="108" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_7_di" bpmnElement="node_7">
+        <di:waypoint x="318" y="108" />
+        <di:waypoint x="318" y="248" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_8_di" bpmnElement="node_8">
+        <dc:Bounds x="420" y="70" width="116" height="76" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_9_di" bpmnElement="node_9">
+        <di:waypoint x="318" y="108" />
+        <di:waypoint x="478" y="108" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_10_di" bpmnElement="node_10">
+        <di:waypoint x="318" y="248" />
+        <di:waypoint x="478" y="248" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_11_di" bpmnElement="node_11">
+        <di:waypoint x="478" y="108" />
+        <di:waypoint x="478" y="248" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

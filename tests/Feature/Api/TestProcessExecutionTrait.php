@@ -2,10 +2,11 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Http\Testing\File;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Process;
+use Illuminate\Http\Testing\File;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
@@ -16,6 +17,11 @@ trait TestProcessExecutionTrait
      * @var Process $process
      */
     protected $process;
+    
+    /**
+     * @var ProcessRequest $request
+     */
+    protected $request;
 
     /**
      * Create new task assignment type user successfully
@@ -46,5 +52,20 @@ trait TestProcessExecutionTrait
         $this->process->bpmn = $definitions->saveXml();
         // When save the process creates the assignments
         $this->process->save();
+    }
+
+    private function startTestProcess($nodeId, $data = [])
+    {
+        $definitions = $this->process->getDefinitions();
+        $startEvent = $definitions->getEvent($nodeId);
+        $this->request = WorkflowManager::triggerStartEvent($this->process, $startEvent, $data);
+    }
+
+    private function completeTestTask($nodeId, $data = [])
+    {
+        $task = $this->request->tokens()->where('element_id', $nodeId)->first();
+        WorkflowManager::completeTask(
+            $this->process, $this->request, $task, $data
+        );
     }
 }

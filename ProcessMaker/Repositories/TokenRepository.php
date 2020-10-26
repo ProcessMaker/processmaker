@@ -166,12 +166,6 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
     {
-        $this->removeUserFromData($token->getInstance());
-        $this->removeRequestFromData($token->getInstance());
-        if ($this->getActivityType($activity) === 'callActivity') {
-            $this->removeParentFromData($token->getInstance());
-        }
-        $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
         $token->process_request_id = $token->getInstance()->getKey();
@@ -354,17 +348,6 @@ class TokenRepository implements TokenRepositoryInterface
     }
 
     /**
-     * Remove user from the request data.
-     *
-     * @param Instance $instance
-     * @param User $user
-     */
-    private function removeUserFromData(Instance $instance)
-    {
-        $instance->getDataStore()->removeData('_user');
-    }
-
-    /**
      * Add request to the request data.
      *
      * @param Instance $instance
@@ -376,27 +359,6 @@ class TokenRepository implements TokenRepositoryInterface
             $this->instanceRepository->persistInstanceUpdated($instance);
         }
     }
-
-    /**
-     * Remove request from the request data.
-     *
-     * @param Instance $instance
-     */
-    private function removeRequestFromData(Instance $instance)
-    {
-        $instance->getDataStore()->removeData('_request');
-    }
-
-    /**
-     * Remove _parent magic variable from the request data.
-     *
-     * @param Instance $instance
-     */
-    private function removeParentFromData(Instance $instance)
-    {
-        $instance->getDataStore()->removeData('_parent');
-    }
-
 
     private function getActivityType($activity)
     {

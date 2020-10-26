@@ -728,4 +728,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $first = $this->locks()->orderBy('id')->first();
         return !$first || $first->getKey() === $lock->getKey();
     }
+
+    public function removeMagicVariables()
+    {
+        $data = $this->data;
+        foreach (['_user', '_request', '_parent'] as $var) {
+            if (isset($data[$var])) {
+                unset($data[$var]);
+            }
+        }
+        $this->data = $data;
+    }
 }

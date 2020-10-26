@@ -190,6 +190,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->status = 'COMPLETED';
         $instance->completed_at = Carbon::now();
         $instance->mergeLatestStoredData();
+        $instance->removeMagicVariables();
         $instance->saveOrFail();
     }
 
