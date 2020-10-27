@@ -74,7 +74,7 @@ class WorkflowServiceProvider extends ServiceProvider
                 $eventDefinitionBus->attachEvent(
                     SignalEventDefinition::class,
                     function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
-                        WorkflowManagerFacade::catchSignalEvent($source, $sourceEventDefinition, $token);
+                        WorkflowManagerFacade::throwSignalEventDefinition($sourceEventDefinition, $token);
                     }
                 );
             }

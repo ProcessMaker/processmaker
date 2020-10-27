@@ -170,8 +170,20 @@ class WorkflowManager
      *
      * @param ServiceTaskInterface $serviceTask
      * @param Token $token
+     * @deprecated 4.0.15 Use WorkflowManager::throwSignalEventDefinition()
      */
     public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    {
+        $this->throwSignalEventDefinition($sourceEventDefinition, $token);
+    }
+
+    /**
+     * Catch a signal event.
+     *
+     * @param EventDefinitionInterface $sourceEventDefinition
+     * @param Token $token
+     */
+    public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
         Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
         $signalRef = $sourceEventDefinition->getProperty('signalRef');
@@ -186,9 +198,7 @@ class WorkflowManager
             $exclude[] = $token->getInstance()->getKey();
         }
         ThrowSignalEvent::dispatch($signalRef, $data, $exclude);
-        //$source, $sourceEventDefinition, $token)->onQueue('bpmn');
     }
-
     /**
      * Attach validation event
      *
