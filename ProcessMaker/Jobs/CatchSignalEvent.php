@@ -12,6 +12,9 @@ use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 
+/**
+ * @deprecated 4.0.15 Use ThrowSignalEvent
+ */
 class CatchSignalEvent implements ShouldQueue
 {
     use Dispatchable,
