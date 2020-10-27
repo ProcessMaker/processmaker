@@ -669,4 +669,10 @@ h1.page-title {
     max-height: inherit !important;
     height: auto !important;
   }
+
+  .d-flex, 
+  .card-deck-flex, 
+  .modal-footer{
+    display:block!important;
+  }
 }
