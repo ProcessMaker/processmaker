@@ -50,7 +50,7 @@ class CatchSignalEventRequest implements ShouldQueue
                 $eventDefinition,
                 null
             );
-            \Log::info($instance->getId());
+
             if ($this->payload) {
                 foreach ($this->payload as $key => $value) {
                     $instance->getDataStore()->putData($key, $value);
