@@ -90,28 +90,6 @@ class WorkflowServiceProvider extends ServiceProvider
         $this->app->bind(BpmnDocumentInterface::class, function ($app, $params) {
             $repository = new DefinitionsRepository();
             $engine = $params['engine'] ?? new BpmnEngine($repository, app('events'));
-            //if (!empty($params['engine'])) {
-            //    $eventBus = app('events');
-//
-            //    //Initialize the BpmnEngine
-            //    $engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
-            //    $eventDefinitionBus = new EventDefinitionBus;
-            //    $engine->setEventDefinitionBus($eventDefinitionBus);
-    //
-            //    // Catch the signal events
-            //    if ($params['globalEvents']) {
-            //        $eventDefinitionBus->attachEvent(
-            //            SignalEventDefinition::class,
-            //            function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
-            //                WorkflowManagerFacade::catchSignalEvent($source, $sourceEventDefinition, $token);
-            //            }
-            //        );
-            //    }
-    //
-            //    $engine->setJobManager(new TaskSchedulerManager());
-            //} else {
-            //    $engine = null;
-            //}
 
             //Initialize BpmnDocument repository (REQUIRES $engine $factory)
             $bpmnRepository = new BpmnDocument($params['process']);
