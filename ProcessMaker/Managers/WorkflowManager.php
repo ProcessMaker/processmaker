@@ -171,7 +171,7 @@ class WorkflowManager
      * @param ServiceTaskInterface $serviceTask
      * @param Token $token
      */
-    public function catchSignalEvent(ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
         Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
         CatchSignalEvent::dispatch($source, $sourceEventDefinition, $token)->onQueue('bpmn');
