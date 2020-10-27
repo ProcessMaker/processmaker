@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
-use ProcessMaker\Jobs\CatchSignalEvent;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
+use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
@@ -174,7 +174,19 @@ class WorkflowManager
     public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
         Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
-        CatchSignalEvent::dispatch($source, $sourceEventDefinition, $token)->onQueue('bpmn');
+        $signalRef = $sourceEventDefinition->getProperty('signalRef');
+        $data = $token->getInstance()->getDataStore()->getData();
+        $exclude = [];
+        $collaboration = $token->getInstance()->process_collaboration;
+        if ($collaboration) {
+            foreach ($collaboration->requests as $request) {
+                $exclude[] = $request->getKey();
+            }
+        } else {
+            $exclude[] = $token->getInstance()->getKey();
+        }
+        ThrowSignalEvent::dispatch($signalRef, $data, $exclude);
+        //$source, $sourceEventDefinition, $token)->onQueue('bpmn');
     }
 
     /**
