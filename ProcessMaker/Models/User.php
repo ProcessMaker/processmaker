@@ -63,7 +63,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
      *   @OA\Property(property="fullname", type="string"),
      *   @OA\Property(property="avatar", type="string"),
-     *   @OA\Property(property="media", type="array", @OA\Items(type="string")),
+     *   @OA\Property(property="media", type="array", @OA\Items(ref="#/components/schemas/media")),
      *   @OA\Property(property="birthdate", type="string", format="date"),
      * ),
      * @OA\Schema(

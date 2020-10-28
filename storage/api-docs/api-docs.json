@@ -539,7 +539,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -715,7 +714,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -763,7 +761,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -913,7 +910,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -975,7 +971,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1561,7 +1556,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1733,7 +1727,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -2001,7 +1994,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -3452,7 +3444,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -3575,7 +3566,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -4185,14 +4175,15 @@
                     },
                     "manipulations": {
                         "description": "Represents media files stored in the database",
-                        "type": "string"
+                        "type": "object"
                     },
                     "custom_properties": {
                         "description": "Represents media files stored in the database",
-                        "type": "string"
+                        "type": "object"
                     },
                     "responsive_images": {
-                        "description": "Represents media files stored in the database"
+                        "description": "Represents media files stored in the database",
+                        "type": "object"
                     },
                     "order_column": {
                         "description": "Represents media files stored in the database",
@@ -5197,7 +5188,7 @@
                         "description": "The attributes that are mass assignable.",
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/media"
                         }
                     },
                     "birthdate": {
