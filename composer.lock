@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0fc02d337ba04e17d321fcb06b983c3e",
+    "content-hash": "cc5e48042ddf17180ba2f79f337d43e0",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -3937,16 +3937,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "86983f2fdbba03a9deb2f5e1ef73579b35a9ca9f"
+                "reference": "738862afaa923f1ecd0acf111a40eb6cf832f1f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/86983f2fdbba03a9deb2f5e1ef73579b35a9ca9f",
-                "reference": "86983f2fdbba03a9deb2f5e1ef73579b35a9ca9f",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/738862afaa923f1ecd0acf111a40eb6cf832f1f1",
+                "reference": "738862afaa923f1ecd0acf111a40eb6cf832f1f1",
                 "shasum": ""
             },
             "require-dev": {
@@ -3963,7 +3963,7 @@
                 "Apache-2.0"
             ],
             "description": "BPMN compliant engine",
-            "time": "2020-10-02T23:27:29+00:00"
+            "time": "2020-10-14T16:28:51+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -9485,5 +9485,6 @@
     "platform": {
         "php": ">=7.2.0"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

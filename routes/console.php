@@ -28,3 +28,15 @@ Artisan::command('notifications:resend {username}', function ($username) {
         $user->notify($notification);
     }
 })->describe('Resend to user the notifications of his/her active tasks');
+
+Artisan::command('check {path}', function ($path) {
+    $dom = new DOMDocument;
+    $dom->load($path);
+    $query = new DOMXPath($dom);
+    $nodes = $query->evaluate("//*[@bpmnElement]");
+    foreach($nodes as $node) {
+        $id = $node->getAttribute('bpmnElement');
+        $elem = $query->evaluate("//*[@id='$id']")->item(0);
+        dump($elem);
+    }
+})->describe('Display an inspiring quote');

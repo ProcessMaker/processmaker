@@ -3,19 +3,14 @@
 namespace ProcessMaker\Repositories;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\ProcessCollaboration;
-use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Nayra\Contracts\Bpmn\EventInterface;
+use ProcessMaker\Models\ProcessRequest as Instance;
 use ProcessMaker\Nayra\Contracts\Bpmn\ParticipantInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\ExecutionInstanceRepositoryInterface;
 use ProcessMaker\Nayra\Contracts\Repositories\StorageInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
-use Reflection;
-use ReflectionClass;
 
 /**
  * Execution Instance Repository.
@@ -94,7 +89,7 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      *
      * @return mixed
      */
-    public function persistInstanceCreated(ExecutionInstanceInterface $instance, EventInterface $event = null, TokenInterface $source = null)
+    public function persistInstanceCreated(ExecutionInstanceInterface $instance)
     {
         //Get instance data
         $data = $instance->getDataStore()->getData();
@@ -112,26 +107,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->status = 'ACTIVE';
         $instance->initiated_at = Carbon::now();
         $instance->data = $data;
-        if ($source) {
-            // copy requester from source request
-            $instance->user_id = $source->getInstance()->user_id;
-        }
         $instance->saveOrFail();
         $instance->setId($instance->getKey());
 
-        /**
-         * NOTE: This will never be run since persistInstanceCreated is never called
-         * with $source or $event. Leaving here since it may be in a future versions
-         * of nayra.
-         * 
-         * Collaborations for message events are currently set in
-         * ProcessMaker/Models/MessageEventDefinition.php
-         */
-        if ($source) {
-            $participant = $this->findParticipantFor($instance);
-            $sourcePartisipant = $this->findParticipantFor($source->getInstance());
-            $this->persistInstanceCollaboration($instance, $participant, $source->getInstance(), $sourcePartisipant);
-        }
+        $this->persistCollaboration($instance);
     }
 
     private function findParticipantFor(ExecutionInstanceInterface $instance)
@@ -213,5 +192,30 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         $instance->process_collaboration_id = $source->process_collaboration_id;
         $instance->participant_id = $participant ? $participant->getId() : null;
         $instance->saveOrFail();
+    }
+
+    /**
+     * Persist current collaboration
+     *
+     * @param ProcessRequest $instance
+     * @return void
+     */
+    private function persistCollaboration(ProcessRequest $request)
+    {
+        $engine = $request->getProcess()->getEngine();
+        $collaboration = null;
+        foreach ($engine->getExecutionInstances() as $instance) {
+            if ($instance->collaboration) {
+                $collaboration = $instance->collaboration;
+                break;
+            }
+        }
+        if (!$collaboration) {
+            $collaboration = new ProcessCollaboration();
+            $collaboration->process_id = $request->process->getKey();
+            $collaboration->saveOrFail();
+        }
+        $request->process_collaboration_id = $collaboration->id;
+        $request->saveOrFail();
     }
 }
