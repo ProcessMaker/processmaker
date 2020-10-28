@@ -186,18 +186,18 @@ class WorkflowManager
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
         Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
-        $signalRef = $sourceEventDefinition->getProperty('signalRef');
+        $model = $token->getInstance()->getProcess()->getOwnerDocument()->getModel();
+        $signalRef = $sourceEventDefinition->getPayload() ?
+            $sourceEventDefinition->getPayload()->getId()
+            : $sourceEventDefinition->getProperty('signalRef');
         $data = $token->getInstance()->getDataStore()->getData();
+        $engine = $token->getInstance()->getProcess()->getEngine();
         $exclude = [];
-        $collaboration = $token->getInstance()->process_collaboration;
-        if ($collaboration) {
-            foreach ($collaboration->requests as $request) {
-                $exclude[] = $request->getKey();
-            }
-        } else {
-            $exclude[] = $token->getInstance()->getKey();
+        foreach($engine->getExecutionInstances() as $request) {
+            $exclude[] = $request->id;
         }
-        ThrowSignalEvent::dispatch($signalRef, $data, $exclude);
+        $exclude = array_unique($exclude);
+        ThrowSignalEvent::dispatch($signalRef, $data, [$model->id], $exclude);
     }
     /**
      * Attach validation event
