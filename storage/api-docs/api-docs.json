@@ -3656,7 +3656,7 @@
                         "description": "ID of user to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3671,15 +3671,14 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/users"
-                                }
-                            }
-                        }
+                    "204": {
+                        "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
                     }
                 }
             },
@@ -5352,6 +5351,24 @@
                         }
                     }
                 }
+            },
+            "422": {
+                "description": "Unprocessable Entity",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                },
+                                "errors": {
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
             }
         },
         "parameters": {
@@ -5376,7 +5393,6 @@
                 "in": "query",
                 "schema": {
                     "type": "string",
-                    "default": "ACTIVE",
                     "enum": [
                         "ACTIVE",
                         "INACTIVE"

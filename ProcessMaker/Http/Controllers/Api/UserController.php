@@ -199,7 +199,7 @@ class UserController extends Controller
      *         name="user_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
@@ -207,10 +207,11 @@ class UserController extends Controller
      *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
     public function update(User $user, Request $request)

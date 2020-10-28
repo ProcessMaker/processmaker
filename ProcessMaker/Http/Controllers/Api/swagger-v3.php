@@ -31,7 +31,7 @@
  *             parameter="status",
  *             name="status",
  *             in="query",
- *             @OA\Schema(type="string", enum={"ACTIVE", "INACTIVE"}, default="ACTIVE"),
+ *             @OA\Schema(type="string", enum={"ACTIVE", "INACTIVE"}),
  *         ),
  *         @OA\Parameter(
  *             parameter="order_direction",
@@ -78,6 +78,14 @@
  *           response=404,
  *           description="Not Found",
  *           @OA\JsonContent(@OA\Property(property="error", type="string"))
+ *         ),
+ *         @OA\Response(
+ *           response=422,
+ *           description="Unprocessable Entity",
+ *           @OA\JsonContent(
+ *              @OA\Property(property="message", type="string"),
+ *              @OA\Property(property="errors", type="object"),
+ *           )
  *         ),
  *     ),
  *     security={
