@@ -74,6 +74,11 @@
  *           schema="DateTime",
  *           @OA\Property(property="date", type="string"),
  *         ),
+ *         @OA\Response(
+ *           response=404,
+ *           description="Not Found",
+ *           @OA\JsonContent(@OA\Property(property="error", type="string"))
+ *         ),
  *     ),
  *     security={
  *         {"pm_api_auth_code": {}},

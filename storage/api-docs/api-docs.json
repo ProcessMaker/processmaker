@@ -3620,7 +3620,7 @@
                         "description": "ID of user to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3634,6 +3634,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -5208,8 +5211,7 @@
                         "properties": {
                             "id": {
                                 "description": "The attributes that are mass assignable.",
-                                "type": "string",
-                                "format": "id"
+                                "type": "integer"
                             },
                             "created_at": {
                                 "description": "The attributes that are mass assignable.",
@@ -5330,6 +5332,23 @@
                         "type": "object"
                     }
                 ]
+            }
+        },
+        "responses": {
+            "404": {
+                "description": "Not Found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
             }
         },
         "parameters": {

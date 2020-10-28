@@ -155,7 +155,7 @@ class UserController extends Controller
      *         name="user_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -163,6 +163,7 @@ class UserController extends Controller
      *         description="Successfully found the process",
      *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function show(User $user)

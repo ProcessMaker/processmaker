@@ -72,7 +72,7 @@ class User extends Authenticatable implements HasMedia
      *      @OA\Schema(ref="#/components/schemas/usersEditable"),
      *      @OA\Schema(
      *          type="object",
-     *          @OA\Property(property="id", type="string", format="id"),
+     *          @OA\Property(property="id", type="integer"),
      *          @OA\Property(property="created_at", type="string", format="date-time"),
      *          @OA\Property(property="updated_at", type="string", format="date-time"),
      *          @OA\Property(property="deleted_at", type="string", format="date-time"),
