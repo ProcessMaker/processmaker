@@ -307,19 +307,19 @@ class UserController extends Controller
      *     operationId="deleteUser",
      *     tags={"Users"},
      *     @OA\Parameter(
-     *         description="ID of user to return",
+     *         description="ID of user to delete",
      *         in="path",
      *         name="user_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
      *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function destroy(User $user)
@@ -396,23 +396,19 @@ class UserController extends Controller
     *     summary="Restore a soft deleted user",
     *     operationId="restoreUser",
     *     tags={"Users"},
-    *     @OA\Parameter(
-    *         description="ID of user to return",
-    *         in="path",
-    *         name="user_id",
-    *         required=true,
-    *         @OA\Schema(
-    *           type="string",
-    *         )
-    *     ),
     *     @OA\RequestBody(
     *       required=true,
-    *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
+    *       @OA\JsonContent(
+    *           @OA\Property(
+    *                property="username",
+    *                type="string",
+    *                description="Username to restore",
+    *           ),
+    *        ),
     *     ),
     *     @OA\Response(
     *         response=200,
     *         description="success",
-    *         @OA\JsonContent(ref="#/components/schemas/users")
     *     ),
     * )
     */

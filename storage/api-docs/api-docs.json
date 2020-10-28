@@ -3765,37 +3765,25 @@
                 ],
                 "summary": "Restore a soft deleted user",
                 "operationId": "restoreUser",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "description": "ID of user to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/usersEditable"
+                                "properties": {
+                                    "username": {
+                                        "description": "Username to restore",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/users"
-                                }
-                            }
-                        }
+                        "description": "success"
                     }
                 }
             }
