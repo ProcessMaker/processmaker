@@ -157,4 +157,9 @@ class BpmnEngine implements EngineInterface
         }
         $this->getJobManager()->disableRegisterStartEvents();
     }
+
+    public function getExecutionInstances()
+    {
+        return $this->executionInstances;
+    }
 }
