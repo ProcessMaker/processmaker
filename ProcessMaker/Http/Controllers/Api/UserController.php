@@ -247,26 +247,31 @@ class UserController extends Controller
      *
      *     @OA\Put(
      *     path="/users/{user_id}/groups",
-     *     summary="Update a user's groups",
+     *     summary="Set the groups a users belongs to",
      *     operationId="updateUserGroups",
      *     tags={"Users"},
      *     @OA\Parameter(
-     *         description="ID of user to return",
+     *         description="ID of user",
      *         in="path",
      *         name="user_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/usersEditable")
+     *       @OA\JsonContent(
+     *            @OA\Property(
+     *                property="groups",
+     *                type="array",
+     *                @OA\Items(type="integer", example=1)
+     *            ),
+     *        ),
      *     ),
      *     @OA\Response(
-     *         response=200,
+     *         response=204,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
      * )
      */
@@ -274,7 +279,8 @@ class UserController extends Controller
     {
         if ($request->has('groups')) {
             if ($request->filled('groups')) {
-                if (! is_array($request->groups)) {
+                $groups = $request->input('groups');
+                if (!is_array($groups)) {
                     $groups = array_map('intval', explode(',', $request->groups));
                 }
                 $user->groups()->sync($groups);
