@@ -31,7 +31,7 @@
  *             parameter="status",
  *             name="status",
  *             in="query",
- *             @OA\Schema(type="string", enum={"active", "inactive"}, default="active"),
+ *             @OA\Schema(type="string", enum={"ACTIVE", "INACTIVE"}, default="ACTIVE"),
  *         ),
  *         @OA\Parameter(
  *             parameter="order_direction",

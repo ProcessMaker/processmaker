@@ -35,6 +35,7 @@ class UserController extends Controller
      *     summary="Returns all users",
      *     operationId="getUsers",
      *     tags={"Users"},
+     *     @OA\Parameter(ref="#/components/parameters/status"),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -78,6 +79,10 @@ class UserController extends Controller
                     ->orWhere('lastname', 'like', $filter)
                     ->orWhere('email', 'like', $filter);
             });
+        }
+
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
         }
 
         $order_by = 'username';

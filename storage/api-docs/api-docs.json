@@ -3536,6 +3536,9 @@
                 "operationId": "getUsers",
                 "parameters": [
                     {
+                        "$ref": "#/components/parameters/status"
+                    },
+                    {
                         "$ref": "#/components/parameters/filter"
                     },
                     {
@@ -5373,10 +5376,10 @@
                 "in": "query",
                 "schema": {
                     "type": "string",
-                    "default": "active",
+                    "default": "ACTIVE",
                     "enum": [
-                        "active",
-                        "inactive"
+                        "ACTIVE",
+                        "INACTIVE"
                     ]
                 }
             },
