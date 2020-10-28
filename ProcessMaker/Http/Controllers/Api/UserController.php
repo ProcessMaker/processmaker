@@ -126,6 +126,7 @@ class UserController extends Controller
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/users")
      *     ),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
     public function store(Request $request)
@@ -261,19 +262,22 @@ class UserController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(
-     *            @OA\Property(
-     *                property="groups",
-     *                type="array",
-     *                @OA\Items(type="integer", example=1)
-     *            ),
-     *        ),
+     *       @OA\JsonContent(ref="#/components/schemas/updateUserGroup"),
      *     ),
      *     @OA\Response(
      *         response=204,
      *         description="success",
      *     ),
-     * )
+     *     ),
+     * 
+     * @OA\Schema(
+     *     schema="updateUserGroup",
+     *     @OA\Property(
+     *         property="groups",
+     *         type="array",
+     *         @OA\Items(type="integer", example=1)
+     *     ),
+     * ),
      */
     public function updateGroups(User $user, Request $request)
     {
