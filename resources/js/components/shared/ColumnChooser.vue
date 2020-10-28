@@ -86,7 +86,7 @@
 <script>
 import Column from "./Column";
 import ColumnConfig from "./ColumnConfig";
-import DataLoadingBasic from "./common/DataLoadingBasic";
+import DataLoadingBasic from "./DataLoadingBasic";
 import draggable from "vuedraggable";
 
 export default {

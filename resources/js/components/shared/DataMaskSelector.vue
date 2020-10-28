@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import DataFormats from '../data-formats';
+import DataFormats from '../../data-formats';
 
 export default {
   props: {
