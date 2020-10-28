@@ -48,7 +48,8 @@
     "sass-loader": "^8.0.2",
     "vue": "^2.6.12",
     "vue-jest": "^2.6.0",
-    "vue-uniq-ids": "^1.0.0"
+    "vue-uniq-ids": "^1.0.0",
+    "vuedraggable": "^2.24.2"
   },
   "dependencies": {
     "@babel/runtime": "^7.11.2",
