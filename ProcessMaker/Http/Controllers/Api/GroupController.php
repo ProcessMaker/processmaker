@@ -36,6 +36,7 @@ class GroupController extends Controller
      *     summary="Returns all groups that the user has access to",
      *     operationId="getGroups",
      *     tags={"Groups"},
+     *     @OA\Parameter(ref="#/components/parameters/status"),
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
@@ -125,6 +126,7 @@ class GroupController extends Controller
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/groups")
      *     ),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
     public function store(Request $request)
@@ -153,7 +155,7 @@ class GroupController extends Controller
      *         name="group_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -161,6 +163,7 @@ class GroupController extends Controller
      *         description="Successfully found the group",
      *         @OA\JsonContent(ref="#/components/schemas/groups")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function show(Group $group)
@@ -193,7 +196,7 @@ class GroupController extends Controller
      *         name="group_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
@@ -204,6 +207,7 @@ class GroupController extends Controller
      *         response=204,
      *         description="success",
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function update(Group $group, Request $request)
@@ -233,13 +237,14 @@ class GroupController extends Controller
      *         name="group_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
      *         response=204,
      *         description="success",
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function destroy(Group $group)
