@@ -326,7 +326,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Save a new media file",
+                "summary": "Save a new media file. Note: To upload files to a request, use createRequestFile in the RequestFile API",
                 "operationId": "createFile",
                 "parameters": [
                     {
@@ -420,7 +420,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Get the metadata of a file",
+                "summary": "Get the metadata of a file. To actually fetch the file see Get File Contents",
                 "operationId": "getFileById",
                 "parameters": [
                     {
@@ -462,13 +462,16 @@
                         "description": "ID of the file",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "204": {
                         "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }

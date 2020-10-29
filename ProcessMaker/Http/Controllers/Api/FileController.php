@@ -144,7 +144,6 @@ class FileController extends Controller
      *             ),
      *         )
      *     ),
-     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function store(Request $request)
