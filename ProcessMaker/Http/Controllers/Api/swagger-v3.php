@@ -31,6 +31,7 @@
  *             parameter="status",
  *             name="status",
  *             in="query",
+ *             description="ACTIVE or INACTIVE",
  *             @OA\Schema(type="string", enum={"ACTIVE", "INACTIVE"}),
  *         ),
  *         @OA\Parameter(
@@ -49,7 +50,7 @@
  *             parameter="include",
  *             name="include",
  *             in="query",
- *             description="Include data from related models in payload. Comma seperated list.",
+ *             description="Include data from related models in payload. Comma separated list.",
  *             @OA\Schema(type="string", default=""),
  *         ),
  *         @OA\Parameter(

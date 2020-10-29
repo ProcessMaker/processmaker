@@ -3651,7 +3651,7 @@
                     "Users"
                 ],
                 "summary": "Update a user",
-                "operationId": "updateUsers",
+                "operationId": "updateUser",
                 "parameters": [
                     {
                         "name": "user_id",
@@ -3735,7 +3735,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/updateUserGroup"
+                                "$ref": "#/components/schemas/updateUserGroups"
                             }
                         }
                     }
@@ -3759,13 +3759,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "properties": {
-                                    "username": {
-                                        "description": "Username to restore",
-                                        "type": "string"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/restoreUser"
                             }
                         }
                     }
@@ -5215,7 +5209,7 @@
                     }
                 ]
             },
-            "updateUserGroup": {
+            "updateUserGroups": {
                 "properties": {
                     "groups": {
                         "description": "Update a user's groups",
@@ -5224,6 +5218,15 @@
                             "type": "integer",
                             "example": 1
                         }
+                    }
+                },
+                "type": "object"
+            },
+            "restoreUser": {
+                "properties": {
+                    "username": {
+                        "description": "Username to restore",
+                        "type": "string"
                     }
                 },
                 "type": "object"
@@ -5384,6 +5387,7 @@
             "status": {
                 "name": "status",
                 "in": "query",
+                "description": "ACTIVE or INACTIVE",
                 "schema": {
                     "type": "string",
                     "enum": [
@@ -5415,7 +5419,7 @@
             "include": {
                 "name": "include",
                 "in": "query",
-                "description": "Include data from related models in payload. Comma seperated list.",
+                "description": "Include data from related models in payload. Comma separated list.",
                 "schema": {
                     "type": "string",
                     "default": ""

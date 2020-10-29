@@ -192,7 +192,7 @@ class UserController extends Controller
      *     @OA\Put(
      *     path="/users/{user_id}",
      *     summary="Update a user",
-     *     operationId="updateUsers",
+     *     operationId="updateUser",
      *     tags={"Users"},
      *     @OA\Parameter(
      *         description="ID of user to return",
@@ -262,7 +262,7 @@ class UserController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/updateUserGroup"),
+     *       @OA\JsonContent(ref="#/components/schemas/updateUserGroups"),
      *     ),
      *     @OA\Response(
      *         response=204,
@@ -271,7 +271,7 @@ class UserController extends Controller
      *     ),
      * 
      * @OA\Schema(
-     *     schema="updateUserGroup",
+     *     schema="updateUserGroups",
      *     @OA\Property(
      *         property="groups",
      *         type="array",
@@ -402,19 +402,21 @@ class UserController extends Controller
     *     tags={"Users"},
     *     @OA\RequestBody(
     *       required=true,
-    *       @OA\JsonContent(
-    *           @OA\Property(
-    *                property="username",
-    *                type="string",
-    *                description="Username to restore",
-    *           ),
-    *        ),
+    *       @OA\JsonContent(ref="#/components/schemas/restoreUser"),
     *     ),
     *     @OA\Response(
     *         response=200,
     *         description="success",
     *     ),
     * )
+    * @OA\Schema(
+    *     schema="restoreUser",
+    *     @OA\Property(
+    *          property="username",
+    *          type="string",
+    *          description="Username to restore",
+    *     ),
+    * ),
     */
 
     public function restore(Request $request) {
