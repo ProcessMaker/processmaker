@@ -245,7 +245,7 @@ class FileController extends Controller
      *         name="file_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -259,6 +259,7 @@ class FileController extends Controller
      *             )
      *         )
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function download(Media $file)

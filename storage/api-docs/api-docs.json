@@ -490,7 +490,7 @@
                         "description": "ID of the file to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -505,6 +505,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
