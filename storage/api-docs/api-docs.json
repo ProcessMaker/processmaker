@@ -312,13 +312,7 @@
                                             }
                                         },
                                         "meta": {
-                                            "description": "Display a listing of the resource.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "$ref": "#/components/schemas/metadata"
                                         }
                                     },
                                     "type": "object"
@@ -347,7 +341,7 @@
                     {
                         "name": "model",
                         "in": "query",
-                        "description": "Name of the class of the model",
+                        "description": "Full namespaced class of the model to associate",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -357,6 +351,15 @@
                         "name": "data_name",
                         "in": "query",
                         "description": "Name of the variable used in a request",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "collection",
+                        "in": "query",
+                        "description": "Media collection name. For requests, use 'default'",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -426,7 +429,7 @@
                         "description": "ID of the file to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -440,6 +443,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },

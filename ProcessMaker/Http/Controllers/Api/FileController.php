@@ -51,7 +51,7 @@ class FileController extends Controller
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 ref="#/components/schemas/metadata",
      *             ),
      *         ),
      *     ),
@@ -87,7 +87,7 @@ class FileController extends Controller
      *
      * @OA\Post(
      *     path="/files",
-     *     summary="Save a new media file",
+     *     summary="Save a new media file. Note: To upload files to a request, use createRequestFile in the RequestFile API",
      *     operationId="createFile",
      *     tags={"Files"},
      *
@@ -101,7 +101,7 @@ class FileController extends Controller
      *      @OA\Parameter(
      *         name="model",
      *         in="query",
-     *         description="Name of the class of the model",
+     *         description="Full namespaced class of the model to associate",
      *         required=true,
      *         @OA\Schema(type="string"),
      *     ),
@@ -126,6 +126,13 @@ class FileController extends Controller
      *            ),
      *         ),
      *     ),
+     *     @OA\Parameter(
+     *         name="collection",
+     *         in="query",
+     *         description="Media collection name. For requests, use 'default'",
+     *         required=false,
+     *         @OA\Schema(type="string"),
+     *     ),     
      *     @OA\Response(
      *         response=200,
      *         description="success",
@@ -137,6 +144,7 @@ class FileController extends Controller
      *             ),
      *         )
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function store(Request $request)
@@ -196,7 +204,7 @@ class FileController extends Controller
      *
      * @OA\Get(
      *     path="/files/{file_id}",
-     *     summary="Get the metadata of a file",
+     *     summary="Get the metadata of a file. To actually fetch the file see Get File Contents",
      *     operationId="getFileById",
      *     tags={"Files"},
      *     @OA\Parameter(
@@ -205,7 +213,7 @@ class FileController extends Controller
      *         name="file_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -213,6 +221,7 @@ class FileController extends Controller
      *         description="Successfully found the file",
      *         @OA\JsonContent(ref="#/components/schemas/media")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function show(Media $file)
@@ -297,13 +306,14 @@ class FileController extends Controller
      *         name="file_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
      *         response=204,
      *         description="success"
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function destroy(Media $file)
