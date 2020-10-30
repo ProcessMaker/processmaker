@@ -42,6 +42,7 @@ use Throwable;
  *   @OA\Property(property="initiated_at", type="string", format="date-time"),
  *   @OA\Property(property="riskchanges_at", type="string", format="date-time"),
  *   @OA\Property(property="subprocess_start_event_id", type="string"),
+ *   @OA\Property(property="data", type="object"),
  * ),
  * @OA\Schema(
  *   schema="processRequestToken",
@@ -60,6 +61,9 @@ use Throwable;
  *          @OA\Property(property="initiated_at", type="string", format="date-time"),
  *          @OA\Property(property="advanceStatus", type="string"),
  *          @OA\Property(property="due_notified", type="integer"),
+ *          @OA\Property(property="user", @OA\Schema(ref="#/components/schemas/users")),
+ *          @OA\Property(property="process", @OA\Schema(ref="#/components/schemas/Process")),
+ *          @OA\Property(property="process_request", @OA\Schema(ref="#/components/schemas/processRequest")),
  *       )
  *   }
  * )

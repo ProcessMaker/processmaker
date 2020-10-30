@@ -3481,6 +3481,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
                     }
                 ],
                 "responses": {
@@ -3538,6 +3541,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -3554,7 +3560,7 @@
                         "description": "ID of task to update",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3578,6 +3584,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
                     }
                 }
             }
@@ -4711,6 +4723,10 @@
                     "subprocess_start_event_id": {
                         "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
                         "type": "string"
+                    },
+                    "data": {
+                        "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
+                        "type": "object"
                     }
                 },
                 "type": "object"
@@ -4777,6 +4793,15 @@
                             "due_notified": {
                                 "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
                                 "type": "integer"
+                            },
+                            "user": {
+                                "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine"
+                            },
+                            "process": {
+                                "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine"
+                            },
+                            "process_request": {
+                                "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine"
                             }
                         },
                         "type": "object"
