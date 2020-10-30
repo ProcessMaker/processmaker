@@ -28,10 +28,10 @@ class SignalController extends Controller
         }
         $processes = $query->get();
         $signals = [];
-        foreach($processes as $process) {
+        foreach ($processes as $process) {
             $document = $process->getDomDocument();
             $nodes = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
-            foreach($nodes as $node) {
+            foreach ($nodes as $node) {
                 $filter = array_filter($signals, function ($signal) use ($node) {
                     return $signal['id'] === $node->getAttribute('id');
                 });
@@ -48,7 +48,7 @@ class SignalController extends Controller
         });
         $filter = $request->input('filter', '');
         if ($filter) {
-            $signals = array_values(array_filter($signals, function ($signal) use($filter) {
+            $signals = array_values(array_filter($signals, function ($signal) use ($filter) {
                 return mb_stripos($signal['name'], $filter) !== false;
             }));
         }
@@ -58,11 +58,28 @@ class SignalController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  mixed  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        //
+        $processes = Process::query()->orderBy('updated_at', 'desc')->get();
+
+        $signals = [];
+        foreach ($processes as $process) {
+            $document = $process->getDomDocument();
+            $nodes = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
+            foreach ($nodes as $node) {
+                if ($id === $node->getAttribute('id')) {
+                    $signals = [
+                        'id' => $node->getAttribute('id'),
+                        'name' => $node->getAttribute('name'),
+                    ];
+                    break;
+                }
+            }
+        }
+
+        return response($signals);
     }
 }

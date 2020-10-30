@@ -161,7 +161,7 @@ Route::group(
 
     // Global signals
     Route::get('signals', 'SignalController@index')->name('signals.index')->middleware('can:view-processes');
-    Route::get('signlas/{signalId}', 'SignalController@show')->name('signals.show')->middleware('can:view-processes');
+    Route::get('signals/{signalId}', 'SignalController@show')->name('signals.show')->middleware('can:view-processes');
 
     //UI customization
     Route::post('customize-ui', 'CssOverrideController@store')->name('customize-ui.store');
