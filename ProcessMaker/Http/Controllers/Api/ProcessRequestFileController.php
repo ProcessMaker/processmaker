@@ -63,7 +63,7 @@ class ProcessRequestFileController extends Controller
      *         name="request_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *
@@ -120,21 +120,21 @@ class ProcessRequestFileController extends Controller
      *     operationId="getRequestFilesById",
      *     tags={"Request Files"},
      *     @OA\Parameter(
-     *         description="ID of the file to return",
-     *         in="path",
-     *         name="file_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *     @OA\Parameter(
      *         description="ID of the request",
      *         in="path",
      *         name="request_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         description="ID of the file to return",
+     *         in="path",
+     *         name="file_id",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -148,6 +148,7 @@ class ProcessRequestFileController extends Controller
      *             )
      *         )
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function show(Request $laravel_request, ProcessRequest $request, Media $file)
@@ -197,20 +198,20 @@ class ProcessRequestFileController extends Controller
      *     tags={"Request Files"},
      *
      *      @OA\Parameter(
-     *         name="data_name",
-     *         in="query",
-     *         description="Variable name in the request data to use for the file name",
-     *         required=false,
-     *         @OA\Schema(type="string"),
-     *     ),
-     *      @OA\Parameter(
      *         description="ID of the request",
      *         in="path",
      *         name="request_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="data_name",
+     *         in="query",
+     *         description="Variable name in the request data to use for the file name",
+     *         required=false,
+     *         @OA\Schema(type="string"),
      *     ),
      *     @OA\RequestBody(
      *       required=true,
@@ -308,7 +309,7 @@ class ProcessRequestFileController extends Controller
      *         name="file_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Parameter(
@@ -324,6 +325,7 @@ class ProcessRequestFileController extends Controller
      *         response=204,
      *         description="success"
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function destroy(Request $laravel_request, ProcessRequest $request)

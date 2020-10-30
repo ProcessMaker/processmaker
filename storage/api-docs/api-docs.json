@@ -312,6 +312,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -554,6 +555,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -741,6 +743,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -788,6 +791,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -937,6 +941,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -998,6 +1003,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1583,6 +1589,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1754,6 +1761,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -2021,6 +2029,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -2046,8 +2055,11 @@
                         "description": "ID of process request to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
                     }
                 ],
                 "responses": {
@@ -2060,6 +2072,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -2076,7 +2091,7 @@
                         "description": "ID of process request to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2093,6 +2108,9 @@
                 "responses": {
                     "204": {
                         "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -2109,7 +2127,7 @@
                         "description": "ID of process request to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2123,6 +2141,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -2187,7 +2208,7 @@
                         "description": "ID of the request",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2230,19 +2251,19 @@
                 "operationId": "createRequestFile",
                 "parameters": [
                     {
-                        "name": "data_name",
-                        "in": "query",
-                        "description": "Variable name in the request data to use for the file name",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "name": "request_id",
                         "in": "path",
                         "description": "ID of the request",
                         "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "data_name",
+                        "in": "query",
+                        "description": "Variable name in the request data to use for the file name",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -2298,21 +2319,21 @@
                 "operationId": "getRequestFilesById",
                 "parameters": [
                     {
-                        "name": "file_id",
-                        "in": "path",
-                        "description": "ID of the file to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "name": "request_id",
                         "in": "path",
                         "description": "ID of the request",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "file_id",
+                        "in": "path",
+                        "description": "ID of the file to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2327,6 +2348,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -2343,7 +2367,7 @@
                         "description": "ID of the file",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -2359,6 +2383,9 @@
                 "responses": {
                     "204": {
                         "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -3471,6 +3498,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -3596,6 +3624,7 @@
                                             }
                                         },
                                         "meta": {
+                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -4638,6 +4667,16 @@
                                 "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
                                 "type": "string",
                                 "format": "date-time"
+                            },
+                            "user": {
+                                "description": "Represents an Eloquent model of a Request which is an instance of a Process."
+                            },
+                            "participants": {
+                                "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/users"
+                                }
                             }
                         },
                         "type": "object"
