@@ -1400,12 +1400,7 @@
                                         },
                                         "meta": {
                                             "description": "Display a listing of the Process Categories.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
