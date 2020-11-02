@@ -696,30 +696,25 @@
                 }
             }
         },
-        "/group_users/{group_id}": {
+        "/groups/{group_id}/users": {
             "get": {
                 "tags": [
-                    "Group Users"
+                    "Groups"
                 ],
                 "summary": "Returns all users of a group",
-                "operationId": "getMembers",
+                "operationId": "getGroupUsers",
                 "parameters": [
                     {
                         "name": "group_id",
                         "in": "path",
-                        "description": "ID of notification to return",
+                        "description": "ID of group",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
-                        "name": "filter",
-                        "in": "query",
-                        "description": "Filter results by string. Searches Name and Status. Status must match exactly. Others can be a substring.",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/filter"
                     },
                     {
                         "$ref": "#/components/parameters/order_direction"
@@ -1454,7 +1449,7 @@
                         "description": "ID of process category to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1484,7 +1479,7 @@
                         "description": "ID of process category to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1524,7 +1519,7 @@
                         "description": "ID of process category to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
