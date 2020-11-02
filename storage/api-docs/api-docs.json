@@ -1644,7 +1644,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -1677,7 +1677,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1717,7 +1717,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1793,7 +1793,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1816,26 +1816,32 @@
                 "tags": [
                     "Processes"
                 ],
-                "summary": "Export a single process by ID",
+                "summary": "Export a single process by ID and return a URL to download it",
                 "operationId": "exportProcess",
                 "parameters": [
                     {
                         "name": "processId",
                         "in": "path",
-                        "description": "ID of process to return",
+                        "description": "ID of process to export",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully found the process",
+                        "description": "Successfully built the process for export",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Process"
+                                    "properties": {
+                                        "url": {
+                                            "description": "Export the specified process.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1855,14 +1861,11 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "file"
-                                ],
                                 "properties": {
                                     "file": {
-                                        "description": "file to upload",
-                                        "type": "file",
-                                        "format": "file"
+                                        "description": "file to import",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -1898,7 +1901,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1907,7 +1910,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ProcessEditable"
+                                "$ref": "#/components/schemas/ProcessAssignments"
                             }
                         }
                     }
@@ -1933,7 +1936,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -4473,7 +4476,10 @@
                         "properties": {
                             "status": {
                                 "description": "Represents a business process definition.",
-                                "type": "object"
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
                             },
                             "assignable": {
                                 "description": "Represents a business process definition.",
@@ -4483,13 +4489,32 @@
                                 }
                             },
                             "process": {
-                                "description": "Represents a business process definition.",
-                                "type": "object"
+                                "description": "Represents a business process definition."
                             }
                         },
                         "type": "object"
                     }
                 ]
+            },
+            "ProcessAssignments": {
+                "properties": {
+                    "assignable": {
+                        "description": "Represents a business process definition.",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "cancel_request": {
+                        "description": "Represents a business process definition.",
+                        "type": "object"
+                    },
+                    "edit_data": {
+                        "description": "Represents a business process definition.",
+                        "type": "object"
+                    }
+                },
+                "type": "object"
             },
             "ProcessCategoryEditable": {
                 "properties": {

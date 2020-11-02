@@ -117,7 +117,7 @@ class ProcessController extends Controller
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/include"),
@@ -225,7 +225,7 @@ class ProcessController extends Controller
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
@@ -569,7 +569,7 @@ class ProcessController extends Controller
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -616,7 +616,7 @@ class ProcessController extends Controller
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -642,22 +642,28 @@ class ProcessController extends Controller
      *
      * @OA\Post(
      *     path="/processes/{processId}/export",
-     *     summary="Export a single process by ID",
+     *     summary="Export a single process by ID and return a URL to download it",
      *     operationId="exportProcess",
      *     tags={"Processes"},
      *     @OA\Parameter(
-     *         description="ID of process to return",
+     *         description="ID of process to export",
      *         in="path",
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         description="Successfully built the process for export",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="url",
+     *                 type="string",
+     *             ),
+     *         ),
      *     ),
      * )
      */
@@ -696,12 +702,11 @@ class ProcessController extends Controller
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
      *                 @OA\Property(
-     *                     description="file to upload",
      *                     property="file",
-     *                     type="file",
-     *                     format="file",
+     *                     description="file to import",
+     *                     type="string",
+     *                     format="binary",
      *                 ),
-     *                 required={"file"}
      *             )
      *         )
      *     ),
@@ -745,7 +750,7 @@ class ProcessController extends Controller
      *         name="process_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -754,7 +759,7 @@ class ProcessController extends Controller
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessAssignments"),
      *     ),
      * )
      */
@@ -856,7 +861,7 @@ class ProcessController extends Controller
      *         name="process_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Parameter(

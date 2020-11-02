@@ -112,13 +112,18 @@ use Throwable;
  *     allOf={
  *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),
  *      @OA\Schema(
- *         @OA\Property(property="status", type="object"),
+ *         @OA\Property(property="status", type="array", @OA\Items(type="object")),
  *         @OA\Property(property="assignable", type="array", @OA\Items(type="object")),
- *         @OA\Property(property="process", type="object")
+ *         @OA\Property(property="process", @OA\Schema(ref="#/components/schemas/Process"))
  *      )
  *    }
  * ),
- *
+ * @OA\Schema(
+ *     schema="ProcessAssignments",
+ *     @OA\Property(property="assignable", type="array", @OA\Items(type="object")),
+ *     @OA\Property(property="cancel_request", type="object"),
+ *     @OA\Property(property="edit_data", type="object"),
+ * )
  */
 class Process extends Model implements HasMedia, ProcessModelInterface
 {
