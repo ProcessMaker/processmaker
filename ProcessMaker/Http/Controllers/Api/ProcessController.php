@@ -45,7 +45,7 @@ class ProcessController extends Controller
      *
      * @return ApiCollection
      *
-     * * @OA\Get(
+     * @OA\Get(
      *     path="/processes",
      *     summary="Returns all processes that the user has access to",
      *     operationId="getProcesses",
@@ -120,10 +120,11 @@ class ProcessController extends Controller
      *           type="string",
      *         )
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
@@ -152,7 +153,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
@@ -234,7 +235,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
@@ -476,6 +477,7 @@ class ProcessController extends Controller
      *     summary="Returns the list of processes that the user can start",
      *     operationId="startProcesses",
      *     tags={"Processes"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -569,10 +571,6 @@ class ProcessController extends Controller
      *         @OA\Schema(
      *           type="string",
      *         )
-     *     ),
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
      *     ),
      *     @OA\Response(
      *         response=200,

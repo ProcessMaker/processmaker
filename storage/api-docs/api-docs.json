@@ -1622,7 +1622,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CreateNewProcess"
+                                    "$ref": "#/components/schemas/Process"
                                 }
                             }
                         }
@@ -1646,6 +1646,9 @@
                         "schema": {
                             "type": "string"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
                     }
                 ],
                 "responses": {
@@ -1654,7 +1657,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CreateNewProcess"
+                                    "$ref": "#/components/schemas/Process"
                                 }
                             }
                         }
@@ -1694,7 +1697,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CreateNewProcess"
+                                    "$ref": "#/components/schemas/Process"
                                 }
                             }
                         }
@@ -1733,6 +1736,9 @@
                 "summary": "Returns the list of processes that the user can start",
                 "operationId": "startProcesses",
                 "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
                     {
                         "$ref": "#/components/parameters/order_by"
                     },
@@ -1791,16 +1797,6 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ProcessEditable"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "success",
@@ -4390,6 +4386,9 @@
                         "items": {
                             "type": "object"
                         }
+                    },
+                    "category": {
+                        "description": "Represents a business process definition."
                     }
                 },
                 "type": "object"
@@ -4425,6 +4424,20 @@
                                 "description": "Represents a business process definition.",
                                 "type": "string",
                                 "format": "date-time"
+                            },
+                            "notifications": {
+                                "description": "Represents a business process definition.",
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
+                            },
+                            "task_notifications": {
+                                "description": "Represents a business process definition.",
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
                             }
                         },
                         "type": "object"
@@ -4470,32 +4483,6 @@
                                 }
                             },
                             "process": {
-                                "description": "Represents a business process definition.",
-                                "type": "object"
-                            }
-                        },
-                        "type": "object"
-                    }
-                ]
-            },
-            "CreateNewProcess": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/ProcessEditable"
-                    },
-                    {
-                        "$ref": "#/components/schemas/Process"
-                    },
-                    {
-                        "properties": {
-                            "notifications": {
-                                "description": "Represents a business process definition.",
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "task_notifications": {
                                 "description": "Represents a business process definition.",
                                 "type": "object"
                             }
