@@ -178,14 +178,14 @@ class WorkflowManager
     }
 
     /**
-     * Catch a signal event.
+     * Throw a signal event.
      *
      * @param EventDefinitionInterface $sourceEventDefinition
      * @param Token $token
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
-        Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
+        Log::info('Throw signal event: ' . $sourceEventDefinition->getName());
         $signalRef = $sourceEventDefinition->getProperty('signalRef');
         $data = $token->getInstance()->getDataStore()->getData();
         $exclude = [];
@@ -199,6 +199,19 @@ class WorkflowManager
         }
         ThrowSignalEvent::dispatch($signalRef, $data, $exclude);
     }
+
+    /**
+     * Catch a signal event.
+     *
+     * @param EventDefinitionInterface $sourceEventDefinition
+     * @param Token $token
+     */
+    public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
+    {
+        Log::info('Throw message event: ' . $messageRef);
+        ThrowSignalEvent::dispatch($instanceId, $elementId, $messageRef, $payload);
+    }
+
     /**
      * Attach validation event
      *
