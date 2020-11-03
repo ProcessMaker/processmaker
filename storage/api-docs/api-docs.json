@@ -1042,17 +1042,11 @@
                                             "description": "Display a listing of the resource.",
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/notifications"
+                                                "$ref": "#/components/schemas/Notification"
                                             }
                                         },
                                         "meta": {
-                                            "description": "Display a listing of the resource.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "description": "Display a listing of the resource."
                                         }
                                     },
                                     "type": "object"
@@ -1073,7 +1067,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/notificationsEditable"
+                                "$ref": "#/components/schemas/NotificationEditable"
                             }
                         }
                     }
@@ -1084,7 +1078,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/notifications"
+                                    "$ref": "#/components/schemas/Notification"
                                 }
                             }
                         }
@@ -1116,7 +1110,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/notifications"
+                                    "$ref": "#/components/schemas/Notification"
                                 }
                             }
                         }
@@ -1145,7 +1139,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/notificationsEditable"
+                                "$ref": "#/components/schemas/NotificationEditable"
                             }
                         }
                     }
@@ -1186,7 +1180,7 @@
                     "Notifications"
                 ],
                 "summary": "Mark notifications as read by the user",
-                "operationId": "ProcessMaker\\Http\\Controllers\\Api\\NotificationController::updateAsRead",
+                "operationId": "markNotificationAsRead",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1226,7 +1220,7 @@
                     "Notifications"
                 ],
                 "summary": "Mark notifications as unread by the user",
-                "operationId": "ProcessMaker\\Http\\Controllers\\Api\\NotificationController::updateAsUnread",
+                "operationId": "markNotificationAsUnread",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1266,21 +1260,21 @@
                     "Notifications"
                 ],
                 "summary": "Mark notifications as read by id and type",
-                "operationId": "ProcessMaker\\Http\\Controllers\\Api\\NotificationController::updateAsReadAll",
+                "operationId": "markAllAsRead",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "notifiable_id": {
+                                    "id": {
                                         "description": "Polymorphic relation id",
                                         "type": "integer",
                                         "items": {
                                             "type": "integer"
                                         }
                                     },
-                                    "notifiable_type": {
+                                    "type": {
                                         "description": "Polymorphic relation type",
                                         "type": "string",
                                         "items": {
@@ -4237,7 +4231,7 @@
                 },
                 "type": "object"
             },
-            "notificationsEditable": {
+            "NotificationEditable": {
                 "properties": {
                     "type": {
                         "description": "Represents a notification definition.",
@@ -4254,36 +4248,58 @@
                     "data": {
                         "description": "Represents a notification definition.",
                         "type": "string"
+                    },
+                    "name": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
+                    },
+                    "processName": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
+                    },
+                    "userName": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
+                    },
+                    "request_id": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
                     }
                 },
                 "type": "object"
             },
-            "notifications": {
-                "properties": {
-                    "id": {
-                        "description": "Represents a notification definition.",
-                        "type": "string"
-                    },
-                    "read_at": {
-                        "description": "Represents a notification definition.",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "created_at": {
-                        "description": "Represents a notification definition.",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Represents a notification definition.",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
+            "Notification": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/notificationsEditable"
+                        "$ref": "#/components/schemas/NotificationEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Represents a notification definition.",
+                                "type": "string"
+                            },
+                            "read_at": {
+                                "description": "Represents a notification definition.",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "created_at": {
+                                "description": "Represents a notification definition.",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "Represents a notification definition.",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
