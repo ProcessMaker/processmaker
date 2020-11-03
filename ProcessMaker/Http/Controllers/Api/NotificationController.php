@@ -229,7 +229,6 @@ class NotificationController extends Controller
     public function update(Notification $notification, Request $request)
     {
         $request->validate(Notification::rules($notification));
-        \Log::info("UPDATE", $request->input());
         $notification->fill($request->input());
         $notification->saveOrFail();
         return response([], 204);

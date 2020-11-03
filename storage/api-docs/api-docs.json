@@ -2873,12 +2873,7 @@
                                         },
                                         "meta": {
                                             "description": "Display a listing of the Script Categories.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
