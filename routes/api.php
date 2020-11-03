@@ -162,7 +162,7 @@ Route::group(
     // Global signals
     Route::get('signals', 'SignalController@index')->name('signals.index')->middleware('can:view-processes');
     Route::get('signals/{signalId}', 'SignalController@show')->name('signals.show')->middleware('can:view-processes');
-    Route::post('signals', 'SignalController@create')->name('signals.create')->middleware('can:edit-processes');
+    Route::post('signals', 'SignalController@store')->name('signals.store')->middleware('can:edit-processes');
     Route::put('signals/{signalId}', 'SignalController@update')->name('signals.update')->middleware('can:edit-processes');
     Route::delete('signals/{signalId}', 'SignalController@destroy')->name('signals.destroy')->middleware('can:edit-processes');
 
