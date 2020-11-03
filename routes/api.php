@@ -164,7 +164,7 @@ Route::group(
     Route::get('signals/{signalId}', 'SignalController@show')->name('signals.show')->middleware('can:view-processes');
     Route::post('signals', 'SignalController@create')->name('signals.create')->middleware('can:edit-processes');
     Route::put('signals', 'SignalController@update')->name('signals.update')->middleware('can:edit-processes');
-    Route::delte('signals', 'SignalController@destroy')->name('signals.destroy')->middleware('can:edit-processes');
+    Route::delete('signals', 'SignalController@destroy')->name('signals.destroy')->middleware('can:edit-processes');
 
     //UI customization
     Route::post('customize-ui', 'CssOverrideController@store')->name('customize-ui.store');
