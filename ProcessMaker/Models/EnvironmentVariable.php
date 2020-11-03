@@ -7,26 +7,22 @@ use Illuminate\Validation\Rule;
 
 /**
  * @OA\Schema(
- *   schema="environment_variablesEditable",
+ *   schema="EnvironmentVariableEditable",
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
- * ),
- * @OA\Schema(
- *   schema="create_environment_variablesEditable",
- *   allOf={@OA\Schema(ref="#/components/schemas/environment_variablesEditable")},
  *   @OA\Property(property="value", type="string"),
  * ),
  * @OA\Schema(
- *   schema="environment_variables",
- *   allOf={@OA\Schema(ref="#/components/schemas/environment_variablesEditable")},
- *   @OA\Property(property="id", type="integer", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   schema="EnvironmentVariable",
+ *   allOf={
+ *     @OA\Schema(ref="#/components/schemas/EnvironmentVariableEditable"),
+ *     @OA\Schema(
+ *       @OA\Property(property="id", type="integer", format="id"),
+ *       @OA\Property(property="created_at", type="string", format="date-time"),
+ *       @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     ),
+ *   },
  * )
- *
- *
- *
- *
  */
 class EnvironmentVariable extends Model
 {

@@ -358,7 +358,7 @@ class ScriptController extends Controller
      *     path="/scripts/{scripts_id}/duplicate",
      *     summary="duplicate a script",
      *     operationId="duplicateScreen",
-     *     tags={"scripts"},
+     *     tags={"Scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",
      *         in="path",
