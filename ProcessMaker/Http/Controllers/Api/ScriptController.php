@@ -118,10 +118,10 @@ class ScriptController extends Controller
     /**
      * Previews executing a script, with sample data/config data
      *
-     *     @OA\Post(
+     * @OA\Post(
      *     path="/scripts/{script_id}/preview",
      *     summary="Test script code without saving it",
-     *     operationId="getScriptsPreview",
+     *     operationId="previewScript",
      *     tags={"Scripts"},
      *         @OA\Parameter(
      *             name="script_id",
@@ -129,26 +129,32 @@ class ScriptController extends Controller
      *             @OA\Schema(type="integer"),
      *             required=true,
      *         ),
-     *         @OA\Parameter(
-     *             name="data",
-     *             in="query",
-     *             @OA\Schema(type="string"),
-     *         ),
-     *         @OA\Parameter(
-     *             name="config",
-     *             in="query",
-     *             @OA\Schema(type="string"),
-     *         ),
-     *         @OA\Parameter(
-     *             name="code",
-     *             in="query",
-     *             @OA\Schema(type="string"),
+     *         @OA\RequestBody(
+     *           @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items (type="object"),
+     *             ),
+     *             @OA\Property(
+     *                 property="config",
+     *                 type="array",
+     *                 @OA\Items (type="object"),
+     *             ),
+     *             @OA\Property(
+     *                 property="code",
+     *                 type="string",
+     *             ),
+     *             @OA\Property(
+     *                 property="nonce",
+     *                 type="string",
+     *             ),
+     *           ),
      *         ),
      *
      *     @OA\Response(
      *         response=200,
      *         description="success if the script was queued",
-     *         @OA\JsonContent(ref="#/components/schemas/scriptsPreview")
      *         ),
      *     ),
      * )
@@ -167,8 +173,8 @@ class ScriptController extends Controller
     /**
      * Executes a script, with sample data/config data
      *
-     *     @OA\Post(
-     *     path="/scripts/{script_id}/execute",
+     * @OA\Post(
+     *     path="/scripts/execute/{script_id}",
      *     summary="Execute script",
      *     operationId="executeScript",
      *     tags={"Scripts"},
@@ -178,15 +184,19 @@ class ScriptController extends Controller
      *             @OA\Schema(type="integer"),
      *             required=true,
      *         ),
-     *         @OA\Parameter(
-     *             name="data",
-     *             in="query",
-     *             @OA\Schema(type="string"),
-     *         ),
-     *         @OA\Parameter(
-     *             name="config",
-     *             in="query",
-     *             @OA\Schema(type="string"),
+     *         @OA\RequestBody(
+     *           @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items (type="object"),
+     *             ),
+     *             @OA\Property(
+     *                 property="config",
+     *                 type="array",
+     *                 @OA\Items (type="object"),
+     *             ),
+     *           ),
      *         ),
      *
      *     @OA\Response(
@@ -357,7 +367,7 @@ class ScriptController extends Controller
      *     @OA\Put(
      *     path="/scripts/{scripts_id}/duplicate",
      *     summary="duplicate a script",
-     *     operationId="duplicateScreen",
+     *     operationId="duplicateScript",
      *     tags={"Scripts"},
      *     @OA\Parameter(
      *         description="ID of script to return",

@@ -247,7 +247,7 @@ class ScreenController extends Controller
      *     @OA\Put(
      *     path="/screens/{screens_id}/duplicate",
      *     summary="duplicate a screen",
-     *     operationId="duplicateScript",
+     *     operationId="duplicateScreen",
      *     tags={"Screens"},
      *     @OA\Parameter(
      *         description="ID of screen to return",

@@ -2722,7 +2722,7 @@
                     "Screens"
                 ],
                 "summary": "duplicate a screen",
-                "operationId": "duplicateScript",
+                "operationId": "duplicateScreen",
                 "parameters": [
                     {
                         "name": "screens_id",
@@ -3048,12 +3048,7 @@
                                         },
                                         "meta": {
                                             "description": "Get a list of scripts in a process.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -3099,7 +3094,7 @@
                     "Scripts"
                 ],
                 "summary": "Test script code without saving it",
-                "operationId": "getScriptsPreview",
+                "operationId": "previewScript",
                 "parameters": [
                     {
                         "name": "script_id",
@@ -3108,44 +3103,49 @@
                         "schema": {
                             "type": "integer"
                         }
-                    },
-                    {
-                        "name": "data",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "config",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "code",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "success if the script was queued",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/scriptsPreview"
-                                }
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "data": {
+                                        "description": "Previews executing a script, with sample data/config data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "config": {
+                                        "description": "Previews executing a script, with sample data/config data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "code": {
+                                        "description": "Previews executing a script, with sample data/config data",
+                                        "type": "string"
+                                    },
+                                    "nonce": {
+                                        "description": "Previews executing a script, with sample data/config data",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success if the script was queued"
                     }
                 }
             }
         },
-        "/scripts/{script_id}/execute": {
+        "/scripts/execute/{script_id}": {
             "post": {
                 "tags": [
                     "Scripts"
@@ -3160,22 +3160,33 @@
                         "schema": {
                             "type": "integer"
                         }
-                    },
-                    {
-                        "name": "data",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "config",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "data": {
+                                        "description": "Executes a script, with sample data/config data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "config": {
+                                        "description": "Executes a script, with sample data/config data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "success if the script was queued",
@@ -3313,7 +3324,7 @@
                     "Scripts"
                 ],
                 "summary": "duplicate a script",
-                "operationId": "duplicateScreen",
+                "operationId": "duplicateScript",
                 "parameters": [
                     {
                         "name": "scripts_id",
@@ -5020,32 +5031,38 @@
                     "key": {
                         "description": "Represents an Eloquent model of a Script",
                         "type": "string"
+                    },
+                    "script_category_id": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "integer"
                     }
                 },
                 "type": "object"
             },
             "scripts": {
-                "properties": {
-                    "id": {
-                        "description": "Represents an Eloquent model of a Script",
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "created_at": {
-                        "description": "Represents an Eloquent model of a Script",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Represents an Eloquent model of a Script",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/scriptsEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Represents an Eloquent model of a Script",
+                                "type": "integer",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "description": "Represents an Eloquent model of a Script",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "Represents an Eloquent model of a Script",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
