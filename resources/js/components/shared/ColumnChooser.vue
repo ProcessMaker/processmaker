@@ -26,13 +26,13 @@
                     </draggable>
                 </div>
                 <div class="w-50">
-                    <div v-if="availableColumns === false" class="d-flex align-items-center justify-content-center border bg-muted h-100 w-100 text-center px-3 draggable-list draggable-available">
+                    <div v-if="availableColumnsDirect === false" class="d-flex align-items-center justify-content-center border bg-muted h-100 w-100 text-center px-3 draggable-list draggable-available">
                         <data-loading-basic
                         desc="Finding available columns..."
                         :is-loaded="false"
                         ></data-loading-basic>
                     </div>
-                    <draggable group="columns" :list="availableColumns" v-else-if="availableColumns === null || availableColumns === undefined || (availableColumns && availableColumns.length === 0)" class="d-flex flex-column align-items-center justify-content-center border bg-muted px-3 draggable-list draggable-available">
+                    <draggable group="columns" :list="availableColumnsDirect" v-else-if="availableColumnsDirect === null || availableColumnsDirect === undefined || (availableColumnsDirect && availableColumnsDirect.length === 0)" class="d-flex flex-column align-items-center justify-content-center border bg-muted px-3 draggable-list draggable-available">
                         <data-loading-basic
                         :empty="$t('No Available Columns')"
                         empty-icon="table"
@@ -42,8 +42,8 @@
                         class="w-100"
                         ></data-loading-basic>
                     </draggable>
-                    <draggable v-else class="border bg-muted px-3 draggable-list draggable-available" group="columns" :list="availableColumns">
-                        <column v-for="(element, index) in availableColumns"
+                    <draggable v-else class="border bg-muted px-3 draggable-list draggable-available" group="columns" :list="availableColumnsDirect">
+                        <column v-for="element in availableColumnsDirect"
                                 :column="element"
                                 :key="element.field"
                                 :without-config="true"
@@ -68,7 +68,7 @@
                         </a>
                     </div>                                    
                 </div>
-                <div class="d-flex mt-3">
+                <div class="d-flex">
                     <div class="mr-auto">
                         <b-button variant="outline-danger" @click="onReset">
                             <i class="fa fa-undo"></i> {{ $t('Reset to Default') }}
@@ -109,7 +109,7 @@ export default {
         },
         dataColumns: {
             default: null,
-        }
+        },
     },
     data() {
         return {
@@ -134,6 +134,7 @@ export default {
             },
             screens: null,
             currentColumns: [],
+            availableColumnsDirect: [],
         }
     },
     mounted() {
@@ -147,9 +148,9 @@ export default {
       window.onresize = this.resizeColumns;
       
       // Must use Bootstrap's jQuery to setup tab change listener
-      // $('a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
-      //   this.resizeColumns();
-      // })
+      $('a[data-toggle="tab"]').on('shown.bs.tab', (e) => {
+        this.resizeColumns();
+      })
     },
     watch: {
         currentColumns: {
@@ -161,6 +162,12 @@ export default {
         value: {
             handler: function(value) {
                 this.currentColumns = value;
+            },
+            deep: true
+        },
+        availableColumns: {
+            handler: function(value) {
+                this.availableColumnsDirect = value;
             },
             deep: true
         }
@@ -178,7 +185,7 @@ export default {
                 .then((response) => {
                     if (response.data) {
                         if (response.data.available) {
-                            this.availableColumns = response.data.available;
+                            this.availableColumnsDirect = response.data.available;
                         }
 
                         if (response.data.data) {
@@ -187,26 +194,26 @@ export default {
                     }
                 })
                 .catch(error => {
-                    this.availableColumns = [];
+                    this.availableColumnsDirect = [];
                 });
         },
         resizeColumns() {
-          // this.resizeColumnTabPane();
-          // this.resizeColumnContainer();
+          this.resizeColumnTabPane();
+          this.resizeColumnContainer();
         },
         resizeColumnTabPane() {
-          let top = this.$refs.tabContent.getBoundingClientRect().top;
+          let top = document.querySelector('.tab-content').getBoundingClientRect().top;
           let windowHeight = window.innerHeight;
           
-          let height = (windowHeight - top) - 16;
-          this.$refs.tabContentColumns.style.height = `${height}px`;
+          let height = (windowHeight - top);
+          document.querySelector('.tab-content-columns').style.height = `${height}px`;
         },
         resizeColumnContainer() {
-          let containerHeight = this.$refs.tabContent.offsetHeight;
+          let containerHeight = document.querySelector('.tab-content').offsetHeight;
           let beforeHeight = this.$refs.columnBefore.offsetHeight;
           let afterHeight = this.$refs.columnAfter.offsetHeight;
           
-          let height = (containerHeight - (beforeHeight + afterHeight)) - 37;
+          let height = (containerHeight - (beforeHeight + afterHeight));
           this.$refs.columnContainer.style.height = `${height}px`;
           this.$refs.columnContainer.style.maxHeight = `${height}px`;
         },
@@ -246,8 +253,8 @@ export default {
             this.configShown = false;
         },
         removeColumn(index) {
-            if (this.availableColumns !== false) {
-                this.availableColumns.unshift(this.currentColumns[index]);
+            if (this.availableColumnsDirect !== false) {
+                this.availableColumnsDirect.unshift(this.currentColumns[index]);
             }
             this.currentColumns.splice(index, 1);
         },
@@ -286,9 +293,9 @@ export default {
                     }
 
                     if (this.dataColumns !== null) {
-                        this.availableColumns = this.cloneArray(this.dataColumns);
+                        this.availableColumnsDirect = this.cloneArray(this.dataColumns);
                     } else {
-                        this.availableColumns = [];
+                        this.availableColumnsDirect = [];
                     }
                 }
             );
@@ -331,5 +338,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+    .column-container {
+        min-height: 100px;
+    }
 </style>
