@@ -220,17 +220,38 @@ class SignalController extends Controller
                     return $signal['id'] === $node->getAttribute('id');
                 });
                 if (count($filter) === 0) {
-                    $signals[] = [
+                    $signal = [
                         'id' => $node->getAttribute('id'),
                         'name' => $node->getAttribute('name'),
+                        'process' => ['id' => $process->id, 'name' => $process->name],
                     ];
+                    $signals[] =  $signal;
                 }
             }
         }
-        usort($signals, function ($a, $b) {
-            return strcmp($a['name'], $b['name']);
-        });
-        return $signals;
+
+        $result = [];
+        foreach($signals as $signal) {
+            $list = array_filter($result, function ($sig) use($signal){
+                return $sig['id'] === $signal['id'];
+            });
+
+            $foundSignal = array_pop($list);
+            if ($foundSignal) {
+                if (!in_array($signal['process'], $foundSignal['processes'])) {
+                    $foundSignal['processes'][] = $signal['process'];
+                }
+            }
+            else {
+                $result[] = [
+                    'id' => $signal['id'],
+                    'name' => $signal['name'],
+                    'processes' => [$signal['process']],
+                ];
+            }
+        }
+
+        return $result;
     }
 
     /**
