@@ -18,59 +18,29 @@
         }
     ],
     "paths": {
-        "/css_settings": {
-            "put": {
-                "tags": [
-                    "SettingsCss"
-                ],
-                "summary": "Update a setting css",
-                "operationId": "updateSettingCss",
-                "parameters": [
-                    {
-                        "name": "css_override_id",
-                        "in": "path",
-                        "description": "ID of setting to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/settingsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/settings"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
+        "/customize-ui": {
             "post": {
                 "tags": [
-                    "SettingsCss"
+                    "CssSettings"
                 ],
-                "summary": "Save a new settings css override",
-                "operationId": "createSettingsCss",
+                "summary": "Create or update a new setting",
+                "operationId": "updateCssSetting",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/settingsEditable"
+                                "properties": {
+                                    "variables": {
+                                        "description": "Create a new Settings css-override",
+                                        "type": "string"
+                                    },
+                                    "sansSerifFont": {
+                                        "description": "Create a new Settings css-override",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
@@ -5133,16 +5103,22 @@
             },
             "settingsEditable": {
                 "properties": {
-                    "id": {
-                        "description": "Class Settings",
-                        "type": "string",
-                        "format": "id"
-                    },
                     "key": {
                         "description": "Class Settings",
                         "type": "string"
                     },
                     "config": {
+                        "description": "Class Settings",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "variables": {
+                        "description": "Class Settings",
+                        "type": "string"
+                    },
+                    "sansSerifFont": {
                         "description": "Class Settings",
                         "type": "string"
                     }
@@ -5150,22 +5126,29 @@
                 "type": "object"
             },
             "settings": {
-                "properties": {
-                    "created_at": {
-                        "description": "Class Settings",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Class Settings",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/settingsEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Class Settings",
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "description": "Class Settings",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "Class Settings",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
