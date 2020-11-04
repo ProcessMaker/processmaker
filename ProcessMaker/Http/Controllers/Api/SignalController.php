@@ -108,6 +108,15 @@ class SignalController extends Controller
         return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
     }
 
+    public function destroy($signalId)
+    {
+        $signal = $this->findSignal($signalId);
+        if ($signal) {
+            $this->removeSignal($signal);
+        }
+        return response('', 201);
+    }
+
     private function addSignal(Signal $signal)
     {
         $signalProcess = $this->getGlobalSignalProcess();
@@ -137,6 +146,21 @@ class SignalController extends Controller
         }
     }
 
+    private function removeSignal(Signal $signal)
+    {
+        $signalProcess = $this->getGlobalSignalProcess();
+        $definitions = $signalProcess->getDefinitions();
+        $x = new DOMXPath($definitions);
+        if ($x->query("//*[@id='" . $signal->getId() . "']")->count() > 0 ) {
+            $node = $x->query("//*[@id='" . $signal->getId() . "']")->item(0);
+            $definitions->firstChild->removeChild($node);
+            $signalProcess->bpmn = $definitions->saveXML();
+            $signalProcess->save();
+        }
+    }
+
+
+
     /**
      * @return Process
      */
@@ -152,7 +176,7 @@ class SignalController extends Controller
      *
      * @return array
      */
-    private function validateSignal(Signal $newSignal, Signal $oldSignal)
+    private function validateSignal(Signal $newSignal, ?Signal $oldSignal)
     {
         $result = [];
 
