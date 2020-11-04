@@ -21,8 +21,14 @@
 
         <!-- Preview -->
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
+          
           <b-col class="overflow-auto h-100">
+            <!-- TODO:: Display conversational form in preview mode -->
+            <div v-if="type == 'conversational'">
+              <conversational-forms v-model="previewData" :screen="screen.config" :watchers="computed.watchers" :computed="screen.computed" :custom-css="screen.custom_css" @onUpdate="onUpdate"></conversational-forms>
+            </div>    
             <vue-form-renderer
+              v-else
               ref="renderer"
               :key="rendererKey"
               v-model="previewData"
@@ -170,6 +176,7 @@ import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
 import { cloneDeep } from 'lodash';
+import ConversationalForms from "../../../../vendor/processmaker/package-conversational-forms/resources/js/components/ConversationalForm";
 
 // Bring in our initial set of controls
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -345,7 +352,8 @@ export default {
     CustomCSS,
     WatchersPopup,
     MonacoEditor,
-    TopMenu
+    TopMenu,
+    ConversationalForms
   },
   watch: {
     config() {
@@ -458,6 +466,7 @@ export default {
       });
     },
     onUpdate(data) {
+      console.log('HIT HERE ON UPDATE', data);
       ProcessMaker.EventBus.$emit("form-data-updated", data);
     },
     getValidationErrorsForItems(items, page) {
