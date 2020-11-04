@@ -36,20 +36,25 @@ use ProcessMaker\Assets\ScreensInScreen;
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="type", type="string"),
  *   @OA\Property(property="description", type="string"),
- *   @OA\Property(property="config", type="string"),
- *   @OA\Property(property="computed", type="string"),
+ *   @OA\Property(property="config", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="computed", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="watchers", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="custom_css", type="string"),
  *   @OA\Property(property="screen_category_id", type="string"),
  * ),
  * @OA\Schema(
  *   schema="screens",
- *   allOf={@OA\Schema(ref="#/components/schemas/screensEditable")},
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   allOf={
+ *     @OA\Schema(ref="#/components/schemas/screensEditable"),
+ *     @OA\Schema(
+ *       @OA\Property(property="id", type="string", format="id"),
+ *       @OA\Property(property="created_at", type="string", format="date-time"),
+ *       @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     ),
+ *   },
  * )
  *
- * * @OA\Schema(
+ * @OA\Schema(
  *   schema="screenExported",
  *   @OA\Property(property="url", type="string"),
  * )

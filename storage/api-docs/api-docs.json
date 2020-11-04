@@ -2403,12 +2403,7 @@
                                         },
                                         "meta": {
                                             "description": "Display a listing of the Screen Categories.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -2583,12 +2578,7 @@
                                         },
                                         "meta": {
                                             "description": "Get a list of Screens.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -2603,7 +2593,7 @@
                     "Screens"
                 ],
                 "summary": "Save a new screens",
-                "operationId": "createScreens",
+                "operationId": "createScreen",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2802,14 +2792,11 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "file"
-                                ],
                                 "properties": {
                                     "file": {
-                                        "description": "file to upload",
-                                        "type": "file",
-                                        "format": "file"
+                                        "description": "file to import",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -2823,7 +2810,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/screens"
+                                    "properties": {
+                                        "status": {
+                                            "description": "Import the specified screen.",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -4881,11 +4874,24 @@
                     },
                     "config": {
                         "description": "Class Screen",
-                        "type": "string"
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
                     },
                     "computed": {
                         "description": "Class Screen",
-                        "type": "string"
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "watchers": {
+                        "description": "Class Screen",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
                     },
                     "custom_css": {
                         "description": "Class Screen",
@@ -4899,27 +4905,29 @@
                 "type": "object"
             },
             "screens": {
-                "properties": {
-                    "id": {
-                        "description": "Class Screen",
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "created_at": {
-                        "description": "Class Screen",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Class Screen",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/screensEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Class Screen",
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "description": "Class Screen",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "Class Screen",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
