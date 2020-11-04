@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use DOMXPath;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -75,18 +76,36 @@ class SignalController extends Controller
      */
     public function store(Request $request)
     {
-        $signal = new Signal();
-        $signal->setId($request->input('id'));
-        $signal->setName($request->input('name'));
+        $newSignal = new Signal();
+        $newSignal->setId($request->input('id'));
+        $newSignal->setName($request->input('name'));
 
-        $errorValidations = $this->validateNewSignal($signal);
+        $errorValidations = $this->validateSignal($newSignal, null);
         if (count($errorValidations) > 0) {
             return response(implode('; ', $errorValidations), 422);
         }
 
-        $this->addSignal($signal);
+        $this->addSignal($newSignal);
 
-        return response(['id' => $signal->getId(), 'name' => $signal->getName()], 200);
+        return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
+    }
+
+    public function update(Request $request, $signalId)
+    {
+        $newSignal = new Signal();
+        $newSignal->setId($request->input('id'));
+        $newSignal->setName($request->input('name'));
+
+        $oldSignal = $this->findSignal($signalId);
+
+        $errorValidations = $this->validateSignal($newSignal, $oldSignal);
+        if (count($errorValidations) > 0) {
+            return response(implode('; ', $errorValidations), 422);
+        }
+
+        $this->replaceSignal($newSignal, $oldSignal);
+
+        return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
     }
 
     private function addSignal(Signal $signal)
@@ -101,6 +120,23 @@ class SignalController extends Controller
         $signalProcess->save();
     }
 
+    private function replaceSignal(Signal $newSignal, Signal $oldSignal)
+    {
+        $signalProcess = $this->getGlobalSignalProcess();
+        $definitions = $signalProcess->getDefinitions();
+        $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
+        $newNode->setAttribute('id', $newSignal->getId());
+        $newNode->setAttribute('name', $newSignal->getName());
+
+        $x = new DOMXPath($definitions);
+        if ($x->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
+            $oldNode = $x->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
+            $definitions->firstChild->replaceChild($newNode, $oldNode);
+            $signalProcess->bpmn = $definitions->saveXML();
+            $signalProcess->save();
+        }
+    }
+
     /**
      * @return Process
      */
@@ -111,21 +147,23 @@ class SignalController extends Controller
     }
 
     /**
-     * @param Signal $signal
+     * @param Signal $newSignal
+     * @param Signal $oldSignal In case of an insert, this variable is null
      *
      * @return array
      */
-    private function validateNewSignal(Signal $signal)
+    private function validateSignal(Signal $newSignal, Signal $oldSignal)
     {
         $result = [];
 
-        if ( !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $signal->getId()) ) {
+        if ( !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $newSignal->getId()) ) {
             $result[] = 'The signal ID should be an alphanumeric string';
         }
 
         $signalIdExists =  count(
-            array_filter($this->getAllSignals(), function($sig) use($signal) {
-                return $sig['id'] === $signal->getId();
+            array_filter($this->getAllSignals(), function($sig) use($newSignal, $oldSignal) {
+                return $sig['id'] === $newSignal->getId()
+                        && (empty($oldSignal) ? true : $sig['id'] !== $oldSignal->getId());
             })
         ) > 0;
 
@@ -134,8 +172,9 @@ class SignalController extends Controller
         }
 
         $signalNameExists =  count(
-                array_filter($this->getAllSignals(), function($sig) use($signal) {
-                    return $sig['name'] === $signal->getName();
+                array_filter($this->getAllSignals(), function($sig) use($newSignal, $oldSignal) {
+                    return $sig['name'] === $newSignal->getName()
+                            && (empty($oldSignal) ? true : $sig['name'] !== $oldSignal->getName());
                 })
             ) > 0;
 
@@ -168,5 +207,27 @@ class SignalController extends Controller
             return strcmp($a['name'], $b['name']);
         });
         return $signals;
+    }
+
+    /**
+     * @param $signalId
+     *
+     * @return Signal | null
+     */
+    private function findSignal($signalId)
+    {
+        $signals = array_filter($this->getAllSignals(), function ($sig) use ($signalId) {
+            return $sig['id'] === $signalId;
+        });
+
+        $result = null;
+        if(count($signals) > 0) {
+          $signal = array_pop($signals) ;
+          $result = new Signal();
+          $result->setId($signal['id']);
+          $result->setName($signal['name']);
+        }
+
+        return $result;
     }
 }
