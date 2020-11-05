@@ -15,27 +15,31 @@ class SignalManager
 
     public static function getAllSignals()
     {
-        $signals = [];
+        $signals = collect();
         foreach (Process::all() as $process) {
-            $document = $process->getDomDocument();
-            $nodes = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
+            $nodes = $process
+                        ->getDomDocument()
+                        ->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
+
             foreach ($nodes as $node) {
-                $signal = [
+                $signals->push([
                     'id' => $node->getAttribute('id'),
                     'name' => $node->getAttribute('name'),
-                    'process' => ($process->category->is_system) ? null : ['id' => $process->id, 'name' => $process->name],
-                ];
-                $signals[] = $signal;
+                    'process' => ($process->category->is_system)
+                                    ? null
+                                    : [
+                                        'id' => $process->id,
+                                        'name' => $process->name,
+                                        'catches' => self::getSignalCatchEvents($node->getAttribute('id'), $process->getDomDocument())->toArray()
+                                    ]
+                ]);
             }
         }
 
-        $result = [];
+        $result = collect();
         foreach ($signals as $signal) {
-            $list = array_filter($result, function ($sig) use ($signal) {
-                return $sig['id'] === $signal['id'];
-            });
+            $foundSignal = $result->firstWhere('id', $signal['id']);
 
-            $foundSignal = array_pop($list);
             if ($foundSignal) {
                 if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
                     $foundSignal['processes'][] = $signal['process'];
@@ -167,5 +171,17 @@ class SignalManager
         }
 
         return $result;
+    }
+
+    private static function getSignalCatchEvents($signalId, BpmnDocument $document)
+    {
+        $nodes = collect($document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signalEventDefinition'));
+        return $nodes->map(function ($node) {
+            return [
+                'id' => $node->parentNode->getAttribute('id'),
+                'name' => $node->parentNode->getAttribute('name'),
+                'type' => $node->parentNode->localName
+            ];
+        });
     }
 }
