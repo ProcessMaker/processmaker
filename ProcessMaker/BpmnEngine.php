@@ -79,6 +79,11 @@ class BpmnEngine implements EngineInterface
         return $this->repository;
     }
 
+    public function getExecutionInstances()
+    {
+        return $this->executionInstances;
+    }
+
     /**
      * @param RepositoryInterface $repository
      *
