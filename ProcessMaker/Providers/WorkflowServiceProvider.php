@@ -3,10 +3,13 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Mustache_Engine;
+use Mustache_LambdaHelper;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Assets\ScriptsInProcess;
 use ProcessMaker\Assets\ScriptsInScreen;
+use ProcessMaker\Bpmn\MustacheOptions;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
@@ -189,6 +192,16 @@ class WorkflowServiceProvider extends ServiceProvider
             $instance->addDependencyManager(ScriptsInProcess::class);
             $instance->addDependencyManager(ScriptsInScreen::class);
             return $instance;
+        });
+        /**
+         * Mustache Engine
+         */
+        $this->app->bind(Mustache_Engine::class, function () {
+            \Log::info('SE DEFINIO!!!');
+            $op = new MustacheOptions;
+            return new Mustache_Engine([
+                'helpers' => $op->helpers,
+            ]);
         });
     }
 }

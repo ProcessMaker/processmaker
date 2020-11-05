@@ -42,7 +42,7 @@ trait MakeHttpRequests
      */
     public function request(array $data = [], array $config = [])
     {
-        $mustache = new Mustache_Engine();
+        $mustache = app(Mustache_Engine::class);
         $endpoint = $this->endpoints[$config['endpoint']];
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
@@ -80,6 +80,8 @@ trait MakeHttpRequests
         }
 
         $body = $mustache->render($endpoint['body'], $data);
+        \Log::info($data);
+        \Log::info($body);
         $bodyType = $mustache->render($endpoint['body_type'], $data);
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
