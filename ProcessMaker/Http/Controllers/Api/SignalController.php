@@ -216,17 +216,12 @@ class SignalController extends Controller
             $document = $process->getDomDocument();
             $nodes = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
             foreach ($nodes as $node) {
-                $filter = array_filter($signals, function ($signal) use ($node) {
-                    return $signal['id'] === $node->getAttribute('id');
-                });
-                if (count($filter) === 0) {
-                    $signal = [
-                        'id' => $node->getAttribute('id'),
-                        'name' => $node->getAttribute('name'),
-                        'process' => ['id' => $process->id, 'name' => $process->name],
-                    ];
-                    $signals[] =  $signal;
-                }
+                $signal = [
+                    'id' => $node->getAttribute('id'),
+                    'name' => $node->getAttribute('name'),
+                    'process' => ($process->category->is_system) ? null: ['id' => $process->id, 'name' => $process->name],
+                ];
+                $signals[] =  $signal;
             }
         }
 
@@ -238,7 +233,7 @@ class SignalController extends Controller
 
             $foundSignal = array_pop($list);
             if ($foundSignal) {
-                if (!in_array($signal['process'], $foundSignal['processes'])) {
+                if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
                     $foundSignal['processes'][] = $signal['process'];
                 }
             }
@@ -246,7 +241,7 @@ class SignalController extends Controller
                 $result[] = [
                     'id' => $signal['id'],
                     'name' => $signal['name'],
-                    'processes' => [$signal['process']],
+                    'processes' => $signal['process'] ? [$signal['process']] : [],
                 ];
             }
         }
