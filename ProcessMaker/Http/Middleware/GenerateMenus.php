@@ -152,6 +152,13 @@ class GenerateMenus
                     'id' => 'process-environment'
                 ]);
             }
+            if (\Auth::check() && \Auth::user()->can('view-signals')) {
+                $submenu->add(__('Signals'), [
+                    'route' => 'signals.index',
+                    'icon' => 'fa-exclamation-triangle',
+                    'id' => 'signal'
+                ]);
+            }
         });
 
         Menu::make('sidebar_designer', function ($menu) { });
