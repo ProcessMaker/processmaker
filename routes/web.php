@@ -39,6 +39,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
         Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder')->middleware('can:edit-scripts,script');
 
         Route::get('signals', 'SignalController@index')->name('signals.index')->middleware('can:view-signals');
+        Route::get('signals/{signalId}/edit', 'SignalController@edit')->name('signals.edit')->middleware('can:edit-signals');
     });
 
     Route::get('designer/processes/categories', 'ProcessController@index')->name('process-categories.index') ->middleware ('can:view-process-categories');
