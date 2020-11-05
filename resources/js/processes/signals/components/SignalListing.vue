@@ -28,7 +28,7 @@
                 @click="onEdit(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Edit')"
-                v-if="permission.includes('edit-signals')"
+                v-if="permission.includes('edit-processes')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -37,7 +37,7 @@
                 @click="onDelete(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
-                v-if="permission.includes('delete-signals')"
+                v-if="permission.includes('edit-processes')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -131,8 +131,7 @@ export default {
             "&order_by=" +
             this.orderBy +
             "&order_direction=" +
-            this.orderDirection +
-            "&include=membersCount"
+            this.orderDirection
         )
         .then((response) => {
           this.data = response.data;
