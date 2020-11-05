@@ -50,24 +50,7 @@ class SignalController extends Controller
      */
     public function show($id)
     {
-        $processes = Process::query()->orderBy('updated_at', 'desc')->get();
-
-        $signals = [];
-        foreach ($processes as $process) {
-            $document = $process->getDomDocument();
-            $nodes = $document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
-            foreach ($nodes as $node) {
-                if ($id === $node->getAttribute('id')) {
-                    $signals = [
-                        'id' => $node->getAttribute('id'),
-                        'name' => $node->getAttribute('name'),
-                    ];
-                    break;
-                }
-            }
-        }
-
-        return response($signals);
+        return response(SignalManager::getAllSignals()->firstWhere('id', $id), 200);
     }
 
     /**
