@@ -97,12 +97,6 @@ class PermissionSeeder extends Seeder
             'edit-auth_clients',
             'delete-auth_clients',
         ],
-        'Signals' => [
-            'create-signals',
-            'delete-signals',
-            'edit-signals',
-            'view-signals',
-        ],
     ];
 
     public function run($seedUser = null)

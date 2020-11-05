@@ -40,11 +40,11 @@
             </div>
         </div>
         <div class="container-fluid">
-            <signals-listing ref="signalList" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('signals') }}" v-on:reload="reload" />
+            <signals-listing ref="signalList" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}" v-on:reload="reload" />
         </div>
     </div>
 
-    @can('create-Signals')
+    @can('create-processes')
     <div class="modal fade" id="createSignal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -87,7 +87,7 @@
 @section('js')
     <script src="{{mix('js/processes/signals/index.js')}}"></script>
 
-    @can('create-signals')
+    @can('create-processes')
     <script>
         new Vue({
             el: '#createSignal',
