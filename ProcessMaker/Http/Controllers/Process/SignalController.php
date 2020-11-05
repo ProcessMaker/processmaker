@@ -6,7 +6,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Models\Screen;
 use ProcessMaker\Traits\HasControllerAddons;
 
 class SignalController extends Controller

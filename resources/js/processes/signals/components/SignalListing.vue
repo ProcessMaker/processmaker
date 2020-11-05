@@ -135,7 +135,7 @@ export default {
             "&include=membersCount"
         )
         .then((response) => {
-          this.data = this.transform(response.data);
+          this.data = response.data;
           this.loading = false;
         });
     },
