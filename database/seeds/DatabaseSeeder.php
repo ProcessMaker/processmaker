@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            UserSeeder::class,
+            SignalSeeder::class,
             PermissionSeeder::class,
             ProcessSystemCategorySeeder::class,
             GroupSeeder::class,
@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             CategorySystemSeeder::class,
             ScreenSystemSeeder::class,
             ScriptExecutorSeeder::class,
+            SignalSeeder::class,
         ]);
         $this->callPluginSeeders();
     }

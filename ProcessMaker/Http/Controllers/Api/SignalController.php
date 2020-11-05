@@ -166,8 +166,12 @@ class SignalController extends Controller
      */
     private function getGlobalSignalProcess()
     {
-        // TODO use a system process created when seeding
-        return Process::find(33);
+        $list = Process::where('name', 'global_signals')->get();
+        if ($list->count() === 0) {
+            throw new \Exception("Global store of signals not found");
+        }
+
+        return $list->first();
     }
 
     /**
