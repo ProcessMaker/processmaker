@@ -25,7 +25,13 @@
           <b-col class="overflow-auto h-100">
             <!-- TODO:: Display conversational form in preview mode -->
             <div v-if="type == 'conversational'">
-              <conversational-forms v-model="previewData" :screen="screen.config" :watchers="computed.watchers" :computed="screen.computed" :custom-css="screen.custom_css" @onUpdate="onUpdate"></conversational-forms>
+              <conversational-forms
+                v-model="previewData"
+                :config="preview.config"
+                :computed="preview.computed"
+                :watchers="preview.watchers"
+                :custom-css="preview.custom_css"
+              />
             </div>    
             <vue-form-renderer
               v-else
@@ -466,7 +472,6 @@ export default {
       });
     },
     onUpdate(data) {
-      console.log('HIT HERE ON UPDATE', data);
       ProcessMaker.EventBus.$emit("form-data-updated", data);
     },
     getValidationErrorsForItems(items, page) {
