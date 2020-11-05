@@ -5,12 +5,12 @@
 @endsection
 
 @section('sidebar')
-  @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_admin')])
+  @include('layouts.sidebar', ['sidebar'=> Menu::get('sidebar_processes')])
 @endsection
 
 @section('breadcrumbs')
   @include('shared.breadcrumbs', ['routes' => [
-    __('Admin') => route('admin.index'),
+    __('Designer') => route('processes.index'),
     __('Signals') => route('signals.index'),
     __('Edit') . " " . $signal->getName() => null,
   ]])
@@ -74,7 +74,7 @@
         showAddUserModal: false,
         formData: {
           id: @json($signal->getId()),
-          name: @json($signal->getName())
+          name: @json($signal->getName()),
         },
         filter: '',
         errors: {
