@@ -12,7 +12,7 @@
   @include('shared.breadcrumbs', ['routes' => [
     __('Designer') => route('processes.index'),
     __('Signals') => route('signals.index'),
-    __('Edit') . " " . $signal->getName() => null,
+    __('Edit') . " " . $signal['name'] => null,
   ]])
 @endsection
 
@@ -55,7 +55,7 @@
           </div>
         </div>
         <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-catch" role="tabpanel" aria-labelledby="nav-catch-tab">
-
+          <catch-listing ref="catchList" :filter="filter" items="{{json_encode($signal['processes'])}}"/>
         </div>
 
       </div>
@@ -66,16 +66,15 @@
 @endsection
 
 @section('js')
+<script src="{{mix('js/processes/signals/edit.js')}}"></script>
+
 <script>
   new Vue({
     el: '#editSignal',
     data() {
       return {
         showAddUserModal: false,
-        formData: {
-          id: @json($signal->getId()),
-          name: @json($signal->getName()),
-        },
+        formData: @json($signal),
         filter: '',
         errors: {
           'name': null,
@@ -84,9 +83,6 @@
       }
     },
     methods: {
-      onCloseAddUser() {
-        this.selectedUsers = [];
-      },
       resetErrors() {
         this.errors = Object.assign({}, {
           id: null,

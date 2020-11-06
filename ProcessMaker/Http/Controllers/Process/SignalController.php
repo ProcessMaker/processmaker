@@ -32,7 +32,7 @@ class SignalController extends Controller
      */
     public function edit($id)
     {
-        $signal = SignalManager::findSignal($id);
+        $signal = SignalManager::getAllSignals()->firstWhere('id', $id);
 
         return view('processes.signals.edit', compact('signal'));
     }
