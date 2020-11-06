@@ -49,6 +49,11 @@
                 <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
             </div>
           </div>
+          @isset($addons)
+            @foreach ($addons as $addon)
+               {!! __($addon['content']) !!}
+            @endforeach
+          @endisset
           <div class="d-flex justify-content-end mt-3">
               {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
               {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
@@ -71,6 +76,7 @@
 <script>
   new Vue({
     el: '#editSignal',
+    mixins:addons,
     data() {
       return {
         showAddUserModal: false,
@@ -97,6 +103,8 @@
         this.resetErrors();
         ProcessMaker.apiClient.put('signals/' + this.originalId, this.formData)
           .then(response => {
+            //todo Change method
+            this.saveSingal();
             ProcessMaker.alert(this.$t('Update Signal Successfully'), 'success');
             this.onClose();
           })
