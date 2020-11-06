@@ -75,6 +75,7 @@
       return {
         showAddUserModal: false,
         formData: @json($signal),
+        originalId:(@json($signal)).id,
         filter: '',
         errors: {
           'name': null,
@@ -94,7 +95,7 @@
       },
       onUpdate() {
         this.resetErrors();
-        ProcessMaker.apiClient.put('signals/' + this.formData.id, this.formData)
+        ProcessMaker.apiClient.put('signals/' + this.originalId, this.formData)
           .then(response => {
             ProcessMaker.alert(this.$t('Update Signal Successfully'), 'success');
             this.onClose();
