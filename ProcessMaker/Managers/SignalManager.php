@@ -119,19 +119,20 @@ class SignalManager
      */
     public static function findSignal($signalId)
     {
-        $signals = array_filter(SignalManager::getAllSignals(), function ($sig) use ($signalId) {
-            return $sig['id'] === $signalId;
-        });
+        $assocSignal =  SignalManager::getAllSignals()
+                            ->firstWhere('id', $signalId);
+//        $signals = array_filter(SignalManager::getAllSignals(), function ($sig) use ($signalId) {
+//            return $sig['id'] === $signalId;
+//        });
+        return $assocSignal ? self::associativeToSignal($assocSignal) : null;
 
-        $result = null;
-        if (count($signals) > 0) {
-            $signal = array_pop($signals);
-            $result = new Signal();
-            $result->setId($signal['id']);
-            $result->setName($signal['name']);
-        }
-
-        return $result;
+//        $result = null;
+//        if (count($signals) > 0) {
+//            $signal = array_pop($signals);
+//            $result = self::associativeToSignal($signal);
+//        }
+//
+//        return $result;
     }
 
     /**
@@ -148,23 +149,21 @@ class SignalManager
             $result[] = 'The signal ID should be an alphanumeric string';
         }
 
-        $signalIdExists =  count(
-                array_filter(SignalManager::getAllSignals(), function($sig) use($newSignal, $oldSignal) {
-                    return $sig['id'] === $newSignal->getId()
-                        && (empty($oldSignal) ? true : $sig['id'] !== $oldSignal->getId());
-                })
-            ) > 0;
+        $signalIdExists = self::getAllSignals()
+                        ->contains(function ($sig) use($newSignal, $oldSignal){
+                            return $sig['id'] === $newSignal->getId()
+                                && (empty($oldSignal) ? true : $sig['id'] !== $oldSignal->getId());
+                        });
 
         if ($signalIdExists) {
             $result[] = 'The signal ID already exists';
         }
 
-        $signalNameExists =  count(
-                array_filter(SignalManager::getAllSignals(), function($sig) use($newSignal, $oldSignal) {
-                    return $sig['name'] === $newSignal->getName()
-                        && (empty($oldSignal) ? true : $sig['name'] !== $oldSignal->getName());
-                })
-            ) > 0;
+        $signalNameExists = self::getAllSignals()
+            ->contains(function ($sig) use($newSignal, $oldSignal){
+                return $sig['name'] === $newSignal->getId()
+                    && (empty($oldSignal) ? true : $sig['name'] !== $oldSignal->getName());
+            });
 
         if ($signalNameExists) {
             $result[] = 'The signal name already exists';
@@ -183,5 +182,20 @@ class SignalManager
                 'type' => $node->parentNode->localName
             ];
         });
+    }
+
+    /**
+     * Converts an associative array to a signal object
+     *
+     * @param array $signal
+     *
+     * @return Signal
+     */
+    protected static function associativeToSignal(array $signal): Signal
+    {
+        $result = new Signal();
+        $result->setId($signal['id']);
+        $result->setName($signal['name']);
+        return $result;
     }
 }
