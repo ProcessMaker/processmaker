@@ -4301,17 +4301,11 @@
                             },
                             "notifications": {
                                 "description": "Represents a business process definition.",
-                                "type": "array",
-                                "items": {
-                                    "type": "object"
-                                }
+                                "type": "object"
                             },
                             "task_notifications": {
                                 "description": "Represents a business process definition.",
-                                "type": "array",
-                                "items": {
-                                    "type": "object"
-                                }
+                                "type": "object"
                             }
                         },
                         "type": "object"

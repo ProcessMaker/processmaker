@@ -78,8 +78,8 @@ use Throwable;
  *           @OA\Property(property="deleted_at", type="string", format="date-time"),
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
- *           @OA\Property(property="notifications", type="array", @OA\Items(type="object")),
- *           @OA\Property(property="task_notifications", type="array", @OA\Items(type="object")),
+ *           @OA\Property(property="notifications", type="object"),
+ *           @OA\Property(property="task_notifications", type="object"),
  *       )
  *   }
  * ),
