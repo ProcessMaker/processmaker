@@ -103,6 +103,8 @@
         this.resetErrors();
         ProcessMaker.apiClient.put('signals/' + this.originalId, this.formData)
           .then(response => {
+            //todo Change method
+            this.saveSingal();
             ProcessMaker.alert(this.$t('Update Signal Successfully'), 'success');
             this.onClose();
           })
