@@ -13,7 +13,7 @@ class SignalManager
 {
     const PROCESS_NAME = 'global_signals';
 
-    public static function getAllSignals()
+    public static function getAllSignals($returnFullList = false)
     {
         $signals = collect();
         foreach (Process::all() as $process) {
@@ -25,18 +25,40 @@ class SignalManager
                 $signals->push([
                     'id' => $node->getAttribute('id'),
                     'name' => $node->getAttribute('name'),
-                    'process' => ($process->category->is_system)
-                                    ? null
-                                    : [
+                    'process' => (!$process->category->is_system || $returnFullList)
+                                    ? [
                                         'id' => $process->id,
                                         'name' => $process->name,
                                         'catches' => self::getSignalCatchEvents($node->getAttribute('id'), $process->getDomDocument())->toArray()
                                     ]
+                                    : null
                 ]);
             }
         }
 
-        $result = collect();
+        //$result = collect();
+
+//        $result = $signals->reduce(function ($carry, $signal) {
+//            $foundSignal = $carry->firstWhere('id', $signal['id']);
+//            if ($foundSignal) {
+//                if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
+//                    $foundSignal['processes'][] = $signal['process'];
+//                    $foundSignal['name'] .= '-K';
+//                    $carry->merge([$foundSignal['id'] => $foundSignal]);
+//                    //$carry->get($foundSignal['id'])['processes'][] = $signal['process'];
+//                }
+//            } else {
+//                $carry->put($signal['id'], [
+//                    'id' => $signal['id'],
+//                    'name' => $signal['name'],
+//                    'processes' => $signal['process'] ? [$signal['process']] : [],
+//                ]);
+//            }
+//            return $carry;
+//
+//        }, collect());
+
+        $result= collect();
         foreach ($signals as $signal) {
             $foundSignal = $result->firstWhere('id', $signal['id']);
 
@@ -44,6 +66,16 @@ class SignalManager
                 if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
                     $foundSignal['processes'][] = $signal['process'];
                 }
+                $resultArray = $result->toArray();
+                $index = 0;
+                foreach($resultArray as $res) {
+                    if ($res['id'] === $signal['id']) {
+                        $resultArray[$index] = $foundSignal;
+                        break;
+                    }
+                    $index++;
+                }
+                $result = collect($resultArray);
             } else {
                 $result[] = [
                     'id' => $signal['id'],
@@ -71,18 +103,57 @@ class SignalManager
 
     public static function replaceSignal(Signal $newSignal, Signal $oldSignal)
     {
-        $signalProcess = SignalManager::getGlobalSignalProcess();
-        $definitions = $signalProcess->getDefinitions();
-        $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
-        $newNode->setAttribute('id', $newSignal->getId());
-        $newNode->setAttribute('name', $newSignal->getName());
+//        $signalProcess = SignalManager::getGlobalSignalProcess();
+//        $definitions = $signalProcess->getDefinitions();
+//        $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
+//        $newNode->setAttribute('id', $newSignal->getId());
+//        $newNode->setAttribute('name', $newSignal->getName());
+//
+//        $x = new DOMXPath($definitions);
+//        if ($x->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
+//            $oldNode = $x->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
+//            $definitions->firstChild->replaceChild($newNode, $oldNode);
+//            $signalProcess->bpmn = $definitions->saveXML();
+//            $signalProcess->save();
+//        }
 
-        $x = new DOMXPath($definitions);
-        if ($x->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
-            $oldNode = $x->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
-            $definitions->firstChild->replaceChild($newNode, $oldNode);
-            $signalProcess->bpmn = $definitions->saveXML();
-            $signalProcess->save();
+        $signal = self::getAllSignals(true)->firstWhere('id', $oldSignal->getId());
+        foreach ($signal['processes'] as $processData) {
+            $process = Process::find($processData['id']);
+            if (empty($process)) {
+                return;
+            }
+            $definitions = $process->getDefinitions();
+            $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
+            $newNode->setAttribute('id', $newSignal->getId());
+            $newNode->setAttribute('name', $newSignal->getName());
+
+            $x = new DOMXPath($definitions);
+            if ($x->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
+                $oldNode = $x->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
+                $definitions->firstChild->replaceChild($newNode, $oldNode);
+            }
+
+
+            $nodes = collect($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signalEventDefinition'));
+            foreach ($nodes as $node) {
+                if ($node->getAttribute('signalRef') === $oldSignal->getId()) {
+                    $node->setAttribute('signalRef', $newSignal->getId());
+                }
+            }
+
+            $process->bpmn = $definitions->saveXML();
+            $process->save();
+//            return $nodes->reduce(function ($carry, $node) use($signalId) {
+//                if ($node->getAttribute('signalRef') === $signalId) {
+//                    $carry->push ([
+//                        'id' => $node->parentNode->getAttribute('id'),
+//                        'name' => $node->parentNode->getAttribute('name'),
+//                        'type' => $node->parentNode->localName
+//                    ]);
+//                }
+//                return $carry;
+//            }, collect());
         }
     }
 
@@ -121,23 +192,12 @@ class SignalManager
     {
         $assocSignal =  SignalManager::getAllSignals()
                             ->firstWhere('id', $signalId);
-//        $signals = array_filter(SignalManager::getAllSignals(), function ($sig) use ($signalId) {
-//            return $sig['id'] === $signalId;
-//        });
         return $assocSignal ? self::associativeToSignal($assocSignal) : null;
-
-//        $result = null;
-//        if (count($signals) > 0) {
-//            $signal = array_pop($signals);
-//            $result = self::associativeToSignal($signal);
-//        }
-//
-//        return $result;
     }
 
     /**
      * @param Signal $newSignal
-     * @param Signal $oldSignal In case of an insert, this variable is null
+     * @param Signal | null $oldSignal In case of an insert, this variable is null
      *
      * @return array
      */
@@ -175,13 +235,16 @@ class SignalManager
     private static function getSignalCatchEvents($signalId, BpmnDocument $document)
     {
         $nodes = collect($document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signalEventDefinition'));
-        return $nodes->map(function ($node) {
-            return [
-                'id' => $node->parentNode->getAttribute('id'),
-                'name' => $node->parentNode->getAttribute('name'),
-                'type' => $node->parentNode->localName
-            ];
-        });
+        return $nodes->reduce(function ($carry, $node) use($signalId) {
+            if ($node->getAttribute('signalRef') === $signalId) {
+                $carry->push ([
+                    'id' => $node->parentNode->getAttribute('id'),
+                    'name' => $node->parentNode->getAttribute('name'),
+                    'type' => $node->parentNode->localName
+                ]);
+            }
+            return $carry;
+        }, collect());
     }
 
     /**
