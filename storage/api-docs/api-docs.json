@@ -270,7 +270,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -513,7 +512,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -696,7 +694,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -744,7 +741,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -894,7 +890,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -956,7 +951,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1531,7 +1525,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1709,7 +1702,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1970,7 +1962,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -3323,79 +3314,6 @@
                 }
             }
         },
-        "/task_assignments": {
-            "post": {
-                "tags": [
-                    "Task Assignments"
-                ],
-                "summary": "Save a new task assignments",
-                "operationId": "createTaskAssignments",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/taskAssignmentsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/taskAssignments"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/task_assignments/{task_assignments_id}": {
-            "put": {
-                "tags": [
-                    "Task Assignments"
-                ],
-                "summary": "Update a task assignments",
-                "operationId": "updateTaskAssignments",
-                "parameters": [
-                    {
-                        "name": "task_assignments_id",
-                        "in": "path",
-                        "description": "ID of task assignment to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/taskAssignmentsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/taskAssignments"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/tasks": {
             "get": {
                 "tags": [
@@ -3441,7 +3359,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -3576,7 +3493,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },

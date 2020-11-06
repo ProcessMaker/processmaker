@@ -328,9 +328,9 @@ class ProcessRequestFileController extends Controller
      *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
-    public function destroy(Request $laravel_request, ProcessRequest $request)
+    public function destroy(Request $laravel_request, ProcessRequest $request, Media $file)
     {
-        $request->getMedia()[0]->delete();
+        $request->getMedia()->firstWhere('id', $file->id)->destroy();
         return response([], 204);
     }
 }
