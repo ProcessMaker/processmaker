@@ -23,18 +23,8 @@
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
           
           <b-col class="overflow-auto h-100">
-            <!-- TODO:: Display conversational form in preview mode -->
-            <div v-if="type == 'conversational'">
-              <conversational-forms
-                v-model="previewData"
-                :config="preview.config"
-                :computed="preview.computed"
-                :watchers="preview.watchers"
-                :custom-css="preview.custom_css"
-              />
-            </div>    
             <vue-form-renderer
-              v-else
+              v-if="renderComponent === 'task-screen'"
               ref="renderer"
               :key="rendererKey"
               v-model="previewData"
@@ -50,6 +40,18 @@
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
             />
+            <div v-else>
+              <component
+                :is="renderComponent"
+                v-model="previewData"
+                :screen="preview.config"
+                :computed="preview.computed"
+                :custom-css="preview.custom_css"
+                :watchers="preview.watchers"
+                :data="previewData"
+                @submit="previewSubmit"
+              />
+            </div>
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
@@ -182,7 +184,6 @@ import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
 import { cloneDeep } from 'lodash';
-import ConversationalForms from "../../../../vendor/processmaker/package-conversational-forms/resources/js/components/ConversationalForm";
 
 // Bring in our initial set of controls
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -348,6 +349,7 @@ export default {
       previewComponents: [],
       optionsMenu: options,
       rendererKey: 0,
+      renderComponent: 'task-screen'
     };
   },
   components: {
@@ -359,7 +361,6 @@ export default {
     WatchersPopup,
     MonacoEditor,
     TopMenu,
-    ConversationalForms
   },
   watch: {
     config() {
@@ -424,6 +425,9 @@ export default {
   mounted() {
     // Call our init lifecycle event
     ProcessMaker.EventBus.$emit("screen-builder-init", this);
+    if (this.screen.type === 'CONVERSATIONAL') {
+      this.renderComponent = 'ConversationalForm';
+    }
     this.computed = this.screen.computed ? this.screen.computed : [];
     this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
     this.watchers = this.screen.watchers ? this.screen.watchers : [];
