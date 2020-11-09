@@ -36,31 +36,33 @@
         <div class="card card-body border-top-0 tab-pane p-3 fade show active" id="nav-detail" role="tabpanel" aria-labelledby="nav-detail-tab">
           <div class="modal-body">
             <div class="form-signal">
-                {!! Form::label('id', __('Id')) !!}<small class="ml-1">*</small>
-                {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
-                'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
-                <small id="emailHelp" class="form-text text-muted">{{__('signal id must be distinct')}}</small>
-                <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
+              {!! Form::label('id', __('Id')) !!}<small class="ml-1">*</small>
+              {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
+              'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
+              <small id="emailHelp" class="form-text text-muted">{{__('signal id must be distinct')}}</small>
+              <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
             </div>
             <div class="form-signal">
-                {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
-                {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
-                'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-                <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+              {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
+              {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
+              'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+              <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
             </div>
           </div>
           @isset($addons)
             @foreach ($addons as $addon)
-               {!! __($addon['content']) !!}
+              {!! __($addon['content']) !!}
             @endforeach
           @endisset
+          @if(!hasPackage('package-webhooks'))
           <div class="d-flex justify-content-end mt-3">
-              {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-              {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
+            {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
+            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
           </div>
+          @endif
         </div>
         <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-catch" role="tabpanel" aria-labelledby="nav-catch-tab">
-          <catch-listing ref="catchList" :filter="filter" items="{{json_encode($signal['processes'])}}"/>
+          <catch-listing ref="catchList" :filter="filter" items="{{json_encode($signal['processes'])}}" />
         </div>
 
       </div>
@@ -76,12 +78,12 @@
 <script>
   new Vue({
     el: '#editSignal',
-    mixins:addons,
+    mixins: addons,
     data() {
       return {
         showAddUserModal: false,
         formData: @json($signal),
-        originalId:(@json($signal)).id,
+        originalId: (@json($signal)).id,
         filter: '',
         errors: {
           'name': null,
@@ -103,8 +105,6 @@
         this.resetErrors();
         ProcessMaker.apiClient.put('signals/' + this.originalId, this.formData)
           .then(response => {
-            //todo Change method
-            this.saveSingal();
             ProcessMaker.alert(this.$t('Update Signal Successfully'), 'success');
             this.onClose();
           })
