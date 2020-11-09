@@ -19,23 +19,25 @@ class ThrowSignalEvent implements ShouldQueue
 
     public $signalRef;
     public $data;
-    public $exclude;
+    public $excludeProcess;
+    public $excludeRequests;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($signalRef, array $data = [], array $exclude = [])
+    public function __construct($signalRef, array $data = [], array $excludeProcess = [], array $excludeRequests = [])
     {
         $this->signalRef = $signalRef;
         $this->data = $data;
-        $this->exclude = $exclude;
+        $this->excludeProcess = $excludeProcess;
+        $this->excludeRequests = $excludeRequests;
     }
 
     public function handle()
     {
-        $processes = Process::whereNotIn('id', $this->exclude)
+        $processes = Process::whereNotIn('id', $this->excludeProcess)
             ->whereJsonContains('signal_events', $this->signalRef)
             ->pluck('id')
             ->toArray();
@@ -43,10 +45,11 @@ class ThrowSignalEvent implements ShouldQueue
             CatchSignalEventProcess::dispatch(
                 $process,
                 $this->signalRef,
-                $this->data
+                $this->data,
             )->onQueue('bpmn');
         }
-        $count = ProcessRequest::whereNotIn('id', $this->exclude)
+        $count = ProcessRequest::whereNotIn('id', $this->excludeRequests)
+            ->where('status', 'ACTIVE')
             ->whereJsonContains('signal_events', $this->signalRef)
             ->count();
         if ($count) {
@@ -54,7 +57,7 @@ class ThrowSignalEvent implements ShouldQueue
             $requests = ProcessRequest::select(['id'])
                 ->whereJsonContains('signal_events', $this->signalRef)
                 ->where('status', 'ACTIVE')
-                ->whereNotIn('id', $this->exclude);
+                ->whereNotIn('id', $this->excludeRequests);
             $requests = $requests->orderBy('id')
                 ->pluck('id')
                 ->toArray();
@@ -63,7 +66,7 @@ class ThrowSignalEvent implements ShouldQueue
                 CatchSignalEventRequest::dispatch(
                     $chunck,
                     $this->signalRef,
-                    $this->data
+                    $this->data,
                 )->onQueue('bpmn');
             }
         }

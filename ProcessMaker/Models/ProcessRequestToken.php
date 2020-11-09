@@ -668,4 +668,18 @@ class ProcessRequestToken extends Model implements TokenInterface
             ARRAY_FILTER_USE_KEY
         );
     }
+
+    public function saveToken()
+    {
+        $activity = $this->getOwnerElement();
+        $token = $this;
+        $token->status = $token->getStatus();
+        $token->element_id = $activity->getId();
+        $token->element_type = $activity->getBpmnElement()->localName;
+        $token->element_name = $activity->getName();
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->saveOrFail();
+        $token->setId($token->getKey());        
+    }
 }
