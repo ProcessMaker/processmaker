@@ -55,33 +55,6 @@ class SignalManager
 
         }, collect());
 
-//        $result= collect();
-//        foreach ($signals as $signal) {
-//            $foundSignal = $result->firstWhere('id', $signal['id']);
-//
-//            if ($foundSignal) {
-//                if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
-//                    $foundSignal['processes'][] = $signal['process'];
-//                }
-//                $resultArray = $result->toArray();
-//                $index = 0;
-//                foreach($resultArray as $res) {
-//                    if ($res['id'] === $signal['id']) {
-//                        $resultArray[$index] = $foundSignal;
-//                        break;
-//                    }
-//                    $index++;
-//                }
-//                $result = collect($resultArray);
-//            } else {
-//                $result[] = [
-//                    'id' => $signal['id'],
-//                    'name' => $signal['name'],
-//                    'processes' => $signal['process'] ? [$signal['process']] : [],
-//                ];
-//            }
-//        }
-
         return $result->values();
     }
 

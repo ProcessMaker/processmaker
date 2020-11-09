@@ -37,7 +37,7 @@
                 @click="onDelete(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
-                v-if="permission.includes('edit-processes')"
+                v-if="isDeletable(props.rowData) && permission.includes('edit-processes')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -94,6 +94,11 @@ export default {
     };
   },
   methods: {
+    isDeletable(data) {
+      let catches = data.processes.reduce((carry, process) => carry + process.catches.length, 0);
+      console.log('catches', data.name, catches);
+      return catches === 0;
+    },
     onEdit(data, index) {
       window.location = "/designer/signals/" + data.id + "/edit";
     },
