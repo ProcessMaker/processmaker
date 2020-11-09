@@ -21,7 +21,7 @@ export default {
         config: {
           label: "Variable Name",
           name: 'Name',
-          helper: "A variable name is a symbolic name to reference information",
+          helper: "A variable name is a symbolic name to reference information.",
           validation: 'regex:/^(?:[A-Z_.a-z])(?:[0-9A-Z_. \/a-z])*$/|required'
         }
       },
