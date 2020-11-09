@@ -36,56 +36,53 @@ class SignalManager
             }
         }
 
-        //$result = collect();
 
-//        $result = $signals->reduce(function ($carry, $signal) {
-//            $foundSignal = $carry->firstWhere('id', $signal['id']);
-//            if ($foundSignal) {
-//                if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
-//                    $foundSignal['processes'][] = $signal['process'];
-//                    $foundSignal['name'] .= '-K';
-//                    $carry->merge([$foundSignal['id'] => $foundSignal]);
-//                    //$carry->get($foundSignal['id'])['processes'][] = $signal['process'];
-//                }
-//            } else {
-//                $carry->put($signal['id'], [
-//                    'id' => $signal['id'],
-//                    'name' => $signal['name'],
-//                    'processes' => $signal['process'] ? [$signal['process']] : [],
-//                ]);
-//            }
-//            return $carry;
-//
-//        }, collect());
-
-        $result= collect();
-        foreach ($signals as $signal) {
-            $foundSignal = $result->firstWhere('id', $signal['id']);
-
+        $result = $signals->reduce(function ($carry, $signal) {
+            $foundSignal = $carry->firstWhere('id', $signal['id']);
             if ($foundSignal) {
                 if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
                     $foundSignal['processes'][] = $signal['process'];
+                    $carry = $carry->merge([$foundSignal['id'] => $foundSignal]);
                 }
-                $resultArray = $result->toArray();
-                $index = 0;
-                foreach($resultArray as $res) {
-                    if ($res['id'] === $signal['id']) {
-                        $resultArray[$index] = $foundSignal;
-                        break;
-                    }
-                    $index++;
-                }
-                $result = collect($resultArray);
             } else {
-                $result[] = [
+                $carry->put($signal['id'], [
                     'id' => $signal['id'],
                     'name' => $signal['name'],
                     'processes' => $signal['process'] ? [$signal['process']] : [],
-                ];
+                ]);
             }
-        }
+            return $carry;
 
-        return $result;
+        }, collect());
+
+//        $result= collect();
+//        foreach ($signals as $signal) {
+//            $foundSignal = $result->firstWhere('id', $signal['id']);
+//
+//            if ($foundSignal) {
+//                if ($signal['process'] && !in_array($signal['process'], $foundSignal['processes'])) {
+//                    $foundSignal['processes'][] = $signal['process'];
+//                }
+//                $resultArray = $result->toArray();
+//                $index = 0;
+//                foreach($resultArray as $res) {
+//                    if ($res['id'] === $signal['id']) {
+//                        $resultArray[$index] = $foundSignal;
+//                        break;
+//                    }
+//                    $index++;
+//                }
+//                $result = collect($resultArray);
+//            } else {
+//                $result[] = [
+//                    'id' => $signal['id'],
+//                    'name' => $signal['name'],
+//                    'processes' => $signal['process'] ? [$signal['process']] : [],
+//                ];
+//            }
+//        }
+
+        return $result->values();
     }
 
     public static function addSignal(Signal $signal)
@@ -103,20 +100,6 @@ class SignalManager
 
     public static function replaceSignal(Signal $newSignal, Signal $oldSignal)
     {
-//        $signalProcess = SignalManager::getGlobalSignalProcess();
-//        $definitions = $signalProcess->getDefinitions();
-//        $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
-//        $newNode->setAttribute('id', $newSignal->getId());
-//        $newNode->setAttribute('name', $newSignal->getName());
-//
-//        $x = new DOMXPath($definitions);
-//        if ($x->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
-//            $oldNode = $x->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
-//            $definitions->firstChild->replaceChild($newNode, $oldNode);
-//            $signalProcess->bpmn = $definitions->saveXML();
-//            $signalProcess->save();
-//        }
-
         $signal = self::getAllSignals(true)->firstWhere('id', $oldSignal->getId());
         foreach ($signal['processes'] as $processData) {
             $process = Process::find($processData['id']);
@@ -144,29 +127,30 @@ class SignalManager
 
             $process->bpmn = $definitions->saveXML();
             $process->save();
-//            return $nodes->reduce(function ($carry, $node) use($signalId) {
-//                if ($node->getAttribute('signalRef') === $signalId) {
-//                    $carry->push ([
-//                        'id' => $node->parentNode->getAttribute('id'),
-//                        'name' => $node->parentNode->getAttribute('name'),
-//                        'type' => $node->parentNode->localName
-//                    ]);
-//                }
-//                return $carry;
-//            }, collect());
         }
     }
 
+    /**
+     * @param Signal $signal
+     */
     public static function removeSignal(Signal $signal)
     {
-        $signalProcess = SignalManager::getGlobalSignalProcess();
-        $definitions = $signalProcess->getDefinitions();
-        $x = new DOMXPath($definitions);
-        if ($x->query("//*[@id='" . $signal->getId() . "']")->count() > 0 ) {
-            $node = $x->query("//*[@id='" . $signal->getId() . "']")->item(0);
-            $definitions->firstChild->removeChild($node);
-            $signalProcess->bpmn = $definitions->saveXML();
-            $signalProcess->save();
+        // TODO validate that the signal is not referenced in any catch event
+
+        $signalAsArray = self::getAllSignals(true)->firstWhere('id', $signal->getId());
+        foreach ($signalAsArray['processes'] as $processData) {
+            $process = Process::find($processData['id']);
+            if (empty($process)) {
+                return;
+            }
+            $definitions = $process->getDefinitions();
+            $x = new DOMXPath($definitions);
+            if ($x->query("//*[@id='" . $signal->getId() . "']")->count() > 0 ) {
+                $node = $x->query("//*[@id='" . $signal->getId() . "']")->item(0);
+                $definitions->firstChild->removeChild($node);
+                $process->bpmn = $definitions->saveXML();
+                $process->save();
+            }
         }
     }
 
@@ -254,7 +238,7 @@ class SignalManager
      *
      * @return Signal
      */
-    protected static function associativeToSignal(array $signal): Signal
+    public static function associativeToSignal(array $signal): Signal
     {
         $result = new Signal();
         $result->setId($signal['id']);
