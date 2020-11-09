@@ -43,7 +43,7 @@ class ThrowSignalEvent implements ShouldQueue
             CatchSignalEventProcess::dispatch(
                 $process,
                 $this->signalRef,
-                $this->data,
+                $this->data
             )->onQueue('bpmn');
         }
         $count = ProcessRequest::whereNotIn('id', $this->exclude)
@@ -63,7 +63,7 @@ class ThrowSignalEvent implements ShouldQueue
                 CatchSignalEventRequest::dispatch(
                     $chunck,
                     $this->signalRef,
-                    $this->data,
+                    $this->data
                 )->onQueue('bpmn');
             }
         }
