@@ -47,21 +47,6 @@ class TaskAssignmentController extends Controller
      * @return ApiResource
      * @throws \Throwable
      *
-     * @OA\Post(
-     *     path="/task_assignments",
-     *     summary="Save a new task assignments",
-     *     operationId="createTaskAssignments",
-     *     tags={"Task Assignments"},
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/taskAssignmentsEditable")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/taskAssignments")
-     *     )
-     * )
      */
     public function store(Request $request)
     {
@@ -81,30 +66,6 @@ class TaskAssignmentController extends Controller
      * @return ApiResource
      * @throws \Throwable
      *
-     * @OA\Put(
-     *     path="/task_assignments/{task_assignments_id}",
-     *     summary="Update a task assignments",
-     *     operationId="updateTaskAssignments",
-     *     tags={"Task Assignments"},
-     *     @OA\Parameter(
-     *         description="ID of task assignment to return",
-     *         in="path",
-     *         name="task_assignments_id",
-     *         required=true,
-     *         @OA\Schema(
-     *           type="string",
-     *         )
-     *     ),
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/taskAssignmentsEditable")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/taskAssignments")
-     *     ),
-     * )
      */
     public function update(ProcessTaskAssignment $task_assignment, Request $request)
     {
