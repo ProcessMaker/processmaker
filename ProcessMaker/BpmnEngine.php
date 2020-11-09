@@ -79,6 +79,11 @@ class BpmnEngine implements EngineInterface
         return $this->repository;
     }
 
+    public function getExecutionInstances()
+    {
+        return $this->executionInstances;
+    }
+
     /**
      * @param RepositoryInterface $repository
      *
@@ -156,10 +161,5 @@ class BpmnEngine implements EngineInterface
             }
         }
         $this->getJobManager()->disableRegisterStartEvents();
-    }
-
-    public function getExecutionInstances()
-    {
-        return $this->executionInstances;
     }
 }

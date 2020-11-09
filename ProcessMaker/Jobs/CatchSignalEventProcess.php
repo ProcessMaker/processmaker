@@ -52,7 +52,15 @@ class CatchSignalEventProcess implements ShouldQueue
             $eventDefinition,
             null
         );
-        //@todo Add payload to started requests
+
+        if ($this->payload) {
+            foreach ($this->payload as $key => $value) {
+                foreach ($engine->getExecutionInstances() as $instance) {
+                    $instance->getDataStore()->putData($key, $value);
+                }
+            }
+        }
+
         $engine->runToNextState();
     }
 

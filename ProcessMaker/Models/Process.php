@@ -66,6 +66,7 @@ use Throwable;
  *   @OA\Property(property="warnings", type="string"),
  *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="category", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
 
  * ),
  * @OA\Schema(
@@ -78,6 +79,8 @@ use Throwable;
  *           @OA\Property(property="deleted_at", type="string", format="date-time"),
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
+ *           @OA\Property(property="notifications", type="object"),
+ *           @OA\Property(property="task_notifications", type="object"),
  *       )
  *   }
  * ),
@@ -110,23 +113,17 @@ use Throwable;
  *     allOf={
  *      @OA\Schema(ref="#/components/schemas/ProcessEditable"),
  *      @OA\Schema(
- *         @OA\Property(property="status", type="object"),
+ *         @OA\Property(property="status", type="array", @OA\Items(type="object")),
  *         @OA\Property(property="assignable", type="array", @OA\Items(type="object")),
- *         @OA\Property(property="process", type="object")
+ *         @OA\Property(property="process", @OA\Schema(ref="#/components/schemas/Process"))
  *      )
  *    }
  * ),
- *
  * @OA\Schema(
- *   schema="CreateNewProcess",
- *   allOf={
- *       @OA\Schema(ref="#/components/schemas/ProcessEditable"),
- *       @OA\Schema(ref="#/components/schemas/Process"),
- *       @OA\Schema(
- *           @OA\Property(property="notifications", type="array", @OA\Items(type="string")),
- *           @OA\Property(property="task_notifications", type="object"),
- *       )
- *   }
+ *     schema="ProcessAssignments",
+ *     @OA\Property(property="assignable", type="array", @OA\Items(type="object")),
+ *     @OA\Property(property="cancel_request", type="object"),
+ *     @OA\Property(property="edit_data", type="object"),
  * )
  */
 class Process extends Model implements HasMedia, ProcessModelInterface

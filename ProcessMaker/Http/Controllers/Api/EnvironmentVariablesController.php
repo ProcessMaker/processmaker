@@ -28,35 +28,35 @@ class EnvironmentVariablesController extends Controller
    *
    * @return ResponseFactory|Response A list of matched users and paging data
    *
-   *      @OA\Get(
-    *     path="/environment_variables",
-    *     summary="Returns all environmentVariables that the user has access to",
-    *     operationId="getEnvironmentVariables",
-    *     tags={"Environment Variables"},
-    *     @OA\Parameter(ref="#/components/parameters/filter"),
-    *     @OA\Parameter(ref="#/components/parameters/order_by"),
-    *     @OA\Parameter(ref="#/components/parameters/order_direction"),
-    *     @OA\Parameter(ref="#/components/parameters/per_page"),
-    *     @OA\Parameter(ref="#/components/parameters/include"),
-    *
-    *     @OA\Response(
-    *         response=200,
-    *         description="list of environmentVariables",
-    *         @OA\JsonContent(
-    *             type="object",
-    *             @OA\Property(
-    *                 property="data",
-    *                 type="array",
-    *                 @OA\Items(ref="#/components/schemas/environment_variables"),
-    *             ),
-    *             @OA\Property(
-    *                 property="meta",
-    *                 type="object",
-    *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
-    *             ),
-    *         ),
-    *     ),
-    * )
+   * @OA\Get(
+   *     path="/environment_variables",
+   *     summary="Returns all environmentVariables that the user has access to. For security, values are not included.",
+   *     operationId="getEnvironmentVariables",
+   *     tags={"Environment Variables"},
+   *     @OA\Parameter(ref="#/components/parameters/filter"),
+   *     @OA\Parameter(ref="#/components/parameters/order_by"),
+   *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+   *     @OA\Parameter(ref="#/components/parameters/per_page"),
+   *     @OA\Parameter(ref="#/components/parameters/include"),
+   *
+   *     @OA\Response(
+   *         response=200,
+   *         description="list of environmentVariables",
+   *         @OA\JsonContent(
+   *             type="object",
+   *             @OA\Property(
+   *                 property="data",
+   *                 type="array",
+   *                 @OA\Items(ref="#/components/schemas/EnvironmentVariable"),
+   *             ),
+   *             @OA\Property(
+   *                 property="meta",
+   *                 type="object",
+   *                 @OA\Schema(ref="#/components/schemas/metadata"),
+   *             ),
+   *         ),
+   *     ),
+   * )
    */
   public function index(Request $request)
   {
@@ -83,26 +83,21 @@ class EnvironmentVariablesController extends Controller
   /**
    * Creates a new global Environment Variable in the system
    *
-   *      * @OA\Get(
-    *     path="/environment_variables/{environment_variables_id}",
-    *     summary="Get single environment_variables by ID",
-    *     operationId="getEnvironmentVariablesById",
-    *     tags={"Environment Variables"},
-    *     @OA\Parameter(
-    *         description="ID of environment_variables to return",
-    *         in="path",
-    *         name="environment_variables_id",
-    *         required=true,
-    *         @OA\Schema(
-    *           type="string",
-    *         )
-    *     ),
-    *     @OA\Response(
-    *         response=200,
-    *         description="Successfully found the environment variable",
-    *         @OA\JsonContent(ref="#/components/schemas/environment_variables")
-    *     ),
-    * )
+   *   @OA\Post(
+   *     path="/environment_variables",
+   *     summary="Create a new environment variable",
+   *     operationId="createEnvironmentVariable",
+   *     tags={"Environment Variables"},
+   *     @OA\RequestBody(
+   *       required=true,
+   *       @OA\JsonContent(ref="#/components/schemas/EnvironmentVariableEditable")
+   *     ),
+   *     @OA\Response(
+   *         response=201,
+   *         description="success",
+   *         @OA\JsonContent(ref="#/components/schemas/EnvironmentVariable")
+   *     ),
+   * )
    */
   public function store(Request $request)
   {
@@ -116,21 +111,26 @@ class EnvironmentVariablesController extends Controller
    * Return an environment variable instance
    * Using implicit model binding, will automatically return 404 if variable now found
    *
-   *      @OA\Post(
-    *     path="/environment_variables",
-    *     summary="Save a new environment_variables",
-    *     operationId="createEnvironmentVariables",
-    *     tags={"Environment Variables"},
-    *     @OA\RequestBody(
-    *       required=true,
-    *       @OA\JsonContent(ref="#/components/schemas/create_environment_variablesEditable")
-    *     ),
-    *     @OA\Response(
-    *         response=201,
-    *         description="success",
-    *         @OA\JsonContent(ref="#/components/schemas/environment_variables")
-    *     ),
-    * )
+   * @OA\Get(
+   *     path="/environment_variables/{environment_variable_id}",
+   *     summary="Get an environment variable by id. For security, the value is not included.",
+   *     operationId="getEnvironmentVariableById",
+   *     tags={"Environment Variables"},
+   *     @OA\Parameter(
+   *         description="ID of environment_variables to return",
+   *         in="path",
+   *         name="environment_variable_id",
+   *         required=true,
+   *         @OA\Schema(
+   *           type="integer",
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=201,
+   *         description="success",
+   *         @OA\JsonContent(ref="#/components/schemas/EnvironmentVariable")
+   *     ),
+   * )
    */
   public function show(EnvironmentVariable $environment_variable)
   {
@@ -139,30 +139,30 @@ class EnvironmentVariablesController extends Controller
   /**
    * Update an environment variable
    *
-   *      @OA\Put(
-    *     path="/environment_variables/{environment_variables_id}",
-    *     summary="Update a environment_variables",
-    *     operationId="updateEnvironmentVariables",
-    *     tags={"Environment Variables"},
-    *     @OA\Parameter(
-    *         description="ID of environment_variables to return",
-    *         in="path",
-    *         name="environment_variables_id",
-    *         required=true,
-    *         @OA\Schema(
-    *           type="string",
-    *         )
-    *     ),
-    *     @OA\RequestBody(
-    *       required=true,
-    *       @OA\JsonContent(ref="#/components/schemas/environment_variablesEditable")
-    *     ),
-    *     @OA\Response(
-    *         response=200,
-    *         description="success",
-    *         @OA\JsonContent(ref="#/components/schemas/environment_variables")
-    *     ),
-    * )
+   * @OA\Put(
+   *     path="/environment_variables/{environment_variable_id}",
+   *     summary="Update an environment variable",
+   *     operationId="updateEnvironmentVariable",
+   *     tags={"Environment Variables"},
+   *     @OA\Parameter(
+   *         description="ID of environment variables to update",
+   *         in="path",
+   *         name="environment_variable_id",
+   *         required=true,
+   *         @OA\Schema(
+   *           type="integer",
+   *         )
+   *     ),
+   *     @OA\RequestBody(
+   *       required=true,
+   *       @OA\JsonContent(ref="#/components/schemas/EnvironmentVariableEditable")
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="success",
+   *         @OA\JsonContent(ref="#/components/schemas/EnvironmentVariable")
+   *     ),
+   * )
    */
   public function update(EnvironmentVariable $environment_variable, Request $request)
   {
@@ -178,26 +178,25 @@ class EnvironmentVariablesController extends Controller
   }
 
   /**
-   *      @OA\Delete(
-    *     path="/environment_variables/{environment_variables_id}",
-    *     summary="Delete a environment_variables",
-    *     operationId="deleteEnvironmentVariables",
-    *     tags={"Environment Variables"},
-    *     @OA\Parameter(
-    *         description="ID of environment_variables to return",
-    *         in="path",
-    *         name="environment_variables_id",
-    *         required=true,
-    *         @OA\Schema(
-    *           type="string",
-    *         )
-    *     ),
-    *     @OA\Response(
-    *         response=200,
-    *         description="success",
-    *         @OA\JsonContent(ref="#/components/schemas/environment_variables")
-    *     ),
-    * )
+   * @OA\Delete(
+   *     path="/environment_variables/{environment_variable_id}",
+   *     summary="Delete an environment variable",
+   *     operationId="deleteEnvironmentVariable",
+   *     tags={"Environment Variables"},
+   *     @OA\Parameter(
+   *         description="ID of environment_variables to return",
+   *         in="path",
+   *         name="environment_variable_id",
+   *         required=true,
+   *         @OA\Schema(
+   *           type="integer",
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="success",
+   *     ),
+   * )
    */
   public function destroy(EnvironmentVariable $environment_variable)
   {
