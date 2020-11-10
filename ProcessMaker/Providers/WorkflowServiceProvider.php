@@ -197,7 +197,6 @@ class WorkflowServiceProvider extends ServiceProvider
          * Mustache Engine
          */
         $this->app->bind(Mustache_Engine::class, function () {
-            \Log::info('SE DEFINIO!!!');
             $op = new MustacheOptions;
             return new Mustache_Engine([
                 'helpers' => $op->helpers,

@@ -73,15 +73,14 @@ trait MakeHttpRequests
 
             if (empty($endpoint['body'])) {
                 $endpoint['body'] = json_encode($mappedData);
-            } else  {
-                $endpointBody = json_decode($endpoint['body'], true);
-                $endpoint['body'] = json_encode(array_merge($endpointBody, $mappedData));
+            } else {
+                foreach ($config['dataMapping'] as $map) {
+                    $data[$map['key']] = $mustache->render($map['value'], $data);
+                }
             }
         }
 
         $body = $mustache->render($endpoint['body'], $data);
-        \Log::info($data);
-        \Log::info($body);
         $bodyType = $mustache->render($endpoint['body_type'], $data);
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
