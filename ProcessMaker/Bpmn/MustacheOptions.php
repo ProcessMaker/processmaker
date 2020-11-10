@@ -13,8 +13,14 @@ class MustacheOptions
     {
         $this->helpers = [
             'base64' => [$this, 'base64'],
+            'html64' => [$this, 'html64'],
             'key' => [$this, 'key'],
         ];
+    }
+
+    public function html64($text, Mustache_LambdaHelper $helper)
+    {
+        return base64_encode('<html><body>' . $helper->render($text) . '</body></html>');
     }
 
     public function base64($text, Mustache_LambdaHelper $helper)
