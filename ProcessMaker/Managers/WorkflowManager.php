@@ -201,6 +201,19 @@ class WorkflowManager
     }
 
     /**
+     * Throw a signal event by id (signalRef).
+     *
+     * @param string $signalRef
+     * @param array $data
+     * @param array $exclude
+     */
+    public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
+    {
+        Log::info('Throw signal event: ' . $signalRef);
+        ThrowSignalEvent::dispatch($signalRef, $data, $exclude);
+    }
+
+    /**
      * Catch a signal event.
      *
      * @param EventDefinitionInterface $sourceEventDefinition
