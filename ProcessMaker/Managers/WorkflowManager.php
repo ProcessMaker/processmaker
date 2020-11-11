@@ -11,6 +11,7 @@ use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
+use ProcessMaker\Jobs\ThrowMessageEvent;
 use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken as Token;
@@ -222,7 +223,7 @@ class WorkflowManager
     public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
     {
         Log::info('Throw message event: ' . $messageRef);
-        ThrowSignalEvent::dispatch($instanceId, $elementId, $messageRef, $payload);
+        ThrowMessageEvent::dispatch($instanceId, $elementId, $messageRef, $payload);
     }
 
     /**
