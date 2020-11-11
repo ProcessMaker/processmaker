@@ -49,6 +49,7 @@
                 :custom-css="preview.custom_css"
                 :watchers="preview.watchers"
                 :data="previewData"
+                :type="screen.type"
                 @submit="previewSubmit"
               />
             </div>
