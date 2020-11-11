@@ -198,7 +198,7 @@ class WorkflowManager
         } else {
             $exclude[] = $token->getInstance()->getKey();
         }
-        ThrowSignalEvent::dispatch($signalRef, $data, $exclude);
+        ThrowSignalEvent::dispatchNow($signalRef, $data, $exclude);
     }
 
     /**
@@ -211,7 +211,7 @@ class WorkflowManager
     public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
     {
         Log::info('Throw signal event: ' . $signalRef);
-        ThrowSignalEvent::dispatch($signalRef, $data, $exclude);
+        ThrowSignalEvent::dispatchNow($signalRef, $data, $exclude);
     }
 
     /**
@@ -223,7 +223,7 @@ class WorkflowManager
     public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
     {
         Log::info('Throw message event: ' . $messageRef);
-        ThrowMessageEvent::dispatch($instanceId, $elementId, $messageRef, $payload);
+        ThrowMessageEvent::dispatchNow($instanceId, $elementId, $messageRef, $payload);
     }
 
     /**
