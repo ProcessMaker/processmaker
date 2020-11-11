@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Exception;
 use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
@@ -126,6 +127,18 @@ class CallActivity implements CallActivityInterface
     protected function catchSubprocessError(TokenInterface $token, ErrorInterface $error = null, ExecutionInstanceInterface $instance)
     {
         $this->catchSubprocessErrorBase($token, $error);
+        // Log subprocess error message
+        $message = [];
+        if ($error) {
+            $message = [$error->getName()];
+        }
+        if ($instance->errors && is_array($instance->errors)) {
+            foreach($instance->errors as $err) {
+                $message[] = $err['message'];
+            }
+        }
+        $token->getInstance()->logError(new Exception(implode("\n", $message)), $this);
+
         $this->syncronizeInstances($instance, $token->getInstance());
         return $this;
     }
