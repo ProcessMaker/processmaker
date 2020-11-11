@@ -42,6 +42,7 @@ use Throwable;
  *   @OA\Property(property="initiated_at", type="string", format="date-time"),
  *   @OA\Property(property="riskchanges_at", type="string", format="date-time"),
  *   @OA\Property(property="subprocess_start_event_id", type="string"),
+ *   @OA\Property(property="data", type="object"),
  * ),
  * @OA\Schema(
  *   schema="processRequestToken",
@@ -60,6 +61,9 @@ use Throwable;
  *          @OA\Property(property="initiated_at", type="string", format="date-time"),
  *          @OA\Property(property="advanceStatus", type="string"),
  *          @OA\Property(property="due_notified", type="integer"),
+ *          @OA\Property(property="user", @OA\Schema(ref="#/components/schemas/users")),
+ *          @OA\Property(property="process", @OA\Schema(ref="#/components/schemas/Process")),
+ *          @OA\Property(property="process_request", @OA\Schema(ref="#/components/schemas/processRequest")),
  *       )
  *   }
  * )
@@ -663,5 +667,19 @@ class ProcessRequestToken extends Model implements TokenInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    public function saveToken()
+    {
+        $activity = $this->getOwnerElement();
+        $token = $this;
+        $token->status = $token->getStatus();
+        $token->element_id = $activity->getId();
+        $token->element_type = $activity->getBpmnElement()->localName;
+        $token->element_name = $activity->getName();
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->saveOrFail();
+        $token->setId($token->getKey());        
     }
 }

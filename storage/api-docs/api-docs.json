@@ -18,59 +18,29 @@
         }
     ],
     "paths": {
-        "/css_settings": {
-            "put": {
-                "tags": [
-                    "SettingsCss"
-                ],
-                "summary": "Update a setting css",
-                "operationId": "updateSettingCss",
-                "parameters": [
-                    {
-                        "name": "css_override_id",
-                        "in": "path",
-                        "description": "ID of setting to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/settingsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/settings"
-                                }
-                            }
-                        }
-                    }
-                }
-            },
+        "/customize-ui": {
             "post": {
                 "tags": [
-                    "SettingsCss"
+                    "CssSettings"
                 ],
-                "summary": "Save a new settings css override",
-                "operationId": "createSettingsCss",
+                "summary": "Create or update a new setting",
+                "operationId": "updateCssSetting",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/settingsEditable"
+                                "properties": {
+                                    "variables": {
+                                        "description": "Create a new Settings css-override",
+                                        "type": "string"
+                                    },
+                                    "sansSerifFont": {
+                                        "description": "Create a new Settings css-override",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
@@ -94,7 +64,7 @@
                 "tags": [
                     "Environment Variables"
                 ],
-                "summary": "Returns all environmentVariables that the user has access to",
+                "summary": "Returns all environmentVariables that the user has access to. For security, values are not included.",
                 "operationId": "getEnvironmentVariables",
                 "parameters": [
                     {
@@ -124,17 +94,12 @@
                                             "description": "Fetch a collection of variables based on paged request and filter if provided",
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/environment_variables"
+                                                "$ref": "#/components/schemas/EnvironmentVariable"
                                             }
                                         },
                                         "meta": {
                                             "description": "Fetch a collection of variables based on paged request and filter if provided",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -148,14 +113,14 @@
                 "tags": [
                     "Environment Variables"
                 ],
-                "summary": "Save a new environment_variables",
-                "operationId": "createEnvironmentVariables",
+                "summary": "Create a new environment variable",
+                "operationId": "createEnvironmentVariable",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/create_environment_variablesEditable"
+                                "$ref": "#/components/schemas/EnvironmentVariableEditable"
                             }
                         }
                     }
@@ -166,7 +131,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/environment_variables"
+                                    "$ref": "#/components/schemas/EnvironmentVariable"
                                 }
                             }
                         }
@@ -174,31 +139,31 @@
                 }
             }
         },
-        "/environment_variables/{environment_variables_id}": {
+        "/environment_variables/{environment_variable_id}": {
             "get": {
                 "tags": [
                     "Environment Variables"
                 ],
-                "summary": "Get single environment_variables by ID",
-                "operationId": "getEnvironmentVariablesById",
+                "summary": "Get an environment variable by id. For security, the value is not included.",
+                "operationId": "getEnvironmentVariableById",
                 "parameters": [
                     {
-                        "name": "environment_variables_id",
+                        "name": "environment_variable_id",
                         "in": "path",
                         "description": "ID of environment_variables to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Successfully found the environment variable",
+                    "201": {
+                        "description": "success",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/environment_variables"
+                                    "$ref": "#/components/schemas/EnvironmentVariable"
                                 }
                             }
                         }
@@ -209,16 +174,16 @@
                 "tags": [
                     "Environment Variables"
                 ],
-                "summary": "Update a environment_variables",
-                "operationId": "updateEnvironmentVariables",
+                "summary": "Update an environment variable",
+                "operationId": "updateEnvironmentVariable",
                 "parameters": [
                     {
-                        "name": "environment_variables_id",
+                        "name": "environment_variable_id",
                         "in": "path",
-                        "description": "ID of environment_variables to return",
+                        "description": "ID of environment variables to update",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -227,7 +192,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/environment_variablesEditable"
+                                "$ref": "#/components/schemas/EnvironmentVariableEditable"
                             }
                         }
                     }
@@ -238,7 +203,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/environment_variables"
+                                    "$ref": "#/components/schemas/EnvironmentVariable"
                                 }
                             }
                         }
@@ -249,29 +214,22 @@
                 "tags": [
                     "Environment Variables"
                 ],
-                "summary": "Delete a environment_variables",
-                "operationId": "deleteEnvironmentVariables",
+                "summary": "Delete an environment variable",
+                "operationId": "deleteEnvironmentVariable",
                 "parameters": [
                     {
-                        "name": "environment_variables_id",
+                        "name": "environment_variable_id",
                         "in": "path",
                         "description": "ID of environment_variables to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/environment_variables"
-                                }
-                            }
-                        }
+                        "description": "success"
                     }
                 }
             }
@@ -312,13 +270,7 @@
                                             }
                                         },
                                         "meta": {
-                                            "description": "Display a listing of the resource.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "$ref": "#/components/schemas/metadata"
                                         }
                                     },
                                     "type": "object"
@@ -332,7 +284,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Save a new media file",
+                "summary": "Save a new media file. Note: To upload files to a request, use createRequestFile in the RequestFile API",
                 "operationId": "createFile",
                 "parameters": [
                     {
@@ -347,7 +299,7 @@
                     {
                         "name": "model",
                         "in": "query",
-                        "description": "Name of the class of the model",
+                        "description": "Full namespaced class of the model to associate",
                         "required": true,
                         "schema": {
                             "type": "string"
@@ -357,6 +309,15 @@
                         "name": "data_name",
                         "in": "query",
                         "description": "Name of the variable used in a request",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "collection",
+                        "in": "query",
+                        "description": "Media collection name. For requests, use 'default'",
                         "required": false,
                         "schema": {
                             "type": "string"
@@ -417,7 +378,7 @@
                 "tags": [
                     "Files"
                 ],
-                "summary": "Get the metadata of a file",
+                "summary": "Get the metadata of a file. To actually fetch the file see Get File Contents",
                 "operationId": "getFileById",
                 "parameters": [
                     {
@@ -426,7 +387,7 @@
                         "description": "ID of the file to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -440,6 +401,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -456,13 +420,16 @@
                         "description": "ID of the file",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "204": {
                         "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -481,7 +448,7 @@
                         "description": "ID of the file to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -496,6 +463,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -508,6 +478,9 @@
                 "summary": "Returns all groups that the user has access to",
                 "operationId": "getGroups",
                 "parameters": [
+                    {
+                        "$ref": "#/components/parameters/status"
+                    },
                     {
                         "$ref": "#/components/parameters/filter"
                     },
@@ -539,7 +512,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -576,6 +548,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
                     }
                 }
             }
@@ -594,7 +569,7 @@
                         "description": "ID of group to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -608,6 +583,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -624,7 +602,7 @@
                         "description": "ID of group to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -641,6 +619,9 @@
                 "responses": {
                     "204": {
                         "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -657,41 +638,39 @@
                         "description": "ID of group to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "204": {
                         "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
         },
-        "/group_users/{group_id}": {
+        "/groups/{group_id}/users": {
             "get": {
                 "tags": [
-                    "Group Users"
+                    "Groups"
                 ],
                 "summary": "Returns all users of a group",
-                "operationId": "getMembers",
+                "operationId": "getGroupUsers",
                 "parameters": [
                     {
                         "name": "group_id",
                         "in": "path",
-                        "description": "ID of notification to return",
+                        "description": "ID of group",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
-                        "name": "filter",
-                        "in": "query",
-                        "description": "Filter results by string. Searches Name and Status. Status must match exactly. Others can be a substring.",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "$ref": "#/components/parameters/filter"
                     },
                     {
                         "$ref": "#/components/parameters/order_direction"
@@ -715,7 +694,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -763,7 +741,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -913,7 +890,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -975,7 +951,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1031,17 +1006,11 @@
                                             "description": "Display a listing of the resource.",
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/components/schemas/notifications"
+                                                "$ref": "#/components/schemas/Notification"
                                             }
                                         },
                                         "meta": {
-                                            "description": "Display a listing of the resource.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "description": "Display a listing of the resource."
                                         }
                                     },
                                     "type": "object"
@@ -1062,7 +1031,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/notificationsEditable"
+                                "$ref": "#/components/schemas/NotificationEditable"
                             }
                         }
                     }
@@ -1073,7 +1042,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/notifications"
+                                    "$ref": "#/components/schemas/Notification"
                                 }
                             }
                         }
@@ -1105,7 +1074,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/notifications"
+                                    "$ref": "#/components/schemas/Notification"
                                 }
                             }
                         }
@@ -1134,7 +1103,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/notificationsEditable"
+                                "$ref": "#/components/schemas/NotificationEditable"
                             }
                         }
                     }
@@ -1175,7 +1144,7 @@
                     "Notifications"
                 ],
                 "summary": "Mark notifications as read by the user",
-                "operationId": "ProcessMaker\\Http\\Controllers\\Api\\NotificationController::updateAsRead",
+                "operationId": "markNotificationAsRead",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1215,7 +1184,7 @@
                     "Notifications"
                 ],
                 "summary": "Mark notifications as unread by the user",
-                "operationId": "ProcessMaker\\Http\\Controllers\\Api\\NotificationController::updateAsUnread",
+                "operationId": "markNotificationAsUnread",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -1255,21 +1224,21 @@
                     "Notifications"
                 ],
                 "summary": "Mark notifications as read by id and type",
-                "operationId": "ProcessMaker\\Http\\Controllers\\Api\\NotificationController::updateAsReadAll",
+                "operationId": "markAllAsRead",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "notifiable_id": {
+                                    "id": {
                                         "description": "Polymorphic relation id",
                                         "type": "integer",
                                         "items": {
                                             "type": "integer"
                                         }
                                     },
-                                    "notifiable_type": {
+                                    "type": {
                                         "description": "Polymorphic relation type",
                                         "type": "string",
                                         "items": {
@@ -1372,12 +1341,7 @@
                                         },
                                         "meta": {
                                             "description": "Display a listing of the Process Categories.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -1431,7 +1395,7 @@
                         "description": "ID of process category to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1461,7 +1425,7 @@
                         "description": "ID of process category to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1501,7 +1465,7 @@
                         "description": "ID of process category to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1561,7 +1525,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1594,7 +1557,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CreateNewProcess"
+                                    "$ref": "#/components/schemas/Process"
                                 }
                             }
                         }
@@ -1616,8 +1579,11 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
                     }
                 ],
                 "responses": {
@@ -1626,7 +1592,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CreateNewProcess"
+                                    "$ref": "#/components/schemas/Process"
                                 }
                             }
                         }
@@ -1646,7 +1612,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1666,7 +1632,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/CreateNewProcess"
+                                    "$ref": "#/components/schemas/Process"
                                 }
                             }
                         }
@@ -1686,7 +1652,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1705,6 +1671,9 @@
                 "summary": "Returns the list of processes that the user can start",
                 "operationId": "startProcesses",
                 "parameters": [
+                    {
+                        "$ref": "#/components/parameters/filter"
+                    },
                     {
                         "$ref": "#/components/parameters/order_by"
                     },
@@ -1733,7 +1702,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -1759,20 +1727,10 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ProcessEditable"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
                         "description": "success",
@@ -1792,26 +1750,32 @@
                 "tags": [
                     "Processes"
                 ],
-                "summary": "Export a single process by ID",
+                "summary": "Export a single process by ID and return a URL to download it",
                 "operationId": "exportProcess",
                 "parameters": [
                     {
                         "name": "processId",
                         "in": "path",
-                        "description": "ID of process to return",
+                        "description": "ID of process to export",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully found the process",
+                        "description": "Successfully built the process for export",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Process"
+                                    "properties": {
+                                        "url": {
+                                            "description": "Export the specified process.",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -1831,14 +1795,11 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "file"
-                                ],
                                 "properties": {
                                     "file": {
-                                        "description": "file to upload",
-                                        "type": "file",
-                                        "format": "file"
+                                        "description": "file to import",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -1874,7 +1835,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -1883,7 +1844,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ProcessEditable"
+                                "$ref": "#/components/schemas/ProcessAssignments"
                             }
                         }
                     }
@@ -1909,7 +1870,7 @@
                         "description": "ID of process to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -2001,7 +1962,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -2027,8 +1987,11 @@
                         "description": "ID of process request to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
                     }
                 ],
                 "responses": {
@@ -2041,6 +2004,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -2057,7 +2023,7 @@
                         "description": "ID of process request to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2074,6 +2040,9 @@
                 "responses": {
                     "204": {
                         "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -2090,7 +2059,7 @@
                         "description": "ID of process request to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2104,6 +2073,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -2168,7 +2140,7 @@
                         "description": "ID of the request",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2211,19 +2183,19 @@
                 "operationId": "createRequestFile",
                 "parameters": [
                     {
-                        "name": "data_name",
-                        "in": "query",
-                        "description": "Variable name in the request data to use for the file name",
-                        "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "name": "request_id",
                         "in": "path",
                         "description": "ID of the request",
                         "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "data_name",
+                        "in": "query",
+                        "description": "Variable name in the request data to use for the file name",
+                        "required": false,
                         "schema": {
                             "type": "string"
                         }
@@ -2279,21 +2251,21 @@
                 "operationId": "getRequestFilesById",
                 "parameters": [
                     {
-                        "name": "file_id",
-                        "in": "path",
-                        "description": "ID of the file to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
                         "name": "request_id",
                         "in": "path",
                         "description": "ID of the request",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "file_id",
+                        "in": "path",
+                        "description": "ID of the file to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2308,6 +2280,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -2324,7 +2299,7 @@
                         "description": "ID of the file",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     {
@@ -2340,6 +2315,9 @@
                 "responses": {
                     "204": {
                         "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -2386,12 +2364,7 @@
                                         },
                                         "meta": {
                                             "description": "Display a listing of the Screen Categories.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -2566,12 +2539,7 @@
                                         },
                                         "meta": {
                                             "description": "Get a list of Screens.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -2586,7 +2554,7 @@
                     "Screens"
                 ],
                 "summary": "Save a new screens",
-                "operationId": "createScreens",
+                "operationId": "createScreen",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -2705,7 +2673,7 @@
                     "Screens"
                 ],
                 "summary": "duplicate a screen",
-                "operationId": "duplicateScript",
+                "operationId": "duplicateScreen",
                 "parameters": [
                     {
                         "name": "screens_id",
@@ -2785,14 +2753,11 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
-                                "required": [
-                                    "file"
-                                ],
                                 "properties": {
                                     "file": {
-                                        "description": "file to upload",
-                                        "type": "file",
-                                        "format": "file"
+                                        "description": "file to import",
+                                        "type": "string",
+                                        "format": "binary"
                                     }
                                 },
                                 "type": "object"
@@ -2806,7 +2771,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/screens"
+                                    "properties": {
+                                        "status": {
+                                            "description": "Import the specified screen.",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
                                 }
                             }
                         }
@@ -2856,12 +2827,7 @@
                                         },
                                         "meta": {
                                             "description": "Display a listing of the Script Categories.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -3036,12 +3002,7 @@
                                         },
                                         "meta": {
                                             "description": "Get a list of scripts in a process.",
-                                            "type": "object",
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/metadata"
-                                                }
-                                            ]
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -3087,7 +3048,7 @@
                     "Scripts"
                 ],
                 "summary": "Test script code without saving it",
-                "operationId": "getScriptsPreview",
+                "operationId": "previewScript",
                 "parameters": [
                     {
                         "name": "script_id",
@@ -3096,44 +3057,49 @@
                         "schema": {
                             "type": "integer"
                         }
-                    },
-                    {
-                        "name": "data",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "config",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "code",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "success if the script was queued",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/scriptsPreview"
-                                }
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "data": {
+                                        "description": "Previews executing a script, with sample data/config data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "config": {
+                                        "description": "Previews executing a script, with sample data/config data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "code": {
+                                        "description": "Previews executing a script, with sample data/config data",
+                                        "type": "string"
+                                    },
+                                    "nonce": {
+                                        "description": "Previews executing a script, with sample data/config data",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success if the script was queued"
                     }
                 }
             }
         },
-        "/scripts/{script_id}/execute": {
+        "/scripts/execute/{script_id}": {
             "post": {
                 "tags": [
                     "Scripts"
@@ -3148,22 +3114,33 @@
                         "schema": {
                             "type": "integer"
                         }
-                    },
-                    {
-                        "name": "data",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "config",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "data": {
+                                        "description": "Executes a script, with sample data/config data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "config": {
+                                        "description": "Executes a script, with sample data/config data",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "success if the script was queued",
@@ -3298,10 +3275,10 @@
         "/scripts/{scripts_id}/duplicate": {
             "put": {
                 "tags": [
-                    "scripts"
+                    "Scripts"
                 ],
                 "summary": "duplicate a script",
-                "operationId": "duplicateScreen",
+                "operationId": "duplicateScript",
                 "parameters": [
                     {
                         "name": "scripts_id",
@@ -3337,79 +3314,6 @@
                 }
             }
         },
-        "/task_assignments": {
-            "post": {
-                "tags": [
-                    "Task Assignments"
-                ],
-                "summary": "Save a new task assignments",
-                "operationId": "createTaskAssignments",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/taskAssignmentsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/taskAssignments"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/task_assignments/{task_assignments_id}": {
-            "put": {
-                "tags": [
-                    "Task Assignments"
-                ],
-                "summary": "Update a task assignments",
-                "operationId": "updateTaskAssignments",
-                "parameters": [
-                    {
-                        "name": "task_assignments_id",
-                        "in": "path",
-                        "description": "ID of task assignment to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/taskAssignmentsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/taskAssignments"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/tasks": {
             "get": {
                 "tags": [
@@ -3435,6 +3339,9 @@
                     },
                     {
                         "$ref": "#/components/parameters/order_direction"
+                    },
+                    {
+                        "$ref": "#/components/parameters/include"
                     }
                 ],
                 "responses": {
@@ -3452,7 +3359,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -3492,6 +3398,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -3508,7 +3417,7 @@
                         "description": "ID of task to update",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3532,6 +3441,12 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
                     }
                 }
             }
@@ -3544,6 +3459,9 @@
                 "summary": "Returns all users",
                 "operationId": "getUsers",
                 "parameters": [
+                    {
+                        "$ref": "#/components/parameters/status"
+                    },
                     {
                         "$ref": "#/components/parameters/filter"
                     },
@@ -3575,7 +3493,6 @@
                                             }
                                         },
                                         "meta": {
-                                            "type": "object",
                                             "$ref": "#/components/schemas/metadata"
                                         }
                                     },
@@ -3612,6 +3529,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
                     }
                 }
             }
@@ -3630,7 +3550,7 @@
                         "description": "ID of user to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3644,6 +3564,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -3652,7 +3575,7 @@
                     "Users"
                 ],
                 "summary": "Update a user",
-                "operationId": "updateUsers",
+                "operationId": "updateUser",
                 "parameters": [
                     {
                         "name": "user_id",
@@ -3660,7 +3583,7 @@
                         "description": "ID of user to return",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3675,15 +3598,14 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/users"
-                                }
-                            }
-                        }
+                    "204": {
+                        "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/422"
                     }
                 }
             },
@@ -3697,23 +3619,19 @@
                     {
                         "name": "user_id",
                         "in": "path",
-                        "description": "ID of user to return",
+                        "description": "ID of user to delete",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "204": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/users"
-                                }
-                            }
-                        }
+                        "description": "success"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -3723,16 +3641,16 @@
                 "tags": [
                     "Users"
                 ],
-                "summary": "Update a user's groups",
+                "summary": "Set the groups a users belongs to",
                 "operationId": "updateUserGroups",
                 "parameters": [
                     {
                         "name": "user_id",
                         "in": "path",
-                        "description": "ID of user to return",
+                        "description": "ID of user",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -3741,21 +3659,14 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/usersEditable"
+                                "$ref": "#/components/schemas/updateUserGroups"
                             }
                         }
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/users"
-                                }
-                            }
-                        }
+                    "204": {
+                        "description": "success"
                     }
                 }
             }
@@ -3767,37 +3678,19 @@
                 ],
                 "summary": "Restore a soft deleted user",
                 "operationId": "restoreUser",
-                "parameters": [
-                    {
-                        "name": "user_id",
-                        "in": "path",
-                        "description": "ID of user to return",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/usersEditable"
+                                "$ref": "#/components/schemas/restoreUser"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/users"
-                                }
-                            }
-                        }
+                        "description": "success"
                     }
                 }
             }
@@ -3885,49 +3778,41 @@
                     }
                 ]
             },
-            "environment_variablesEditable": {
+            "EnvironmentVariableEditable": {
                 "properties": {
                     "name": {
                         "type": "string"
                     },
                     "description": {
                         "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "create_environment_variablesEditable": {
-                "properties": {
+                    },
                     "value": {
                         "type": "string"
                     }
                 },
-                "type": "object",
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/environment_variablesEditable"
-                    }
-                ]
+                "type": "object"
             },
-            "environment_variables": {
-                "properties": {
-                    "id": {
-                        "type": "integer",
-                        "format": "id"
-                    },
-                    "created_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
+            "EnvironmentVariable": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/environment_variablesEditable"
+                        "$ref": "#/components/schemas/EnvironmentVariableEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -4185,14 +4070,15 @@
                     },
                     "manipulations": {
                         "description": "Represents media files stored in the database",
-                        "type": "string"
+                        "type": "object"
                     },
                     "custom_properties": {
                         "description": "Represents media files stored in the database",
-                        "type": "string"
+                        "type": "object"
                     },
                     "responsive_images": {
-                        "description": "Represents media files stored in the database"
+                        "description": "Represents media files stored in the database",
+                        "type": "object"
                     },
                     "order_column": {
                         "description": "Represents media files stored in the database",
@@ -4230,7 +4116,7 @@
                 },
                 "type": "object"
             },
-            "notificationsEditable": {
+            "NotificationEditable": {
                 "properties": {
                     "type": {
                         "description": "Represents a notification definition.",
@@ -4247,36 +4133,58 @@
                     "data": {
                         "description": "Represents a notification definition.",
                         "type": "string"
+                    },
+                    "name": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
+                    },
+                    "processName": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
+                    },
+                    "userName": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
+                    },
+                    "request_id": {
+                        "description": "Represents a notification definition.",
+                        "type": "string"
                     }
                 },
                 "type": "object"
             },
-            "notifications": {
-                "properties": {
-                    "id": {
-                        "description": "Represents a notification definition.",
-                        "type": "string"
-                    },
-                    "read_at": {
-                        "description": "Represents a notification definition.",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "created_at": {
-                        "description": "Represents a notification definition.",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Represents a notification definition.",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
+            "Notification": {
                 "allOf": [
                     {
-                        "$ref": "#/components/schemas/notificationsEditable"
+                        "$ref": "#/components/schemas/NotificationEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Represents a notification definition.",
+                                "type": "string"
+                            },
+                            "read_at": {
+                                "description": "Represents a notification definition.",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "created_at": {
+                                "description": "Represents a notification definition.",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "Represents a notification definition.",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -4352,6 +4260,9 @@
                         "items": {
                             "type": "object"
                         }
+                    },
+                    "category": {
+                        "description": "Represents a business process definition."
                     }
                 },
                 "type": "object"
@@ -4387,6 +4298,14 @@
                                 "description": "Represents a business process definition.",
                                 "type": "string",
                                 "format": "date-time"
+                            },
+                            "notifications": {
+                                "description": "Represents a business process definition.",
+                                "type": "object"
+                            },
+                            "task_notifications": {
+                                "description": "Represents a business process definition.",
+                                "type": "object"
                             }
                         },
                         "type": "object"
@@ -4422,7 +4341,10 @@
                         "properties": {
                             "status": {
                                 "description": "Represents a business process definition.",
-                                "type": "object"
+                                "type": "array",
+                                "items": {
+                                    "type": "object"
+                                }
                             },
                             "assignable": {
                                 "description": "Represents a business process definition.",
@@ -4432,39 +4354,32 @@
                                 }
                             },
                             "process": {
-                                "description": "Represents a business process definition.",
-                                "type": "object"
+                                "description": "Represents a business process definition."
                             }
                         },
                         "type": "object"
                     }
                 ]
             },
-            "CreateNewProcess": {
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/ProcessEditable"
+            "ProcessAssignments": {
+                "properties": {
+                    "assignable": {
+                        "description": "Represents a business process definition.",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
                     },
-                    {
-                        "$ref": "#/components/schemas/Process"
+                    "cancel_request": {
+                        "description": "Represents a business process definition.",
+                        "type": "object"
                     },
-                    {
-                        "properties": {
-                            "notifications": {
-                                "description": "Represents a business process definition.",
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            },
-                            "task_notifications": {
-                                "description": "Represents a business process definition.",
-                                "type": "object"
-                            }
-                        },
+                    "edit_data": {
+                        "description": "Represents a business process definition.",
                         "type": "object"
                     }
-                ]
+                },
+                "type": "object"
             },
             "ProcessCategoryEditable": {
                 "properties": {
@@ -4641,6 +4556,16 @@
                                 "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
                                 "type": "string",
                                 "format": "date-time"
+                            },
+                            "user": {
+                                "description": "Represents an Eloquent model of a Request which is an instance of a Process."
+                            },
+                            "participants": {
+                                "description": "Represents an Eloquent model of a Request which is an instance of a Process.",
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/components/schemas/users"
+                                }
                             }
                         },
                         "type": "object"
@@ -4675,6 +4600,10 @@
                     "subprocess_start_event_id": {
                         "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
                         "type": "string"
+                    },
+                    "data": {
+                        "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
+                        "type": "object"
                     }
                 },
                 "type": "object"
@@ -4741,6 +4670,15 @@
                             "due_notified": {
                                 "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine",
                                 "type": "integer"
+                            },
+                            "user": {
+                                "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine"
+                            },
+                            "process": {
+                                "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine"
+                            },
+                            "process_request": {
+                                "description": "ProcessRequestToken is used to store the state of a token of the\nNayra engine"
                             }
                         },
                         "type": "object"
@@ -4816,11 +4754,24 @@
                     },
                     "config": {
                         "description": "Class Screen",
-                        "type": "string"
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
                     },
                     "computed": {
                         "description": "Class Screen",
-                        "type": "string"
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "watchers": {
+                        "description": "Class Screen",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
                     },
                     "custom_css": {
                         "description": "Class Screen",
@@ -4834,27 +4785,29 @@
                 "type": "object"
             },
             "screens": {
-                "properties": {
-                    "id": {
-                        "description": "Class Screen",
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "created_at": {
-                        "description": "Class Screen",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Class Screen",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/screensEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Class Screen",
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "description": "Class Screen",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "Class Screen",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -4966,32 +4919,38 @@
                     "key": {
                         "description": "Represents an Eloquent model of a Script",
                         "type": "string"
+                    },
+                    "script_category_id": {
+                        "description": "Represents an Eloquent model of a Script",
+                        "type": "integer"
                     }
                 },
                 "type": "object"
             },
             "scripts": {
-                "properties": {
-                    "id": {
-                        "description": "Represents an Eloquent model of a Script",
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "created_at": {
-                        "description": "Represents an Eloquent model of a Script",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Represents an Eloquent model of a Script",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/scriptsEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Represents an Eloquent model of a Script",
+                                "type": "integer",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "description": "Represents an Eloquent model of a Script",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "Represents an Eloquent model of a Script",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -5054,16 +5013,22 @@
             },
             "settingsEditable": {
                 "properties": {
-                    "id": {
-                        "description": "Class Settings",
-                        "type": "string",
-                        "format": "id"
-                    },
                     "key": {
                         "description": "Class Settings",
                         "type": "string"
                     },
                     "config": {
+                        "description": "Class Settings",
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "variables": {
+                        "description": "Class Settings",
+                        "type": "string"
+                    },
+                    "sansSerifFont": {
                         "description": "Class Settings",
                         "type": "string"
                     }
@@ -5071,22 +5036,29 @@
                 "type": "object"
             },
             "settings": {
-                "properties": {
-                    "created_at": {
-                        "description": "Class Settings",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updated_at": {
-                        "description": "Class Settings",
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "type": "object",
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/settingsEditable"
+                    },
+                    {
+                        "properties": {
+                            "id": {
+                                "description": "Class Settings",
+                                "type": "string",
+                                "format": "id"
+                            },
+                            "created_at": {
+                                "description": "Class Settings",
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "updated_at": {
+                                "description": "Class Settings",
+                                "type": "string",
+                                "format": "date-time"
+                            }
+                        },
+                        "type": "object"
                     }
                 ]
             },
@@ -5197,7 +5169,7 @@
                         "description": "The attributes that are mass assignable.",
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/media"
                         }
                     },
                     "birthdate": {
@@ -5217,8 +5189,7 @@
                         "properties": {
                             "id": {
                                 "description": "The attributes that are mass assignable.",
-                                "type": "string",
-                                "format": "id"
+                                "type": "integer"
                             },
                             "created_at": {
                                 "description": "The attributes that are mass assignable.",
@@ -5239,6 +5210,28 @@
                         "type": "object"
                     }
                 ]
+            },
+            "updateUserGroups": {
+                "properties": {
+                    "groups": {
+                        "description": "Update a user's groups",
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "restoreUser": {
+                "properties": {
+                    "username": {
+                        "description": "Username to restore",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "metadata": {
                 "properties": {
@@ -5341,6 +5334,41 @@
                 ]
             }
         },
+        "responses": {
+            "404": {
+                "description": "Not Found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "422": {
+                "description": "Unprocessable Entity",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                },
+                                "errors": {
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
         "parameters": {
             "filter": {
                 "name": "filter",
@@ -5361,12 +5389,12 @@
             "status": {
                 "name": "status",
                 "in": "query",
+                "description": "ACTIVE or INACTIVE",
                 "schema": {
                     "type": "string",
-                    "default": "active",
                     "enum": [
-                        "active",
-                        "inactive"
+                        "ACTIVE",
+                        "INACTIVE"
                     ]
                 }
             },
@@ -5393,7 +5421,7 @@
             "include": {
                 "name": "include",
                 "in": "query",
-                "description": "Include data from related models in payload. Comma seperated list.",
+                "description": "Include data from related models in payload. Comma separated list.",
                 "schema": {
                     "type": "string",
                     "default": ""

@@ -137,8 +137,7 @@
         // Load from our api client
         ProcessMaker.apiClient
           .get(
-            "group_users/" +
-            this.groupId +
+            "groups/" + this.groupId + "/users" +
             "?page=" +
             this.page +
             "&per_page=" +

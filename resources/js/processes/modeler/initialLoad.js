@@ -3,6 +3,7 @@
 import {
   association,
   endEvent,
+  terminateEndEvent,
   exclusiveGateway,
   inclusiveGateway,
   parallelGateway,
@@ -205,6 +206,16 @@ ProcessMaker.EventBus.$on(
       }
     });
     registerInspectorExtension(endEvent, {
+      component: 'ModelerScreenSelect',
+      config: {
+        label: 'Summary Screen',
+        helper:
+          'Select Display-type Screen to show the summary of this Request when it completes',
+        name: 'screenRef',
+        params: { type: 'DISPLAY' }
+      }
+    });
+    registerInspectorExtension(terminateEndEvent, {
       component: 'ModelerScreenSelect',
       config: {
         label: 'Summary Screen',

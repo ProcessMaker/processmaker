@@ -37,13 +37,18 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  *   @OA\Property(property="timeout", type="integer"),
  *   @OA\Property(property="run_as_user_id", type="integer"),
  *   @OA\Property(property="key", type="string"),
+ *   @OA\Property(property="script_category_id", type="integer"),
  * ),
  * @OA\Schema(
  *   schema="scripts",
- *   allOf={@OA\Schema(ref="#/components/schemas/scriptsEditable")},
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   allOf={
+ *     @OA\Schema(ref="#/components/schemas/scriptsEditable"),
+ *     @OA\Schema(
+ *       @OA\Property(property="id", type="integer", format="id"),
+ *       @OA\Property(property="created_at", type="string", format="date-time"),
+ *       @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     )
+ *   },
  * ),
  *
  * @OA\Schema(

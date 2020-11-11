@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
-use ProcessMaker\Jobs\CatchSignalEvent;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
+use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
@@ -170,13 +170,35 @@ class WorkflowManager
      *
      * @param ServiceTaskInterface $serviceTask
      * @param Token $token
+     * @deprecated 4.0.15 Use WorkflowManager::throwSignalEventDefinition()
      */
-    public function catchSignalEvent(ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
-        Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
-        CatchSignalEvent::dispatch($source, $sourceEventDefinition, $token)->onQueue('bpmn');
+        $this->throwSignalEventDefinition($sourceEventDefinition, $token);
     }
 
+    /**
+     * Catch a signal event.
+     *
+     * @param EventDefinitionInterface $sourceEventDefinition
+     * @param Token $token
+     */
+    public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    {
+        Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
+        $model = $token->getInstance()->getProcess()->getOwnerDocument()->getModel();
+        $signalRef = $sourceEventDefinition->getPayload() ?
+            $sourceEventDefinition->getPayload()->getId()
+            : $sourceEventDefinition->getProperty('signalRef');
+        $data = $token->getInstance()->getDataStore()->getData();
+        $engine = $token->getInstance()->getProcess()->getEngine();
+        $exclude = [];
+        foreach($engine->getExecutionInstances() as $request) {
+            $exclude[] = $request->id;
+        }
+        $exclude = array_unique($exclude);
+        ThrowSignalEvent::dispatch($signalRef, $data, [$model->id], $exclude);
+    }
     /**
      * Attach validation event
      *

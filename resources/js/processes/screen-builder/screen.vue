@@ -318,6 +318,7 @@ export default {
         custom_css: '',
         watchers: [],
       },
+      rendererKey: 0,
       self: this,
       watchers_config: {
         api: {
@@ -432,7 +433,6 @@ export default {
     this.computed = this.screen.computed ? this.screen.computed : [];
     this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
     this.watchers = this.screen.watchers ? this.screen.watchers : [];
-    this.updatePreview(new Object());
     this.previewInput = "{}";
 
     ProcessMaker.EventBus.$emit("screen-builder-start", this);
@@ -472,9 +472,13 @@ export default {
       }
       this.mode = mode;
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
-      this.$nextTick(() => {
+      if (mode == 'preview') {
         this.rendererKey++;
-      });
+        this.preview.config = cloneDeep(this.config);
+        this.preview.computed = cloneDeep(this.computed);
+        this.preview.customCSS = cloneDeep(this.customCSS);
+        this.preview.watchers = cloneDeep(this.watchers);
+      }
     },
     onUpdate(data) {
       ProcessMaker.EventBus.$emit("form-data-updated", data);
@@ -563,9 +567,6 @@ export default {
       this.config = newConfig;
       this.refreshSession();
       ProcessMaker.EventBus.$emit("new-changes");
-    },
-    updatePreview(data) {
-      this.previewData = data;
     },
     previewSubmit() {
       alert("Preview Form was Submitted");

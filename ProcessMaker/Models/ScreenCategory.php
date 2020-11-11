@@ -27,7 +27,6 @@ use ProcessMaker\Traits\HideSystemResources;
  *   allOf={
  *      @OA\Schema(ref="#/components/schemas/ScreenCategoryEditable"),
  *      @OA\Schema(
- *          type="object",
  *          @OA\Property(property="id", type="string", format="id"),
  *          @OA\Property(property="created_at", type="string", format="date-time"),
  *          @OA\Property(property="updated_at", type="string", format="date-time"),

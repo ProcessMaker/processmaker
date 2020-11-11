@@ -1,6 +1,6 @@
 {
   "name": "processmaker/processmaker",
-  "version": "4.0.13",
+  "version": "4.1.0",
   "description": "BPM PHP Software",
   "keywords": [
     "php bpm processmaker"
@@ -21,8 +21,8 @@
   ],
   "require": {
     "php": ">=7.2.0",
-    "darkaonline/l5-swagger": "6.0.*",
     "babenkoivan/elastic-scout-driver": "^1.2",
+    "darkaonline/l5-swagger": "6.0.*",
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
     "fzaninotto/faker": "^1.4",

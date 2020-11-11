@@ -58,7 +58,7 @@ class ScreenController extends Controller
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 @OA\Schema(ref="#/components/schemas/metadata"),
      *             ),
      *         ),
      *     ),
@@ -180,7 +180,7 @@ class ScreenController extends Controller
      *  @OA\Post(
      *     path="/screens",
      *     summary="Save a new screens",
-     *     operationId="createScreens",
+     *     operationId="createScreen",
      *     tags={"Screens"},
      *     @OA\RequestBody(
      *       required=true,
@@ -254,7 +254,7 @@ class ScreenController extends Controller
      *     @OA\Put(
      *     path="/screens/{screens_id}/duplicate",
      *     summary="duplicate a screen",
-     *     operationId="duplicateScript",
+     *     operationId="duplicateScreen",
      *     tags={"Screens"},
      *     @OA\Parameter(
      *         description="ID of screen to return",
@@ -392,7 +392,9 @@ class ScreenController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="object"),
+     *         )
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -400,12 +402,11 @@ class ScreenController extends Controller
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
      *                 @OA\Property(
-     *                     description="file to upload",
      *                     property="file",
-     *                     type="file",
-     *                     format="file",
+     *                     description="file to import",
+     *                     type="string",
+     *                     format="binary",
      *                 ),
-     *                 required={"file"}
      *             )
      *         )
      *     ),
