@@ -65,6 +65,8 @@ use ProcessMaker\Traits\HideSystemResources;
  *           @OA\Property(property="process_category_id", type="string", format="id"),
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
+ *           @OA\Property(property="user", @OA\Schema(ref="#/components/schemas/users")),
+ *           @OA\Property(property="participants", type="array", @OA\Items(ref="#/components/schemas/users")),
  *      )
  *   },
  * )

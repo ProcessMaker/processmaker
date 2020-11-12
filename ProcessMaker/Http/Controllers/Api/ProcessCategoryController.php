@@ -43,7 +43,7 @@ class ProcessCategoryController extends Controller
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 @OA\Schema(ref="#/components/schemas/metadata"),
      *             ),
      *         ),
      *     ),
@@ -102,7 +102,7 @@ class ProcessCategoryController extends Controller
      *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -167,7 +167,7 @@ class ProcessCategoryController extends Controller
      *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
@@ -207,7 +207,7 @@ class ProcessCategoryController extends Controller
      *         name="process_category_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(

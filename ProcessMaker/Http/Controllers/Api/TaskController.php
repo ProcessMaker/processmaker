@@ -66,6 +66,7 @@ class TaskController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
      *         response=200,
@@ -226,6 +227,7 @@ class TaskController extends Controller
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/processRequestToken")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function show(ProcessRequestToken $task)
@@ -253,7 +255,7 @@ class TaskController extends Controller
      *         name="task_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
@@ -265,6 +267,8 @@ class TaskController extends Controller
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/processRequestToken")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
     public function update(Request $request, ProcessRequestToken $task)

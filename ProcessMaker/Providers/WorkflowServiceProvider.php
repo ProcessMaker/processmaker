@@ -65,7 +65,7 @@ class WorkflowServiceProvider extends ServiceProvider
 
         $this->app->bind(BpmnEngine::class, function ($app, $params) {
             $definitions = $params['definitions'];
-            $globalEvents = true;
+            $globalEvents = $params['globalEvents'] ?? true;
             $repository = $definitions->getFactory();
             $eventBus = app('events');
             //Initialize the BpmnEngine

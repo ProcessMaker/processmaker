@@ -30,7 +30,7 @@ Route::group(
     Route::post('groups', 'GroupController@store')->name('groups.store')->middleware('can:create-groups');
     Route::put('groups/{group}', 'GroupController@update')->name('groups.update')->middleware('can:edit-groups');
     Route::delete('groups/{group}', 'GroupController@destroy')->name('groups.destroy')->middleware('can:delete-groups');
-    Route::get('group_users/{group}', 'GroupController@members')->name('groups.members')->middleware('can:view-groups');
+    Route::get('groups/{group}/users', 'GroupController@members')->name('groups.members')->middleware('can:view-groups');
 
     // Group Members
     Route::get('group_members', 'GroupMemberController@index')->name('group_members.index'); //Already filtered in controller
