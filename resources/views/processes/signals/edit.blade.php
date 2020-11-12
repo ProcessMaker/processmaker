@@ -54,7 +54,7 @@
               {!! __($addon['content']) !!}
             @endforeach
           @endisset
-          @if(!hasPackage('package-webhooks'))
+          @if(!hasPackage('package-data-sources'))
           <div class="d-flex justify-content-end mt-3">
             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
             {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
