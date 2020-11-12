@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\HasCategories;
+use ProcessMaker\Traits\HasScreenFields;
 use ProcessMaker\Traits\HasVersioning;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
@@ -36,20 +37,25 @@ use ProcessMaker\Assets\ScreensInScreen;
  *   @OA\Property(property="title", type="string"),
  *   @OA\Property(property="type", type="string"),
  *   @OA\Property(property="description", type="string"),
- *   @OA\Property(property="config", type="string"),
- *   @OA\Property(property="computed", type="string"),
+ *   @OA\Property(property="config", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="computed", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="watchers", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="custom_css", type="string"),
  *   @OA\Property(property="screen_category_id", type="string"),
  * ),
  * @OA\Schema(
  *   schema="screens",
- *   allOf={@OA\Schema(ref="#/components/schemas/screensEditable")},
- *   @OA\Property(property="id", type="string", format="id"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   allOf={
+ *     @OA\Schema(ref="#/components/schemas/screensEditable"),
+ *     @OA\Schema(
+ *       @OA\Property(property="id", type="string", format="id"),
+ *       @OA\Property(property="created_at", type="string", format="date-time"),
+ *       @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     ),
+ *   },
  * )
  *
- * * @OA\Schema(
+ * @OA\Schema(
  *   schema="screenExported",
  *   @OA\Property(property="url", type="string"),
  * )
@@ -60,6 +66,7 @@ class Screen extends Model
     use SerializeToIso8601;
     use HideSystemResources;
     use HasCategories;
+    use HasScreenFields;
     use HasVersioning;
     use ExtendedPMQL;
 

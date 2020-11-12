@@ -23,15 +23,21 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *
  * @OA\Schema(
  *   schema="settingsEditable",
- *   @OA\Property(property="id", type="string", format="id"),
  *   @OA\Property(property="key", type="string"),
- *   @OA\Property(property="config", type="string"),
+ *   @OA\Property(property="config", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="variables", type="string"),
+ *   @OA\Property(property="sansSerifFont", type="string"),
  * ),
  * @OA\Schema(
  *   schema="settings",
- *   allOf={@OA\Schema(ref="#/components/schemas/settingsEditable")},
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   allOf={
+ *     @OA\Schema(ref="#/components/schemas/settingsEditable"),
+ *     @OA\Schema(
+ *       @OA\Property(property="id", type="string", format="id"),
+ *       @OA\Property(property="created_at", type="string", format="date-time"),
+ *       @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     ),
+ *   },
  * )
  *
  */

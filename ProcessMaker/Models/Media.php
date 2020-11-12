@@ -36,9 +36,9 @@ use Illuminate\Validation\ValidationException;
  *   @OA\Property(property="mime_type", type="string"),
  *   @OA\Property(property="disk", type="string"),
  *   @OA\Property(property="size", type="integer"),
- *   @OA\Property(property="manipulations", type="string"),
- *   @OA\Property(property="custom_properties", type="string"),
- *   @OA\Property(property="responsive_images", @OA\Schema(type="array", @OA\Items(type="string"))),
+ *   @OA\Property(property="manipulations", type="object"),
+ *   @OA\Property(property="custom_properties", type="object"),
+ *   @OA\Property(property="responsive_images", type="object"),
  *   @OA\Property(property="order_column", type="integer"),
  * ),
  * @OA\Schema(

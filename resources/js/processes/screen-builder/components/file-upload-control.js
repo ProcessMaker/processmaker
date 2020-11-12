@@ -17,10 +17,20 @@ export default {
     inspector: [
       {
         type: "FormInput",
+        field: "name",
+        config: {
+          label: "Variable Name",
+          name: 'Name',
+          helper: "A variable name is a symbolic name to reference information.",
+          validation: 'regex:/^(?:[A-Z_.a-z])(?:[0-9A-Z_. \/a-z])*$/|required'
+        }
+      },
+      {
+        type: "FormInput",
         field: "label",
         config: {
           label: "Label",
-          helper: "The text to display"
+          helper: "The label describes the field's name"
         }
       },
       {
@@ -29,16 +39,6 @@ export default {
         config: {
           label: "File Accepted",
           helper: "Common file types: application/msword, image/gif, image/jpeg, application/pdf, application/vnd.ms-powerpoint, application/vnd.ms-excel, text/plain"
-        }
-      },
-      {
-        type: "FormInput",
-        field: "name",
-        config: {
-          label: "Name",
-          name: 'Name',
-          helper: "The name of the upload",
-          validation: 'regex:/^(?:[A-Z_.a-z])(?:[0-9A-Z_. \/a-z])*$/|required'
         }
       },
       {
