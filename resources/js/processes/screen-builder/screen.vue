@@ -42,6 +42,7 @@
             />
             <div v-else>
               <component
+                :mode="mode"
                 :is="renderComponent"
                 v-model="previewData"
                 :screen="preview.config"
