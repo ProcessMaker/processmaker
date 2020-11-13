@@ -84,9 +84,9 @@ class SignalManager
             $newNode->setAttribute('id', $newSignal->getId());
             $newNode->setAttribute('name', $newSignal->getName());
 
-            $x = new DOMXPath($definitions);
-            if ($x->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
-                $oldNode = $x->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
+            $domDefinitions = new DOMXPath($definitions);
+            if ($domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
+                $oldNode = $domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->item(0);
                 $definitions->firstChild->replaceChild($newNode, $oldNode);
             }
 
@@ -117,9 +117,9 @@ class SignalManager
                 return;
             }
             $definitions = $process->getDefinitions();
-            $x = new DOMXPath($definitions);
-            if ($x->query("//*[@id='" . $signal->getId() . "']")->count() > 0 ) {
-                $node = $x->query("//*[@id='" . $signal->getId() . "']")->item(0);
+            $domDefinitions = new DOMXPath($definitions);
+            if ($domDefinitions->query("//*[@id='" . $signal->getId() . "']")->count() > 0 ) {
+                $node = $domDefinitions->query("//*[@id='" . $signal->getId() . "']")->item(0);
                 $definitions->firstChild->removeChild($node);
                 $process->bpmn = $definitions->saveXML();
                 $process->save();
@@ -189,7 +189,7 @@ class SignalManager
         return $result;
     }
 
-    private static function getSignalCatchEvents($signalId, BpmnDocument $document)
+    public static function getSignalCatchEvents($signalId, BpmnDocument $document)
     {
         $nodes = collect($document->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signalEventDefinition'));
         return $nodes->reduce(function ($carry, $node) use($signalId) {

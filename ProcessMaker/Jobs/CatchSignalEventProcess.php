@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -54,9 +55,21 @@ class CatchSignalEventProcess implements ShouldQueue
         );
 
         if ($this->payload) {
-            foreach ($this->payload as $key => $value) {
+            $catches = SignalManager::getSignalCatchEvents($this->signalRef, $definitions);
+            $processVariable = '';
+            foreach($catches as $catch) {
+                $processVariable = $definitions->getStartEvent($catch['id'])->getBpmnElement()->getAttribute('pm:config');
+            }
+            if ($processVariable) {
                 foreach ($engine->getExecutionInstances() as $instance) {
-                    $instance->getDataStore()->putData($key, $value);
+                    $instance->getDataStore()->putData($processVariable, $this->payload);
+                }
+            }
+            else {
+                foreach ($this->payload as $key => $value) {
+                    foreach ($engine->getExecutionInstances() as $instance) {
+                        $instance->getDataStore()->putData($key, $value);
+                    }
                 }
             }
         }
