@@ -39,7 +39,7 @@
               {!! Form::label('id', __('Id')) !!}<small class="ml-1">*</small>
               {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
               'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
-              <small id="emailHelp" class="form-text text-muted">{{__('signal id must be distinct')}}</small>
+              <small id="emailHelp" class="form-text text-muted"></small>
               <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
             </div>
             <div class="form-signal">
