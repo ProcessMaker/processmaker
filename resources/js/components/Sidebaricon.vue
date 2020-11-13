@@ -3,6 +3,7 @@
       <li class="nav-item">
         <a :href="item.url" class="nav-link"  @click="toggle" :target="item.attributes.target">
           <i v-if="item.attributes.icon" class="fas nav-icon" :class="item.attributes.icon" ></i>
+          <i v-if="item.attributes.customicon" :class="item.attributes.customicon" ></i>
           <img v-if="item.attributes.file" :src="item.attributes.file" class="nav-icon" id="custom_icon">
           <span class="nav-text" v-if="expanded()" v-cloak >
             {{item.title}}

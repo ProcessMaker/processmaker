@@ -155,7 +155,7 @@ class GenerateMenus
             if (\Auth::check() && \Auth::user()->can('view-signals')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',
-                    'icon' => 'fa-play fa-rotate-270',
+                    'customicon' => 'far fa-play-circle fa-rotate-270',
                     'id' => 'signal'
                 ]);
             }
