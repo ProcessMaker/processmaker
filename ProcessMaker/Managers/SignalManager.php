@@ -108,8 +108,6 @@ class SignalManager
      */
     public static function removeSignal(Signal $signal)
     {
-        // TODO validate that the signal is not referenced in any catch event
-
         $signalAsArray = self::getAllSignals(true)->firstWhere('id', $signal->getId());
         foreach ($signalAsArray['processes'] as $processData) {
             $process = Process::find($processData['id']);
