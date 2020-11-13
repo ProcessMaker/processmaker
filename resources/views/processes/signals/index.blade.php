@@ -59,14 +59,14 @@
                         {!! Form::label('id', __('Id')) !!}<small class="ml-1">*</small>
                         {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
                         'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
-                        <small id="emailHelp" class="form-text text-muted">{{__('signal id must be distinct')}}</small>
+                        <small id="emailHelp" class="form-text text-muted">{{__('Id to the identify uniquely the signal')}}</small>
                         <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
                     </div>
                     <div class="form-signal">
                         {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
                         {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
                         'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-                        <small id="emailHelp" class="form-text text-muted">{{__('signal name must be distinct')}}</small>
+                        <small id="emailHelp" class="form-text text-muted">{{__('Signal name')}}</small>
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
                 </div>
@@ -136,11 +136,13 @@
                             window.location = '/designer/signals';
                         })
                         .catch(error => {
+                            console.log('ERRROR!');
                             this.disabled = false;
                             //define how display errors
                             if (error.response.status && error.response.status === 422) {
                                 // Validation error
                                 this.errors = error.response.data.errors;
+                                //ProcessMaker.alert(this.errors, 'warning');
                             }
                         });
                 }

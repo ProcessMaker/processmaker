@@ -160,8 +160,8 @@ class SignalManager
     {
         $result = [];
 
-        if ( !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $newSignal->getId()) ) {
-            $result[] = 'The signal ID should be an alphanumeric string';
+        if ( !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $newSignal->getId()) ) {
+            self::addError($result, 'id','The signal ID should be an alphanumeric string');
         }
 
         $signalIdExists = self::getAllSignals()
@@ -171,7 +171,11 @@ class SignalManager
                         });
 
         if ($signalIdExists) {
-            $result[] = 'The signal ID already exists';
+            self::addError($result, 'id','The signal ID already exists');
+        }
+
+        if (strlen(trim($newSignal->getName())) === 0) {
+            self::addError($result, 'name','The signal name is required');
         }
 
         $signalNameExists = self::getAllSignals()
@@ -181,7 +185,7 @@ class SignalManager
             });
 
         if ($signalNameExists) {
-            $result[] = 'The signal name already exists';
+            self::addError($result, 'name','The signal name already exists');
         }
 
         return $result;
@@ -215,5 +219,19 @@ class SignalManager
         $result->setId($signal['id']);
         $result->setName($signal['name']);
         return $result;
+    }
+
+    /**
+     * @param array $errors
+     * @param string $field
+     * @param string $message
+     */
+    private static function addError(array &$errors, string $field, string $message)
+    {
+        if (!array_key_exists($field, $errors)) {
+            $errors[$field] = [];
+        }
+
+        array_push($errors[$field], $message);
     }
 }

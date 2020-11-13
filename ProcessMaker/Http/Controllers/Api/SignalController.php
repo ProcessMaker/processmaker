@@ -66,7 +66,7 @@ class SignalController extends Controller
 
         $errorValidations = SignalManager::validateSignal($newSignal, null);
         if (count($errorValidations) > 0) {
-            return response(implode('; ', $errorValidations), 422);
+            return response(['errors' => $errorValidations], 422);
         }
 
         SignalManager::addSignal($newSignal);
