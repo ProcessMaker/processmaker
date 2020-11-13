@@ -96,7 +96,6 @@ export default {
   methods: {
     isDeletable(data) {
       let catches = data.processes.reduce((carry, process) => carry + process.catches.length, 0);
-      console.log('catches', data.name, catches);
       return catches === 0;
     },
     onEdit(data, index) {
