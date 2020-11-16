@@ -311,11 +311,19 @@ export default {
             }
 
             let filter = this.filter;
+            let filterParams = '';
             
             if (filter && filter.length) {
               if (filter.isPMQL()) {
                 pmql = `(${pmql}) and (${filter})`;
                 filter = '';
+              } else {
+                let filterParams =
+                    "&user_id=" +
+                    window.ProcessMaker.user.id +
+                    "&filter=" +
+                    filter +
+                    "&statusfilter=ACTIVE,CLOSED";
               }
             }
 
@@ -335,11 +343,7 @@ export default {
                   encodeURIComponent(pmql) +
                   "&per_page=" +
                   this.perPage +
-                  "&user_id=" +
-                  window.ProcessMaker.user.id +
-                  "&filter=" +
-                  filter +
-                  "&statusfilter=ACTIVE,CLOSED" +
+                  filterParams +
                   this.getSortParam(),
                 {
                   cancelToken: new CancelToken(c => {
