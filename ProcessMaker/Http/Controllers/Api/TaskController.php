@@ -184,12 +184,15 @@ class TaskController extends Controller
         }
         $response = $this->handleOrderByRequestName($request, $query->get());
 
-        $response = $response->filter(function($processRequestToken) use ($request) {
-            if ($request->input('status') === 'CLOSED') {
-                return Auth::user()->can('view', $processRequestToken->processRequest);
-            }
-            return Auth::user()->can('view', $processRequestToken);
-        })->values();
+        // Only filter results if the user id was specified
+        if ($request->input('user_id') === $request->user()->id) {
+            $response = $response->filter(function($processRequestToken) use ($request) {
+                if ($request->input('status') === 'CLOSED') {
+                    return Auth::user()->can('view', $processRequestToken->processRequest);
+                }
+                return Auth::user()->can('view', $processRequestToken);
+            })->values();
+        }
         
         //Map each item through its resource
         $response = $response->map(function ($processRequestToken) use ($request) {
