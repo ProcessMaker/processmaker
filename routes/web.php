@@ -85,7 +85,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('tasks', 'TaskController@index')->name('tasks.index');
     Route::get('tasks/{task}/edit', 'TaskController@edit')->name('tasks.edit');
 
-    Route::get('notifications', 'NotificationController@index')->name('notifications.index');
+    Route::get('notifications', 'NotificationController@index')->name('notifications.index')->middleware('can:view,notification');
 
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function () {

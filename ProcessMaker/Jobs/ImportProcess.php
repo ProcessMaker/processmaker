@@ -7,6 +7,7 @@ use DB;
 use DOMXPath;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use ProcessMaker\Events\ImportedScreenSaved;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessNotificationSetting;
@@ -385,6 +386,7 @@ class ImportProcess implements ShouldQueue
             $new->type = $screen->type;
             $new->watchers =  $this->watcherScriptsToSave($screen);
             $new->save();
+            event(new ImportedScreenSaved($new->id, $screen));
 
             // save categories
             if (isset($screen->categories)) {

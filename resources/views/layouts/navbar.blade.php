@@ -59,10 +59,12 @@
                 <component id="navbar-request-button" v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
             </b-nav-item>
 
-            <b-nav-item class="d-none d-lg-block">
-                <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
-                </notifications>
-            </b-nav-item>
+            @can('view-notifications')
+                <b-nav-item class="d-none d-lg-block">
+                    <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
+                    </notifications>
+                </b-nav-item>
+            @endcan
             <li class="separator d-none d-lg-block"></li>
             <li class="d-none d-lg-block">
                 @php
