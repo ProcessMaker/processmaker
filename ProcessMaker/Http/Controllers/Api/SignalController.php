@@ -40,7 +40,41 @@ class SignalController extends Controller
                         || mb_stripos($signal['id'], $filter) !== false;
             });
         }
-        return response()->json(['data' => $signals]);
+
+        $orderBy = $request->input('order_by', 'id');
+        $orderDirection = $request->input('order_direction', 'ASC');
+
+        $signals = strcasecmp($orderDirection, 'DESC') === 0
+                ? $signals->sortByDesc($orderBy)->values()
+                : $signals->sortBy($orderBy)->values();
+
+        $perPage = $request->input('per_page', 10);
+        $lastPage = intval(floor($signals->count() / $perPage)) + 1;
+        $page = $request->input('page', 1) > $lastPage
+                ? $lastPage
+                : $request->input('page', 1);
+
+        $meta = [
+            'count' => $signals->count(),
+            'current_page' => $page,
+            'filter' => $filter,
+            'from' => $perPage * ($page - 1) + 1,
+            'last_page' => $lastPage,
+            'path' => '/',
+            'per_page' => $perPage,
+            'sort_by' => $orderBy,
+            'sort_order' => strtolower($orderDirection),
+            'to' => $perPage * ($page - 1) + $perPage,
+            'total' => $signals->count(),
+            'total_pages' => $lastPage
+        ];
+
+        $signals = $signals->chunk($perPage)[$page - 1];
+
+        return response()->json([
+            'data' => $signals,
+            'meta' => $meta
+        ]);
     }
 
     /**

@@ -66,12 +66,12 @@ export default {
   props: ["filter", "permission"],
   data() {
     return {
-      orderBy: "name",
+      orderBy: "id",
 
       sortOrder: [
         {
-          field: "name",
-          sortField: "name",
+          field: "id",
+          sortField: "id",
           direction: "asc",
         },
       ],
