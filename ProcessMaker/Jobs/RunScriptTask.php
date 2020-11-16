@@ -54,6 +54,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
         }
         $dataStore = $token->getInstance()->getDataStore();
         $data = $dataStore->getData();
+        $data['_request'] = $instance->attributesToArray();
         try {
             if (empty($scriptRef)) {
                 $code = $element->getScript();

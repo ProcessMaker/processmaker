@@ -11,6 +11,7 @@ use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
+use ProcessMaker\Jobs\ThrowMessageEvent;
 use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken as Token;
@@ -178,27 +179,50 @@ class WorkflowManager
     }
 
     /**
-     * Catch a signal event.
+     * Throw a signal event.
      *
      * @param EventDefinitionInterface $sourceEventDefinition
      * @param Token $token
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
-        Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
-        $model = $token->getInstance()->getProcess()->getOwnerDocument()->getModel();
-        $signalRef = $sourceEventDefinition->getPayload() ?
-            $sourceEventDefinition->getPayload()->getId()
-            : $sourceEventDefinition->getProperty('signalRef');
+        $signalRef = $sourceEventDefinition->getProperty('signalRef');
         $data = $token->getInstance()->getDataStore()->getData();
-        $engine = $token->getInstance()->getProcess()->getEngine();
         $exclude = [];
-        foreach($engine->getExecutionInstances() as $request) {
-            $exclude[] = $request->id;
+        $collaboration = $token->getInstance()->process_collaboration;
+        if ($collaboration) {
+            foreach ($collaboration->requests as $request) {
+                $exclude[] = $request->getKey();
+            }
+        } else {
+            $exclude[] = $token->getInstance()->getKey();
         }
-        $exclude = array_unique($exclude);
-        ThrowSignalEvent::dispatch($signalRef, $data, [$model->id], $exclude);
+        ThrowSignalEvent::dispatchNow($signalRef, $data, $exclude);
     }
+
+    /**
+     * Throw a signal event by id (signalRef).
+     *
+     * @param string $signalRef
+     * @param array $data
+     * @param array $exclude
+     */
+    public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
+    {
+        ThrowSignalEvent::dispatchNow($signalRef, $data, $exclude);
+    }
+
+    /**
+     * Catch a signal event.
+     *
+     * @param EventDefinitionInterface $sourceEventDefinition
+     * @param Token $token
+     */
+    public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
+    {
+        ThrowMessageEvent::dispatchNow($instanceId, $elementId, $messageRef, $payload);
+    }
+
     /**
      * Attach validation event
      *

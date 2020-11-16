@@ -53,6 +53,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         }
         $dataStore = $token->getInstance()->getDataStore();
         $data = $dataStore->getData();
+        $data['_request'] = $instance->attributesToArray();
         try {
             if (empty($implementation)) {
                 Log::error('Service task implementation not defined');

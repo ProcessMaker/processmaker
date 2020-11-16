@@ -42,7 +42,7 @@ trait MakeHttpRequests
      */
     public function request(array $data = [], array $config = [])
     {
-        $mustache = new Mustache_Engine();
+        $mustache = app(Mustache_Engine::class);
         $endpoint = $this->endpoints[$config['endpoint']];
         $method = $mustache->render($endpoint['method'], $data);
         $url = $mustache->render($endpoint['url'], $data);
@@ -73,9 +73,10 @@ trait MakeHttpRequests
 
             if (empty($endpoint['body'])) {
                 $endpoint['body'] = json_encode($mappedData);
-            } else  {
-                $endpointBody = json_decode($endpoint['body'], true);
-                $endpoint['body'] = json_encode(array_merge($endpointBody, $mappedData));
+            } else {
+                foreach ($config['dataMapping'] as $map) {
+                    $data[$map['key']] = $mustache->render($map['value'], $data);
+                }
             }
         }
 

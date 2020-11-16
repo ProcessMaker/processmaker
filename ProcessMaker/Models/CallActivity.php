@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Exception;
 use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
@@ -126,6 +127,18 @@ class CallActivity implements CallActivityInterface
     protected function catchSubprocessError(TokenInterface $token, ErrorInterface $error = null, ExecutionInstanceInterface $instance)
     {
         $this->catchSubprocessErrorBase($token, $error);
+        // Log subprocess error message
+        $message = [];
+        if ($error) {
+            $message = [$error->getName()];
+        }
+        if ($instance->errors && is_array($instance->errors)) {
+            foreach($instance->errors as $err) {
+                $message[] = $err['message'];
+            }
+        }
+        $token->getInstance()->logError(new Exception(implode("\n", $message)), $this);
+
         $this->syncronizeInstances($instance, $token->getInstance());
         return $this;
     }
@@ -157,7 +170,7 @@ class CallActivity implements CallActivityInterface
             return $this->getOwnerDocument()->getElementInstanceById($calledElementRef);
         } elseif (count($refs) === 2) {
             // Capability to reuse other processes inside a process
-            $process = Process::findOrFail($refs[1]);
+            $process = is_numeric($refs[1]) ? Process::findOrFail($refs[1]) : Process::where('package_key', $refs[1])->firstOrFail();
             $engine = $this->getProcess()->getEngine();
             $definitions = $engine->getDefinition($process->getLatestVersion());
             $response = $definitions->getElementInstanceById($refs[0]);
