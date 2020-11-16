@@ -186,7 +186,6 @@ class WorkflowManager
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
-        Log::info('Throw signal event: ' . $sourceEventDefinition->getName());
         $signalRef = $sourceEventDefinition->getProperty('signalRef');
         $data = $token->getInstance()->getDataStore()->getData();
         $exclude = [];
@@ -210,7 +209,6 @@ class WorkflowManager
      */
     public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
     {
-        Log::info('Throw signal event: ' . $signalRef);
         ThrowSignalEvent::dispatchNow($signalRef, $data, $exclude);
     }
 
@@ -222,7 +220,6 @@ class WorkflowManager
      */
     public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
     {
-        Log::info('Throw message event: ' . $messageRef);
         ThrowMessageEvent::dispatchNow($instanceId, $elementId, $messageRef, $payload);
     }
 
