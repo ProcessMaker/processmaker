@@ -11,13 +11,13 @@ import IconSelector from './IconSelector';
 
 export {
   BasicSearch,
+  ColorSchemeSelector,
   Column,
   ColumnChooser,
   ColumnConfig,
   DataFormatSelector,
   DataLoadingBasic,
   DataMaskSelector,
-  ColorSchemeSelector,
   FileUploadButton,
   IconSelector
 };

@@ -2,16 +2,25 @@
 
 namespace Tests\Feature\Api;
 
+use Tests\TestCase;
+use PermissionSeeder;
 use Faker\Factory as Faker;
+use ProcessMaker\Models\User;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScriptExecutor;
-use ProcessMaker\Models\User;
-use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Facades\WorkflowManager;
 use Illuminate\Support\Facades\Notification;
-use ProcessMaker\Notifications\ScriptResponseNotification;
+use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Notifications\ScriptResponseNotification;
+use ProcessMaker\PolicyExtension;
 
 class ScriptsTest extends TestCase
 {
@@ -561,5 +570,39 @@ class ScriptsTest extends TestCase
         ];
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(204);
+    }
+
+    public function testExecutePolicy()
+    {
+        (new PermissionSeeder)->run();
+        $asp = new AuthServiceProvider(app());
+        $asp->boot();
+        $this->user = factory(User::class)->create();
+        $this->user->giveDirectPermission('view-scripts');
+
+        ImportProcess::dispatchNow(
+            file_get_contents(__DIR__ . '/../../Fixtures/process_with_script_watcher.json')
+        );
+        $process = Process::orderBy('id', 'desc')->first();
+        $script = Script::orderBy('id', 'desc')->first();
+
+        WorkflowManager::triggerStartEvent(
+            $process,
+            $process->getDefinitions()->getEvent('node_1'),
+            []
+        );
+        
+        $task = ProcessRequestToken::orderBy('id', 'desc')->first();
+
+        $url = route('api.scripts.execute', [$script]);
+        $response = $this->apiCall('post', $url);
+        $response->assertStatus(200);
+
+        app(PolicyExtension::class)->add('execute', Script::class, function($user, $script) {
+            return false;
+        });
+
+        $response = $this->apiCall('post', $url);
+        $response->assertStatus(403);
     }
 }

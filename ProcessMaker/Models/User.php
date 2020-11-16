@@ -3,17 +3,19 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\Rule;
 use Laravel\Passport\HasApiTokens;
-use ProcessMaker\Models\RequestUserPermission;
 use ProcessMaker\Query\Traits\PMQL;
+use Illuminate\Session\Store as Session;
+use Illuminate\Notifications\Notifiable;
 use ProcessMaker\Traits\HasAuthorization;
-use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
+use ProcessMaker\Traits\SerializeToIso8601;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use ProcessMaker\Models\RequestUserPermission;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use ProcessMaker\Traits\HideSystemResources;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -24,6 +26,7 @@ class User extends Authenticatable implements HasMedia
     use HasAuthorization;
     use SerializeToIso8601;
     use SoftDeletes;
+    use HideSystemResources;
 
     protected $connection = 'processmaker';
 
@@ -31,6 +34,8 @@ class User extends Authenticatable implements HasMedia
     public const DISK_PROFILE = 'profile';
     //collection media library
     public const COLLECTION_PROFILE = 'profile';
+    // Session key to save request ids that the user started
+    public const REQUESTS_SESSION_KEY = 'web-entry-request-ids';
 
     /**
      * The attributes that are mass assignable.
@@ -146,7 +151,7 @@ class User extends Authenticatable implements HasMedia
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
             'status' => ['required', 'in:ACTIVE,INACTIVE'],
             'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
-            'birthdate' => 'date|nullable'
+            'birthdate' => 'date|nullable' 
         ];
     }
 

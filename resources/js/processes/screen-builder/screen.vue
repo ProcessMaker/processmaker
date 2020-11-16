@@ -21,8 +21,10 @@
 
         <!-- Preview -->
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
+          
           <b-col class="overflow-auto h-100">
             <vue-form-renderer
+              v-if="renderComponent === 'task-screen'"
               ref="renderer"
               :key="rendererKey"
               v-model="previewData"
@@ -32,12 +34,26 @@
               :mode="mode"
               :config="preview.config"
               :computed="preview.computed"
-              :custom-css="preview.customCSS"
+              :custom-css="preview.custom_css"
               :watchers="preview.watchers"
               v-on:css-errors="cssErrors = $event"
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
             />
+            <div v-else>
+              <component
+                :mode="mode"
+                :is="renderComponent"
+                v-model="previewData"
+                :screen="preview.config"
+                :computed="preview.computed"
+                :custom-css="preview.custom_css"
+                :watchers="preview.watchers"
+                :data="previewData"
+                :type="screen.type"
+                @submit="previewSubmit"
+              />
+            </div>
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
@@ -300,7 +316,7 @@ export default {
           },
         ],
         computed: [],
-        customCSS: '',
+        custom_css: '',
         watchers: [],
       },
       rendererKey: 0,
@@ -334,7 +350,9 @@ export default {
       mockMagicVariables,
       validationWarnings: [],
       previewComponents: [],
-      optionsMenu: options
+      optionsMenu: options,
+      rendererKey: 0,
+      renderComponent: 'task-screen'
     };
   },
   components: {
@@ -345,7 +363,7 @@ export default {
     CustomCSS,
     WatchersPopup,
     MonacoEditor,
-    TopMenu
+    TopMenu,
   },
   watch: {
     config() {
@@ -358,6 +376,11 @@ export default {
         this.previewData = JSON.parse(this.previewInput);
       } else {
         this.previewData = {};
+      }
+    },
+    mode() {
+      if (this.mode === 'preview') {
+        this.getPreviewValues();
       }
     }
   },
@@ -405,6 +428,9 @@ export default {
   mounted() {
     // Call our init lifecycle event
     ProcessMaker.EventBus.$emit("screen-builder-init", this);
+    if (this.screen.type === 'CONVERSATIONAL') {
+      this.renderComponent = 'ConversationalForm';
+    }
     this.computed = this.screen.computed ? this.screen.computed : [];
     this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
     this.watchers = this.screen.watchers ? this.screen.watchers : [];
@@ -416,6 +442,16 @@ export default {
     });
   },
   methods: {
+    getPreviewValues() {
+      ProcessMaker.apiClient.post("/screens/preview", {
+          config: this.config,
+          computed: this.computed,
+          custom_css: this.customCSS,
+          watchers: this.watchers,
+      }).then(response => {
+        this.preview = response.data;
+      });
+    },
     changeMode(mode) {
       if (mode === "editor") {
         this.$refs.menuScreen.changeItem("button_design", {
@@ -544,6 +580,7 @@ export default {
       builderBinding
     ) {
       // Add it to the renderer
+      if (!this.$refs.renderer) { return }
       this.$refs.renderer.$options.components[
         rendererBinding
       ] = rendererComponent;

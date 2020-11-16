@@ -68,7 +68,7 @@ class UserController extends Controller
             Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view users.'));
         }
-        $query = User::query();
+        $query = User::nonSystem();
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {

@@ -13,12 +13,14 @@ const path = require("path");
 */
 
 mix.webpackConfig({
+
   plugins: [
   ],
   externals: [
     'monaco-editor'
   ],
   resolve: {
+    symlinks: false,
     alias: {
       'vue-monaco': path.resolve(__dirname, 'resources/js/vue-monaco-amd.js')
     },
@@ -100,7 +102,7 @@ mix.js("resources/js/app-layout.js", "public/js")
 // Monaco AMD modules. Copy only the files we need to make the build faster.
 const monacoSource = 'node_modules/monaco-editor/min/vs/';
 const monacoDestination = 'public/vendor/monaco-editor/min/vs/';
-const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r'];
+const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html'];
 const monacoFiles = [
   'loader.js',
   'editor/editor.main.js',

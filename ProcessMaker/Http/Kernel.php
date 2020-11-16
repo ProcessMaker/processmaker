@@ -65,6 +65,6 @@ class Kernel extends HttpKernel
         'sanitize' => \ProcessMaker\Http\Middleware\SanitizeInput::class,
         'setlocale' => \ProcessMaker\Http\Middleware\SetLocale::class,
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
-        'external.connection' => \ProcessMaker\Http\Middleware\ValidateExternalConnection::class
+        'external.connection' => \ProcessMaker\Http\Middleware\ValidateExternalConnection::class,
     ];
 }

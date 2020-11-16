@@ -2,7 +2,6 @@ import Vue from "vue";
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
 import {renderer, FormBuilderControls} from "@processmaker/screen-builder";
 import formTypes from "./formTypes";
-import FileDownloadControl from "./components/file-download-control";
 
 const {
   FormText
@@ -13,6 +12,7 @@ const RichTextControl = FormBuilderControls.find(control => control.rendererBind
 let FormRecordList = FormBuilderControls.find(control => control.rendererBinding === "FormRecordList");
 const FormImage = FormBuilderControls.find(control => control.rendererBinding === "FormImage");
 const FormLoop = FormBuilderControls.find(control => control.rendererBinding === "FormLoop");
+const FileDownloadControl = FormBuilderControls.find(control => control.builderBinding === "FileDownload");
 
 // Remove editable inspector props
 FormRecordList.control.inspector = FormRecordList.control.inspector.filter(prop => prop.field !== "editable" && prop.field !== "form");
@@ -23,9 +23,8 @@ let controlsDisplay = [
   FormRecordList,
   FormImage,
   FormLoop,
+  FileDownloadControl,
 ];
-
-controlsDisplay.push(FileDownloadControl);
 
 ProcessMaker.EventBus.$on("screen-builder-init", (manager) => {
   controlsDisplay.forEach((item) => {

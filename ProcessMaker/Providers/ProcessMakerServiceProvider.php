@@ -15,6 +15,7 @@ use Laravel\Horizon\Horizon;
 use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
@@ -25,6 +26,7 @@ use ProcessMaker\Observers\ProcessRequestObserver;
 use ProcessMaker\Observers\UserObserver;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Observers\ProcessRequestTokenObserver;
+use ProcessMaker\PolicyExtension;
 
 /**
  * Provide our ProcessMaker specific services
@@ -55,7 +57,6 @@ class ProcessMakerServiceProvider extends ServiceProvider
         Validator::extend('alpha_spaces', function ($attr, $val) {
             return preg_match('/^[\pL\s\-\_\d\.\']+$/u', $val);
         });
-
 
         parent::boot();
     }
@@ -110,6 +111,14 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton(GlobalScriptsManager::class, function($app) {
             return new GlobalScriptsManager();
+        });
+        
+        $this->app->singleton(AnonymousUser::class, function($app) {
+            return AnonymousUser::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
+        });
+        
+        $this->app->singleton(PolicyExtension::class, function($app) {
+            return new PolicyExtension();
         });
 
         // Listen to the events for our core screen types and add our javascript

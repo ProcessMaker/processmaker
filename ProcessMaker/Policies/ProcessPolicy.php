@@ -6,6 +6,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\Request;
+use ProcessMaker\Models\AnonymousUser;
 
 class ProcessPolicy
 {
@@ -39,8 +40,15 @@ class ProcessPolicy
         if ($process->groupsCanStart(request()->query('event'))->whereIn('id', $groupIds)->count()) {
             return true;
         }
-        
-        if ($process->usersCanStart(request()->query('event'))->where('id', $user->id)->count()) {
+
+        $usersCanStart = $process->usersCanStart(
+            request()->query('event')
+        )->pluck('id');
+
+        if (
+            $usersCanStart->contains($user->id) ||
+            $usersCanStart->contains(app(AnonymousUser::class)->id)
+        ) {
             return true;
         }
 

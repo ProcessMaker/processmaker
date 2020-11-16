@@ -97,10 +97,17 @@
         }
         return 'FORM'
       },
+      interactive() {
+        if (this.params && this.params.interactive) {
+          return this.params.interactive;
+        }
+        return false;
+      },
       load(filter) {
         let params = Object.assign(
           {
             type: this.type(),
+            interactive: this.interactive(),
             order_direction: 'asc',
             status: 'active',
             selectList: true,

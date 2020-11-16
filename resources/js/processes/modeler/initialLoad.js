@@ -122,7 +122,10 @@ ProcessMaker.EventBus.$on(
         helper: 'Select Screen to display this Task',
         name: 'screenRef',
         required: true,
-        type: 'FORM'
+        params: {
+          type: 'FORM',
+          interactive: true
+        }        
       }
     });
 

@@ -3,6 +3,7 @@
         <div class="form-group">
             <label>{{ $t('Type') }}</label>
             <select class="form-control"
+                    :disabled="disabled"
                     :value="assignmentGetter"
                     @input="assignmentSetter">
                 <option value="">{{ $t('Select...') }}</option>
@@ -26,7 +27,8 @@
                          :searchable="true"
                          :internal-search="false"
                          @open="load"
-                         @search-change="load">
+                         @search-change="load"
+                         :disabled="disabled">
                 <template slot="noResult" >
                     {{ $t('No elements found. Consider changing the search query.') }}
                 </template>
@@ -50,6 +52,7 @@
         loading: false,
         error: '',
         type: '',
+        disabled: false,
       };
     },
     watch: {
@@ -199,6 +202,10 @@
     },
     mounted() {
       this.loadAssigned();
+
+      this.$root.$on('disable-assignment-settings', (val) => {
+        this.disabled = val;
+      });
     },
   };
 </script>

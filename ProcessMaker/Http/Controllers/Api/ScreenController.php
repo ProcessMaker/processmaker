@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Query\SyntaxError;
 
 class ScreenController extends Controller
@@ -105,7 +107,12 @@ class ScreenController extends Controller
                 });
             }
         }
-        if ($request->input('type')) {
+        $interactive = filter_var($request->input('interactive'), FILTER_VALIDATE_BOOLEAN);
+        if ($interactive) {
+            $screens = ScreenType::where('is_interactive', $interactive)->get('name');
+            $query->whereIn('type', $screens);
+        }
+        if (!$interactive  && $request->input('type')) {
             $types = explode(',', $request->input('type'));
             $query->whereIn('type', $types);
         }
@@ -160,7 +167,7 @@ class ScreenController extends Controller
             Auth::user()->can('edit-processes'))) {
             throw new AuthorizationException(__('Not authorized to view screens.'));
         }
-        return new ApiResource($screen);
+        return new ScreenResource($screen);
     }
 
     /**
@@ -364,7 +371,7 @@ class ScreenController extends Controller
         if ($fileKey) {
             return ['url' => url("/designer/screens/{$screen->id}/download/{$fileKey}")];
         } else {
-            return response(['error' => __('Unable to Export Screen')], 500);
+            return response(['message' => __('Unable to Export Screen')], 500);
         }
     }
 
@@ -435,5 +442,45 @@ class ScreenController extends Controller
         $hasVersion = $isDecoded && isset($decoded->version) && is_string($decoded->version);
         $validVersion = $hasVersion && method_exists(ImportScreen::class, "parseFileV{$decoded->version}");
         return $isDecoded && $validType && $validVersion;
+    }
+
+    /**
+     * Get preview a screen
+     *
+     * @param Request $request
+     *
+     * @return ResponseFactory|Response
+     *
+     * @OA\Post(
+     *     path="/screens/preview",
+     *     summary="Preview a screen",
+     *     operationId="preview",
+     *     tags={"Screens"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="config", type="object"),
+     *             @OA\Property(property="watchers", type="object"),
+     *             @OA\Property(property="computed", type="object"),
+     *             @OA\Property(property="custom_css", type="string"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successfully found the screen",
+     *         @OA\JsonContent(ref="#/components/schemas/screens")
+     *     ),
+     * )
+     */
+    public function preview(Request $request)
+    {
+        $screen = new Screen();
+        $screen->config = $request->post('config');
+        $screen->watchers = $request->post('watchers');
+        $screen->computed = $request->post('computed');
+        $screen->custom_css = $request->post('custom_css');
+
+        return new ScreenResource($screen);
     }
 }

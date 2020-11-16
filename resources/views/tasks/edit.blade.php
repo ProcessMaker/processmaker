@@ -48,70 +48,20 @@
                     @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
-                            @can('update', $task)
-                            <template v-if="taskIsOpenOrOverdue">
-                                <div class="card card-body border-top-0 h-100">
-                                    <template v-if="task.component">
-                                        <component
-                                            :is="task.component"
-                                            ref="taskScreen"
-                                            :process-id="task.process_id"
-                                            :instance-id="task.process_request_id"
-                                            :token-id="task.id"
-                                            :screen="task.screen.config"
-                                            :csrf-token="'{{ csrf_token() }}'"
-                                            :computed="task.screen.computed"
-                                            :custom-css="task.screen.custom_css"
-                                            :watchers="task.screen.watchers"
-                                            :data="task.request_data"
-                                            @activity-assigned="activityAssigned"
-                                            @process-completed="redirectWhenProcessCompleted"
-                                            @process-updated="refreshWhenProcessUpdated"
-                                        >
-                                        </component>
-                                    </template>
-                                    <template v-else>
-                                        <task-screen
-                                            ref="taskScreen"
-                                            :process-id="task.process_id"
-                                            :instance-id="task.process_request_id"
-                                            :token-id="task.id"
-                                            :screen="[{items:[]}]"
-                                            :data="task.request_data"
-                                            @activity-assigned="activityAssigned"
-                                            @process-completed="redirectWhenProcessCompleted"
-                                            @process-updated="refreshWhenProcessUpdated"
-                                        >
-                                        </task-screen>
-                                    </template>
-                                </div>
-                                <div v-if="task.bpmn_tag_name === 'manualTask' || !task.screen" class="card-footer">
-                                    <button type="button" class="btn btn-primary" @click="submitTaskScreen">{{__('Complete Task')}}</button>
-                                </div>
-                            </template>
-                            <template v-if="taskIsCompleted">
-                              <div class="card card-body border-top-0 h-100">
-                                <task-screen
-                                    ref="taskWaitScreen"
-                                    v-if="task.allow_interstitial"
-                                    :process-id="task.process_id"
-                                    :instance-id="task.process_request_id"
-                                    :token-id="task.id"
-                                    :screen="task.interstitial_screen.config"
-                                    :computed="task.interstitial_screen.computed"
-                                    :custom-css="task.interstitial_screen.custom_css"
-                                    :watchers="task.interstitial_screen.watchers"
-                                    :data="task.request_data"
-                                    @activity-assigned="activityAssigned"
-                                    @process-completed="redirectWhenProcessCompleted"
-                                    @process-updated="refreshWhenProcessUpdated"
-                                ></task-screen>
-                                <div v-else class="card card-body text-center" v-cloak>
-                                    <h1>{{ __('Task Completed') }} <i class="fas fa-clipboard-check"></i></h1>
-                                </div>
-                              </div>
-                            </template>
-                            @endcan
+                          @can('update', $task) 
+                            <task
+                              v-model="formData"
+                              :initial-task-id="{{ $task->id }}"
+                              :initial-request-id="{{ $task->process_request_id }}"
+                              :user-id="{{ Auth::user()->id }}"
+                              csrf-token="{{ csrf_token() }}"
+                              @task-updated="taskUpdated"
+                              @submit="submit"
+                              @completed="completed"
+                              @@error="error"
+                              @closed="closed"
+                          ></task>
+                          @endcan
                             @can('view-comments')
                               <div v-if="taskHasComments">
                                 <timeline :commentable_id="task.id"
@@ -124,7 +74,7 @@
                                           :readonly="task.status === 'CLOSED'"
                                           />
                               </div>
-                            @endcan
+                            @endcan 
                         </div>
                         @can('editData', $task->processRequest)
                             <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
@@ -262,6 +212,10 @@
       requestFiles: @json($files),
       getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
     };
+
+    const task = @json($task);
+    const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+
   </script>
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
@@ -285,13 +239,13 @@
           usersList: [],
           filter: "",
           showReassignment: false,
-
-          task: @json($task->toArray()),
-          userHasAccessToTask: {{ Auth::user()->can('update', $task) ? "true": "false" }},
+          task,
+          userHasAccessToTask,
           statusCard: "card-header text-capitalize text-white bg-success",
           selectedUser: [],
           hasErrors: false,
           redirectInProcess: false,
+          formData: {},
         },
         watch: {
           task: {
@@ -321,12 +275,6 @@
             };
             return dueLabels[this.task.advanceStatus] || '';
           },
-          taskIsCompleted() {
-            return this.task.advanceStatus === 'completed' || this.task.advanceStatus === 'triggered';
-          },
-          taskIsOpenOrOverdue() {
-            return this.task.advanceStatus === 'open' || this.task.advanceStatus === 'overdue';
-          },
           isSelfService() {
             return this.task.process_request.status === 'ACTIVE' && this.task.is_self_service;
           },
@@ -351,35 +299,14 @@
           }
         },
         methods: {
-          activityAssigned() {
-            this.checkTaskStatus();
-            this.redirectToNextAssignedTask(false);
+          completed(processRequestId) {
+            this.redirect(`/requests/${processRequestId}`);
           },
-          reload() {
-            this.loadTask(this.task.id);
+          error(processRequestId) {
+            this.redirect(`/requests/${this.task.process_request_id}`);
           },
-          loadTask(id) {
-            if (this.redirectInProcess) {
-              return;
-            }
-
-            window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
-              .then((response) => {
-                this.resetScreenState();
-                this.$set(this, 'task', response.data);
-                if (response.data.process_request.status === 'ERROR') {
-                  this.hasErrors = true;
-                }
-                this.prepareTask();
-              })
-              .catch(error => {
-                  this.hasErrors = true;
-              })
-          },
-          resetScreenState() {
-            if (this.$refs.taskScreen && this.$refs.taskScreen.$children[0]) {
-              this.$refs.taskScreen.$children[0].currentPage = 0;
-            }
+          closed(taskId) {
+            this.redirect("/tasks");
           },
           claimTask() {
             ProcessMaker.apiClient
@@ -390,58 +317,6 @@
               .then(response => {
                 this.reload();
               });
-          },
-          redirectWhenProcessCompleted() {
-            this.redirect(`/requests/${this.task.process_request_id}`);
-          },
-          refreshWhenProcessUpdated(data) {
-            if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
-              this.reload();
-            }
-          },
-          checkTaskStatus(redirect=false) {
-            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
-              this.closeTask();
-            }
-          },
-          closeTask() {
-            if (this.hasErrors) {
-              this.redirect(`/requests/${this.task.process_request_id}`);
-              return;
-            }
-            if (!this.task.allow_interstitial) {
-              this.redirect("/tasks");
-            } else {
-              this.redirectToNextAssignedTask();
-            }
-          },
-          redirectToNextAssignedTask(redirect = false) {
-            if (this.redirectInProcess) {
-              return;
-            }
-
-            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
-              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user_id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
-                if (response.data.data.length > 0) {
-                  const firstNextAssignedTask = response.data.data[0].id;
-                  if (redirect) {
-                    this.redirect(`/tasks/${firstNextAssignedTask}/edit`);
-                  } else {
-                    this.loadTask(firstNextAssignedTask);
-                  }
-                } else if (this.task.process_request.status === 'COMPLETED') {
-                  setTimeout(() => {
-                    this.redirect(`/requests/${this.task.process_request_id}`);
-                  }, 500);
-                }
-              });
-            }
-          },
-          /**
-           * Submit the task screen
-           */
-          submitTaskScreen () {
-            this.$refs.taskScreen.submit();
           },
           // Data editor
           updateRequestData () {
@@ -513,18 +388,6 @@
                 this.usersList = response.data.assignable_users.filter(u => u.id !== this.task.user_id);
               });
           },
-          classHeaderCard (status) {
-            let header = "bg-success";
-            switch (status) {
-              case "completed":
-                header = "bg-secondary";
-                break;
-              case "overdue":
-                header = "bg-danger";
-                break;
-            }
-            return "card-header text-capitalize text-white " + header;
-          },
           assignedUserAvatar (user) {
             return [{
               src: user.avatar,
@@ -535,15 +398,33 @@
             let editor = this.$refs.monaco.getMonaco();
             editor.layout({height: window.innerHeight * 0.65});
           },
-          prepareTask(redirect = false) {
-            this.statusCard = this.classHeaderCard(this.task.advanceStatus);
-            this.updateRequestData = debounce(this.updateRequestData, 1000);
-            this.editJsonData();
-            this.checkTaskStatus(redirect);
+          prepareData() {
+              this.updateRequestData = debounce(this.updateRequestData, 1000);
+              this.editJsonData();
           },
+          updateTask(val) {
+            this.$set(this, 'task', val);
+          },
+          submit(task) {
+            let message = this.$t('Task Completed Successfully');
+            const taskId = task.id;
+            ProcessMaker.apiClient
+            .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
+            .then(() => {
+              window.ProcessMaker.alert(message, 'success', 5, true);
+            })
+            .catch(error => {
+              // If there are errors, the user will be redirected to the request page
+              // to view error details. This is done in loadTask in Task.vue
+            });
+            
+          },
+          taskUpdated(task) {
+            this.task = task;
+          }
         },
-        mounted () {
-          this.prepareTask(true);
+        mounted() {
+          this.prepareData();
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)

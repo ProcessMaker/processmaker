@@ -1,7 +1,11 @@
-import FileDownload from './file-download'
-import FileUpload from './form/file-upload'
+import {renderer} from '@processmaker/screen-builder';
+
+const {
+  FileDownload,
+  FileUpload
+} = renderer;
 
 export {
-    FileDownload,
-    FileUpload
-}
+  FileDownload,
+  FileUpload
+};

@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Resources;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Models\User;
+use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use StdClass;
 
 class Task extends ApiResource
@@ -36,7 +37,17 @@ class Task extends ApiResource
             $array['component'] = $this->getScreen() ? $this->getScreen()->renderComponent() : null;
         }
         if (in_array('screen', $include)) {
-            $array['screen'] = $this->getScreen() ? $this->getScreen()->toArray() : null;
+            $screen = $this->getScreen();
+            if ($screen) {
+                if ($screen->type === 'ADVANCED') {
+                    $array['screen'] = $screen;
+                } else {
+                    $resource = new ScreenResource($screen);
+                    $array['screen'] = $resource->toArray($request);
+                }
+            } else {
+                $array['screen'] = null;
+            }
         }
         if (in_array('requestData', $include)) {
             $array['request_data'] = $this->processRequest->data ?: new StdClass();

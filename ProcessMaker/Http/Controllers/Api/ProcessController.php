@@ -675,7 +675,7 @@ class ProcessController extends Controller
             $url = url("/processes/{$process->id}/download/{$fileKey}");
             return ['url' => $url];
         } else {
-            return response(['error' => __('Unable to Export Process')], 500);
+            return response(['message' => __('Unable to Export Process')], 500);
         }
     }
 
