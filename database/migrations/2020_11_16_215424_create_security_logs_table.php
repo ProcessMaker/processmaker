@@ -18,7 +18,7 @@ class CreateSecurityLogsTable extends Migration
             $table->bigIncrements('id');
             $table->string('type', 40)->index();
             $table->string('ip', 40)->index()->nullable();
-            $table->string('user_agent')->nullable();
+            $table->json('meta')->nullable();
             $table->unsignedInteger('user_id')->nullable();
             $table->timestamp('created_at');
             
