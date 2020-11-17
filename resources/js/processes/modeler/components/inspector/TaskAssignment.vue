@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="form-group">
+        <div class="form-group"> 
             <label>{{ $t( label ) }}</label>
             <select
                 ref="assignmentsDropDownList"
@@ -153,16 +153,20 @@
         default() {
           return [
             {
-              value: "requester",
-              label: "Requester"
+              value: "user_group",
+              label: "User"
             },
             {
               value: "user_group",
-              label: "Users / Groups"
+              label: "Group"
             },
             {
               value: "previous_task_assignee",
               label: "Previous Task Assignee"
+            },
+            {
+              value: "requester",
+              label: "Request Starter"
             },
             {
               value: "user_by_id",
@@ -171,6 +175,10 @@
             {
               value: "self_service",
               label: "Self Service"
+            },
+            {
+              value: "feel_expression",
+              label: "FEEL Expression"
             },
           ];
         },
