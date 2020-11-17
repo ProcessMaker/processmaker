@@ -150,7 +150,7 @@ ProcessMaker.EventBus.$on(
         {
           component: 'TaskAssignment',
           config: {
-            label: 'Task Assignment',
+            label: 'Assignment Type',
             helper: '',
             name: 'taskAssignment'
           }
