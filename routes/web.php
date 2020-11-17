@@ -59,7 +59,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::put('processes/{process}', 'ProcessController@update')->name('processes.edit')->middleware('can:edit-processes');
     Route::delete('processes/{process}', 'ProcessController@destroy')->name('processes.destroy')->middleware('can:archive-processes');
     
-    Route::get('process_events/{process}', 'ProcessController@triggerStartEventApi');
+    Route::get('process_events/{process}', 'ProcessController@triggerStartEventApi')->middleware('can:start,process');
 
     Route::get('about', 'AboutController@index')->name('about.index');
 
