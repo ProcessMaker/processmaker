@@ -4,6 +4,7 @@ namespace ProcessMaker\Listeners;
 use Carbon\Carbon;
 use ProcessMaker\Models\SecurityLog;
 use ProcessMaker\Models\User;
+use WhichBrowser\Parser;
 
 class SecurityLogger
 {
@@ -32,10 +33,18 @@ class SecurityLogger
                 $userId = null;
             }
             
+            $parsed = new Parser(request()->headers->get('User-Agent'));
+            
             SecurityLog::create([
                'type' => $type,
                'ip' => request()->ip(),
-               'user_agent' => request()->headers->get('User-Agent'),
+               'meta' => [
+                   'user_agent' => request()->headers->get('User-Agent'),
+                   'browser' => [
+                       'name' => $parsed->browser->name,
+                       'version' => $parsed->browser->version->toString(),
+                   ],
+               ],
                'user_id' => $userId,
             ]);
         }
