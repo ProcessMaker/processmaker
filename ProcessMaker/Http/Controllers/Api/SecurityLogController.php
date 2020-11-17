@@ -25,7 +25,11 @@ class SecurityLogController extends Controller
         }
         
         if ($filter = $request->input('filter')) {
-            $query->where('event', 'like', mb_strtolower($filter));
+            $filter = '%' . mb_strtolower($filter) . '%';
+            $query->where('event', 'like', $filter)
+                  ->orWhere(DB::raw("LOWER(ip)"), 'like', $filter)
+                  ->orWhere(DB::raw("LOWER(meta->>'$.browser.name')"), 'like', $filter)
+                  ->orWhere(DB::raw("LOWER(meta->>'$.os.name')"), 'like', $filter);
         }
         
         if ($orderBy = $request->input('order_by')) {
