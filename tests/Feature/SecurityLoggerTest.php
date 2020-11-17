@@ -14,7 +14,7 @@ use Tests\Feature\Shared\RequestHelper;
 class SecurityLoggerTest extends TestCase
 {
     /**
-     * Create new script in process
+     * Test to ensure security events are logged
      */
     public function testLogSecurityEvents()
     {
