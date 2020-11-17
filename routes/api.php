@@ -178,6 +178,10 @@ Route::group(
     Route::post('script-executors/cancel', 'ScriptExecutorController@cancel')->name('script-executors.cancel');
     Route::delete('script-executors/{script_executor}', 'ScriptExecutorController@delete')->name('script-executors.delete');
 
+    // Security logs
+    Route::get('security-logs', 'SecurityLogController@index')->name('security-logs.index')->middleware('can:view-security-logs');
+    Route::get('security-logs/{securityLog}', 'SecurityLogController@show')->name('security-logs.show')->middleware('can:view-security-logs');
+
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
 

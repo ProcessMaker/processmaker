@@ -1216,5 +1216,10 @@
   "Variable Data Property": "Variable Data Property",
   "Enter the property name from the Request data variable that will be passed as the value when selected.": "Enter the property name from the Request data variable that will be passed as the value when selected.",
   "Endpoint to populate select": "Endpoint to populate select",
-  "View Other Users Profiles": "View Other Users Profiles"
+  "Security Logs": "Security Logs",
+  "View Security Logs": "View Security Logs",
+  "View Other Users Profiles": "View Other Users Profiles",
+  "Unidentified": "Unidentified",
+  "Logged Event": "Logged Event",
+  "Logged Events": "Logged Events"
 }

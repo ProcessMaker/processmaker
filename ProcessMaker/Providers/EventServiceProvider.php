@@ -14,8 +14,15 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
+        'Illuminate\Auth\Events\Failed' => [
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
         'Illuminate\Auth\Events\Login' => [
             'ProcessMaker\Listeners\LoginListener',
+            'ProcessMaker\Listeners\SecurityLogger',
+        ],
+        'Illuminate\Auth\Events\Logout' => [
+            'ProcessMaker\Listeners\SecurityLogger',
         ],
         'ProcessMaker\Events\SessionStarted' => [
             'ProcessMaker\Listeners\ActiveUserListener',
