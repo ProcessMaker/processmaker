@@ -3,9 +3,12 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Traits\ExtendedPMQL;
 
 class SecurityLog extends Model
 {
+    use ExtendedPMQL;
+    
     const UPDATED_AT = null;
     
     protected $connection = 'data';
