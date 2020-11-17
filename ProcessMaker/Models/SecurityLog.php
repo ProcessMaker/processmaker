@@ -9,6 +9,7 @@ class SecurityLog extends Model
 {
     use ExtendedPMQL;
     
+    const CREATED_AT = 'occurred_at';
     const UPDATED_AT = null;
     
     protected $connection = 'data';
@@ -20,7 +21,7 @@ class SecurityLog extends Model
      */
     protected $guarded = [
         'id',
-        'created_at',
+        'occurred_at',
     ];
     
     /**

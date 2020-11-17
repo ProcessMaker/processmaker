@@ -20,7 +20,7 @@ class CreateSecurityLogsTable extends Migration
             $table->string('ip', 40)->index()->nullable();
             $table->json('meta')->nullable();
             $table->unsignedInteger('user_id')->nullable();
-            $table->timestamp('created_at');
+            $table->timestamp('occurred_at');
             
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
