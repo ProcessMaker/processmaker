@@ -8,7 +8,7 @@ use WhichBrowser\Parser;
 
 class SecurityLogger
 {
-    private $types = [
+    private $eventTypes = [
         'Illuminate\Auth\Events\Failed' => 'attempt',
         'Illuminate\Auth\Events\Login' => 'login',
         'Illuminate\Auth\Events\Logout' => 'logout',
@@ -24,8 +24,8 @@ class SecurityLogger
     {
         $class = get_class($event);
         
-        if (array_key_exists($class, $this->types)) {
-            $type = $this->types[$class];
+        if (array_key_exists($class, $this->eventTypes)) {
+            $eventType = $this->eventTypes[$class];
             
             if (isset($event->user)) {
                 $userId = $event->user->id;
@@ -36,7 +36,7 @@ class SecurityLogger
             $parsed = new Parser(request()->headers->get('User-Agent'));
             
             SecurityLog::create([
-               'type' => $type,
+               'event' => $eventType,
                'ip' => request()->ip(),
                'meta' => [
                    'user_agent' => request()->headers->get('User-Agent'),

@@ -16,7 +16,7 @@ class CreateSecurityLogsTable extends Migration
     {
         Schema::create('security_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('type', 40)->index();
+            $table->string('event', 40)->index();
             $table->string('ip', 40)->index()->nullable();
             $table->json('meta')->nullable();
             $table->unsignedInteger('user_id')->nullable();

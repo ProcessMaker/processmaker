@@ -25,7 +25,7 @@ class SecurityLogController extends Controller
         }
         
         if ($filter = $request->input('filter')) {
-            $query->where('type', 'like', $filter);
+            $query->where('event', 'like', mb_strtolower($filter));
         }
         
         if ($orderBy = $request->input('order_by')) {
