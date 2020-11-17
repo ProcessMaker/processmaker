@@ -17,7 +17,8 @@ mix.webpackConfig({
   plugins: [
   ],
   externals: [
-    'monaco-editor'
+    'monaco-editor',
+    'SharedComponents'
   ],
   resolve: {
     symlinks: false,
