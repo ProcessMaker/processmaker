@@ -15,17 +15,30 @@
 
         <div v-if="!disabled">
           <select-user-group
-              v-if="showAssignments"
-              :label="$t('Assigned Users/Groups')"
-              v-model="assignments"
-              :hide-users="hideUsers"/>
+            v-if="showAssignUser"
+            :label="$t('Assign to User')"
+            v-model="assignments"
+            :hide-groups="true" />
+
+          <select-user-group
+            v-if="showAssignGroup"
+            :label="$t('Assign to Group')"
+            v-model="assignments"
+            :hide-users="true" />
 
           <user-by-id
               v-if="showAssignUserById"
-              :label="$t('Variable Name of User ID Value')"
+              :label="$t('Variable Name')"
               v-model="assigned"
+              :helper="$t('Variable containing the numeric User ID')"
           ></user-by-id>
-
+          
+          <select-user-group
+            v-if="showAssignSelfService"
+            :label="$t('Assign to User/Group')"
+            v-model="assignments"
+            :hide-users="false" />
+            
           <form-checkbox
               v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
               :label="$t('Lock task assignment to user')"
@@ -37,14 +50,13 @@
           <form-checkbox
               v-if="configurables.includes('ALLOW_REASSIGNMENT')"
               :label="$t('Allow Reassignment')"
-              :helper="$t('Allows the Task assignee to reassign this Task')"
               :checked="allowReassignmentGetter"
               toggle="true"
               @change="allowReassignmentSetter">
           </form-checkbox>
         </div>
 
-        <div v-if="configurables.includes('ASSIGN_BY_EXPRESSION') && !disabled" class="form-group">
+        <!-- <div v-if="configurables.includes('ASSIGN_BY_EXPRESSION') && !disabled" class="form-group">
 
             <div class="form-group special-assignment-header">
                 <label>{{ $t("Assign by Expression Use a rule to assign this Task conditionally") }}</label>
@@ -131,7 +143,7 @@
                     </div>
                 </template>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -153,11 +165,11 @@
         default() {
           return [
             {
-              value: "user_group",
+              value: "user",
               label: "User"
             },
             {
-              value: "user_group",
+              value: "group",
               label: "Group"
             },
             {
@@ -285,11 +297,19 @@
       showAssignUserById () {
         return this.assignment === "user_by_id";
       },
-      showAssignments () {
-        this.hideUsers = this.assignment === "self_service";
+      showAssignUser () {
+        return this.assignment === "user";
+      },
+      showAssignGroup () {
+        return this.assignment === "group";
+      },
+      showAssignSelfService () {
+        return this.assignment === "self_service";
+        // this.hideUsers = this.assignment === "self_service";
+        
 
-        const assign = ["user", "group", "self_service", "user_group"];
-        return assign.indexOf(this.assignment) !== -1;
+        // const assign = ["user", "group", "self_service", "user_group"];
+        // return assign.indexOf(this.assignment) !== -1;
       },
       showSpecialAssignOneUserGroup () {
         this.hideUsersAssignmentExpression = this.typeAssignmentExpression === "self_service";
