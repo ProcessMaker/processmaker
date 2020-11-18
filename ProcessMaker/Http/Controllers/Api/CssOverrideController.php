@@ -14,6 +14,15 @@ use ProcessMaker\Models\Setting;
 
 class CssOverrideController extends Controller
 {
+    /**
+     * A whitelist of attributes that should not be
+     * sanitized by our SanitizeInput middleware.
+     *
+     * @var array
+     */
+    public $doNotSanitize = [
+        'loginFooter'
+    ];
 
     /**
      * Create a new Settings css-override
@@ -78,12 +87,23 @@ class CssOverrideController extends Controller
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
         $setting->saveOrFail();
+        
+        $this->setLoginFooter($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
         $this->compileSass(json_decode($request->input('variables', '[]'), true));
 
         return new ApiResource($setting);
+    }
+
+    private function setLoginFooter(Request $request)
+    {
+        Setting::updateOrCreate([
+            'key' => 'login-footer'
+        ],[
+            'config' => ['html' => $request->input('loginFooter', '')]
+        ]);
     }
 
     public function update(Request $request)
