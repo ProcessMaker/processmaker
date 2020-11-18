@@ -105,6 +105,11 @@
                             </template>
                         </multiselect>
                     </div>
+                    <div class="form-group">
+                        <!-- Do not use FormHtmlEditor since we dont want inline -->
+                        {!! Form::label('fileIcon', __('Login Page Footer')) !!}
+                        <editor v-model="loginFooter" :init="editorSettings"></editor>
+                    </div>
                     <br>
                     <div class="d-flex">
                         {!! Form::button('<i class="fas fa-undo"></i> ' . __('Reset'), ['class'=>'btn btn-outline-danger', '@click' => 'onReset', ':disabled' => '!config' ]) !!}
@@ -149,10 +154,23 @@
     <script src="{{mix('js/admin/cssOverride/edit.js')}}"></script>
     <script>
 
+      const loginFooterSetting = @json($loginFooter);
+
       new Vue({
         el: '#editCss',
         data() {
           return {
+            loginFooter: '',
+            editorSettings: {
+              content_css: '/css/app.css',
+              content_style: "body {padding: 10px}",
+              menubar: false,
+              plugins: [ 'link', 'lists', 'code' ],
+              toolbar: 'code | undo redo | link | styleselect fontsizeselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+              skin: false,
+              relative_urls: false,
+              remove_script_host: false,
+            },
             config: @json($config),
             key: 'css-override',
             fileLogin: {
@@ -325,6 +343,8 @@
               this.onClose();
             }
           });
+
+          this.loginFooter = _.get(loginFooterSetting, 'config.html', '');
         },
         methods: {
           resetErrors() {
@@ -351,6 +371,7 @@
             formData.append('fileIcon', this.fileIcon.file);
             formData.append('variables', JSON.stringify(this.customColors));
             formData.append('sansSerifFont', JSON.stringify(this.selectedSansSerifFont));
+            formData.append('loginFooter', this.loginFooter);
 
             this.onCreate(formData);
           },
@@ -370,6 +391,7 @@
                 formData.append('fileIcon', '');
                 formData.append('variables', JSON.stringify(this.colorDefault));
                 formData.append('sansSerifFont', JSON.stringify({id:"'Open Sans'", value:'Open Sans'}));
+                formData.append('loginFooter', '');
 
                 this.onCreate(formData);
               }
