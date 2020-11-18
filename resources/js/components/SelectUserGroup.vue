@@ -99,14 +99,25 @@
         set (value) {
           this.selected.users = [];
           this.selected.groups = [];
-          value.forEach(item => {
-            this.results.push(item);
-            if (typeof item.id === "number") {
-              this.selected.users.push(item.id);
+          if (value.length) {
+            console.log('HIT HERE', value);
+            value.forEach(item => {
+              this.results.push(item);
+              if (typeof item.id === "number") {
+                this.selected.users.push(item.id);
+              } else {
+                this.selected.groups.push(parseInt(item.id.substr(6)));
+              }
+            });
+          } else {
+            console.log(typeof value.id);
+            if (typeof value.id === "number") {
+              this.selected.users.push(value);
             } else {
-              this.selected.groups.push(parseInt(item.id.substr(6)));
+              this.selected.groups.push(value);
             }
-          });
+          }
+          
         }
       }
     },
@@ -114,6 +125,7 @@
       content: {
         handler () {
           this.lastEmitted = JSON.stringify(this.selected);
+          console.log('EMITTED', this.selected);
           this.$emit("input", this.selected);
         }
       },
@@ -205,6 +217,7 @@
           });
       },
       formatGroup (item) {
+        console.log('HIT HERE');
         item.id = "group-" + item.id;
         item.fullname = item.name;
         return item;

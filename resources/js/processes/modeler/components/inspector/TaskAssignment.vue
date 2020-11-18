@@ -18,13 +18,15 @@
             v-if="showAssignUser"
             :label="$t('Assign to User')"
             v-model="assignments"
-            :hide-groups="true" />
+            :hide-groups="true"
+            :multiple="false" />
 
           <select-user-group
             v-if="showAssignGroup"
             :label="$t('Assign to Group')"
             v-model="assignments"
-            :hide-users="true" />
+            :hide-users="true"
+            :multiple="false" />
 
           <user-by-id
               v-if="showAssignUserById"
@@ -32,13 +34,12 @@
               v-model="assigned"
               :helper="$t('Variable containing the numeric User ID')"
           ></user-by-id>
-          
-          <select-user-group
-            v-if="showAssignSelfService"
-            :label="$t('Assign to User/Group')"
+
+          <self-service-select v-if="showAssignSelfService" 
             v-model="assignments"
-            :hide-users="false" />
+          ></self-service-select>
             
+
           <form-checkbox
               v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
               :label="$t('Lock task assignment to user')"
@@ -148,7 +149,9 @@
 </template>
 
 <script>
+import SelfServiceSelect from './SelfServiceSelect.vue';
   export default {
+  components: { SelfServiceSelect },
     props: {
       value: null,
       label: null,
@@ -540,6 +543,8 @@
       },
       assignment: {
         handler (assigned) {
+          this.assignments.groups = [];
+          this.assignments.users = [];
           let value = "";
           if (assigned === "user") {
             value = this.assignedUserGetter;
