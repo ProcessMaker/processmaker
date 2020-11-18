@@ -166,7 +166,7 @@
               content_style: "body {padding: 10px}",
               menubar: false,
               plugins: [ 'link', 'lists', 'code' ],
-              toolbar: 'code | undo redo | link | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
+              toolbar: 'code | undo redo | link | styleselect fontsizeselect | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
               skin: false,
               relative_urls: false,
               remove_script_host: false,
