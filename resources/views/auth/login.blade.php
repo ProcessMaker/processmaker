@@ -64,6 +64,18 @@ Login
 
   </div>
 </div>
+
+@php
+  $loginFooterSetting = \ProcessMaker\Models\Setting::byKey('login-footer');
+@endphp
+@if ($loginFooterSetting)
+  <div class="fixed-bottom">
+    <div class="container">
+        {!! $loginFooterSetting->config['html'] !!}
+    </div>
+  </div>
+@endif
+
 @endsection
 @section('css')
   <style media="screen">
