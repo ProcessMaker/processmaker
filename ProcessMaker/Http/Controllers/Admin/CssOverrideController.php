@@ -17,6 +17,8 @@ class CssOverrideController extends Controller
         }
 
         $config = Setting::byKey('css-override');
-        return view('admin.cssOverride.edit', compact('config'));
+        $loginFooter = Setting::byKey('login-footer');
+
+        return view('admin.cssOverride.edit', compact('config', 'loginFooter'));
     }
 }
