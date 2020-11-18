@@ -6,6 +6,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use ProcessMaker\Traits\HasControllerAddons;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -86,6 +87,13 @@ class LoginController extends Controller
     public function keepAlive()
     {
         return response('', 204);
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        if (env('LOGOUT_OTHER_DEVICES', false)) {
+            Auth::logoutOtherDevices($request->input('password'));
+        }
     }
     
 }
