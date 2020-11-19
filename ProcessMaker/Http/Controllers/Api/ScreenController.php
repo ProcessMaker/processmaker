@@ -116,6 +116,11 @@ class ScreenController extends Controller
             $types = explode(',', $request->input('type'));
             $query->whereIn('type', $types);
         }
+
+        if($request->input('interstitial', false)) {
+            $query->orWhere('key', 'interstitial');
+        }
+
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
