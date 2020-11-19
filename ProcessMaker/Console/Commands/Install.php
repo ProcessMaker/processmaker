@@ -128,6 +128,7 @@ class Install extends Command
             'API_TIMEOUT' => $this->option('api-timeout') ? $this->option('api-timeout') : 5000,
             'PROXIES' => '*',
             'LOGOUT_OTHER_DEVICES' => 'false',
+            'BROWSER_CACHE' => 'true',
         ];
 
         if ($this->option('redis-host')) {
