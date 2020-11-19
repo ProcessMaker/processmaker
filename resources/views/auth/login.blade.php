@@ -3,7 +3,8 @@
 Login
 @endsection
 @section('content')
-<div align="container">
+<div class="d-flex flex-column" style="min-height: 100vh">
+<div class="flex-fill">
   <div align="center" class="p-5">
     @php
       $loginLogo = \ProcessMaker\Models\Setting::getLogin();
@@ -69,11 +70,7 @@ Login
   $loginFooterSetting = \ProcessMaker\Models\Setting::byKey('login-footer');
 @endphp
 @if ($loginFooterSetting)
-  <div class="fixed-bottom">
-    <div class="container">
-        {!! $loginFooterSetting->config['html'] !!}
-    </div>
-  </div>
+  <div>{!! $loginFooterSetting->config['html'] !!}</div>
 @endif
 
 @endsection
