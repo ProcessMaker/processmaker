@@ -140,11 +140,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane" id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab">
-                            <div>
-                                <security-logs-listing :user-id="@json($user->id)"></security-logs-listing>
-                            </div>
-                        </div>
+                        @can('view-security-logs')
+                          <div class="tab-pane" id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab">
+                              <div>
+                                  <security-logs-listing :user-id="@json($user->id)"></security-logs-listing>
+                              </div>
+                          </div>
+                        @endcan
                     </div>
                 </div>
             </div>
