@@ -34,7 +34,8 @@
         loading: false,
         error: '',
         parameters: {
-          type: 'DISPLAY'
+          type: 'DISPLAY',
+          interstitial: true
         }
       };
     },
