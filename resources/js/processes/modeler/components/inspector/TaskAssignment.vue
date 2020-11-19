@@ -38,8 +38,10 @@
           <self-service-select v-if="showAssignSelfService" 
             v-model="assignments"
           ></self-service-select>
-            
 
+          <assign-expression v-if="showAssignFeelExpression">
+          </assign-expression>
+            
           <form-checkbox
               v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
               :label="$t('Lock task assignment to user')"
@@ -149,9 +151,11 @@
 </template>
 
 <script>
-import SelfServiceSelect from './SelfServiceSelect.vue';
+  import SelfServiceSelect from './SelfServiceSelect.vue';
+  import AssignExpression from './AssignExpression.vue';
+
   export default {
-  components: { SelfServiceSelect },
+  components: { SelfServiceSelect, AssignExpression },
     props: {
       value: null,
       label: null,
@@ -253,23 +257,31 @@ import SelfServiceSelect from './SelfServiceSelect.vue';
       assignments: {
         get () {
           let value = [],
-            users = [];
-          if (this.assignment !== "self_service") {
-            users = this.assignedUserGetter ? this.assignedUserGetter.split(",") : [];
-          }
+          users = this.assignedUserGetter ? this.assignedUserGetter.split(",") : [],
+          groups = this.assignedGroupGetter ? this.assignedGroupGetter.split(",") : [];
           value.users = users;
-          value.groups = this.assignedGroupGetter ? this.assignedGroupGetter.split(",") : [];
+          value.groups = groups;
+          // let value = [],
+          //   users = [];
+          // if (this.assignment !== "self_service") {
+          //   users = this.assignedUserGetter ? this.assignedUserGetter.split(",") : [];
+          // }
+          // value.users = users;
+          // value.groups = this.assignedGroupGetter ? this.assignedGroupGetter.split(",") : [];
 
           return value;
         },
         set (value) {
-          this.assignedUserSetter(value.users.join(","));
+          const assignedUsers = value.users.map(user => {return user.id});
+          const assignedGroups = value.groups.map(group => { return group.id.replace('group-', "")});
+          
+          this.assignedUserSetter(assignedUsers.join(","));
           let users = "";
           if (this.assignment !== "self_service") {
             users = value.users.join(",");
+            this.assignedUserSetter(users);
           }
-          this.assignedUserSetter(users);
-          this.assignedGroupSetter(value.groups.join(","));
+          this.assignedGroupSetter(assignedGroups.join(","));
         }
       },
 
@@ -313,6 +325,9 @@ import SelfServiceSelect from './SelfServiceSelect.vue';
 
         // const assign = ["user", "group", "self_service", "user_group"];
         // return assign.indexOf(this.assignment) !== -1;
+      },
+      showAssignFeelExpression () {
+        return this.assignment === 'feel_expression';
       },
       showSpecialAssignOneUserGroup () {
         this.hideUsersAssignmentExpression = this.typeAssignmentExpression === "self_service";
