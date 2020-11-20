@@ -35,18 +35,18 @@
 
         <div class="card card-body border-top-0 tab-pane p-3 fade show active" id="nav-detail" role="tabpanel" aria-labelledby="nav-detail-tab">
           <div class="modal-body">
-            <div class="form-signal">
-              {!! Form::label('id', __('Id')) !!}<small class="ml-1">*</small>
+            <div class="form-group">
+              {!! Form::label('name', __('Signal Name')) !!}
+              {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
+              'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+              <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+            </div>
+            <div class="form-group">
+              {!! Form::label('id', __('Signal ID')) !!}
               {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
               'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
               <small id="emailHelp" class="form-text text-muted"></small>
               <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
-            </div>
-            <div class="form-signal">
-              {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
-              {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
-              'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-              <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
             </div>
           </div>
           @isset($addons)

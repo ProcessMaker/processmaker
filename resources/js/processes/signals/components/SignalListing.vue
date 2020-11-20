@@ -87,6 +87,7 @@ export default {
           sortField: "Name",
         },
         {
+          title: () => this.$t("Actions"),
           name: "__slot:actions",
           title: "",
         },
