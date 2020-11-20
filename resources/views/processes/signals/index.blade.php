@@ -62,7 +62,7 @@
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('id', __('Singal ID')) !!}
+                        {!! Form::label('id', __('Signal ID')) !!}
                         {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
                         'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
                         <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
