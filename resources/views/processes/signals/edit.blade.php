@@ -55,9 +55,9 @@
             @endforeach
           @endisset
           @if(!hasPackage('package-data-sources'))
-          <div class="d-flex justify-content-end mt-3">
+          <div class="card-footer text-right mt-3">
             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
+            {!! Form::button(__('Confirm and Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
           </div>
           @endif
         </div>
