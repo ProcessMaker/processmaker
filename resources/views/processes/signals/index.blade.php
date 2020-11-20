@@ -67,6 +67,11 @@
                         'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
                         <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
                     </div>
+                    <div class="form-group">
+                        {!! Form::textarea('detail', null, ['id' => 'detail', 'rows' => 4, 'class'=> 'form-control', 'v-bind:placeholder' => '__("Additional Detail (optional)")',
+                        'v-model' => 'formData.detail', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.detail}']) !!}
+                        <div class="invalid-feedback" v-if="errors.detail">@{{errors.detail[0]}}</div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
