@@ -49,7 +49,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5>{{__('New signal')}}</h5>
+                    <h5>{{__('New Signal')}}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -62,7 +62,7 @@
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
                     <div class="form-group">
-                        {!! Form::label('id', __('Sinal Id')) !!}
+                        {!! Form::label('id', __('Singal ID')) !!}
                         {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
                         'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
                         <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
