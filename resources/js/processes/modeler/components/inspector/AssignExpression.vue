@@ -123,31 +123,32 @@ export default {
   },
   methods: {
     addSpecialAssignment(editIndex = null) {
-      if (editIndex) {
-        console.log('edit expression');
-      } else {
-        let field;
-        if (this.assignedExpression.users.length) {
-          field = {
-            "type" : "user",
-            "name": this.assignedExpression.users[0].fullname,
-            "id": this.assignedExpression.users[0].id,
-          };
-        } else if (this.assignedExpression.groups.length) {
-          field = {
-            "type" : "group",
-            "name": this.assignedExpression.groups[0].name,
-            "id": this.assignedExpression.groups[0].id,
-          };
-        }
-        let byExpression = {
-          type: field.type,
-          assignee: field.id,
-          expression: this.assignmentExpression,
-          assignmentName: field.name
+      let field;
+      if (this.assignedExpression.users.length) {
+        field = {
+          "type" : "user",
+          "name": this.assignedExpression.users[0].fullname,
+          "id": this.assignedExpression.users[0].id,
         };
+      } else if (this.assignedExpression.groups.length) {
+        field = {
+          "type" : "group",
+          "name": this.assignedExpression.groups[0].name,
+          "id": this.assignedExpression.groups[0].id,
+        };
+      }
+      let byExpression = {
+        type: field.type,
+        assignee: field.id,
+        expression: this.assignmentExpression,
+        assignmentName: field.name
+      };
 
-        if (byExpression.expression) {
+      if (byExpression.expression) {
+        if (editIndex !== null)  {
+          this.specialAssignments[editIndex] = byExpression;
+          this.$emit('input', this.specialAssignments);
+        } else {
           this.specialAssignments.push(byExpression);
         }
       }
