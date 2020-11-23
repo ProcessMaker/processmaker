@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7da1a9aea209836acbea8ec4465447e3",
+    "content-hash": "3a1b89cca74cafd7882577b65e906744",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4134,16 +4134,16 @@
         },
         {
             "name": "pion/laravel-chunk-upload",
-            "version": "dev-master",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/ProcessMaker/laravel-chunk-upload.git",
-                "reference": "388df281c1da2dcd2908fb7e0f763c678d7f1e92"
+                "url": "https://github.com/pionl/laravel-chunk-upload.git",
+                "reference": "a97902906e11da3ff26874c7fd0004625c618d44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/laravel-chunk-upload/zipball/388df281c1da2dcd2908fb7e0f763c678d7f1e92",
-                "reference": "388df281c1da2dcd2908fb7e0f763c678d7f1e92",
+                "url": "https://api.github.com/repos/pionl/laravel-chunk-upload/zipball/a97902906e11da3ff26874c7fd0004625c618d44",
+                "reference": "a97902906e11da3ff26874c7fd0004625c618d44",
                 "shasum": ""
             },
             "require": {
@@ -4183,7 +4183,11 @@
                 }
             ],
             "description": "Service for chunked upload with several js providers",
-            "time": "2020-06-21T21:03:21+00:00"
+            "support": {
+                "issues": "https://github.com/pionl/laravel-chunk-upload/issues",
+                "source": "https://github.com/pionl/laravel-chunk-upload/tree/master"
+            },
+            "time": "2020-06-21T20:08:02+00:00"
         },
         {
             "name": "predis/predis",
@@ -10581,7 +10585,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "pion/laravel-chunk-upload": 20,
         "processmaker/laravel-i18next": 20,
         "processmaker/pmql": 20
     },
@@ -10591,5 +10594,5 @@
         "php": ">=7.2.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }
