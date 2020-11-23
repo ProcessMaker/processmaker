@@ -84,7 +84,6 @@ export default {
     fetch() {
       this.data = [];
       let fields = JSON.parse(this.items);
-      console.log('campos', fields);
       fields.forEach((field) => {
         field.catches.forEach((item) => {
           this.data.push({
