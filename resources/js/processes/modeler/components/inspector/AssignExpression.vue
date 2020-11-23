@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <draggable @update="updateSort" :element="'div'" v-model="specialAssignments" group="assignment" @start="drag=true" @end="drag=false" >
+    <draggable :element="'div'" v-model="specialAssignments" group="assignment" @start="drag=true" @end="drag=false" >
       <div v-for="(assignment, index) in specialAssignments" :key="index">
         <div class="row border-top" :class="rowCss(index)">
           <div class="col-1" style="cursor:grab">
@@ -61,94 +61,6 @@
         </div>
       </div>
     </draggable>
-
-
-<!-- 
-      <div class="form-group special-assignment-header">
-          <label>{{ $t("Assign by Expression Use a rule to assign this Task conditionally") }}</label>
-          <button type="button"
-                  @click="addingSpecialAssignment = true"
-                  class="float-right btn-special-assignment-action btn btn-secondary btn-sm"
-                  :class="{inactive: addingSpecialAssignment}">
-              <i class="fa fa-plus"/> {{ $t("Rule") }}
-          </button>
-      </div>
-
-      <div class="special-assignment-wrapper" ref="specialAssignmentWrapper" @transitionend="transitionEnded">
-          <div class="special-assignment-form">
-
-              <div class="form-group">
-                  <label>{{ $t("Expression") }}</label>
-                  <input class="form-control" ref="specialAssignmentsInput" type="text"
-                          v-model="assignmentExpression">
-                  <small class="form-text text-muted">{{$t("Enter the expression to evaluate Task assignment")}}</small>
-              </div>
-
-              <div class="form-group">
-                  <label>{{ $t("Select the Task assignee") }}</label>
-                  <select
-                      ref="specialAssignmentsDropDownList"
-                      class="form-control"
-                      v-model="typeAssignmentExpression">
-                      <option value=""></option>
-                      <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{
-                          $t(type.label) }}
-                      </option>
-                  </select>
-              </div>
-
-              <select-user-group
-                  v-if="showSpecialAssignOneUserGroup"
-                  ref="userGroupAssignedSpecial"
-                  :label="$t('Assigned Users/Groups')"
-                  v-model="assignedExpression"
-                  :hide-users="hideUsersAssignmentExpression"/>
-
-              <user-by-id
-                  v-if="showSpecialAssignUserById"
-                  :label="$t('Variable Name of User ID Value')"
-                  v-model="specialAssignedUserID"
-              ></user-by-id>
-
-              <div class="form-group form-group-actions">
-                  <button
-                      type="button"
-                      @click="addingSpecialAssignment = false"
-                      class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm">
-                      {{ $t("Cancel") }}
-                  </button>
-                  <button
-                      type="button"
-                      @click="saveSpecialAssignment"
-                      class="btn-special-assignment-action btn btn-secondary btn-sm">
-                      {{ $t("Save") }}
-                  </button>
-              </div>
-
-          </div>
-      </div>
-
-      <div v-for="(row, index) in specialAssignmentsData"
-              class="list-group-item list-group-item-action pt-0 pb-0"
-              :class="{'bg-primary': false}">
-          <template>
-              <div class="special-assignment-section">
-                  <div class="special-assignment-value" :title="row.expression">
-                      <strong>{{ $t(row.expression) }}</strong></div>
-                  <div class="btn-special-assignment-delete" @click="removeSpecialAssignment(row)">
-                      <i class="fa fa-trash"></i>
-                  </div>
-              </div>
-              <div class="special-assignment-section">
-                  <small class="special-assignment-value">{{ $t("Assigned to") }}
-                      <strong v-if="row.type == 'requester'">{{$t(row.type)}}</strong>
-                      <strong v-if="row.type == 'previous_task_assignee'">{{$t('Previous Task Assignee')}}</strong>
-                      <strong v-if="row.type == 'user_by_id'">{{$t('User with ID') }} {{row.assignee}}</strong>
-                      <strong v-else>{{$t(row.assignmentName)}}</strong>
-                  </small>
-              </div>
-          </template>
-      </div> -->
   </div>
 </template>
 
@@ -190,12 +102,6 @@ export default {
     }
   },
   methods: {
-    updateSort() {
-      // TODO:: Configure draggable rows
-      console.log('update sort');
-      // this.jsonData = JSON.stringify(this.optionsList);
-      // this.$emit('change', this.dataObjectOptions);
-    },
     addSpecialAssignment(editIndex = null) {
       if (editIndex) {
         console.log('edit expression');
