@@ -88,7 +88,7 @@ export default {
         field.catches.forEach((item) => {
           this.data.push({
             subscriber: item.name,
-            type: field.name,
+            type: `#${field.id} ${field.name}`
           });
         });
       });

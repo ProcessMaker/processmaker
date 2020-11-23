@@ -3,21 +3,24 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use DOMXPath;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use ProcessMaker\Http\Controllers\Controller;
-use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Nayra\Bpmn\Models\Signal;
+use ProcessMaker\Models\SignalData;
 use ProcessMaker\Query\SyntaxError;
-use ProcessMaker\Repositories\BpmnDocument;
 
 class SignalController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     *
+     * @return Response
      */
     public function index(Request $request)
     {
@@ -69,7 +72,7 @@ class SignalController extends Controller
             'total_pages' => $lastPage
         ];
 
-        $signals = $signals->chunk($perPage)[$page - 1];
+        $signals = $signals->count() === 0 ? [] : $signals->chunk($perPage)[$page - 1];
 
         return response()->json([
             'data' => $signals,
@@ -81,7 +84,7 @@ class SignalController extends Controller
      * Display the specified resource.
      *
      * @param  mixed  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -92,28 +95,34 @@ class SignalController extends Controller
      * Creates a new global signal
      *
      * @param Request $request
+     *
+     * @return Application|ResponseFactory|Response
      */
     public function store(Request $request)
     {
-        $newSignal = new Signal();
-        $newSignal->setId($request->input('id'));
-        $newSignal->setName($request->input('name'));
+        $newSignal = new SignalData(
+            $request->input('id'),
+            $request->input('name'),
+            $request->input('detail', '')
+        );
 
         $errorValidations = SignalManager::validateSignal($newSignal, null);
         if (count($errorValidations) > 0) {
             return response(['errors' => $errorValidations], 422);
         }
 
-        SignalManager::addSignal($newSignal);
+        SignalManager::addSignal($newSignal, ['detail' => $request->input('detail', '')]);
 
         return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
     }
 
     public function update(Request $request, $signalId)
     {
-        $newSignal = new Signal();
-        $newSignal->setId($request->input('id'));
-        $newSignal->setName($request->input('name'));
+        $newSignal = new SignalData(
+            $request->input('id'),
+            $request->input('name'),
+            $request->input('detail', '')
+        );
 
         $oldSignal = SignalManager::findSignal($signalId);
 
@@ -122,7 +131,7 @@ class SignalController extends Controller
             return response(implode('; ', $errorValidations), 422);
         }
 
-        SignalManager::replaceSignal($newSignal, $oldSignal);
+        SignalManager::replaceSignal($newSignal, $oldSignal, ['detail' => $request->input('detail', '')]);
 
         return response(['id' => $newSignal->getId(), 'name' => $newSignal->getName()], 200);
     }
