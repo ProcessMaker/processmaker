@@ -39,8 +39,10 @@
             v-model="assignments"
           ></self-service-select>
 
-          <assign-expression v-if="showAssignFeelExpression">
-          </assign-expression>
+          <assign-expression 
+            v-if="showAssignFeelExpression"
+            v-model="specialAssignments" 
+          />
             
           <form-checkbox
               v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
@@ -205,7 +207,7 @@
     },
     data () {
       return {
-        specialAssignments: [],
+        // specialAssignments: [],
         addingSpecialAssignment: false,
         assignmentExpression: "",
         typeAssignmentExpression: "",
@@ -282,6 +284,15 @@
             this.assignedUserSetter(users);
           }
           this.assignedGroupSetter(assignedGroups.join(","));
+        }
+      },
+      specialAssignments: {
+        get () {
+          const value = this.specialAssignmentsListGetter;
+          return value;
+        }, 
+        set(value) {
+          this.assignmentRulesSetter(value);
         }
       },
 
@@ -383,8 +394,8 @@
         }
         return val;
       },
-      assignmentRulesSetter () {
-        this.$set(this.node, "assignmentRules", JSON.stringify(this.specialAssignments));
+      assignmentRulesSetter (value) {
+        this.$set(this.node, "assignmentRules", JSON.stringify(value));
       },
       removeSpecialAssignment (assignment) {
         this.specialAssignments = this.specialAssignments.filter(function (obj) {

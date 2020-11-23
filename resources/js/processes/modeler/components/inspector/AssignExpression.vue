@@ -5,12 +5,12 @@
         {{ $t('Expressions') }}
         <small class="d-block">{{ $t('Expressions are evaluated top to bottom') }}</small>
       </label>
-      <b-button class="" variant="secondary" size="sm" @click="showCard = true">+</b-button>
+      <b-button class="" variant="secondary" size="sm" @click="showAddCard()">+</b-button>
     </div>
 
     <div v-if="showCard" class="card mb-2">
       <div class="card-header">
-        {{ $t('Add FEEL Expression') }}
+        {{ title }}
       </div>
       <div class="card-body p-2">
         <div class="form-group">
@@ -29,11 +29,11 @@
         </div>
       </div>
       <div class="card-footer text-right p-2">
-        <button type="button" class="btn btn-sm btn-outline-secondary mr-2" @click="editIndex=null">
+        <button type="button" class="btn btn-sm btn-outline-secondary mr-2" @click="showCard = false">
           {{ $t('Cancel') }}
         </button>
-        <button type="button" class="btn btn-sm btn-secondary" @click="saveSpecialAssignment()">
-          {{ $t('Add') }}
+        <button type="button" class="btn btn-sm btn-secondary" @click="addSpecialAssignment(editIndex)">
+          {{ buttonLabel }}
         </button>
       </div>
     </div>
@@ -47,9 +47,9 @@
           <div class="col-6" style="cursor:grab">
             <div>{{ assignment.expression }}</div>
             <div>
-              <i v-if="assignment.assignee.type == 'user'" class="fas fa-user"></i>
+              <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
               <i v-else class="fas fa-users"></i> 
-              {{ assignment.assignee.name }}
+              {{ assignment.assignmentName }}
             </div>
           </div>
           <div class="col-1">
@@ -156,6 +156,7 @@
 import draggable from 'vuedraggable';
 
 export default {
+  props: ['value'],
   components: {
     draggable
   },
@@ -166,77 +167,88 @@ export default {
       assignmentList: [],
       assignedExpression: null,
       specialAssignments: [],
+      cardType: null,
+      buttonLabel: null,
+      editIndex: null,
+    }
+  },
+  computed: {
+    title() {
+      if (this.cardType == 'edit') {
+        return this.$t('Edit');
+      } else {
+        return this.$t('Add FEEL Expression');
+      }
+    }
+  },
+  watch: {
+    specialAssignments: {
+      deep:true,
+      handler() {
+        this.$emit('input', this.specialAssignments);
+      }
     }
   },
   methods: {
     updateSort() {
+      // TODO:: Configure draggable rows
       console.log('update sort');
       // this.jsonData = JSON.stringify(this.optionsList);
       // this.$emit('change', this.dataObjectOptions);
     },
-    saveSpecialAssignment() {
-      let field;
-      console.log('assignedExpression', this.assignedExpression);
-      if (this.assignedExpression.users) {
-        field = {
-          "type" : "user",
-          "name": this.assignedExpression.users[0].fullname
+    addSpecialAssignment(editIndex = null) {
+      if (editIndex) {
+        console.log('edit expression');
+      } else {
+        let field;
+        if (this.assignedExpression.users.length) {
+          field = {
+            "type" : "user",
+            "name": this.assignedExpression.users[0].fullname,
+            "id": this.assignedExpression.users[0].id,
+          };
+        } else if (this.assignedExpression.groups.length) {
+          field = {
+            "type" : "group",
+            "name": this.assignedExpression.groups[0].name,
+            "id": this.assignedExpression.groups[0].id,
+          };
+        }
+        let byExpression = {
+          type: field.type,
+          assignee: field.id,
+          expression: this.assignmentExpression,
+          assignmentName: field.name
         };
-      } else if (this.assignedExpression.groups) {
-        field = {
-          "type" : "group",
-          "name": this.assignedExpression.groups[0].name
-        };
+
+        if (byExpression.expression) {
+          this.specialAssignments.push(byExpression);
+        }
       }
-      let byExpression = {
-        // type: this.typeAssignmentExpression,
-        assignee: field,
-        expression: this.assignmentExpression
-      };
-
-      console.log('save special assignment', byExpression);
-      if (byExpression.expression) {
-        this.specialAssignments.push(byExpression);
-        this.assignmentRulesSetter();
-        let assignmentName = "";
-        console.log('specialAssignments', this.specialAssignments);
-        // if (this.typeAssignmentExpression === "user_group" || this.typeAssignmentExpression === "self_service") {
-        //   this.$refs.userGroupAssignedSpecial.content.forEach(item => {
-        //     assignmentName += assignmentName ? ", " : "";
-        //     assignmentName += item.fullname || item.name;
-        //   });
-        // }
-
-        // this.specialAssignmentsData.push({
-        //   type: this.typeAssignmentExpression,
-        //   assignee: this.assignedExpression || this.specialAssignedUserID || "",
-        //   expression: this.assignmentExpression,
-        //   assignmentName,
-        // });
-
-      //   this.assignmentExpression = "";
-      //   this.typeAssignmentExpression = "";
-      //   this.assignedExpression = null;
-      //   this.specialAssignedUserID = null;
-      // }
-
       
-      }
-      // this.addingSpecialAssignment = false;
       this.showCard = false;
-    },
-    assignmentRulesSetter () {
-      this.$set(this.node, "assignmentRules", JSON.stringify(this.specialAssignments));
     },
     rowCss(index) {
       return index % 2 === 0 ? 'striped' : 'bg-default';
     },
-    showEditOption(index) {
-      console.log('show edit options', index);
+    showEditOption(index) { 
+      this.cardType = 'edit';
+      this.buttonLabel = this.$t('Update');
+      this.editIndex = index;
+      this.assignmentExpression = this.specialAssignments[index].expression;
+      this.assignedExpression = this.specialAssignments[index].assignee;
+      this.showCard = true;
     },
     showDeleteConfirmation(index) {
       console.log('show delete confirmation', index);
+    },
+    showAddCard() {
+      this.buttonLabel = this.$t('Add');
+      this.showCard = true;
     }
+  },
+  mounted() {
+    this.specialAssignments = this.value;
   }
 }
 </script>
