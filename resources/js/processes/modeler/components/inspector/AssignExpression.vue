@@ -38,6 +38,20 @@
       </div>
     </div>
 
+    <div v-if="showConfirmationCard">
+      <div class="card mb-3 bg-danger text-white text-right">
+        <div class="card-body p-2" v-html="confirmationMessage"></div>
+        <div class="card-footer text-right p-2">
+          <button type="button" class="btn btn-sm btn-light mr-2" @click="showConfirmationCard = false">
+            {{ $t('Cancel') }}
+          </button>
+          <button type="button" class="btn btn-sm btn-danger" @click="deleteExpression()">
+            {{ $t('Delete') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
     <draggable :element="'div'" v-model="specialAssignments" group="assignment" @start="drag=true" @end="drag=false" >
       <div v-for="(assignment, index) in specialAssignments" :key="index">
         <div class="row border-top" :class="rowCss(index)">
@@ -82,6 +96,8 @@ export default {
       cardType: null,
       buttonLabel: null,
       editIndex: null,
+      removeIndex: null,
+      showConfirmationCard: false,
     }
   },
   computed: {
@@ -91,6 +107,10 @@ export default {
       } else {
         return this.$t('Add FEEL Expression');
       }
+    },
+    confirmationMessage() {
+      const item = this.specialAssignments[this.removeIndex].expression;
+      return this.$t('Are you sure you want to delete expression {{item}}', {item: item});
     }
   },
   watch: {
@@ -146,11 +166,16 @@ export default {
       this.showCard = true;
     },
     showDeleteConfirmation(index) {
-      console.log('show delete confirmation', index);
+      this.removeIndex = index;
+      this.showConfirmationCard = true;
     },
     showAddCard() {
       this.buttonLabel = this.$t('Add');
       this.showCard = true;
+    },
+    deleteExpression() {
+      this.specialAssignments.splice(this.removeIndex, 1);
+      this.showConfirmationCard = false;
     }
   },
   mounted() {
