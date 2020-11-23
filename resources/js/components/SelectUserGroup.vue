@@ -89,11 +89,24 @@
           if (this.loading) {
             return [];
           }
-          return this.selected.users.map(uid => {
+          return this.selected.users.map(user => {
+            let uid;
+            if (typeof user === 'number') {
+              uid = user;
+            } else {
+              uid = user.id;
+            }
             return addUsernameToFullName(this.results.find(item => item.id === uid));
           })
-            .concat(this.selected.groups.map(gid => {
-              return this.results.find(item => item.id === "group-" + gid);
+            .concat(this.selected.groups.map(group => {
+              let gid;
+              if (typeof group == 'number') {
+                gid = group;
+              } else {
+                gid = group.id;
+              }
+              return this.results.find(item => item.id ===  gid);
+              
             }));
         },
         set (value) {
@@ -109,6 +122,7 @@
               }
             });
           } else {
+            this.results.push(value);
             if (typeof value.id === "number") {
               this.selected.users.push(value);
             } else {

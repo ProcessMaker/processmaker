@@ -163,7 +163,16 @@ export default {
       this.buttonLabel = this.$t('Update');
       this.editIndex = index;
       this.assignmentExpression = this.specialAssignments[index].expression;
-      this.assignedExpression = this.specialAssignments[index].assignee;
+      let assignee = {
+        users: [],
+        groups: []
+      };
+      if (this.specialAssignments[index].type == 'user') {
+        assignee.users.push(this.specialAssignments[index].assignee);
+      } else {
+        assignee.groups.push(this.specialAssignments[index].assignee);
+      }
+      this.assignedExpression = assignee;
       this.showCard = true;
     },
     showDeleteConfirmation(index) {
