@@ -29,7 +29,7 @@
         </div>
       </div>
       <div class="card-footer text-right p-2">
-        <button type="button" class="btn btn-sm btn-outline-secondary mr-2" @click="showCard = false">
+        <button type="button" class="btn btn-sm btn-outline-secondary mr-2" @click="hideAddCard">
           {{ $t('Cancel') }}
         </button>
         <button type="button" class="btn btn-sm btn-secondary" @click="addSpecialAssignment(editIndex)">
@@ -67,7 +67,7 @@
             </div>
           </div>
           <div class="col-1">
-            <a @click="showEditOption(index)" class="fas fa-cog" style="cursor:pointer" data-cy="inspector-options-edit"/>
+            <a @click="showEditCard(index)" class="fas fa-cog" style="cursor:pointer" data-cy="inspector-options-edit"/>
           </div>
           <div class="col-1">
             <a @click="showDeleteConfirmation(index)" class="fas fa-trash-alt" style="cursor:pointer" data-cy="inspector-options-remove" />
@@ -119,46 +119,52 @@ export default {
       handler() {
         this.$emit('input', this.specialAssignments);
       }
+    },
+    value: {
+      deep: true,
+      handler() {
+        this.specialAssignments = this.value;
+      }
     }
   },
   methods: {
     addSpecialAssignment(editIndex = null) {
-      let field;
-      if (this.assignedExpression.users.length) {
-        field = {
-          "type" : "user",
-          "name": this.assignedExpression.users[0].fullname,
-          "id": this.assignedExpression.users[0].id,
-        };
-      } else if (this.assignedExpression.groups.length) {
-        field = {
-          "type" : "group",
-          "name": this.assignedExpression.groups[0].name,
-          "id": this.assignedExpression.groups[0].id,
-        };
-      }
-      let byExpression = {
-        type: field.type,
-        assignee: field.id,
-        expression: this.assignmentExpression,
-        assignmentName: field.name
-      };
-
-      if (byExpression.expression) {
-        if (editIndex !== null)  {
-          this.specialAssignments[editIndex] = byExpression;
-          this.$emit('input', this.specialAssignments);
-        } else {
-          this.specialAssignments.push(byExpression);
+        let field;
+        if (this.assignedExpression.users.length) {
+          field = {
+            "type" : "user",
+            "name": this.assignedExpression.users[0].fullname,
+            "id": this.assignedExpression.users[0].id,
+          };
+        } else if (this.assignedExpression.groups.length) {
+          field = {
+            "type" : "group",
+            "name": this.assignedExpression.groups[0].name,
+            "id": this.assignedExpression.groups[0].id,
+          };
         }
-      }
-      
-      this.showCard = false;
+        let byExpression = {
+          type: field.type,
+          assignee: field.id,
+          expression: this.assignmentExpression,
+          assignmentName: field.name
+        };
+
+        if (byExpression.expression) {
+          if (editIndex !== null)  {
+            this.specialAssignments[editIndex] = byExpression;
+            this.$emit('input', this.specialAssignments);
+          } else {
+            this.specialAssignments.push(byExpression);
+          }
+        }
+        this.hideAddCard();
     },
     rowCss(index) {
       return index % 2 === 0 ? 'striped' : 'bg-default';
     },
-    showEditOption(index) { 
+    showEditCard(index) { 
+      this.showCard = true;
       this.cardType = 'edit';
       this.buttonLabel = this.$t('Update');
       this.editIndex = index;
@@ -169,11 +175,11 @@ export default {
       };
       if (this.specialAssignments[index].type == 'user') {
         assignee.users.push(this.specialAssignments[index].assignee);
-      } else {
-        assignee.groups.push(this.specialAssignments[index].assignee);
+      } else if (this.specialAssignments[index].type == 'group') {
+        assignee.groups.push(parseInt(this.specialAssignments[index].assignee.substr(6)));
       }
+
       this.assignedExpression = assignee;
-      this.showCard = true;
     },
     showDeleteConfirmation(index) {
       this.removeIndex = index;
@@ -186,6 +192,11 @@ export default {
     deleteExpression() {
       this.specialAssignments.splice(this.removeIndex, 1);
       this.showConfirmationCard = false;
+    },
+    hideAddCard() {
+      this.showCard = false;
+      this.assignmentExpression = null;
+      this.assignedExpression = null;
     }
   },
   mounted() {
