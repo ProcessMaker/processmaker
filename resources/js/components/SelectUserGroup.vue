@@ -228,7 +228,9 @@
           });
       },
       formatGroup (item) {
-        item.id = "group-" + item.id;
+        if (typeof item == 'number') {
+          item.id = "group-" + item.id;
+        }
         item.fullname = item.name;
         return item;
       },
