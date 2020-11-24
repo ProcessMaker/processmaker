@@ -16,6 +16,9 @@ Login
     <div class="col-md-6 offset-md-3">
       <div class="card card-body">
         <form method="POST" class="form" action="{{ route('login') }}">
+        @if (session()->has('timeout'))
+          <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
+        @endif
         @if (session()->has('login-error'))
           <div class="alert alert-danger">{{ session()->get('login-error')}}</div>
           @endif

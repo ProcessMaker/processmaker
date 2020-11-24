@@ -252,7 +252,7 @@ if (userID) {
             );
         }
         if (e.data.method === 'timedOut') {
-            window.location = '/logout';
+            window.location = '/logout?timeout=true';
         }
     });
 

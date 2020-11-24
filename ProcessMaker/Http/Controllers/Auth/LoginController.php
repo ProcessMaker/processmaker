@@ -95,5 +95,13 @@ class LoginController extends Controller
             Auth::logoutOtherDevices($request->input('password'));
         }
     }
-    
+
+    public function loggedOut(Request $request)
+    {
+        $response = redirect(route('login'));
+        if ($request->has('timeout')) {
+            $response->with('timeout', true);
+        }
+        return $response;
+    }
 }
