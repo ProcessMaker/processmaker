@@ -52,8 +52,8 @@
       </div>
     </div>
 
-    <draggable :element="'div'" v-model="specialAssignments" group="assignment" @start="drag=true" @end="drag=false" >
-      <div v-for="(assignment, index) in specialAssignments" :key="index" :class="rowCss(index)" class="row border-bottom py-2">
+    <draggable :element="'div'" v-model="specialAssignmentsList" group="assignment" @start="drag=true" @end="drag=false" >
+      <div v-for="(assignment, index) in specialAssignmentsList" :key="index" :class="rowCss(index)" class="row border-bottom py-2">
         <div class="d-flex">
           <div class="col-1" style="cursor:grab">
             <span class="fas fa-arrows-alt-v"/>
@@ -75,6 +75,16 @@
         </div>
       </div>
     </draggable>
+
+    <div class="form-group">
+      <select-user-group
+        :label="$t('Default Assignment')"
+        v-model="defaultExpression"
+        :hide-users="false"
+        :multiple="false" 
+        :helper="$t('If no evaluations are true')"
+      />
+    </div>
   </div>
 </template>
 
@@ -98,6 +108,7 @@ export default {
       editIndex: null,
       removeIndex: null,
       showConfirmationCard: false,
+      defaultExpression: null,
     }
   },
   computed: {
@@ -111,6 +122,11 @@ export default {
     confirmationMessage() {
       const item = this.specialAssignments[this.removeIndex].expression;
       return this.$t('Are you sure you want to delete expression {{item}}', {item: item});
+    },
+    specialAssignmentsList() {
+      return this.specialAssignments.filter(assignment => {
+        return !assignment.default;
+      });
     }
   },
   watch: {
@@ -125,6 +141,30 @@ export default {
       handler() {
         this.specialAssignments = this.value;
       }
+    },
+    defaultExpression() {
+      let field;
+      if (this.defaultExpression.users.length) {
+        field = {
+          "type" : "user",
+          "name": this.defaultExpression.users[0].fullname,
+          "id": this.defaultExpression.users[0].id,
+        };
+      } else if (this.defaultExpression.groups.length) {
+        field = {
+          "type" : "group",
+          "name": this.defaultExpression.groups[0].name,
+          "id": this.defaultExpression.groups[0].id,
+        };
+      }
+      let byExpression = {
+        type: field.type,
+        assignee: field.id,
+        expression: this.assignmentExpression,
+        assignmentName: field.name,
+        default: true,
+      };
+      this.specialAssignments.push(byExpression);
     }
   },
   methods: {
