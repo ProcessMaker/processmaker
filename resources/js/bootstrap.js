@@ -39,7 +39,9 @@ window.Vue = require("vue");
 window.Vue.use(BootstrapVue);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
-window.Vue.use(Router);
+if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
+    window.Vue.use(Router);
+}
 window.VueMonaco = require("vue-monaco");
 window.ScreenBuilder = require('@processmaker/screen-builder');
 
