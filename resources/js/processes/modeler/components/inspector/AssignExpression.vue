@@ -21,10 +21,10 @@
 
         <div class="form-group">
           <select-user-group
-              :label="$t('Assign to User / Group')"
-              v-model="assignedExpression"
-              :hide-users="false"
-              :multiple="false" 
+            :label="$t('Assign to User / Group')"
+            v-model="assignedExpression"
+            :hide-users="false"
+            :multiple="false" 
           />
         </div>
       </div>
@@ -53,12 +53,12 @@
     </div>
 
     <draggable :element="'div'" v-model="specialAssignments" group="assignment" @start="drag=true" @end="drag=false" >
-      <div v-for="(assignment, index) in specialAssignments" :key="index">
-        <div class="row border-top" :class="rowCss(index)">
+      <div v-for="(assignment, index) in specialAssignments" :key="index" :class="rowCss(index)" class="row border-bottom py-2">
+        <div class="d-flex">
           <div class="col-1" style="cursor:grab">
             <span class="fas fa-arrows-alt-v"/>
           </div>
-          <div class="col-6" style="cursor:grab">
+          <div class="col-7" style="cursor:grab">
             <div>{{ assignment.expression }}</div>
             <div>
               <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
@@ -67,10 +67,10 @@
             </div>
           </div>
           <div class="col-1">
-            <a @click="showEditCard(index)" class="fas fa-cog" style="cursor:pointer" data-cy="inspector-options-edit"/>
+            <a @click="showEditCard(index)" class="fas fa-cog text-secondary" style="cursor:pointer" data-cy="inspector-options-edit"/>
           </div>
           <div class="col-1">
-            <a @click="showDeleteConfirmation(index)" class="fas fa-trash-alt" style="cursor:pointer" data-cy="inspector-options-remove" />
+            <a @click="showDeleteConfirmation(index)" class="fas fa-trash-alt text-secondary" style="cursor:pointer" data-cy="inspector-options-remove" />
           </div>
         </div>
       </div>
@@ -204,3 +204,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .striped {
+    background-color: rgba(0,0,0,.05);
+  }
+</style>
