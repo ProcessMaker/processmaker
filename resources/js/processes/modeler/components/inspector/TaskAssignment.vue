@@ -117,7 +117,6 @@
     },
     data () {
       return {
-        addingSpecialAssignment: false,
         assignmentExpression: "",
         typeAssignmentExpression: "",
         specialAssignmentsData: [],
@@ -256,18 +255,9 @@
       showAssignFeelExpression () {
         return this.assignment === 'feel_expression';
       },
-      showSpecialAssignOneUserGroup () {
-        this.hideUsersAssignmentExpression = this.typeAssignmentExpression === "self_service";
-
-        const assign = ["user", "group", "self_service", "user_group"];
-        return assign.indexOf(this.typeAssignmentExpression) !== -1;
-      },
       specialAssignmentsListGetter () {
         const value = this.node.get("assignmentRules") || "[]";
         return JSON.parse(value);
-      },
-      showSpecialAssignUserById () {
-        return this.typeAssignmentExpression === "user_by_id";
       },
     },
     methods: {
@@ -313,165 +303,6 @@
       assignmentRulesSetter (value) {
         this.$set(this.node, "assignmentRules", JSON.stringify(value));
       },
-      removeSpecialAssignment (assignment) {
-        this.specialAssignments = this.specialAssignments.filter(function (obj) {
-          return (
-            obj.type !== assignment.type ||
-            obj.expression !== assignment.expression ||
-            obj.assignee !== assignment.assignee
-          );
-        });
-
-        this.specialAssignmentsData = this.specialAssignmentsData.filter(function (obj) {
-          return (
-            obj.type !== assignment.type ||
-            obj.expression !== assignment.expression ||
-            obj.assignee !== assignment.assignee
-          );
-        });
-
-        this.assignmentRulesSetter();
-      },
-
-      transitionEnded (event) {
-        if (this.addingSpecialAssignment) {
-          if (event.propertyName == "height") {
-            this.$refs.specialAssignmentsInput.focus();
-            this.$refs.specialAssignmentWrapper.style.height = "auto";
-          }
-        } else {
-          this.assignmentExpression = "";
-          this.typeAssignmentExpression = "";
-          this.assignedExpression = null;
-          this.specialAssignedUserID = null;
-        }
-      },
-
-      saveSpecialAssignment () {
-        let byExpression = {
-          type: this.typeAssignmentExpression,
-          assignee: this.assignedExpression || this.specialAssignedUserID || "",
-          expression: this.assignmentExpression
-        };
-
-        if (byExpression.type && byExpression.expression) {
-          this.specialAssignments.push(byExpression);
-          this.assignmentRulesSetter();
-          let assignmentName = "";
-          if (this.typeAssignmentExpression === "user_group" || this.typeAssignmentExpression === "self_service") {
-            this.$refs.userGroupAssignedSpecial.content.forEach(item => {
-              assignmentName += assignmentName ? ", " : "";
-              assignmentName += item.fullname || item.name;
-            });
-          }
-
-          this.specialAssignmentsData.push({
-            type: this.typeAssignmentExpression,
-            assignee: this.assignedExpression || this.specialAssignedUserID || "",
-            expression: this.assignmentExpression,
-            assignmentName,
-          });
-
-          this.assignmentExpression = "";
-          this.typeAssignmentExpression = "";
-          this.assignedExpression = null;
-          this.specialAssignedUserID = null;
-        }
-
-        this.addingSpecialAssignment = false;
-      },
-
-      loadSpecialAssignments () {
-        this.specialAssignmentsData = [];
-        const items = this.specialAssignmentsListGetter;
-        this.specialAssignments = items;
-
-        items.forEach(item => {
-          switch (item.type) 
-          {
-            case 'requester': 
-            case 'previous_task_assignee':
-            case 'user_by_id':
-              this.specialAssignmentsData.push({
-                type: item.type,
-                assignee: item.assignee,
-                expression: item.expression
-              });
-              break;
-            case 'user_group':
-            case 'self_service':
-              if (item.assignee.users) {
-                let assignmentName = "";
-
-                let usersPromise = Promise.all(
-                  item.assignee.users.map(user => {
-                    return ProcessMaker.apiClient.get("users/" + user);
-                  })
-                )
-                  .then(response => {
-                    response.forEach(user => {
-                      assignmentName += assignmentName ? ", " + user.data.fullname : user.data.fullname;
-                    });
-                  });
-
-                let groupsPromise = Promise.all(
-                  item.assignee.groups.map(group => {
-                    return ProcessMaker.apiClient.get("groups/" + group);
-                  })
-                )
-                  .then(response => {
-                    response.forEach(group => {
-                      assignmentName += assignmentName ? ", " + group.data.name : group.data.name;
-                    });
-                  });
-
-                Promise.all([usersPromise, groupsPromise])
-                  .then(() => {
-                    this.specialAssignmentsData.push({
-                      type: item.type,
-                      assignee: item.assignee,
-                      expression: item.expression,
-                      assignmentName: assignmentName
-                    });
-                  });
-              }
-              break;
-            case 'user':
-              ProcessMaker.apiClient
-              .get("users/" + item.assignee)
-              .then(response => {
-                this.specialAssignmentsData.push({
-                  type: item.type,
-                  assignee: item.assignee,
-                  expression: item.expression,
-                  assignmentName: response.data.fullname
-                });
-              })
-              .catch(() => {
-                item.assignmentName = "";
-                this.specialAssignmentsData.push(item);
-              });
-              break;
-            case 'group':
-            case 'self_service':
-              ProcessMaker.apiClient
-                .get("groups/" + item.assignee)
-                .then(response => {
-                  this.specialAssignmentsData.push({
-                    type: item.type,
-                    assignee: item.assignee,
-                    expression: item.expression,
-                    assignmentName: response.data.name
-                  });
-                })
-                .catch(() => {
-                  item.assignmentName = "";
-                  this.specialAssignmentsData.push(item);
-                });
-              break;
-          }
-        })
-      },
     },
     watch: {
       assigned: {
@@ -497,23 +328,6 @@
         }
 
       },
-      addingSpecialAssignment (value) {
-        let wrapper = this.$refs.specialAssignmentWrapper;
-        let height = wrapper.scrollHeight;
-
-        if (value === true) {
-          wrapper.style.height = height + "px";
-          wrapper.style.opacity = 1;
-        }
-
-        if (value === false) {
-          wrapper.style.height = height + "px";
-          setTimeout(() => {
-            wrapper.style.height = 0;
-            wrapper.style.opacity = 0;
-          }, 0);
-        }
-      }
     }
   };
 </script>
