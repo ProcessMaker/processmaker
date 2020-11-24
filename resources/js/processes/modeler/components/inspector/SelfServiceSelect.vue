@@ -50,7 +50,7 @@
               {{ assignment.name }} 
             </div>
             <div class="col-1"> 
-              <b-button class="p-0" variant="link" @click="showDeleteConfirmation(itemIndex, assignment.name, assignmentIndex)" :title="$t('Delete')">
+              <b-button class="p-0 text-secondary" variant="link" @click="showDeleteConfirmation(itemIndex, assignment.name, assignmentIndex)" :title="$t('Delete')">
                 <i class="fas fa-trash-alt"/>
               </b-button>
             </div>
