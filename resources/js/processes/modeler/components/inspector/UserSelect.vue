@@ -51,7 +51,6 @@
     watch: {
       content: {
         handler() {
-          console.log('USER SELECT EMIT', this.content);
           this.$emit("input", this.content.id);
         }
       },
