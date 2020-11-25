@@ -19,6 +19,7 @@
 <!-- Style sheets-->
 <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 <link href="{{ asset(mix($cssFile, 'vendor/horizon')) }}" rel="stylesheet">
+<meta name="is-horizon">
 @endsection
 
 @section('content')

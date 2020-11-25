@@ -31,12 +31,15 @@
                            aria-controls="nav-profile" aria-selected="false">{{__('Permissions')}}</a>
                         <a class="nav-item nav-link" id="nav-tokens-tab" data-toggle="tab" href="#nav-tokens" role="tab"
                            aria-controls="nav-tokens" aria-selected="false">{{__('API Tokens')}}</a>
-
+                        @can('view-security-logs')
+                            <a class="nav-item nav-link" id="nav-logs-tab" data-toggle="tab" href="#nav-logs" role="tab"
+                               aria-controls="nav-logs" aria-selected="false">{{__('Security Logs')}}</a>
+                        @endcan
                     </div>
                 </nav>
                 <div class="container mt-0 border-top-0 p-3 card card-body">
                     <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                        <div class="tab-pane show active" id="nav-home" role="tabpanel"
                              aria-labelledby="nav-home-tab">
                             <div class="d-flex flex-column flex-lg-row">
                                 <div class="flex-grow-1">
@@ -51,7 +54,7 @@
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'profileUpdate','id'=>'saveUser']) !!}
                             </div>
                         </div>
-                        <div class="tab-pane fade show" id="nav-groups" role="tabpanel"
+                        <div class="tab-pane show" id="nav-groups" role="tabpanel"
                              aria-labelledby="nav-groups-tab">
                              <div class="input-group w-100 mb-3">
                                  <input v-model="userGroupsFilter" class="form-control" placeholder="{{__('Search')}}">
@@ -72,7 +75,7 @@
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onSaveGroups','id'=>'saveGroups']) !!}
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div class="tab-pane" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <div class="accordion" id="accordionPermissions">
                                 <div class="mb-2 custom-control custom-switch">
                                     <input v-model="formData.is_administrator" type="checkbox" class="custom-control-input" id="is_administrator" @input="adminHasChanged = true">
@@ -89,7 +92,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
+                        <div class="tab-pane" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
                             <div>
                                 <div class="d-flex justify-content-end mb-3">
                                     <button type="button" class="btn btn-secondary" @click="generateToken">
@@ -137,6 +140,13 @@
                                 </div>
                             </div>
                         </div>
+                        @can('view-security-logs')
+                          <div class="tab-pane" id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab">
+                              <div>
+                                  <security-logs-listing :user-id="@json($user->id)"></security-logs-listing>
+                              </div>
+                          </div>
+                        @endcan
                     </div>
                 </div>
             </div>

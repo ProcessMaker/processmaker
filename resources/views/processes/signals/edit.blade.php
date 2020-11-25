@@ -35,18 +35,23 @@
 
         <div class="card card-body border-top-0 tab-pane p-3 fade show active" id="nav-detail" role="tabpanel" aria-labelledby="nav-detail-tab">
           <div class="modal-body">
-            <div class="form-signal">
-              {!! Form::label('id', __('Id')) !!}<small class="ml-1">*</small>
+            <div class="form-group">
+              {!! Form::label('name', __('Signal Name')) !!}
+              {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
+              'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+              <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+            </div>
+            <div class="form-group">
+              {!! Form::label('id', __('Signal ID')) !!}
               {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
               'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
               <small id="emailHelp" class="form-text text-muted"></small>
               <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
             </div>
-            <div class="form-signal">
-              {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
-              {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
-              'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-              <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+            <div class="form-group">
+              {!! Form::textarea('detail', null, ['id' => 'detail', 'rows' => 4, 'class'=> 'form-control', 'v-bind:placeholder' => '__("Additional Detail (optional)")',
+              'v-model' => 'formData.detail', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.detail}']) !!}
+              <div class="invalid-feedback" v-if="errors.detail">@{{errors.detail[0]}}</div>
             </div>
           </div>
           @isset($addons)
@@ -55,9 +60,9 @@
             @endforeach
           @endisset
           @if(!hasPackage('package-data-sources'))
-          <div class="d-flex justify-content-end mt-3">
+          <div class="card-footer text-right mt-3">
             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
-            {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
+            {!! Form::button(__('Confirm and Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveSingal']) !!}
           </div>
           @endif
         </div>

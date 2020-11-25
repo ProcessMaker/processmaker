@@ -175,7 +175,7 @@
 
         <b-button
           v-if="showCancel"
-          :disabled="this.pidFile === null"
+          :disabled="pidFile === null"
           variant="secondary"
           @click="cancel"
         >

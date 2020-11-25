@@ -4,9 +4,7 @@ namespace ProcessMaker\Managers;
 
 use DOMXPath;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\Screen;
-use Illuminate\Database\Eloquent\Model;
-use ProcessMaker\Nayra\Bpmn\Models\Signal;
+use ProcessMaker\Models\SignalData;
 use ProcessMaker\Repositories\BpmnDocument;
 
 class SignalManager
@@ -25,6 +23,7 @@ class SignalManager
                 $signals->push([
                     'id' => $node->getAttribute('id'),
                     'name' => $node->getAttribute('name'),
+                    'detail' => $node->getAttribute('detail'),
                     'process' => (!$process->category->is_system || $returnFullList)
                                     ? [
                                         'id' => $process->id,
@@ -48,6 +47,7 @@ class SignalManager
                 $carry->put($signal['id'], [
                     'id' => $signal['id'],
                     'name' => $signal['name'],
+                    'detail' => $signal['detail'],
                     'processes' => $signal['process'] ? [$signal['process']] : [],
                 ]);
             }
@@ -58,20 +58,21 @@ class SignalManager
         return $result->values();
     }
 
-    public static function addSignal(Signal $signal)
+    public static function addSignal(SignalData $signal)
     {
         $signalProcess = SignalManager::getGlobalSignalProcess();
         $definitions = $signalProcess->getDefinitions();
         $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
         $newNode->setAttribute('id', $signal->getId());
         $newNode->setAttribute('name', $signal->getName());
+        $newNode->setAttribute('detail', $signal->getDetail());
         $definitions->firstChild->appendChild($newNode);
         $signalProcess->bpmn = $definitions->saveXML();
         $signalProcess->save();
     }
 
 
-    public static function replaceSignal(Signal $newSignal, Signal $oldSignal)
+    public static function replaceSignal(SignalData $newSignal, SignalData $oldSignal)
     {
         $signal = self::getAllSignals(true)->firstWhere('id', $oldSignal->getId());
         foreach ($signal['processes'] as $processData) {
@@ -83,6 +84,7 @@ class SignalManager
             $newNode = $definitions->createElementNS(BpmnDocument::BPMN_MODEL, "bpmn:signal");
             $newNode->setAttribute('id', $newSignal->getId());
             $newNode->setAttribute('name', $newSignal->getName());
+            $newNode->setAttribute('detail', $newSignal->getDetail());
 
             $domDefinitions = new DOMXPath($definitions);
             if ($domDefinitions->query("//*[@id='" . $oldSignal->getId() . "']")->count() > 0 ) {
@@ -104,9 +106,9 @@ class SignalManager
     }
 
     /**
-     * @param Signal $signal
+     * @param SignalData $signal
      */
-    public static function removeSignal(Signal $signal)
+    public static function removeSignal(SignalData $signal)
     {
         $signalAsArray = self::getAllSignals(true)->firstWhere('id', $signal->getId());
         foreach ($signalAsArray['processes'] as $processData) {
@@ -141,7 +143,7 @@ class SignalManager
     /**
      * @param $signalId
      *
-     * @return Signal | null
+     * @return SignalData | null
      */
     public static function findSignal($signalId)
     {
@@ -151,12 +153,12 @@ class SignalManager
     }
 
     /**
-     * @param Signal $newSignal
-     * @param Signal | null $oldSignal In case of an insert, this variable is null
+     * @param SignalData $newSignal
+     * @param SignalData | null $oldSignal In case of an insert, this variable is null
      *
      * @return array
      */
-    public static function validateSignal(Signal $newSignal, ?Signal $oldSignal)
+    public static function validateSignal(SignalData $newSignal, ?SignalData $oldSignal)
     {
         $result = [];
 
@@ -211,14 +213,15 @@ class SignalManager
      *
      * @param array $signal
      *
-     * @return Signal
+     * @return SignalData
      */
-    public static function associativeToSignal(array $signal): Signal
+    public static function associativeToSignal(array $signal): SignalData
     {
-        $result = new Signal();
-        $result->setId($signal['id']);
-        $result->setName($signal['name']);
-        return $result;
+        return new SignalData(
+            $signal['id'],
+            $signal['name'],
+            $signal['detail']
+        );
     }
 
     /**

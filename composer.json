@@ -12,10 +12,6 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/ProcessMaker/laravel-chunk-upload"
-    },
-    {
-      "type": "vcs",
       "url": "https://github.com/ProcessMaker/pmql"
     }
   ],
@@ -38,7 +34,7 @@
     "moontoast/math": "^1.1",
     "mustache/mustache": "^2.12",
     "phing/phing": "^2.16",
-    "pion/laravel-chunk-upload": "dev-master",
+    "pion/laravel-chunk-upload": "^1.4",
     "predis/predis": "^1.1",
     "processmaker/docker-executor-lua": "^1.0",
     "processmaker/docker-executor-node": "^1.0",
@@ -53,7 +49,8 @@
     "symfony/expression-language": "^5.1.6",
     "teamtnt/laravel-scout-tntsearch-driver": "^9.0",
     "typo3/class-alias-loader": "^1.0",
-    "watson/validating": "^3.1"
+    "watson/validating": "^3.1",
+    "whichbrowser/parser": "^2.0"
   },
   "require-dev": {
     "filp/whoops": "^2.0",
