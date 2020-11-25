@@ -37,6 +37,7 @@ import {registerNodes} from "@processmaker/modeler";
 import Interstitial from "./components/inspector/Interstitial";
 import SelectUserGroup from "../../components/SelectUserGroup";
 import validateScreenRef from './validateScreenRef';
+import i18next from 'i18next';
 
 Vue.component('UserSelect', UserSelect);
 Vue.component('UserById', UserById);
@@ -88,7 +89,7 @@ ProcessMaker.EventBus.$on(
       container: true,
       config: {
         initiallyOpen: false,
-        label: 'Start Permissions',
+        label: i18next.t('Start Permissions'),
         icon: 'user-shield',
         name: 'permissions-accordion',
       },
@@ -142,7 +143,7 @@ ProcessMaker.EventBus.$on(
       container: true,
       config: {
         initiallyOpen: false,
-        label: 'Assignment Rules',
+        label: i18next.t('Assignment Rules'),
         icon: 'users',
         name: 'assignments-accordion',
       },
@@ -162,7 +163,7 @@ ProcessMaker.EventBus.$on(
       container: true,
       config: {
         initiallyOpen: false,
-        label: 'Notifications',
+        label: i18next.t('Notifications'),
         icon: 'bell',
         name: 'notifications-accordion',
       },
@@ -249,7 +250,7 @@ ProcessMaker.EventBus.$on(
       container: true,
       config: {
         initiallyOpen: false,
-        label: 'Assignment Rules',
+        label: i18next.t('Assignment Rules'),
         icon: 'users',
         name: 'assignments-accordion',
       },
@@ -269,7 +270,7 @@ ProcessMaker.EventBus.$on(
       container: true,
       config: {
         initiallyOpen: false,
-        label: 'Notifications',
+        label: i18next.t('Notifications'),
         icon: 'bell',
         name: 'notifications-accordion',
       },
@@ -313,8 +314,8 @@ ProcessMaker.EventBus.$on(
     registerInspectorExtension(intermediateMessageCatchEvent, {
       component: 'FormInput',
       config: {
-          label: 'Whitelist',
-          helper: 'IP/Domain whitelist',
+          label: i18next.t('Whitelist'),
+          helper: i18next.t('IP/Domain whitelist'),
           name: 'whitelist',
       },
     });
@@ -333,7 +334,7 @@ ProcessMaker.EventBus.$on(
       container: true,
       config: {
         initiallyOpen: false,
-        label: 'Assignment Rules',
+        label: i18next.t('Assignment Rules'),
         icon: 'users',
         name: 'assignments-accordion',
       },

@@ -39,7 +39,9 @@ window.Vue = require("vue");
 window.Vue.use(BootstrapVue);
 window.Vue.use(ScreenBuilder);
 window.Vue.use(VueDeepSet);
-window.Vue.use(Router);
+if (!document.head.querySelector("meta[name=\"is-horizon\"]")) {
+    window.Vue.use(Router);
+}
 window.VueMonaco = require("vue-monaco");
 window.ScreenBuilder = require('@processmaker/screen-builder');
 
@@ -91,6 +93,7 @@ i18next.use(Backend).init({
 Vue.mixin({ i18n: new VueI18Next(i18next) })
 
 window.ProcessMaker = {
+    i18n: i18next,
 
     /**
      * A general use global event bus that can be used
@@ -250,7 +253,7 @@ if (userID) {
             );
         }
         if (e.data.method === 'timedOut') {
-            window.location = '/logout';
+            window.location = '/logout?timeout=true';
         }
     });
 
