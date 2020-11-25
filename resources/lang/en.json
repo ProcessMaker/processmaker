@@ -1273,7 +1273,6 @@
   "If the expression evaluates to true, create or update the following variable": "If the expression evaluates to true, create or update the following variable",
   "Open Process": "Open Process",
   "Enter the request variable that will store the signal payload": "Enter the request variable that will store the signal payload",
-  "xxx": "xxx",
   "End Point": "End Point",
   "Data Connector to use": "Data Connector to use",
   "Data Connector": "Data Connector",
