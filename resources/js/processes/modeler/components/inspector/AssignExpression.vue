@@ -127,6 +127,12 @@ export default {
       return this.specialAssignments.filter(assignment => {
         return !assignment.default;
       });
+    },
+    defaultExpressionIndex() {
+      let defaultExpression = this.specialAssignments.filter(assignment => {
+        return assignment.default;
+      });
+      return this.specialAssignments.indexOf(defaultExpression[0]);
     }
   },
   watch: {
@@ -164,7 +170,12 @@ export default {
         assignmentName: field.name,
         default: true,
       };
-      this.specialAssignments.push(byExpression);
+      if (this.defaultExpressionIndex) {
+        this.specialAssignments[this.defaultExpressionIndex] = byExpression;
+        this.$emit('input', this.specialAssignments);
+      } else {
+        this.specialAssignments.push(byExpression);
+      }
     }
   },
   methods: {
