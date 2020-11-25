@@ -92,8 +92,6 @@ i18next.use(Backend).init({
 // Make $t available to all vue instances
 Vue.mixin({ i18n: new VueI18Next(i18next) })
 
-console.log('Iniciando ProcessMaker. Traducc: ');
-
 window.ProcessMaker = {
     i18n: i18next,
 
