@@ -93,6 +93,7 @@ i18next.use(Backend).init({
 Vue.mixin({ i18n: new VueI18Next(i18next) })
 
 window.ProcessMaker = {
+    i18n: i18next,
 
     /**
      * A general use global event bus that can be used
