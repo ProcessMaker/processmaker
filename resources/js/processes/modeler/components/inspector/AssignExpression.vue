@@ -139,6 +139,11 @@ export default {
     specialAssignments: {
       deep:true,
       handler() {
+        let defaultExpression = this.specialAssignments.filter(assignment => { return assignment.default;})
+        let index = this.specialAssignments.indexOf(defaultExpression[0]);
+        if (this.specialAssignments.length - 1 != index) {
+          this.specialAssignments.push(this.specialAssignments.splice(index, 1)[0]);
+        }
         this.$emit('input', this.specialAssignments);
       }
     },
