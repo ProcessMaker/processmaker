@@ -16,7 +16,7 @@
             </div>
             <div slot="modal-footer">
                 <b-button @click="closePopup" class="btn btn-secondary">
-                    {{ $t('CLOSE') }}
+                    {{ $t('Close') }}
                 </b-button>
             </div>
 
