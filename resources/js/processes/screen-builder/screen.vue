@@ -186,6 +186,7 @@ import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
 import { cloneDeep } from 'lodash';
+import i18next from 'i18next';
 
 // Bring in our initial set of controls
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -412,7 +413,7 @@ export default {
 
       if (this.type === formTypes.form && !this.containsSubmitButton()) {
         this.validationWarnings.push(
-          "Warning: Screens without save buttons cannot be executed."
+          this.$t("Warning: Screens without save buttons cannot be executed.")
         );
       }
 
@@ -426,22 +427,32 @@ export default {
     }
   },
   mounted() {
-    // Call our init lifecycle event
-    ProcessMaker.EventBus.$emit("screen-builder-init", this);
-    if (this.screen.type === 'CONVERSATIONAL') {
-      this.renderComponent = 'ConversationalForm';
-    }
-    this.computed = this.screen.computed ? this.screen.computed : [];
-    this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
-    this.watchers = this.screen.watchers ? this.screen.watchers : [];
-    this.previewInput = "{}";
+    this.mountWhenTranslationAvailable();
 
-    ProcessMaker.EventBus.$emit("screen-builder-start", this);
-    ProcessMaker.EventBus.$on("save-screen", (value, onSuccess, onError) => {
-      this.saveScreen(value, onSuccess, onError);
-    });
   },
   methods: {
+    mountWhenTranslationAvailable() {
+      let d = new Date();
+      if(ProcessMaker.i18n.exists('Save') === false) {
+        window.setTimeout(() => this.mountWhenTranslationAvailable(), 100);
+      } else {
+        let that = this;
+        // Call our init lifecycle event
+        ProcessMaker.EventBus.$emit("screen-builder-init", that);
+        if (that.screen.type === 'CONVERSATIONAL') {
+          that.renderComponent = 'ConversationalForm';
+        }
+        that.computed = that.screen.computed ? that.screen.computed : [];
+        that.customCSS = that.screen.custom_css ? that.screen.custom_css : "";
+        that.watchers = that.screen.watchers ? that.screen.watchers : [];
+        that.previewInput = "{}";
+
+        ProcessMaker.EventBus.$emit("screen-builder-start", that);
+        ProcessMaker.EventBus.$on("save-screen", (value, onSuccess, onError) => {
+          that.saveScreen(value, onSuccess, onError);
+        });
+      }
+    },
     getPreviewValues() {
       ProcessMaker.apiClient.post("/screens/preview", {
           config: this.config,
@@ -579,6 +590,7 @@ export default {
       builderComponent,
       builderBinding
     ) {
+      this.translateControl(control);
       // Add it to the renderer
       if (!this.$refs.renderer) { return }
       this.$refs.renderer.$options.components[
@@ -586,6 +598,32 @@ export default {
       ] = rendererComponent;
       // Add it to the form builder
       this.$refs.builder.addControl(control, builderComponent, builderBinding);
+    },
+    translateControl(control) {
+      if (control.label) {
+        control.label = this.$t(control.label);
+      }
+      if (control.config && control.config.label) {
+        control.config.label = this.$t(control.config.label);
+      }
+      if (control.config && control.config.helper) {
+        control.config.helper = this.$t(control.config.helper);
+      }
+
+      // translate option list items
+      if (control.config.options && Array.isArray(control.config.options)) {
+        control.config.options.forEach($item => {
+          if ($item.content) {
+            $item.content = this.$t($item.content);
+          }
+        });
+      }
+
+      // translate inspector items
+      if (control.inspector) {
+        control.inspector.forEach($item => this.translateControl($item));
+      }
+
     },
     addPreviewComponent(component) {
       this.previewComponents.push(component);
