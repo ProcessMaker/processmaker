@@ -211,7 +211,7 @@ class GroupMembersTest extends TestCase
         //The new group does not have groups assigned.
         factory(User::class, 15)->create(['status' => 'ACTIVE']);
         $group = factory(Group::class)->create(['status' => 'ACTIVE']);
-        $count = User::where('status', 'ACTIVE')->count();
+        $count = User::nonSystem()->where('status', 'ACTIVE')->count();
         $response = $this->apiCall('GET', '/user_members_available', [
             'group_id' => $group->id
         ]);
@@ -234,7 +234,7 @@ class GroupMembersTest extends TestCase
         factory(User::class, 15)->create(['status' => 'ACTIVE']);
 
 
-        $count = User::where('status', 'ACTIVE')->count() - 1;
+        $count = User::nonSystem()->where('status', 'ACTIVE')->count() - 1;
         $response = $this->apiCall('GET', '/user_members_available', [
             'group_id' => $group->id
         ]);
