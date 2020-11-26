@@ -31,6 +31,12 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
+    <style type="text/css" media="print">
+        div {
+            overflow:hidden;
+            width:100%;
+        }
+    </style>
     @yield('css')
     <script type="text/javascript">
     @if(Auth::user())
