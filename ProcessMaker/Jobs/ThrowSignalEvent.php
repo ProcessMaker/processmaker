@@ -19,7 +19,7 @@ class ThrowSignalEvent implements ShouldQueue
 
     public $signalRef;
     public $data;
-    public $excludeProcess;
+    public $excludeProcesses;
     public $excludeRequests;
 
     /**
@@ -27,17 +27,18 @@ class ThrowSignalEvent implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($signalRef, array $data = [], array $excludeProcess = [], array $excludeRequests = [])
+    public function __construct($signalRef, array $data = [], array $excludeProcesses = [], array $excludeRequests = [])
     {
         $this->signalRef = $signalRef;
         $this->data = $data;
-        $this->excludeProcess = $excludeProcess;
+        $this->excludeProcesses = $excludeProcesses;
         $this->excludeRequests = $excludeRequests;
     }
 
     public function handle()
     {
-        $processes = Process::whereNotIn('id', $this->excludeProcess)
+        dump($this->excludeProcesses, $this->excludeRequests);
+        $processes = Process::whereNotIn('id', $this->excludeProcesses)
             ->whereJsonContains('signal_events', $this->signalRef)
             ->pluck('id')
             ->toArray();

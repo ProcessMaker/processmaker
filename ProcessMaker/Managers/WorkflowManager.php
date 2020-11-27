@@ -178,6 +178,12 @@ class WorkflowManager
         $this->throwSignalEventDefinition($sourceEventDefinition, $token);
     }
 
+    private function ss(EventDefinitionInterface $sourceEventDefinition)
+    {
+        $node = $sourceEventDefinition->getBpmnElement();
+        return $node->ownerDocument->saveXml($node->parentNode);
+    }
+
     /**
      * Throw a signal event.
      *
@@ -186,18 +192,24 @@ class WorkflowManager
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
-        $signalRef = $sourceEventDefinition->getProperty('signalRef');
+        $signalRef = $sourceEventDefinition->getProperty('signal') ?
+            $sourceEventDefinition->getProperty('signal')->getId() :
+            $sourceEventDefinition->getProperty('signalRef');
+        if (!$signalRef) {
+            return;
+        }
         $data = $token->getInstance()->getDataStore()->getData();
-        $exclude = [];
+        $excludeProcesses = [$token->getInstance()->getModel()->getKey()];
+        $excludeRequests = [];
         $collaboration = $token->getInstance()->process_collaboration;
         if ($collaboration) {
             foreach ($collaboration->requests as $request) {
-                $exclude[] = $request->getKey();
+                $excludeRequests[] = $request->getKey();
             }
         } else {
-            $exclude[] = $token->getInstance()->getKey();
+            $excludeRequests[] = $token->getInstance()->getKey();
         }
-        ThrowSignalEvent::dispatchNow($signalRef, $data, $exclude);
+        ThrowSignalEvent::dispatchNow($signalRef, $data, $excludeProcesses, $excludeRequests);
     }
 
     /**
