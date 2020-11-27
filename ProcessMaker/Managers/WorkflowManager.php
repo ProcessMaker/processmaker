@@ -201,13 +201,9 @@ class WorkflowManager
         $data = $token->getInstance()->getDataStore()->getData();
         $excludeProcesses = [$token->getInstance()->getModel()->getKey()];
         $excludeRequests = [];
-        $collaboration = $token->getInstance()->process_collaboration;
-        if ($collaboration) {
-            foreach ($collaboration->requests as $request) {
-                $excludeRequests[] = $request->getKey();
-            }
-        } else {
-            $excludeRequests[] = $token->getInstance()->getKey();
+        $instances = $token->getInstance()->getProcess()->getEngine()->getExecutionInstances();
+        foreach($instances as $instance) {
+            $excludeRequests[] = $instance->getId();
         }
         ThrowSignalEvent::dispatchNow($signalRef, $data, $excludeProcesses, $excludeRequests);
     }

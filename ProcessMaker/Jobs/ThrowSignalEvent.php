@@ -37,7 +37,6 @@ class ThrowSignalEvent implements ShouldQueue
 
     public function handle()
     {
-        dump($this->excludeProcesses, $this->excludeRequests);
         $processes = Process::whereNotIn('id', $this->excludeProcesses)
             ->whereJsonContains('signal_events', $this->signalRef)
             ->pluck('id')
