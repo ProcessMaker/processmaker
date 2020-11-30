@@ -160,19 +160,28 @@ export default {
           return;
         }
         let field;
-        if (this.defaultAssignment.users.length) {
+        if (this.defaultAssignment.users.length && Object.keys(this.defaultAssignment.users[0]).length) {        
+          let name = this.defaultAssignment.users[0].fullname ? this.defaultAssignment.users[0].fullname : this.defaultAssignment.users[0].assignmentName;
+          let id = this.defaultAssignment.users[0].id ? this.defaultAssignment.users[0].id : this.defaultAssignment.users[0].assignee;
           field = {
             "type" : "user",
-            "name": this.defaultAssignment.users[0].fullname,
-            "id": this.defaultAssignment.users[0].id,
+            "name": name,
+            "id": id,
           };
-        } else if (this.defaultAssignment.groups.length) {
+        } else if (this.defaultAssignment.groups.length && Object.keys(this.defaultAssignment.groups[0]).length)  {
+          let name = this.defaultAssignment.groups[0].name ? this.defaultAssignment.groups[0].name : this.defaultAssignment.groups[0].assignmentName;
+          let id = this.defaultAssignment.groups[0].id ? 'group-' + this.defaultAssignment.groups[0].id : "group-" + this.defaultAssignment.groups[0].assignee;
           field = {
             "type" : "group",
-            "name": this.defaultAssignment.groups[0].name,
-            "id": this.defaultAssignment.groups[0].id,
+            "name": name,
+            "id": id,
           };
         }
+        
+        if (!field) {
+          return;
+        }
+
         let byExpression = {
           type: field.type,
           assignee: field.id,
@@ -180,6 +189,7 @@ export default {
           assignmentName: field.name,
           default: true,
         };
+
         if (this.defaultAssignmentIndex != null) {
           this.specialAssignments[this.defaultAssignmentIndex] = byExpression;
           this.$emit('input', this.specialAssignments);
@@ -271,12 +281,15 @@ export default {
     },
     loadDefaultAssignment() {
       let defaultAssignment = this.specialAssignments.filter(assignment => { return assignment.default;});
-      if (!defaultAssignment) {
+      if (defaultAssignment.length == 0) {
         return;
       } 
       if (defaultAssignment[0].type == 'user') {
         this.defaultAssignment.users.push(defaultAssignment[0]);
-      } else if (defaultStatusp[0].type == 'group') {
+      } else if (defaultAssignment[0].type == 'group') {
+        if (typeof defaultAssignment[0].assignee != 'number') {
+          defaultAssignment[0].assignee = defaultAssignment[0].assignee.replace("group-", "");
+        }
         this.defaultAssignment.groups.push(defaultAssignment[0]);
       }
     }

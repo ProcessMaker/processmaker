@@ -101,7 +101,7 @@
             .concat(this.selected.groups.map(group => {
               let gid;
               if (typeof group == 'number') {
-                gid = group;
+                gid = "group-" + group;
               } else {
                 gid = group.id;
               }
@@ -162,7 +162,7 @@
                 return ProcessMaker.apiClient.get("users/" + item);
               } else {
                 if (item.assignee) {
-                  let id = item.assignee
+                  let id = item.assignee;
                   return ProcessMaker.apiClient.get("users/" + id);
                 }
               }
@@ -176,7 +176,14 @@
 
           let groupsPromise = Promise.all(
             value.groups.map(item => {
-              return ProcessMaker.apiClient.get("groups/" + item);
+              if (typeof item == 'number') {
+                return ProcessMaker.apiClient.get("groups/" + item);
+              } else {
+                if (item.assignee) {
+                  let id = this.unformatGroup(item.assignee);
+                  return ProcessMaker.apiClient.get("groups/" + id);
+                }
+              }
             })
           )
             .then(items => {
@@ -235,12 +242,21 @@
           });
       },
       formatGroup (item) {
-        if (typeof item == 'number') {
+        if (item && typeof item.id == 'number') {
           item.id = "group-" + item.id;
         }
         item.fullname = item.name;
         return item;
       },
+      unformatGroup(groupId) {
+        if (typeof groupId == 'number') {
+          return groupId;
+        } else {
+          let id = groupId.replace('group-', "");
+          return id;
+        }
+        
+      }
     },
   };
 </script>
