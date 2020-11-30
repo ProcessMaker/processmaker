@@ -315,7 +315,7 @@
                 is_self_service: 0,
               })
               .then(response => {
-                this.reload();
+                window.location.reload();
               });
           },
           // Data editor
