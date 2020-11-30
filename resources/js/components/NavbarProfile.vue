@@ -1,6 +1,6 @@
 <template>
   <div id="userMenu">
-    <div id="profileMenu">    
+    <div id="profileMenu">
       <avatar-image
         id="avatarMenu"
         class-container="d-flex"
@@ -17,13 +17,13 @@
           <li class="list-group-item px-2">
             <a :href="user_id">
               <i class="fas fa-user fa-fw fa-lg mr-1"></i>
-              {{$t('View')}} {{username}} {{$t('Profile')}}
+              {{ viewProfileText  }}
             </a>
           </li>
           <li class="list-group-item px-2">
             <a href="/profile/edit">
               <i class="fas fa-user-cog fa-fw fa-lg mr-1"></i>
-              {{$t('Edit')}} {{username}} {{$t('Profile')}}
+              {{ editProfileText  }}
             </a>
           </li>
           <li v-if="displayMyFilesLink" class="list-group-item px-2">
@@ -79,6 +79,12 @@ export default {
   computed: {
     displayMyFilesLink() {
       return window.ProcessMaker.packages.includes('package-files');
+    },
+    viewProfileText() {
+      return this.$t("View {{user}} Profile", {user: this.username});
+    },
+    editProfileText() {
+      return this.$t("Edit {{user}} Profile", {user: this.username});
     }
   },
   methods: {
