@@ -199,7 +199,7 @@ class WorkflowManager
             return;
         }
         $data = $token->getInstance()->getDataStore()->getData();
-        $excludeProcesses = [$token->getInstance()->getModel()->getKey()];
+        $excludeProcesses = [$token->getInstance()->getModel()->process_id];
         $excludeRequests = [];
         $instances = $token->getInstance()->getProcess()->getEngine()->getExecutionInstances();
         foreach($instances as $instance) {
