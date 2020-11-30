@@ -132,7 +132,8 @@ export default {
       let defaultExpression = this.specialAssignments.filter(assignment => {
         return assignment.default;
       });
-      return this.specialAssignments.indexOf(defaultExpression[0]);
+      let index = this.specialAssignments.indexOf(defaultExpression[0])
+      return index >= 0 ? index : null ;
     }
   },
   watch: {
