@@ -158,7 +158,14 @@
 
           let usersPromise = Promise.all(
             value.users.map(item => {
-              return ProcessMaker.apiClient.get("users/" + item);
+              if (typeof item == 'number') {
+                return ProcessMaker.apiClient.get("users/" + item);
+              } else {
+                if (item.assignee) {
+                  let id = item.assignee
+                  return ProcessMaker.apiClient.get("users/" + id);
+                }
+              }
             })
           )
             .then(items => {

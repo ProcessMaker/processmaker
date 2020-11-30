@@ -108,7 +108,10 @@ export default {
       editIndex: null,
       removeIndex: null,
       showConfirmationCard: false,
-      defaultAssignment: null,
+      defaultAssignment: {
+        users: [],
+        groups: []
+      },
     }
   },
   computed: {
@@ -132,8 +135,8 @@ export default {
       let defaultAssignment = this.specialAssignments.filter(assignment => {
         return assignment.default;
       });
-      let index = this.specialAssignments.indexOf(defaultAssignment[0])
-      return index >= 0 ? index : null ;
+      let index = this.specialAssignments.indexOf(defaultAssignment[0]);
+      return index >= 0 ? index : null;
     }
   },
   watch: {
@@ -150,33 +153,39 @@ export default {
         this.specialAssignments = this.value;
       }
     },
-    defaultAssignment() {
-      let field;
-      if (this.defaultAssignment.users.length) {
-        field = {
-          "type" : "user",
-          "name": this.defaultAssignment.users[0].fullname,
-          "id": this.defaultAssignment.users[0].id,
+    defaultAssignment: {
+      deep: true,
+      handler() {
+        if (this.defaultAssignment.users.length === 0 && this.defaultAssignment.groups.length === 0) {
+          return;
+        }
+        let field;
+        if (this.defaultAssignment.users.length) {
+          field = {
+            "type" : "user",
+            "name": this.defaultAssignment.users[0].fullname,
+            "id": this.defaultAssignment.users[0].id,
+          };
+        } else if (this.defaultAssignment.groups.length) {
+          field = {
+            "type" : "group",
+            "name": this.defaultAssignment.groups[0].name,
+            "id": this.defaultAssignment.groups[0].id,
+          };
+        }
+        let byExpression = {
+          type: field.type,
+          assignee: field.id,
+          expression: this.assignmentExpression,
+          assignmentName: field.name,
+          default: true,
         };
-      } else if (this.defaultAssignment.groups.length) {
-        field = {
-          "type" : "group",
-          "name": this.defaultAssignment.groups[0].name,
-          "id": this.defaultAssignment.groups[0].id,
-        };
-      }
-      let byExpression = {
-        type: field.type,
-        assignee: field.id,
-        expression: this.assignmentExpression,
-        assignmentName: field.name,
-        default: true,
-      };
-      if (this.defaultAssignmentIndex) {
-        this.specialAssignments[this.defaultAssignmentIndex] = byExpression;
-        this.$emit('input', this.specialAssignments);
-      } else {
-        this.specialAssignments.push(byExpression);
+        if (this.defaultAssignmentIndex != null) {
+          this.specialAssignments[this.defaultAssignmentIndex] = byExpression;
+          this.$emit('input', this.specialAssignments);
+        } else {
+          this.specialAssignments.push(byExpression);
+        }
       }
     }
   },
@@ -254,13 +263,27 @@ export default {
     setDefaultAssignmentToEndOfArray() {
       let defaultAssignment = this.specialAssignments.filter(assignment => { return assignment.default;});
       let index = this.specialAssignments.indexOf(defaultAssignment[0]);
-      if (this.specialAssignments.length - 1 != index) {
-        this.specialAssignments.push(this.specialAssignments.splice(index, 1)[0]);
+      let length = this.specialAssignments.length - 1;
+      let assignments = _.cloneDeep(this.specialAssignments);
+      if (length != index) {
+        this.specialAssignments.push(assignments.splice(index, 1)[0]);
+      }
+    },
+    loadDefaultAssignment() {
+      let defaultAssignment = this.specialAssignments.filter(assignment => { return assignment.default;});
+      if (!defaultAssignment) {
+        return;
+      } 
+      if (defaultAssignment[0].type == 'user') {
+        this.defaultAssignment.users.push(defaultAssignment[0]);
+      } else if (defaultStatusp[0].type == 'group') {
+        this.defaultAssignment.groups.push(defaultAssignment[0]);
       }
     }
   },
   mounted() {
     this.specialAssignments = this.value;
+    this.loadDefaultAssignment();
   }
 }
 </script>
