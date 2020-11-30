@@ -1319,5 +1319,12 @@
   "Variable Name for Callback URL": "Variable Name for Callback URL",
   "View Process Categories": "View Process Categories",
   "View Vocabularies": "View Vocabularies",
-  "Warning: Screens without save buttons cannot be executed.": "Warning: Screens without save buttons cannot be executed."
+  "Warning: Screens without save buttons cannot be executed.": "Warning: Screens without save buttons cannot be executed.",
+  "Callback": "Callback",
+  "Running": "Running",
+  "Form Data": "Callback",
+  "Unreachable elements": "Unreachable elements",
+  "Wait for server callback": "Wait for server callback",
+  "View {{user}} Profile": "View {{user}} Profile",
+  "Edit {{user}} Profile": "View {{user}} Profile"
 }
