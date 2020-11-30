@@ -88,11 +88,12 @@ class TasksTest extends TestCase
             'user_id' => $user_2->id
         ]);
         //Get a page of tokens
-        $route = route('api.' . $this->resource . '.index');
+        //Since PR #3470, user_id is required as parameter
+        $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id]);
         $response = $this->apiCall('GET', $route);
 
         // should only see the user's 2 tasks
-        $this->assertEquals(count($response->json()['data']), 2);
+        $this->assertEquals(2, count($response->json()['data']));
     }
 
     /**
