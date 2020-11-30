@@ -79,7 +79,7 @@
     <div class="form-group">
       <select-user-group
         :label="$t('Default Assignment')"
-        v-model="defaultExpression"
+        v-model="defaultAssignment"
         :hide-users="false"
         :multiple="false" 
         :helper="$t('If no evaluations are true')"
@@ -108,7 +108,7 @@ export default {
       editIndex: null,
       removeIndex: null,
       showConfirmationCard: false,
-      defaultExpression: null,
+      defaultAssignment: null,
     }
   },
   computed: {
@@ -128,11 +128,11 @@ export default {
         return !assignment.default;
       });
     },
-    defaultExpressionIndex() {
-      let defaultExpression = this.specialAssignments.filter(assignment => {
+    defaultAssignmentIndex() {
+      let defaultAssignment = this.specialAssignments.filter(assignment => {
         return assignment.default;
       });
-      let index = this.specialAssignments.indexOf(defaultExpression[0])
+      let index = this.specialAssignments.indexOf(defaultAssignment[0])
       return index >= 0 ? index : null ;
     }
   },
@@ -140,11 +140,7 @@ export default {
     specialAssignments: {
       deep:true,
       handler() {
-        let defaultExpression = this.specialAssignments.filter(assignment => { return assignment.default;})
-        let index = this.specialAssignments.indexOf(defaultExpression[0]);
-        if (this.specialAssignments.length - 1 != index) {
-          this.specialAssignments.push(this.specialAssignments.splice(index, 1)[0]);
-        }
+        this.setDefaultAssignmentToEndOfArray();
         this.$emit('input', this.specialAssignments);
       }
     },
@@ -154,19 +150,19 @@ export default {
         this.specialAssignments = this.value;
       }
     },
-    defaultExpression() {
+    defaultAssignment() {
       let field;
-      if (this.defaultExpression.users.length) {
+      if (this.defaultAssignment.users.length) {
         field = {
           "type" : "user",
-          "name": this.defaultExpression.users[0].fullname,
-          "id": this.defaultExpression.users[0].id,
+          "name": this.defaultAssignment.users[0].fullname,
+          "id": this.defaultAssignment.users[0].id,
         };
-      } else if (this.defaultExpression.groups.length) {
+      } else if (this.defaultAssignment.groups.length) {
         field = {
           "type" : "group",
-          "name": this.defaultExpression.groups[0].name,
-          "id": this.defaultExpression.groups[0].id,
+          "name": this.defaultAssignment.groups[0].name,
+          "id": this.defaultAssignment.groups[0].id,
         };
       }
       let byExpression = {
@@ -176,8 +172,8 @@ export default {
         assignmentName: field.name,
         default: true,
       };
-      if (this.defaultExpressionIndex) {
-        this.specialAssignments[this.defaultExpressionIndex] = byExpression;
+      if (this.defaultAssignmentIndex) {
+        this.specialAssignments[this.defaultAssignmentIndex] = byExpression;
         this.$emit('input', this.specialAssignments);
       } else {
         this.specialAssignments.push(byExpression);
@@ -254,6 +250,13 @@ export default {
       this.showCard = false;
       this.assignmentExpression = null;
       this.assignedExpression = null;
+    },
+    setDefaultAssignmentToEndOfArray() {
+      let defaultAssignment = this.specialAssignments.filter(assignment => { return assignment.default;});
+      let index = this.specialAssignments.indexOf(defaultAssignment[0]);
+      if (this.specialAssignments.length - 1 != index) {
+        this.specialAssignments.push(this.specialAssignments.splice(index, 1)[0]);
+      }
     }
   },
   mounted() {
