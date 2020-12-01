@@ -182,6 +182,7 @@ import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import VueJsonPretty from "vue-json-pretty";
+import 'vue-json-pretty/lib/styles.css';
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
