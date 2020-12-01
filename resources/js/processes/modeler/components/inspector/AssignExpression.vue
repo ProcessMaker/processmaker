@@ -79,7 +79,7 @@
     <div class="form-group">
       <select-user-group
         :label="$t('Default Assignment')"
-        v-model="defaultExpression"
+        v-model="defaultAssignment"
         :hide-users="false"
         :multiple="false" 
         :helper="$t('If no evaluations are true')"
@@ -108,7 +108,10 @@ export default {
       editIndex: null,
       removeIndex: null,
       showConfirmationCard: false,
-      defaultExpression: null,
+      defaultAssignment: {
+        users: [],
+        groups: []
+      },
     }
   },
   computed: {
@@ -123,27 +126,29 @@ export default {
       const item = this.specialAssignments[this.removeIndex].expression;
       return this.$t('Are you sure you want to delete expression {{item}}', {item: item});
     },
-    specialAssignmentsList() {
-      return this.specialAssignments.filter(assignment => {
-        return !assignment.default;
-      });
+    specialAssignmentsList: {
+      get() {
+        return this.specialAssignments.filter(assignment => {
+          return !assignment.default;
+        });
+      },
+      set(value) {
+        this.specialAssignments = value;
+      }
     },
-    defaultExpressionIndex() {
-      let defaultExpression = this.specialAssignments.filter(assignment => {
+    defaultAssignmentIndex() {
+      let defaultAssignment = this.specialAssignments.filter(assignment => {
         return assignment.default;
       });
-      return this.specialAssignments.indexOf(defaultExpression[0]);
+      let index = this.specialAssignments.indexOf(defaultAssignment[0]);
+      return index >= 0 ? index : null;
     }
   },
   watch: {
     specialAssignments: {
       deep:true,
       handler() {
-        let defaultExpression = this.specialAssignments.filter(assignment => { return assignment.default;})
-        let index = this.specialAssignments.indexOf(defaultExpression[0]);
-        if (this.specialAssignments.length - 1 != index) {
-          this.specialAssignments.push(this.specialAssignments.splice(index, 1)[0]);
-        }
+        this.setDefaultAssignmentToEndOfArray();
         this.$emit('input', this.specialAssignments);
       }
     },
@@ -153,33 +158,62 @@ export default {
         this.specialAssignments = this.value;
       }
     },
-    defaultExpression() {
-      let field;
-      if (this.defaultExpression.users.length) {
-        field = {
-          "type" : "user",
-          "name": this.defaultExpression.users[0].fullname,
-          "id": this.defaultExpression.users[0].id,
+    defaultAssignment: {
+      deep: true,
+      handler() {
+        if (this.defaultAssignment.users.length === 0 && this.defaultAssignment.groups.length === 0) {
+          return;
+        }
+        let field;
+        if (this.defaultAssignment.users.length && Object.keys(this.defaultAssignment.users[0]).length) {        
+          let name = this.defaultAssignment.users[0].fullname ? this.defaultAssignment.users[0].fullname : this.defaultAssignment.users[0].assignmentName;
+          let id = this.defaultAssignment.users[0].id ? this.defaultAssignment.users[0].id : this.defaultAssignment.users[0].assignee;
+          field = {
+            "type" : "user",
+            "name": name,
+            "id": id,
+          };
+        } else if (this.defaultAssignment.groups.length && Object.keys(this.defaultAssignment.groups[0]).length)  {
+          let name = this.defaultAssignment.groups[0].name ? this.defaultAssignment.groups[0].name : this.defaultAssignment.groups[0].assignmentName;
+          let id;
+          if (this.defaultAssignment.groups[0].id) {
+            if (this.defaultAssignment.groups[0].id.includes("group")){
+              id = this.defaultAssignment.groups[0].id.replace("group-", "");
+            } else {
+              id = this.defaultAssignment.groups[0].id;
+            }
+          } else {
+            if (this.defaultAssignment.groups[0].assignee.includes("group")) {
+              id = this.defaultAssignment.groups[0].assignee.replace("group-", "");
+            } else {
+              id = this.defaultAssignment.groups[0].assignee;
+            }
+          }
+          field = {
+            "type" : "group",
+            "name": name,
+            "id": id,
+          };
+        }
+        
+        if (!field) {
+          return;
+        }
+
+        let byExpression = {
+          type: field.type,
+          assignee: field.id,
+          expression: this.assignmentExpression,
+          assignmentName: field.name,
+          default: true,
         };
-      } else if (this.defaultExpression.groups.length) {
-        field = {
-          "type" : "group",
-          "name": this.defaultExpression.groups[0].name,
-          "id": this.defaultExpression.groups[0].id,
-        };
-      }
-      let byExpression = {
-        type: field.type,
-        assignee: field.id,
-        expression: this.assignmentExpression,
-        assignmentName: field.name,
-        default: true,
-      };
-      if (this.defaultExpressionIndex) {
-        this.specialAssignments[this.defaultExpressionIndex] = byExpression;
-        this.$emit('input', this.specialAssignments);
-      } else {
-        this.specialAssignments.push(byExpression);
+        console.log('BY EXPRESSION', byExpression);
+        if (this.defaultAssignmentIndex != null) {
+          this.specialAssignments[this.defaultAssignmentIndex] = byExpression;
+          this.$emit('input', this.specialAssignments);
+        } else {
+          this.specialAssignments.push(byExpression);
+        }
       }
     }
   },
@@ -253,10 +287,35 @@ export default {
       this.showCard = false;
       this.assignmentExpression = null;
       this.assignedExpression = null;
+    },
+    setDefaultAssignmentToEndOfArray() {
+      let index = this.specialAssignments.findIndex(item => item.default == true);
+      let length = this.specialAssignments.length - 1;
+      if (index == -1) {
+        return;
+      }
+      if (index != length) {
+        this.specialAssignments.push(this.specialAssignments.splice(index,1)[0]);
+      }
+    },
+    loadDefaultAssignment() {
+      let defaultAssignment = this.specialAssignments.filter(assignment => { return assignment.default;});
+      if (defaultAssignment.length == 0) {
+        return;
+      } 
+      if (defaultAssignment[0].type == 'user') {
+        this.defaultAssignment.users.push(defaultAssignment[0]);
+      } else if (defaultAssignment[0].type == 'group') {
+        if (typeof defaultAssignment[0].assignee != 'number') {
+          defaultAssignment[0].assignee = defaultAssignment[0].assignee.replace("group-", "");
+        }
+        this.defaultAssignment.groups.push(defaultAssignment[0]);
+      }
     }
   },
   mounted() {
     this.specialAssignments = this.value;
+    this.loadDefaultAssignment();
   }
 }
 </script>
