@@ -173,15 +173,15 @@ export default {
           let id;
           if (this.defaultAssignment.groups[0].id) {
             if (this.defaultAssignment.groups[0].id.includes("group")){
-              id = this.defaultAssignment.groups[0].id;
+              id = this.defaultAssignment.groups[0].id.replace("group-", "");
             } else {
-              id = "group-" + this.defaultAssignment.groups[0].id;
+              id = this.defaultAssignment.groups[0].id;
             }
           } else {
             if (this.defaultAssignment.groups[0].assignee.includes("group")) {
-              id = this.defaultAssignment.groups[0].assignee;
+              id = this.defaultAssignment.groups[0].assignee.replace("group-", "");
             } else {
-              id = "group-" + this.defaultAssignment.groups[0].assignee;
+              id = this.defaultAssignment.groups[0].assignee;
             }
           }
           field = {
@@ -202,7 +202,7 @@ export default {
           assignmentName: field.name,
           default: true,
         };
-
+        console.log('BY EXPRESSION', byExpression);
         if (this.defaultAssignmentIndex != null) {
           this.specialAssignments[this.defaultAssignmentIndex] = byExpression;
           this.$emit('input', this.specialAssignments);
