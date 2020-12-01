@@ -170,7 +170,20 @@ export default {
           };
         } else if (this.defaultAssignment.groups.length && Object.keys(this.defaultAssignment.groups[0]).length)  {
           let name = this.defaultAssignment.groups[0].name ? this.defaultAssignment.groups[0].name : this.defaultAssignment.groups[0].assignmentName;
-          let id = this.defaultAssignment.groups[0].id ? 'group-' + this.defaultAssignment.groups[0].id : "group-" + this.defaultAssignment.groups[0].assignee;
+          let id;
+          if (this.defaultAssignment.groups[0].id) {
+            if (this.defaultAssignment.groups[0].id.includes("group")){
+              id = this.defaultAssignment.groups[0].id;
+            } else {
+              id = "group-" + this.defaultAssignment.groups[0].id;
+            }
+          } else {
+            if (this.defaultAssignment.groups[0].assignee.includes("group")) {
+              id = this.defaultAssignment.groups[0].assignee;
+            } else {
+              id = "group-" + this.defaultAssignment.groups[0].assignee;
+            }
+          }
           field = {
             "type" : "group",
             "name": name,
@@ -271,12 +284,11 @@ export default {
       this.assignedExpression = null;
     },
     setDefaultAssignmentToEndOfArray() {
-      let defaultAssignment = this.specialAssignments.filter(assignment => { return assignment.default;});
-      let index = this.specialAssignments.indexOf(defaultAssignment[0]);
+      let index = this.specialAssignments.findIndex(item => item.default == true);
       let length = this.specialAssignments.length - 1;
-      let assignments = _.cloneDeep(this.specialAssignments);
-      if (length != index) {
-        this.specialAssignments.push(assignments.splice(index, 1)[0]);
+      
+      if (index != length) {
+        this.specialAssignments.push(this.specialAssignments.splice(index,1)[0]);
       }
     },
     loadDefaultAssignment() {
