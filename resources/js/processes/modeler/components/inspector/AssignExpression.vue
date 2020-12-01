@@ -126,10 +126,15 @@ export default {
       const item = this.specialAssignments[this.removeIndex].expression;
       return this.$t('Are you sure you want to delete expression {{item}}', {item: item});
     },
-    specialAssignmentsList() {
-      return this.specialAssignments.filter(assignment => {
-        return !assignment.default;
-      });
+    specialAssignmentsList: {
+      get() {
+        return this.specialAssignments.filter(assignment => {
+          return !assignment.default;
+        });
+      },
+      set(value) {
+        this.specialAssignments = value;
+      }
     },
     defaultAssignmentIndex() {
       let defaultAssignment = this.specialAssignments.filter(assignment => {
