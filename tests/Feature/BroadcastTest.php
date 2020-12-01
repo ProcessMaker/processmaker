@@ -20,8 +20,9 @@ use ProcessMaker\Managers\ScreenBuilderManager as ScreenBuilder;
 use ProcessMaker\Managers\ModelerManager as Modeler;
 use ProcessMaker\Managers\ScriptBuilderManager as ScriptBuilder;
 use Illuminate\Foundation\Testing\WithFaker;
-
-
+use ProcessMaker\Events\ImportedScreenSaved;
+use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Models\Screen;
 
 class BroadcastTest extends TestCase
 {
@@ -122,7 +123,9 @@ class BroadcastTest extends TestCase
      */
     public function testScreenBuilderStartingBroadcast()
     {
-        $this->markTestSkipped('Will implement later');
+        $this->expectsEvents([
+            ScreenBuilderStarting::class,
+        ]);
         $manager = new ScreenBuilder();
         event(new ScreenBuilderStarting($manager, 'DISPLAY'));
     }
@@ -134,7 +137,9 @@ class BroadcastTest extends TestCase
      */
     public function testModelerStartingBroadcast()
     {
-        $this->markTestSkipped('Will implement later');
+        $this->expectsEvents([
+            ModelerStarting::class,
+        ]);
         $manager = new Modeler();
         event(new ModelerStarting($manager));
     }
@@ -175,8 +180,25 @@ class BroadcastTest extends TestCase
      */
     public function testScriptBuilderStartingBroadcast()
     {
-        $this->markTestSkipped('Will implement later');
-        $manager = new ScriptBuilder();
-        event(new ScreenBuilderStarting($manager));
+        $this->expectsEvents([
+            ScreenBuilderStarting::class,
+        ]);
+        $manager = new ScreenBuilderManager();
+        $type = 'FORM';
+        event(new ScreenBuilderStarting($manager, $type));
+    }
+
+    /**
+     * Asserts that the BuildScriptExecutor event works.
+     *
+     * @return void
+     */
+    public function testImportedScreenSavedBroadcast()
+    {
+        $this->expectsEvents([
+            ImportedScreenSaved::class,
+        ]);
+        $screen = factory(Screen::class)->create();
+        event(new ImportedScreenSaved($screen->id, $screen->toArray()));
     }
 }
