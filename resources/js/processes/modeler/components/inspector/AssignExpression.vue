@@ -286,7 +286,9 @@ export default {
     setDefaultAssignmentToEndOfArray() {
       let index = this.specialAssignments.findIndex(item => item.default == true);
       let length = this.specialAssignments.length - 1;
-      
+      if (index == -1) {
+        return;
+      }
       if (index != length) {
         this.specialAssignments.push(this.specialAssignments.splice(index,1)[0]);
       }
