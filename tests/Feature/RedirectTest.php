@@ -31,4 +31,12 @@ class RedirectTest extends TestCase
         //302 because we want to make sure they are being redirected
         $response->assertStatus(302);
     }
+    
+    /**
+     * Do not use transactions for this test
+     */
+    protected function connectionsToTransact()
+    {
+        return [];
+    }
 }
