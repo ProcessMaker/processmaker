@@ -4,9 +4,9 @@ namespace Tests\Feature\Api;
 
 use Exception;
 use Illuminate\Support\Facades\Cache;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\GlobalDataStore;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
@@ -56,6 +56,7 @@ class ProcessPatternsTest extends TestCase
     {
         $tests = [];
         $tests = $this->prepareTestCases('Conditional_StartEvent.bpmn', $tests);
+        $tests = $this->prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
         return $tests;
     }
 
@@ -156,6 +157,23 @@ class ProcessPatternsTest extends TestCase
             if ($token) {
                 $submited = true;
                 $this->completeTask($token, []);
+            }
+            // Trigger intermediate events
+            $tokens = ProcessRequestToken::where('STATUS', 'ACTIVE')
+                ->where('element_type', 'event')
+                ->get();
+            foreach ($tokens as $token) {
+                $element = $token->getDefinition(true);
+                $nodeName = $element->getBpmnElement()->localName;
+                if ($nodeName === 'intermediateCatchEvent') {
+                    foreach ($element->getEventDefinitions() as $event) {
+                        switch ($event->getBpmnElement()->localName) {
+                            case 'signalEventDefinition':
+                                WorkflowManager::throwSignalEventDefinition($event, $token);
+                                break;
+                        }
+                    }
+                }
             }
             $pending = ProcessRequest::where('STATUS', 'ACTIVE')
                 ->count();
