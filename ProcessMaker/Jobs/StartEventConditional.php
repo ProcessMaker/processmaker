@@ -10,6 +10,8 @@ class StartEventConditional extends BpmnAction
     /**
      * Create a new job instance.
      *
+     * @param Definitions $definitions
+     *
      * @return void
      */
     public function __construct(Definitions $definitions)
@@ -18,9 +20,13 @@ class StartEventConditional extends BpmnAction
     }
 
     /**
+     * Conditional event
      *
+     * This Job only uses the base behavior of BpmnAction to load and evaluate the conditional event
+     * it not requires any additional behavior.
      */
     public function action()
     {
+        return true;
     }
 }
