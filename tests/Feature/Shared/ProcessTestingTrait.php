@@ -18,6 +18,8 @@ trait ProcessTestingTrait
 {
     /**
      * Create new process from a BPMN
+     *
+     * @return Process
      */
     private function createProcess($attributes, array $users = [])
     {
