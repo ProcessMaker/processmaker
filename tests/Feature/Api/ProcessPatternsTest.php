@@ -151,7 +151,7 @@ class ProcessPatternsTest extends TestCase
         $pending = 1;
         while ($pending) {
             $submited = false;
-            $token = ProcessRequestToken::where('STATUS', 'ACTIVE')
+            $token = ProcessRequestToken::where('status', 'ACTIVE')
                 ->where('element_type', 'task')
                 ->first();
             if ($token) {
@@ -159,27 +159,37 @@ class ProcessPatternsTest extends TestCase
                 $this->completeTask($token, []);
             }
             // Trigger intermediate events
-            $tokens = ProcessRequestToken::where('STATUS', 'ACTIVE')
-                ->where('element_type', 'event')
-                ->get();
-            foreach ($tokens as $token) {
-                $element = $token->getDefinition(true);
-                $nodeName = $element->getBpmnElement()->localName;
-                if ($nodeName === 'intermediateCatchEvent') {
-                    foreach ($element->getEventDefinitions() as $event) {
-                        switch ($event->getBpmnElement()->localName) {
-                            case 'signalEventDefinition':
-                                WorkflowManager::throwSignalEventDefinition($event, $token);
-                                break;
+            if (!$submited) {
+                $tokens = ProcessRequestToken::where('status', 'ACTIVE')
+                    ->where('element_type', 'event')
+                    ->get();
+                foreach ($tokens as $token) {
+                    $element = $token->getDefinition(true);
+                    $nodeName = $element->getBpmnElement()->localName;
+                    if ($nodeName === 'intermediateCatchEvent') {
+                        foreach ($element->getEventDefinitions() as $event) {
+                            switch ($event->getBpmnElement()->localName) {
+                                case 'signalEventDefinition':
+                                    WorkflowManager::throwSignalEventDefinition($event, $token);
+                                    $submited = true;
+                                    break;
+                            }
                         }
                     }
                 }
             }
-            $pending = ProcessRequest::where('STATUS', 'ACTIVE')
+            $pending = ProcessRequest::where('status', 'ACTIVE')
                 ->count();
             if (!$submited && $pending) {
-                $elements = implode(', ', ProcessRequest::where('STATUS', 'ACTIVE')->pluck('element_name'));
-                throw new Exception('The process got stuck in elements:' . $elements);
+                $elements = implode(
+                    ', ',
+                    ProcessRequestToken::whereIn('status', ['ACTIVE', 'FAILING'])
+                    ->pluck('element_name')
+                    ->toArray()
+                );
+                // Get instance errors
+                $errors = $this->getRequestsErrors();
+                throw new Exception("The process got stuck in elements: {$elements}\n{$errors}");
             }
         }
         $tasks = ProcessRequestToken::
@@ -187,6 +197,22 @@ class ProcessPatternsTest extends TestCase
             ->get()
             ->pluck('element_id')
             ->toArray();
-        $this->assertEquals($expectedResult, $tasks);
+        // Get instance errors
+        $errors = $this->getRequestsErrors();
+        // Assertion: Check the process run as expected
+        $this->assertEquals($expectedResult, $tasks, "FAILED: {$bpmnFile}\n{$errors}");
+    }
+
+    private function getRequestsErrors()
+    {
+        $errors = [];
+        foreach (ProcessRequest::pluck('errors') as $error) {
+            if ($error) {
+                foreach ($error as $msg) {
+                    $errors[] = $msg['message'];
+                }
+            }
+        }
+        return \implode("\n", $errors);
     }
 }

@@ -1,7 +1,7 @@
 [
     {
         "startEvent": "StartEvent_1",
-        "data": {"a":1},
+        "data": {"a":1,"b":0},
         "events": [
         ],
         "result": [
@@ -11,7 +11,7 @@
     },
     {
         "startEvent": "StartEvent_1",
-        "data": {"b":1},
+        "data": {"a":0,"b":1},
         "events": [
         ],
         "result": [
