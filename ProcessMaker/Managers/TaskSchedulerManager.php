@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use PDOException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Jobs\StartEventConditional;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ScheduledTask;
@@ -535,7 +536,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
     {
         $processes = Process::where('conditional_events', '!=', '[]')->get();
         foreach ($processes as $process) {
-            $process->getDefinitions()->getEngine()->runToNextState();
+            StartEventConditional::dispatchNow($process);
         }
     }
 
