@@ -171,12 +171,11 @@ class TaskAssignmentExecutionTest extends TestCase
         $processRequest = WorkflowManager::triggerStartEvent($process, $event, []);
         $task = $processRequest->refresh()->tokens()->where('status', 'ACTIVE')->first();
 
-        $listTasksUrl = route('api.tasks.index');
-        // $listTasksUrl = route('api.tasks.index', ['pmql' => '(status = "Self Service")']);
         $updateTaskUrl = route('api.tasks.update', [$task->id]);
 
         // Assert someone not in the group can not take the task
         $this->user = $userWithNoGroup;
+        $listTasksUrl = route('api.tasks.index', ['pmql' => "user_id = {$userWithNoGroup->id}"]);
         $response = $this->apiCall('GET', $listTasksUrl)->json();
         $this->assertCount(0, $response['data']);
         $response = $this->apiCall('put', $updateTaskUrl, [
@@ -187,6 +186,7 @@ class TaskAssignmentExecutionTest extends TestCase
         
         // Assert a group member can claim the task
         $this->user = $users[1];
+        $listTasksUrl = route('api.tasks.index');
         $response = $this->apiCall('GET', $listTasksUrl)->json();
 
         $this->assertCount(1, $response['data']);
