@@ -74,7 +74,7 @@ class GenerateMenus
                     'icon' => 'fa-infinity',
                 ]);
             }
-            
+
             if (\Auth::check() && \Auth::user()->is_administrator) {
                 $submenu->add(__('Script Executors'), [
                     'route' => 'script-executors.index',
@@ -155,7 +155,7 @@ class GenerateMenus
             if (\Auth::check() && \Auth::user()->can('view-signals')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',
-                    'customicon' => 'far fa-play-circle fa-rotate-270',
+                    'customicon' => 'nav-icon fas bpmn-icon-end-event-signal',
                     'id' => 'signal'
                 ]);
             }

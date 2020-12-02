@@ -56,7 +56,8 @@ mix.extract([
   .copy("resources/js/timeout.js", "public/js")
   // Copy files necessary for images for the designer/modeler to it's own img directory
   .copy("node_modules/@processmaker/modeler/dist/img", "public/js/processes/modeler/img")
-  .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js");
+  .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
+  .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
 mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
