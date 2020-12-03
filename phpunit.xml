@@ -41,6 +41,8 @@
       <env name="DB_ADAPTER" value="mysql" />
       <env name="DB_DATABASE" value="test" />
       <env name="DATA_DB_DATABASE" value="test" />
+      <env name="DB_TIMEZONE" value="+00:00" />
+      <env name="DATA_DB_TIMEZONE" value="+00:00" />
 
       <!-- Log config -->
       <env name="LOG_CHANNEL" value="test" />
