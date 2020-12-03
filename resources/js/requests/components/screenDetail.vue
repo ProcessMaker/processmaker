@@ -67,11 +67,19 @@
       }
     },
     mounted() {
+      this.loadPages();
       if (this.canPrint) {
         this.print();
       }
     },
     methods: {
+      loadPages() {
+        this.$nextTick(() => {
+          this.$refs.print.forEach((page, index) => {
+            page.setCurrentPage(this.printablePages[index]);
+          });
+        });
+      },
       findPagesInNavButtons(object, found = []) {
         if (object.items) {
           object.items.forEach(item => {
@@ -123,13 +131,8 @@
     watch: {
       "rowData.config": {
         deep: true,
-        immediate: true,
         handler() {
-          this.$nextTick(() => {
-            this.$refs.print.forEach((page, index) => {
-              page.setCurrentPage(this.printablePages[index])
-            });
-          });
+          this.loadPages();
         }
       }
     }
