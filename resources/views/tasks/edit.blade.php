@@ -47,20 +47,45 @@
                         </ul>
                     @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
-                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
-                          @can('update', $task) 
-                            <task
-                              v-model="formData"
-                              :initial-task-id="{{ $task->id }}"
-                              :initial-request-id="{{ $task->process_request_id }}"
-                              :user-id="{{ Auth::user()->id }}"
-                              csrf-token="{{ csrf_token() }}"
-                              @task-updated="taskUpdated"
-                              @submit="submit"
-                              @completed="completed"
-                              @@error="error"
-                              @closed="closed"
-                          ></task>
+                        <div id="tab-form" role="tabpanel" aria-labelledby="tab-form"
+                             class="tab-pane active show h-100">
+                            @can('update', $task)
+                                @if($task->component)
+                                    <div class="card card-body border-top-0 h-100">
+                                        <template>
+                                            <component
+                                                    :is="task.component"
+                                                    ref="taskScreen"
+                                                    :process-id="task.process_id"
+                                                    :instance-id="task.process_request_id"
+                                                    :token-id="task.id"
+                                                    :screen="task.screen.config"
+                                                    :csrf-token="'{{ csrf_token() }}'"
+                                                    :computed="task.screen.computed"
+                                                    :custom-css="task.screen.custom_css"
+                                                    :watchers="task.screen.watchers"
+                                                    :data="task.request_data"
+                                                    @activity-assigned="activityAssigned"
+                                                    @process-completed="redirectWhenProcessCompleted"
+                                                    @process-updated="refreshWhenProcessUpdated"
+                                            >
+                                            </component>
+                                        </template>
+                                    </div>
+                                @else
+                                    <task
+                                            v-model="formData"
+                                            :initial-task-id="{{ $task->id }}"
+                                            :initial-request-id="{{ $task->process_request_id }}"
+                                            :user-id="{{ Auth::user()->id }}"
+                                            csrf-token="{{ csrf_token() }}"
+                                            @task-updated="taskUpdated"
+                                            @submit="submit"
+                                            @completed="completed"
+                                            @@error="error"
+                                            @closed="closed"
+                                    ></task>
+                                @endif
                           @endcan
                             @can('view-comments')
                               <div v-if="taskHasComments">
@@ -74,7 +99,7 @@
                                           :readonly="task.status === 'CLOSED'"
                                           />
                               </div>
-                            @endcan 
+                            @endcan
                         </div>
                         @can('editData', $task->processRequest)
                             <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
@@ -299,6 +324,99 @@
           }
         },
         methods: {
+          refreshWhenProcessUpdated(data) {
+            if (data.event === 'ACTIVITY_COMPLETED' || data.event === 'ACTIVITY_ACTIVATED') {
+              this.reload();
+            }
+          },
+          redirectWhenProcessCompleted() {
+            this.redirect(`/requests/${this.task.process_request_id}`);
+          },
+          activityAssigned() {
+            this.checkTaskStatus();
+            this.redirectToNextAssignedTask(false);
+          },
+          checkTaskStatus(redirect=false) {
+            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
+              this.closeTask();
+            }
+          },
+          closeTask() {
+            if (this.hasErrors) {
+              this.redirect(`/requests/${this.task.process_request_id}`);
+              return;
+            }
+            if (!this.task.allow_interstitial) {
+              this.redirect("/tasks");
+            } else {
+              this.redirectToNextAssignedTask();
+            }
+          },
+          reload() {
+              this.loadTask(this.task.id);
+          },
+          resetScreenState() {
+            if (this.$refs.taskScreen && this.$refs.taskScreen.$children[0]) {
+              this.$refs.taskScreen.$children[0].currentPage = 0;
+            }
+          },
+          classHeaderCard (status) {
+            let header = "bg-success";
+            switch (status) {
+              case "completed":
+                header = "bg-secondary";
+                break;
+                case "overdue":
+                  header = "bg-danger";
+                  break;
+            }
+            return "card-header text-capitalize text-white " + header;
+          },
+          prepareTask(redirect = false) {
+            this.statusCard = this.classHeaderCard(this.task.advanceStatus);
+            this.updateRequestData = debounce(this.updateRequestData, 1000);
+            this.editJsonData();
+            this.checkTaskStatus(redirect);
+          },
+          loadTask(id) {
+            if (this.redirectInProcess) {
+              return;
+            }
+
+            let self = this;
+            window.ProcessMaker.apiClient.get(`/tasks/${id}?include=data,user,requestor,processRequest,component,screen,requestData,bpmnTagName,interstitial,definition`)
+                  .then((response) => {
+                    self.resetScreenState();
+                    this.$set(this, 'task', response.data);
+                    if (response.data.process_request.status === 'ERROR') {
+                      this.hasErrors = true;
+                    }
+                    this.prepareTask();
+                  });
+          },
+          redirectToNextAssignedTask(redirect = false) {
+            if (this.redirectInProcess) {
+              return;
+            }
+
+            if (this.task.status == 'COMPLETED' || this.task.status == 'CLOSED' || this.task.status == 'TRIGGERED') {
+              window.ProcessMaker.apiClient.get(`/tasks?user_id=${this.task.user_id}&status=ACTIVE&process_request_id=${this.task.process_request_id}`).then((response) => {
+                if (response.data.data.length > 0) {
+                  const firstNextAssignedTask = response.data.data[0].id;
+                  if (redirect) {
+                    this.redirect(`/tasks/${firstNextAssignedTask}/edit`);
+                  } else {
+                    this.loadTask(firstNextAssignedTask);
+                  }
+                } else if (this.task.process_request.status === 'COMPLETED') {
+                    setTimeout(() => {
+                        this.redirect(`/requests/${this.task.process_request_id}`);
+                    }, 500);
+                }
+              });
+            }
+          },
+
           completed(processRequestId) {
             this.redirect(`/requests/${processRequestId}`);
           },
@@ -417,7 +535,7 @@
               // If there are errors, the user will be redirected to the request page
               // to view error details. This is done in loadTask in Task.vue
             });
-            
+
           },
           taskUpdated(task) {
             this.task = task;
