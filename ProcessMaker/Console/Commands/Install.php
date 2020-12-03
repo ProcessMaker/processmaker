@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Console\Helper\Table;
 use ProcessMaker\Traits\SupportsNonInteraction;
-use SignalSeeder;
+use UserSeeder;
 use Validator;
 
 /**
@@ -327,11 +327,11 @@ class Install extends Command
             $validator = $this->validateField('lastname', $lastname, ['max:50']);
         } while($validator->fails());
         // Set the default admin properties for UserSeeder
-        SignalSeeder::$INSTALLER_ADMIN_USERNAME = $username;
-        SignalSeeder::$INSTALLER_ADMIN_EMAIL = $email;
-        SignalSeeder::$INSTALLER_ADMIN_PASSWORD = $password;
-        SignalSeeder::$INSTALLER_ADMIN_FIRSTNAME = $firstname;
-        SignalSeeder::$INSTALLER_ADMIN_LASTNAME = $lastname;
+        UserSeeder::$INSTALLER_ADMIN_USERNAME = $username;
+        UserSeeder::$INSTALLER_ADMIN_EMAIL = $email;
+        UserSeeder::$INSTALLER_ADMIN_PASSWORD = $password;
+        UserSeeder::$INSTALLER_ADMIN_FIRSTNAME = $firstname;
+        UserSeeder::$INSTALLER_ADMIN_LASTNAME = $lastname;
     }
 
     /**
