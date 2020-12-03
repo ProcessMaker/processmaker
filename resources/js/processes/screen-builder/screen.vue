@@ -447,7 +447,7 @@ export default {
         that.customCSS = that.screen.custom_css ? that.screen.custom_css : "";
         that.watchers = that.screen.watchers ? that.screen.watchers : [];
         that.previewInput = "{}";
-
+        that.preview.custom_css = that.customCSS;
         ProcessMaker.EventBus.$emit("screen-builder-start", that);
         ProcessMaker.EventBus.$on("save-screen", (value, onSuccess, onError) => {
           that.saveScreen(value, onSuccess, onError);
