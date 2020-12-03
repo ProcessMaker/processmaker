@@ -18,6 +18,9 @@ class SecurityLoggerTest extends TestCase
      */
     public function testLogSecurityEvents()
     {
+        // Set the config to log security events
+        config(['auth.log_auth_events' => true]);
+        
         // Build a user with a specified password
         $user = factory(User::class)->create([
             'username' =>'newuser',
@@ -42,6 +45,9 @@ class SecurityLoggerTest extends TestCase
         // Attempt to logout
         Auth::logout();
         $this->assertDatabaseHas('security_logs', ['event' => 'logout', 'user_id' => $user->id]);
+        
+        // Disable security logging
+        config(['auth.log_auth_events' => false]);
     }
     
     /**

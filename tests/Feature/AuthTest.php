@@ -48,12 +48,4 @@ class AuthTest extends TestCase
         ]));
         $this->assertEquals($user->id, Auth::id());
     }
-
-    /**
-     * Do not use transactions for this test
-     */
-    protected function connectionsToTransact()
-    {
-        return [];
-    }
 }
