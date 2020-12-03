@@ -127,7 +127,7 @@
         handler() {
           this.$nextTick(() => {
             this.$refs.print.forEach((page, index) => {
-              page.currentPage = this.printablePages[index];
+              page.setCurrentPage(this.printablePages[index])
             });
           });
         }
