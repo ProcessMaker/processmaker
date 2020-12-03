@@ -242,6 +242,10 @@ export default {
 
         if (byExpression.expression) {
           if (editIndex !== null)  {
+            if (byExpression.assignee == null) {
+              byExpression.assignee = this.specialAssignments[editIndex].assignee;
+              byExpression.assignmentName = this.specialAssignments[editIndex].assignmentName;
+            }
             this.specialAssignments[editIndex] = byExpression;
             this.$emit('input', this.specialAssignments);
           } else {
