@@ -50,7 +50,8 @@
     "teamtnt/laravel-scout-tntsearch-driver": "^9.0",
     "typo3/class-alias-loader": "^1.0",
     "watson/validating": "^3.1",
-    "whichbrowser/parser": "^2.0"
+    "whichbrowser/parser": "^2.0",
+    "lcobucci/jwt": "3.3.3"
   },
   "require-dev": {
     "filp/whoops": "^2.0",
