@@ -56,6 +56,7 @@ return [
             'prefix' => '',
             'strict' => true,
             'engine' => 'InnoDB',
+            'timezone'  => env('DB_TIMEZONE'),
         ],
         'data' => [
             'driver' => env('DATA_DB_DRIVER', 'mysql'),
@@ -70,6 +71,7 @@ return [
             'schema' => env('DATA_DB_SCHEMA'),
             'engine' => env('DATA_DB_ENGINE'),
             'date_format' => env('DATA_DB_DATE_FORMAT'),
+            'timezone'  => env('DATA_DB_TIMEZONE'),
         ]
     ],
 

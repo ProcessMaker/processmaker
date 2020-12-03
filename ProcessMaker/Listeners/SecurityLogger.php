@@ -22,35 +22,37 @@ class SecurityLogger
      */
     public function handle($event)
     {
-        $class = get_class($event);
-        
-        if (array_key_exists($class, $this->eventTypes)) {
-            $eventType = $this->eventTypes[$class];
+        if (config('auth.log_auth_events')) {
+            $class = get_class($event);
             
-            if (isset($event->user)) {
-                $userId = $event->user->id;
-            } else {
-                $userId = null;
-            }
-            
-            $userAgent = $this->userAgent();
-            
-            SecurityLog::create([
-               'event' => $eventType,
-               'ip' => request()->ip(),
-               'meta' => [
-                   'user_agent' => $userAgent->string,
-                   'browser' => [
-                       'name' => $userAgent->browser->name,
-                       'version' => $userAgent->browser->version,
+            if (array_key_exists($class, $this->eventTypes)) {
+                $eventType = $this->eventTypes[$class];
+                
+                if (isset($event->user)) {
+                    $userId = $event->user->id;
+                } else {
+                    $userId = null;
+                }
+                
+                $userAgent = $this->userAgent();
+                
+                SecurityLog::create([
+                   'event' => $eventType,
+                   'ip' => request()->ip(),
+                   'meta' => [
+                       'user_agent' => $userAgent->string,
+                       'browser' => [
+                           'name' => $userAgent->browser->name,
+                           'version' => $userAgent->browser->version,
+                       ],
+                       'os' => [
+                           'name' => $userAgent->os->name,
+                           'version' => $userAgent->os->version,
+                       ]
                    ],
-                   'os' => [
-                       'name' => $userAgent->os->name,
-                       'version' => $userAgent->os->version,
-                   ]
-               ],
-               'user_id' => $userId,
-            ]);
+                   'user_id' => $userId,
+                ]);
+            }
         }
     }
     
