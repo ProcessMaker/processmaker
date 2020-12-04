@@ -3,8 +3,10 @@ memory: 2048
 cpus: 1
 provider: virtualbox
 box: laravel/homestead
-version: 6.4.0
+version: 9.6.1
+
 authorize: ~/.ssh/id_rsa.pub
+
 keys:
     - ~/.ssh/id_rsa
 folders:
@@ -26,7 +28,10 @@ sites:
     -
         map: processmaker.local.processmaker.com
         to: /home/vagrant/processmaker/public
+        php: "7.4"
         schedule: true
+features: 
+    - mysql: true
 databases:
     - processmaker
     - test
