@@ -30,6 +30,8 @@ sites:
         to: /home/vagrant/processmaker/public
         php: "7.4"
         schedule: true
+features: 
+    - mysql: true
 databases:
     - processmaker
     - test
