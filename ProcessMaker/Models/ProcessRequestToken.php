@@ -149,11 +149,14 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function toSearchableArray()
     {
+        $dataToInclude = $this->data;
+        unset($dataToInclude['_request']);
+        unset($dataToInclude['_user']);
         return [
             'id' => $this->id,
             'element_name' => $this->element_name,
             'request' => isset($this->processRequest->name) ? $this->processRequest->name : "",
-            'data' => json_encode($this->data),
+            'data' => json_encode($dataToInclude),
         ];
     }
 
