@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6aee5bb25cba7f72e2652f1124d95994",
+    "content-hash": "22c740431dcb90ddabac976c23a081cb",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -9425,37 +9425,31 @@
         },
         {
             "name": "laravel/homestead",
-            "version": "v7.20.0",
+            "version": "v10.15.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/homestead.git",
-                "reference": "cae38adcfdde1de1c4581e7a33872adaf9fbf926"
+                "reference": "af7ca899c6f33088e7d596300d67dbaafcba4748"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/homestead/zipball/cae38adcfdde1de1c4581e7a33872adaf9fbf926",
-                "reference": "cae38adcfdde1de1c4581e7a33872adaf9fbf926",
+                "url": "https://api.github.com/repos/laravel/homestead/zipball/af7ca899c6f33088e7d596300d67dbaafcba4748",
+                "reference": "af7ca899c6f33088e7d596300d67dbaafcba4748",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6 || ^7.0",
-                "symfony/console": "~3.3|~4.0",
-                "symfony/process": "~3.3|~4.0",
-                "symfony/yaml": "~3.3|~4.0"
+                "php": "^7.1",
+                "symfony/console": "~3.0||~4.0||~5.0",
+                "symfony/process": "~3.0||~4.0||~5.0",
+                "symfony/yaml": "~3.0||~4.0||~5.0"
             },
             "require-dev": {
-                "phly/changelog-generator": "^2.2",
-                "phpunit/phpunit": "^5.7 || ^6.0"
+                "phpunit/phpunit": "^6.0"
             },
             "bin": [
                 "bin/homestead"
             ],
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.0-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Laravel\\Homestead\\": "src/"
@@ -9468,15 +9462,15 @@
             "authors": [
                 {
                     "name": "Taylor Otwell",
-                    "email": "taylorotwell@gmail.com"
+                    "email": "taylor@laravel.com"
                 }
             ],
             "description": "A virtual machine for web artisans.",
             "support": {
                 "issues": "https://github.com/laravel/homestead/issues",
-                "source": "https://github.com/laravel/homestead/tree/master"
+                "source": "https://github.com/laravel/homestead/tree/v10.15.2"
             },
-            "time": "2018-12-11T02:04:35+00:00"
+            "time": "2020-11-01T14:03:24+00:00"
         },
         {
             "name": "mockery/mockery",
