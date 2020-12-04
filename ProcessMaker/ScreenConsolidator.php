@@ -41,10 +41,13 @@ class ScreenConsolidator {
         ];
     }
 
-    public function replace($items)
+    public function replace($items, $removeButtons = false)
     {
         $new = [];
         foreach ($items as $item) {
+            if ($removeButtons && $this->is('FormButton', $item)) {
+                continue;
+            }
             if ($this->is('FormMultiColumn', $item)) {
                 $new[] = $this->getMultiColumn($item, $new);
 
@@ -75,7 +78,7 @@ class ScreenConsolidator {
         $this->appendCustomCss($screen);
 
         // Only use the first page
-        foreach ($this->replace($screen->config[0]['items']) as $screenItem) {
+        foreach ($this->replace($screen->config[0]['items'], true) as $screenItem) {
             $new[] = $screenItem;
         }
         $this->recursion = 0;
