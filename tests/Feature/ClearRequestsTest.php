@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Feature\Api;
+namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
