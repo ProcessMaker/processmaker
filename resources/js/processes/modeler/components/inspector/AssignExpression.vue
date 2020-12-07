@@ -16,7 +16,7 @@
         <div class="form-group">
           <label>{{ $t("Expression") }}</label>
           <input class="form-control" ref="specialAssignmentsInput" type="text" v-model="assignmentExpression">
-          <small class="form-text text-muted">{{ $t("If the rule's expression evaluates to true then") }}</small>
+          <small class="form-text text-muted">{{ $t("If the FEEL Expression evaluates to true then") }}</small>
         </div>
 
         <div class="form-group">
