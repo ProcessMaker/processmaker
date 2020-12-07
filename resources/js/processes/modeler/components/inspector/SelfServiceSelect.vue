@@ -120,7 +120,8 @@ export default {
         };
         this.selfServiceAssignments.users.push(field);
       });
-
+      this.selectedAssignment.groups = [];
+      this.selectedAssignment.users = [];
       this.showCard = false; 
     },
     showDeleteConfirmation(index, name, assignmentIndex) {
