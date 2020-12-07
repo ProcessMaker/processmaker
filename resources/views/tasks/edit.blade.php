@@ -48,7 +48,7 @@
                     @endcan
                     <div id="tabContent" class="tab-content flex-grow-1">
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
-                          @can('update', $task) 
+                          @can('update', $task)
                             <task
                               v-model="formData"
                               :initial-task-id="{{ $task->id }}"
@@ -74,7 +74,7 @@
                                           :readonly="task.status === 'CLOSED'"
                                           />
                               </div>
-                            @endcan 
+                            @endcan
                         </div>
                         @can('editData', $task->processRequest)
                             <div v-if="task.process_request.status === 'ACTIVE'" id="tab-data" role="tabpanel" aria-labelledby="tab-data" class="card card-body border-top-0 tab-pane p-3">
@@ -300,7 +300,10 @@
         },
         methods: {
           completed(processRequestId) {
-            this.redirect(`/requests/${processRequestId}`);
+            // avoid redirection if using a customized renderer
+            if(this.task.component && this.task.component === 'task-screen') {
+                this.redirect(`/requests/${processRequestId}`);
+            }
           },
           error(processRequestId) {
             this.redirect(`/requests/${this.task.process_request_id}`);
@@ -417,7 +420,7 @@
               // If there are errors, the user will be redirected to the request page
               // to view error details. This is done in loadTask in Task.vue
             });
-            
+
           },
           taskUpdated(task) {
             this.task = task;
