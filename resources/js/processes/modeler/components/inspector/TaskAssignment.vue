@@ -33,7 +33,7 @@
           ></self-service-select>
 
           <assign-expression 
-            v-if="showAssignFeelExpression"
+            v-if="showAssignRuleExpression"
             v-model="specialAssignments" 
           />
             
@@ -99,8 +99,8 @@
               label: "Self Service"
             },
             {
-              value: "feel_expression",
-              label: "FEEL Expression"
+              value: "rule_expression",
+              label: "Rule Expression"
             },
           ];
         },
@@ -221,8 +221,8 @@
       showAssignSelfService () {
         return this.assignment === "self_service";
       },
-      showAssignFeelExpression () {
-        return this.assignment === 'feel_expression';
+      showAssignRuleExpression () {
+        return this.assignment === 'rule_expression';
       },
       specialAssignmentsListGetter () {
         const value = this.node.get("assignmentRules") || "[]";
