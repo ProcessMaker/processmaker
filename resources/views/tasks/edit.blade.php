@@ -301,9 +301,11 @@
         methods: {
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
-            if(this.task.component && this.task.component === 'task-screen') {
-                this.redirect(`/requests/${processRequestId}`);
+            if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
+              return;
             }
+
+            this.redirect(`/requests/${processRequestId}`);
           },
           error(processRequestId) {
             this.redirect(`/requests/${this.task.process_request_id}`);
