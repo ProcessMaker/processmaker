@@ -203,6 +203,9 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
     private function persistCollaboration(ProcessRequest $request)
     {
         $engine = $request->getProcess()->getEngine();
+        if (count($engine->getExecutionInstances()) <= 1) {
+            return;
+        }
         $collaboration = null;
         foreach ($engine->getExecutionInstances() as $instance) {
             if ($instance->collaboration) {
