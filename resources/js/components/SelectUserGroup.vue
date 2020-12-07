@@ -158,7 +158,7 @@
 
           let usersPromise = Promise.all(
             value.users.map(item => {
-              if (typeof item == 'number') {
+              if (typeof item == 'number' || typeof item == 'string') {
                 return ProcessMaker.apiClient.get("users/" + item);
               } else {
                 if (item.assignee) {
@@ -176,7 +176,7 @@
 
           let groupsPromise = Promise.all(
             value.groups.map(item => {
-              if (typeof item == 'number') {
+              if (typeof item == 'number' || typeof item == 'string' ) {
                 return ProcessMaker.apiClient.get("groups/" + item);
               } else {
                 if (item.assignee) {

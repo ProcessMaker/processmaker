@@ -14,18 +14,13 @@
         </div>
 
         <div v-if="!disabled">
-          <user-select 
-            v-if="showAssignUser"
-            :label="$t('Assign to User')"
-            v-model="userAssignment"
-          />
-
-          <group-select 
-            v-if="showAssignGroup"
-            :label="$t('Assign to Group')"
-            v-model="groupAssignment"
-          />
-
+          <select-user-group
+            v-if="showAssignments"
+            :label="$t('Assigned Users/Groups')"
+            v-model="assignments"
+            :hide-users="hideUsers" 
+            :multiple="true" />
+          
           <user-by-id
               v-if="showAssignUserById"
               :label="$t('Variable Name')"
@@ -38,13 +33,13 @@
           ></self-service-select>
 
           <assign-expression 
-            v-if="showAssignFeelExpression"
+            v-if="showAssignRuleExpression"
             v-model="specialAssignments" 
           />
             
           <form-checkbox
               v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
-              :label="$t('Lock task assignment to user')"
+              :label="$t('Lock Task Assignment to User')"
               :checked="assignmentLockGetter"
               toggle="true"
               @change="assignmentLockSetter">
@@ -64,10 +59,10 @@
 <script>
   import SelfServiceSelect from './SelfServiceSelect.vue';
   import AssignExpression from './AssignExpression.vue';
-  import GroupSelect from './GroupSelect.vue';
+  import SelectUserGroup from '../../../../components/SelectUserGroup.vue';
 
   export default {
-  components: { SelfServiceSelect, AssignExpression, GroupSelect },
+  components: { SelfServiceSelect, AssignExpression},
     props: {
       value: null,
       label: null,
@@ -84,12 +79,8 @@
         default() {
           return [
             {
-              value: "user",
-              label: "User"
-            },
-            {
-              value: "group",
-              label: "Group"
+              value: "user_group",
+              label: "Users / Groups"
             },
             {
               value: "previous_task_assignee",
@@ -108,8 +99,8 @@
               label: "Self Service"
             },
             {
-              value: "feel_expression",
-              label: "FEEL Expression"
+              value: "rule_expression",
+              label: "Rule Expression"
             },
           ];
         },
@@ -124,7 +115,6 @@
         error: "",
         hideUsers: false,
         hideUsersAssignmentExpression: false,
-        specialAssignedUserID: null,
         disabled: false,
       };
     },
@@ -162,26 +152,6 @@
       assignedGroupGetter () {
         return _.get(this.node, "assignedGroups");
       },
-      userAssignment: {
-        get () {
-          let user = this.assignedUserGetter;
-          return user;
-        },
-        set (value) {
-          const assignedUser = value;
-          this.assignedUserSetter(assignedUser);
-        }
-      },
-      groupAssignment: {
-        get () {
-          let group = this.assignedGroupGetter;
-          return group;
-        },
-        set (value) {
-          const assignedGroup = value;
-          this.assignedGroupSetter(assignedGroup);
-        }
-      },
       assignments: {
         get () {
           let value = [],
@@ -192,7 +162,7 @@
           return value;
         },
         set (value) {
-          const assignedUsers = value.users.map(user => {return user.id});
+          const assignedUsers = value.users.map(user => { return user.id ? user.id : user});
           const assignedGroups = value.groups.map(group => {
             if (!group.id) {
               return group;
@@ -243,17 +213,16 @@
       showAssignUserById () {
         return this.assignment === "user_by_id";
       },
-      showAssignUser () {
-        return this.assignment === "user";
-      },
-      showAssignGroup () {
-        return this.assignment === "group";
+      showAssignments() {
+        this.hideUsers = this.assignment === "self_service";
+        const assign = ["user", "group", "user_group"];
+        return assign.indexOf(this.assignment) !== -1;
       },
       showAssignSelfService () {
         return this.assignment === "self_service";
       },
-      showAssignFeelExpression () {
-        return this.assignment === 'feel_expression';
+      showAssignRuleExpression () {
+        return this.assignment === 'rule_expression';
       },
       specialAssignmentsListGetter () {
         const value = this.node.get("assignmentRules") || "[]";

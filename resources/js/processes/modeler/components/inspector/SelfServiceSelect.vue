@@ -2,7 +2,7 @@
   <div>
     <div class="d-flex justify-content-between align-items-center mb-3">
       <label class="m-0">{{ $t('Assigned Users / Groups') }}</label>
-      <b-button variant="secondary" size="sm" @click="showCard = true">+</b-button>
+      <b-button class="add-button" variant="secondary" size="sm" @click="showCard = true">+</b-button>
     </div>
     <div v-if="showCard" class="card mb-2">
       <div class="card-header">
@@ -120,7 +120,8 @@ export default {
         };
         this.selfServiceAssignments.users.push(field);
       });
-
+      this.selectedAssignment.groups = [];
+      this.selectedAssignment.users = [];
       this.showCard = false; 
     },
     showDeleteConfirmation(index, name, assignmentIndex) {
@@ -177,5 +178,8 @@ export default {
 <style scoped lang="scss">
   .striped {
     background-color: rgba(0,0,0,.05);
+  }
+  .add-button {
+    padding: 0 3px;
   }
 </style>

@@ -5,7 +5,7 @@
         {{ $t('Expressions') }}
         <small class="d-block">{{ $t('Expressions are evaluated top to bottom') }}</small>
       </label>
-      <b-button class="" variant="secondary" size="sm" @click="showAddCard()">+</b-button>
+      <b-button class="add-button" variant="secondary" size="sm" @click="showAddCard()">+</b-button>
     </div>
 
     <div v-if="showCard" class="card mb-2">
@@ -327,5 +327,8 @@ export default {
 <style scoped>
   .striped {
     background-color: rgba(0,0,0,.05);
+  }
+  .add-button {
+    padding: 0 3px;
   }
 </style>
