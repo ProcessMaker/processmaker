@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <data-loading
-            :for=/requests\?page/
+            :for=/requests\?page|results\?page/
             v-show="shouldShowLoader"
             :empty="$t('No Data Available')"
             :empty-desc="$t('')"
@@ -71,7 +71,14 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "columns", "pmql"],
+  props: {
+    filter: {},
+    columns: {},
+    pmql: {},
+    savedSearch: {
+      default: false
+    }
+  },
   data() {
     return {
       orderBy: "id",
@@ -87,6 +94,15 @@ export default {
       fields: [],
       previousFilter: ""
     };
+  },
+  computed: {
+    endpoint() {
+      if (this.savedSearch !== false) {
+        return `saved-searches/${this.savedSearch}/results`;
+      }
+      
+      return 'requests';
+    },
   },
   mounted() {
     this.setupColumns();
@@ -253,7 +269,7 @@ export default {
             // Load from our api client
             ProcessMaker.apiClient
               .get(
-                "requests?page=" +
+                `${this.endpoint}?page=` +
                   this.page +
                   "&per_page=" +
                   this.perPage +

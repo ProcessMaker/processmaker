@@ -1,7 +1,7 @@
 <template>
   <div class="data-table">
     <data-loading
-      :for=/tasks\?page/
+      :for=/tasks\?page|results\?page/
       v-show="shouldShowLoader"
       :empty="$t('Congratulations')"
       :empty-desc="$t('You don\'t currently have any tasks assigned to you')"
@@ -99,7 +99,14 @@ Vue.component("avatar-image", AvatarImage);
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "columns", "pmql"],
+  props: {
+    filter: {},
+    columns: {},
+    pmql: {},
+    savedSearch: {
+      default: false
+    }
+  },
   data() {
     return {
       orderBy: "ID",
@@ -115,6 +122,15 @@ export default {
       fields: [],
       previousFilter: ""
     };
+  },
+  computed: {
+    endpoint() {
+      if (this.savedSearch !== false) {
+        return `saved-searches/${this.savedSearch}/results`;
+      }
+      
+      return 'tasks';
+    },
   },
   mounted: function mounted() {
     this.setupColumns();
@@ -328,7 +344,7 @@ export default {
             // Load from our api client
             ProcessMaker.apiClient
               .get(
-                "tasks?page=" +
+                `${this.endpoint}?page=` +
                   this.page +
                   "&include=process,processRequest,processRequest.user,user,data" +
                   "&pmql=" +
