@@ -1326,5 +1326,7 @@
   "Unreachable elements": "Unreachable elements",
   "Wait for server callback": "Wait for server callback",
   "View {{user}} Profile": "View {{user}} Profile",
-  "Edit {{user}} Profile": "View {{user}} Profile"
+  "Edit {{user}} Profile": "View {{user}} Profile",
+  "If the FEEL Expression evaluates to true then": "If the FEEL Expression evaluates to true then",
+  "Rule Expression": "Rule Expression"
 }
