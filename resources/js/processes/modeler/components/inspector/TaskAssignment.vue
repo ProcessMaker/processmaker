@@ -39,7 +39,7 @@
             
           <form-checkbox
               v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
-              :label="$t('Lock task assignment to user')"
+              :label="$t('Lock Task Assignment to User')"
               :checked="assignmentLockGetter"
               toggle="true"
               @change="assignmentLockSetter">
