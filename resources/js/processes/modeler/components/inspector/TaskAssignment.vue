@@ -84,12 +84,8 @@
         default() {
           return [
             {
-              value: "user",
-              label: "User"
-            },
-            {
-              value: "group",
-              label: "Group"
+              value: "user_group",
+              label: "Users / Groups"
             },
             {
               value: "previous_task_assignee",
