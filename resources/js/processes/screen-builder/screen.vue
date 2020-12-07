@@ -383,6 +383,9 @@ export default {
       if (this.mode === 'preview') {
         this.getPreviewValues();
       }
+    },
+    customCSS(newCustomCSS) {
+      this.preview.custom_css = newCustomCSS;
     }
   },
   computed: {
