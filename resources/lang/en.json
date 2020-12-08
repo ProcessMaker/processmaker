@@ -1328,5 +1328,17 @@
   "View {{user}} Profile": "View {{user}} Profile",
   "Edit {{user}} Profile": "View {{user}} Profile",
   "If the FEEL Expression evaluates to true then": "If the FEEL Expression evaluates to true then",
-  "Rule Expression": "Rule Expression"
+  "Rule Expression": "Rule Expression",
+  "Assigned Users / Groups": "Assigned Users / Groups",
+  "Add Self Service": "Add Self Service",
+  "User / Group": "User / Group",
+  "Expressions": "Expressions",
+  "Expressions are evaluated top to bottom": "Expressions are evaluated top to bottom",
+  "Default Assignment": "Default Assignment",
+  "If no evaluations are true": "If no evaluations are true",
+  "Add FEEL Expression": "Add FEEL Expression",
+  "Assign to User / Group": "Assifn to User / Group",
+  "Are you sure you want to delete expression {{item}}": "Are you sure you want to delete expression {{item}}","$schema",
+  "Are you sure you want to delete {{item}}": "Are your sure you want to delete {{item}}",
+  "Variable containing the numeric User ID": "Vairable containing the numeric User ID"
 }
