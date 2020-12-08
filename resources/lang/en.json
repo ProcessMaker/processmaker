@@ -1338,7 +1338,7 @@
   "If no evaluations are true": "If no evaluations are true",
   "Add FEEL Expression": "Add FEEL Expression",
   "Assign to User / Group": "Assifn to User / Group",
-  "Are you sure you want to delete expression {{item}}": "Are you sure you want to delete expression {{item}}","$schema",
+  "Are you sure you want to delete expression {{item}}": "Are you sure you want to delete expression {{item}}",
   "Are you sure you want to delete {{item}}": "Are your sure you want to delete {{item}}",
   "Variable containing the numeric User ID": "Vairable containing the numeric User ID"
 }
