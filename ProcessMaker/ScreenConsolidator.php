@@ -11,6 +11,7 @@ class ScreenConsolidator {
     private $computed = [];
     private $custom_css = '';
     private $recursion = 0;
+    private $additionalPages = [];
 
     public function __construct($screen)
     {
@@ -31,7 +32,11 @@ class ScreenConsolidator {
             $this->custom_css = $this->screen->custom_css;
         }
 
+        $this->additionalPages = [];
         $config = $this->replace($this->screen->config);
+        foreach($this->additionalPages as $page) {
+            $config[] = $page;
+        }
 
         return [
             'config' => $config,
@@ -41,7 +46,7 @@ class ScreenConsolidator {
         ];
     }
 
-    public function replace($items, $removeButtons = false)
+    public function replace($items, $removeButtons = false, $index0 = 0)
     {
         $new = [];
         foreach ($items as $item) {
@@ -49,13 +54,17 @@ class ScreenConsolidator {
                 continue;
             }
             if ($this->is('FormMultiColumn', $item)) {
-                $new[] = $this->getMultiColumn($item, $new);
+                $new[] = $this->getMultiColumn($item, $index0);
 
             } elseif ($this->is('FormNestedScreen', $item)) {
-                $this->setNestedScreen($item, $new);
+                $this->setNestedScreen($item, $new, $index0);
+
+            } elseif ($this->is('FormRecordList', $item)) {
+                $this->setRecordList($item, $new, $index0);
 
             } elseif ($this->hasItems($item)) {
-                $new[] = $this->getWithItems($item);
+                $new[] = $this->getWithItems($item, $index0);
+
             } else {
                 $new[] = $item;
             }
@@ -63,7 +72,7 @@ class ScreenConsolidator {
         return $new;
     }
 
-    private function setNestedScreen($item, &$new)
+    private function setNestedScreen($item, &$new, $index0 = 0)
     {
         if ($this->recursion > 10) {
             throw new MaximumRecursionException();
@@ -77,10 +86,26 @@ class ScreenConsolidator {
         $this->appendComputed($screen);
         $this->appendCustomCss($screen);
 
-        // Only use the first page
-        foreach ($this->replace($screen->config[0]['items'], true) as $screenItem) {
-            $new[] = $screenItem;
+        // unshift page references in nested screens
+        $index0 = count($this->screen->config) + count($this->additionalPages) - 1;
+        foreach($screen->config as $index => $page) {
+            if ($index === 0) {
+                foreach ($this->replace($page['items'], true, $index0) as $screenItem) {
+                    $new[] = $screenItem;
+                }
+            } else {
+                $this->additionalPages[] = $this->getWithItems($page, $index0);
+            }
         }
+        $this->recursion = 0;
+    }
+
+    private function setRecordList($item, &$new, $index0 = 0)
+    {
+        $pageId = $item['config']['form'];
+        $item['config']['form'] = $pageId + $index0;
+        $new[] = $item;
+
         $this->recursion = 0;
     }
 
@@ -94,21 +119,21 @@ class ScreenConsolidator {
         return is_array($item) && isset($item['items']);
     }
 
-    private function getMultiColumn($item)
+    private function getMultiColumn($item, $index0 = 0)
     {
         $new = $item;
         $newItems = [];
         foreach ($item['items'] as $column) {
-            $newItems[] = $this->replace($column);
+            $newItems[] = $this->replace($column, false, $index0);
         }
         $new['items'] = $newItems;
         return $new;
     }
 
-    private function getWithItems($item)
+    private function getWithItems($item, $index0 = 0)
     {
         $new = $item;
-        $new['items'] = $this->replace($item['items']);
+        $new['items'] = $this->replace($item['items'], false, $index0);
         return $new;
     }
 
