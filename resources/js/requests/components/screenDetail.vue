@@ -69,7 +69,9 @@
     mounted() {
       this.loadPages();
       if (this.canPrint) {
-        this.print();
+        setTimeout(() => {
+          this.print();
+        }, 750);
       }
     },
     methods: {
