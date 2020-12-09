@@ -56,6 +56,7 @@ class SignalController extends Controller
         $page = $request->input('page', 1) > $lastPage
                 ? $lastPage
                 : $request->input('page', 1);
+        $page = (int)$page;
 
         $meta = [
             'count' => $signals->count(),
@@ -73,6 +74,7 @@ class SignalController extends Controller
         ];
 
         $signals = $signals->count() === 0 ? [] : $signals->chunk($perPage)[$page - 1];
+        $meta['count'] = $signals->count();
 
         return response()->json([
             'data' => $signals,

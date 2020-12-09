@@ -139,7 +139,7 @@ export default {
             this.orderDirection
         )
         .then((response) => {
-          this.data = response.data;
+          this.data = this.transform(response.data);
           this.loading = false;
         });
     },
