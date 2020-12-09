@@ -68,7 +68,9 @@
     },
     mounted() {
       if (this.canPrint) {
-        this.print();
+        setTimeout(() => {
+          this.print();
+        }, 750);
       }
     },
     methods: {
