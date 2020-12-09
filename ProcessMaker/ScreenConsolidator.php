@@ -86,7 +86,8 @@ class ScreenConsolidator {
         $this->appendComputed($screen);
         $this->appendCustomCss($screen);
 
-        // unshift page references in nested screens
+        // $index0 used to unshift page references in nested screens
+        // @todo: If the nested screen is inserted multiple times it repeats the subpages, it could be improved appending them once
         $index0 = count($this->screen->config) + count($this->additionalPages) - 1;
         foreach($screen->config as $index => $page) {
             if ($index === 0) {
