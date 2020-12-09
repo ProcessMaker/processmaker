@@ -11,6 +11,7 @@ class ScreenConsolidator {
     private $computed = [];
     private $custom_css = '';
     private $recursion = 0;
+    private $inNestedScreen = false;
 
     public function __construct($screen)
     {
@@ -41,11 +42,11 @@ class ScreenConsolidator {
         ];
     }
 
-    public function replace($items, $removeButtons = false)
+    public function replace($items)
     {
         $new = [];
         foreach ($items as $item) {
-            if ($removeButtons && $this->is('FormButton', $item)) {
+            if ($this->inNestedScreen && $this->is('FormButton', $item)) {
                 continue;
             }
             if ($this->is('FormMultiColumn', $item)) {
@@ -70,6 +71,12 @@ class ScreenConsolidator {
         }
         $this->recursion++;
 
+        $topLevelNestedScreen = false;
+        if (!$this->inNestedScreen) {
+            $this->inNestedScreen = true;
+            $topLevelNestedScreen = true;
+        }
+
         $screenId = $item['config']['screen'];
         $screen = Screen::findOrFail($screenId);
 
@@ -78,9 +85,14 @@ class ScreenConsolidator {
         $this->appendCustomCss($screen);
 
         // Only use the first page
-        foreach ($this->replace($screen->config[0]['items'], true) as $screenItem) {
+        foreach ($this->replace($screen->config[0]['items']) as $screenItem) {
             $new[] = $screenItem;
         }
+
+        if ($topLevelNestedScreen) {
+            $this->inNestedScreen = false;
+        }
+
         $this->recursion = 0;
     }
 
