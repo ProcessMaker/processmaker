@@ -161,10 +161,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function toSearchableArray()
     {
+        $dataToInclude = $this->data;
+        unset($dataToInclude['_request']);
+        unset($dataToInclude['_user']);
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'data' => json_encode($this->data),
+            'data' => json_encode($dataToInclude),
         ];
     }
 

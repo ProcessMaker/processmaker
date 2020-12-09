@@ -163,6 +163,11 @@ return [
          */
         'Theme' => Igaster\LaravelTheme\Facades\Theme::class,
         'Menu'      => Lavary\Menu\Facade::class,
+        
+        /**
+         * Overwrite package classes
+         */        
+        'ElasticScoutDriver\Factories\SearchRequestFactory' => ProcessMaker\Factories\SearchRequestFactory::class,
 
 
     ],
