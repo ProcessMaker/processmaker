@@ -23,6 +23,9 @@ class Process extends ApiResource
         if (in_array('events', $include)) {
             $array['events'] = $this->getStartEvents(true);
         }
+        if (in_array('svg', $include)) {
+            $array['svg'] = $this->svg;
+        }
         return $array;
     }
 }
