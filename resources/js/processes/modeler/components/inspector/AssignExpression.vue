@@ -341,8 +341,9 @@ export default {
     background-color: rgba(0,0,0,.05);
   }
   .add-button {
-    padding: 0 3px;
-    height: 16px;
+    padding: 0;
+    height: 14px;
+    width: 13px;
     line-height: 0;
   }
   .helper-text {

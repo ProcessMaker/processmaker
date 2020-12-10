@@ -1,8 +1,10 @@
 <template>
   <div>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <label class="m-0">{{ $t('Assigned Users / Groups') }}</label>
-      <b-button class="add-button" variant="secondary" size="sm" @click="showCard = true">+</b-button>
+    <div class="d-flex justify-content-between mb-3 align-items-center">
+      <label class="m-0">
+        {{ $t('Assigned Users / Groups') }}
+      </label>
+      <b-button class="add-button rounded-0" variant="secondary" size="sm" @click="showCard = true">+</b-button>
     </div>
     <div v-if="showCard" class="card mb-2">
       <div class="card-header">
@@ -40,17 +42,17 @@
     </div>
     <div class="pb-3">
       <div v-for="(items, itemIndex) in selfServiceAssignments" :key="itemIndex">
-        <div v-for="(assignment, assignmentIndex) in items" :key="assignmentIndex">
-          <div class="row border-top" :class="rowCss(assignmentIndex)">
-            <div class="col-1">
+        <div class="row" v-for="(assignment, assignmentIndex) in items" :key="assignmentIndex">
+          <div class="d-flex col-12 border-top self-service-assignments align-items-center py-2" :class="rowCss(assignmentIndex)">
+            <div class="col-1 p-0 pr-3">
               <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
               <i v-else class="fas fa-users"></i>
             </div>
-            <div class="col-8"> 
+            <div class="col-9 p-0"> 
               {{ assignment.name }} 
             </div>
             <div class="col-1"> 
-              <b-button class="p-0 text-secondary" variant="link" @click="showDeleteConfirmation(itemIndex, assignment.name, assignmentIndex)" :title="$t('Delete')">
+              <b-button class="p-0 text-dark" variant="link" @click="showDeleteConfirmation(itemIndex, assignment.name, assignmentIndex)" :title="$t('Delete')">
                 <i class="fas fa-trash-alt"/>
               </b-button>
             </div>
@@ -180,6 +182,12 @@ export default {
     background-color: rgba(0,0,0,.05);
   }
   .add-button {
-    padding: 0 3px;
+    padding: 0;
+    height: 14px;
+    width: 13px;
+    line-height: 0;
+  }
+  .self-service-assignments {
+    font-size: 13px;
   }
 </style>
