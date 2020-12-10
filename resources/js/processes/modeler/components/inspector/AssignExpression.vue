@@ -293,6 +293,7 @@ export default {
       this.showCard = false;
       this.assignmentExpression = null;
       this.assignedExpression = null;
+      this.editIndex = null;
     },
     setDefaultAssignmentToEndOfArray() {
       let index = this.specialAssignments.findIndex(item => item.default == true);
