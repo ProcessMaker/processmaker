@@ -12,6 +12,7 @@ class ScreenConsolidator {
     private $custom_css = '';
     private $recursion = 0;
     private $additionalPages = [];
+    private $inNestedScreen = false;
 
     public function __construct($screen)
     {
@@ -46,11 +47,11 @@ class ScreenConsolidator {
         ];
     }
 
-    public function replace($items, $removeButtons = false, $index0 = 0)
+    public function replace($items, $index0 = 0)
     {
         $new = [];
         foreach ($items as $item) {
-            if ($removeButtons && $this->is('FormButton', $item)) {
+            if ($this->inNestedScreen && $this->is('FormButton', $item)) {
                 continue;
             }
             if ($this->is('FormMultiColumn', $item)) {
@@ -79,6 +80,12 @@ class ScreenConsolidator {
         }
         $this->recursion++;
 
+        $topLevelNestedScreen = false;
+        if (!$this->inNestedScreen) {
+            $this->inNestedScreen = true;
+            $topLevelNestedScreen = true;
+        }
+
         $screenId = $item['config']['screen'];
         $screen = Screen::findOrFail($screenId);
 
@@ -87,17 +94,23 @@ class ScreenConsolidator {
         $this->appendCustomCss($screen);
 
         // $index0 used to unshift page references in nested screens
-        // @todo: If the nested screen is inserted multiple times it repeats the subpages, it could be improved appending them once
+        // @todo: If the same nested screen is inserted multiple times it repeats the subpages,
+        // it could be improved appending them once
         $index0 = count($this->screen->config) + count($this->additionalPages) - 1;
         foreach($screen->config as $index => $page) {
             if ($index === 0) {
-                foreach ($this->replace($page['items'], true, $index0) as $screenItem) {
+                foreach ($this->replace($page['items'], $index0) as $screenItem) {
                     $new[] = $screenItem;
                 }
             } else {
                 $this->additionalPages[] = $this->getWithItems($page, $index0);
             }
         }
+
+        if ($topLevelNestedScreen) {
+            $this->inNestedScreen = false;
+        }
+
         $this->recursion = 0;
     }
 
@@ -125,7 +138,7 @@ class ScreenConsolidator {
         $new = $item;
         $newItems = [];
         foreach ($item['items'] as $column) {
-            $newItems[] = $this->replace($column, false, $index0);
+            $newItems[] = $this->replace($column, $index0);
         }
         $new['items'] = $newItems;
         return $new;
@@ -134,7 +147,7 @@ class ScreenConsolidator {
     private function getWithItems($item, $index0 = 0)
     {
         $new = $item;
-        $new['items'] = $this->replace($item['items'], false, $index0);
+        $new['items'] = $this->replace($item['items'], $index0);
         return $new;
     }
 

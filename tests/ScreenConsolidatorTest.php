@@ -21,7 +21,7 @@ class ScreenConsolidatorTest extends TestCase
         $consolidator = new ScreenConsolidator($screen);
         $result = $consolidator->call();
  
-        $this->assertCount(1, $result['config']);
+        $this->assertCount(2, $result['config']);
         $this->assertCount(5, $result['config'][0]['items']);
 
         $parent = $result['config'][0]['items'];
