@@ -1,0 +1,228 @@
+{
+    "type": "screen_package",
+    "version": "2",
+    "screens": [
+        {
+            "id": 2,
+            "screen_category_id": "3",
+            "title": "Screen Section3",
+            "description": "Screen Section3",
+            "type": "FORM",
+            "config": [
+                {
+                    "name": "Screen Section3",
+                    "items": [
+                        {
+                            "label": "Record List",
+                            "config": {
+                                "form": "1",
+                                "icon": "fas fa-th-list",
+                                "name": "form_record_list_1",
+                                "label": "Relevant Activities",
+                                "fields": {
+                                    "jsonData": "[{\"content\":\"Edad\",\"value\":\"age\"},{\"content\":\"Nombre\",\"value\":\"name\"}]",
+                                    "editIndex": null,
+                                    "dataSource": "provideData",
+                                    "optionsList": [
+                                        {
+                                            "value": "age",
+                                            "content": "Edad"
+                                        },
+                                        {
+                                            "value": "name",
+                                            "content": "Nombre"
+                                        }
+                                    ],
+                                    "removeIndex": null,
+                                    "showJsonEditor": false,
+                                    "showOptionCard": false,
+                                    "showRemoveWarning": false
+                                },
+                                "editable": true
+                            },
+                            "component": "FormRecordList",
+                            "editor-control": "FormRecordList",
+                            "editor-component": "FormText"
+                        }
+                    ]
+                },
+                {
+                    "name": "data",
+                    "items": [
+                        {
+                            "label": "Line Input",
+                            "config": {
+                                "icon": "far fa-square",
+                                "name": "name",
+                                "type": "text",
+                                "label": "name",
+                                "helper": null,
+                                "readonly": false,
+                                "dataFormat": "string",
+                                "validation": [],
+                                "placeholder": null
+                            },
+                            "component": "FormInput",
+                            "editor-control": "FormInput",
+                            "editor-component": "FormInput"
+                        },
+                        {
+                            "label": "Line Input",
+                            "config": {
+                                "icon": "far fa-square",
+                                "name": "age",
+                                "type": "text",
+                                "label": "age",
+                                "helper": null,
+                                "readonly": false,
+                                "dataFormat": "int",
+                                "validation": [],
+                                "placeholder": null
+                            },
+                            "component": "FormInput",
+                            "editor-control": "FormInput",
+                            "editor-component": "FormInput"
+                        }
+                    ]
+                }
+            ],
+            "computed": [],
+            "custom_css": null,
+            "created_at": "2020-12-01T20:02:20-08:00",
+            "updated_at": "2020-12-09T07:11:02-08:00",
+            "status": "ACTIVE",
+            "key": null,
+            "watchers": null,
+            "categories": [
+                {
+                    "id": 3,
+                    "name": "Base Forms",
+                    "status": "ACTIVE",
+                    "is_system": 0,
+                    "created_at": "2020-03-05T16:29:42-08:00",
+                    "updated_at": "2020-12-09T07:11:02-08:00",
+                    "pivot": {
+                        "assignable_id": 2,
+                        "category_id": 3,
+                        "category_type": "ProcessMaker\\Models\\ScreenCategory"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "screen_category_id": "1",
+            "title": "Test Nested Record List",
+            "description": "Test Nested Record List",
+            "type": "FORM",
+            "config": [
+                {
+                    "name": "Test Nested Record List",
+                    "items": [
+                        {
+                            "items": [
+                                [
+                                    {
+                                        "items": [
+                                            {
+                                                "label": "Nested Screen",
+                                                "config": {
+                                                    "icon": "fas fa-file-invoice",
+                                                    "name": null,
+                                                    "event": "submit",
+                                                    "label": "Nested Screen",
+                                                    "value": null,
+                                                    "screen": 2,
+                                                    "variant": "primary"
+                                                },
+                                                "component": "FormNestedScreen",
+                                                "editor-control": "FormNestedScreen",
+                                                "editor-component": "FormNestedScreen"
+                                            }
+                                        ],
+                                        "label": "Loop",
+                                        "config": {
+                                            "icon": "fas fa-redo",
+                                            "name": "loop_1",
+                                            "label": null,
+                                            "settings": {
+                                                "add": false,
+                                                "type": "new",
+                                                "times": "3",
+                                                "varname": "loop_1"
+                                            }
+                                        },
+                                        "component": "FormLoop",
+                                        "container": true,
+                                        "editor-control": "Loop",
+                                        "editor-component": "Loop"
+                                    }
+                                ],
+                                [
+                                    {
+                                        "label": "Nested Screen",
+                                        "config": {
+                                            "icon": "fas fa-file-invoice",
+                                            "name": null,
+                                            "event": "submit",
+                                            "label": "Nested Screen",
+                                            "value": null,
+                                            "screen": 2,
+                                            "variant": "primary"
+                                        },
+                                        "component": "FormNestedScreen",
+                                        "editor-control": "FormNestedScreen",
+                                        "editor-component": "FormNestedScreen"
+                                    }
+                                ]
+                            ],
+                            "label": "Multicolumn \/ Table",
+                            "config": {
+                                "icon": "fas fa-table",
+                                "label": null,
+                                "options": [
+                                    {
+                                        "value": "1",
+                                        "content": "6"
+                                    },
+                                    {
+                                        "value": "2",
+                                        "content": "6"
+                                    }
+                                ]
+                            },
+                            "component": "FormMultiColumn",
+                            "container": true,
+                            "editor-control": "MultiColumn",
+                            "editor-component": "MultiColumn"
+                        }
+                    ]
+                }
+            ],
+            "computed": [],
+            "custom_css": null,
+            "created_at": "2020-12-09T14:51:09-08:00",
+            "updated_at": "2020-12-09T14:52:07-08:00",
+            "status": "ACTIVE",
+            "key": null,
+            "watchers": [],
+            "categories": [
+                {
+                    "id": 1,
+                    "name": "Uncategorized",
+                    "status": "ACTIVE",
+                    "is_system": 0,
+                    "created_at": "2020-12-09T07:08:38-08:00",
+                    "updated_at": "2020-12-09T07:08:38-08:00",
+                    "pivot": {
+                        "assignable_id": 5,
+                        "category_id": 1,
+                        "category_type": "ProcessMaker\\Models\\ScreenCategory"
+                    }
+                }
+            ]
+        }
+    ],
+    "screen_categories": [],
+    "scripts": []
+}

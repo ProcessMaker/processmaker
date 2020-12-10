@@ -22,15 +22,17 @@
     "doctrine/dbal": "^2.9",
     "fideloper/proxy": "^4.0",
     "fzaninotto/faker": "^1.4",
+    "guzzlehttp/guzzle": "^6.5",
     "igaster/laravel-theme": "2.0.*",
     "laravel/framework": "^6.18.35",
     "laravel/horizon": "~3.0",
-    "laravel/passport": "^9.4",
+    "laravel/passport": "9.3.2",
     "laravel/scout": "^7.2",
     "laravel/telescope": "^3.0",
     "laravel/tinker": "^2.0",
     "laravelcollective/html": "^6.1.2",
     "lavary/laravel-menu": "^1.7",
+    "lcobucci/jwt": "^3.3",
     "moontoast/math": "^1.1",
     "mustache/mustache": "^2.12",
     "phing/phing": "^2.16",
@@ -50,8 +52,7 @@
     "teamtnt/laravel-scout-tntsearch-driver": "^9.0",
     "typo3/class-alias-loader": "^1.0",
     "watson/validating": "^3.1",
-    "whichbrowser/parser": "^2.0",
-    "guzzlehttp/guzzle": "^7.2.0"
+    "whichbrowser/parser": "^2.0"
   },
   "require-dev": {
     "filp/whoops": "^2.0",

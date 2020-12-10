@@ -12,6 +12,7 @@ const RichTextControl = FormBuilderControls.find(control => control.rendererBind
 let FormRecordList = FormBuilderControls.find(control => control.rendererBinding === "FormRecordList");
 const FormImage = FormBuilderControls.find(control => control.rendererBinding === "FormImage");
 const FormLoop = FormBuilderControls.find(control => control.rendererBinding === "FormLoop");
+const FormNestedScreen = FormBuilderControls.find(control => control.rendererBinding === "FormNestedScreen");
 const FileDownloadControl = FormBuilderControls.find(control => control.builderBinding === "FileDownload");
 
 // Remove editable inspector props
@@ -23,6 +24,7 @@ let controlsDisplay = [
   FormRecordList,
   FormImage,
   FormLoop,
+  FormNestedScreen,
   FileDownloadControl,
 ];
 
