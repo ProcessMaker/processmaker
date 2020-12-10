@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between">
       <label class="m-0">
         {{ $t('Expressions') }}
-        <small class="d-block">{{ $t('Expressions are evaluated top to bottom') }}</small>
       </label>
-      <b-button class="add-button" variant="secondary" size="sm" @click="showAddCard()">+</b-button>
+      <b-button class="add-button align-top d-inline rounded-0" variant="secondary" size="sm" @click="showAddCard()">+</b-button>
     </div>
+    <div class="helper-text mb-3"><small class="d-block">{{ $t('Expressions are evaluated top to bottom') }}</small></div>
 
     <div v-if="showCard" class="card mb-2">
       <div class="card-header">
@@ -15,7 +15,7 @@
       <div class="card-body p-2">
         <div class="form-group">
           <label>{{ $t("Expression") }}</label>
-          <input class="form-control" ref="specialAssignmentsInput" type="text" v-model="assignmentExpression">
+          <textarea class="form-control special-assignment-input" ref="specialAssignmentsInput"  v-model="assignmentExpression" />
           <small class="form-text text-muted">{{ $t("If the FEEL Expression evaluates to true then") }}</small>
         </div>
 
@@ -24,7 +24,7 @@
             :label="$t('Assign to User / Group')"
             v-model="assignedExpression"
             :hide-users="false"
-            :multiple="false" 
+            :multiple="false"
           />
         </div>
       </div>
@@ -53,24 +53,26 @@
     </div>
 
     <draggable :element="'div'" v-model="specialAssignmentsList" group="assignment" @start="drag=true" @end="drag=false" >
-      <div v-for="(assignment, index) in specialAssignmentsList" :key="index" :class="rowCss(index)" class="row border-bottom py-2">
-        <div class="d-flex">
-          <div class="col-1" style="cursor:grab">
+      <div v-for="(assignment, index) in specialAssignmentsList" :key="index" :class="rowCss(index)" class="row border-bottom py-2 assignment-list">
+        <div class="d-flex col-12">
+          <div class="col-1 p-0" style="cursor:grab">
             <span class="fas fa-arrows-alt-v"/>
           </div>
-          <div class="col-7" style="cursor:grab">
-            <div>{{ assignment.expression }}</div>
+          <div class="col-9 p-0" style="cursor:grab" >
+            <div class="displayed-expression">
+              {{ assignment.displayExpression }}<span>...</span>
+            </div>
             <div>
               <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
               <i v-else class="fas fa-users"></i> 
               {{ assignment.assignmentName }}
             </div>
           </div>
-          <div class="col-1">
-            <a @click="showEditCard(index)" class="fas fa-cog text-secondary" style="cursor:pointer" data-cy="inspector-options-edit"/>
+          <div class="col-1 p-0 pr-3">
+            <a @click="showEditCard(index)" class="fas fa-cog text-dark" style="cursor:pointer" data-cy="inspector-options-edit"/>
           </div>
-          <div class="col-1">
-            <a @click="showDeleteConfirmation(index)" class="fas fa-trash-alt text-secondary" style="cursor:pointer" data-cy="inspector-options-remove" />
+          <div class="col-1 p-0">
+            <a @click="showDeleteConfirmation(index)" class="fas fa-trash-alt text-dark" style="cursor:pointer" data-cy="inspector-options-remove" />
           </div>
         </div>
       </div>
@@ -117,7 +119,7 @@ export default {
   computed: {
     title() {
       if (this.cardType == 'edit') {
-        return this.$t('Edit');
+        return this.$t('Edit FEEL Expression');
       } else {
         return this.$t('Add FEEL Expression');
       }
@@ -207,7 +209,6 @@ export default {
           assignmentName: field.name,
           default: true,
         };
-        console.log('BY EXPRESSION', byExpression);
         if (this.defaultAssignmentIndex != null) {
           this.specialAssignments[this.defaultAssignmentIndex] = byExpression;
           this.$emit('input', this.specialAssignments);
@@ -237,7 +238,8 @@ export default {
           type: field.type,
           assignee: field.id,
           expression: this.assignmentExpression,
-          assignmentName: field.name
+          assignmentName: field.name,
+          displayExpression: this.assignmentExpression.substring(0, 15),
         };
 
         if (byExpression.expression) {
@@ -315,10 +317,20 @@ export default {
         }
         this.defaultAssignment.groups.push(defaultAssignment[0]);
       }
+    },
+    truncateDisplayedExpression() {
+      const assignmentList = _.cloneDeep(this.value);
+      assignmentList.map(value => {
+        if (value.displayExpression) {
+          return;
+        }
+        value.displayExpression = value.expression.substring(0, 15);
+      });
+      this.specialAssignments = assignmentList;
     }
   },
   mounted() {
-    this.specialAssignments = this.value;
+    this.truncateDisplayedExpression();
     this.loadDefaultAssignment();
   }
 }
@@ -330,5 +342,23 @@ export default {
   }
   .add-button {
     padding: 0 3px;
+    height: 16px;
+    line-height: 0;
+  }
+  .helper-text {
+    font-size: 12px;
+  }
+  
+  .displayed-expression,
+  .special-assignment-input {
+    font-family: monospace;
+  }
+
+  .displayed-expression span {
+    font-family: "Open Sans";
+  }
+  
+  .assignment-list {
+    font-size:13px;
   }
 </style>
