@@ -28,7 +28,7 @@ class PerformanceModelsTest extends TestCase
     // unit_time = time a single model is created
     // u=71.48 σ=22.16 => Min Speed of distribution = 27.16
     // Maximum allowed payload per creation: 2 times the creation
-    const MIN_SPEED = 3.2;
+    const MIN_SPEED = 1;
 
     private $exceptions = [
         // Hi payload because of password hash
