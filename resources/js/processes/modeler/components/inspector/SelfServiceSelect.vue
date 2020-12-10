@@ -44,7 +44,7 @@
       <div v-for="(items, itemIndex) in selfServiceAssignments" :key="itemIndex">
         <div class="row" v-for="(assignment, assignmentIndex) in items" :key="assignmentIndex">
           <div class="d-flex col-12 border-top self-service-assignments align-items-center py-2" :class="rowCss(assignmentIndex)">
-            <div class="col-1 p-0 pr-3">
+            <div class="col-1 p-0 pr-4">
               <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
               <i v-else class="fas fa-users"></i>
             </div>
@@ -52,7 +52,7 @@
               {{ assignment.name }} 
             </div>
             <div class="col-1"> 
-              <b-button class="p-0 text-dark" variant="link" @click="showDeleteConfirmation(itemIndex, assignment.name, assignmentIndex)" :title="$t('Delete')">
+              <b-button class="p-0 text-dark delete-button" variant="link" @click="showDeleteConfirmation(itemIndex, assignment.name, assignmentIndex)" :title="$t('Delete')">
                 <i class="fas fa-trash-alt"/>
               </b-button>
             </div>
@@ -187,7 +187,8 @@ export default {
     width: 13px;
     line-height: 0;
   }
-  .self-service-assignments {
+  .self-service-assignments,
+  .delete-button {
     font-size: 13px;
   }
 </style>
