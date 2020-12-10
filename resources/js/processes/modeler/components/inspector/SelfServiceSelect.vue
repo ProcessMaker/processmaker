@@ -44,7 +44,7 @@
       <div v-for="(items, itemIndex) in selfServiceAssignments" :key="itemIndex">
         <div class="row" v-for="(assignment, assignmentIndex) in items" :key="assignmentIndex">
           <div class="d-flex col-12 border-top self-service-assignments align-items-center py-2" :class="rowCss(assignmentIndex)">
-            <div class="col-1 p-0 pr-4">
+            <div class="col-1 p-0 pr-3">
               <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
               <i v-else class="fas fa-users"></i>
             </div>
