@@ -68,27 +68,7 @@ let translationsLoaded = false
 let mdates = JSON.parse(
     document.head.querySelector("meta[name=\"i18n-mdate\"]").content
 )
-i18next.use(Backend).init({
-    lng: document.documentElement.lang,
-    keySeparator: false,
-    parseMissingKeyHandler(value) {
-        if (!translationsLoaded) { return value }
-        // Report that a translation is missing
-        window.ProcessMaker.missingTranslation(value)
-        // Fallback to showing the english version
-        return value
-    },
-    backend: {
-        backends: [
-            LocalStorageBackend, // Try cache first
-            XHR,
-        ],
-        backendOptions: [
-            { versions: mdates },
-            { loadPath: '/i18next/fetch/{{lng}}/_default' },
-        ],
-    }
-}).then(() => { translationsLoaded = true })
+
 // Make $t available to all vue instances
 Vue.mixin({ i18n: new VueI18Next(i18next) })
 
@@ -169,6 +149,31 @@ window.ProcessMaker = {
         icons: {},
     },
 };
+
+
+window.ProcessMaker.i18nPromise = i18next.use(Backend).init({
+    lng: document.documentElement.lang,
+    keySeparator: false,
+    parseMissingKeyHandler(value) {
+        if (!translationsLoaded) { return value }
+        // Report that a translation is missing
+        window.ProcessMaker.missingTranslation(value)
+        // Fallback to showing the english version
+        return value
+    },
+    backend: {
+        backends: [
+            LocalStorageBackend, // Try cache first
+            XHR,
+        ],
+        backendOptions: [
+            { versions: mdates },
+            { loadPath: '/i18next/fetch/{{lng}}/_default' },
+        ],
+    }
+})
+
+window.ProcessMaker.i18nPromise.then(() => { translationsLoaded = true })
 
 /**
  * Create a axios instance which any vue component can bring in to call
@@ -286,7 +291,7 @@ if (userID) {
 
 const clickTab = () => {
     const hash = window.location.hash;
-    if (!hash) { 
+    if (!hash) {
         return;
     }
     const tab = $('[role="tab"][href="'+ hash + '"]');
