@@ -14,14 +14,22 @@ https://processmaker.gitbook.io/processmaker/
 
 #### System Requirements
 
+* [Composer](https://getcomposer.org/)
+* [Node.js 14.4.0](https://nodejs.org/en/)
+* [PHP 7.4](https://php.net)
+* [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
+* [PHP GD Extension](https://www.php.net/manual/en/image.installation.php)
+* [PHP ImageMagick Extension](https://www.php.net/manual/en/book.imagick.php)
+* [PHP IMAP Extension](https://www.php.net/manual/en/imap.setup.php)
+* [Nginx](https://nginx.org/)
+* [MySql 5.7](https://dev.mysql.com/downloads/mysql/5.7.html)
+* [Redis](https://redis.io/)
+* [Docker](https://docs.docker.com/get-docker/)
+
 You can develop ProcessMaker as well as ProcessMaker packages locally. In order to do so, you must have the following:
 
 * [Virtualbox  5.2](https://www.virtualbox.org/) or above
 * [Vagrant 2.2.0](https://www.vagrantup.com/) or above
-* [PHP 7.2.0](https://php.net) or above
-  * Windows users can install [XAMPP](https://www.apachefriends.org/index.html)
-* [Composer](https://getcomposer.org/)
-* [Node.js 10.13.0](https://nodejs.org/en/) or above
 
 **Steps for Development Installation**
 
