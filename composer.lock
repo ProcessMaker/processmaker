@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "949bb0073c0938751a25cad99049b102",
+    "content-hash": "067f2363e232c01d26b09d4099a5dc9b",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4678,20 +4678,20 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "dev-laravel-upgrade",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "a581c3b1e4216ba2594aa6a9cdf3ab41f6198028"
+                "reference": "ea0bef309b290e7c234d613818bc88d460c0883a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/a581c3b1e4216ba2594aa6a9cdf3ab41f6198028",
-                "reference": "a581c3b1e4216ba2594aa6a9cdf3ab41f6198028",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/ea0bef309b290e7c234d613818bc88d460c0883a",
+                "reference": "ea0bef309b290e7c234d613818bc88d460c0883a",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "~5.7|~6"
+                "laravel/framework": "^5.7|^6"
             },
             "require-dev": {
                 "orchestra/testbench": "^4.8.0",
@@ -4708,11 +4708,7 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -4721,10 +4717,10 @@
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
-                "source": "https://github.com/ProcessMaker/pmql/tree/laravel-upgrade",
-                "issues": "https://github.com/ProcessMaker/pmql/issues"
+                "issues": "https://github.com/ProcessMaker/pmql/issues",
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.2.0"
             },
-            "time": "2020-10-12T20:52:35+00:00"
+            "time": "2020-12-11T16:41:17+00:00"
         },
         {
             "name": "psr/cache",
@@ -11277,8 +11273,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "processmaker/laravel-i18next": 20,
-        "processmaker/pmql": 20
+        "processmaker/laravel-i18next": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
