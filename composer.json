@@ -9,12 +9,6 @@
   "license": "GAGPL-3.0-or-later",
   "minimum-stability": "dev",
   "prefer-stable": true,
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/ProcessMaker/pmql"
-    }
-  ],
   "require": {
     "php": ">=7.2.0",
     "babenkoivan/elastic-scout-driver": "^1.2",
