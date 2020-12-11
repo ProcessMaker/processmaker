@@ -73,7 +73,7 @@ class SignalController extends Controller
             'total_pages' => $lastPage
         ];
 
-        $signals = $signals->count() === 0 ? [] : $signals->chunk($perPage)[$page - 1];
+        $signals = $signals->count() === 0 ? $signals : $signals->chunk($perPage)[$page - 1];
         $meta['count'] = $signals->count();
 
         return response()->json([
