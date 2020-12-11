@@ -14,7 +14,7 @@
       </div>
       <div class="card-body p-2">
         <div class="form-group">
-          <label>{{ $t("Expression") }}</label>
+          <label>{{ $t("FEEL Expression") }}</label>
           <textarea class="form-control special-assignment-input" ref="specialAssignmentsInput"  v-model="assignmentExpression" />
           <small class="form-text text-muted">{{ $t("If the FEEL Expression evaluates to true then") }}</small>
         </div>
