@@ -14,7 +14,7 @@ https://processmaker.gitbook.io/processmaker/
 
 #### System Requirements
 
-* [Composer](https://getcomposer.org/)
+* [Composer 2](https://getcomposer.org/)
 * [Node.js 14.4.0](https://nodejs.org/en/)
 * [PHP 7.4](https://php.net)
 * [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
