@@ -322,7 +322,7 @@ export default {
     truncateDisplayedExpression() {
       const assignmentList = _.cloneDeep(this.value);
       assignmentList.map(value => {
-        if (value.displayExpression) {
+        if (value.displayExpression || value.default) {
           return;
         }
         value.displayExpression = value.expression.substring(0, 15);
