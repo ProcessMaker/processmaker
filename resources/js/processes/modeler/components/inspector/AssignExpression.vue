@@ -60,7 +60,7 @@
           </div>
           <div class="col-9 p-0" style="cursor:grab" >
             <div class="displayed-expression">
-              {{ assignment.displayExpression }}<span>...</span>
+              {{ assignment.displayExpression }}<span v-if="assignment.expression.length > 14">...</span>
             </div>
             <div>
               <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
