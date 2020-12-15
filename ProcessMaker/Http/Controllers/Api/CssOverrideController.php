@@ -87,7 +87,7 @@ class CssOverrideController extends Controller
         $request->validate(Setting::rules($setting));
         $setting->fill($request->input());
         $setting->saveOrFail();
-        
+
         $this->setLoginFooter($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
@@ -99,10 +99,15 @@ class CssOverrideController extends Controller
 
     private function setLoginFooter(Request $request)
     {
+        $footerContent = $request->input('loginFooter', '');
+        if ($footerContent === "null") {
+            $footerContent = "";
+        }
+
         Setting::updateOrCreate([
             'key' => 'login-footer'
-        ],[
-            'config' => ['html' => $request->input('loginFooter', '')]
+        ], [
+            'config' => ['html' => $footerContent]
         ]);
     }
 
