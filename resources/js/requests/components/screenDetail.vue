@@ -68,13 +68,22 @@
     },
     mounted() {
       this.loadPages();
-      if (this.canPrint) {
-        setTimeout(() => {
-          this.print();
-        }, 750);
-      }
+      window.addEventListener('load', () => {
+        this.interval = setInterval(this.checkComponentsPrint, 1000);
+      });
     },
     methods: {
+      closeRequestCount() {
+        window.ProcessMaker.apiClient.requestCount = 0;
+        window.ProcessMaker.apiClient.requestCountFlag = false;
+      },
+      checkComponentsPrint() {
+        if (this.canPrint && window.ProcessMaker.apiClient.requestCount === 0) {
+          clearInterval(this.interval);
+          this.closeRequestCount();
+          this.print();
+        }
+      },
       loadPages() {
         this.$nextTick(() => {
           this.$refs.print.forEach((page, index) => {

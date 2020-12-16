@@ -204,8 +204,15 @@ window.ProcessMaker.confirmModal = function (title, message, variant, callback) 
   ProcessMaker.navbar.confirmCallback = callback;
   ProcessMaker.navbar.confirmShow = true;
 };
+//flags print forms
+window.ProcessMaker.apiClient.requestCount = 0;
+window.ProcessMaker.apiClient.requestCountFlag = false;
 
 window.ProcessMaker.apiClient.interceptors.request.use((request) => {
+  //flags print forms
+  if (window.ProcessMaker.apiClient.requestCountFlag) {
+    window.ProcessMaker.apiClient.requestCount++;
+  }
   window.ProcessMaker.EventBus.$emit("api-client-loading", request);
   return request;
 });
@@ -215,6 +222,10 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
   // response.config.method (PUT, POST, DELETE)
   // response.config.url (extract resource name)
   window.ProcessMaker.EventBus.$emit("api-client-done", response);
+  //flags print forms
+  if (window.ProcessMaker.apiClient.requestCountFlag) {
+    window.ProcessMaker.apiClient.requestCount--;
+  }
   return response;
 }, (error) => {
     window.ProcessMaker.EventBus.$emit("api-client-error", error);
