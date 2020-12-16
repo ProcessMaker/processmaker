@@ -32,10 +32,17 @@ new Vue({
       
       if (status) {
         this.status.push({
-          name: this.$t(status),
+          name: status,
           value: status
         });
       }
+
+      //translate status labels when available
+      window.ProcessMaker.i18nPromise.then(() => {
+        this.status.forEach(item => {
+          item.name = this.$t(item.name);
+        });
+      });
     },
     methods: {
       onChange: function(query) {
