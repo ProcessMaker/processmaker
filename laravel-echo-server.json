@@ -1,4 +1,5 @@
 {
+	"authHost": "http://127.0.0.1:8000",
 	"authEndpoint": "/broadcasting/auth",
 	"clients": [
 		{
@@ -13,10 +14,14 @@
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
 	},
-	"protocol": "https",
+	"devMode": true,
+	"host": null,
+	"port": "6001",
+	"protocol": "http",
 	"socketio": {},
-	"sslCertPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.crt",
-	"sslKeyPath": "/etc/nginx/ssl/processmaker.local.processmaker.com.key",
+	"secureOptions": 67108864,
+	"sslCertPath": "",
+	"sslKeyPath": "",
 	"sslCertChainPath": "",
 	"sslPassphrase": "",
 	"subscribers": {
@@ -24,9 +29,9 @@
 		"redis": true
 	},
 	"apiOriginAllow": {
-		"allowCors": false,
-		"allowOrigin": "",
-		"allowMethods": "",
-		"allowHeaders": ""
+		"allowCors": true,
+		"allowOrigin": "http://192.168.0.8:8000",
+		"allowMethods": "GET, POST",
+		"allowHeaders": "Origin, Content-Type, X-Auth-Token, X-Requested-With, Accept, Authorization, X-CSRF-TOKEN, X-Socket-Id"
 	}
 }
