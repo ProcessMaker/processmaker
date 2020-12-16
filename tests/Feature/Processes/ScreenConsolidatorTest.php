@@ -279,7 +279,7 @@ class ScreenConsolidatorTest extends TestCase
             'file' => $file,
         ]);
 
-        $consolidator = new ScreenConsolidator(Screen::find(2));
+        $consolidator = new ScreenConsolidator(Screen::orderBy('id', 'desc')->first());
 
         $consolidatedScreen = $consolidator->call();
 
