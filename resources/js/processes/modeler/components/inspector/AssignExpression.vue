@@ -59,8 +59,8 @@
             <span class="fas fa-arrows-alt-v"/>
           </div>
           <div class="col-9 p-0" style="cursor:grab" >
-            <div class="displayed-expression">
-              {{ assignment.displayExpression }}<span>...</span>
+            <div class="displayed-expression text-truncate">
+              {{ assignment.expression }}
             </div>
             <div>
               <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
@@ -238,8 +238,7 @@ export default {
           type: field.type,
           assignee: field.id,
           expression: this.assignmentExpression,
-          assignmentName: field.name,
-          displayExpression: this.assignmentExpression.substring(0, 15),
+          assignmentName: field.name
         };
 
         if (byExpression.expression) {
@@ -319,19 +318,8 @@ export default {
         this.defaultAssignment.groups.push(defaultAssignment[0]);
       }
     },
-    truncateDisplayedExpression() {
-      const assignmentList = _.cloneDeep(this.value);
-      assignmentList.map(value => {
-        if (value.displayExpression) {
-          return;
-        }
-        value.displayExpression = value.expression.substring(0, 15);
-      });
-      this.specialAssignments = assignmentList;
-    }
   },
   mounted() {
-    this.truncateDisplayedExpression();
     this.loadDefaultAssignment();
   }
 }
@@ -350,16 +338,16 @@ export default {
   .helper-text {
     font-size: 12px;
   }
+
+  .displayed-expression {
+    width: 146px;
+  }
   
   .displayed-expression,
   .special-assignment-input {
     font-family: monospace;
   }
 
-  .displayed-expression span {
-    font-family: "Open Sans";
-  }
-  
   .assignment-list {
     font-size:13px;
   }
