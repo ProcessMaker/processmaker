@@ -78,7 +78,7 @@
       window.ProcessMaker.apiClient.requestCountFlag = true;
       window.addEventListener('load', () => {
         setTimeout(() => {
-          this.interval = setInterval(this.checkComponentsPrint, 1000);
+          this.interval = setInterval(this.printWhenNoRequestsArePending, 1000);
         }, 750);
 
         setTimeout(() => {
@@ -94,7 +94,7 @@
         window.ProcessMaker.apiClient.requestCount = 0;
         window.ProcessMaker.apiClient.requestCountFlag = false;
       },
-      checkComponentsPrint() {
+      printWhenNoRequestsArePending() {
         if (this.canPrint && window.ProcessMaker.apiClient.requestCount === 0) {
           clearInterval(this.interval);
           this.closeRequestCount();
