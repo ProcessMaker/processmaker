@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Assets;
 
+use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
 
@@ -39,13 +40,26 @@ class ScriptsInScreen
      *
      * @return void
      */
-    public function updateReferences(Screen $screen, array $references = [])
+    public function updateReferences(Screen $screen, array $references = [], ExportManager $exportManager)
     {
         $watches = $screen->watchers;
         if (is_array($watches)) {
-            foreach($watches as &$watcher) {
+            foreach ($watches as &$watcher) {
                 $oldRef = explode('-', $watcher['script_id'])[1];
-                $newRef = $references[Script::class][$oldRef]->getKey();
+                if (isset($references[Script::class][$oldRef])) {
+                    $newRef = $references[Script::class][$oldRef]->getKey();
+                } else {
+                    $newRef = null;
+                    $exportManager->addLogMessage(
+                        'ScriptsInScreen:references',
+                        __(
+                            'Imported file does not contain the script #:script assigned to a watcher',
+                            ['script' => $oldRef]
+                        ),
+                        false,
+                        __("Missing watcher's script")
+                    );
+                }
                 $watcher['script_id'] = $newRef;
                 $watcher['script']['id'] = "script-$newRef";
             }
