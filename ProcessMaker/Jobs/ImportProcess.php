@@ -668,6 +668,7 @@ class ImportProcess implements ShouldQueue
 
         $manager = app(ExportManager::class);
         $manager->updateReferences($this->new);
+        $this->status = array_merge($this->status, $manager->getLogMessages());
         $this->new['process']->save();
     }
 
