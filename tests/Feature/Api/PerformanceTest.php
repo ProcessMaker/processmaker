@@ -29,7 +29,7 @@ class PerformanceTest extends TestCase
     // Speed of model Group creation (records/unit_time):
     // u=71.48 σ=22.16 => Min Speed of distribution = 27.16
     // Maximum allowed payload per creation: 2 times the creation
-    const MIN_SPEED = 27 / (1 + 2 * 71 / 27);
+    const MIN_SPEED = 1;
 
     private $exceptions = [
         // Hi payload because of password hash
