@@ -9,6 +9,8 @@ class ExportManager
 {
     private $dependencies = [];
 
+    private $logMessages = [];
+
     /**
      * Get the value of dependencies
      */
@@ -73,7 +75,7 @@ class ExportManager
         $newReferences = [];
         foreach ($this->dependencies as $dependencie) {
             if (is_a($owner, $dependencie['owner'])) {
-                $newReferences = call_user_func($dependencie['referencesToExport'], $owner, $newReferences);
+                $newReferences = call_user_func($dependencie['referencesToExport'], $owner, $newReferences, $this);
             }
         }
         $newReferences = $this->uniqueDiff($newReferences, $references);
@@ -114,7 +116,7 @@ class ExportManager
     {
         foreach ($this->dependencies as $dependencie) {
             if (is_a($model, $dependencie['owner']) && isset($dependencie['updateReferences'])) {
-                call_user_func($dependencie['updateReferences'], $model, $newReferences);
+                call_user_func($dependencie['updateReferences'], $model, $newReferences, $this);
             }
         }
     }
@@ -152,5 +154,29 @@ class ExportManager
             }
         }
         return $result;
+    }
+
+    /**
+     * Add a log message about the import process
+     *
+     * @param string $key
+     * @param string $label
+     * @param bool $success
+     * @param string $message
+     * @return void
+     */
+    public function addLogMessage($key, $label, $success, $message)
+    {
+        $this->logMessages[$key] = \compact('label', 'success', 'message');
+    }
+
+    /**
+     * Get logs of the current import process
+     *
+     * @return array
+     */
+    public function getLogMessages()
+    {
+        return $this->logMessages;
     }
 }
