@@ -4,15 +4,7 @@
 
 ProcessMaker is an open source, workflow management software suite, which includes tools to automate your workflow, design forms, create documents, assign roles and users, create routing rules, and map an individual process quickly and easily. It's relatively lightweight and doesn't require any kind of installation on the client computer. This file describes the requirements and installation steps for the server.
 
-## Using ProcessMaker 4
-
-The online documentation for usage of ProcessMaker 4 can be found by clicking the link below.
-
-https://processmaker.gitbook.io/processmaker/
-
-## Development
-
-#### System Requirements
+## System Requirements
 
 * [Composer 2](https://getcomposer.org/)
 * [Node.js 14.4.0](https://nodejs.org/en/)
@@ -25,6 +17,35 @@ https://processmaker.gitbook.io/processmaker/
 * [MySql 5.7](https://dev.mysql.com/downloads/mysql/5.7.html)
 * [Redis](https://redis.io/)
 * [Docker](https://docs.docker.com/get-docker/)
+
+
+## Install
+
+Before installing, Nginx needs to be configured to use php-fpm and point to the public folder 
+
+1. Download and unzip a version from the releases page https://github.com/ProcessMaker/processmaker/releases
+1. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See https://laravel.com/docs/5.8/deployment#nginx
+1. CD into the folder and run `composer install --no-dev`
+1. Run the installer `php artisan processmaker:install` and follow the instructions
+1. Edit the .env file to update any server specific settings
+1. Install javascript assets `npm install`
+1. Compile javascript assets `npm run dev`
+1. Run laravel echo server in a separate shell `npx laravel-echo-server start`
+1. Run horizon in a separate shell `php artisan horizon`
+1. If you change any settings, make sure to run `php artisan optimize:clear` and restart horizon
+
+## Upgrading an enterprise AWS instance from a previous version
+
+See Server Deployment instructions here: https://processmaker.atlassian.net/wiki/spaces/PM4/pages/480149598/Server+Deployment
+
+## Using ProcessMaker 4
+
+The online documentation for usage of ProcessMaker 4 can be found by clicking the link below.
+
+https://processmaker.gitbook.io/processmaker/
+
+## Development
+
 
 You can develop ProcessMaker as well as ProcessMaker packages locally. In order to do so, you must have the following:
 
