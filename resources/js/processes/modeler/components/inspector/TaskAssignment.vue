@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="form-group"> 
+        <div class="form-group">
             <label>{{ $t( label ) }}</label>
             <select
                 ref="assignmentsDropDownList"
@@ -18,9 +18,9 @@
             v-if="showAssignments"
             :label="$t('Assigned Users/Groups')"
             v-model="assignments"
-            :hide-users="hideUsers" 
+            :hide-users="hideUsers"
             :multiple="true" />
-          
+
           <user-by-id
               v-if="showAssignUserById"
               :label="$t('Variable Name')"
@@ -28,15 +28,15 @@
               :helper="$t('Variable containing the numeric User ID')"
           ></user-by-id>
 
-          <self-service-select v-if="showAssignSelfService" 
+          <self-service-select v-if="showAssignSelfService"
             v-model="assignments"
           ></self-service-select>
 
-          <assign-expression 
+          <assign-expression
             v-if="showAssignRuleExpression"
-            v-model="specialAssignments" 
+            v-model="specialAssignments"
           />
-            
+
           <form-checkbox
               v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
               :label="$t('Lock Task Assignment to User')"
@@ -178,7 +178,7 @@
         get () {
           const value = this.specialAssignmentsListGetter;
           return value;
-        }, 
+        },
         set(value) {
           this.assignmentRulesSetter(value);
         }
@@ -201,7 +201,7 @@
       },
       assignment: {
         get () {
-          const value = _.get(this.node, "assignment");
+          const value = _.get(this.node, "assignment", "");
           return value;
         },
         set (value) {
