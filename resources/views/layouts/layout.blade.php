@@ -32,15 +32,6 @@
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
     <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
-    <style type="text/css" media="print">
-        html, body {
-            height: auto;
-        }
-        div {
-            overflow:hidden;
-            width:100%;
-        }
-    </style>
     @yield('css')
     <script type="text/javascript">
     @if(Auth::user())

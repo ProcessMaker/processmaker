@@ -651,3 +651,39 @@ h1.page-title {
     max-width: 350px;
   }  
 }
+
+
+@media print {
+  html,
+  body {
+    overflow-x: visible !important;
+  }
+
+  div#app-container {
+    max-height: inherit !important;
+    height: auto !important;
+  }
+
+  .d-flex,
+  .card-deck-flex,
+  .modal-footer{
+    display:block!important;
+  }
+
+  div.card {
+    overflow: hidden !important;
+    padding: 10px;
+  }
+
+  div.page {
+    margin-right: 100px;
+  }
+
+  @-moz-document url-prefix() {
+    div.card {
+      overflow: visible !important;
+      padding: 10px;
+    }
+  }
+
+}
