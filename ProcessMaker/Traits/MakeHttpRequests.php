@@ -73,10 +73,14 @@ trait MakeHttpRequests
 
             if (empty($endpoint['body'])) {
                 $endpoint['body'] = json_encode($mappedData);
+                \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Empty Body mappedData = " . print_r($mappedData, true));
             } else {
+                \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists endpoint = " . print_r($endpoint, true));
+                \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists data = " . print_r($data, true));
                 foreach ($config['dataMapping'] as $map) {
                     $data[$map['key']] = $mustache->render($map['value'], $data);
                 }
+                \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists data changed = " . print_r($data, true));
             }
         }
 
