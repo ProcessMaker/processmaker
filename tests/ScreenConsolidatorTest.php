@@ -22,7 +22,7 @@ class ScreenConsolidatorTest extends TestCase
         $result = $consolidator->call();
  
         $this->assertCount(2, $result['config']);
-        $this->assertCount(5, $result['config'][0]['items']);
+        $this->assertCount(6, $result['config'][0]['items']);
 
         $parent = $result['config'][0]['items'];
         
@@ -33,8 +33,13 @@ class ScreenConsolidatorTest extends TestCase
 
         $this->assertEquals('FormHtmlViewer', $parent[2]['component']);
         $this->assertEquals('<p>Child 2</p>', $parent[2]['config']['content']);
-        $this->assertEquals('FormHtmlViewer', $parent[3]['component']);
-        $this->assertEquals('<p>Child 3</p>', $parent[3]['config']['content']);
+
+        $this->assertEquals('FormMultiColumn', $parent[3]['component']);
+        $this->assertCount(0, $parent[3]['items'][0]);
+        $this->assertCount(0, $parent[3]['items'][1]);
+
+        $this->assertEquals('FormHtmlViewer', $parent[4]['component']);
+        $this->assertEquals('<p>Child 3</p>', $parent[4]['config']['content']);
 
         $this->assertEquals('parent watcher test', $result['watchers'][0]['name']);
         $this->assertEquals('child watcher', $result['watchers'][1]['name']);
