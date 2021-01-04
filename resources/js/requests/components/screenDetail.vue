@@ -42,6 +42,11 @@
         default: false
       },
     },
+    data() {
+      return {
+        interval: null,
+      }
+    },
     computed: {
       json() {
         const json = JSON.parse(JSON.stringify(this.rowData.config));
@@ -68,13 +73,34 @@
     },
     mounted() {
       this.loadPages();
-      if (this.canPrint) {
+
+      window.ProcessMaker.apiClient.requestCount = 0;
+      window.ProcessMaker.apiClient.requestCountFlag = true;
+      window.addEventListener('load', () => {
         setTimeout(() => {
-          this.print();
+          this.interval = setInterval(this.printWhenNoRequestsArePending, 1000);
         }, 750);
-      }
+
+        setTimeout(() => {
+          this.closeRequestCount();
+          if (window.ProcessMaker.apiClient.requestCountFlag) {
+            this.print();
+          }
+        }, 10000);
+      });
     },
     methods: {
+      closeRequestCount() {
+        window.ProcessMaker.apiClient.requestCount = 0;
+        window.ProcessMaker.apiClient.requestCountFlag = false;
+      },
+      printWhenNoRequestsArePending() {
+        if (this.canPrint && window.ProcessMaker.apiClient.requestCount === 0) {
+          clearInterval(this.interval);
+          this.closeRequestCount();
+          this.print();
+        }
+      },
       loadPages() {
         this.$nextTick(() => {
           this.$refs.print.forEach((page, index) => {

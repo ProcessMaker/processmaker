@@ -29,7 +29,7 @@ class ScreenController extends Controller
         foreach(ScreenType::pluck('name')->toArray() as $type) {
             $types[$type] = __(ucwords(strtolower($type)));
         }
-
+        asort($types);
         $catConfig = (object) [
             'labels' => (object) [
                 'countColumn' => __('# Screens'),

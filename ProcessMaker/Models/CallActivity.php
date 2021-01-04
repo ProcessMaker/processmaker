@@ -220,4 +220,26 @@ class CallActivity implements CallActivityInterface
             $currentInstance->getProcess()->getEngine()->runToNextState();
         }
     }
+
+    /**
+     * Returns true if callable element is external to the owner definition
+     *
+     * @return boolean
+     */
+    public function isFromExternalDefinition()
+    {
+        $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
+        return count($ref) === 2 && is_numeric($ref[1]);
+    }
+
+    /**
+     * Returns true if callable element is a service sub process (like data-connector)
+     *
+     * @return boolean
+     */
+    public function isServiceSubProcess()
+    {
+        $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
+        return count($ref) === 2 && !is_numeric($ref[1]);
+    }
 }

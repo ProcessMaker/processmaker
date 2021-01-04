@@ -1,0 +1,237 @@
+{
+    "type": "screen_package",
+    "version": "2",
+    "screens": [
+        {
+            "id": 3,
+            "screen_category_id": "1",
+            "title": "nested",
+            "description": "nested",
+            "type": "FORM",
+            "config": [
+                {
+                    "name": "Page0 from Nested",
+                    "items": [
+                        {
+                            "label": "Line Input",
+                            "config": {
+                                "icon": "far fa-square",
+                                "name": "form_input_1",
+                                "type": "text",
+                                "label": "New Input",
+                                "helper": null,
+                                "dataFormat": "string",
+                                "validation": null,
+                                "placeholder": null
+                            },
+                            "component": "FormInput",
+                            "editor-control": "FormInput",
+                            "editor-component": "FormInput"
+                        },
+                        {
+                            "label": "Page Navigation",
+                            "config": {
+                                "icon": "far fa-compass",
+                                "event": "pageNavigate",
+                                "label": "Page 2",
+                                "variant": "primary",
+                                "eventData": "1"
+                            },
+                            "component": "FormButton",
+                            "editor-control": "PageNavigation",
+                            "editor-component": "FormButton"
+                        }
+                    ]
+                },
+                {
+                    "name": "Page 1 from Nested",
+                    "items": [
+                        {
+                            "label": "Line Input",
+                            "config": {
+                                "icon": "far fa-square",
+                                "name": "form_input_2",
+                                "type": "text",
+                                "label": "New Input 2",
+                                "helper": null,
+                                "readonly": false,
+                                "dataFormat": "string",
+                                "validation": [],
+                                "placeholder": null
+                            },
+                            "component": "FormInput",
+                            "editor-control": "FormInput",
+                            "editor-component": "FormInput"
+                        },
+                        {
+                            "label": "Page Navigation",
+                            "config": {
+                                "icon": "far fa-compass",
+                                "event": "pageNavigate",
+                                "label": "Page 3",
+                                "variant": "primary",
+                                "eventData": "2"
+                            },
+                            "component": "FormButton",
+                            "editor-control": "PageNavigation",
+                            "editor-component": "FormButton"
+                        }
+                    ]
+                },
+                {
+                    "name": "Page 2 from Nested",
+                    "items": [
+                        {
+                            "label": "Line Input",
+                            "config": {
+                                "icon": "far fa-square",
+                                "name": "form_input_3",
+                                "type": "text",
+                                "label": "New Input 3",
+                                "helper": null,
+                                "readonly": false,
+                                "dataFormat": "string",
+                                "validation": [],
+                                "placeholder": null
+                            },
+                            "component": "FormInput",
+                            "editor-control": "FormInput",
+                            "editor-component": "FormInput"
+                        },
+                        {
+                            "label": "Page Navigation",
+                            "config": {
+                                "icon": "far fa-compass",
+                                "event": "pageNavigate",
+                                "label": "Page 1",
+                                "variant": "primary",
+                                "eventData": "0"
+                            },
+                            "component": "FormButton",
+                            "editor-control": "PageNavigation",
+                            "editor-component": "FormButton"
+                        }
+                    ]
+                }
+            ],
+            "computed": [],
+            "custom_css": null,
+            "created_at": "2020-12-16T08:46:35-08:00",
+            "updated_at": "2020-12-16T08:52:19-08:00",
+            "status": "ACTIVE",
+            "key": null,
+            "watchers": [],
+            "categories": [
+                {
+                    "id": 1,
+                    "name": "Uncategorized",
+                    "status": "ACTIVE",
+                    "is_system": 0,
+                    "created_at": "2020-12-15T09:29:29-08:00",
+                    "updated_at": "2020-12-15T09:29:29-08:00",
+                    "pivot": {
+                        "assignable_id": 3,
+                        "category_id": 1,
+                        "category_type": "ProcessMaker\\Models\\ScreenCategory"
+                    }
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "screen_category_id": "1",
+            "title": "test parent",
+            "description": "test parent",
+            "type": "FORM",
+            "config": [
+                {
+                    "name": "Page 0 from Root",
+                    "items": [
+                        {
+                            "label": "Nested Screen",
+                            "config": {
+                                "icon": "fas fa-file-invoice",
+                                "name": null,
+                                "event": "submit",
+                                "label": "Nested Screen",
+                                "value": null,
+                                "screen": 3,
+                                "variant": "primary"
+                            },
+                            "component": "FormNestedScreen",
+                            "editor-control": "FormSubmit",
+                            "editor-component": "FormNestedScreen"
+                        },
+                        {
+                            "label": "Record List",
+                            "config": {
+                                "form": "1",
+                                "icon": "fas fa-th-list",
+                                "name": "form_record_list_1",
+                                "label": "New Record List",
+                                "fields": {
+                                    "jsonData": "[]",
+                                    "editIndex": null,
+                                    "dataSource": "provideData",
+                                    "optionsList": [],
+                                    "removeIndex": null,
+                                    "showJsonEditor": false,
+                                    "showOptionCard": false,
+                                    "showRemoveWarning": false
+                                },
+                                "editable": true
+                            },
+                            "component": "FormRecordList",
+                            "editor-control": "FormRecordList",
+                            "editor-component": "FormText"
+                        }
+                    ]
+                },
+                {
+                    "name": "Page 1 from Root",
+                    "items": [
+                        {
+                            "label": "Nested Screen",
+                            "config": {
+                                "icon": "fas fa-file-invoice",
+                                "name": null,
+                                "event": "submit",
+                                "label": "Nested Screen",
+                                "value": null,
+                                "screen": 3,
+                                "variant": "primary"
+                            },
+                            "component": "FormNestedScreen",
+                            "editor-control": "FormNestedScreen",
+                            "editor-component": "FormNestedScreen"
+                        }
+                    ]
+                }
+            ],
+            "computed": [],
+            "custom_css": null,
+            "created_at": "2020-12-16T08:52:41-08:00",
+            "updated_at": "2020-12-16T09:35:02-08:00",
+            "status": "ACTIVE",
+            "key": null,
+            "watchers": [],
+            "categories": [
+                {
+                    "id": 1,
+                    "name": "Uncategorized",
+                    "status": "ACTIVE",
+                    "is_system": 0,
+                    "created_at": "2020-12-15T09:29:29-08:00",
+                    "updated_at": "2020-12-15T09:29:29-08:00",
+                    "pivot": {
+                        "assignable_id": 4,
+                        "category_id": 1,
+                        "category_type": "ProcessMaker\\Models\\ScreenCategory"
+                    }
+                }
+            ]
+        }
+    ],
+    "screen_categories": [],
+    "scripts": []
+}

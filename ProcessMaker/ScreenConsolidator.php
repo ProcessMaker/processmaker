@@ -51,10 +51,9 @@ class ScreenConsolidator {
     {
         $new = [];
         foreach ($items as $item) {
-            if ($this->inNestedScreen && $this->is('FormButton', $item)) {
-                continue;
-            }
-            if ($this->is('FormMultiColumn', $item)) {
+            if ($this->isNavButton($item)) {
+                $this->setNavButton($item, $new, $index0);
+            } elseif ($this->is('FormMultiColumn', $item)) {
                 $new[] = $this->getMultiColumn($item, $index0);
 
             } elseif ($this->is('FormNestedScreen', $item)) {
@@ -119,14 +118,25 @@ class ScreenConsolidator {
         $pageId = $item['config']['form'];
         $item['config']['form'] = $pageId + $index0;
         $new[] = $item;
+    }
 
-        $this->recursion = 0;
+    private function setNavButton($item, &$new, $index0 = 0)
+    {
+        $pageId = $item['config']['eventData'];
+        $item['config']['eventData'] = $pageId + $index0;
+        $new[] = $item;
     }
 
     private function is($component, $item) {
         return is_array($item) &&
                isset($item['component']) &&
                $item['component'] === $component;
+    }
+
+    private function isNavButton($item) {
+        return is_array($item) &&
+               isset($item['editor-control']) &&
+               $item['editor-control'] === 'PageNavigation';
     }
 
     private function hasItems($item) {
