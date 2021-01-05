@@ -97,34 +97,31 @@ trait MakeHttpRequests
             }
         }
 
-        if (isset($config['outboundConfig'])) {
+        if (isset($config['outboundConfig']) || isset($config['dataMapping'])) {
+            // If it is the old version of data sources
+            $configParameter = isset($config['outboundConfig']) ? 'outboundConfig' : 'dataMapping';
+            $configKey = isset($config['outboundConfig']) ? 'parameter' : 'key';
+            $configValue = 'value';
+
             $mappedData = [];
-            foreach ($config['outboundConfig'] as $map) {
-                $mappedData[$map['property']] =  $map['value'];
+            foreach ($config[$configParameter] as $map) {
+                $mappedData[$map[$configKey]] =  $map[$configValue];
             }
 
             if (empty($endpoint['body'])) {
                 $endpoint['body'] = json_encode($mappedData);
-                \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Empty Body mappedData = " . print_r($mappedData, true));
             } else {
-                \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists endpoint = " . print_r($endpoint, true));
-                \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists data = " . print_r($data, true));
-                foreach ($config['outboundConfig'] as $map) {
-                    $data[$map['property']] = $this->getMustache()->render($map['value'], $data);
+                foreach ($config[$configParameter] as $map) {
+                    $data[$map[$configKey]] = $this->getMustache()->render($map[$configValue], $data);
                 }
-                \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists data changed = " . print_r($data, true));
             }
+
         }
 
         $body = $this->getMustache()->render($endpoint['body'], $data);
         $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body to send = " . print_r($body, true));
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body type = " . print_r($bodyType, true));
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Method = " . print_r($bodyType, true));
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " headers = " . print_r($headers, true));
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " URL = " . print_r($url, true));
 
         return $request;
     }
