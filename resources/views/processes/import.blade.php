@@ -16,7 +16,7 @@
     ]])
 @endsection
 @section('content')
-    <div class="container mb-3" id="importProcess">
+    <div class="container mb-3" id="importProcess" v-cloak>
         <div class="row">
             <div class="col">
                 <div class="card text-center">
@@ -314,10 +314,10 @@
         data: {
           file: '',
           uploaded: false,
-          submitted: false,
+          submitted: @json($submitted),
           options: [],
           assignable: null,
-          importing: false,
+          importing: @json($submitted),
           imported: false,
           selectedUser: null,
           usersAndGroups: [],
@@ -325,6 +325,7 @@
           processes: [],
           cancelRequest: [],
           processEditData: [],
+          importingCode: @json($importingCode),
         },
         filters: {
           titleCase: function (value) {
@@ -452,7 +453,7 @@
               return
             }
             this.submitted = true;
-            ProcessMaker.apiClient.post('/processes/import',
+            ProcessMaker.apiClient.post('/processes/import?queue=1',
               formData,
               {
                 headers: {
@@ -461,38 +462,54 @@
               }
             )
               .then(response => {
-                let message = '{{__('Unable to import the process.')}}';
-                if (!response.data.status) {
-                  ProcessMaker.alert(message, 'danger');
-                  return;
-                }
-
-                this.options = response.data.status;
-                this.importing = false;
-                this.imported = true;
-
-                if (!response.data.process.id) {
-                  ProcessMaker.alert(message, 'danger');
-                  return;
-                }
-                this.assignable = response.data.assignable;
-                this.processId = response.data.process.id;
-                message = this.$t('The process was imported.');
-                let variant = 'success';
-                for (let item in this.options) {
-                  if (!this.options[item].success) {
-                    message = this.$t('The process was imported, but with errors.');
-                    variant = 'warning'
-                  }
-                }
-                ProcessMaker.alert(message, variant);
+                window.location.hash = `#code=${response.data.code}`;
+                this.importingCode = response.data.code;
               })
               .catch(error => {
                 this.submitted = false;
                 ProcessMaker.alert(this.$t('Unable to import the process.')  + (error.response.data.message ? ': ' + error.response.data.message : ''), 'danger');
               });
-          }
-        }
+          },
+          importReady(response) {
+            let message = '{{__("Unable to import the process.")}}';
+            if (!response.data.status) {
+              ProcessMaker.alert(message, 'danger');
+              return;
+            }
+
+            this.options = response.data.status;
+            this.importing = false;
+            this.imported = true;
+
+            if (!response.data.process.id) {
+              ProcessMaker.alert(message, 'danger');
+              return;
+            }
+            this.assignable = response.data.assignable;
+            this.processId = response.data.process.id;
+            message = this.$t('The process was imported.');
+            let variant = 'success';
+            for (let item in this.options) {
+              if (!this.options[item].success) {
+                message = this.$t('The process was imported, but with errors.');
+                variant = 'warning'
+              }
+            }
+            ProcessMaker.alert(message, variant);
+          },
+        },
+        mounted() {
+          window.Echo.private(`ProcessMaker.Models.User.${window.ProcessMaker.user.id}`).notification(
+            (response) => {
+              if (
+                response.type === 'ProcessMaker.Notifications.ImportReady' &&
+                this.importingCode === response.code
+              ) {
+                this.importReady(response);
+              }
+            },
+          );
+        },
       })
     </script>
 @endsection

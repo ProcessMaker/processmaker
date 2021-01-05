@@ -721,6 +721,15 @@ class ProcessController extends Controller
                 422
             );
         }
+        $queue = $request->input('queue');
+        if ($queue) {
+            $path = $request->file('file')->store('imports');
+            $code = uniqid('import', true);
+            ImportProcess::dispatch(null, $code, $path, Auth::id());
+            return [
+                'code' => $code,
+            ];
+        }
         $import = ImportProcess::dispatchNow($content);
         return response([
             'status' => $import->status,
