@@ -183,11 +183,9 @@ class ProcessController extends Controller
         return view('processes.export', compact('process'));
     }
 
-    public function import(Process $process, Request $request)
+    public function import(Process $process)
     {
-        $importingCode = $request->input('code', false);
-        $submitted = !!$importingCode;
-        return view('processes.import', compact('importingCode', 'submitted'));
+        return view('processes.import');
     }
 
     /**

@@ -739,6 +739,48 @@ class ProcessController extends Controller
     }
 
     /**
+     * Check if the import is ready
+     *
+     * @param Request $request
+     *
+     * @OA\Head(
+     *     path="/processes/import/{code}/is_ready",
+     *     summary="Check if the import is ready",
+     *     tags={"Processes"},
+     *
+     *     @OA\Response(
+     *         response=200,
+     *         description="check is import is ready",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="ready",
+     *                 type="boolean",
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function import_ready($code)
+    {
+        $user = Auth::user();
+        $notifications = $user
+            ->notifications()
+            ->where('type', 'ProcessMaker\Notifications\ImportReady')
+            ->get();
+        foreach ($notifications as $notification) {
+            if ($notification->data['code'] === $code) {
+                $data = $notification->data['data'];
+                $data['ready'] = true;
+                return $data;
+            }
+        }
+        return [
+            'ready' => false,
+        ];
+    }
+
+    /**
      * Import Assignments of process.
      *
      * @param Process $process

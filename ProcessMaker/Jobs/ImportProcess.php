@@ -877,8 +877,6 @@ class ImportProcess implements ShouldQueue
 
     private function broadcastResponse($response)
     {
-        \Log::debug('Import User: ' . $this->user);
-        \Log::debug(json_encode($response));
         if ($this->user) {
             User::find($this->user)->notify(new ImportReady(
                 $this->code,

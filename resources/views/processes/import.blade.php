@@ -309,15 +309,16 @@
 
 @section('js')
     <script>
+      const importingCode = window.location.hash.match(/#code=(.+)/);
       new Vue({
         el: '#importProcess',
         data: {
           file: '',
           uploaded: false,
-          submitted: @json($submitted),
+          submitted: importingCode ? true : false,
           options: [],
           assignable: null,
-          importing: @json($submitted),
+          importing: importingCode ? true : false,
           imported: false,
           selectedUser: null,
           usersAndGroups: [],
@@ -325,7 +326,7 @@
           processes: [],
           cancelRequest: [],
           processEditData: [],
-          importingCode: @json($importingCode),
+          importingCode: importingCode ? importingCode[1] : null,
         },
         filters: {
           titleCase: function (value) {
@@ -499,16 +500,28 @@
           },
         },
         mounted() {
+          let received = false;
           window.Echo.private(`ProcessMaker.Models.User.${window.ProcessMaker.user.id}`).notification(
             (response) => {
               if (
+                !received &&
                 response.type === 'ProcessMaker.Notifications.ImportReady' &&
                 this.importingCode === response.code
               ) {
+                received = true;
                 this.importReady(response);
               }
             },
           );
+          if (this.importingCode) {
+            ProcessMaker.apiClient.get(`/processes/import/${this.importingCode}/is_ready`)
+              .then(response => {
+                if (response.data.ready) {
+                  received = true;
+                  this.importReady(response);
+                }
+              });
+          }
         },
       })
     </script>
