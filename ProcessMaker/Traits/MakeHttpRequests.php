@@ -28,6 +28,15 @@ trait MakeHttpRequests
      */
     protected $verifySsl = true;
 
+    private $mustache = null;
+
+    private function getMustache() {
+       if ($this->mustache === null)  {
+           $this->mustache = app(Mustache_Engine::class);
+       }
+       return $this->mustache;
+    }
+
     /**
      * Send a HTTP request based on the datasource, configuration
      * and the process request data.
@@ -42,10 +51,30 @@ trait MakeHttpRequests
      */
     public function request(array $data = [], array $config = [])
     {
-        $mustache = app(Mustache_Engine::class);
+        //$data is modified by the method
+        $request = $this->prepareRequest($data, $config);
+
+        try {
+            return $this->response($this->call(...$request), $data, $config);
+        } catch (ClientException $exception) {
+            throw new HttpResponseException($exception->getResponse());
+        }
+    }
+
+    /**
+     * Prepares data for the http request replacing mustache with pm instance
+     *
+     * @param array $data, request data
+     * @param array $config, datasource configuration
+     *
+     * @return array
+     */
+    private function prepareRequest(array &$data, array &$config)
+    {
         $endpoint = $this->endpoints[$config['endpoint']];
-        $method = $mustache->render($endpoint['method'], $data);
-        $url = $mustache->render($endpoint['url'], $data);
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Endpoint config = " . print_r($endpoint, true));
+        $method = $this->getMustache()->render($endpoint['method'], $data);
+        $url = $this->getMustache()->render($endpoint['url'], $data);
 
         // If exists a query string in the call, add it to the URL
         if (array_key_exists('queryString', $config)) {
@@ -53,22 +82,25 @@ trait MakeHttpRequests
             $url .= $separator . $config['queryString'];
         }
 
-        $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
-                            ? $this->credentials['verify_certificate']
-                            : true;
+        //xxx verificar por qué está esto si en credential sólo se ve el bearer
+        //$this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
+                            //? $this->credentials['verify_certificate']
+                            //: true;
+        $this->verifySsl = false;
+
 
         // Datasource works with json responses
         $headers = ['Accept' => 'application/json'];
         if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
             foreach ($endpoint['headers'] as $header) {
-                $headers[$mustache->render($header['key'], $data)] = $mustache->render($header['value'], $data);
+                $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
             }
         }
 
-        if (isset($config['dataMapping'])) {
+        if (isset($config['outboundConfig'])) {
             $mappedData = [];
-            foreach ($config['dataMapping'] as $map) {
-                $mappedData[$map['key']] =  $map['value'];
+            foreach ($config['outboundConfig'] as $map) {
+                $mappedData[$map['property']] =  $map['value'];
             }
 
             if (empty($endpoint['body'])) {
@@ -77,22 +109,24 @@ trait MakeHttpRequests
             } else {
                 \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists endpoint = " . print_r($endpoint, true));
                 \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists data = " . print_r($data, true));
-                foreach ($config['dataMapping'] as $map) {
-                    $data[$map['key']] = $mustache->render($map['value'], $data);
+                foreach ($config['outboundConfig'] as $map) {
+                    $data[$map['property']] = $this->getMustache()->render($map['value'], $data);
                 }
                 \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body exists data changed = " . print_r($data, true));
             }
         }
 
-        $body = $mustache->render($endpoint['body'], $data);
-        $bodyType = $mustache->render($endpoint['body_type'], $data);
+        $body = $this->getMustache()->render($endpoint['body'], $data);
+        $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
-        try {
-            return $this->response($this->call(...$request), $data, $config, $mustache);
-        } catch (ClientException $exception) {
-            throw new HttpResponseException($exception->getResponse());
-        }
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body to send = " . print_r($body, true));
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Body type = " . print_r($bodyType, true));
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Method = " . print_r($bodyType, true));
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " headers = " . print_r($headers, true));
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " URL = " . print_r($url, true));
+
+        return $request;
     }
 
     /**
@@ -189,7 +223,7 @@ trait MakeHttpRequests
      * @return array
      * @throws HttpResponseException
      */
-    private function response($response, array $data = [], array $config = [], Mustache_Engine $mustache)
+    private function response($response, array $data = [], array $config = [])
     {
         $status = $response->getStatusCode();
         switch (true) {
