@@ -748,6 +748,15 @@ class ProcessController extends Controller
      *     summary="Check if the import is ready",
      *     tags={"Processes"},
      *
+     *     @OA\Parameter(
+     *         description="Import code",
+     *         in="path",
+     *         name="code",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="check is import is ready",
