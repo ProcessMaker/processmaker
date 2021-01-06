@@ -320,6 +320,7 @@ export default {
     },
   },
   mounted() {
+    this.specialAssignments = this.value;
     this.loadDefaultAssignment();
   }
 }
