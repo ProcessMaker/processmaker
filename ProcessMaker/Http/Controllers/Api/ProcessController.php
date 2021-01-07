@@ -721,12 +721,72 @@ class ProcessController extends Controller
                 422
             );
         }
+        $queue = $request->input('queue');
+        if ($queue) {
+            $path = $request->file('file')->store('imports');
+            $code = uniqid('import', true);
+            ImportProcess::dispatch(null, $code, $path, Auth::id());
+            return [
+                'code' => $code,
+            ];
+        }
         $import = ImportProcess::dispatchNow($content);
         return response([
             'status' => $import->status,
             'assignable' => $import->assignable,
             'process' => $import->process
         ]);
+    }
+
+    /**
+     * Check if the import is ready
+     *
+     * @param Request $request
+     *
+     * @OA\Head(
+     *     path="/processes/import/{code}/is_ready",
+     *     summary="Check if the import is ready",
+     *     tags={"Processes"},
+     *
+     *     @OA\Parameter(
+     *         description="Import code",
+     *         in="path",
+     *         name="code",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="check is import is ready",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="ready",
+     *                 type="boolean",
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function import_ready($code)
+    {
+        $user = Auth::user();
+        $notifications = $user
+            ->notifications()
+            ->where('type', 'ProcessMaker\Notifications\ImportReady')
+            ->get();
+        foreach ($notifications as $notification) {
+            if ($notification->data['code'] === $code) {
+                $data = $notification->data['data'];
+                $data['ready'] = true;
+                return $data;
+            }
+        }
+        return [
+            'ready' => false,
+        ];
     }
 
     /**

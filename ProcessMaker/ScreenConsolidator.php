@@ -51,6 +51,9 @@ class ScreenConsolidator {
     {
         $new = [];
         foreach ($items as $item) {
+            if ($this->inNestedScreen && $this->isSubmitButton($item)) {
+                continue;
+            }
             if ($this->isNavButton($item)) {
                 $this->setNavButton($item, $new, $index0);
             } elseif ($this->is('FormMultiColumn', $item)) {
@@ -137,6 +140,14 @@ class ScreenConsolidator {
         return is_array($item) &&
                isset($item['editor-control']) &&
                $item['editor-control'] === 'PageNavigation';
+    }
+
+    private function isSubmitButton($item) {
+        return is_array($item) &&
+               isset($item['editor-control']) &&
+               isset($item['editor-component']) &&
+               $item['editor-control'] === 'FormSubmit' &&
+               $item['editor-component'] === 'FormButton';
     }
 
     private function hasItems($item) {

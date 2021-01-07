@@ -21,6 +21,8 @@ use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Traits\PluginServiceProviderTrait;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Notifications\ImportReady;
 
 class ImportProcess implements ShouldQueue
 {
@@ -32,6 +34,20 @@ class ImportProcess implements ShouldQueue
      * @var string
      */
     private $fileContents;
+
+    /**
+     * Importing code.
+     *
+     * @var string
+     */
+    private $code;
+
+    /**
+     * The path of the imported file.
+     *
+     * @var string
+     */
+    private $path;
 
     /**
      * The decoded object obtained from the file.
@@ -71,6 +87,13 @@ class ImportProcess implements ShouldQueue
     protected $status = [];
 
     /**
+     * User that requests the import
+     *
+     * @var int
+     */
+    protected $user;
+
+    /**
      * In order to handle backwards compatibility with previous packages, an
      * array with a previous package name as the key, and the updated
      * package name as the value.
@@ -86,9 +109,12 @@ class ImportProcess implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($fileContents)
+    public function __construct($fileContents, $code = false, $path = null, $user = null)
     {
         $this->fileContents = $fileContents;
+        $this->code = $code;
+        $this->path = $path;
+        $this->user = $user;
     }
 
     /**
@@ -593,6 +619,7 @@ class ImportProcess implements ShouldQueue
             $this->new['process'] = $new;
             $this->finishStatus('process');
         } catch (\Exception $e) {
+            throw $e;
             $this->finishStatus('process', true);
         }
     }
@@ -731,6 +758,9 @@ class ImportProcess implements ShouldQueue
      */
     public function handle()
     {
+        if ($this->path && !$this->fileContents) {
+            $this->fileContents = Storage::get($this->path);
+        }
         //First, decode the file
         $this->decodeFile();
 
@@ -738,7 +768,9 @@ class ImportProcess implements ShouldQueue
         if ($this->file->type == 'process_package') {
             if ($method = $this->getParser()) {
                 $this->resetStatus();
-                return $this->{$method}();
+                $response = $this->{$method}();
+                $this->broadcastResponse($response);
+                return $response;
             }
         }
 
@@ -841,5 +873,15 @@ class ImportProcess implements ShouldQueue
             return false;
         }
         return true;
+    }
+
+    private function broadcastResponse($response)
+    {
+        if ($this->user) {
+            User::find($this->user)->notify(new ImportReady(
+                $this->code,
+                json_decode(json_encode($response), true)
+            ));
+        }
     }
 }
