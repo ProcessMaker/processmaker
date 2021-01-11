@@ -6,15 +6,21 @@
                   pagination-path="meta" :noDataTemplate="$t('No Data Available')">
 
             <template slot="subject" slot-scope="props">
-                <i class="fas fa-ban" v-if="props.rowData.type==='PROCESS_CANCELED'"></i>
-                <i class="fas fa-play-circle" v-if="props.rowData.type==='PROCESS_CREATED'"></i>
-                <i class="fas fa-check-circle" v-if="props.rowData.type==='PROCESS_COMPLETED'"></i>
-                <i class="fas fa-play-circle" v-if="props.rowData.type==='TASK_CREATED'"></i>
-                <i class="fas fa-check-circle" v-if="props.rowData.type==='TASK_COMPLETED'"></i>
-                <i class="fas fa-user-friends" v-if="props.rowData.type==='TASK_REASSIGNED'"></i>
-                <i class="fas fa-comment-alt" v-if="props.rowData.type==='MESSAGE'"></i>
-                <a v-bind:href="props.rowData.url">#{{ props.rowData.request_id }} {{props.rowData.name}}</a>
-                ({{props.rowData.processName}})
+                <i class="fas fa-fw fa-ban" v-if="props.rowData.type==='PROCESS_CANCELED'"></i>
+                <i class="fas fa-fw fa-play-circle" v-if="props.rowData.type==='PROCESS_CREATED'"></i>
+                <i class="fas fa-fw fa-check-circle" v-if="props.rowData.type==='PROCESS_COMPLETED'"></i>
+                <i class="fas fa-fw fa-play-circle" v-if="props.rowData.type==='TASK_CREATED'"></i>
+                <i class="fas fa-fw fa-check-circle" v-if="props.rowData.type==='TASK_COMPLETED'"></i>
+                <i class="fas fa-fw fa-user-friends" v-if="props.rowData.type==='TASK_REASSIGNED'"></i>
+                <i class="fas fa-fw fa-comment-alt" v-if="props.rowData.type==='MESSAGE'"></i>
+                <i class="fas fa-fw fa-file-download" v-if="props.rowData.type==='FILE_READY'"></i>
+                <span v-if="props.rowData.type==='FILE_READY'">
+                    <a v-bind:href="props.rowData.url">{{props.rowData.name}}</a>
+                </span>
+                <span v-else>
+                    <a v-bind:href="props.rowData.url">#{{ props.rowData.request_id }} {{props.rowData.name}}</a>
+                    ({{props.rowData.processName}})
+                </span>
             </template>
 
             <template slot="changeStatus" slot-scope="props">
