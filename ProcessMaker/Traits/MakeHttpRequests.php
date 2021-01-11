@@ -367,7 +367,7 @@ trait MakeHttpRequests
     {
         $headers = ['Accept' => 'application/json'];
 
-        // Old behavior: evaluate headers defined in the data source
+        // evaluate headers defined in the data source
         if (!array_key_exists('outboundConfig', $config)) {
             if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
                 foreach ($endpoint['headers'] as $header) {
@@ -377,7 +377,7 @@ trait MakeHttpRequests
             return $headers;
         }
 
-        // New behavior: mix data source and connector config headers
+        // mix data source and connector config headers
         $outboundConfig = $config['outboundConfig'];
         $dataSourceParams = array_filter($endpoint['headers'], function ($item) {
             return $item['required'] === true;
