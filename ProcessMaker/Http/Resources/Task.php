@@ -22,7 +22,7 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
         if (in_array('data', $include)) {
-            $array['data'] = $this->processRequest->data;
+            $array['data'] = $this->addUser($this->processRequest->data, $this->user);
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
@@ -50,7 +50,11 @@ class Task extends ApiResource
             }
         }
         if (in_array('requestData', $include)) {
-            $array['request_data'] = $this->processRequest->data ?: new StdClass();
+            $data = new StdClass();
+            if ($this->processRequest->data) {
+                $data = $this->addUser($this->processRequest->data, $this->user);
+            }
+            $array['request_data'] = $data;
         }
         if (in_array('definition', $include)) {
             $array['definition'] = $this->getDefinition();
@@ -84,5 +88,17 @@ class Task extends ApiResource
             $array['assignable_users'] = $users;
         }
         return $array;
+    }
+
+    private function addUser($data, $user)
+    {
+        if (!$user) {
+            return $data;
+        }
+
+        $userData = $user->attributesToArray();
+        unset($userData['remember_token']);
+
+        return array_merge($data, ['_user' => $userData]);
     }
 }
