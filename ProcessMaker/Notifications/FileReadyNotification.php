@@ -64,8 +64,8 @@ class FileReadyNotification extends Notification
     {
         return [
             'type' => 'FILE_READY' ,
-            'message' => "The {$this->name} you requested is now ready for download.",
-            'name' => "The {$this->name} you requested is now ready for download.",
+            'message' => __("The :file you requested is now ready for download.", ['file' => $name]),
+            'name' => __("The :file you requested is now ready for download.", ['file' => $name]),
             'url' => $this->url,
             'fileType' => $this->fileType,
             'fileId' => $this->fileId,
