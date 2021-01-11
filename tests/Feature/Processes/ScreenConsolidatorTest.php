@@ -323,6 +323,41 @@ class ScreenConsolidatorTest extends TestCase
         $this->assertEquals('Page 2 from Nested', $pages[5]['name'], 'Page 5 must be Page 2 from Nested 2');
     }
 
+    /**
+     * Test read only recordlist without editable form
+     *
+     * @return void
+     */
+    public function testRecordListWithoutRecordForm()
+    {
+        // Create an admin user
+        $adminUser = factory(User::class)->create([
+            'username' => 'admin',
+            'is_administrator' => true,
+        ]);
+
+        // Save the file contents and convert them to an UploadedFile
+        $fileName = realpath(__DIR__ . '/../../Fixtures/record_without_record_form.json');
+        $file = new UploadedFile($fileName, 'record_without_record_form.json', null, null, null, true);
+
+        // Test to ensure our standard user cannot import a screen
+        $this->user = $adminUser;
+        $this->apiCall('POST', '/screens/import', [
+            'file' => $file,
+        ]);
+
+        $consolidator = new ScreenConsolidator(Screen::orderBy('id', 'desc')->first());
+
+        $consolidatedScreen = $consolidator->call();
+
+        $pages = $consolidatedScreen['config'];
+
+        // Page 0 has a NavButton to Page 2
+        $this->assertPageHas($pages[0]['items'], [
+            ['editor-control' => 'FormRecordList', 'config' => ['form' => null]],
+        ], 'Readonly FormRecordList should be empty');
+    }
+
     private function assertPageHas($page, $content, $message)
     {
         $this->assertTrue($this->doesPageContains($page, $content), $message);
