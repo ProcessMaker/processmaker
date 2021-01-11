@@ -51,12 +51,10 @@ trait MakeHttpRequests
      */
     public function request(array $data = [], array $config = [])
     {
-        //$data is modified by the method
-        $request = $this->prepareRequest($data, $config);
-
         try {
+            $request = $this->prepareRequest($data, $config);
             if (array_key_exists('outboundConfig', $config)) {
-                return $this->newResponse($this->call(...$request), $data, $config);
+                return $this->responseWithHeaderData($this->call(...$request), $data, $config);
             }
             else {
                 return $this->response($this->call(...$request), $data, $config);
@@ -77,72 +75,37 @@ trait MakeHttpRequests
     private function prepareRequest(array &$data, array &$config)
     {
         $endpoint = $this->endpoints[$config['endpoint']];
-
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " endpoint al inicio= " . print_r($endpoint, true));
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " Endpoint config = " . print_r($endpoint, true));
         $method = $this->getMustache()->render($endpoint['method'], $data);
-        $url = $this->getMustache()->render($endpoint['url'], $data);
 
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " antes del issetA" );
-        // If exists a query string in the call, add it to the URL
-        if (array_key_exists('queryString', $config)) {
-            $separator = strpos($url, '?') ? '&' : '?';
-            $url .= $separator . $config['queryString'];
-        }
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " antes del issetB" );
+        $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $data);
 
-        $url = $this->addQueryStringsParamsToUrl($url, $endpoint, $config, $data);
+        $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
+            ? $this->credentials['verify_certificate']
+            : true;
 
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " antes del issetC" . print_r($this->credentials, true));
-
-//        $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
-//                            ? $this->credentials['verify_certificate']
-//                            : true;
-
-        $this->verifySsl = false;
-
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " antes del issetC1" );
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " antes del issetC2" );
         $headers = $this->addHeaders($endpoint, $config, $data);
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " antes del issetD" );
 
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " antes del isset" );
-//        if (isset($config['outboundConfig']) || isset($config['dataMapping'])) {
-//            // If it is the old version of data sources
-//            $configParameter = isset($config['outboundConfig']) ? 'outboundConfig' : 'dataMapping';
-//            $configKey = isset($config['outboundConfig']) ? 'property' : 'key';
-//            $configValue = 'value';
-//
-//            \Illuminate\Support\Facades\Log::Critical(__FILE__ . " sset A" );
-//            $mappedData = [];
-//            foreach ($config[$configParameter] as $map) {
-//                $mappedData[$map[$configKey]] =  $map[$configValue];
-//            }
-//            \Illuminate\Support\Facades\Log::Critical(__FILE__ . " sset B" );
-//
-//            if (empty($endpoint['body'])) {
-//                $endpoint['body'] = json_encode($mappedData);
-//            } else {
-//                foreach ($config[$configParameter] as $map) {
-//                    $data[$map[$configKey]] = $this->getMustache()->render($map[$configValue], $data);
-//                }
-//            }
-//            \Illuminate\Support\Facades\Log::Critical(__FILE__ . " sset Z" );
-//
-//        }
+        if (isset($config['outboundConfig']) || isset($config['dataMapping'])) {
+            // If it is the old version of data sources use dataMapping
+            $configParameter = isset($config['outboundConfig']) ? 'outboundConfig' : 'dataMapping';
+            $mappedData = [];
+            foreach ($config[$configParameter] as $map) {
+                $mappedData[$map['key']] =  $map['value'];
+            }
+            if (empty($endpoint['body'])) {
+                $endpoint['body'] = json_encode($mappedData);
+            } else {
+                foreach ($config[$configParameter] as $map) {
+                    $data[$map['key']] = $this->getMustache()->render($map['value'], $data);
+                }
+            }
+        }
 
         $body = $this->getMustache()->render($endpoint['body'], $data);
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " endpoint = " . print_r($endpoint, true));
-
-
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " SEND request body = " . print_r($body, true));
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " SEND request url = " . print_r($url, true));
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . " SEND request headers = " . print_r($headers, true));
 
         $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
-
         return $request;
     }
 
@@ -268,7 +231,7 @@ trait MakeHttpRequests
         return $mapped;
     }
 
-    private function newResponse($response, array $data = [], array $config = [])
+    private function responseWithHeaderData($response, array $data = [], array $config = [])
     {
         $status = $response->getStatusCode();
         switch (true) {
@@ -297,11 +260,10 @@ trait MakeHttpRequests
         }, $response->getHeaders());
 
         $merged = array_merge($data, $content, $headers);
-
         foreach ($config['dataMapping'] as $map) {
-            $apiVar = (str_contains( $map['apiKey'], '{{')) ? $map['apiKey'] : '{{' . $map['apiKey'] . '}}';
+            $apiVar = (str_contains( $map['value'], '{{')) ? $map['value'] : '{{' . $map['value'] . '}}';
             $evaluatedApiVar = $this->getMustache()->render($apiVar, $merged);
-            $processVar = $this->getMustache()->render($map['processVariable'], $merged);
+            $processVar = $this->getMustache()->render($map['key'], $merged);
             $mapped[$processVar] = $evaluatedApiVar;
         }
 
@@ -340,8 +302,13 @@ trait MakeHttpRequests
      *
      * @return string
      */
-    private function addQueryStringsParamsToUrl(string $url, $endpoint, array $config,  array $data)
+    private function addQueryStringsParamsToUrl( $endpoint, array $config,  array $data)
     {
+        // Note that item['key'] corresponds to an endpoint property (in the header, querystring, etc.)
+        //           item['value'] corresponds to a PM request variable or mustache expression 
+        //           item['type'] location of the property defined in 'key'. It can be BODY, PARAM (in the query string), HEADER
+
+        $url = $endpoint['url'];
         if (!array_key_exists('outboundConfig', $config) || !array_key_exists('params', $endpoint)) {
             return $url;
         }
@@ -352,37 +319,52 @@ trait MakeHttpRequests
             return $item['required'] === true;
         });
         $configParams = array_filter($outboundConfig, function ($item) {
-            return $item['param'] === 'PARAM';
+            return $item['type'] === 'PARAM';
         });
 
         foreach ($configParams as $cfgParam) {
             $existsInDataSourceParams = false;
             foreach ($dataSourceParams as &$param) {
-                if ($param['key'] === $cfgParam['property']) {
+                if ($param['key'] === $cfgParam['key']) {
                     $param['value'] = $cfgParam['value'];
                     $existsInDataSourceParams = true;
                 }
             }
             if (!$existsInDataSourceParams) {
                 array_push($dataSourceParams, [
-                    'key' => $cfgParam['property'],
+                    'key' => $cfgParam['key'],
                     'value' => $cfgParam['value']
                 ]);
             }
         }
+
+        $dataForUrl = [];
         foreach ($dataSourceParams as $param) {
             $separator = strpos($url, '?') ? '&' : '?';
             $url .= $separator .
                     $this->getMustache()->render($param['key'], $data) .
                     '=' .
                     $this->getMustache()->render($param['value'], $data);
+            $dataForUrl[$param['key']] = $this->getMustache()->render($param['value'], $data);
         }
+
+        // replace url placeholders with resolved data
+        $url = $this->getMustache()->render($url, $dataForUrl);
+
+        // if some placeholders are left, use directly request data
+        $url = $this->getMustache()->render($url, $data);
+
+        // If exists a query string in the call, add it to the URL
+        if (array_key_exists('queryString', $config)) {
+            $separator = strpos($url, '?') ? '&' : '?';
+            $url .= $separator . $config['queryString'];
+        }
+
         return $url;
     }
 
     private function addHeaders($endpoint, array $config,  array $data)
     {
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "Nuevos headers 0 " );
         $headers = ['Accept' => 'application/json'];
 
         // Old behavior: evaluate headers defined in the data source
@@ -394,40 +376,34 @@ trait MakeHttpRequests
             }
             return $headers;
         }
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "Nuevos headers A " );
 
         // New behavior: mix data source and connector config headers
         $outboundConfig = $config['outboundConfig'];
         $dataSourceParams = array_filter($endpoint['headers'], function ($item) {
             return $item['required'] === true;
         });
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "Nuevos headers B " );
         $configParams = array_filter($outboundConfig, function ($item) {
-            return $item['param'] === 'HEADER';
+            return $item['type'] === 'HEADER';
         });
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "Nuevos headers C " );
 
         foreach ($configParams as $cfgParam) {
             $existsInDataSourceParams = false;
             foreach ($dataSourceParams as &$param) {
-                if ($param['key'] === $cfgParam['property']) {
+                if ($param['key'] === $cfgParam['key']) {
                     $param['value'] = $cfgParam['value'];
                     $existsInDataSourceParams = true;
                 }
             }
             if (!$existsInDataSourceParams) {
                 array_push($dataSourceParams, [
-                    'key' => $cfgParam['property'],
+                    'key' => $cfgParam['key'],
                     'value' => $cfgParam['value']
                 ]);
             }
         }
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "Nuevos headers D " );
         foreach ($dataSourceParams as $header) {
             $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
         }
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "Nuevos headers E " );
-
         return $headers;
     }
 }
