@@ -302,7 +302,7 @@ trait MakeHttpRequests
      *
      * @return string
      */
-    private function addQueryStringsParamsToUrl( $endpoint, array $config,  array $data)
+    private function addQueryStringsParamsToUrl($endpoint, array $config,  array $data)
     {
         // Note that item['key'] corresponds to an endpoint property (in the header, querystring, etc.)
         //           item['value'] corresponds to a PM request variable or mustache expression 
@@ -348,11 +348,9 @@ trait MakeHttpRequests
             $dataForUrl[$param['key']] = $this->getMustache()->render($param['value'], $data);
         }
 
-        // replace url placeholders with resolved data
-        $url = $this->getMustache()->render($url, $dataForUrl);
 
         // if some placeholders are left, use directly request data
-        $url = $this->getMustache()->render($url, $data);
+        $url = $this->getMustache()->render($url, array_merge($data, $dataForUrl));
 
         // If exists a query string in the call, add it to the URL
         if (array_key_exists('queryString', $config)) {
