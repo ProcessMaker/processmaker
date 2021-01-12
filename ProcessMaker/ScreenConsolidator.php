@@ -119,8 +119,8 @@ class ScreenConsolidator {
     private function setRecordList($item, &$new, $index0 = 0)
     {
         $pageId = $item['config']['form'];
-        if ($pageId)  {
-            $item['config']['form'] = $pageId + $index0;
+        if ($pageId) {
+            $item['config']['form'] = (string) (intval($pageId) + $index0);
         }
         $new[] = $item;
     }
