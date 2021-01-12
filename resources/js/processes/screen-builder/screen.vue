@@ -17,7 +17,11 @@
           ref="builder"
           @change="updateConfig"
           :screen="screen"
-        />
+        >
+          <data-loading-basic
+            :is-loaded="false"
+          ></data-loading-basic>
+        </vue-form-builder>
 
         <!-- Preview -->
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
@@ -195,6 +199,7 @@ import _ from "lodash";
 
 import Validator from "validatorjs";
 import formTypes from "./formTypes";
+import DataLoadingBasic from "../../components/shared/DataLoadingBasic";
 
 // To include another language in the Validator with variable processmaker
 if (
@@ -366,6 +371,7 @@ export default {
     WatchersPopup,
     MonacoEditor,
     TopMenu,
+    DataLoadingBasic,
   },
   watch: {
     config() {

@@ -178,12 +178,6 @@ class WorkflowManager
         $this->throwSignalEventDefinition($sourceEventDefinition, $token);
     }
 
-    private function ss(EventDefinitionInterface $sourceEventDefinition)
-    {
-        $node = $sourceEventDefinition->getBpmnElement();
-        return $node->ownerDocument->saveXml($node->parentNode);
-    }
-
     /**
      * Throw a signal event.
      *
@@ -205,7 +199,7 @@ class WorkflowManager
         foreach($instances as $instance) {
             $excludeRequests[] = $instance->getId();
         }
-        ThrowSignalEvent::dispatchNow($signalRef, $data, $excludeProcesses, $excludeRequests);
+        ThrowSignalEvent::dispatch($signalRef, $data, $excludeProcesses, $excludeRequests)->onQueue('bpmn');
     }
 
     /**
@@ -217,7 +211,7 @@ class WorkflowManager
      */
     public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
     {
-        ThrowSignalEvent::dispatchNow($signalRef, $data, $exclude);
+        ThrowSignalEvent::dispatch($signalRef, $data, $exclude)->onQueue('bpmn');
     }
 
     /**
@@ -228,7 +222,7 @@ class WorkflowManager
      */
     public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
     {
-        ThrowMessageEvent::dispatchNow($instanceId, $elementId, $messageRef, $payload);
+        ThrowMessageEvent::dispatch($instanceId, $elementId, $messageRef, $payload)->onQueue('bpmn');
     }
 
     /**

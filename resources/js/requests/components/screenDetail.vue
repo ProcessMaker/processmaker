@@ -104,7 +104,9 @@
       loadPages() {
         this.$nextTick(() => {
           this.$refs.print.forEach((page, index) => {
-            page.setCurrentPage(this.printablePages[index]);
+            if (page.setCurrentPage) {
+              page.setCurrentPage(this.printablePages[index]);
+            }
           });
         });
       },
