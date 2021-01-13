@@ -95,11 +95,13 @@ class ScreenConsolidator {
         $this->appendComputed($screen);
         $this->appendCustomCss($screen);
 
+        $config = $this->hiddenNavButtons($screen->config);
+
         // $index0 used to unshift page references in nested screens
         // @todo: If the same nested screen is inserted multiple times it repeats the subpages,
         // it could be improved appending them once
         $index0 = count($this->screen->config) + count($this->additionalPages) - 1;
-        foreach($screen->config as $index => $page) {
+        foreach($config as $index => $page) {
             if ($index === 0) {
                 foreach ($this->replace($page['items'], $index0) as $screenItem) {
                     $new[] = $screenItem;
@@ -213,6 +215,30 @@ class ScreenConsolidator {
             return 0;
         }
         return collect($this->computed)->max('id');
+    }
+
+    private function hiddenNavButtons($items)
+    {
+
+        foreach ($items as $key => $item) {
+
+            //If the element has containers
+            if (is_array($item) && !array_key_exists('config', $item)) {
+                $items[$key] = $this->hiddenNavButtons($item);
+            }
+
+            //If the element has items
+            if (isset($item['items'])) {
+                $items[$key]['items'] = $this->hiddenNavButtons($item['items']);
+            }
+
+            if ($this->isNavButton($item)) {
+                $items[$key]['config']['hidden'] = true;
+            }
+
+        }
+
+        return $items;
     }
 
 }
