@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
@@ -366,6 +367,34 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         return $this->hasMany(ProcessRequestToken::class)
                 ->with('user')
                 ->whereNotIn('element_type', ['scriptTask']);
+    }
+    
+    /**
+     * Filter processes with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filter)
+    {
+        $setting = Setting::byKey('indexed-search');
+        if ($setting && $setting->config['enabled'] === true) {
+            if (is_numeric($filter)) {
+                $query->whereIn('id', [$filter]);
+            } else {
+                $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
+                $query->whereIn('id', $matches);            
+            }
+        } else {
+            $filter = '%' . mb_strtolower($filter) . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->where(DB::raw('LOWER(name)'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
+            });            
+        }
+        
+        return $query;
     }
 
     /**
