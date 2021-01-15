@@ -319,7 +319,15 @@ trait MakeHttpRequests
         //           item['type'] location of the property defined in 'key'. It can be BODY, PARAM (in the query string), HEADER
 
         $url = $endpoint['url'];
+
+        // If exists a query string in the call, add it to the URL
+        if (array_key_exists('queryString', $config)) {
+            $separator = strpos($url, '?') ? '&' : '?';
+            $url .= $separator . $config['queryString'];
+        }
+
         if (!array_key_exists('outboundConfig', $config) || !array_key_exists('params', $endpoint)) {
+            $url = $this->getMustache()->render($url, $data);
             return $url;
         }
 
@@ -361,12 +369,6 @@ trait MakeHttpRequests
 
         // if some placeholders are left, use directly request data
         $url = $this->getMustache()->render($url, array_merge($data, $dataForUrl));
-
-        // If exists a query string in the call, add it to the URL
-        if (array_key_exists('queryString', $config)) {
-            $separator = strpos($url, '?') ? '&' : '?';
-            $url .= $separator . $config['queryString'];
-        }
 
         return $url;
     }
