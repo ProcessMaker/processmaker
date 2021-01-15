@@ -118,7 +118,7 @@
           });
       },
       loadUncategorized() {
-        if (this.uncategorizedId) {
+        if (this.uncategorizedIdSet) {
           return;
         }
         ProcessMaker.apiClient
