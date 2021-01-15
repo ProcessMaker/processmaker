@@ -249,7 +249,11 @@ class TaskController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/processRequestTokenEditable")
+     *       @OA\JsonContent(
+     *          required={"status","data"},
+     *          @OA\Property(property="status", type="string", example="COMPLETED"),
+     *          @OA\Property(property="data", type="object"),
+     *       )
      *     ),
      *     @OA\Response(
      *         response=200,
