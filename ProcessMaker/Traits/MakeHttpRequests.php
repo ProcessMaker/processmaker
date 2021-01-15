@@ -53,6 +53,8 @@ trait MakeHttpRequests
     {
         try {
             $request = $this->prepareRequest($data, $config);
+
+            // if using the new version of data connectors
             if (array_key_exists('outboundConfig', $config)) {
                 return $this->responseWithHeaderData($this->call(...$request), $data, $config);
             }
@@ -204,8 +206,8 @@ trait MakeHttpRequests
      */
     private function response($response, array $data = [], array $config = [])
     {
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "(".__LINE__. ") versión antigua");
         $status = $response->getStatusCode();
-
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
             return ["response" => $bodyContent, "status" => $status];
@@ -237,8 +239,8 @@ trait MakeHttpRequests
 
     private function responseWithHeaderData($response, array $data = [], array $config = [])
     {
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "(".__LINE__. ") versión nueva");
         $status = $response->getStatusCode();
-
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
             return ["response" => $bodyContent, "status" => $status];
