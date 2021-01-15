@@ -28,6 +28,15 @@ trait MakeHttpRequests
      */
     protected $verifySsl = true;
 
+    private $mustache = null;
+
+    private function getMustache() {
+       if ($this->mustache === null)  {
+           $this->mustache = app(Mustache_Engine::class);
+       }
+       return $this->mustache;
+    }
+
     /**
      * Send a HTTP request based on the datasource, configuration
      * and the process request data.
@@ -42,53 +51,63 @@ trait MakeHttpRequests
      */
     public function request(array $data = [], array $config = [])
     {
-        $mustache = app(Mustache_Engine::class);
-        $endpoint = $this->endpoints[$config['endpoint']];
-        $method = $mustache->render($endpoint['method'], $data);
-        $url = $mustache->render($endpoint['url'], $data);
+        try {
+            $request = $this->prepareRequest($data, $config);
 
-        // If exists a query string in the call, add it to the URL
-        if (array_key_exists('queryString', $config)) {
-            $separator = strpos($url, '?') ? '&' : '?';
-            $url .= $separator . $config['queryString'];
+            // if using the new version of data connectors
+            if (array_key_exists('outboundConfig', $config)) {
+                return $this->responseWithHeaderData($this->call(...$request), $data, $config);
+            }
+            else {
+                return $this->response($this->call(...$request), $data, $config);
+            }
+        } catch (ClientException $exception) {
+            throw new HttpResponseException($exception->getResponse());
         }
+    }
+
+    /**
+     * Prepares data for the http request replacing mustache with pm instance
+     *
+     * @param array $data, request data
+     * @param array $config, datasource configuration
+     *
+     * @return array
+     */
+    private function prepareRequest(array &$data, array &$config)
+    {
+        $endpoint = $this->endpoints[$config['endpoint']];
+        $method = $this->getMustache()->render($endpoint['method'], $data);
+
+        $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $data);
 
         $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
-                            ? $this->credentials['verify_certificate']
-                            : true;
+            ? $this->credentials['verify_certificate']
+            : true;
 
-        // Datasource works with json responses
-        $headers = ['Accept' => 'application/json'];
-        if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
-            foreach ($endpoint['headers'] as $header) {
-                $headers[$mustache->render($header['key'], $data)] = $mustache->render($header['value'], $data);
-            }
-        }
+        $headers = $this->addHeaders($endpoint, $config, $data);
 
-        if (isset($config['dataMapping'])) {
+        if (isset($config['outboundConfig']) || isset($config['dataMapping'])) {
+            // If it is the old version of data sources use dataMapping
+            $configParameter = isset($config['outboundConfig']) ? 'outboundConfig' : 'dataMapping';
             $mappedData = [];
-            foreach ($config['dataMapping'] as $map) {
+            foreach ($config[$configParameter] as $map) {
                 $mappedData[$map['key']] =  $map['value'];
             }
-
             if (empty($endpoint['body'])) {
                 $endpoint['body'] = json_encode($mappedData);
             } else {
-                foreach ($config['dataMapping'] as $map) {
-                    $data[$map['key']] = $mustache->render($map['value'], $data);
+                foreach ($config[$configParameter] as $map) {
+                    $data[$map['key']] = $this->getMustache()->render($map['value'], $data);
                 }
             }
         }
 
-        $body = $mustache->render($endpoint['body'], $data);
-        $bodyType = $mustache->render($endpoint['body_type'], $data);
+        $body = $this->getMustache()->render($endpoint['body'], $data);
+        $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
-        try {
-            return $this->response($this->call(...$request), $data, $config, $mustache);
-        } catch (ClientException $exception) {
-            throw new HttpResponseException($exception->getResponse());
-        }
+        return $request;
     }
 
     /**
@@ -185,12 +204,17 @@ trait MakeHttpRequests
      * @return array
      * @throws HttpResponseException
      */
-    private function response($response, array $data = [], array $config = [], Mustache_Engine $mustache)
+    private function response($response, array $data = [], array $config = [])
     {
         $status = $response->getStatusCode();
+        $bodyContent = $response->getBody()->getContents();
+        if (!$this->isJson($bodyContent)) {
+            return ["response" => $bodyContent, "status" => $status];
+        }
+
         switch (true) {
             case $status == 200:
-                $content = json_decode($response->getBody()->getContents(), true);
+                $content = json_decode($bodyContent, true);
                 break;
             case $status > 200 && $status < 300:
                 $content = [];
@@ -205,11 +229,54 @@ trait MakeHttpRequests
 
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
-                //$value = $mustache->render($map['value'], $merged);
                 $value = Arr::get($merged, $map['value'], '');
                 Arr::set($mapped, $map['key'], $value);
             }
         }
+        return $mapped;
+    }
+
+    private function responseWithHeaderData($response, array $data = [], array $config = [])
+    {
+        $status = $response->getStatusCode();
+        $bodyContent = $response->getBody()->getContents();
+        if (!$this->isJson($bodyContent)) {
+            return ["response" => $bodyContent, "status" => $status];
+        }
+
+        switch (true) {
+            case $status == 200:
+                $content = json_decode($bodyContent, true);
+                break;
+            case $status > 200 && $status < 300:
+                $content = [];
+                break;
+            default:
+                throw new HttpResponseException($response);
+        }
+
+        $mapped = [];
+        $mapped['status'] = $status;
+        $mapped['response'] = $content;
+
+        if (!isset($config['dataMapping'])) {
+            return $mapped;
+        }
+
+        $headers = array_map(function ($item) {
+            if (count($item) > 0) {
+                return $item[0];
+            }
+        }, $response->getHeaders());
+
+        $merged = array_merge($data, $content, $headers);
+        foreach ($config['dataMapping'] as $map) {
+            $apiVar = (str_contains( $map['value'], '{{')) ? $map['value'] : '{{' . $map['value'] . '}}';
+            $evaluatedApiVar = $this->getMustache()->render($apiVar, $merged);
+            $processVar = $this->getMustache()->render($map['key'], $merged);
+            $mapped[$processVar] = $evaluatedApiVar;
+        }
+
         return $mapped;
     }
 
@@ -235,5 +302,123 @@ trait MakeHttpRequests
         }
         $request = new Request($method, $url, $headers, $body);
         return $client->send($request, $options);
+    }
+
+    /**
+     * @param string $url
+     * @param $endpoint
+     * @param array $config
+     * @param array $data
+     *
+     * @return string
+     */
+    private function addQueryStringsParamsToUrl($endpoint, array $config,  array $data)
+    {
+        // Note that item['key'] corresponds to an endpoint property (in the header, querystring, etc.)
+        //           item['value'] corresponds to a PM request variable or mustache expression 
+        //           item['type'] location of the property defined in 'key'. It can be BODY, PARAM (in the query string), HEADER
+
+        $url = $endpoint['url'];
+
+        // If exists a query string in the call, add it to the URL
+        if (array_key_exists('queryString', $config)) {
+            $separator = strpos($url, '?') ? '&' : '?';
+            $url .= $separator . $config['queryString'];
+        }
+
+        if (!array_key_exists('outboundConfig', $config) || !array_key_exists('params', $endpoint)) {
+            $url = $this->getMustache()->render($url, $data);
+            return $url;
+        }
+
+        $outboundConfig = $config['outboundConfig'];
+
+        $dataSourceParams = array_filter($endpoint['params'], function ($item) {
+            return $item['required'] === true;
+        });
+        $configParams = array_filter($outboundConfig, function ($item) {
+            return $item['type'] === 'PARAM';
+        });
+
+        foreach ($configParams as $cfgParam) {
+            $existsInDataSourceParams = false;
+            foreach ($dataSourceParams as &$param) {
+                if ($param['key'] === $cfgParam['key']) {
+                    $param['value'] = $cfgParam['value'];
+                    $existsInDataSourceParams = true;
+                }
+            }
+            if (!$existsInDataSourceParams) {
+                array_push($dataSourceParams, [
+                    'key' => $cfgParam['key'],
+                    'value' => $cfgParam['value']
+                ]);
+            }
+        }
+
+        $dataForUrl = [];
+        foreach ($dataSourceParams as $param) {
+            $separator = strpos($url, '?') ? '&' : '?';
+            $url .= $separator .
+                    $this->getMustache()->render($param['key'], $data) .
+                    '=' .
+                    $this->getMustache()->render($param['value'], $data);
+            $dataForUrl[$param['key']] = $this->getMustache()->render($param['value'], $data);
+        }
+
+
+        // if some placeholders are left, use directly request data
+        $url = $this->getMustache()->render($url, array_merge($data, $dataForUrl));
+
+        return $url;
+    }
+
+    private function addHeaders($endpoint, array $config,  array $data)
+    {
+        $headers = ['Accept' => 'application/json'];
+
+        // evaluate headers defined in the data source
+        if (!array_key_exists('outboundConfig', $config)) {
+            if (isset($endpoint['headers']) && is_array($endpoint['headers'])) {
+                foreach ($endpoint['headers'] as $header) {
+                    $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
+                }
+            }
+            return $headers;
+        }
+
+        // mix data source and connector config headers
+        $outboundConfig = $config['outboundConfig'];
+        $dataSourceParams = array_filter($endpoint['headers'], function ($item) {
+            return $item['required'] === true;
+        });
+        $configParams = array_filter($outboundConfig, function ($item) {
+            return $item['type'] === 'HEADER';
+        });
+
+        foreach ($configParams as $cfgParam) {
+            $existsInDataSourceParams = false;
+            foreach ($dataSourceParams as &$param) {
+                if ($param['key'] === $cfgParam['key']) {
+                    $param['value'] = $cfgParam['value'];
+                    $existsInDataSourceParams = true;
+                }
+            }
+            if (!$existsInDataSourceParams) {
+                array_push($dataSourceParams, [
+                    'key' => $cfgParam['key'],
+                    'value' => $cfgParam['value']
+                ]);
+            }
+        }
+        foreach ($dataSourceParams as $header) {
+            $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
+        }
+        return $headers;
+    }
+
+    function isJson($str) {
+        json_decode($str);
+        return (json_last_error() == JSON_ERROR_NONE);
     }
 }
