@@ -131,4 +131,22 @@ class ApiCollection extends ResourceCollection
         return new LengthAwarePaginator($this->collection, $count, $perPage);
     }    
     
+    /**
+     * Return the total count.
+     *
+     * @return int
+     */
+    public function getTotal()
+    {
+        if ($this->totalCount !== null) {
+            return $this->totalCount;
+        } else {
+            $resource = $this->resource->toArray();
+            if (isset($resource['total'])) {
+                return $resource['total'];
+            }
+        }
+        
+        return null;
+    }
 }
