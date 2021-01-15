@@ -103,21 +103,7 @@ class TaskController extends Controller
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $setting = Setting::byKey('indexed-search');
-            if ($setting && $setting->config['enabled'] === true) {
-                if (is_numeric($filter)) {
-                    $query->whereIn('id', [$filter]);
-                } else {
-                    $matches = ProcessRequestToken::search($filter)->take(10000)->get()->pluck('id');
-                    $query->whereIn('id', $matches);
-                }
-            } else {
-                $filter = '%' . mb_strtolower($filter) . '%';
-                $query->where(function ($query) use ($filter) {
-                    $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
-                        ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-                });            
-            }
+            $query->filter($filter);
         }
         
         $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
@@ -263,7 +249,11 @@ class TaskController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/processRequestTokenEditable")
+     *       @OA\JsonContent(
+     *          required={"status","data"},
+     *          @OA\Property(property="status", type="string", example="COMPLETED"),
+     *          @OA\Property(property="data", type="object"),
+     *       )
      *     ),
      *     @OA\Response(
      *         response=200,

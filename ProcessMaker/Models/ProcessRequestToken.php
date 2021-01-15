@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
@@ -419,6 +420,34 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function subProcessRequest()
     {
         return $this->belongsTo(ProcessRequest::class, 'subprocess_request_id');
+    }
+    
+    /**
+     * Filter tokens with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filter)
+    {
+        $setting = Setting::byKey('indexed-search');
+        if ($setting && $setting->config['enabled'] === true) {
+            if (is_numeric($filter)) {
+                $query->whereIn('id', [$filter]);
+            } else {
+                $matches = ProcessRequestToken::search($filter)->take(10000)->get()->pluck('id');
+                $query->whereIn('id', $matches);
+            }
+        } else {
+            $filter = '%' . mb_strtolower($filter) . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
+            });            
+        }
+        
+        return $query;
     }
 
     /**

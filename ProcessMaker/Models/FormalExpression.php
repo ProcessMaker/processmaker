@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Illuminate\Support\Arr;
 use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Exception\SyntaxErrorException;
@@ -118,6 +119,17 @@ class FormalExpression implements FormalExpressionInterface
             },
             function ($str) {
                 return strtoupper($str);
+            }
+        );
+
+        // arrayget($array, $key, $default)
+        // similar to laravel's Arr:get: arrayget($myarray, 'field1.subfield2', false)
+        $this->feelExpression->register(
+            'arrayget',
+            function () {
+            },
+            function ($arguments, $array, $key, $default) {
+                return Arr::get($array,$key, $default);
             }
         );
     }

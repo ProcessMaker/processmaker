@@ -81,6 +81,7 @@ class CallActivityTest extends TestCase
             'file' => File::image('photo1.jpg'),
             'data_name' => 'photo1',
             'parent' => 99,
+            'row_id' => 0,
         ]);
         $response = $this->apiCall('POST', $route, [
             'file' => File::image('photo-no-parent.jpg'),
@@ -120,6 +121,7 @@ class CallActivityTest extends TestCase
             'file' => File::image('overwrite.jpg'),
             'data_name' => 'photo1',
             'parent' => 99,
+            'row_id' => 0,
         ]);
         
         $this->completeTask($childTask);
