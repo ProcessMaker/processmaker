@@ -122,21 +122,7 @@ class ProcessRequestController extends Controller
         
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $setting = Setting::byKey('indexed-search');
-            if ($setting && $setting->config['enabled'] === true) {
-                if (is_numeric($filter)) {
-                    $query->whereIn('id', [$filter]);
-                } else {
-                    $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
-                    $query->whereIn('id', $matches);            
-                }
-            } else {
-                $filter = '%' . mb_strtolower($filter) . '%';
-                $query->where(function ($query) use ($filter) {
-                    $query->where(DB::raw('LOWER(name)'), 'like', $filter)
-                        ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-                });            
-            }
+            $query->filter($filter);
         }        
 
         $pmql = $request->input('pmql', '');
