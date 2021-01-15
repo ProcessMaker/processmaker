@@ -102,7 +102,6 @@ trait MakeHttpRequests
         }
 
         $body = $this->getMustache()->render($endpoint['body'], $data);
-
         $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
@@ -206,9 +205,15 @@ trait MakeHttpRequests
     private function response($response, array $data = [], array $config = [])
     {
         $status = $response->getStatusCode();
+
+        $bodyContent = $response->getBody()->getContents();
+        if (!$this->isJson($bodyContent)) {
+            return ["response" => $bodyContent, "status" => $status];
+        }
+
         switch (true) {
             case $status == 200:
-                $content = json_decode($response->getBody()->getContents(), true);
+                $content = json_decode($bodyContent, true);
                 break;
             case $status > 200 && $status < 300:
                 $content = [];
@@ -223,7 +228,6 @@ trait MakeHttpRequests
 
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
-                //$value = $mustache->render($map['value'], $merged);
                 $value = Arr::get($merged, $map['value'], '');
                 Arr::set($mapped, $map['key'], $value);
             }
@@ -234,9 +238,15 @@ trait MakeHttpRequests
     private function responseWithHeaderData($response, array $data = [], array $config = [])
     {
         $status = $response->getStatusCode();
+
+        $bodyContent = $response->getBody()->getContents();
+        if (!$this->isJson($bodyContent)) {
+            return ["response" => $bodyContent, "status" => $status];
+        }
+
         switch (true) {
             case $status == 200:
-                $content = json_decode($response->getBody()->getContents(), true);
+                $content = json_decode($bodyContent, true);
                 break;
             case $status > 200 && $status < 300:
                 $content = [];
@@ -403,5 +413,10 @@ trait MakeHttpRequests
             $headers[$this->getMustache()->render($header['key'], $data)] = $this->getMustache()->render($header['value'], $data);
         }
         return $headers;
+    }
+
+    function isJson($str) {
+        json_decode($str);
+        return (json_last_error() == JSON_ERROR_NONE);
     }
 }
