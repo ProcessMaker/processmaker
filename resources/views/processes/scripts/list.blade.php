@@ -62,7 +62,7 @@
                             </div>
                             <category-select :label="$t('Category')" api-get="script_categories"
                                              api-list="script_categories" v-model="script_category_id"
-                                             :errors="addError.script_category_id">
+                                             :errors="addError.script_category_id" ref="categorySelect">
                             </category-select>
                             <div class="form-group">
                                 {!!Form::label('script_executor_id', __('Language'))!!}<small class="ml-1">*</small>
@@ -150,6 +150,7 @@
                 this.code = '';
                 this.timeout = 60;
                 this.addError = {};
+                this.$refs.categorySelect.resetUncategorized();
               },
               onSubmit() {
                 this.errors = Object.assign({}, {
