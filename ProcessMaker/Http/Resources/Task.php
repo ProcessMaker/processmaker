@@ -69,22 +69,11 @@ class Task extends ApiResource
         }
         if (in_array('assignableUsers', $include)) {
             $definition = $this->getDefinition();
-            $assignment = isset($definition['assignment']) ? $definition['assignment'] : 'requester';
-            switch ($assignment) {
-                case 'self_service':
-                case 'cyclical':
-                case 'group':
-                case 'user_group':
-                    $ids = $this->process->getAssignableUsers($this->element_id);
-                    $users = User::where('status', 'ACTIVE')->whereIn('id', $ids)->get();
-                    break;
-                case 'user':
-                case 'requester':
-                    $users = User::where('status', 'ACTIVE')->get();
-                    break;
-                default:
-                    $users = [];
-            }
+            $currentUser = \Auth::user();
+            $users = User::where('status', 'ACTIVE')
+                ->where('id', '!=', $currentUser->id)
+                ->where('is_system', 'false')
+                ->get();
             $array['assignable_users'] = $users;
         }
         return $array;
