@@ -8,6 +8,7 @@ ProcessMaker is an open source, workflow management software suite, which includ
 
 * [Composer 2](https://getcomposer.org/)
 * [Node.js 14.4.0](https://nodejs.org/en/)
+* [NPM 6.14](https://www.npmjs.com/package/npm)
 * [PHP 7.4](https://php.net)
 * [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
 * [PHP GD Extension](https://www.php.net/manual/en/image.installation.php)
