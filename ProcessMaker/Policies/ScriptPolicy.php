@@ -19,6 +19,6 @@ class ScriptPolicy
             return $policyExtension->authorize('execute', $user, $script);
         }
         
-        return $user->can('view-scripts');
+        return !$user->isAnonymous;
     }
 }
