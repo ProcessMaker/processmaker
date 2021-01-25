@@ -68,7 +68,6 @@ class Task extends ApiResource
             $array['interstitial_screen'] = $interstitial['interstitial_screen'];
         }
         if (in_array('assignableUsers', $include)) {
-            $definition = $this->getDefinition();
             $currentUser = \Auth::user();
             $users = User::where('status', 'ACTIVE')
                 ->where('id', '!=', $currentUser->id)
