@@ -17,6 +17,7 @@ use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
+use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
@@ -512,7 +513,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 $user = $this->getNextUserFromVariable($activity, $token);
                 break;
             case 'requester':
-                $user = $this->getRequester($token);
+                $user = $this->getRequester($activity, $token);
                 break;
             case 'previous_task_assignee':
                 $rule = new PreviousTaskAssignee();
@@ -684,7 +685,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                             $user = $item->assignee;
                             break;
                         case 'requester':
-                            $user = $this->getRequester($token);
+                            $user = $this->getRequester($activity, $token);
                             break;
                         case 'manual':
                         case 'self_service':
@@ -917,16 +918,19 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     /**
      * Get the requester of the current token
      *
-     * @param string $processTaskUuid
+     * @param $token
+     * @param $activity
      *
-     * @return Integer $user_id
+     * @return Integer|null $user_id
      * @throws TaskDoesNotHaveRequesterException
      */
-    private function getRequester($token)
+    private function getRequester($activity, $token)
     {
         $processRequest = $token->getInstance();
 
-        if (!$processRequest->user_id) {
+        $validateUserId = $activity instanceof Activity;
+
+        if ($validateUserId  && !$processRequest->user_id) {
             throw new TaskDoesNotHaveRequesterException();
         }
 
@@ -1150,7 +1154,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 $this->warnings = $warnings;
             }
             return false;
-        } 
+        }
         return true;
     }
 }
