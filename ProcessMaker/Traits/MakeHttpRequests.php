@@ -271,8 +271,9 @@ trait MakeHttpRequests
 
         $merged = array_merge($data, $content, $headers);
         foreach ($config['dataMapping'] as $map) {
-            $apiVar = (str_contains( $map['value'], '{{')) ? $map['value'] : '{{' . $map['value'] . '}}';
-            $evaluatedApiVar = $this->getMustache()->render($apiVar, $merged);
+            $evaluatedApiVar = (str_contains( $map['value'], '{{'))
+                ? $this->getMustache()->render($map['value'], $merged)
+                : Arr::get($merged, $map['value']);
             $processVar = $this->getMustache()->render($map['key'], $merged);
             $mapped[$processVar] = $evaluatedApiVar;
         }
@@ -315,7 +316,7 @@ trait MakeHttpRequests
     private function addQueryStringsParamsToUrl($endpoint, array $config,  array $data)
     {
         // Note that item['key'] corresponds to an endpoint property (in the header, querystring, etc.)
-        //           item['value'] corresponds to a PM request variable or mustache expression 
+        //           item['value'] corresponds to a PM request variable or mustache expression
         //           item['type'] location of the property defined in 'key'. It can be BODY, PARAM (in the query string), HEADER
 
         $url = $endpoint['url'];
