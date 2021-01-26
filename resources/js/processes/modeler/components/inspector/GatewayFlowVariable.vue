@@ -13,7 +13,6 @@
           <label>{{ $t("Value") }}</label>
           <input class="form-control" ref="expression" type="text"
                    v-model="config.update_data.expression">
-          <small class="form-text text-muted">{{$t("Expression to evaluate. Mustache syntax supported.")}}</small>
         </div>
     </div>
 </template>
