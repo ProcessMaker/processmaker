@@ -167,11 +167,6 @@ class ScreenController extends Controller
      */
     public function show(Screen $screen)
     {
-        if (!(Auth::user()->can('view-screens') ||
-            Auth::user()->can('create-processes') ||
-            Auth::user()->can('edit-processes'))) {
-            throw new AuthorizationException(__('Not authorized to view screens.'));
-        }
         return new ScreenResource($screen);
     }
 
