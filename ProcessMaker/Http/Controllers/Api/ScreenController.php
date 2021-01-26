@@ -66,12 +66,6 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
-        if (!(Auth::user()->can('view-screens') ||
-            Auth::user()->can('create-processes') ||
-            Auth::user()->can('edit-processes'))) {
-            throw new AuthorizationException(__('Not authorized to view screens.'));
-        }
-
         $query = Screen::nonSystem()
                     ->select('screens.*')
                     ->where('key', null)
