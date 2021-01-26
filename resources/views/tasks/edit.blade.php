@@ -211,6 +211,7 @@
     window.PM4ConfigOverrides = {
       requestFiles: @json($files),
       getScreenEndpoint: 'tasks/{{ $task->id }}/screens',
+      postScriptEndpoint: '/scripts/execute/{id}?task_id={{ $task->id }}',
     };
 
     const task = @json($task);
