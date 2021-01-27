@@ -104,6 +104,9 @@ class ScreenConsolidator {
         foreach($config as $index => $page) {
             if ($index === 0) {
                 foreach ($this->replace($page['items'], $index0) as $screenItem) {
+                    if ($item['config']['conditionalHide']) {
+                        $screenItem['config']['conditionalHide'] = $screenItem['config']['conditionalHide'] ? $screenItem['config']['conditionalHide'] . ' AND ' . $item['config']['conditionalHide'] : $item['config']['conditionalHide'];
+                    }
                     $new[] = $screenItem;
                 }
             } else {
