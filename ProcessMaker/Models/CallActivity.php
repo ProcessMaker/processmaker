@@ -134,7 +134,12 @@ class CallActivity implements CallActivityInterface
         }
         if ($instance->errors && is_array($instance->errors)) {
             foreach($instance->errors as $err) {
-                $message[] = $err['message'];
+                $errorMessage = $err['message'];
+                if (array_key_exists('body', $err)) {
+                    // add the body but not the stack trace:
+                    $errorMessage = "\n" . explode('Stack trace', $err['body'])[0];
+                }
+                $message[] = $errorMessage;
             }
         }
         $token->getInstance()->logError(new Exception(implode("\n", $message)), $this);
