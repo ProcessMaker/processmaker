@@ -39,7 +39,7 @@
                 monacoLargeOptions: {
                     automaticLayout: true,
                 },
-                code: _.get(node, this.property),
+                code: _.get(node, this.property, ''),
                 showPopup: false,
             };
         },
@@ -50,7 +50,6 @@
             code() {
                 const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
                 _.set(node, this.property, this.code);
-                this.$emit('input', this.value);
             },
         },
         computed: {
