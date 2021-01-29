@@ -326,7 +326,6 @@ export default {
         custom_css: '',
         watchers: [],
       },
-      rendererKey: 0,
       self: this,
       watchers_config: {
         api: {
@@ -384,11 +383,6 @@ export default {
         this.previewData = JSON.parse(this.previewInput);
       } else {
         this.previewData = {};
-      }
-    },
-    mode() {
-      if (this.mode === 'preview') {
-        this.getPreviewValues();
       }
     },
     customCSS(newCustomCSS) {
@@ -463,16 +457,6 @@ export default {
         });
       }
     },
-    getPreviewValues() {
-      ProcessMaker.apiClient.post("/screens/preview", {
-          config: this.config,
-          computed: this.computed,
-          custom_css: this.customCSS,
-          watchers: this.watchers,
-      }).then(response => {
-        this.preview = response.data;
-      });
-    },
     changeMode(mode) {
       if (mode === "editor") {
         this.$refs.menuScreen.changeItem("button_design", {
@@ -493,9 +477,8 @@ export default {
         this.$refs.menuScreen.sectionRight = false;
       }
       this.mode = mode;
+      this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
       if (mode == 'preview') {
-        this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
-
         this.rendererKey++;
         this.preview.config = cloneDeep(this.config);
         this.preview.computed = cloneDeep(this.computed);
