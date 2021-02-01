@@ -62,7 +62,10 @@ abstract class Base
     {
         // Prepare the docker parameters
         $environmentVariables = $this->getEnvironmentVariables();
-    
+        if (!getenv('HOME')) {
+            putenv('HOME=' . base_path());
+        }
+
         // Create tokens for the SDK if a user is set
         $token = null;
         if ($user) {
