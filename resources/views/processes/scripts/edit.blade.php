@@ -83,6 +83,13 @@
                             <small class="form-text text-muted"
                                   v-if="! errors.timeout">{{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}</small>
                         </div>
+                        <component
+                            v-for="(cmp,index) in editScriptHooks"
+                            :key="`edit-script-hook-${index}`"
+                            :is="cmp"
+                            :script="formData"
+                            ref="editScriptHooks"
+                        ></component>
                         <br>
                         <div class="text-right">
                             {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
@@ -107,7 +114,7 @@
 @section('js')
     <script src="{{mix('js/processes/scripts/editConfig.js')}}"></script>
     <script>
-      new Vue({
+      window.DesignerScripts = new Vue({
         el: '#editScript',
         mixins: addons,
         data() {
@@ -120,7 +127,8 @@
               'description': null,
               'timeout': null,
               'status': null
-            }
+            },
+            editScriptHooks: [],
           }
         },
         methods: {
@@ -148,6 +156,9 @@
             })
               .then(response => {
                 ProcessMaker.alert(this.$t('The script was saved.'), 'success');
+                this.$refs.editScriptHooks.forEach(hook => {
+                  hook.onsave(this.formData);
+                });
                 this.onClose();
               })
               .catch(error => {
