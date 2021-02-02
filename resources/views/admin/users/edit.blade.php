@@ -402,7 +402,7 @@
           profileUpdate($event) {
             this.resetErrors();
             if (!this.validatePassword()) return false;
-            ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData, {context: this})
+            ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
               .then(response => {
                 ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
                 window.ProcessMaker.events.$emit('update-profile-avatar');
