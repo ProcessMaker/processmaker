@@ -67,14 +67,6 @@ class GroupMembersTest extends TestCase
         $this->user = $other_user;
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $response->assertStatus(403);
-
-        //when user is regular user they can only get the groups that they belong to
-        $this->user->permissions()->attach(Permission::byName('view-users')->id);
-
-        $response = $this->apiCall('GET', self::API_TEST_URL);
-        $json = $response->json('data');
-        $this->assertCount(1, $json);
-        $this->assertEquals('Group that other user belongs to', $json[0]['name']);
     }
 
     /**
