@@ -62,8 +62,7 @@ class GroupMemberController extends Controller
      */
     public function index(Request $request)
     {
-        if (!Auth::user()->can('view-groups') ||
-            !Auth::user()->can('view-users')) {
+        if (!(Auth::user()->can('view-groups') || Auth::user()->can('view-users'))) {
             throw new AuthorizationException(__('Not authorized to view groups.'));
         }
 
