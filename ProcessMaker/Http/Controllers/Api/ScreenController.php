@@ -68,7 +68,6 @@ class ScreenController extends Controller
     {
         $query = Screen::nonSystem()
                     ->select('screens.*')
-                    ->where('key', null)
                     ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id');
         $include = $request->input('include', '');
 
@@ -109,10 +108,6 @@ class ScreenController extends Controller
         if (!$interactive  && $request->input('type')) {
             $types = explode(',', $request->input('type'));
             $query->whereIn('type', $types);
-        }
-
-        if($request->input('interstitial', false)) {
-            $query->orWhere('key', 'interstitial');
         }
 
         $pmql = $request->input('pmql', '');
