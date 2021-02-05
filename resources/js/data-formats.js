@@ -1,5 +1,5 @@
 import { DataTypeProperty } from '@processmaker/screen-builder/src/VariableDataTypeProperties';
-import Currencies from '@processmaker/screen-builder/src/currency';
+import Currencies from '@processmaker/screen-builder/src/currency.json';
 
 let formats = DataTypeProperty.config.options;
 let masks = Currencies;
