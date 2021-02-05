@@ -702,7 +702,7 @@ class ProcessRequestToken extends Model implements TokenInterface
 
     public function updateTokenProperties()
     {
-        $allowed = ['conditionals'];
+        $allowed = ['conditionals', 'loopCharacteristics', 'data'];
         $this->token_properties = array_filter(
             $this->getProperties(),
             function ($key) use ($allowed) {
