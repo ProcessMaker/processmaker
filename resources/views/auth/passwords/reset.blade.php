@@ -3,7 +3,7 @@
 @section('content')
 <div align="center">
   <div class="formContainer">
-    <img src="/img/md-blue-logo.png">
+    <img src="/img/processmaker_login.png">
     <h3>{{__('Reset Your Password')}}</h3>
     <form role="form" class="form" method="POST" action="{{ url('/password/reset') }}">
       {{ csrf_field() }}

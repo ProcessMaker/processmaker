@@ -3,7 +3,7 @@
 @section('content')
 <div align="center">
   <div class="formContainer">
-    <img src="/img/md-blue-logo.png">
+    <img src="/img/processmaker_login.png">
     <div class="form" align="center">
       <div class="form-group">
         <small>
