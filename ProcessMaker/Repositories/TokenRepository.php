@@ -97,6 +97,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->due_at = $due ? Carbon::now()->addHours($due) : null;
         $token->initiated_at = null;
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
+        $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
         event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_ACTIVATED'));
@@ -132,6 +133,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->initiated_at = Carbon::now();
         $token->completed_at = Carbon::now();
         $token->riskchanges_at = null;
+        $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
         event(new ProcessUpdated($token->getInstance(), 'START_EVENT_TRIGGERED'));
@@ -239,6 +241,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->due_at = null;
         $token->initiated_at = null;
         $token->riskchanges_at = null;
+        $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
         $token->getInstance()->updateCatchEvents();
@@ -277,6 +280,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->due_at = null;
         $token->initiated_at = null;
         $token->riskchanges_at = null;
+        $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
     }
@@ -322,6 +326,7 @@ class TokenRepository implements TokenRepositoryInterface
         $token->due_at = null;
         $token->initiated_at = null;
         $token->riskchanges_at = null;
+        $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
     }
@@ -370,6 +375,7 @@ class TokenRepository implements TokenRepositoryInterface
             $token->due_at = null;
             $token->riskchanges_at = null;
             $token->completed_at = Carbon::now();
+            $token->updateTokenProperties();
             $token->saveOrFail();
             $token->setId($token->getKey());
         }
@@ -490,6 +496,7 @@ class TokenRepository implements TokenRepositoryInterface
         $subprocess->saveOrFail();
         $token->subprocess_request_id = $subprocess->id;
         $token->subprocess_start_event_id = $sequenceFlow->getProperty('startEvent');
+        $token->updateTokenProperties();
         $token->saveOrFail();
     }
 
