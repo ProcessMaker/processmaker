@@ -24,7 +24,9 @@ class ScreenSystemSeeder extends Seeder
                     $screen->categories()->sync([]);
                     $screen->save();
                 }
-            } else {
+            }
+            
+            if (!$screen) {
                 $screen = new Screen();
                 $screen->fill([
                     'title' => $json[0]->name,
