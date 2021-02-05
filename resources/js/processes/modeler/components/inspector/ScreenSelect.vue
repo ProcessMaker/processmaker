@@ -103,18 +103,11 @@
         }
         return false;
       },
-      interstitial() {
-        if (this.params && this.params.interstitial) {
-          return this.params.interstitial
-        }
-        return false
-      },
       load(filter) {
         let params = Object.assign(
           {
             type: this.type(),
             interactive: this.interactive(),
-            interstitial: this.interstitial(),
             order_direction: 'asc',
             status: 'active',
             selectList: true,
