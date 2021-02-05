@@ -34,7 +34,7 @@ class SignalController extends Controller
             }
         }
 
-        $signals = SignalManager::getAllSignals();
+        $signals = SignalManager::getAllSignals(false, $query->get()->all());
 
         $filter = $request->input('filter', '');
         if ($filter) {
