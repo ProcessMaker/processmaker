@@ -108,9 +108,9 @@ class WorkflowServiceProvider extends ServiceProvider
             $mapping = $bpmnRepository->getBpmnElementsMapping();
 
             //Initialize custom properties for ProcessMaker
-            $bpmnRepository->setBpmnElementMapping(self::PROCESS_MAKER_NS, '', []);
-            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'userTask', $mapping[BpmnDocument::BPMN_MODEL]['task']);
-            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'manualTask', $mapping[BpmnDocument::BPMN_MODEL]['task']);
+            //$bpmnRepository->setBpmnElementMapping(self::PROCESS_MAKER_NS, '', []);
+            //$bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'userTask', $mapping[BpmnDocument::BPMN_MODEL]['task']);
+            //$bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'manualTask', $mapping[BpmnDocument::BPMN_MODEL]['task']);
             $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'association', BpmnDocument::SKIP_ELEMENT);
             $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'textAnnotation', BpmnDocument::SKIP_ELEMENT);
 

@@ -60,7 +60,7 @@ class TaskController extends Controller
         $screen = $task->getScreen();
         $task->component = $screen ? $screen->renderComponent() : null;
         $task->screen = $screen ? $screen->toArray() : null;
-        $task->request_data = $this->addUser($task->processRequest->data, $task->user);
+        $task->request_data = $this->addUser($task->processRequest->data, $task->user, $task);
         $task->bpmn_tag_name = $task->getBpmnDefinition()->localName;
         $interstitial = $task->getInterstitial();
         $task->interstitial_screen = $interstitial['interstitial_screen'];
@@ -101,7 +101,7 @@ class TaskController extends Controller
         }
     }
 
-    private function addUser($data, $user)
+    private function addUser($data, $user, ProcessRequestToken $task)
     {
         if (!$user) {
             return $data;
@@ -110,6 +110,10 @@ class TaskController extends Controller
         $userData = $user->attributesToArray();
         unset($userData['remember_token']);
 
-        return array_merge($data, ['_user' => $userData]);
+        $data =  array_merge($data, ['_user' => $userData]);
+        if (!empty($task->token_properties['data'])) {
+            $data =  array_merge($data, $task->token_properties['data']);
+        }
+        return $data;
     }
 }
