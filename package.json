@@ -46,6 +46,7 @@
         "moment": "^2.29.1",
         "moment-timezone": "^0.5.31",
         "resolve-url-loader": "^2.2.1",
+        "node-sass": "^4.13.1",
         "sass": "^1.29.0",
         "sass-loader": "^6.0.7",
         "vue": "^2.6.12",
