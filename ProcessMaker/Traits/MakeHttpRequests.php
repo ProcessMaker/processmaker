@@ -327,16 +327,20 @@ trait MakeHttpRequests
             $url .= $separator . $config['queryString'];
         }
 
-        if (!array_key_exists('outboundConfig', $config) || !array_key_exists('params', $endpoint)) {
+        if (!array_key_exists('outboundConfig', $config)) {
             $url = $this->getMustache()->render($url, $data);
             return $url;
         }
 
         $outboundConfig = $config['outboundConfig'];
 
-        $dataSourceParams = array_filter($endpoint['params'], function ($item) {
-            return $item['required'] === true;
-        });
+        $dataSourceParams = [];
+        if(array_key_exists('params', $endpoint)) {
+            $dataSourceParams = array_filter($endpoint['params'], function ($item) {
+                return $item['required'] === true;
+            });
+        }
+
         $configParams = array_filter($outboundConfig, function ($item) {
             return $item['type'] === 'PARAM';
         });
