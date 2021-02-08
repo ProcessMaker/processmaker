@@ -14,7 +14,7 @@
         "watch-poll": "npm run watch -- --watch-poll",
         "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
         "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/**"
@@ -47,7 +47,7 @@
         "moment-timezone": "^0.5.31",
         "resolve-url-loader": "^3.1.2",
         "sass": "^1.29.0",
-        "sass-loader": "^7.1.0",
+        "sass-loader": "^6.0.7",
         "vue": "^2.6.12",
         "vue-jest": "^2.6.0",
         "vue-uniq-ids": "^1.0.0",
