@@ -120,6 +120,18 @@ class User extends Authenticatable implements HasMedia
     ];
 
     /**
+     * Register any model events
+     *
+     * @return void
+     */
+    public static function boot() {
+        parent::boot();
+        static::deleted(function($user) {
+            $user->removeFromGroups();
+        });
+    }
+
+    /**
      * Validation rules
      *
      * @param $existing
@@ -407,5 +419,10 @@ class User extends Authenticatable implements HasMedia
             // Batch insert the new permissions
             RequestUserPermission::query()->insert($batch);
         }        
+    }
+
+    public function removeFromGroups()
+    {
+        $this->groups()->detach();
     }
 }
