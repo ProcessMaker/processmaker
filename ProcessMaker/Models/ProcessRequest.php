@@ -23,6 +23,7 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Traits\HideSystemResources;
 
 /**
@@ -472,7 +473,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $result = [];
         if (is_array($this->data)) {
-            foreach ($this->data as $key => $value) {
+            foreach ($this->getRequestData() as $key => $value) {
                 $result[] = [
                     'key' => $key,
                     'value' => $value
@@ -785,5 +786,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function isNonPersistent()
     {
         return $this->getProcess()->isNonPersistent();
+    }
+
+    /**
+     * Get managed data from the process request
+     *
+     * @return array
+     */
+    public function getRequestData()
+    {
+        $dataManager = new DataManager();
+        return $dataManager->getRequestData($this);
     }
 }

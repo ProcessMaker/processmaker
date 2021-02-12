@@ -363,7 +363,7 @@
               automaticLayout: true,
             },
             showJSONEditor: false,
-            data: @json($request->data),
+            data: @json($request->getRequestData()),
             requestId: @json($request->getKey()),
             screenRequested: @json($screenRequested),
             request: @json($request),
