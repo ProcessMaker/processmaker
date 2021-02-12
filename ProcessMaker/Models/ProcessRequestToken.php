@@ -12,6 +12,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -771,5 +772,20 @@ class ProcessRequestToken extends Model implements TokenInterface
             $this->user_id = $res['assign_to'];
         }
         return $this;
+    }
+
+    /**
+     * Returns True is the tokens belongs to a MiltiInstance Task
+     *
+     * @return boolean
+     */
+    public function isMultiInstance()
+    {
+        $definition = $this->getDefinition(true);
+        if ($definition instanceof ActivityInterface) {
+            $loop = $definition->getLoopCharacteristics();
+            return $loop->isExecutable();
+        }
+        return false;
     }
 }
