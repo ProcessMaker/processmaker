@@ -2,7 +2,10 @@
 namespace ProcessMaker\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\DatabaseManager;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
@@ -33,13 +36,11 @@ class CompleteActivity extends BpmnAction implements ShouldQueue
      *
      * @return void
      */
-    public function action(TokenInterface $token, ActivityInterface $element, array $data)
+    public function action(ProcessRequestToken $token, ActivityInterface $element, array $data)
     {
-        $dataStore = $token->getInstance()->getDataStore();
         //@todo requires a class to manage the data access and control the updates
-        foreach ($data as $key => $value) {
-            $dataStore->putData($key, $value);
-        }
+        $manager = new DataManager();
+        $manager->updateData($token, $data);
         $this->engine->runToNextState();
         $element->complete($token);
     }
