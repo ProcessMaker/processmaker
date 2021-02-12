@@ -726,7 +726,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         $definition = $this->getDefinition(true);
         if ($definition instanceof ActivityInterface) {
             $loop = $definition->getLoopCharacteristics();
-            return $loop->isExecutable();
+            return $loop && $loop->isExecutable();
         }
         return false;
     }
