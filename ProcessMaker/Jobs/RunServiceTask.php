@@ -6,6 +6,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -50,9 +51,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         if ($configuration === null) {
             $configuration = [];
         }
-        $dataStore = $token->getInstance()->getDataStore();
-        $data = $dataStore->getData();
-        $data['_request'] = $instance->attributesToArray();
         try {
             if (empty($implementation)) {
                 throw new ScriptException('Service task implementation not defined');
@@ -64,6 +62,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
             }
 
             $this->unlockInstance($instance->getKey());
+            $dataManager = new DataManager();
+            $data = $dataManager->getData($token);
             $response = $script->runScript($data, $configuration);
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
@@ -72,9 +72,8 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 if (is_array($response['output'])) {
                     // Validate data
                     WorkflowManager::validateData($response['output'], $processModel, $element);
-                    foreach ($response['output'] as $key => $value) {
-                        $dataStore->putData($key, $value);
-                    }
+                    $dataManager = new DataManager();
+                    $dataManager->updateData($token, $response['output']);
                     $engine->runToNextState();
                 }
                 $element->complete($token);
