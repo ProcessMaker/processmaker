@@ -11,6 +11,7 @@ class DataManager
     private $reservedVariables = [
         '_user',
         '_request',
+        '_parent',
         'loopCounter',
         'loopCharacteristics',
     ];
