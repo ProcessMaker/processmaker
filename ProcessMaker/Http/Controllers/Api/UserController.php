@@ -10,6 +10,7 @@ use ProcessMaker\Exception\ReferentialIntegrityException;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users as UserResource;
+use ProcessMaker\Jobs\ThrowSignalEvent;
 use ProcessMaker\Models\User;
 
 class UserController extends Controller
@@ -234,6 +235,9 @@ class UserController extends Controller
         $user->saveOrFail();
         if ($request->has('avatar')) {
             $this->uploadAvatar($user, $request);
+        }
+        if (config('user-signal.update')) {
+            ThrowSignalEvent::dispatch('user_update', $user->toArray());
         }
         return response([], 204);
     }
