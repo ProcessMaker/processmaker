@@ -3,6 +3,7 @@
 namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Auth;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 
 class DataManager
@@ -76,12 +77,23 @@ class DataManager
 
         // Magic Variable: _parent
         if ($token->isMultiInstance()) {
-            $data['_parent'] = $token->processRequest->data ?: [];
-            foreach ($this->hiddenVariables as $key) {
-                unset($data['_parent'][$key]);
-            }
+            $data['_parent'] = $this->getRequestData($token->processRequest);
         }
 
+        foreach ($this->hiddenVariables as $key) {
+            unset($data[$key]);
+        }
+        return $data;
+    }
+
+    /**
+     * Get root data from request
+     *
+     * @return array
+     */
+    public function getRequestData(ProcessRequest $request)
+    {
+        $data = $request->data ?: [];
         foreach ($this->hiddenVariables as $key) {
             unset($data[$key]);
         }
