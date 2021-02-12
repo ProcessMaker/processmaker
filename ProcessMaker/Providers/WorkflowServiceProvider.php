@@ -20,6 +20,7 @@ use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
 use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
 use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
+use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
@@ -156,6 +157,14 @@ class WorkflowServiceProvider extends ServiceProvider
                 ]
             );
 
+            // Remove reference check for CallActivity::calledElement
+            $callActivityMap = $mapping[BpmnDocument::BPMN_MODEL]['callActivity'];
+            unset($callActivityMap[1][CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT]);
+            $bpmnRepository->setBpmnElementMapping(
+                BpmnDocument::BPMN_MODEL,
+                'callActivity',
+                $callActivityMap
+            );
             return $bpmnRepository;
         });
         /**
