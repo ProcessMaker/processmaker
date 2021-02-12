@@ -44,7 +44,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
     public function action(ProcessRequestToken $token, ServiceTaskInterface $element, Definitions $processModel, ProcessRequest $instance)
     {
         $implementation = $element->getImplementation();
-        Log::info('Service task started: ' . $implementation);
         $configuration = json_decode($element->getProperty('config'), true);
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
@@ -56,13 +55,11 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         $data['_request'] = $instance->attributesToArray();
         try {
             if (empty($implementation)) {
-                Log::error('Service task implementation not defined');
                 throw new ScriptException('Service task implementation not defined');
             } else {
                 $script = Script::where('key', $implementation)->first();
             }
             if (empty($script)) {
-                Log::error('Service task not implemented: ' . $implementation);
                 throw new ScriptException('Service task not implemented: ' . $implementation);
             }
 
@@ -84,7 +81,6 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
                 $this->engine = $engine;
                 $this->instance = $instance;
             });
-            Log::info('Service task completed: ' . $implementation);
         } catch (Throwable $exception) {
             // Change to error status
             $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
