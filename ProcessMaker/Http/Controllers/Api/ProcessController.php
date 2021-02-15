@@ -535,7 +535,17 @@ class ProcessController extends Controller
                         ->filter(function ($eventDefinition) {
                             return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
-                return !$eventIsTimerStart;
+                
+                // Filter out web entry start events
+                $eventIsWebEntry = false;
+                if (isset($event['config'])) {
+                    $config = json_decode($event['config'], true);
+                    if (isset($config['web_entry']) && $config['web_entry'] !== null) {
+                        $eventIsWebEntry = true;
+                    }
+                }
+
+                return !$eventIsTimerStart && !$eventIsWebEntry;
             });
 
             if (count($process->startEvents) === 0) {
