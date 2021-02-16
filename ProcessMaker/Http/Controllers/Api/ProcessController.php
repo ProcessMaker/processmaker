@@ -546,7 +546,7 @@ class ProcessController extends Controller
                 }
 
                 return !$eventIsTimerStart && !$eventIsWebEntry;
-            });
+            })->values();
 
             if (count($process->startEvents) === 0) {
                 $processes->forget($key);
