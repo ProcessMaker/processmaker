@@ -70,6 +70,8 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="avatar", type="string"),
      *   @OA\Property(property="media", type="array", @OA\Items(ref="#/components/schemas/media")),
      *   @OA\Property(property="birthdate", type="string", format="date"),
+     *   @OA\Property(property="delegation_user_id", type="string", format="id"),
+     *   @OA\Property(property="manager_id", type="string", format="id"),
      * ),
      * @OA\Schema(
      *   schema="users",
@@ -106,6 +108,8 @@ class User extends Authenticatable implements HasMedia
         'datetime_format',
         'language',
         'meta',
+        'delegation_user_id',
+        'manager_id',
     ];
 
     protected $appends = [
@@ -424,5 +428,25 @@ class User extends Authenticatable implements HasMedia
     public function removeFromGroups()
     {
         $this->groups()->detach();
+    }
+
+    /**
+     * User's Delegation are user associations that allow for automatic reassignment based on specific availability of a user.
+     *
+     * @return User
+     */
+    public function delegationUser()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * User's Manager are user associations that allow for automatic reassignment based on specific rules in the task assignment.
+     *
+     * @return User
+     */
+    public function manager()
+    {
+        return $this->belongsTo(User::class);
     }
 }

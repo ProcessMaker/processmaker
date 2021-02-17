@@ -48,7 +48,8 @@ export default {
     storeId: {
       type: Boolean,
       default: true
-    }
+    },
+    undefinedValue: null,
   },
   data() {
     return {
@@ -69,7 +70,7 @@ export default {
   },
   methods: {
     change(value) {
-      this.$emit("input", this.storeId ? get(value, this.trackBy) : value);
+      this.$emit("input", this.storeId ? get(value, this.trackBy, this.undefinedValue) : value);
     },
     loadOptions(filter) {
       window.ProcessMaker.apiClient
