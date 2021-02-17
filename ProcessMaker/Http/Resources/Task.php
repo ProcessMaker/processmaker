@@ -6,6 +6,8 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Models\User;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
+use ProcessMaker\Managers\DataManager;
+use ProcessMaker\Models\ProcessRequestToken;
 use StdClass;
 
 class Task extends ApiResource
@@ -19,10 +21,11 @@ class Task extends ApiResource
      */
     public function toArray($request)
     {
+        $dataManager = new DataManager();
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
         if (in_array('data', $include)) {
-            $array['data'] = $this->addUser($this->processRequest->data, $this->user);
+            $array['data'] = $dataManager->getData($this);
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
@@ -87,6 +90,10 @@ class Task extends ApiResource
         $userData = $user->attributesToArray();
         unset($userData['remember_token']);
 
-        return array_merge($data, ['_user' => $userData]);
+        $data =  array_merge($data, ['_user' => $userData]);
+        if (!empty($this->token_properties['data'])) {
+            $data =  array_merge($data, $this->token_properties['data']);
+        }
+        return $data;
     }
 }

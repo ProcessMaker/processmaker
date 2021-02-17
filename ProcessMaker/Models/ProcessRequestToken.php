@@ -11,6 +11,7 @@ use Log;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -691,7 +692,7 @@ class ProcessRequestToken extends Model implements TokenInterface
 
     public function updateTokenProperties()
     {
-        $allowed = ['conditionals'];
+        $allowed = ['conditionals', 'loopCharacteristics', 'data'];
         $this->token_properties = array_filter(
             $this->getProperties(),
             function ($key) use ($allowed) {
@@ -713,5 +714,20 @@ class ProcessRequestToken extends Model implements TokenInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->saveOrFail();
         $token->setId($token->getKey());        
+    }
+
+    /**
+     * Returns True is the tokens belongs to a MiltiInstance Task
+     *
+     * @return boolean
+     */
+    public function isMultiInstance()
+    {
+        $definition = $this->getDefinition(true);
+        if ($definition instanceof ActivityInterface) {
+            $loop = $definition->getLoopCharacteristics();
+            return $loop && $loop->isExecutable();
+        }
+        return false;
     }
 }
