@@ -29,11 +29,11 @@ return [
       <bpmn:outgoing>node_12</bpmn:outgoing>
       <bpmn:outgoing>node_13</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:task id="node_5" name="Fill Request" pm:screenRef="request">
+    <bpmn:task id="node_5" name="Fill Request" pm:screenRef="request" pm:assignment="user" pm:assignedUsers="55">
       <bpmn:incoming>node_12</bpmn:incoming>
       <bpmn:outgoing>node_16</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="node_6" name="Approval" pm:screenRef="approve">
+    <bpmn:task id="node_6" name="Approval" pm:screenRef="approve" pm:assignment="self_service" pm:assignedUsers="" pm:assignedGroups="5">
       <bpmn:incoming>node_16</bpmn:incoming>
       <bpmn:outgoing>node_17</bpmn:outgoing>
     </bpmn:task>

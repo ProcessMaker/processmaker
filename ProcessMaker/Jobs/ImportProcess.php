@@ -298,6 +298,13 @@ class ImportProcess implements ShouldQueue
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
+
+                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                // If an assignment rule is already set, do not ask to set it
+                if ($assignment) {
+                    continue;
+                }
+
                 $this->assignable->push((object)[
                     'type' => 'task',
                     'id' => $task->getAttribute('id'),
