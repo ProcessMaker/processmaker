@@ -59,10 +59,12 @@
         immediate: true,
         handler() {
           this.validate();
+          let selected = ''
           if (this.content) {
             this.error = '';
-            this.$emit('input', this.content.id);
+            selected = this.content.id;
           }
+          this.$emit('input', selected);
         }
       },
       value: {
