@@ -35,7 +35,6 @@
         error: '',
         parameters: {
           type: 'DISPLAY',
-          interstitial: true
         }
       };
     },

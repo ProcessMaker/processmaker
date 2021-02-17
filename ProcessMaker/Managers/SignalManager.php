@@ -11,10 +11,20 @@ class SignalManager
 {
     const PROCESS_NAME = 'global_signals';
 
-    public static function getAllSignals($returnFullList = false)
+    /**
+     * Return the list of all signals in the system
+     *
+     * @param false $includeSystemProcesses, true if the signals that will be included can pertain to system processes
+     * @param null $processList, collection of processes that will be used to extract the list of signals.
+     * @return mixed
+     */
+    public static function getAllSignals($includeSystemProcesses = false, $processList = null)
     {
         $signals = collect();
-        foreach (Process::all() as $process) {
+
+        $processes = $processList ? $processList : Process::all();
+
+        foreach ($processes as $process) {
             $nodes = $process
                         ->getDomDocument()
                         ->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'signal');
@@ -24,7 +34,7 @@ class SignalManager
                     'id' => $node->getAttribute('id'),
                     'name' => $node->getAttribute('name'),
                     'detail' => $node->getAttribute('detail'),
-                    'process' => (!$process->category->is_system || $returnFullList)
+                    'process' => (!$process->category->is_system || $includeSystemProcesses)
                                     ? [
                                         'id' => $process->id,
                                         'name' => $process->name,

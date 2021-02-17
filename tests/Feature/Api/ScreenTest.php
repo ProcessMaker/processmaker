@@ -488,6 +488,7 @@ class ScreenTest extends TestCase
 
     public function testPreviewScreen()
     {
+        $this->markTestSkipped('Skip consolidated screen preview');
         $child = factory(Screen::class)->create([
             'config' => json_decode(
                 file_get_contents(__DIR__ . "/../../Fixtures/simple_child_screen.json")

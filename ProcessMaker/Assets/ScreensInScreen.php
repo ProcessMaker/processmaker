@@ -39,6 +39,7 @@ class ScreensInScreen
                     $screen = Screen::findOrFail($item['config']['screen']);
                     $this->recursion++;
                     $screens = $this->referencesToExport($screen, $screens);
+                    $this->recursion--;
                 }
             });
         }

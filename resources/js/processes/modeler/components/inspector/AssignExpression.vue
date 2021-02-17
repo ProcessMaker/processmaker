@@ -231,7 +231,7 @@ export default {
           field = {
             "type" : "group",
             "name": this.assignedExpression.groups[0].name,
-            "id": this.assignedExpression.groups[0].id,
+            "id": this.assignedExpression.groups[0].id.replace('group-', ''),
           };
         }
         let byExpression = {

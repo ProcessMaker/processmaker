@@ -270,9 +270,8 @@ class ProcessRequestFileController extends Controller
             if(
                 $mediaItem->getCustomProperty('data_name') == $data_name &&
                 $mediaItem->getCustomProperty('parent') == $parent &&
-                $mediaItem->getCustomProperty('row_id') == $rowId &&
-                $mediaItem->getCustomProperty('row_id') !== null
-            ) {
+                $mediaItem->getCustomProperty('row_id') == $rowId)
+            {
                 $originalCreatedBy = $mediaItem->getCustomProperty('createdBy');
                 $mediaItem->delete();
             }

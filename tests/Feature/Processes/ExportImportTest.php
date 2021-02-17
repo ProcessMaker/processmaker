@@ -135,12 +135,6 @@ class ExportImportTest extends TestCase
      */
     public function testExportImportProcess()
     {
-
-        
-        $this->markTestSkipped();
-
-
-
         // Create an admin user
         $adminUser = factory(User::class)->create([
             'username' => 'admin',
@@ -193,7 +187,7 @@ class ExportImportTest extends TestCase
         // Test to ensure we can download the exported file
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.json');
+        $response->assertHeader('content-disposition', 'attachment; filename="Leave Absence Request.json"');
 
         // Get our file contents (we have to do it this way because of
         // Symfony's weird response API)
@@ -235,6 +229,16 @@ class ExportImportTest extends TestCase
 
         $this->assertCount(2, $screen->category->refresh()->screens);
         $this->assertCount(2, $secondScreenCategory->refresh()->screens);
+
+        // Assert that assignments are preserved, except for user and group assignments
+        $process = Process::where('name', 'Leave Absence Request 2')->first();
+        $definitions = $process->getDefinitions();
+        $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
+        $this->assertEquals("", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
+        $this->assertEquals("", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignedUsers'));
+        
+        $this->assertEquals("self_service", $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignment'));
+        $this->assertEquals("", $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignedGroups'));
     }
 
     /**
