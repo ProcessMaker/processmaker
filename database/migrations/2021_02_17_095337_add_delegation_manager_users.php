@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class AddDelegationManagerUsers extends Migration
@@ -13,11 +14,16 @@ class AddDelegationManagerUsers extends Migration
      */
     public function up()
     {
+        $dbPlatform = DB::connection()->getDoctrineSchemaManager()->getDatabasePlatform();
+        if (!$dbPlatform->hasDoctrineTypeMappingFor('enum')) {
+            $dbPlatform->registerDoctrineTypeMapping('enum', 'string');
+        }
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedInteger('delegation_user_id')->nullable();
             $table->unsignedInteger('manager_id')->nullable();
             $table->foreign('delegation_user_id')->references('id')->on('users');
             $table->foreign('manager_id')->references('id')->on('users');
+            $table->string('status')->default('ACTIVE')->change();
         });
     }
 
