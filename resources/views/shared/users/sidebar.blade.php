@@ -93,5 +93,37 @@
                     @{{errors.status}}
                 </div>
             </div>
+            <b-form-group
+              id="group-delegation"
+              label="{{__('Delegation')}}"
+              label-for="delegation_user_id"
+            >
+                <select-from-api
+                    id="delegation_user_id"
+                    v-model="formData.delegation_user_id"
+                    type="text"
+                    required
+                    placeholder="{{__('delegation user')}}"
+                    api="users"
+                    label="fullname"
+                    :undefined-value="null"
+                />
+            </b-form-group>
+            <b-form-group
+              id="group-manager"
+              label="{{__('Manager')}}"
+              label-for="manager_id"
+            >
+                <select-from-api
+                    id="manager_id"
+                    v-model="formData.manager_id"
+                    type="text"
+                    required
+                    placeholder="{{__('Manager user')}}"
+                    api="users"
+                    label="fullname"
+                    :undefined-value="null"
+                />
+            </b-form-group>
     </div>
 </div>
