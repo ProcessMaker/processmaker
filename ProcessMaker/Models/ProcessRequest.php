@@ -681,6 +681,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function scopeRequestsThatUserCan($query, $permission, User $user)
     {
+        if ($permission === 'can_view' && $user->can('view-all_requests')) {
+            return $query;
+        }
         $query->whereHas('userPermissions', function ($query) use ($permission, $user) {
             $query->where('user_id', $user->getKey());
             $query->where($permission, true);
