@@ -119,7 +119,7 @@
         );
         this.loading = true;
         ProcessMaker.apiClient
-          .get('screens', {
+          .get('screens?exclude=config', {
             params: params
           })
           .then(response => {
