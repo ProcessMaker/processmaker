@@ -289,8 +289,9 @@ export default {
             this.orderBy +
             "&order_direction=" +
             this.orderDirection +
-            "&include=categories,category"
-        )
+            "&include=categories,category" +
+            "&exclude=config"
+    )
         .then(response => {
           this.data = this.transform(response.data);
           this.loading = false;
