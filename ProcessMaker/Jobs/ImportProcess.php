@@ -22,6 +22,7 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Traits\PluginServiceProviderTrait;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Notifications\ImportReady;
 
 class ImportProcess implements ShouldQueue
@@ -734,6 +735,7 @@ class ImportProcess implements ShouldQueue
         $this->saveScripts($this->file->scripts);
         $this->saveScreens($this->file->screens, $this->file->process);
         $this->parseAssignables();
+        $this->setAnonymousUser();
         $this->saveBpmn($this->file->process);
 
         return (object)[
@@ -741,6 +743,32 @@ class ImportProcess implements ShouldQueue
             'assignable' => $this->assignable,
             'process' => $this->new['process']
         ];
+    }
+
+    /**
+     * Replace any anonymous user placeholders with the anonymous user id
+     *
+     * @return void
+     */
+    private function setAnonymousUser()
+    {
+        $humanTasks = ['startEvent', 'task', 'userTask', 'manualTask'];
+        $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
+
+        if (!isset($this->file->process->anonymousUserId)) {
+            return;
+        }
+
+        $originalAnonymousUserId = $this->file->process->anonymousUserId;
+
+        foreach ($humanTasks as $tag) {
+            foreach($this->definitions->getElementsByTagName($tag) as $task) {
+                $assignedUsers = $task->getAttributeNS($ns, 'assignedUsers');
+                if ($assignedUsers === (string) $originalAnonymousUserId) {
+                    $task->setAttributeNS($ns, 'assignedUsers', app(AnonymousUser::class)->id);
+                }
+            }
+        }
     }
 
     /**

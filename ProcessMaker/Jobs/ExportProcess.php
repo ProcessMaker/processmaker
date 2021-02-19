@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use ProcessMaker\Managers\ExportManager;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 
 class ExportProcess implements ShouldQueue
@@ -82,18 +83,24 @@ class ExportProcess implements ShouldQueue
     private function removeAssignedEntities()
     {
         $humanTasks = ['startEvent', 'task', 'userTask', 'manualTask'];
+        $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
+
         foreach ($humanTasks as $humanTask) {
             $tasks = $this->definitions->getElementsByTagName($humanTask);
             foreach ($tasks as $task) {
-
-                $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-                // Only remove user/group assignments
-                if (in_array($assignment, ['user', 'group', 'user_group'])) {
-                    $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+                if ($this->assignedToAnonymous($task)) {
+                    // Do not remove the anonymous user association. It will be
+                    // updated when importing.
+                    continue;
                 }
-
-                $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
-                $task->removeAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedGroups');
+                
+                // Only remove user/group assignments
+                $assignment = $task->getAttributeNS($ns, 'assignment');
+                if (in_array($assignment, ['user', 'group', 'user_group'])) {
+                    $task->removeAttributeNS($ns, 'assignment');
+                }
+                $task->removeAttributeNS($ns, 'assignedUsers');
+                $task->removeAttributeNS($ns, 'assignedGroups');
             }
         }
 
@@ -111,6 +118,16 @@ class ExportProcess implements ShouldQueue
         $this->process->bpmn = $this->definitions->saveXML();
     }
 
+    private function assignedToAnonymous($task)
+    {
+        $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
+        $assignment = $task->getAttributeNS($ns, 'assignment');
+        $assignedUsers = $task->getAttributeNS($ns, 'assignedUsers');
+
+        return in_array($assignment, ['user', 'user_group']) &&
+               $assignedUsers === (string) app(AnonymousUser::class)->id;
+    }
+
     /**
      * Package the process itself. Note that we must save BPMN separately
      * since it is hidden from our toArray method.
@@ -121,6 +138,7 @@ class ExportProcess implements ShouldQueue
     {
         $this->package['process'] = $this->process->append('notifications', 'task_notifications')->toArray();
         $this->package['process']['bpmn'] = $this->process->bpmn;
+        $this->package['process']['anonymousUserId'] = app(AnonymousUser::class)->id;
     }
 
     /**
