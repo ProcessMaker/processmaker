@@ -110,6 +110,7 @@ class User extends Authenticatable implements HasMedia
         'meta',
         'delegation_user_id',
         'manager_id',
+        'schedule',
     ];
 
     protected $appends = [
@@ -121,6 +122,7 @@ class User extends Authenticatable implements HasMedia
         'is_administrator' => 'bool',
         'meta' => 'object',
         'active_at' => 'datetime',
+        'schedule' => 'array',
     ];
 
     /**
@@ -165,7 +167,7 @@ class User extends Authenticatable implements HasMedia
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
-            'status' => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE'],
+            'status' => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
             'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
             'birthdate' => 'date|nullable' 
         ];

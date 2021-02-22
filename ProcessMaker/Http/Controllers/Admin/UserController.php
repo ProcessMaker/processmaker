@@ -57,6 +57,7 @@ class UserController extends Controller
             ['value' => 'ACTIVE', 'text' => __('ACTIVE')],
             ['value' => 'INACTIVE', 'text' => __('INACTIVE')],
             ['value' => 'OUT_OF_OFFICE', 'text' => __('OUT_OF_OFFICE')],
+            ['value' => 'SCHEDULED', 'text' => __('SCHEDULED')],
         ];
 
         $timezones = array_reduce(
