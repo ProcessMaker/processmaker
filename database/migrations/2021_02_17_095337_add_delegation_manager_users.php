@@ -21,6 +21,7 @@ class AddDelegationManagerUsers extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedInteger('delegation_user_id')->nullable();
             $table->unsignedInteger('manager_id')->nullable();
+            $table->json('schedule')->nullable();
             $table->foreign('delegation_user_id')->references('id')->on('users');
             $table->foreign('manager_id')->references('id')->on('users');
             $table->string('status')->default('ACTIVE')->change();
@@ -40,6 +41,7 @@ class AddDelegationManagerUsers extends Migration
             $table->dropColumn([
                 'delegation_user_id',
                 'manager_id',
+                'schedule',
             ]);
         });
     }

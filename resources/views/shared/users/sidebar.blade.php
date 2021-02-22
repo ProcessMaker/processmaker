@@ -93,6 +93,35 @@
                     @{{errors.status}}
                 </div>
             </div>
+            <div class="d-flex flex-row" v-if="formData.status==='SCHEDULED'">
+                <div class="d-flex flex-column">
+                    <b-form-checkbox
+                        v-for="(sch, idx) in formData.schedule"
+                        :key="`sch-day-${idx}`"
+                        v-model="sch.active"
+                        :button-variant="sch.active ? 'secondary' : 'outline-secondary'"
+                        button
+                    >
+                        @{{ weekdays[idx] }}
+                    </b-form-checkbox>
+                </div>
+                <div class="d-flex flex-column">
+                    <b-form-select
+                        v-for="(sch, idx) in formData.schedule"
+                        :key="`sch-from-${idx}`"
+                        v-model="sch.from"
+                        :options="hours"
+                    />
+                </div>
+                <div class="d-flex flex-column">
+                    <b-form-select
+                        v-for="(sch, idx) in formData.schedule"
+                        :key="`sch-to-${idx}`"
+                        v-model="sch.to"
+                        :options="relativeHours(sch.from)"
+                    />
+                </div>
+            </div>
             <b-form-group
               id="group-delegation"
               label="{{__('Delegation')}}"
