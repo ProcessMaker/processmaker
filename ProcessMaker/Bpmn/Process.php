@@ -48,4 +48,9 @@ class Process extends ModelsProcess
             return parent::setProperty($name, $value);
         }
     }
+
+    public function isNonPersistent()
+    {
+        return true;
+    }
 }

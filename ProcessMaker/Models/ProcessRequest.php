@@ -514,7 +514,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->errors = $errors;
         $this->status = 'ERROR';
         \Log::error($exception);
-        $this->save();
+        if (!$this->isNonPersistent()) {
+            $this->save();
+        }
     }
 
     public function childRequests()
@@ -773,5 +775,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $first = $this->locks()->orderBy('id')->first();
         return !$first || $first->getKey() === $lock->getKey();
+    }
+
+    /**
+     * Returns true if the request persists
+     *
+     * @return boolean
+     */
+    public function isNonPersistent()
+    {
+        return $this->getProcess()->isNonPersistent();
     }
 }

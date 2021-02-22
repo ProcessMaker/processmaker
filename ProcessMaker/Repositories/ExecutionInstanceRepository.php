@@ -98,6 +98,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
         //Get process definition
         $definition = $process->getOwnerDocument()->getModel();
 
+        if ($process->isNonPersistent()) {
+            return;
+        }
+
         //Save the row
         $instance->callable_id = $process->getId();
         $instance->process_id = $definition->getKey();
@@ -135,6 +139,11 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceError(ExecutionInstanceInterface $instance)
     {
+        $process = $instance->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
+
         //Save instance
         $instance->status = 'ERROR';
         $instance->mergeLatestStoredData();
@@ -150,6 +159,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceUpdated(ExecutionInstanceInterface $instance)
     {
+        $process = $instance->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         //Save instance
         $instance->status = 'ACTIVE';
         $instance->mergeLatestStoredData();
@@ -165,6 +178,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCompleted(ExecutionInstanceInterface $instance)
     {
+        $process = $instance->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         //Save instance
         $instance->status = 'COMPLETED';
         $instance->completed_at = Carbon::now();
@@ -182,6 +199,10 @@ class ExecutionInstanceRepository implements ExecutionInstanceRepositoryInterfac
      */
     public function persistInstanceCollaboration(ExecutionInstanceInterface $instance, ParticipantInterface $participant = null, ExecutionInstanceInterface $source, ParticipantInterface $sourceParticipant = null)
     {
+        $process = $instance->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         if ($source->process_collaboration_id === null) {
             $collaboration = new ProcessCollaboration();
             $collaboration->process_id = $instance->process->getKey();
