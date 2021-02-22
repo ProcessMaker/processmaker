@@ -74,6 +74,10 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityActivated(ActivityInterface $activity, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $user = $token->getInstance()->process->getNextUser($activity, $token);
         $this->addUserToData($token->getInstance(), $user);
@@ -109,6 +113,10 @@ class TokenRepository implements TokenRepositoryInterface
     public function persistStartEventTriggered(StartEventInterface $startEvent, CollectionInterface $tokens)
     {
         $token = $tokens->item(0);
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
 
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'TRIGGERED';
@@ -143,6 +151,10 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityException(ActivityInterface $activity, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->instanceRepository->persistInstanceError($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
@@ -166,6 +178,10 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityCompleted(ActivityInterface $activity, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->removeUserFromData($token->getInstance());
         $this->removeRequestFromData($token->getInstance());
         if ($this->getActivityType($activity) === 'callActivity') {
@@ -192,6 +208,10 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistActivityClosed(ActivityInterface $activity, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $activity->getId();
@@ -204,6 +224,10 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistCatchEventTokenArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $intermediateCatchEvent->getId();
@@ -222,6 +246,10 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistCatchEventTokenConsumed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'CLOSED';
         $token->element_id = $intermediateCatchEvent->getId();
@@ -234,6 +262,10 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistCatchEventMessageArrives(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = $token->getStatus();
         $token->element_id = $intermediateCatchEvent->getId();
@@ -251,6 +283,10 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistCatchEventMessageConsumed(CatchEventInterface $intermediateCatchEvent, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'CLOSED';
         $token->element_id = $intermediateCatchEvent->getId();
@@ -267,6 +303,10 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistGatewayTokenArrives(GatewayInterface $gateway, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         if ($token->exists) {
             return;
         }
@@ -288,6 +328,10 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistGatewayTokenConsumed(GatewayInterface $gateway, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $this->instanceRepository->persistInstanceUpdated($token->getInstance());
         $token->status = 'CLOSED';
         $token->element_id = $gateway->getId();
@@ -309,6 +353,10 @@ class TokenRepository implements TokenRepositoryInterface
 
     public function persistThrowEventTokenConsumed(ThrowEventInterface $event, TokenInterface $token)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         // we register just end event throw events
         if ($event instanceof EndEvent) {
             $this->instanceRepository->persistInstanceUpdated($token->getInstance());
@@ -424,6 +472,10 @@ class TokenRepository implements TokenRepositoryInterface
      */
     public function persistCallActivityActivated(TokenInterface $token, ExecutionInstanceInterface $subprocess, FlowInterface $sequenceFlow)
     {
+        $process = $token->getInstance()->getProcess();
+        if ($process->isNonPersistent()) {
+            return;
+        }
         $source = $token->getInstance();
         if ($source->process_collaboration_id === null) {
             $collaboration = new ProcessCollaboration();

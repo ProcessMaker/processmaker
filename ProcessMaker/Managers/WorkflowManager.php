@@ -253,4 +253,12 @@ class WorkflowManager
         }
         $this->validator->validate($data);
     }
+
+    public function runProcess($id, $startId, array $data, $silent = true)
+    {
+        $definitions = Definitions::find($id);
+        $startEvent = $definitions->getDefinitions()->getProcess($startId);
+        $instance = $this->triggerStartEvent($definitions, $startEvent, $data);
+        return $instance->getDataStore()->getData();
+    }
 }

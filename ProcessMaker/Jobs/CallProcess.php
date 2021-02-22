@@ -1,7 +1,7 @@
 <?php
 namespace ProcessMaker\Jobs;
 
-use ProcessMaker\Model\Process as Definitions;
+use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Nayra\Contracts\Bpmn\ProcessInterface;
 
 class CallProcess extends BpmnAction

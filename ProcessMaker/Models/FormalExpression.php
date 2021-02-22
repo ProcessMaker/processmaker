@@ -54,6 +54,14 @@ class FormalExpression implements FormalExpressionInterface
      */
     private function registerPMFunctions()
     {
+        $this->feelExpression->register(
+            'get',
+            function () {
+            },
+            function ($arguments, $o, $a) {
+                return ((array)$o)[$a];
+            }
+        );
         // date($format, $timestamp)
         $this->feelExpression->register(
             'date',
@@ -68,7 +76,7 @@ class FormalExpression implements FormalExpressionInterface
             'env',
             function () {
             },
-            function ($name) {
+            function ($__data, $name) {
                 $env = EnvironmentVariable::where('name', $name)->first();
                 if ($env) {
                     return $env->value;
@@ -81,7 +89,7 @@ class FormalExpression implements FormalExpressionInterface
             'process',
             function () {
             },
-            function ($id) {
+            function ($__data, $id) {
                 return Process::find($id);
             }
         );
@@ -90,7 +98,7 @@ class FormalExpression implements FormalExpressionInterface
             'request',
             function () {
             },
-            function ($id) {
+            function ($__data, $id) {
                 return ProcessRequest::find($id);
             }
         );
@@ -99,7 +107,7 @@ class FormalExpression implements FormalExpressionInterface
             'user',
             function () {
             },
-            function ($id) {
+            function ($__data, $id) {
                 return User::find($id);
             }
         );
@@ -108,7 +116,7 @@ class FormalExpression implements FormalExpressionInterface
             'lowercase',
             function () {
             },
-            function ($str) {
+            function ($__data, $str) {
                 return strtolower($str);
             }
         );
@@ -117,7 +125,7 @@ class FormalExpression implements FormalExpressionInterface
             'uppercase',
             function () {
             },
-            function ($str) {
+            function ($__data,$str) {
                 return strtoupper($str);
             }
         );
