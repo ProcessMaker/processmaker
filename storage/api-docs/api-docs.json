@@ -2561,7 +2561,6 @@
                         "$ref": "#/components/parameters/include"
                     },
                     {
-                        "parameter": "exclude",
                         "name": "exclude",
                         "in": "query",
                         "description": "Comma separated list of fields to exclude from the response",
