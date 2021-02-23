@@ -45,7 +45,6 @@ class ScreenController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
      *     @OA\Parameter(
-     *         parameter="exclude",
      *         name="exclude",
      *         in="query",
      *         description="Comma separated list of fields to exclude from the response",

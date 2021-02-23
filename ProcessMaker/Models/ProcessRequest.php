@@ -644,12 +644,17 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     private function valueAliasParticipant($value, $expression)
     {
-        $user = User::where('username', $value)->firstOrFail();
-        $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+        $user = User::where('username', $value)->get()->first();
 
-        return function ($query) use ($tokens) {
-            $query->whereIn('id', $tokens->pluck('process_request_id'));
-        };
+        if ($user) {
+            $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+
+            return function ($query) use ($tokens) {
+                $query->whereIn('id', $tokens->pluck('process_request_id'));
+            };
+        } else {
+            throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
+        }
     }
 
     /**
