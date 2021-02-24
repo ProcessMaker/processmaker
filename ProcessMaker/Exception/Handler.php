@@ -85,7 +85,7 @@ class Handler extends ExceptionHandler
         $prefixes = [];
         $prefixes[] = explode('.', $route->getName())[0];
         if (isset($route->computedMiddleware) && count($route->computedMiddleware)) {
-            if (in_array('api', $route->computedMiddleware) || in_array('aduth:api', $route->computedMiddleware)) {
+            if (in_array('api', $route->computedMiddleware) || in_array('auth:api', $route->computedMiddleware)) {
                 $prefixes[] = 'api';
             }
         }
