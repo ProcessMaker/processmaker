@@ -113,6 +113,7 @@ class RequestController extends Controller
                 if ($allowInterstitial && $request->user_id == Auth::id()) {
                     $active = $request->tokens()
                         ->where('user_id', Auth::id())
+                        ->where('element_type', 'task')
                         ->where('status', 'ACTIVE')
                         ->orderBy('id')->first();
                     return redirect(route('tasks.edit', ['task' => $active ? $active->getKey() : $startEvent->getKey()]));
