@@ -134,6 +134,7 @@
                     required
                     placeholder="{{__('delegation user')}}"
                     api="users"
+                    :exclude_ids="[formData.id]"
                     label="fullname"
                     :undefined-value="null"
                 />
@@ -150,6 +151,7 @@
                     required
                     placeholder="{{__('Manager user')}}"
                     api="users"
+                    :exclude_ids="[formData.id]"
                     label="fullname"
                     :undefined-value="null"
                 />
