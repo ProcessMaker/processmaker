@@ -272,28 +272,11 @@
 
     <script>
       var formVueInstance = new Vue({
+        mixins:addons,
         el: '#editUser',
         data() {
-          const weekdays = {};
-          for(let i=1;i<=7;i++) {
-            //@todo key must be always in english
-            weekdays[moment(`2020-11-0${i}`).format('ddd')] = moment(`2020-11-0${i}`).format('ddd');
-          }
-          const hours = this.relativeHours('00:00');
-          const formData = @json($user);
-          formData.schedule = formData.schedule  || {
-              Sun: {active: false, from: '08:00', to: '16:00'},
-              Mon: {active: true, from: '08:00', to: '16:00'},
-              Tue: {active: true, from: '08:00', to: '16:00'},
-              Wed: {active: true, from: '08:00', to: '16:00'},
-              Thu: {active: true, from: '08:00', to: '16:00'},
-              Fri: {active: true, from: '08:00', to: '16:00'},
-              Sat: {active: false, from: '08:00', to: '16:00'},
-            };
           return {
-            hours,
-            weekdays,
-            formData,
+            formData: @json($user),
             langs: @json($availableLangs),
             timezones: @json($timezones),
             datetimeFormats: @json($datetimeFormats),
@@ -349,20 +332,6 @@
           }
         },
         methods: {
-          relativeHours(h) {
-            let from = h.split(':')[0] *1 + h.split(':')[1] * 0.5;
-            const hours = [];
-            const hour = moment('2020-11-01 00:00:00');
-            for(let i=0; i<24*2; i++,from+=0.5) {
-              hour.hour(parseInt(from));
-              hour.minutes(from % 1 == 0.5 ? 30 : 0);
-              hours.push({
-                value: hour.format('HH:mm'),
-                text: from == 24 ? this.$t('Midnight') : hour.format('HH:mm'),
-              });
-            }
-            return hours;
-          },
           areAllPermissionsSelected() {
             return this.selectedPermissions.length === this.permissions.length;
           },

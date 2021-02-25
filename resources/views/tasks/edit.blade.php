@@ -171,6 +171,15 @@
                               </b-modal>
                             </span>
                           </div>
+                          <div v-if="taskDefinitionConfig.escalateToManager">
+                            <br>
+                            <span>
+                                <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
+                                        @click="escalateToManager">
+                                    <i class="fas fa-user-friends"></i> {{__('Escalate the Manager')}}
+                                </button>
+                            </span>
+                          </div>
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
@@ -260,6 +269,13 @@
           }
         },
         computed: {
+          taskDefinitionConfig () {
+            let config = {};
+            if (this.task.definition && this.task.definition.config) {
+              return JSON.parse(this.task.definition.config);
+            }
+            return {};
+          },
           taskHasComments() {
             const commentsPackage = 'comment-editor' in Vue.options.components;
             let config = {};
@@ -300,6 +316,15 @@
           }
         },
         methods: {
+          escalateToManager() {
+            ProcessMaker.apiClient
+              .put("tasks/" + this.task.id, {
+                user_id: '#manager',
+              })
+              .then(response => {
+                window.location.reload();
+              });
+          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {

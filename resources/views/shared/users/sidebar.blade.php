@@ -54,7 +54,7 @@
 
     @isset($addons)
         @foreach ($addons as $addon)
-            {!! __($addon['content']) !!}
+            {!! $addon['content'] ?? '' !!}
         @endforeach
     @endisset
 
@@ -93,68 +93,11 @@
                     @{{errors.status}}
                 </div>
             </div>
-            <div class="d-flex flex-row" v-if="formData.status==='SCHEDULED'">
-                <div class="d-flex flex-column">
-                    <b-form-checkbox
-                        v-for="(weekday, idx) in weekdays"
-                        :key="`sch-day-${idx}`"
-                        v-model="formData.schedule[weekday].active"
-                        :button-variant="formData.schedule[weekday].active ? 'secondary' : 'outline-secondary'"
-                        button
-                    >
-                        @{{ weekdays[idx] }}
-                    </b-form-checkbox>
-                </div>
-                <div class="d-flex flex-column">
-                    <b-form-select
-                        v-for="(weekday, idx) in weekdays"
-                        :key="`sch-from-${idx}`"
-                        v-model="formData.schedule[weekday].from"
-                        :options="hours"
-                    />
-                </div>
-                <div class="d-flex flex-column">
-                    <b-form-select
-                        v-for="(weekday, idx) in weekdays"
-                        :key="`sch-to-${idx}`"
-                        v-model="formData.schedule[weekday].to"
-                        :options="relativeHours(formData.schedule[weekday].from)"
-                    />
-                </div>
-            </div>
-            <b-form-group
-              id="group-delegation"
-              label="{{__('Delegation')}}"
-              label-for="delegation_user_id"
-            >
-                <select-from-api
-                    id="delegation_user_id"
-                    v-model="formData.delegation_user_id"
-                    type="text"
-                    required
-                    placeholder="{{__('delegation user')}}"
-                    api="users"
-                    :exclude_ids="[formData.id]"
-                    label="fullname"
-                    :undefined-value="null"
-                />
-            </b-form-group>
-            <b-form-group
-              id="group-manager"
-              label="{{__('Manager')}}"
-              label-for="manager_id"
-            >
-                <select-from-api
-                    id="manager_id"
-                    v-model="formData.manager_id"
-                    type="text"
-                    required
-                    placeholder="{{__('Manager user')}}"
-                    api="users"
-                    :exclude_ids="[formData.id]"
-                    label="fullname"
-                    :undefined-value="null"
-                />
-            </b-form-group>
+
+            @isset($addonsSettings)
+                @foreach ($addonsSettings as $addon)
+                    {!! $addon['content'] ?? '' !!}
+                @endforeach
+            @endisset
     </div>
 </div>
