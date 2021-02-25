@@ -607,10 +607,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         return function ($query) use ($value, $statusMap, $expression) {
             if (array_key_exists($value, $statusMap)) {
-                $query->where('status', $expression->operator, $statusMap[$value]);
-            } else {
-                $query->where('status', $value);
+                $value = $statusMap[$value];
             }
+            $query->where('status', $expression->operator, $value);
         };
     }
 
