@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Lavary\Menu\Facade as Menu;
+use ProcessMaker\Models\Setting;
 
 class GenerateMenus
 {
@@ -31,7 +32,7 @@ class GenerateMenus
                     $request_items->add(__('Designer'), ['route' => 'processes.index'])->active('processes/*');
                 });
             }
-            if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients')) {
+            if (\Auth::check() && \Auth::user()->canAny('view-users|view-groups|view-auth_clients|view-settings')) {
                 $menu->group(['prefix' => 'admin'], function ($admin_items) {
                     $admin_items->add(__('Admin'), ['route' => 'admin.index'])->active('admin/*');
                 });
@@ -52,6 +53,13 @@ class GenerateMenus
                 $submenu->add(__('Groups'), [
                     'route' => 'groups.index',
                     'icon' => 'fa-users',
+                    'id' => 'homeid'
+                ]);
+            }
+            if (\Auth::check() && \Auth::user()->can('view-settings') && Setting::notHidden()->count()) {
+                $submenu->add(__('Settings'), [
+                    'route' => 'settings.index',
+                    'icon' => 'fa-sliders-h',
                     'id' => 'homeid'
                 ]);
             }
