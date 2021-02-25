@@ -56,8 +56,6 @@ class UserController extends Controller
         $status = [
             ['value' => 'ACTIVE', 'text' => __('ACTIVE')],
             ['value' => 'INACTIVE', 'text' => __('INACTIVE')],
-            ['value' => 'OUT_OF_OFFICE', 'text' => __('OUT_OF_OFFICE')],
-            ['value' => 'SCHEDULED', 'text' => __('SCHEDULED')],
         ];
 
         $timezones = array_reduce(
@@ -79,6 +77,7 @@ class UserController extends Controller
         );
 
         $addons = $this->getPluginAddons('edit', compact(['user']));
+        $addonsSettings = $this->getPluginAddons('edit.settings', compact(['user']));
 
         return view('admin.users.edit', compact(
             'user',
@@ -92,7 +91,8 @@ class UserController extends Controller
             'datetimeFormats',
             'availableLangs',
             'status',
-            'addons'
+            'addons',
+            'addonsSettings',
         ));
     }
 

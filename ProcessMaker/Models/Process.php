@@ -17,6 +17,7 @@ use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -143,6 +144,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     use ProcessTrait;
 
     const categoryClass = ProcessCategory::class;
+    const ASSIGNMENT_PROCESS = 'Assignment process';
 
     protected $connection = 'processmaker';
 
@@ -526,6 +528,15 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             case 'script':
             default:
                 $user = null;
+        }
+        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
+        if ($assignmentProcesss) {
+            $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
+                'user_id' => $user,
+                'process_id' => $this->id,
+                'request_id' => $token->getInstance()->getId(),
+            ]);
+            $user = $res['assign_to'];
         }
         return $user ? User::where('id', $user)->first() : null;
     }

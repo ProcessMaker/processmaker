@@ -8,6 +8,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
@@ -723,5 +724,52 @@ class ProcessRequestToken extends Model implements TokenInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->saveOrFail();
         $token->setId($token->getKey());        
+    }
+
+    /**
+     * Escalate task to manager
+     *
+     * @return int
+     */
+    public function escalateToManager()
+    {
+        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
+        if ($assignmentProcesss) {
+            $res = WorkflowManager::runProcess($assignmentProcesss, 'escalate', [
+                'task_id' => $this->id,
+                'user_id' => $this->user_id,
+                'process_id' => $this->process_id,
+                'request_id' => $this->process_request_id,
+            ]);
+            $this->user_id = $res['assign_to'];
+            return $res['assign_to'];
+        }
+        return $this->user_id;
+    }
+
+    /**
+     * Reassign task to $userId
+     *
+     * @param string $userId
+     *
+     * @return self
+     */
+    public function reassignTo($userId)
+    {
+        if ($userId === "#manager") {
+            $this->escalateToManager();
+            return $this;
+        }
+        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
+        if ($assignmentProcesss) {
+            $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
+                'task_id' => $this->id,
+                'user_id' => $userId,
+                'process_id' => $this->process_id,
+                'request_id' => $this->process_request_id,
+            ]);
+            $this->user_id = $res['assign_to'];
+        }
+        return $this;
     }
 }
