@@ -19,10 +19,12 @@ use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Observers\ProcessCollaborationObserver;
 use ProcessMaker\Observers\ProcessObserver;
 use ProcessMaker\Observers\ProcessRequestObserver;
+use ProcessMaker\Observers\SettingObserver;
 use ProcessMaker\Observers\UserObserver;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Observers\ProcessRequestTokenObserver;
@@ -43,6 +45,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(UserObserver::class);
+        Setting::observe(SettingObserver::class);
         Process::observe(ProcessObserver::class);
         ProcessRequest::observe(ProcessRequestObserver::class);
         ProcessRequestToken::observe(ProcessRequestTokenObserver::class);
