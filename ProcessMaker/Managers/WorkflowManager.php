@@ -196,7 +196,7 @@ class WorkflowManager
         $excludeProcesses = [$token->getInstance()->getModel()->process_id];
         $excludeRequests = [];
         $instances = $token->getInstance()->getProcess()->getEngine()->getExecutionInstances();
-        foreach($instances as $instance) {
+        foreach ($instances as $instance) {
             $excludeRequests[] = $instance->getId();
         }
         ThrowSignalEvent::dispatch($signalRef, $data, $excludeProcesses, $excludeRequests)->onQueue('bpmn');
@@ -254,10 +254,18 @@ class WorkflowManager
         $this->validator->validate($data);
     }
 
-    public function runProcess($id, $startId, array $data, $silent = true)
+    /**
+     * Run a process and returns its data
+     *
+     * @param Definitions $definitions
+     * @param string $startId
+     * @param array $data
+     *
+     * @return array
+     */
+    public function runProcess(Definitions $definitions, $startId, array $data)
     {
-        $definitions = Definitions::find($id);
-        $startEvent = $definitions->getDefinitions()->getProcess($startId);
+        $startEvent = $definitions->getDefinitions()->getStartEvent($startId);
         $instance = $this->triggerStartEvent($definitions, $startEvent, $data);
         return $instance->getDataStore()->getData();
     }

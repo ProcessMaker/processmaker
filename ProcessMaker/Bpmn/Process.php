@@ -49,8 +49,13 @@ class Process extends ModelsProcess
         }
     }
 
+    /**
+     * Return true if the process is not persistent
+     *
+     * @return boolean
+     */
     public function isNonPersistent()
     {
-        return true;
+        return strpos($this->getId(), 'non_persistent') !== false;
     }
 }
