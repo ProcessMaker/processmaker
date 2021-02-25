@@ -42,7 +42,7 @@ class UserController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
      *     @OA\Parameter(
-     *         name="exclude",
+     *         name="exclude_ids",
      *         in="query",
      *         description="Comma separated list of IDs to exclude from the response",
      *         @OA\Schema(type="string", default=""),
