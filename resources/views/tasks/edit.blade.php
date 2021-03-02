@@ -317,12 +317,15 @@
         },
         methods: {
           escalateToManager() {
-            ProcessMaker.apiClient
-              .put("tasks/" + this.task.id, {
-                user_id: '#manager',
-              })
-              .then(response => {
-                window.location.reload();
+            ProcessMaker.confirmModal(
+              'Confirm action', 'Are you sure to scale this task?', '', () => {
+                ProcessMaker.apiClient
+                  .put("tasks/" + this.task.id, {
+                    user_id: '#manager',
+                  })
+                  .then(response => {
+                    this.redirect("/tasks");
+                  });
               });
           },
           completed(processRequestId) {

@@ -55,6 +55,27 @@ class FormalExpression implements FormalExpressionInterface
     private function registerPMFunctions()
     {
         $this->feelExpression->register(
+            'getActiveTaskAt',
+            function () {
+            },
+            function ($arguments, $element_id, $request_id) {
+                $task = ProcessRequestToken::where('element_id', $element_id)
+                    ->where('process_request_id', $request_id)
+                    ->where('status', 'ACTIVE')
+                    ->first();
+                return $task;
+            }
+        );
+        $this->feelExpression->register(
+            'escalateTask',
+            function () {
+            },
+            function ($arguments, $task_id) {
+                $task = ProcessRequestToken::find($task_id);
+                $task->reassignTo('#manager')->save();
+            }
+        );
+        $this->feelExpression->register(
             'reassignTasks',
             function () {
             },

@@ -69,7 +69,7 @@ use Throwable;
  *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="category", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
-
+ *
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -529,14 +529,16 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             default:
                 $user = null;
         }
-        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
-        if ($assignmentProcesss) {
-            $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
-                'user_id' => $user,
-                'process_id' => $this->id,
-                'request_id' => $token->getInstance()->getId(),
-            ]);
-            $user = $res['assign_to'];
+        if ($user) {
+            $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
+            if ($assignmentProcesss) {
+                $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
+                    'user_id' => $user,
+                    'process_id' => $this->id,
+                    'request_id' => $token->getInstance()->getId(),
+                ]);
+                $user = $res['assign_to'];
+            }
         }
         return $user ? User::where('id', $user)->first() : null;
     }
@@ -865,9 +867,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      *
      * @return array
      */
-    private function getStartEventPermissions()
+    private function getStartEventPermissions(User $user)
     {
         $permissions = [];
+
         foreach ($this->usersCanStart()->withPivot('node')->get() as $user) {
             $permissions[$user->pivot->node][$user->id] = $user->id;
         }
