@@ -1,327 +1,124 @@
 <template>
   <div>
-    <div class="d-flex justify-content-between">
-      <label class="m-0">
-        {{ $t('Expressions') }}
-      </label>
-      <b-button class="add-button align-top d-inline rounded-0" variant="secondary" size="sm" @click="showAddCard()">+</b-button>
-    </div>
-    <div class="helper-text mb-3"><small class="d-block">{{ $t('Expressions are evaluated top to bottom') }}</small></div>
-
-    <div v-if="showCard" class="card mb-2">
-      <div class="card-header">
-        {{ title }}
-      </div>
-      <div class="card-body p-2">
-        <div class="form-group">
-          <label>{{ $t("FEEL Expression") }}</label>
-          <textarea class="form-control special-assignment-input" ref="specialAssignmentsInput"  v-model="assignmentExpression" />
-          <small class="form-text text-muted">{{ $t("If the FEEL Expression evaluates to true then") }}</small>
-        </div>
-
-        <div class="form-group">
-          <select-user-group
-            :label="$t('Assign to User / Group')"
-            v-model="assignedExpression"
-            :hide-users="false"
-            :multiple="false"
-          />
-        </div>
-      </div>
-      <div class="card-footer text-right p-2">
-        <button type="button" class="btn btn-sm btn-outline-secondary mr-2" @click="hideAddCard">
-          {{ $t('Cancel') }}
-        </button>
-        <button type="button" class="btn btn-sm btn-secondary" @click="addSpecialAssignment(editIndex)">
-          {{ buttonLabel }}
-        </button>
-      </div>
-    </div>
-
-    <div v-if="showConfirmationCard">
-      <div class="card mb-3 bg-danger text-white text-right">
-        <div class="card-body p-2" v-html="confirmationMessage"></div>
-        <div class="card-footer text-right p-2">
-          <button type="button" class="btn btn-sm btn-light mr-2" @click="showConfirmationCard = false">
-            {{ $t('Cancel') }}
-          </button>
-          <button type="button" class="btn btn-sm btn-danger" @click="deleteExpression()">
-            {{ $t('Delete') }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <draggable :element="'div'" v-model="specialAssignmentsList" group="assignment" @start="drag=true" @end="drag=false" >
-      <div v-for="(assignment, index) in specialAssignmentsList" :key="index" :class="rowCss(index)" class="row border-bottom py-2 assignment-list">
-        <div class="d-flex col-12">
-          <div class="col-1 p-0" style="cursor:grab">
-            <span class="fas fa-arrows-alt-v"/>
-          </div>
-          <div class="col-9 p-0" style="cursor:grab" >
-            <div class="displayed-expression text-truncate">
-              {{ assignment.expression }}
-            </div>
-            <div>
-              <i v-if="assignment.type == 'user'" class="fas fa-user"></i>
-              <i v-else class="fas fa-users"></i> 
-              {{ assignment.assignmentName }}
-            </div>
-          </div>
-          <div class="col-1 p-0 pr-3">
-            <a @click="showEditCard(index)" class="fas fa-cog text-dark" style="cursor:pointer" data-cy="inspector-options-edit"/>
-          </div>
-          <div class="col-1 p-0">
-            <a @click="showDeleteConfirmation(index)" class="fas fa-trash-alt text-dark" style="cursor:pointer" data-cy="inspector-options-remove" />
-          </div>
-        </div>
-      </div>
-    </draggable>
-
     <div class="form-group">
-      <select-user-group
-        :label="$t('Default Assignment')"
-        v-model="defaultAssignment"
-        :hide-users="false"
-        :multiple="false" 
-        :helper="$t('If no evaluations are true')"
-      />
+      <label>Signal Payload</label>
+        <multiselect
+            v-model="selectedPayloadType"
+            @input="payloadChange"
+            placeholder="Select Option"
+            :options="payloadTypes"
+            track-by="id"
+            label="name"
+            :show-labels="false"
+            :searchable="true"
+            :internal-search="false"
+        >
+          <template slot="noResult">
+            <slot name="noResult">{{ $t('Not found') }}</slot>
+          </template>
+          <template slot="noOptions">
+            <slot name="noOptions">{{ $t('No Data Available') }}</slot>
+          </template>
+        </multiselect>
+    </div>
+
+    <div class="form-group" v-if="showVariable">
+      <label>{{ variableLabel }}</label>
+      <input class="form-control" type="text" v-model="config.payload[0].variable">
+      <small class="form-text text-muted">{{ variableHelper }}</small>
+    </div>
+    <div class="form-group" v-if="showExpression">
+      <label>{{$t('Expression')}}</label>
+      <input class="form-control" type="text" v-model="config.payload[0].expression">
     </div>
   </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable';
 
 export default {
   props: ['value'],
-  components: {
-    draggable
-  },
   data() {
     return {
-      showCard: false,
-      assignmentExpression: null,
-      assignmentList: [],
-      assignedExpression: null,
-      specialAssignments: [],
-      cardType: null,
-      buttonLabel: null,
-      editIndex: null,
-      removeIndex: null,
-      showConfirmationCard: false,
-      defaultAssignment: {
-        users: [],
-        groups: []
+      config: {
+        payload: [{
+          id: 'ALL_REQUEST_DATA',
+          variable: '',
+          expression: ''
+        }]
       },
+      selectedPayloadType: null
     }
   },
   computed: {
-    title() {
-      if (this.cardType == 'edit') {
-        return this.$t('Edit FEEL Expression');
-      } else {
-        return this.$t('Add FEEL Expression');
-      }
+    showVariable() {
+      return this.config.payload && this.config.payload.length > 0 &&
+          (this.config.payload[0].id === 'REQUEST_VARIABLE' || this.config.payload[0].id === 'EXPRESSION');
     },
-    confirmationMessage() {
-      const item = this.specialAssignments[this.removeIndex].expression;
-      return this.$t('Are you sure you want to delete expression {{item}}', {item: item});
+    showExpression() {
+      return this.config.payload && this.config.payload.length > 0 && this.config.payload[0].id === 'EXPRESSION';
     },
-    specialAssignmentsList: {
-      get() {
-        return this.specialAssignments.filter(assignment => {
-          return !assignment.default;
-        });
-      },
-      set(value) {
-        this.specialAssignments = value;
-      }
+    variableLabel() {
+      return this.config.payload && this.config.payload.length > 0 && this.config.payload[0].id === 'EXPRESSION'
+        ? this.$t("Name")
+        : this.$t("Request Variable")
     },
-    defaultAssignmentIndex() {
-      let defaultAssignment = this.specialAssignments.filter(assignment => {
-        return assignment.default;
-      });
-      let index = this.specialAssignments.indexOf(defaultAssignment[0]);
-      return index >= 0 ? index : null;
-    }
+    variableHelper() {
+      return this.config.payload && this.config.payload.length > 0 && this.config.payload[0].id === 'EXPRESSION'
+          ? this.$t("Name to identify the expression result.")
+          : this.$t("Name of the request variable to send as payload.")
+    },
+    payloadTypes() {
+      return [
+        { id: 'NONE', name: this.$t('No Request Data') },
+        { id: 'ALL_REQUEST_DATA', name: this.$t('All Request Data') },
+        { id: 'REQUEST_VARIABLE', name: this.$t('Specify Request Variable') },
+        { id: 'EXPRESSION', name: this.$t('Specify Expression') },
+      ];
+    },
   },
   watch: {
-    specialAssignments: {
+    'config.payload': {
       deep:true,
-      handler() {
-        this.setDefaultAssignmentToEndOfArray();
-        this.$emit('input', this.specialAssignments);
-      }
+      handler(value) {
+        if (value && value.length > 0) {
+          const firstElem = value[0];
+          this.selectedPayloadType = this.payloadTypes.find(type => type.id == firstElem.id) || null;
+        }
+        else {
+          this.selectedPayloadType = null;
+        }
+      },
     },
-    value: {
+    config: {
       deep: true,
-      handler() {
-        this.specialAssignments = this.value;
-      }
-    },
-    defaultAssignment: {
-      deep: true,
-      handler() {
-        if (this.defaultAssignment.users.length === 0 && this.defaultAssignment.groups.length === 0) {
-          return;
-        }
-        let field;
-        if (this.defaultAssignment.users.length && Object.keys(this.defaultAssignment.users[0]).length) {        
-          let name = this.defaultAssignment.users[0].fullname ? this.defaultAssignment.users[0].fullname : this.defaultAssignment.users[0].assignmentName;
-          let id = this.defaultAssignment.users[0].id ? this.defaultAssignment.users[0].id : this.defaultAssignment.users[0].assignee;
-          field = {
-            "type" : "user",
-            "name": name,
-            "id": id,
-          };
-        } else if (this.defaultAssignment.groups.length && Object.keys(this.defaultAssignment.groups[0]).length)  {
-          let name = this.defaultAssignment.groups[0].name ? this.defaultAssignment.groups[0].name : this.defaultAssignment.groups[0].assignmentName;
-          let id;
-          if (this.defaultAssignment.groups[0].id) {
-            if (this.defaultAssignment.groups[0].id.includes("group")){
-              id = this.defaultAssignment.groups[0].id.replace("group-", "");
-            } else {
-              id = this.defaultAssignment.groups[0].id;
+      handler()  {
+        if (this.node()) {
+          this.node().eventDefinitions.forEach(definition => {
+            if(definition.$type === 'bpmn:SignalEventDefinition') {
+              definition.config = JSON.stringify(this.config);
             }
-          } else {
-            if (this.defaultAssignment.groups[0].assignee.includes("group")) {
-              id = this.defaultAssignment.groups[0].assignee.replace("group-", "");
-            } else {
-              id = this.defaultAssignment.groups[0].assignee;
-            }
-          }
-          field = {
-            "type" : "group",
-            "name": name,
-            "id": id,
-          };
-        }
-        
-        if (!field) {
-          return;
-        }
-
-        let byExpression = {
-          type: field.type,
-          assignee: field.id,
-          expression: this.assignmentExpression,
-          assignmentName: field.name,
-          default: true,
-        };
-        if (this.defaultAssignmentIndex != null) {
-          this.specialAssignments[this.defaultAssignmentIndex] = byExpression;
-          this.$emit('input', this.specialAssignments);
-        } else {
-          this.specialAssignments.push(byExpression);
+          }, this)
         }
       }
     }
   },
   methods: {
-    addSpecialAssignment(editIndex = null) {
-        let field;
-        if (this.assignedExpression.users.length) {
-          field = {
-            "type" : "user",
-            "name": this.assignedExpression.users[0].fullname,
-            "id": this.assignedExpression.users[0].id,
-          };
-        } else if (this.assignedExpression.groups.length) {
-          field = {
-            "type" : "group",
-            "name": this.assignedExpression.groups[0].name,
-            "id": this.assignedExpression.groups[0].id.replace('group-', ''),
-          };
-        }
-        let byExpression = {
-          type: field.type,
-          assignee: field.id,
-          expression: this.assignmentExpression,
-          assignmentName: field.name
-        };
-
-        if (byExpression.expression) {
-          if (editIndex !== null)  {
-            if (byExpression.assignee == null) {
-              byExpression.assignee = this.specialAssignments[editIndex].assignee;
-              byExpression.assignmentName = this.specialAssignments[editIndex].assignmentName;
-            }
-            this.specialAssignments[editIndex] = byExpression;
-            this.$emit('input', this.specialAssignments);
-          } else {
-            this.specialAssignments.push(byExpression);
-          }
-        }
-        this.hideAddCard();
+    payloadChange(selectedObject) {
+      this.config.payload[0].id = selectedObject.id;
     },
-    rowCss(index) {
-      return index % 2 === 0 ? 'striped' : 'bg-default';
+    node() {
+      const modeler =  this.$root.$children[0].$refs.modeler;
+      return modeler.highlightedNode.definition;
     },
-    showEditCard(index) { 
-      this.showCard = true;
-      this.cardType = 'edit';
-      this.buttonLabel = this.$t('Update');
-      this.editIndex = index;
-      this.assignmentExpression = this.specialAssignments[index].expression;
-      let assignee = {
-        users: [],
-        groups: []
-      };
-      if (this.specialAssignments[index].type == 'user') {
-        assignee.users.push(this.specialAssignments[index].assignee);
-      } else if (this.specialAssignments[index].type == 'group') {
-        assignee.groups.push(parseInt(this.specialAssignments[index].assignee.substr(6)));
-      }
-
-      this.assignedExpression = assignee;
-    },
-    showDeleteConfirmation(index) {
-      this.removeIndex = index;
-      this.showConfirmationCard = true;
-    },
-    showAddCard() {
-      this.buttonLabel = this.$t('Add');
-      this.showCard = true;
-    },
-    deleteExpression() {
-      this.specialAssignments.splice(this.removeIndex, 1);
-      this.showConfirmationCard = false;
-    },
-    hideAddCard() {
-      this.showCard = false;
-      this.assignmentExpression = null;
-      this.assignedExpression = null;
-      this.editIndex = null;
-    },
-    setDefaultAssignmentToEndOfArray() {
-      let index = this.specialAssignments.findIndex(item => item.default == true);
-      let length = this.specialAssignments.length - 1;
-      if (index == -1) {
-        return;
-      }
-      if (index != length) {
-        this.specialAssignments.push(this.specialAssignments.splice(index,1)[0]);
-      }
-    },
-    loadDefaultAssignment() {
-      let defaultAssignment = this.specialAssignments.filter(assignment => { return assignment.default;});
-      if (defaultAssignment.length == 0) {
-        return;
-      } 
-      if (defaultAssignment[0].type == 'user') {
-        this.defaultAssignment.users.push(defaultAssignment[0]);
-      } else if (defaultAssignment[0].type == 'group') {
-        if (typeof defaultAssignment[0].assignee != 'number') {
-          defaultAssignment[0].assignee = defaultAssignment[0].assignee.replace("group-", "");
-        }
-        this.defaultAssignment.groups.push(defaultAssignment[0]);
+    loadConfig() {
+      if (this.node().eventDefinitions && this.node().eventDefinitions.length > 0 && this.node().eventDefinitions[0].config) {
+        this.config = JSON.parse(_.get(this.node().eventDefinitions[0], 'config'));
       }
     },
   },
   mounted() {
-    this.specialAssignments = this.value;
-    this.loadDefaultAssignment();
+    this.loadConfig();
   }
 }
 </script>
