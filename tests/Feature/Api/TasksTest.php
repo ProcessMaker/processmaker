@@ -517,7 +517,6 @@ class TasksTest extends TestCase
         $url = route('api.tasks.index') . 
                "?pmql=(user_id%20%3D%20${userId})%20AND%20(status%20%3D%20%22Self%20Service%22)";
         $response = $this->apiCall('GET', $url);
-        dd($response->json());
 
         $expectedTaskIds = collect([
             $selfServiceTaskOriginal,
