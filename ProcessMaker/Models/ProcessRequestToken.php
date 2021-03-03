@@ -519,8 +519,12 @@ class ProcessRequestToken extends Model implements TokenInterface
     
         return function($query) use ($value, $statusMap, $expression) {
             if ($value === 'self service') {
-                $query->where('status', 'ACTIVE')
-                ->where('is_self_service', 1);
+                if (auth()->user()) {
+                    $taskIds = auth()->user()->availableSelfServiceTaskIds();
+                    $query->whereIn('id', $taskIds);
+                } else {
+                    $query->where('is_self_service', 1);
+                }
             } elseif (array_key_exists($value, $statusMap)) {
                 $query->where('status',  $expression->operator, $statusMap[$value])
                     ->where('is_self_service', 0);
