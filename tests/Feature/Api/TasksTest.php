@@ -452,7 +452,7 @@ class TasksTest extends TestCase
 
     public function testSelfServeTasks()
     {
-        $user = factory(User::class)->create(['status' => 'ACTIVE']);
+        $this->user = $user = factory(User::class)->create(['status' => 'ACTIVE']);
         $otherUser = factory(User::class)->create(['status' => 'ACTIVE']);
 
         $group1 = factory(Group::class)->create();
@@ -514,8 +514,7 @@ class TasksTest extends TestCase
         ]);
 
         $userId = $user->id;
-        $url = route('api.tasks.index') . 
-               "?pmql=(user_id%20%3D%20${userId})%20AND%20(status%20%3D%20%22Self%20Service%22)";
+        $url = route('api.tasks.index') . "?pmql=(status%20%3D%20%22Self%20Service%22)";
         $response = $this->apiCall('GET', $url);
 
         $expectedTaskIds = collect([
