@@ -21,11 +21,13 @@ class AssignmentProcess extends Seeder
         }
 
         $admin = User::where('is_administrator', true)->firstOrFail();
+        $processCategory = ProcessCategory::where('is_system', true)->firstOrFail();
         $bpmn = file_get_contents(__DIR__ . '/../processes/' . static::$TEMPLATE_PROCESS_FILE);
 
         Process::unguard();
         Process::updateOrCreate([
             'name' => Process::ASSIGNMENT_PROCESS,
+            'process_category_id' => $processCategory->id,
             'description' => 'Assignment Process',
             'bpmn' => $bpmn,
             'user_id' => $admin->id,
