@@ -1377,5 +1377,9 @@
   "Uncategorized": "Uncategorized",
   "Comments Active Tasks": "Comments Active Tasks",
   "Modified By Tasks": "Modified By Tasks",
-  "The :file you requested is now ready for download.": "The :file you requested is now ready for download."
+  "The :file you requested is now ready for download.": "The :file you requested is now ready for download.",
+  "No Request Data": "No Request Data",
+  "All Request Data": "All Request Data",
+  "Specify Request Variable": "Specify Data Variable",
+  "Specify Expression": "Specify Expression"
 }
