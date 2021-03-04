@@ -430,4 +430,25 @@ class User extends Authenticatable implements HasMedia
     {
         $this->groups()->detach();
     }
+
+    public function availableSelfServiceTaskIds()
+    {
+        $groupIds = $this->groups()->pluck('groups.id');
+        $userId = $this->id;
+
+        $taskQuery = ProcessRequestToken::where([
+            'is_self_service' => true,
+            'status' => 'ACTIVE',
+            'user_id' => null
+        ]);
+
+        $sqlWhere = $groupIds->map(function($groupId) {
+            return "JSON_CONTAINS(self_service_groups, '$groupId') OR 
+                    JSON_CONTAINS(self_service_groups, '$groupId', '$.groups')";
+        })
+        ->push("JSON_CONTAINS(self_service_groups, '$userId', '$.users')")
+        ->join(" OR ");
+
+        return $taskQuery->whereRaw($sqlWhere)->pluck('id');
+    }
 }
