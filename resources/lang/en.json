@@ -1430,5 +1430,9 @@
   "Saved Search": "Saved Search",
   "Docker file": "Docker file",
   "URL": "URL",
-  "Error Message": "Error Message"
+  "Error Message": "Error Message",
+  "All Request Data": "All Request Data",
+  "No Request Data": "No Request Data",
+  "Specify Request Variable": "Specify Data Variable",
+  "Specify Expression": "Specify Expression"
 }
