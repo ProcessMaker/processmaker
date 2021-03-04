@@ -4,6 +4,7 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Arr;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
@@ -13,6 +14,7 @@ use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
 use ProcessMaker\Jobs\ThrowMessageEvent;
 use ProcessMaker\Jobs\ThrowSignalEvent;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
@@ -25,6 +27,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+
 
 class WorkflowManager
 {
@@ -186,13 +189,45 @@ class WorkflowManager
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "-". __LINE__ ." throw signal ");
         $signalRef = $sourceEventDefinition->getProperty('signal') ?
             $sourceEventDefinition->getProperty('signal')->getId() :
             $sourceEventDefinition->getProperty('signalRef');
+
         if (!$signalRef) {
             return;
         }
-        $data = $token->getInstance()->getDataStore()->getData();
+
+        $requestData = $token->getInstance()->getDataStore()->getData();
+        $eventConfig = json_decode($sourceEventDefinition->getProperty('config') ?? null);
+        $payload = $eventConfig && $eventConfig->payload ? $eventConfig->payload[0] : null;
+        $payloadId = $payload && $payload->id ? $payload->id : null;
+
+        $data = [];
+
+        switch ($payloadId) {
+            case "REQUEST_VARIABLE":
+                if ($payload->variable) {
+                    $extractedData = Arr::get($requestData, $payload->variable);
+                    Arr::set($data, $payload->variable, $extractedData);
+                }
+                break;
+            case "EXPRESSION":
+                $expression = $payload->expression;
+                $formalExp = new FormalExpression();
+                $formalExp->setLanguage('FEEL');
+                $formalExp->setBody($expression);
+                $expressionResult = $formalExp($requestData);
+                Arr::set($data, $payload->variable, $expressionResult);
+                break;
+            case "NONE":
+                $data = [];
+                break;
+            default:
+                $data = $requestData;
+                break;
+        }
+
         $excludeProcesses = [$token->getInstance()->getModel()->process_id];
         $excludeRequests = [];
         $instances = $token->getInstance()->getProcess()->getEngine()->getExecutionInstances();

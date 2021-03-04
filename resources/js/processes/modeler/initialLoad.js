@@ -19,7 +19,9 @@ import {
   serviceTask,
   callActivity,
   eventBasedGateway,
-  intermediateMessageCatchEvent
+  intermediateMessageCatchEvent,
+  intermediateSignalThrowEvent,
+  signalEndEvent
 } from '@processmaker/modeler';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -31,6 +33,7 @@ import TaskAssignment from './components/inspector/TaskAssignment';
 import TaskDueIn from './components/inspector/TaskDueIn';
 import GatewayFlowVariable from './components/inspector/GatewayFlowVariable';
 import ConfigEditor from './components/inspector/ConfigEditor';
+import SignalPayload from './components/inspector/SignalPayload';
 import ScriptSelect from './components/inspector/ScriptSelect';
 import StartPermission from './components/inspector/StartPermission';
 import {registerNodes} from "@processmaker/modeler";
@@ -49,6 +52,7 @@ Vue.component('TaskAssignment', TaskAssignment);
 Vue.component('TaskDueIn', TaskDueIn);
 Vue.component('GatewayFlowVariable', GatewayFlowVariable);
 Vue.component('ConfigEditor', ConfigEditor);
+Vue.component('SignalPayload', SignalPayload);
 Vue.component('ScriptSelect', ScriptSelect);
 Vue.component('StartPermission', StartPermission);
 Vue.component("Interstitial", Interstitial);
@@ -72,6 +76,8 @@ let nodeTypes = [
   serviceTask,
   textAnnotation,
   intermediateMessageCatchEvent,
+  intermediateSignalThrowEvent,
+  signalEndEvent,
   eventBasedGateway,
 ];
 
@@ -375,6 +381,24 @@ ProcessMaker.EventBus.$on(
           }
         },
       ],
+    });
+
+    registerInspectorExtension(intermediateSignalThrowEvent, {
+      component: "SignalPayload",
+      config: {
+        label: "Payload Type",
+        helper: "data that will be sent as payload",
+        name: "interstitial"
+      }
+    });
+
+    registerInspectorExtension(signalEndEvent, {
+      component: "SignalPayload",
+      config: {
+        label: "Payload Type",
+        helper: "data that will be sent as payload",
+        name: "interstitial"
+      }
     });
   }
 );

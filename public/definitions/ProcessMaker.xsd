@@ -116,6 +116,14 @@
         </xsd:complexContent>
     </xsd:complexType>
 
+    <xsd:complexType name="tPmSignalEventDefinition">
+        <xsd:complexContent>
+            <xsd:extension base="bpmn:tSignalEventDefinition">
+                <xsd:attribute name="config" type="xsd:string" use="optional"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
     <xsd:complexType name="tPmSequenceFlow">
         <xsd:complexContent>
             <xsd:extension base="bpmn:tSequenceFlow">
