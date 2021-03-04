@@ -756,6 +756,31 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     }
 
     /**
+     * Check if the user belongs to the group
+     */
+    private function doesUserBelongsGroup($userId, $groupId)
+    {
+        $isMember = GroupMember::where('group_id', $groupId)
+            ->where('member_type', User::class)
+            ->where('member_id', $userId)
+            ->first();
+        if ($isMember) {
+            return true;
+        } else {
+            $groupMembers = GroupMember::where('group_id', $groupId)
+                ->where('member_type', Group::class)
+                ->get();
+            foreach ($groupMembers as $groupMember) {
+                $belongs = $this->doesUserBelongsGroup($userId, $groupMember->member_id);
+                if ($belongs) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get a list of the process start events.
      *
      * @return array
@@ -763,16 +788,32 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     public function getStartEvents($filterWithPermissions = false)
     {
         $user = Auth::user();
-        $isAdmin = $user ? $user->is_administrator : false;
-        $permissions = $filterWithPermissions && !$isAdmin ? $this->getStartEventPermissions() : [];
-        $nofilter = $isAdmin || !$filterWithPermissions;
-        $response = [];
+        // Load Process Start Events
         if (!isset($this->start_events)) {
             $this->start_events = $this->getUpdatedStartEvents();
         }
+        // If user is administrator heshe can access all the start events
+        if (!$filterWithPermissions || $user->is_administrator) {
+            return $this->start_events;
+        }
+        // Filter the start events assigned to the user
+        $response = [];
         foreach ($this->start_events as $startEvent) {
-            $id = $startEvent['id'];
-            if ($nofilter || ($user && isset($permissions[$id]) && in_array($user->id, $permissions[$id]))) {
+            if (isset($startEvent['assignment']) && $startEvent['assignment'] === 'user') {
+                $users = explode(',', $startEvent['assignedUsers']);
+                $access = in_array($user->id, $users);
+            } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'group') {
+                $access = false;
+                foreach (explode(',', $startEvent['assignedGroups']) as $groupId) {
+                    $access = $this->doesUserBelongsGroup($user->id, $groupId);
+                    if ($access) {
+                        break;
+                    }
+                }
+            } else {
+                $access = false;
+            }
+            if ($access) {
                 $response[] = $startEvent;
             }
         }

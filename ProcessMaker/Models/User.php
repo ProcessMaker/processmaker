@@ -363,10 +363,15 @@ class User extends Authenticatable implements HasMedia
             return false;
         }
 
-        return collect($task->self_service_groups)
-            ->intersect(
-                $this->groups()->pluck('groups.id')
-            )->count() > 0;
+        if (in_array(\Auth::user()->id, $task->self_service_groups['users'])) {
+            return true;
+        } else {
+            $groups = collect($task->self_service_groups['groups'])
+                ->intersect(
+                    $this->groups()->pluck('groups.id')
+                )->count() > 0;
+            return $groups;
+        }
     }
 
     public function updatePermissionsToRequests()
@@ -424,5 +429,26 @@ class User extends Authenticatable implements HasMedia
     public function removeFromGroups()
     {
         $this->groups()->detach();
+    }
+
+    public function availableSelfServiceTaskIds()
+    {
+        $groupIds = $this->groups()->pluck('groups.id');
+        $userId = $this->id;
+
+        $taskQuery = ProcessRequestToken::where([
+            'is_self_service' => true,
+            'status' => 'ACTIVE',
+            'user_id' => null
+        ]);
+
+        $sqlWhere = $groupIds->map(function($groupId) {
+            return "JSON_CONTAINS(self_service_groups, '$groupId') OR 
+                    JSON_CONTAINS(self_service_groups, '$groupId', '$.groups')";
+        })
+        ->push("JSON_CONTAINS(self_service_groups, '$userId', '$.users')")
+        ->join(" OR ");
+
+        return $taskQuery->whereRaw($sqlWhere)->pluck('id');
     }
 }

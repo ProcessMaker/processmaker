@@ -815,14 +815,18 @@ class ProcessTest extends TestCase
 
         // Prepare a process
         $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
-        $node = 'StartEventUID';
+
+        // Assign start event to $user
+        $bpmn = \str_replace(
+            '<startEvent id="StartEventUID"',
+            '<startEvent id="StartEventUID" pm:assignment="user" pm:assignedUsers="' . $this->user->id . '"',
+            $bpmn
+        );
 
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
             'bpmn' => $bpmn,
         ]);
-        // Need to check that sync works with param.....
-        $process->usersCanStart($node)->sync([$this->user->id => ['method' => 'START', 'node' => $node]]);
 
         $other_process = factory(Process::class)->create([
             'status' => 'ACTIVE',
