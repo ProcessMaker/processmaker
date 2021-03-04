@@ -189,6 +189,7 @@ class WorkflowManager
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
+        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "-". __LINE__ ." throw signal ");
         $signalRef = $sourceEventDefinition->getProperty('signal') ?
             $sourceEventDefinition->getProperty('signal')->getId() :
             $sourceEventDefinition->getProperty('signalRef');
@@ -200,9 +201,11 @@ class WorkflowManager
         $requestData = $token->getInstance()->getDataStore()->getData();
         $eventConfig = json_decode($sourceEventDefinition->getProperty('config') ?? null);
         $payload = $eventConfig && $eventConfig->payload ? $eventConfig->payload[0] : null;
+        $payloadId = $payload && $payload->id ? $payload->id : null;
 
-        $data=[];
-        switch ($payload->id) {
+        $data = [];
+
+        switch ($payloadId) {
             case "REQUEST_VARIABLE":
                 if ($payload->variable) {
                     $extractedData = Arr::get($requestData, $payload->variable);
