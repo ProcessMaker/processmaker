@@ -20,14 +20,27 @@ trait HasSelfServiceTasks
         }
         $definitions = new BpmnDocument();
         $definitions->loadXML($this->bpmn);
-        $tasks = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'task');
-        foreach ($tasks as $task) {
-            $id = $task->getAttribute('id');
-            $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
-            if ($assignment === 'self_service') {
-                $response[$id]['groups'] = explode(',', $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedGroups'));
-                $response[$id]['users'] = explode(',', $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers'));
-            }
+        foreach ($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'task') as $task) {
+            $response = $this->assignSelfService($task);
+        }
+
+        foreach ($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'manualTask') as $task) {
+            $response = $this->assignSelfService($task);
+        }
+        
+        return $response;
+    }
+
+    /**
+    * Assign self service
+    */
+    private function assignSelfService($task) {
+        $response = [];
+        $id = $task->getAttribute('id');
+        $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+        if ($assignment === 'self_service') {
+            $response[$id]['groups'] = explode(',', $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedGroups'));
+            $response[$id]['users'] = explode(',', $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers'));
         }
         return $response;
     }
