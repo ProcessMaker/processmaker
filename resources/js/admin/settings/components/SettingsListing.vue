@@ -171,6 +171,7 @@ export default {
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             this.$refs.table.refresh();
+            this.$emit('refresh');
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
           }
         })
