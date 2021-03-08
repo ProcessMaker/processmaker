@@ -157,7 +157,8 @@ class CallActivity implements CallActivityInterface
             return $this->getOwnerDocument()->getElementInstanceById($calledElementRef);
         } elseif (count($refs) === 2) {
             // Capability to reuse other processes inside a process
-            $process = Process::findOrFail($refs[1]);
+            //$process = Process::findOrFail($refs[1]);
+            $process = is_numeric($refs[1]) ? Process::findOrFail($refs[1]) : Process::where('package_key', $refs[1])->firstOrFail();
             $engine = $this->getProcess()->getEngine();
             $definitions = $engine->getDefinition($process->getLatestVersion());
             $response = $definitions->getElementInstanceById($refs[0]);
