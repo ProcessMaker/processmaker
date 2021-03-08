@@ -443,8 +443,13 @@ class ProcessRequestToken extends Model implements TokenInterface
             $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
-                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-            });            
+                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
+                    ->orWhere('id', 'like', $filter)
+                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('due_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter);
+            });
         }
         
         return $query;

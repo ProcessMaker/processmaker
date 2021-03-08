@@ -390,8 +390,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(name)'), 'like', $filter)
-                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-            });            
+                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
+                    ->orWhere(DB::raw('id'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
+                    ->orWhere('initiated_at', 'like', $filter)
+                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter);
+            });
         }
         
         return $query;
