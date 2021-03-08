@@ -85,6 +85,8 @@ export default {
       from: 0,
       orderBy: 'name',
       orderDesc: false,
+      orderByPrevious: 'name',
+      orderDescPrevious: false,
       perPage: 25,
       pmql: '',
       searchQuery: '',
@@ -124,7 +126,7 @@ export default {
     this.fields.push({
       key: "config",
       label: "Configuration",
-      sortable: true,
+      sortable: false,
       tdClass: "align-middle td-config",
     });
   },
@@ -159,7 +161,11 @@ export default {
         this.totalRows = response.data.meta.total;
         this.from = response.data.meta.from;
         this.to = response.data.meta.to;
-        callback([]);
+        if (this.orderBy !== this.orderByPrevious || this.orderDesc !== this.orderDescPrevious) {
+          callback([]);
+        }
+        this.orderByPrevious = this.orderBy;
+        this.orderDescPrevious = this.orderDesc;
         this.$nextTick(() => {
           callback(this.settings);
         });
