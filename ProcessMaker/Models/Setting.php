@@ -93,6 +93,7 @@ class Setting extends Model implements HasMedia
     protected $casts = [
         'hidden' => 'boolean',
         'readonly' => 'boolean',
+        'ui' => 'object',
     ];
 
     /**
