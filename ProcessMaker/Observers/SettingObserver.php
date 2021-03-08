@@ -75,12 +75,12 @@ class SettingObserver
     }
 
     /**
-     * Handle the setting "saved" event.
+     * Handle the setting "updated" event.
      *
      * @param  \ProcessMaker\Models\Setting  $setting
      * @return void
      */
-    public function saved(Setting $setting)
+    public function updated(Setting $setting)
     {
         Artisan::call('config:cache');
     }
