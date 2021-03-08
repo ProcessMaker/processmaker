@@ -48,7 +48,14 @@ export default {
     storeId: {
       type: Boolean,
       default: true
-    }
+    },
+    exclude_ids: {
+      type: Array,
+      default() {
+        return [];
+      },
+    },
+    undefinedValue: null,
   },
   data() {
     return {
@@ -69,12 +76,20 @@ export default {
   },
   methods: {
     change(value) {
-      this.$emit("input", this.storeId ? get(value, this.trackBy) : value);
+      this.$emit("input", this.storeId ? get(value, this.trackBy, this.undefinedValue) : value);
     },
     loadOptions(filter) {
+      const query = {
+        filter: typeof filter === "string" ? filter : '',
+        exclude_ids: this.exclude_ids.join(','),
+      };
       window.ProcessMaker.apiClient
-        .get(this.api + (typeof filter === "string" ? "?filter=" + filter : ""))
-        .then(response => {
+        .get(this.api + '?' +
+          Object.keys(query).
+          filter(par => query[par], '').
+          map(par => `${par}=${encodeURIComponent(query[par])}`).
+          join('&')
+        ).then(response => {
           this.options = response.data.data || [];
         });
     },

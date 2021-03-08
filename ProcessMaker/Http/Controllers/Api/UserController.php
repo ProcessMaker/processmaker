@@ -41,6 +41,12 @@ class UserController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/include"),
+     *     @OA\Parameter(
+     *         name="exclude_ids",
+     *         in="query",
+     *         description="Comma separated list of IDs to exclude from the response",
+     *         @OA\Schema(type="string", default=""),
+     *     ),
      *
      *     @OA\Response(
      *         response=200,
@@ -79,6 +85,13 @@ class UserController extends Controller
                     ->orWhere('lastname', 'like', $filter)
                     ->orWhere('email', 'like', $filter);
             });
+        }
+
+        // Adds a parameter to exclude users by id.
+        $exclude_ids = $request->input('exclude_ids', '');
+        if ($exclude_ids) {
+            $exclude_ids = explode(',', $exclude_ids);
+            $query->whereNotIn('id', $exclude_ids);
         }
 
         if ($request->has('status')) {

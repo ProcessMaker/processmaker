@@ -65,11 +65,13 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="expires_at", type="string"),
      *   @OA\Property(property="loggedin_at", type="string"),
      *   @OA\Property(property="remember_token", type="string"),
-     *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+     *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "SCHEDULED", "OUT_OF_OFFICE"}),
      *   @OA\Property(property="fullname", type="string"),
      *   @OA\Property(property="avatar", type="string"),
      *   @OA\Property(property="media", type="array", @OA\Items(ref="#/components/schemas/media")),
      *   @OA\Property(property="birthdate", type="string", format="date"),
+     *   @OA\Property(property="delegation_user_id", type="string", format="id"),
+     *   @OA\Property(property="manager_id", type="string", format="id"),
      * ),
      * @OA\Schema(
      *   schema="users",
@@ -106,6 +108,9 @@ class User extends Authenticatable implements HasMedia
         'datetime_format',
         'language',
         'meta',
+        'delegation_user_id',
+        'manager_id',
+        'schedule',
     ];
 
     protected $appends = [
@@ -117,6 +122,7 @@ class User extends Authenticatable implements HasMedia
         'is_administrator' => 'bool',
         'meta' => 'object',
         'active_at' => 'datetime',
+        'schedule' => 'array',
     ];
 
     /**
@@ -161,7 +167,7 @@ class User extends Authenticatable implements HasMedia
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
-            'status' => ['required', 'in:ACTIVE,INACTIVE'],
+            'status' => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
             'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
             'birthdate' => 'date|nullable' 
         ];
@@ -424,5 +430,25 @@ class User extends Authenticatable implements HasMedia
     public function removeFromGroups()
     {
         $this->groups()->detach();
+    }
+
+    /**
+     * User's Delegation are user associations that allow for automatic reassignment based on specific availability of a user.
+     *
+     * @return User
+     */
+    public function delegationUser()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * User's Manager are user associations that allow for automatic reassignment based on specific rules in the task assignment.
+     *
+     * @return User
+     */
+    public function manager()
+    {
+        return $this->belongsTo(User::class);
     }
 }
