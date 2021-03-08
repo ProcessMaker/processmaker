@@ -6,6 +6,7 @@ use Blade;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Managers\IndexManager;
+use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\PackageManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -76,6 +77,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton(PackageManager::class, function () {
             return new PackageManager();
+        });
+        
+        $this->app->singleton(LoginManager::class, function () {
+            return new LoginManager();
         });
 
         /**
