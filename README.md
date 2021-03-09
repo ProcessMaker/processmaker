@@ -25,7 +25,7 @@ ProcessMaker is an open source, workflow management software suite, which includ
 Before installing, Nginx needs to be configured to use php-fpm and point to the public folder 
 
 1. Download and unzip a version from the releases page https://github.com/ProcessMaker/processmaker/releases
-1. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See https://laravel.com/docs/5.8/deployment#nginx
+1. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See https://laravel.com/docs/6.x/deployment#nginx
 1. CD into the folder and run `composer install --no-dev`
 1. Run the installer `php artisan processmaker:install` and follow the instructions
 1. Edit the .env file to update any server specific settings
@@ -263,7 +263,7 @@ Full OpenAPI 3.0 specification at [https://github.com/OAI/OpenAPI-Specification/
 
 **Testing with Laravel Dusk**
 
-When testing in [Laravel Dusk](https://laravel.com/docs/5.7/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app\_env value to `develop` in the same file:
+When testing in [Laravel Dusk](https://laravel.com/docs/6.x/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app\_env value to `develop` in the same file:
 
 ```text
 APP_DEBUG=FALSE
@@ -278,11 +278,11 @@ Execute `php artisan dusk:make newTest` to generate a new Dusk test. The generat
 
 **More Info**
 
-Detailed installation can be found at [https://laravel.com/docs/5.7/dusk\#installation](https://laravel.com/docs/5.7/dusk#installation)
+Detailed installation can be found at [https://laravel.com/docs/6.x/dusk#installation](https://laravel.com/docs/6.x/dusk#installation)
 
-To interact with web elements [https://laravel.com/docs/5.7/dusk\#interacting-with-elements](https://laravel.com/docs/5.7/dusk#interacting-with-elements)
+To interact with web elements [https://laravel.com/docs/6.x/dusk#interacting-with-elements](https://laravel.com/docs/6.x/dusk#interacting-with-elements)
 
-List of available assertions [https://laravel.com/docs/5.7/dusk\#available-assertions](https://laravel.com/docs/5.7/dusk#available-assertions)
+List of available assertions [https://laravel.com/docs/6.x/dusk#available-assertions](https://laravel.com/docs/6.x/dusk#available-assertions)
 
 #### License
 
