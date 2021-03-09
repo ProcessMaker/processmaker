@@ -60,7 +60,7 @@ class DataManager
     public function getData($token)
     {
         if ($token->isMultiInstance()) {
-            $data = $token->getProperty('data', $token->token_properties['data']) ?: [];
+            $data = $token->getProperty('data', ($token->token_properties ?? [])['data'] ?? []) ?: [];
         } else {
             $data = $token->processRequest->data ?: [];
         }

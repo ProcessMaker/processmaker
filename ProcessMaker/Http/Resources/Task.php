@@ -55,7 +55,7 @@ class Task extends ApiResource
         if (in_array('requestData', $include)) {
             $data = new StdClass();
             if ($this->processRequest->data) {
-                $data = $this->addUser($this->processRequest->data, $this->user);
+                $data = $dataManager->getData($this);
             }
             $array['request_data'] = $data;
         }
