@@ -476,34 +476,34 @@ class TasksTest extends TestCase
 
         $selfServiceTaskOriginal = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
-                'self_service_groups' => [$group1->id]
+                'self_service_groups' => [(string) $group1->id]
             ])
         );
         $selfServiceTaskGroups = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
                 'self_service_groups' => [
-                    'groups' => [$group2->id]
+                    'groups' => [(string) $group2->id]
                 ]
             ])
         );
         $selfServiceTaskUsers = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
                 'self_service_groups' => [
-                    'users' => [$user->id, $otherUser->id]
+                    'users' => [(string) $user->id, (string) $otherUser->id]
                 ]
             ])
         );
         $selfServiceTaskOtherUser = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
                 'self_service_groups' => [
-                    'users' => [$otherUser->id]
+                    'users' => [(string) $otherUser->id]
                 ]
             ])
         );
         $selfServiceTaskAssigned = factory(ProcessRequestToken::class)->create(
             array_merge($params, [
                 'self_service_groups' => [
-                    'users' => [$group1->id]
+                    'users' => [(string) $group1->id]
                 ],
                 'user_id' => $user->id,
             ])
