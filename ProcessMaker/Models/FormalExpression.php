@@ -120,6 +120,15 @@ class FormalExpression implements FormalExpressionInterface
                 return strtoupper($str);
             }
         );
+
+        $this->feelExpression->register(
+            'arrayget',
+            function () {
+            },
+            function ($arguments, $array, $key, $default) {
+                return \Illuminate\Support\Arr::get($array, $key, $default);
+            }
+        );
     }
 
     /**
