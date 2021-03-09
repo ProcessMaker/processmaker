@@ -293,6 +293,10 @@ button:focus.navbar-toggler {
   display: inline-table;
 }
 
+.table-column {
+  max-width: 300px;
+}
+
 @media only screen and (max-width: 600px) {
   #mobileRight {
     float: right;
