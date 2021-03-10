@@ -189,7 +189,6 @@ class WorkflowManager
      */
     public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
-        \Illuminate\Support\Facades\Log::Critical(__FILE__ . "-". __LINE__ ." throw signal ");
         $signalRef = $sourceEventDefinition->getProperty('signal') ?
             $sourceEventDefinition->getProperty('signal')->getId() :
             $sourceEventDefinition->getProperty('signalRef');
