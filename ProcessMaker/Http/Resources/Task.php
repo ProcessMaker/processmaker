@@ -67,11 +67,15 @@ class Task extends ApiResource
             $array['allow_interstitial'] = $interstitial['allow_interstitial'];
             $array['interstitial_screen'] = $interstitial['interstitial_screen'];
         }
+        /**
+         * @deprecated since 4.1 Use instead `/api/1.0/users`
+         */
         if (in_array('assignableUsers', $include)) {
             $currentUser = \Auth::user();
             $users = User::where('status', 'ACTIVE')
                 ->where('id', '!=', $currentUser->id)
                 ->where('is_system', 'false')
+                ->limit(100)
                 ->get();
             $array['assignable_users'] = $users;
         }

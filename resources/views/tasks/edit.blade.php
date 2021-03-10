@@ -124,15 +124,13 @@
                                       v-cloak>
                                 <div class="form-group">
                                     {!!Form::label('user', __('User'))!!}
-                                    <multiselect v-model="selectedUser"
+                                    <select-from-api v-model="selectedUser"
                                                   placeholder="{{__('Select the user to reassign to the task')}}"
-                                                  :options="usersList"
+                                                  api="users"
                                                   :multiple="false"
-                                                  track-by="fullname"
                                                   :show-labels="false"
-                                                  :searchable="false"
-                                                  :internal-search="false"
-                                                  @search-change="loadUsers"
+                                                  :searchable="true"
+                                                  :store-id="false"
                                                   label="fullname">
                                           <template slot="noResult">
                                             {{ __('No elements found. Consider changing the search query.') }}
@@ -157,7 +155,7 @@
                                                 <span class="option__title mr-1">@{{ props.option.fullname }}</span>
                                             </div>
                                         </template>
-                                    </multiselect>
+                                    </select-from-api>
                                 </div>
                                 <div slot="modal-footer">
                                     <button type="button" class="btn btn-outline-secondary" @click="cancelReassign">
@@ -255,9 +253,6 @@
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
             }
           },
-          showReassignment (show) {
-            show ? this.loadUsers() : null;
-          }
         },
         computed: {
           taskHasComments() {
@@ -375,24 +370,6 @@
             }
             this.redirectInProcess = true;
             window.location.href = to;
-          },
-          loadUsers (filter) {
-            if (this.redirectInProcess) {
-              return;
-            }
-
-            filter = typeof filter === "string" ? "?filter=" + filter + "&" : "?";
-            ProcessMaker.apiClient
-              .get(
-                "tasks/" + this.task.id + filter, {
-                  params: {
-                    include: "assignableUsers"
-                  }
-                }
-              )
-              .then(response => {
-                this.usersList = response.data.assignable_users.filter(u => u.id !== this.task.user_id);
-              });
           },
           assignedUserAvatar (user) {
             return [{
