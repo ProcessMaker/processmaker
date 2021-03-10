@@ -390,8 +390,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(name)'), 'like', $filter)
-                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-            });            
+                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
+                    ->orWhere(DB::raw('id'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
+                    ->orWhere('initiated_at', 'like', $filter)
+                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter);
+            });
         }
         
         return $query;
@@ -609,10 +614,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         return function ($query) use ($value, $statusMap, $expression) {
             if (array_key_exists($value, $statusMap)) {
-                $query->where('status', $expression->operator, $statusMap[$value]);
-            } else {
-                $query->where('status', $value);
+                $value = $statusMap[$value];
             }
+            $query->where('status', $expression->operator, $value);
         };
     }
 
@@ -646,12 +650,17 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     private function valueAliasParticipant($value, $expression)
     {
-        $user = User::where('username', $value)->firstOrFail();
-        $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+        $user = User::where('username', $value)->get()->first();
 
-        return function ($query) use ($tokens) {
-            $query->whereIn('id', $tokens->pluck('process_request_id'));
-        };
+        if ($user) {
+            $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+
+            return function ($query) use ($tokens) {
+                $query->whereIn('id', $tokens->pluck('process_request_id'));
+            };
+        } else {
+            throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
+        }
     }
 
     /**

@@ -9,7 +9,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route as RouteFacade;
+use Illuminate\Routing\Route;
 
 /**
  * Our general exception handler
@@ -59,19 +60,43 @@ class Handler extends ExceptionHandler
     {
         $prefix = '';
         $route = $request->route();
-        // Make sure we are using the correct fallback, web or api
-        if ($route && substr($route->getName(), 0, 4) === 'api.') {
-            $prefix = 'api.';
+        
+        if ($route) {
+            if ($exception instanceof NotFoundHttpException) {
+                return RouteFacade::respondWithRoute($this->getFallbackRoute($route));
+            }
+    
+            if ($exception instanceof ModelNotFoundException) {
+                return RouteFacade::respondWithRoute($this->getFallbackRoute($route));
+            }   
         }
-
-        if ($exception instanceof NotFoundHttpException) {
-            return Route::respondWithRoute($prefix . 'fallback');
-        }
-
-        if ($exception instanceof ModelNotFoundException) {
-            return Route::respondWithRoute($prefix . 'fallback');
-        }
+        
         return parent::render($request, $exception);
+    }
+    
+    /**
+     * Determine which fallback route should be used.
+     *
+     * @param  \Illuminate\Routing\Route  $route
+     * @return string
+     */    
+    private function getFallbackRoute(Route $route)
+    {
+        $prefixes = [];
+        $prefixes[] = explode('.', $route->getName())[0];
+        if (isset($route->computedMiddleware) && count($route->computedMiddleware)) {
+            if (in_array('api', $route->computedMiddleware) || in_array('auth:api', $route->computedMiddleware)) {
+                $prefixes[] = 'api';
+            }
+        }
+        
+        foreach ($prefixes as $prefix) {
+            if (RouteFacade::has("$prefix.fallback")) {
+                return "$prefix.fallback";
+            }
+        }
+        
+        return "fallback";
     }
 
     /**

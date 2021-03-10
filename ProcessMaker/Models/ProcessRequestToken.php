@@ -444,8 +444,13 @@ class ProcessRequestToken extends Model implements TokenInterface
             $filter = '%' . mb_strtolower($filter) . '%';
             $query->where(function ($query) use ($filter) {
                 $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
-                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-            });            
+                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
+                    ->orWhere('id', 'like', $filter)
+                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('due_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter);
+            });
         }
         
         return $query;
@@ -505,10 +510,11 @@ class ProcessRequestToken extends Model implements TokenInterface
      * PMQL value alias for status field
      *
      * @param string $value
+     * @param ProcessMaker\Query\Expression $expression
      * 
      * @return callback
      */        
-    public function valueAliasStatus($value)
+    public function valueAliasStatus($value, $expression)
     {
         $statusMap = [
             'in progress' => 'ACTIVE',
@@ -517,15 +523,19 @@ class ProcessRequestToken extends Model implements TokenInterface
         
         $value = mb_strtolower($value);
     
-        return function($query) use ($value, $statusMap) {
+        return function($query) use ($value, $statusMap, $expression) {
             if ($value === 'self service') {
-                $query->where('status', 'ACTIVE')
-                ->where('is_self_service', 1);
+                if (auth()->user()) {
+                    $taskIds = auth()->user()->availableSelfServiceTaskIds();
+                    $query->whereIn('id', $taskIds);
+                } else {
+                    $query->where('is_self_service', 1);
+                }
             } elseif (array_key_exists($value, $statusMap)) {
-                $query->where('status', $statusMap[$value])
+                $query->where('status',  $expression->operator, $statusMap[$value])
                     ->where('is_self_service', 0);
             } else {
-                $query->where('status', $value)
+                $query->where('status',  $expression->operator, $value)
                     ->where('is_self_service', 0);
             }
         };

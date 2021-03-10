@@ -106,7 +106,7 @@
         </b-row>
       </b-container>
 
-      <p class="mb-0">{{ $t("Dockerfile") }}</p>
+      <p class="mb-0">{{ $t("Docker file") }}</p>
 
       <div class="d-flex flex-row mb-1">
         <div class="mr-1">
