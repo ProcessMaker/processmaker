@@ -3,10 +3,13 @@
 namespace ProcessMaker\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Mustache_Engine;
+use Mustache_LambdaHelper;
 use ProcessMaker\Assets\ScreensInProcess;
 use ProcessMaker\Assets\ScreensInScreen;
 use ProcessMaker\Assets\ScriptsInProcess;
 use ProcessMaker\Assets\ScriptsInScreen;
+use ProcessMaker\Bpmn\MustacheOptions;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\TimerExpressionInterface;
 use ProcessMaker\Facades\WorkflowManager as WorkflowManagerFacade;
@@ -24,6 +27,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TimerEventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
+use ProcessMaker\Nayra\Contracts\Engine\EngineInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Repositories\DefinitionsRepository;
@@ -58,33 +62,47 @@ class WorkflowServiceProvider extends ServiceProvider
         $this->app->singleton('workflow.manager', function ($app) {
             return new WorkflowManager();
         });
+
+        $this->app->bind(BpmnEngine::class, function ($app, $params) {
+            $definitions = $params['definitions'];
+            $globalEvents = $params['globalEvents'] ?? true;
+            $repository = $definitions->getFactory();
+            $eventBus = app('events');
+            //Initialize the BpmnEngine
+            $engine = new BpmnEngine($repository, $eventBus);
+            $eventDefinitionBus = new EventDefinitionBus;
+            $engine->setEventDefinitionBus($eventDefinitionBus);
+            // Catch the signal events
+            if ($globalEvents) {
+                $eventDefinitionBus->attachEvent(
+                    SignalEventDefinition::class,
+                    function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
+                        WorkflowManagerFacade::throwSignalEventDefinition($sourceEventDefinition, $token);
+                    }
+                );
+            }
+            $engine->setJobManager(new TaskSchedulerManager());
+            $definitions->setEngine($engine);
+            $engine->loadProcessDefinitions($definitions);
+            return $engine;
+        });
+
         /**
          * BpmnDocument Process Context
          */
         $this->app->bind(BpmnDocumentInterface::class, function ($app, $params) {
             $repository = new DefinitionsRepository();
-            $eventBus = app('events');
-
-            //Initialize the BpmnEngine
-            $engine = empty($params['engine']) ? new BpmnEngine($repository, $eventBus) : $params['engine'];
-            $eventDefinitionBus = new EventDefinitionBus;
-            $engine->setEventDefinitionBus($eventDefinitionBus);
-
-            // Catch the signal events
-            if ($params['globalEvents']) {
-                $eventDefinitionBus->attachEvent(
-                    SignalEventDefinition::class,
-                    function (ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token) {
-                        WorkflowManagerFacade::catchSignalEvent($source, $sourceEventDefinition, $token);
-                    }
-                );
-            }
-
-            $engine->setJobManager(new TaskSchedulerManager());
+            $engine = $params['engine'] ?? new BpmnEngine($repository, app('events'));
 
             //Initialize BpmnDocument repository (REQUIRES $engine $factory)
             $bpmnRepository = new BpmnDocument($params['process']);
-            $bpmnRepository->setEngine($engine);
+            if ($engine) {
+                if (!$engine->getJobManager()) {
+                    $engine->setJobManager(new TaskSchedulerManager());
+                }
+                $bpmnRepository->setEngine($engine);
+            }
+            $bpmnRepository->getFactory();
             $bpmnRepository->setFactory($repository);
             $bpmnRepository->setSkipElementsNotImplemented(true);
             $mapping = $bpmnRepository->getBpmnElementsMapping();
@@ -177,6 +195,15 @@ class WorkflowServiceProvider extends ServiceProvider
             $instance->addDependencyManager(ScriptsInProcess::class);
             $instance->addDependencyManager(ScriptsInScreen::class);
             return $instance;
+        });
+        /**
+         * Mustache Engine
+         */
+        $this->app->bind(Mustache_Engine::class, function () {
+            $op = new MustacheOptions;
+            return new Mustache_Engine([
+                'helpers' => $op->helpers,
+            ]);
         });
     }
 }

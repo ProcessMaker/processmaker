@@ -42,6 +42,11 @@
         default: false
       },
     },
+    data() {
+      return {
+        interval: null,
+      }
+    },
     computed: {
       json() {
         const json = JSON.parse(JSON.stringify(this.rowData.config));
@@ -67,11 +72,44 @@
       }
     },
     mounted() {
-      if (this.canPrint) {
-        this.print();
-      }
+      this.loadPages();
+
+      window.ProcessMaker.apiClient.requestCount = 0;
+      window.ProcessMaker.apiClient.requestCountFlag = true;
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          this.interval = setInterval(this.printWhenNoRequestsArePending, 1000);
+        }, 750);
+
+        setTimeout(() => {
+          this.closeRequestCount();
+          if (window.ProcessMaker.apiClient.requestCountFlag) {
+            this.print();
+          }
+        }, 10000);
+      });
     },
     methods: {
+      closeRequestCount() {
+        window.ProcessMaker.apiClient.requestCount = 0;
+        window.ProcessMaker.apiClient.requestCountFlag = false;
+      },
+      printWhenNoRequestsArePending() {
+        if (this.canPrint && window.ProcessMaker.apiClient.requestCount === 0) {
+          clearInterval(this.interval);
+          this.closeRequestCount();
+          this.print();
+        }
+      },
+      loadPages() {
+        this.$nextTick(() => {
+          this.$refs.print.forEach((page, index) => {
+            if (page.setCurrentPage) {
+              page.setCurrentPage(this.printablePages[index]);
+            }
+          });
+        });
+      },
       findPagesInNavButtons(object, found = []) {
         if (object.items) {
           object.items.forEach(item => {
@@ -123,13 +161,8 @@
     watch: {
       "rowData.config": {
         deep: true,
-        immediate: true,
         handler() {
-          this.$nextTick(() => {
-            this.$refs.print.forEach((page, index) => {
-              page.currentPage = this.printablePages[index];
-            });
-          });
+          this.loadPages();
         }
       }
     }

@@ -19,6 +19,7 @@ class Kernel extends HttpKernel
         \ProcessMaker\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \ProcessMaker\Http\Middleware\TrustProxies::class,
+        \ProcessMaker\Http\Middleware\BrowserCache::class,
     ];
     /**
      * The application's route middleware groups.
@@ -31,7 +32,7 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \ProcessMaker\Http\Middleware\SessionStarted::class,
-            // \Illuminate\Session\Middleware\AuthenticateSession::class,   // In case we want to log users out after changing password, we need this
+            \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,  
             \ProcessMaker\Http\Middleware\SetLocale::class,       // This is disabled until all routes are handled by our new engine
@@ -65,6 +66,6 @@ class Kernel extends HttpKernel
         'sanitize' => \ProcessMaker\Http\Middleware\SanitizeInput::class,
         'setlocale' => \ProcessMaker\Http\Middleware\SetLocale::class,
         'setskin' => \ProcessMaker\Http\Middleware\SetSkin::class,
-        'external.connection' => \ProcessMaker\Http\Middleware\ValidateExternalConnection::class
+        'external.connection' => \ProcessMaker\Http\Middleware\ValidateExternalConnection::class,
     ];
 }

@@ -21,10 +21,11 @@ use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 use ProcessMaker\Models\Script;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Policies\UserPolicy;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Policies\ScreenPolicy;
-
+use ProcessMaker\Policies\ScriptPolicy;
 
 /**
  * Our AuthService Provider binds our base processmaker provider and registers any policies, if defined.
@@ -45,7 +46,8 @@ class AuthServiceProvider extends ServiceProvider
         ProcessRequest::class => ProcessRequestPolicy::class,
         ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
         User::class => UserPolicy::class,
-        Screen::class => ScreenPolicy::class,
+        User::class => UserPolicy::class,
+        Script::class => ScriptPolicy::class,
     ];
 
     /**
@@ -80,6 +82,13 @@ class AuthServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             Log::notice('Unable to register gates. Either no database connection or no permissions table exists.');
         }
+
+        Auth::viaRequest('anon', function ($request) {
+            if ($request->user()) {
+                return $request->user();
+            }
+            return app(AnonymousUser::class);
+        });
 
     }
 

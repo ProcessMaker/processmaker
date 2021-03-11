@@ -12,18 +12,22 @@ self.addEventListener('message', function (e) {
 });
 
 self.start = function (data) {
-  self.time = data.timeout * 60;
+  var timestampAtStart = Math.floor(Date.now() / 1000);
+  var timeoutAt = timestampAtStart + (data.timeout * 60);
+  
   clearInterval(self.interval);
   self.interval = setInterval(function () {
-    self.time--;
-    
-    if (self.time < data.warnSeconds && self.time > 0) {
-      self.postMessage({ method: 'countdown', data: { time: self.time } });
+
+    var currentTimestamp = Math.floor(Date.now() / 1000);
+    var timeRemaining = timeoutAt - currentTimestamp;
+
+    if (timeRemaining < data.warnSeconds && timeRemaining > 0) {
+      self.postMessage({ method: 'countdown', data: { time: timeRemaining } });
     }
 
-    if (self.time < 1) {
+    if (timeRemaining < 1) {
       clearInterval(self.interval);
-      self.postMessage({ method: 'timedOut', data: { time: self.time } });
+      self.postMessage({ method: 'timedOut', data: { time: timeRemaining } });
     }
   }, 1000);
 }

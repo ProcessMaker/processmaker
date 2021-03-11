@@ -13,12 +13,15 @@ const path = require("path");
 */
 
 mix.webpackConfig({
+
   plugins: [
   ],
   externals: [
-    'monaco-editor'
+    'monaco-editor',
+    'SharedComponents'
   ],
   resolve: {
+    symlinks: false,
     alias: {
       'vue-monaco': path.resolve(__dirname, 'resources/js/vue-monaco-amd.js')
     },
@@ -53,7 +56,8 @@ mix.extract([
   .copy("resources/js/timeout.js", "public/js")
   // Copy files necessary for images for the designer/modeler to it's own img directory
   .copy("node_modules/@processmaker/modeler/dist/img", "public/js/processes/modeler/img")
-  .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js");
+  .copy("node_modules/@processmaker/vue-form-elements/dist", "public/js")
+  .copy("node_modules/bpmn-font/dist", "public/css/bpmn-symbols");
 
 mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
@@ -78,6 +82,8 @@ mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/environment-variables/index.js", "public/js/processes/environment-variables")
   .js("resources/js/processes/screens/index.js", "public/js/processes/screens")
   .js("resources/js/processes/screens/edit.js", "public/js/processes/screens")
+  .js("resources/js/processes/signals/index.js", "public/js/processes/signals")
+  .js("resources/js/processes/signals/edit.js", "public/js/processes/signals")
   .js("resources/js/processes/screen-builder/main.js", "public/js/processes/screen-builder")
   .js("resources/js/processes/screen-builder/typeForm.js", "public/js/processes/screen-builder")
   .js("resources/js/processes/screen-builder/typeDisplay.js", "public/js/processes/screen-builder")
@@ -98,7 +104,7 @@ mix.js("resources/js/app-layout.js", "public/js")
 // Monaco AMD modules. Copy only the files we need to make the build faster.
 const monacoSource = 'node_modules/monaco-editor/min/vs/';
 const monacoDestination = 'public/vendor/monaco-editor/min/vs/';
-const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r'];
+const monacoLanguages = ['php', 'css', 'lua', 'javascript', 'csharp', 'java', 'python', 'r', 'html'];
 const monacoFiles = [
   'loader.js',
   'editor/editor.main.js',
@@ -114,6 +120,7 @@ monacoLanguages.forEach(lang => {
   const path = `basic-languages/${lang}/${lang}.js`;
   mix.copy(monacoSource + path, monacoDestination + path);
 });
+mix.copyDirectory(monacoSource + 'language', monacoDestination + 'language');
 
 mix.sass("resources/sass/sidebar/sidebar.scss", "public/css")
   .sass("resources/sass/app.scss", "public/css")

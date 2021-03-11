@@ -66,6 +66,7 @@ class TaskController extends Controller
      *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
      *
      *     @OA\Response(
      *         response=200,
@@ -102,21 +103,7 @@ class TaskController extends Controller
 
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $setting = Setting::byKey('indexed-search');
-            if ($setting && $setting->config['enabled'] === true) {
-                if (is_numeric($filter)) {
-                    $query->whereIn('id', [$filter]);
-                } else {
-                    $matches = ProcessRequestToken::search($filter)->take(10000)->get()->pluck('id');
-                    $query->whereIn('id', $matches);
-                }
-            } else {
-                $filter = '%' . mb_strtolower($filter) . '%';
-                $query->where(function ($query) use ($filter) {
-                    $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
-                        ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-                });            
-            }
+            $query->filter($filter);
         }
         
         $filterByFields = ['process_id', 'process_request_tokens.user_id' => 'user_id', 'process_request_tokens.status' => 'status', 'element_id', 'element_name', 'process_request_id'];
@@ -183,12 +170,15 @@ class TaskController extends Controller
         }
         $response = $this->handleOrderByRequestName($request, $query->get());
 
-        $response = $response->filter(function($processRequestToken) use ($request) {
-            if ($request->input('status') === 'CLOSED') {
-                return Auth::user()->can('view', $processRequestToken->processRequest);
-            }
-            return Auth::user()->can('view', $processRequestToken);
-        })->values();
+        // Only filter results if the user id was specified
+        if ($request->input('user_id') === $request->user()->id) {
+            $response = $response->filter(function($processRequestToken) use ($request) {
+                if ($request->input('status') === 'CLOSED') {
+                    return Auth::user()->can('view', $processRequestToken->processRequest);
+                }
+                return Auth::user()->can('view', $processRequestToken);
+            })->values();
+        }
         
         //Map each item through its resource
         $response = $response->map(function ($processRequestToken) use ($request) {
@@ -226,6 +216,7 @@ class TaskController extends Controller
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/processRequestToken")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function show(ProcessRequestToken $task)
@@ -253,18 +244,24 @@ class TaskController extends Controller
      *         name="task_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/processRequestTokenEditable")
+     *       @OA\JsonContent(
+     *          required={"status","data"},
+     *          @OA\Property(property="status", type="string", example="COMPLETED"),
+     *          @OA\Property(property="data", type="object"),
+     *       )
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/processRequestToken")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
      * )
      */
     public function update(Request $request, ProcessRequestToken $task)

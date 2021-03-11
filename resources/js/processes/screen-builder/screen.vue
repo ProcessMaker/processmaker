@@ -17,12 +17,18 @@
           ref="builder"
           @change="updateConfig"
           :screen="screen"
-        />
+        >
+          <data-loading-basic
+            :is-loaded="false"
+          ></data-loading-basic>
+        </vue-form-builder>
 
         <!-- Preview -->
         <b-row class="h-100 m-0" id="preview" v-show="displayPreview">
+          
           <b-col class="overflow-auto h-100">
             <vue-form-renderer
+              v-if="renderComponent === 'task-screen'"
               ref="renderer"
               :key="rendererKey"
               v-model="previewData"
@@ -32,12 +38,26 @@
               :mode="mode"
               :config="preview.config"
               :computed="preview.computed"
-              :custom-css="preview.customCSS"
+              :custom-css="preview.custom_css"
               :watchers="preview.watchers"
               v-on:css-errors="cssErrors = $event"
               :show-errors="true"
               :mock-magic-variables="mockMagicVariables"
             />
+            <div v-else>
+              <component
+                :mode="mode"
+                :is="renderComponent"
+                v-model="previewData"
+                :screen="preview.config"
+                :computed="preview.computed"
+                :custom-css="preview.custom_css"
+                :watchers="preview.watchers"
+                :data="previewData"
+                :type="screen.type"
+                @submit="previewSubmit"
+              />
+            </div>
           </b-col>
 
           <b-col class="overflow-hidden h-100 preview-inspector p-0">
@@ -166,10 +186,12 @@ import CustomCSS from "@processmaker/screen-builder/src/components/custom-css";
 import "@processmaker/screen-builder/dist/vue-form-builder.css";
 import "@processmaker/vue-form-elements/dist/vue-form-elements.css";
 import VueJsonPretty from "vue-json-pretty";
+import 'vue-json-pretty/lib/styles.css';
 import MonacoEditor from "vue-monaco";
 import mockMagicVariables from "./mockMagicVariables";
 import TopMenu from "../../components/Menu";
 import { cloneDeep } from 'lodash';
+import i18next from 'i18next';
 
 // Bring in our initial set of controls
 import globalProperties from "@processmaker/screen-builder/src/global-properties";
@@ -177,6 +199,7 @@ import _ from "lodash";
 
 import Validator from "validatorjs";
 import formTypes from "./formTypes";
+import DataLoadingBasic from "../../components/shared/DataLoadingBasic";
 
 // To include another language in the Validator with variable processmaker
 if (
@@ -300,7 +323,7 @@ export default {
           },
         ],
         computed: [],
-        customCSS: '',
+        custom_css: '',
         watchers: [],
       },
       self: this,
@@ -333,7 +356,9 @@ export default {
       mockMagicVariables,
       validationWarnings: [],
       previewComponents: [],
-      optionsMenu: options
+      optionsMenu: options,
+      rendererKey: 0,
+      renderComponent: 'task-screen'
     };
   },
   components: {
@@ -344,7 +369,8 @@ export default {
     CustomCSS,
     WatchersPopup,
     MonacoEditor,
-    TopMenu
+    TopMenu,
+    DataLoadingBasic,
   },
   watch: {
     config() {
@@ -358,6 +384,9 @@ export default {
       } else {
         this.previewData = {};
       }
+    },
+    customCSS(newCustomCSS) {
+      this.preview.custom_css = newCustomCSS;
     }
   },
   computed: {
@@ -388,7 +417,7 @@ export default {
 
       if (this.type === formTypes.form && !this.containsSubmitButton()) {
         this.validationWarnings.push(
-          "Warning: Screens without save buttons cannot be executed."
+          this.$t("Warning: Screens without save buttons cannot be executed.")
         );
       }
 
@@ -402,20 +431,32 @@ export default {
     }
   },
   mounted() {
-    // Call our init lifecycle event
-    ProcessMaker.EventBus.$emit("screen-builder-init", this);
-    this.computed = this.screen.computed ? this.screen.computed : [];
-    this.customCSS = this.screen.custom_css ? this.screen.custom_css : "";
-    this.watchers = this.screen.watchers ? this.screen.watchers : [];
-    this.updatePreview(new Object());
-    this.previewInput = "{}";
+    this.mountWhenTranslationAvailable();
 
-    ProcessMaker.EventBus.$emit("screen-builder-start", this);
-    ProcessMaker.EventBus.$on("save-screen", (value, onSuccess, onError) => {
-      this.saveScreen(value, onSuccess, onError);
-    });
   },
   methods: {
+    mountWhenTranslationAvailable() {
+      let d = new Date();
+      if(ProcessMaker.i18n.exists('Save') === false) {
+        window.setTimeout(() => this.mountWhenTranslationAvailable(), 100);
+      } else {
+        let that = this;
+        // Call our init lifecycle event
+        ProcessMaker.EventBus.$emit("screen-builder-init", that);
+        if (that.screen.type === 'CONVERSATIONAL') {
+          that.renderComponent = 'ConversationalForm';
+        }
+        that.computed = that.screen.computed ? that.screen.computed : [];
+        that.customCSS = that.screen.custom_css ? that.screen.custom_css : "";
+        that.watchers = that.screen.watchers ? that.screen.watchers : [];
+        that.previewInput = "{}";
+        that.preview.custom_css = that.customCSS;
+        ProcessMaker.EventBus.$emit("screen-builder-start", that);
+        ProcessMaker.EventBus.$on("save-screen", (value, onSuccess, onError) => {
+          that.saveScreen(value, onSuccess, onError);
+        });
+      }
+    },
     changeMode(mode) {
       if (mode === "editor") {
         this.$refs.menuScreen.changeItem("button_design", {
@@ -437,9 +478,13 @@ export default {
       }
       this.mode = mode;
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
-      this.$nextTick(() => {
+      if (mode == 'preview') {
         this.rendererKey++;
-      });
+        this.preview.config = cloneDeep(this.config);
+        this.preview.computed = cloneDeep(this.computed);
+        this.preview.customCSS = cloneDeep(this.customCSS);
+        this.preview.watchers = cloneDeep(this.watchers);
+      }
     },
     onUpdate(data) {
       ProcessMaker.EventBus.$emit("form-data-updated", data);
@@ -529,9 +574,6 @@ export default {
       this.refreshSession();
       ProcessMaker.EventBus.$emit("new-changes");
     },
-    updatePreview(data) {
-      this.previewData = data;
-    },
     previewSubmit() {
       alert("Preview Form was Submitted");
     },
@@ -542,12 +584,40 @@ export default {
       builderComponent,
       builderBinding
     ) {
+      this.translateControl(control);
       // Add it to the renderer
+      if (!this.$refs.renderer) { return }
       this.$refs.renderer.$options.components[
         rendererBinding
       ] = rendererComponent;
       // Add it to the form builder
       this.$refs.builder.addControl(control, builderComponent, builderBinding);
+    },
+    translateControl(control) {
+      if (control.label) {
+        control.label = this.$t(control.label);
+      }
+      if (control.config && control.config.label) {
+        control.config.label = this.$t(control.config.label);
+      }
+      if (control.config && control.config.helper) {
+        control.config.helper = this.$t(control.config.helper);
+      }
+
+      // translate option list items
+      if (control.config.options && Array.isArray(control.config.options)) {
+        control.config.options.forEach($item => {
+          if ($item.content) {
+            $item.content = this.$t($item.content);
+          }
+        });
+      }
+
+      // translate inspector items
+      if (control.inspector) {
+        control.inspector.forEach($item => this.translateControl($item));
+      }
+
     },
     addPreviewComponent(component) {
       this.previewComponents.push(component);

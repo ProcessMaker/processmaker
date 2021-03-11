@@ -74,7 +74,7 @@ class GenerateMenus
                     'icon' => 'fa-infinity',
                 ]);
             }
-            
+
             if (\Auth::check() && \Auth::user()->is_administrator) {
                 $submenu->add(__('Script Executors'), [
                     'route' => 'script-executors.index',
@@ -150,6 +150,13 @@ class GenerateMenus
                     'route' => 'environment-variables.index',
                     'icon' => 'fa-lock',
                     'id' => 'process-environment'
+                ]);
+            }
+            if (\Auth::check() && \Auth::user()->can('edit-processes')) {
+                $submenu->add(__('Signals'), [
+                    'route' => 'signals.index',
+                    'customicon' => 'nav-icon fas bpmn-icon-end-event-signal',
+                    'id' => 'signal'
                 ]);
             }
         });

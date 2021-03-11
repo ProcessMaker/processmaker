@@ -4,9 +4,11 @@ namespace ProcessMaker\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
@@ -111,6 +113,7 @@ class RequestController extends Controller
                 if ($allowInterstitial && $request->user_id == Auth::id()) {
                     $active = $request->tokens()
                         ->where('user_id', Auth::id())
+                        ->where('element_type', 'task')
                         ->where('status', 'ACTIVE')
                         ->orderBy('id')->first();
                     return redirect(route('tasks.edit', ['task' => $active ? $active->getKey() : $startEvent->getKey()]));
@@ -118,7 +121,21 @@ class RequestController extends Controller
             }
         }
 
-        $this->authorize('view', $request);
+        $userHasCommentsForRequest = Comment::where('commentable_type', ProcessRequest::class)
+                ->where('commentable_id', $request->id)
+                ->where('body','like', '%@' . \Auth::user()->username . '%')
+                ->count() > 0;
+
+        $requestMedia = $request->media()->get()->pluck('id');
+        $userHasCommentsForMedia = Comment::where('commentable_type', \ProcessMaker\Models\Media::class)
+                ->whereIn('commentable_id', $requestMedia)
+                ->where('body','like', '%@' . \Auth::user()->username . '%')
+                ->count() > 0;
+
+        if (!$userHasCommentsForMedia && !$userHasCommentsForRequest) {
+            $this->authorize('view', $request);
+        }
+
         $request->participants;
         $request->user;
         $request->summary = $request->summary();
@@ -157,7 +174,7 @@ class RequestController extends Controller
             return redirect('403');
         }
 
-        $manager = new ScreenBuilderManager();
+        $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
         return view('requests.preview', compact('request', 'screen', 'manager'));
     }

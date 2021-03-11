@@ -30,12 +30,12 @@ Route::group(
     Route::post('groups', 'GroupController@store')->name('groups.store')->middleware('can:create-groups');
     Route::put('groups/{group}', 'GroupController@update')->name('groups.update')->middleware('can:edit-groups');
     Route::delete('groups/{group}', 'GroupController@destroy')->name('groups.destroy')->middleware('can:delete-groups');
-    Route::get('group_users/{group}', 'GroupController@members')->name('groups.members')->middleware('can:view-groups');
+    Route::get('groups/{group}/users', 'GroupController@members')->name('groups.members')->middleware('can:view-groups');
 
     // Group Members
     Route::get('group_members', 'GroupMemberController@index')->name('group_members.index'); //Already filtered in controller
     Route::get('group_members/{group_member}', 'GroupMemberController@show')->name('group_members.show')->middleware('can:view-groups');
-    Route::get('group_members_available', 'GroupMemberController@groupsAvailable')->name('group_members_available.show')->middleware('can:view-groups');
+    Route::get('group_members_available', 'GroupMemberController@groupsAvailable')->name('group_members_available.show'); //Permissions handled in the controller
     Route::get('user_members_available', 'GroupMemberController@usersAvailable')->name('user_members_available.show')->middleware('can:view-groups');
     Route::post('group_members', 'GroupMemberController@store')->name('group_members.store')->middleware('can:edit-groups');
     Route::delete('group_members/{group_member}', 'GroupMemberController@destroy')->name('group_members.destroy')->middleware('can:edit-groups');
@@ -72,8 +72,8 @@ Route::group(
     Route::put('scripts/{script}/duplicate', 'ScriptController@duplicate')->name('scripts.duplicate')->middleware('can:create-scripts');
     Route::delete('scripts/{script}', 'ScriptController@destroy')->name('scripts.destroy')->middleware('can:delete-scripts');
     Route::post('scripts/{script}/preview', 'ScriptController@preview')->name('scripts.preview')->middleware('can:view-scripts');
-    Route::post('scripts/execute/{script_id}/{script_key?}', 'ScriptController@execute')->name('scripts.execute')->middleware('can:view-scripts');
-    Route::get('scripts/execution/{key}', 'ScriptController@execution')->name('scripts.execution')->middleware('can:view-scripts');
+    Route::post('scripts/execute/{script_id}/{script_key?}', 'ScriptController@execute')->name('scripts.execute');
+    Route::get('scripts/execution/{key}', 'ScriptController@execution')->name('scripts.execution');
 
     // Script Categories
     Route::get('script_categories', 'ScriptCategoryController@index')->name('script_categories.index')->middleware('can:view-script-categories');
@@ -87,6 +87,7 @@ Route::group(
     Route::get('processes/{process}', 'ProcessController@show')->name('processes.show')->middleware('can:view-processes');
     Route::post('processes/{process}/export', 'ProcessController@export')->name('processes.export')->middleware('can:export-processes');
     Route::post('processes/import', 'ProcessController@import')->name('processes.import')->middleware('can:import-processes');
+    Route::get('processes/import/{code}/is_ready', 'ProcessController@import_ready')->name('processes.import_is_ready')->middleware('can:import-processes');
     Route::post('processes/{process}/import/assignments', 'ProcessController@importAssignments')->name('processes.import.assignments')->middleware('can:import-processes');
     Route::post('processes', 'ProcessController@store')->name('processes.store')->middleware('can:create-processes');
     Route::put('processes/{process}', 'ProcessController@update')->name('processes.update')->middleware('can:edit-processes');
@@ -161,7 +162,10 @@ Route::group(
 
     // Global signals
     Route::get('signals', 'SignalController@index')->name('signals.index')->middleware('can:view-processes');
-    Route::get('signlas/{signalId}', 'SignalController@show')->name('signals.show')->middleware('can:view-processes');
+    Route::get('signals/{signalId}', 'SignalController@show')->name('signals.show')->middleware('can:view-processes');
+    Route::post('signals', 'SignalController@store')->name('signals.store')->middleware('can:edit-processes');
+    Route::put('signals/{signalId}', 'SignalController@update')->name('signals.update')->middleware('can:edit-processes');
+    Route::delete('signals/{signalId}', 'SignalController@destroy')->name('signals.destroy')->middleware('can:edit-processes');
 
     //UI customization
     Route::post('customize-ui', 'CssOverrideController@store')->name('customize-ui.store');
@@ -173,6 +177,10 @@ Route::group(
     Route::post('script-executors', 'ScriptExecutorController@store')->name('script-executors.store');
     Route::post('script-executors/cancel', 'ScriptExecutorController@cancel')->name('script-executors.cancel');
     Route::delete('script-executors/{script_executor}', 'ScriptExecutorController@delete')->name('script-executors.delete');
+
+    // Security logs
+    Route::get('security-logs', 'SecurityLogController@index')->name('security-logs.index')->middleware('can:view-security-logs');
+    Route::get('security-logs/{securityLog}', 'SecurityLogController@show')->name('security-logs.show')->middleware('can:view-security-logs');
 
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');

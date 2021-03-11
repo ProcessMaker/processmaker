@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use phpDocumentor\Reflection\PseudoType;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
@@ -17,6 +18,7 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScreenCategory;
+use ProcessMaker\Models\AnonymousUser;
 
 class ExportImportTest extends TestCase
 {
@@ -135,12 +137,6 @@ class ExportImportTest extends TestCase
      */
     public function testExportImportProcess()
     {
-
-        
-        $this->markTestSkipped();
-
-
-
         // Create an admin user
         $adminUser = factory(User::class)->create([
             'username' => 'admin',
@@ -193,7 +189,7 @@ class ExportImportTest extends TestCase
         // Test to ensure we can download the exported file
         $response = $this->webCall('GET', $response->json('url'));
         $response->assertStatus(200);
-        $response->assertHeader('content-disposition', 'attachment; filename=leave_absence_request.json');
+        $response->assertHeader('content-disposition', 'attachment; filename="Leave Absence Request.json"');
 
         // Get our file contents (we have to do it this way because of
         // Symfony's weird response API)
@@ -235,6 +231,72 @@ class ExportImportTest extends TestCase
 
         $this->assertCount(2, $screen->category->refresh()->screens);
         $this->assertCount(2, $secondScreenCategory->refresh()->screens);
+
+        // Assert that assignments are preserved, except for user and group assignments
+        $process = Process::where('name', 'Leave Absence Request 2')->first();
+        $definitions = $process->getDefinitions();
+        $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
+        $this->assertEquals("", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
+        $this->assertEquals("", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignedUsers'));
+        
+        $this->assertEquals("self_service", $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignment'));
+        $this->assertEquals("", $definitions->findElementById('node_6')->getAttributeNS($ns, 'assignedGroups'));
+    }
+
+    /**
+     * Test anonymous user assignments are not removed. Instead,
+     * they are are updated to the current instance's anon user ID
+     */
+    public function testExportWithAnonymousUser()
+    {
+        $originalAnonUser = app(AnonymousUser::class);
+        $adminUser = factory(User::class)->create([
+            'username' => 'admin',
+            'is_administrator' => true,
+        ]);
+
+        Artisan::call('db:seed', ['--class' => 'ProcessSeeder']);
+
+        $process = Process::where('name', 'Leave Absence Request')->first();
+        $definitions = $process->getDefinitions();
+        $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
+        $definitions->findElementById('node_5')->setAttributeNS($ns, 'assignedUsers', $originalAnonUser->id);
+        $process->update(['bpmn' => $definitions->saveXML()]);
+
+        $response = $this->apiCall('POST', "/processes/{$process->id}/export");
+        $response = $this->webCall('GET', $response->json('url'));
+        ob_start();
+        $content = $response->sendContent();
+        $content = ob_get_clean();
+        
+        // Save the file contents and convert them to an UploadedFile
+        $fileName = tempnam(sys_get_temp_dir(), 'exported');
+        file_put_contents($fileName, $content);
+        $file = new UploadedFile($fileName, 'leave_absence_request.json', null, null, null, true);
+
+        $newAnonUser = factory(User::class)->create(['status' => 'active']);
+        $this->app->extend(AnonymousUser::class, function($app) use ($newAnonUser) {
+            return $newAnonUser;
+        });
+        
+        $this->user = $adminUser;
+        $response = $this->apiCall('POST', "/processes/import", [
+            'file' => $file,
+        ]);
+
+        $process = Process::where('name', 'Leave Absence Request 2')->first();
+        $definitions = $process->getDefinitions();
+        $ns = WorkflowServiceProvider::PROCESS_MAKER_NS;
+        $this->assertEquals("user", $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignment'));
+        $this->assertEquals(
+            $newAnonUser->id, 
+            $definitions->findElementById('node_5')->getAttributeNS($ns, 'assignedUsers')
+        );
+        
+        // Reset the anon user for other tests
+        $this->app->extend(AnonymousUser::class, function($app) use ($originalAnonUser) {
+            return $originalAnonUser;
+        });
     }
 
     /**

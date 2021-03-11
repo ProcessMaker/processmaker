@@ -6,10 +6,12 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use ProcessMaker\Managers\SignalManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Repositories\BpmnDocument;
+use ProcessMaker\Repositories\DefinitionsRepository;
 
 class CatchSignalEventProcess implements ShouldQueue
 {
@@ -17,49 +19,60 @@ class CatchSignalEventProcess implements ShouldQueue
         InteractsWithQueue,
         Queueable;
 
-    public $eventDefinition;
     public $payload;
     public $processId;
-    public $requestId;
     public $signalRef;
-    public $throwEvent;
-    public $tokenId;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($processId, $signalRef, $payload, $throwEvent, $eventDefinition, $tokenId, $requestId)
+    public function __construct($processId, $signalRef, $payload)
     {
-        $this->eventDefinition = $eventDefinition;
         $this->payload = $payload;
         $this->processId = $processId;
-        $this->requestId = $requestId;
         $this->signalRef = $signalRef;
-        $this->throwEvent = $throwEvent;
-        $this->tokenId = $tokenId;
     }
 
     public function handle()
     {
-        $mainRequest = ProcessRequest::find($this->requestId);
-        $definitions = ($mainRequest->processVersion ?? $mainRequest->process)->getDefinitions(true);
-        $engine = $definitions->getEngine();
-        $throwEvent = $definitions->findElementById($this->throwEvent)->getBpmnElementInstance();
-        $eventDefinition = $this->getEventDefinitionBySignalRef($definitions);
-        $instance = $engine->loadProcessRequest($mainRequest);
-        $token = ProcessRequestToken::find($this->tokenId);
-        $token->setInstance($instance);
+        $repository = new DefinitionsRepository;
+        $eventDefinition = $repository->createSignalEventDefinition();
+        $signal = $repository->createSignal();
+        $signal->setId($this->signalRef);
+        $eventDefinition->setPayload($signal);
+        $eventDefinition->setProperty('signalRef', $this->signalRef);
+
         $version = Process::find($this->processId)->getLatestVersion();
         $definitions = $version->getDefinitions(true, null, false);
         $engine = $definitions->getEngine();
         $engine->loadProcessDefinitions($definitions);
         $engine->getEventDefinitionBus()->dispatchEventDefinition(
-            $throwEvent,
+            null,
             $eventDefinition,
-            $token
+            null
         );
+
+        if ($this->payload) {
+            $catches = SignalManager::getSignalCatchEvents($this->signalRef, $definitions);
+            $processVariable = '';
+            foreach($catches as $catch) {
+                $processVariable = $definitions->getStartEvent($catch['id'])->getBpmnElement()->getAttribute('pm:config');
+            }
+            if ($processVariable) {
+                foreach ($engine->getExecutionInstances() as $instance) {
+                    $instance->getDataStore()->putData($processVariable, $this->payload);
+                }
+            }
+            else {
+                foreach ($this->payload as $key => $value) {
+                    foreach ($engine->getExecutionInstances() as $instance) {
+                        $instance->getDataStore()->putData($key, $value);
+                    }
+                }
+            }
+        }
 
         $engine->runToNextState();
     }

@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Process;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
@@ -88,11 +90,12 @@ class TasksTest extends TestCase
             'user_id' => $user_2->id
         ]);
         //Get a page of tokens
-        $route = route('api.' . $this->resource . '.index');
+        //Since PR #3470, user_id is required as parameter
+        $route = route('api.' . $this->resource . '.index', ['user_id' => $user_1->id]);
         $response = $this->apiCall('GET', $route);
 
         // should only see the user's 2 tasks
-        $this->assertEquals(count($response->json()['data']), 2);
+        $this->assertEquals(2, count($response->json()['data']));
     }
 
     /**
@@ -445,5 +448,83 @@ class TasksTest extends TestCase
         $response = $this->actingAs(factory(User::class)->create())
             ->json('GET', $url, []);
         $response->assertStatus(401);
+    }
+
+    public function testSelfServeTasks()
+    {
+        $this->user = $user = factory(User::class)->create(['status' => 'ACTIVE']);
+        $otherUser = factory(User::class)->create(['status' => 'ACTIVE']);
+
+        $group1 = factory(Group::class)->create();
+        factory(GroupMember::class)->create([
+            'member_id' => $user->id,
+            'member_type' => User::class,
+            'group_id' => $group1->id
+        ]);
+        $group2 = factory(Group::class)->create();
+        factory(GroupMember::class)->create([
+            'member_id' => $user->id,
+            'member_type' => User::class,
+            'group_id' => $group2->id
+        ]);
+
+        $params = [
+            'status' => 'ACTIVE',
+            'user_id' => null,
+            'is_self_service' => true,
+        ];
+
+        $selfServiceTaskOriginal = factory(ProcessRequestToken::class)->create(
+            array_merge($params, [
+                'self_service_groups' => [(string) $group1->id]
+            ])
+        );
+        $selfServiceTaskGroups = factory(ProcessRequestToken::class)->create(
+            array_merge($params, [
+                'self_service_groups' => [
+                    'groups' => [(string) $group2->id]
+                ]
+            ])
+        );
+        $selfServiceTaskUsers = factory(ProcessRequestToken::class)->create(
+            array_merge($params, [
+                'self_service_groups' => [
+                    'users' => [(string) $user->id, (string) $otherUser->id]
+                ]
+            ])
+        );
+        $selfServiceTaskOtherUser = factory(ProcessRequestToken::class)->create(
+            array_merge($params, [
+                'self_service_groups' => [
+                    'users' => [(string) $otherUser->id]
+                ]
+            ])
+        );
+        $selfServiceTaskAssigned = factory(ProcessRequestToken::class)->create(
+            array_merge($params, [
+                'self_service_groups' => [
+                    'users' => [(string) $group1->id]
+                ],
+                'user_id' => $user->id,
+            ])
+        );
+        $regularTask = factory(ProcessRequestToken::class)->create([
+            'status' => 'ACTIVE',
+            'user_id' => $user->id,
+        ]);
+
+        $userId = $user->id;
+        $url = route('api.tasks.index') . "?pmql=(status%20%3D%20%22Self%20Service%22)";
+        $response = $this->apiCall('GET', $url);
+
+        $expectedTaskIds = collect([
+            $selfServiceTaskOriginal,
+            $selfServiceTaskGroups,
+            $selfServiceTaskUsers
+        ])->pluck('id');
+
+        $actualIds = collect($response->json()['data'])->pluck('id');
+
+        $this->assertEquals($expectedTaskIds, $actualIds);
     }
 }

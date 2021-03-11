@@ -46,6 +46,10 @@ return [
             'driver' => 'local',
             'root' => storage_path('app'),
         ],
+        'imports' => [
+            'driver' => 'local',
+            'root' => storage_path('app/imports'),
+        ],
         'keys' => [
             'driver' => 'local',
             'root' => env('KEYS_PATH') ? base_path(env('KEYS_PATH')) : storage_path('keys')

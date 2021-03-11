@@ -13,7 +13,7 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Broadcast::routes();
+        Broadcast::routes(['middleware'=>['web', 'auth:anon']]);
         require base_path('routes/channels.php');
     }
 }

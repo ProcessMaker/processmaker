@@ -240,21 +240,22 @@ class ProcessManualTaskTest extends TestCase
         $response = $this->apiCall('POST', $route, []);
 
         //Get the active tasks of the request
-        $route = route('api.tasks.index');
+        $route = route('api.tasks.index', ['user_id' => $foo->id]);
         $response = $this->actingAs($foo, 'api')->json('GET', $route);
         $tasks = $response->json('data');
 
         // Assert the first user "foo" got the task
-        $this->assertEquals(count($tasks), 1);
+        $this->assertEquals(1, count($tasks));
         $task_id = $tasks[0]['id'];
         
         //Get the active tasks of the request for the other user
-        $route = route('api.tasks.index');
+        //Since PR #3470, user_id is required as parameter
+        $route = route('api.tasks.index', ['user_id' => $bar->id]);
         $response = $this->actingAs($bar, 'api')->json('GET', $route);
         $tasks = $response->json('data');
         
         // Assert that "bar" did NOT get the task
-        $this->assertEquals(count($tasks), 0);
+        $this->assertEquals(0, count($tasks));
 
         // Complete the task
         $route = route('api.tasks.update', [$task_id, 'status' => 'COMPLETED']);
@@ -265,7 +266,8 @@ class ProcessManualTaskTest extends TestCase
         $response = $this->apiCall('POST', $route, []);
 
         //Get the active tasks of the request
-        $route = route('api.tasks.index');
+        //Since PR #3470, user_id is required as parameter
+        $route = route('api.tasks.index', ['user_id' => $bar->id]);
         $response = $this->actingAs($bar, 'api')->json('GET', $route);
         $tasks = $response->json('data');
 
@@ -281,12 +283,12 @@ class ProcessManualTaskTest extends TestCase
         $response = $this->apiCall('POST', $route, []);
 
         //Get the active tasks of the request
-        $route = route('api.tasks.index');
+        $route = route('api.tasks.index', ['user_id' => $foo->id]);
         $response = $this->actingAs($foo, 'api')->json('GET', $route);
         $tasks = $response->json('data');
 
         // Assert the next user, "foo" again, got the task
-        $this->assertEquals($tasks[0]['advanceStatus'], 'completed');
-        $this->assertEquals($tasks[1]['advanceStatus'], 'open');
+        $this->assertEquals('completed', $tasks[0]['advanceStatus']);
+        $this->assertEquals('open', $tasks[1]['advanceStatus']);
     }
 }

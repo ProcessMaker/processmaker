@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
-use Laravel\Horizon\Http\Controllers\Controller;
+use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Notifications as NotificationResource;
 use ProcessMaker\Models\Notification;
@@ -60,12 +60,11 @@ class NotificationController extends Controller
      *             @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/notifications"),
+     *                 @OA\Items(ref="#/components/schemas/Notification"),
      *             ),
      *             @OA\Property(
      *                 property="meta",
-     *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 @OA\Schema(ref="#/components/schemas/metadata"),
      *             ),
      *         ),
      *     ),
@@ -139,12 +138,12 @@ class NotificationController extends Controller
      *     tags={"Notifications"},
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/notificationsEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/NotificationEditable")
      *     ),
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/notifications")
+     *         @OA\JsonContent(ref="#/components/schemas/Notification")
      *     ),
      * )
      */
@@ -184,7 +183,7 @@ class NotificationController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the notification",
-     *         @OA\JsonContent(ref="#/components/schemas/notifications")
+     *         @OA\JsonContent(ref="#/components/schemas/Notification")
      *     ),
      * )
      */
@@ -219,7 +218,7 @@ class NotificationController extends Controller
      *     ),
      *     @OA\RequestBody(
      *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/notificationsEditable")
+     *       @OA\JsonContent(ref="#/components/schemas/NotificationEditable")
      *     ),
      *     @OA\Response(
      *         response=204,
@@ -271,15 +270,16 @@ class NotificationController extends Controller
 
 
     /**
-     * Update notifications
+     * Update notification as read
      *
      * @param Request $request
      *
      * @return Response
      *
-     *     @OA\Put(
+     * @OA\Put(
      *     path="/read_notifications",
      *     summary="Mark notifications as read by the user",
+     *     operationId="markNotificationAsRead",
      *     tags={"Notifications"},
      *
      *     @OA\RequestBody(
@@ -322,9 +322,10 @@ class NotificationController extends Controller
      *
      * @return Response
      *
-     *     @OA\Put(
+     * @OA\Put(
      *     path="/unread_notifications",
      *     summary="Mark notifications as unread by the user",
+     *     operationId="markNotificationAsUnread",
      *     tags={"Notifications"},
      *
      *     @OA\RequestBody(
@@ -377,18 +378,19 @@ class NotificationController extends Controller
      * @OA\Put(
      *     path="/read_all_notifications",
      *     summary="Mark notifications as read by id and type",
+     *     operationId="markAllAsRead",
      *     tags={"Notifications"},
      *
      *     @OA\RequestBody(
      *       required=true,
      *       @OA\JsonContent(
      *          @OA\Property(
-     *              property="notifiable_id",
+     *              property="id",
      *              type="integer",
      *              description="Polymorphic relation id",
      *              @OA\Items (type="integer")),
      *          @OA\Property(
-     *              property="notifiable_type",
+     *              property="type",
      *              type="string",
      *              description="Polymorphic relation type",
      *              @OA\Items (type="string"))

@@ -53,7 +53,7 @@ class ScreenCategoryController extends Controller
      *             @OA\Property(
      *                 property="meta",
      *                 type="object",
-     *                 allOf={@OA\Schema(ref="#/components/schemas/metadata")},
+     *                 @OA\Schema(ref="#/components/schemas/metadata"),
      *             ),
      *         ),
      *     ),

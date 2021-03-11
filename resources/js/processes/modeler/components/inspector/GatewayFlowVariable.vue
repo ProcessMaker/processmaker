@@ -1,6 +1,6 @@
 <template>
     <div v-if="isConditionedFlow">
-      <h5>Flow Variable</h5>
+      <h5>{{ $t('Flow Variable') }}</h5>
       <small class="form-text text-muted">{{$t("If the expression evaluates to true, create or update the following variable")}}</small>
       <div class="form-group">
           <label>{{ $t("Variable Name") }}</label>
@@ -13,7 +13,6 @@
           <label>{{ $t("Value") }}</label>
           <input class="form-control" ref="expression" type="text"
                    v-model="config.update_data.expression">
-          <small class="form-text text-muted">{{$t("Expression to evaluate. Mustache syntax supported.")}}</small>
         </div>
     </div>
 </template>

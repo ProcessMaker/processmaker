@@ -7,12 +7,15 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \ProcessMaker\Managers\WorkflowManager
  * 
- * @methodStatic mixed callProcess($filename, $processId)
- * @methodStatic mixed triggerStartEvent($definitions, $event, array $data)
- * @methodStatic mixed runScripTask(\ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface $scriptTask, Token $token)
- * @methodStatic mixed runServiceTask(\ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface $serviceTask, Token $token)
- * @methodStatic void onDataValidation(callable $callback)
- * @methodStatic void validateData(array $data, $definitions, $element)
+ * @method static mixed callProcess($filename, $processId)
+ * @method static mixed triggerStartEvent($definitions, $event, array $data)
+ * @method static mixed runScripTask(\ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface $scriptTask, Token $token)
+ * @method static mixed runServiceTask(\ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface $serviceTask, Token $token)
+ * @method static void throwSignalEventDefinition(\ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface $sourceEventDefinition, \ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface $token)
+ * @method static void throwSignalEvent($signalRef, array $data = [], array $exclude = [])
+ * @method static void throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
+ * @method static void onDataValidation(callable $callback)
+ * @method static void validateData(array $data, $definitions, $element)
  */
 class WorkflowManager extends Facade
 {

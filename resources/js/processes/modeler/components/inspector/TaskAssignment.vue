@@ -1,139 +1,68 @@
 <template>
     <div>
-        <div class="form-group">
+        <div class="form-group"> 
             <label>{{ $t( label ) }}</label>
             <select
                 ref="assignmentsDropDownList"
                 class="form-control"
-                v-model="assignment">
+                v-model="assignment"
+                :disabled="disabled">
                 <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{ $t(type.label) }}
                 </option>
             </select>
             <small class="form-text text-muted">{{$t("Select the Task assignee")}}</small>
         </div>
 
-        <select-user-group
+        <div v-if="!disabled">
+          <select-user-group
             v-if="showAssignments"
             :label="$t('Assigned Users/Groups')"
             v-model="assignments"
-            :hide-users="hideUsers"/>
+            :hide-users="hideUsers" 
+            :multiple="true" />
+          
+          <user-by-id
+              v-if="showAssignUserById"
+              :label="$t('Variable Name')"
+              v-model="assigned"
+              :helper="$t('Variable containing the numeric User ID')"
+          ></user-by-id>
 
-        <user-by-id
-            v-if="showAssignUserById"
-            :label="$t('Variable Name of User ID Value')"
-            v-model="assigned"
-        ></user-by-id>
+          <self-service-select v-if="showAssignSelfService" 
+            v-model="assignments"
+          ></self-service-select>
 
-        <form-checkbox
-            v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
-            :label="$t('Lock task assignment to user')"
-            :checked="assignmentLockGetter"
-            toggle="true"
-            @change="assignmentLockSetter">
-        </form-checkbox>
+          <assign-expression 
+            v-if="showAssignRuleExpression"
+            v-model="specialAssignments" 
+          />
+            
+          <form-checkbox
+              v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
+              :label="$t('Lock Task Assignment to User')"
+              :checked="assignmentLockGetter"
+              toggle="true"
+              @change="assignmentLockSetter">
+          </form-checkbox>
 
-        <form-checkbox
-            v-if="configurables.includes('ALLOW_REASSIGNMENT')"
-            :label="$t('Allow Reassignment')"
-            :helper="$t('Allows the Task assignee to reassign this Task')"
-            :checked="allowReassignmentGetter"
-            toggle="true"
-            @change="allowReassignmentSetter">
-        </form-checkbox>
-
-        <div v-if="configurables.includes('ASSIGN_BY_EXPRESSION')" class="form-group">
-
-            <div class="form-group special-assignment-header">
-                <label>{{ $t("Assign by Expression Use a rule to assign this Task conditionally") }}</label>
-                <button type="button"
-                        @click="addingSpecialAssignment = true"
-                        class="float-right btn-special-assignment-action btn btn-secondary btn-sm"
-                        :class="{inactive: addingSpecialAssignment}">
-                    <i class="fa fa-plus"/> {{ $t("Rule") }}
-                </button>
-            </div>
-
-            <div class="special-assignment-wrapper" ref="specialAssignmentWrapper" @transitionend="transitionEnded">
-                <div class="special-assignment-form">
-
-                    <div class="form-group">
-                        <label>{{ $t("Expression") }}</label>
-                        <input class="form-control" ref="specialAssignmentsInput" type="text"
-                               v-model="assignmentExpression">
-                        <small class="form-text text-muted">{{$t("Enter the expression to evaluate Task assignment")}}</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label>{{ $t("Select the Task assignee") }}</label>
-                        <select
-                            ref="specialAssignmentsDropDownList"
-                            class="form-control"
-                            v-model="typeAssignmentExpression">
-                            <option value=""></option>
-                            <option v-for="type in assignmentTypes" :key="type.value" :value="type.value">{{
-                                $t(type.label) }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <select-user-group
-                        v-if="showSpecialAssignOneUserGroup"
-                        ref="userGroupAssignedSpecial"
-                        :label="$t('Assigned Users/Groups')"
-                        v-model="assignedExpression"
-                        :hide-users="hideUsersAssignmentExpression"/>
-
-                    <user-by-id
-                        v-if="showSpecialAssignUserById"
-                        :label="$t('Variable Name of User ID Value')"
-                        v-model="specialAssignedUserID"
-                    ></user-by-id>
-
-                    <div class="form-group form-group-actions">
-                        <button
-                            type="button"
-                            @click="addingSpecialAssignment = false"
-                            class="btn-special-assignment-action btn-special-assignment-close btn btn-outline-secondary btn-sm">
-                            {{ $t("Cancel") }}
-                        </button>
-                        <button
-                            type="button"
-                            @click="saveSpecialAssignment"
-                            class="btn-special-assignment-action btn btn-secondary btn-sm">
-                            {{ $t("Save") }}
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-            <div v-for="(row, index) in specialAssignmentsData"
-                 class="list-group-item list-group-item-action pt-0 pb-0"
-                 :class="{'bg-primary': false}">
-                <template>
-                    <div class="special-assignment-section">
-                        <div class="special-assignment-value" :title="row.expression">
-                            <strong>{{ $t(row.expression) }}</strong></div>
-                        <div class="btn-special-assignment-delete" @click="removeSpecialAssignment(row)">
-                            <i class="fa fa-trash"></i>
-                        </div>
-                    </div>
-                    <div class="special-assignment-section">
-                        <small class="special-assignment-value">{{ $t("Assigned to") }}
-                            <strong v-if="row.type == 'requester'">{{$t(row.type)}}</strong>
-                            <strong v-if="row.type == 'previous_task_assignee'">{{$t('Previous Task Assignee')}}</strong>
-                            <strong v-if="row.type == 'user_by_id'">{{$t('User with ID') }} {{row.assignee}}</strong>
-                            <strong v-else>{{$t(row.assignmentName)}}</strong>
-                        </small>
-                    </div>
-                </template>
-            </div>
+          <form-checkbox
+              v-if="configurables.includes('ALLOW_REASSIGNMENT')"
+              :label="$t('Allow Reassignment')"
+              :checked="allowReassignmentGetter"
+              toggle="true"
+              @change="allowReassignmentSetter">
+          </form-checkbox>
         </div>
     </div>
 </template>
 
 <script>
+  import SelfServiceSelect from './SelfServiceSelect.vue';
+  import AssignExpression from './AssignExpression.vue';
+  import SelectUserGroup from '../../../../components/SelectUserGroup.vue';
+
   export default {
+  components: { SelfServiceSelect, AssignExpression},
     props: {
       value: null,
       label: null,
@@ -150,16 +79,16 @@
         default() {
           return [
             {
-              value: "requester",
-              label: "Requester"
-            },
-            {
               value: "user_group",
               label: "Users / Groups"
             },
             {
               value: "previous_task_assignee",
               label: "Previous Task Assignee"
+            },
+            {
+              value: "requester",
+              label: "Request Starter"
             },
             {
               value: "user_by_id",
@@ -169,14 +98,16 @@
               value: "self_service",
               label: "Self Service"
             },
+            {
+              value: "rule_expression",
+              label: "Rule Expression"
+            },
           ];
         },
       },
     },
     data () {
       return {
-        specialAssignments: [],
-        addingSpecialAssignment: false,
         assignmentExpression: "",
         typeAssignmentExpression: "",
         specialAssignmentsData: [],
@@ -184,11 +115,13 @@
         error: "",
         hideUsers: false,
         hideUsersAssignmentExpression: false,
-        specialAssignedUserID: null,
+        disabled: false,
       };
     },
     mounted () {
-      this.loadSpecialAssignments();
+      this.$root.$on('disable-assignment-settings', (val) => {
+        this.disabled = val;
+      });
     },
     computed: {
       node () {
@@ -222,23 +155,32 @@
       assignments: {
         get () {
           let value = [],
-            users = [];
-          if (this.assignment !== "self_service") {
-            users = this.assignedUserGetter ? this.assignedUserGetter.split(",") : [];
-          }
+          users = this.assignedUserGetter ? this.assignedUserGetter.split(",") : [],
+          groups = this.assignedGroupGetter ? this.assignedGroupGetter.split(",") : [];
           value.users = users;
-          value.groups = this.assignedGroupGetter ? this.assignedGroupGetter.split(",") : [];
-
+          value.groups = groups;
           return value;
         },
         set (value) {
-          this.assignedUserSetter(value.users.join(","));
-          let users = "";
-          if (this.assignment !== "self_service") {
-            users = value.users.join(",");
-          }
-          this.assignedUserSetter(users);
-          this.assignedGroupSetter(value.groups.join(","));
+          const assignedUsers = value.users.map(user => { return user.id ? user.id : user});
+          const assignedGroups = value.groups.map(group => {
+            if (!group.id) {
+              return group;
+            } else {
+              return group.id.replace("group-", "");
+            }
+          });
+          this.assignedUserSetter(assignedUsers.join(","));
+          this.assignedGroupSetter(assignedGroups.join(","));
+        }
+      },
+      specialAssignments: {
+        get () {
+          const value = this.specialAssignmentsListGetter;
+          return value;
+        }, 
+        set(value) {
+          this.assignmentRulesSetter(value);
         }
       },
 
@@ -263,30 +205,28 @@
           return value;
         },
         set (value) {
+          this.$set(this.node, 'assignedUsers', "");
+          this.$set(this.node, 'assignedGroups', "");
           this.$set(this.node, "assignment", value);
         }
       },
       showAssignUserById () {
         return this.assignment === "user_by_id";
       },
-      showAssignments () {
+      showAssignments() {
         this.hideUsers = this.assignment === "self_service";
-
-        const assign = ["user", "group", "self_service", "user_group"];
+        const assign = ["user", "group", "user_group"];
         return assign.indexOf(this.assignment) !== -1;
       },
-      showSpecialAssignOneUserGroup () {
-        this.hideUsersAssignmentExpression = this.typeAssignmentExpression === "self_service";
-
-        const assign = ["user", "group", "self_service", "user_group"];
-        return assign.indexOf(this.typeAssignmentExpression) !== -1;
+      showAssignSelfService () {
+        return this.assignment === "self_service";
+      },
+      showAssignRuleExpression () {
+        return this.assignment === 'rule_expression';
       },
       specialAssignmentsListGetter () {
         const value = this.node.get("assignmentRules") || "[]";
         return JSON.parse(value);
-      },
-      showSpecialAssignUserById () {
-        return this.typeAssignmentExpression === "user_by_id";
       },
     },
     methods: {
@@ -329,167 +269,8 @@
         }
         return val;
       },
-      assignmentRulesSetter () {
-        this.$set(this.node, "assignmentRules", JSON.stringify(this.specialAssignments));
-      },
-      removeSpecialAssignment (assignment) {
-        this.specialAssignments = this.specialAssignments.filter(function (obj) {
-          return (
-            obj.type !== assignment.type ||
-            obj.expression !== assignment.expression ||
-            obj.assignee !== assignment.assignee
-          );
-        });
-
-        this.specialAssignmentsData = this.specialAssignmentsData.filter(function (obj) {
-          return (
-            obj.type !== assignment.type ||
-            obj.expression !== assignment.expression ||
-            obj.assignee !== assignment.assignee
-          );
-        });
-
-        this.assignmentRulesSetter();
-      },
-
-      transitionEnded (event) {
-        if (this.addingSpecialAssignment) {
-          if (event.propertyName == "height") {
-            this.$refs.specialAssignmentsInput.focus();
-            this.$refs.specialAssignmentWrapper.style.height = "auto";
-          }
-        } else {
-          this.assignmentExpression = "";
-          this.typeAssignmentExpression = "";
-          this.assignedExpression = null;
-          this.specialAssignedUserID = null;
-        }
-      },
-
-      saveSpecialAssignment () {
-        let byExpression = {
-          type: this.typeAssignmentExpression,
-          assignee: this.assignedExpression || this.specialAssignedUserID || "",
-          expression: this.assignmentExpression
-        };
-
-        if (byExpression.type && byExpression.expression) {
-          this.specialAssignments.push(byExpression);
-          this.assignmentRulesSetter();
-          let assignmentName = "";
-          if (this.typeAssignmentExpression === "user_group" || this.typeAssignmentExpression === "self_service") {
-            this.$refs.userGroupAssignedSpecial.content.forEach(item => {
-              assignmentName += assignmentName ? ", " : "";
-              assignmentName += item.fullname || item.name;
-            });
-          }
-
-          this.specialAssignmentsData.push({
-            type: this.typeAssignmentExpression,
-            assignee: this.assignedExpression || this.specialAssignedUserID || "",
-            expression: this.assignmentExpression,
-            assignmentName,
-          });
-
-          this.assignmentExpression = "";
-          this.typeAssignmentExpression = "";
-          this.assignedExpression = null;
-          this.specialAssignedUserID = null;
-        }
-
-        this.addingSpecialAssignment = false;
-      },
-
-      loadSpecialAssignments () {
-        this.specialAssignmentsData = [];
-        const items = this.specialAssignmentsListGetter;
-        this.specialAssignments = items;
-
-        items.forEach(item => {
-          switch (item.type) 
-          {
-            case 'requester': 
-            case 'previous_task_assignee':
-            case 'user_by_id':
-              this.specialAssignmentsData.push({
-                type: item.type,
-                assignee: item.assignee,
-                expression: item.expression
-              });
-              break;
-            case 'user_group':
-            case 'self_service':
-              if (item.assignee.users) {
-                let assignmentName = "";
-
-                let usersPromise = Promise.all(
-                  item.assignee.users.map(user => {
-                    return ProcessMaker.apiClient.get("users/" + user);
-                  })
-                )
-                  .then(response => {
-                    response.forEach(user => {
-                      assignmentName += assignmentName ? ", " + user.data.fullname : user.data.fullname;
-                    });
-                  });
-
-                let groupsPromise = Promise.all(
-                  item.assignee.groups.map(group => {
-                    return ProcessMaker.apiClient.get("groups/" + group);
-                  })
-                )
-                  .then(response => {
-                    response.forEach(group => {
-                      assignmentName += assignmentName ? ", " + group.data.name : group.data.name;
-                    });
-                  });
-
-                Promise.all([usersPromise, groupsPromise])
-                  .then(() => {
-                    this.specialAssignmentsData.push({
-                      type: item.type,
-                      assignee: item.assignee,
-                      expression: item.expression,
-                      assignmentName: assignmentName
-                    });
-                  });
-              }
-              break;
-            case 'user':
-              ProcessMaker.apiClient
-              .get("users/" + item.assignee)
-              .then(response => {
-                this.specialAssignmentsData.push({
-                  type: item.type,
-                  assignee: item.assignee,
-                  expression: item.expression,
-                  assignmentName: response.data.fullname
-                });
-              })
-              .catch(() => {
-                item.assignmentName = "";
-                this.specialAssignmentsData.push(item);
-              });
-              break;
-            case 'group':
-            case 'self_service':
-              ProcessMaker.apiClient
-                .get("groups/" + item.assignee)
-                .then(response => {
-                  this.specialAssignmentsData.push({
-                    type: item.type,
-                    assignee: item.assignee,
-                    expression: item.expression,
-                    assignmentName: response.data.name
-                  });
-                })
-                .catch(() => {
-                  item.assignmentName = "";
-                  this.specialAssignmentsData.push(item);
-                });
-              break;
-          }
-        })
+      assignmentRulesSetter (value) {
+        this.$set(this.node, "assignmentRules", JSON.stringify(value));
       },
     },
     watch: {
@@ -504,6 +285,8 @@
       },
       assignment: {
         handler (assigned) {
+          this.assignments.groups = [];
+          this.assignments.users = [];
           let value = "";
           if (assigned === "user") {
             value = this.assignedUserGetter;
@@ -514,23 +297,6 @@
         }
 
       },
-      addingSpecialAssignment (value) {
-        let wrapper = this.$refs.specialAssignmentWrapper;
-        let height = wrapper.scrollHeight;
-
-        if (value === true) {
-          wrapper.style.height = height + "px";
-          wrapper.style.opacity = 1;
-        }
-
-        if (value === false) {
-          wrapper.style.height = height + "px";
-          setTimeout(() => {
-            wrapper.style.height = 0;
-            wrapper.style.opacity = 0;
-          }, 0);
-        }
-      }
     }
   };
 </script>

@@ -14,23 +14,23 @@ class OAuthTest extends TestCase
 
     public function withUserSetup()
     {
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', []);
 
         $this->assertEquals('The name field is required.', $response->json()['errors']['name'][0]);
         $this->assertEquals('The types field is required.', $response->json()['errors']['types'][0]);
         
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', [ 'name' => 'foo', 'types' => []]);
 
         $this->assertEquals('The Auth-Client must have at least 1 item chosen.', $response->json()['errors']['types'][0]);
         
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', [ 'name' => 'foo', 'types' => ['authorization_code_grant']]);
 
         $this->assertEquals('The redirect field is required.', $response->json()['errors']['redirect'][0]);
         
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                          ->json('POST', '/oauth/clients', ['name' => 'test', 'redirect' => 'http://test.com', 'types' => ['authorization_code_grant']]);
         
         $response->assertStatus(201);
@@ -44,7 +44,7 @@ class OAuthTest extends TestCase
      */
     public function testCreateAndList()
     {
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                          ->json('GET', '/oauth/clients');
 
         $response->assertStatus(200);
@@ -63,7 +63,7 @@ class OAuthTest extends TestCase
     {
         $this->assertNotContains('password_client', $this->json['types']);
         $this->assertNotContains('personal_access_client', $this->json['types']);
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                     ->json(
                         'PUT',
                         '/oauth/clients/' . $this->json['id'],
@@ -75,7 +75,7 @@ class OAuthTest extends TestCase
                     );
         $response->assertStatus(200);
 
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                          ->json('GET', '/oauth/clients');
 
         $json = $response->json()['data'];
@@ -94,26 +94,26 @@ class OAuthTest extends TestCase
      */
     public function testDelete()
     {
-        $this->actingAs($this->user, 'api')
+        $this->actingAs($this->user)
              ->json('POST', '/oauth/clients', [
                  'name' => 'other',
                  'redirect' => 'http://other.net',
                  'types' => ['authorization_code_grant']
             ]);
         
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                          ->json('GET', '/oauth/clients');
 
         $this->assertCount(2, $response->json()['data']);
 
-        $response = $this->actingAs($this->user, 'api')
+        $response = $this->actingAs($this->user)
                     ->json(
                         'DELETE',
                         '/oauth/clients/' . $this->json['id']
                     );
         $response->assertStatus(Response::HTTP_NO_CONTENT);
         
-        $response= $this->actingAs($this->user, 'api')
+        $response= $this->actingAs($this->user)
                         ->json('GET', '/oauth/clients');
 
         $json = $response->json()['data'];

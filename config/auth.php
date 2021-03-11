@@ -39,6 +39,9 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+        'anon' => [
+            'driver' => 'anon',
+        ],
     ],
     /*
     |--------------------------------------------------------------------------
@@ -81,4 +84,15 @@ return [
             'expire' => 60,
         ],
     ],
+    /*
+    |--------------------------------------------------------------------------
+    | Security Logging
+    |--------------------------------------------------------------------------
+    |
+    | This controls the logging of authentication events such as login, logout,
+    | and attempts to a database table. If disabled, such events will not be
+    | logged. If enabled, the events will be displayed within user admin.
+    |
+    */
+    'log_auth_events' => env('LOG_AUTH_EVENTS', true),
 ];

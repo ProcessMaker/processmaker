@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Resources;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Models\User;
+use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use StdClass;
 
 class Task extends ApiResource
@@ -21,7 +22,7 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
         if (in_array('data', $include)) {
-            $array['data'] = $this->processRequest->data;
+            $array['data'] = $this->addUser($this->processRequest->data, $this->user);
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
@@ -36,10 +37,24 @@ class Task extends ApiResource
             $array['component'] = $this->getScreen() ? $this->getScreen()->renderComponent() : null;
         }
         if (in_array('screen', $include)) {
-            $array['screen'] = $this->getScreen() ? $this->getScreen()->toArray() : null;
+            $screen = $this->getScreen();
+            if ($screen) {
+                if ($screen->type === 'ADVANCED') {
+                    $array['screen'] = $screen;
+                } else {
+                    $resource = new ScreenResource($screen);
+                    $array['screen'] = $resource->toArray($request);
+                }
+            } else {
+                $array['screen'] = null;
+            }
         }
         if (in_array('requestData', $include)) {
-            $array['request_data'] = $this->processRequest->data ?: new StdClass();
+            $data = new StdClass();
+            if ($this->processRequest->data) {
+                $data = $this->addUser($this->processRequest->data, $this->user);
+            }
+            $array['request_data'] = $data;
         }
         if (in_array('definition', $include)) {
             $array['definition'] = $this->getDefinition();
@@ -52,26 +67,30 @@ class Task extends ApiResource
             $array['allow_interstitial'] = $interstitial['allow_interstitial'];
             $array['interstitial_screen'] = $interstitial['interstitial_screen'];
         }
+        /**
+         * @deprecated since 4.1 Use instead `/api/1.0/users`
+         */
         if (in_array('assignableUsers', $include)) {
-            $definition = $this->getDefinition();
-            $assignment = isset($definition['assignment']) ? $definition['assignment'] : 'requester';
-            switch ($assignment) {
-                case 'self_service':
-                case 'cyclical':
-                case 'group':
-                case 'user_group':
-                    $ids = $this->process->getAssignableUsers($this->element_id);
-                    $users = User::where('status', 'ACTIVE')->whereIn('id', $ids)->get();
-                    break;
-                case 'user':
-                case 'requester':
-                    $users = User::where('status', 'ACTIVE')->get();
-                    break;
-                default:
-                    $users = [];
-            }
+            $currentUser = \Auth::user();
+            $users = User::where('status', 'ACTIVE')
+                ->where('id', '!=', $currentUser->id)
+                ->where('is_system', 'false')
+                ->limit(100)
+                ->get();
             $array['assignable_users'] = $users;
         }
         return $array;
+    }
+
+    private function addUser($data, $user)
+    {
+        if (!$user) {
+            return $data;
+        }
+
+        $userData = $user->attributesToArray();
+        unset($userData['remember_token']);
+
+        return array_merge($data, ['_user' => $userData]);
     }
 }

@@ -2,13 +2,15 @@
 
 namespace Tests\Feature\Api;
 
+use Tests\TestCase;
 use Faker\Factory as Faker;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
-use ProcessMaker\Models\GroupMember;
-use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
+use ProcessMaker\Models\Permission;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Models\GroupMember;
+use Illuminate\Support\Facades\Artisan;
+use Tests\Feature\Shared\RequestHelper;
 
 class GroupMembersTest extends TestCase
 {
@@ -32,6 +34,9 @@ class GroupMembersTest extends TestCase
 
     public function testGetGroupMemberList()
     {
+        // Seed our tables.
+        Artisan::call('db:seed', ['--class' => 'PermissionSeeder']);
+
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $response->assertStatus(200);
 
@@ -58,12 +63,10 @@ class GroupMembersTest extends TestCase
         $this->assertEquals('Group that admin belongs to', $json[0]['name']);
         $this->assertEquals('Group that other user belongs to', $json[1]['name']);
 
-        //when user is regular user they can only get the groups that they belong to
+        //user not have permission
         $this->user = $other_user;
         $response = $this->apiCall('GET', self::API_TEST_URL);
-        $json = $response->json('data');
-        $this->assertCount(1, $json);
-        $this->assertEquals('Group that other user belongs to', $json[0]['name']);
+        $response->assertStatus(403);
     }
 
     /**
@@ -211,7 +214,7 @@ class GroupMembersTest extends TestCase
         //The new group does not have groups assigned.
         factory(User::class, 15)->create(['status' => 'ACTIVE']);
         $group = factory(Group::class)->create(['status' => 'ACTIVE']);
-        $count = User::where('status', 'ACTIVE')->count();
+        $count = User::nonSystem()->where('status', 'ACTIVE')->count();
         $response = $this->apiCall('GET', '/user_members_available', [
             'group_id' => $group->id
         ]);
@@ -234,7 +237,7 @@ class GroupMembersTest extends TestCase
         factory(User::class, 15)->create(['status' => 'ACTIVE']);
 
 
-        $count = User::where('status', 'ACTIVE')->count() - 1;
+        $count = User::nonSystem()->where('status', 'ACTIVE')->count() - 1;
         $response = $this->apiCall('GET', '/user_members_available', [
             'group_id' => $group->id
         ]);

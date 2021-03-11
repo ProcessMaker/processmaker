@@ -37,6 +37,9 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
         Route::get('scripts', 'ScriptController@index')->name('scripts.index')->middleware('can:view-scripts');
         Route::get('scripts/{script}/edit', 'ScriptController@edit')->name('scripts.edit')->middleware('can:edit-scripts,script');
         Route::get('scripts/{script}/builder', 'ScriptController@builder')->name('scripts.builder')->middleware('can:edit-scripts,script');
+
+        Route::get('signals', 'SignalController@index')->name('signals.index')->middleware('can:view-processes');
+        Route::get('signals/{signalId}/edit', 'SignalController@edit')->name('signals.edit')->middleware('can:edit-processes');
     });
 
     Route::get('designer/processes/categories', 'ProcessController@index')->name('process-categories.index') ->middleware ('can:view-process-categories');
@@ -56,7 +59,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::put('processes/{process}', 'ProcessController@update')->name('processes.edit')->middleware('can:edit-processes');
     Route::delete('processes/{process}', 'ProcessController@destroy')->name('processes.destroy')->middleware('can:archive-processes');
     
-    Route::get('process_events/{process}', 'ProcessController@triggerStartEventApi');
+    Route::get('process_events/{process}', 'ProcessController@triggerStartEventApi')->middleware('can:start,process');
 
     Route::get('about', 'AboutController@index')->name('about.index');
 
@@ -82,7 +85,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('tasks', 'TaskController@index')->name('tasks.index');
     Route::get('tasks/{task}/edit', 'TaskController@edit')->name('tasks.edit');
 
-    Route::get('notifications', 'NotificationController@index')->name('notifications.index');
+    Route::get('notifications', 'NotificationController@index')->name('notifications.index')->middleware('can:view-notifications,notification');
 
     // Allows for a logged in user to see navigation on a 404 page
     Route::fallback(function () {

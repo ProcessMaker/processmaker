@@ -19,20 +19,29 @@ use Ramsey\Uuid\Uuid;
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
- *   @OA\Schema(
- *   schema="notificationsEditable",
+ * @OA\Schema(
+ *   schema="NotificationEditable",
  *   @OA\Property(property="type", type="string"),
  *   @OA\Property(property="notifiable_type", type="string"),
  *   @OA\Property(property="notifiable_id", type="integer"),
  *   @OA\Property(property="data", type="string"),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="message", type="string"),
+ *   @OA\Property(property="processName", type="string"),
+ *   @OA\Property(property="userName", type="string"),
+ *   @OA\Property(property="request_id", type="string"),
  * ),
  * @OA\Schema(
- *   schema="notifications",
- *   allOf={@OA\Schema(ref="#/components/schemas/notificationsEditable")},
- *   @OA\Property(property="id", type="string"),
- *   @OA\Property(property="read_at", type="string", format="date-time"),
- *   @OA\Property(property="created_at", type="string", format="date-time"),
- *   @OA\Property(property="updated_at", type="string", format="date-time"),
+ *   schema="Notification",
+ *   allOf={
+ *     @OA\Schema(ref="#/components/schemas/NotificationEditable"),
+ *     @OA\Schema(
+ *       @OA\Property(property="id", type="string"),
+ *       @OA\Property(property="read_at", type="string", format="date-time"),
+ *       @OA\Property(property="created_at", type="string", format="date-time"),
+ *       @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     ),
+ *   },
  * )
  *
  */

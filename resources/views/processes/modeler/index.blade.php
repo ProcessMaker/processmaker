@@ -13,6 +13,10 @@
     </div>
 @endsection
 
+@section('meta')
+<meta name="anonymous-user-id" content="{{ app(\ProcessMaker\Models\AnonymousUser::class)->id }}">
+@endsection
+
 @section('css')
 <style>
 div.main {

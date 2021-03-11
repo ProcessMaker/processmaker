@@ -51,7 +51,7 @@ class TaskController extends Controller
             ->whereNull('read_at')
             ->update(['read_at' => Carbon::now()]);
 
-        $manager = new ScreenBuilderManager();
+        $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, $task->getScreen() ? $task->getScreen()->type : 'FORM'));
 
         $submitUrl = route('api.tasks.update', $task->id);
@@ -60,7 +60,7 @@ class TaskController extends Controller
         $screen = $task->getScreen();
         $task->component = $screen ? $screen->renderComponent() : null;
         $task->screen = $screen ? $screen->toArray() : null;
-        $task->request_data = $task->processRequest->data;
+        $task->request_data = $this->addUser($task->processRequest->data, $task->user);
         $task->bpmn_tag_name = $task->getBpmnDefinition()->localName;
         $interstitial = $task->getInterstitial();
         $task->interstitial_screen = $interstitial['interstitial_screen'];
@@ -71,10 +71,21 @@ class TaskController extends Controller
 
         $files = [];
         foreach ($task->processRequest->getMedia() as $file) {
-            $files[$file->getCustomProperty('data_name')] = [
-                'id' => $file->id,
-                'file_name' => $file->file_name,
-            ];
+            $dataName = $file->getCustomProperty('data_name');
+            if (isset($files[$dataName])) {
+                if (isset($files[$dataName]['id'])) {
+                    $files[$dataName] = [$files[$dataName]];
+                }
+                $files[$dataName][] = [
+                    'id' => $file->id,
+                    'file_name' => $file->file_name
+                ];
+            } else {
+                $files[$dataName] = [
+                    'id' => $file->id,
+                    'file_name' => $file->file_name,
+                ];
+            }
         }
 
         if ($element instanceof ScriptTaskInterface) {
@@ -88,5 +99,17 @@ class TaskController extends Controller
                 'files' => $files,
                 ]);
         }
+    }
+
+    private function addUser($data, $user)
+    {
+        if (!$user) {
+            return $data;
+        }
+
+        $userData = $user->attributesToArray();
+        unset($userData['remember_token']);
+
+        return array_merge($data, ['_user' => $userData]);
     }
 }

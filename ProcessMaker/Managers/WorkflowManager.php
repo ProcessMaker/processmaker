@@ -4,14 +4,17 @@ namespace ProcessMaker\Managers;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Arr;
 use ProcessMaker\Jobs\BoundaryEvent;
 use ProcessMaker\Jobs\CallProcess;
 use ProcessMaker\Jobs\CatchEvent;
-use ProcessMaker\Jobs\CatchSignalEvent;
 use ProcessMaker\Jobs\CompleteActivity;
 use ProcessMaker\Jobs\RunScriptTask;
 use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Jobs\StartEvent;
+use ProcessMaker\Jobs\ThrowMessageEvent;
+use ProcessMaker\Jobs\ThrowSignalEvent;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Nayra\Contracts\Bpmn\BoundaryEventInterface;
@@ -24,6 +27,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
+
 
 class WorkflowManager
 {
@@ -170,11 +174,89 @@ class WorkflowManager
      *
      * @param ServiceTaskInterface $serviceTask
      * @param Token $token
+     * @deprecated 4.0.15 Use WorkflowManager::throwSignalEventDefinition()
      */
-    public function catchSignalEvent(ThrowEventInterface $source, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    public function catchSignalEvent(ThrowEventInterface $source = null, EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
     {
-        Log::info('Catch signal event: ' . $sourceEventDefinition->getName());
-        CatchSignalEvent::dispatch($source, $sourceEventDefinition, $token)->onQueue('bpmn');
+        $this->throwSignalEventDefinition($sourceEventDefinition, $token);
+    }
+
+    /**
+     * Throw a signal event.
+     *
+     * @param EventDefinitionInterface $sourceEventDefinition
+     * @param Token $token
+     */
+    public function throwSignalEventDefinition(EventDefinitionInterface $sourceEventDefinition, TokenInterface $token)
+    {
+        $signalRef = $sourceEventDefinition->getProperty('signal') ?
+            $sourceEventDefinition->getProperty('signal')->getId() :
+            $sourceEventDefinition->getProperty('signalRef');
+
+        if (!$signalRef) {
+            return;
+        }
+
+        $requestData = $token->getInstance()->getDataStore()->getData();
+        $eventConfig = json_decode($sourceEventDefinition->getProperty('config') ?? null);
+        $payload = $eventConfig && $eventConfig->payload ? $eventConfig->payload[0] : null;
+        $payloadId = $payload && $payload->id ? $payload->id : null;
+
+        $data = [];
+
+        switch ($payloadId) {
+            case "REQUEST_VARIABLE":
+                if ($payload->variable) {
+                    $extractedData = Arr::get($requestData, $payload->variable);
+                    Arr::set($data, $payload->variable, $extractedData);
+                }
+                break;
+            case "EXPRESSION":
+                $expression = $payload->expression;
+                $formalExp = new FormalExpression();
+                $formalExp->setLanguage('FEEL');
+                $formalExp->setBody($expression);
+                $expressionResult = $formalExp($requestData);
+                Arr::set($data, $payload->variable, $expressionResult);
+                break;
+            case "NONE":
+                $data = [];
+                break;
+            default:
+                $data = $requestData;
+                break;
+        }
+
+        $excludeProcesses = [$token->getInstance()->getModel()->process_id];
+        $excludeRequests = [];
+        $instances = $token->getInstance()->getProcess()->getEngine()->getExecutionInstances();
+        foreach($instances as $instance) {
+            $excludeRequests[] = $instance->getId();
+        }
+        ThrowSignalEvent::dispatch($signalRef, $data, $excludeProcesses, $excludeRequests)->onQueue('bpmn');
+    }
+
+    /**
+     * Throw a signal event by id (signalRef).
+     *
+     * @param string $signalRef
+     * @param array $data
+     * @param array $exclude
+     */
+    public function throwSignalEvent($signalRef, array $data = [], array $exclude = [])
+    {
+        ThrowSignalEvent::dispatch($signalRef, $data, $exclude)->onQueue('bpmn');
+    }
+
+    /**
+     * Catch a signal event.
+     *
+     * @param EventDefinitionInterface $sourceEventDefinition
+     * @param Token $token
+     */
+    public function throwMessageEvent($instanceId, $elementId, $messageRef, array $payload = [])
+    {
+        ThrowMessageEvent::dispatch($instanceId, $elementId, $messageRef, $payload)->onQueue('bpmn');
     }
 
     /**

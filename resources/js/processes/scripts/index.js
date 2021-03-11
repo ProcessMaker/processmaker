@@ -24,12 +24,7 @@ new Vue({
                 });
         },
         reload() {
-            this.$refs.listScript.dataManager([
-                {
-                    field: "updated_at",
-                    direction: "desc"
-                }
-            ]);
+            this.$refs.listScript.fetch();
         }
     }
 });

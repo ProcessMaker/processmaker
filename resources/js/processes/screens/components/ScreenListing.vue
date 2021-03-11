@@ -158,18 +158,18 @@ export default {
 
       fields: [
         {
-          title: this.$t("Name"),
+          title: () => this.$t("Name"),
           name: "__slot:title",
           field: "title",
           sortField: "title"
         },
         {
-          title: this.$t("Description"),
+          title: () => this.$t("Description"),
           name: "description",
           sortField: "description"
         },
         {
-          title: this.$t("Category"),
+          title: () => this.$t("Category"),
           name: "categories",
           sortField: "category.name",
           callback(categories) {
@@ -177,19 +177,19 @@ export default {
           }
         },
         {
-          title: this.$t("Type"),
+          title: () => this.$t("Type"),
           name: "type",
           sortField: "type",
           callback: this.formatType
         },
         {
-          title: this.$t("Modified"),
+          title: () => this.$t("Modified"),
           name: "updated_at",
           sortField: "updated_at",
           callback: "formatDate"
         },
         {
-          title: this.$t("Created"),
+          title: () => this.$t("Created"),
           name: "created_at",
           sortField: "created_at",
           callback: "formatDate"
@@ -289,8 +289,9 @@ export default {
             this.orderBy +
             "&order_direction=" +
             this.orderDirection +
-            "&include=categories,category"
-        )
+            "&include=categories,category" +
+            "&exclude=config"
+    )
         .then(response => {
           this.data = this.transform(response.data);
           this.loading = false;

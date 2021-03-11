@@ -48,5 +48,4 @@ class AuthTest extends TestCase
         ]));
         $this->assertEquals($user->id, Auth::id());
     }
-
 }

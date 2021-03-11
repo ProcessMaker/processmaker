@@ -28,28 +28,26 @@ class MessageEventDefinition extends Base
      */
     public function execute(EventDefinitionInterface $event, FlowNodeInterface $target, ExecutionInstanceInterface $targetRequest = null, TokenInterface $token = null)
     {
-        $sourceRequest = $token->getInstance();
-        $payloadData = $this->getPayload()->getData($sourceRequest);
-        $storage = $targetRequest->getDataStore();
-        foreach ($payloadData as $key => $value) {
-            $storage->putData($key, $value);
-        }
-
         // Set collaboration
-        $parent = $token->getInstance();
+        $parent = $token ? $token->getInstance() : null;
         $child = $targetRequest;
 
         if ($parent && $child) {
-            if (!$parent->process_collaboration_id) {
+            $collaboration_id = $parent->process_collaboration_id ?: $child->process_collaboration_id;
+            if (!$collaboration_id) {
                 $collaboration = new ProcessCollaboration();
                 $collaboration->process_id = $parent->process->getKey();
                 $collaboration->saveOrFail();
-
-                $parent->process_collaboration_id = $collaboration->getKey();
+                $collaboration_id = $collaboration->getKey();
+            }
+            if (!$parent->process_collaboration_id) {
+                $parent->process_collaboration_id = $collaboration_id;
                 $parent->saveOrFail();
             }
-            $child->process_collaboration_id = $parent->process_collaboration_id;
-            $child->saveOrFail();
+            if (!$child->process_collaboration_id) {
+                $child->process_collaboration_id = $collaboration_id;
+                $child->saveOrFail();
+            }
         }
         
         return $this;

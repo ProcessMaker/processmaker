@@ -3,7 +3,8 @@
 Login
 @endsection
 @section('content')
-<div align="container">
+<div class="d-flex flex-column" style="min-height: 100vh">
+<div class="flex-fill">
   <div align="center" class="p-5">
     @php
       $loginLogo = \ProcessMaker\Models\Setting::getLogin();
@@ -15,6 +16,9 @@ Login
     <div class="col-md-6 offset-md-3">
       <div class="card card-body">
         <form method="POST" class="form" action="{{ route('login') }}">
+        @if (session()->has('timeout'))
+          <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
+        @endif
         @if (session()->has('login-error'))
           <div class="alert alert-danger">{{ session()->get('login-error')}}</div>
           @endif
@@ -64,6 +68,14 @@ Login
 
   </div>
 </div>
+
+@php
+  $loginFooterSetting = \ProcessMaker\Models\Setting::byKey('login-footer');
+@endphp
+@if ($loginFooterSetting)
+  <div>{!! $loginFooterSetting->config['html'] !!}</div>
+@endif
+
 @endsection
 @section('css')
   <style media="screen">

@@ -7,11 +7,13 @@ use Illuminate\Support\Arr;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Providers\WorkflowServiceProvider;
+use ProcessMaker\Exception\MaximumRecursionException;
 
 class ScreensInScreen
 {
     public $type = Screen::class;
     public $owner = Screen::class;
+    private $recursion = 0;
 
     /**
      * Get the screens (nested) used in a screen
@@ -23,13 +25,21 @@ class ScreensInScreen
      */
     public function referencesToExport(Screen $screen, array $screens = [])
     {
+        if ($this->recursion > 10) {
+            throw new MaximumRecursionException(
+                "Max screen recursion depth of 10 exceeded. Is a child screen referencing its parent?"
+            );
+        }
+
         $config = $screen->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$screens) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
                     $screen = Screen::findOrFail($item['config']['screen']);
+                    $this->recursion++;
                     $screens = $this->referencesToExport($screen, $screens);
+                    $this->recursion--;
                 }
             });
         }

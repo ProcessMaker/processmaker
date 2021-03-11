@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Exception;
 use ProcessMaker\Nayra\Bpmn\ActivitySubProcessTrait;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityClosedEvent;
@@ -126,6 +127,23 @@ class CallActivity implements CallActivityInterface
     protected function catchSubprocessError(TokenInterface $token, ErrorInterface $error = null, ExecutionInstanceInterface $instance)
     {
         $this->catchSubprocessErrorBase($token, $error);
+        // Log subprocess error message
+        $message = [];
+        if ($error) {
+            $message = [$error->getName()];
+        }
+        if ($instance->errors && is_array($instance->errors)) {
+            foreach($instance->errors as $err) {
+                $errorMessage = $err['message'];
+                if (array_key_exists('body', $err)) {
+                    // add the body but not the stack trace:
+                    $errorMessage = "\n" . explode('Stack trace', $err['body'])[0];
+                }
+                $message[] = $errorMessage;
+            }
+        }
+        $token->getInstance()->logError(new Exception(implode("\n", $message)), $this);
+
         $this->syncronizeInstances($instance, $token->getInstance());
         return $this;
     }
@@ -157,7 +175,7 @@ class CallActivity implements CallActivityInterface
             return $this->getOwnerDocument()->getElementInstanceById($calledElementRef);
         } elseif (count($refs) === 2) {
             // Capability to reuse other processes inside a process
-            $process = Process::findOrFail($refs[1]);
+            $process = is_numeric($refs[1]) ? Process::findOrFail($refs[1]) : Process::where('package_key', $refs[1])->firstOrFail();
             $engine = $this->getProcess()->getEngine();
             $definitions = $engine->getDefinition($process->getLatestVersion());
             $response = $definitions->getElementInstanceById($refs[0]);
@@ -206,5 +224,27 @@ class CallActivity implements CallActivityInterface
         if ($instance->process->id !== $currentInstance->process->id) {
             $currentInstance->getProcess()->getEngine()->runToNextState();
         }
+    }
+
+    /**
+     * Returns true if callable element is external to the owner definition
+     *
+     * @return boolean
+     */
+    public function isFromExternalDefinition()
+    {
+        $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
+        return count($ref) === 2 && is_numeric($ref[1]);
+    }
+
+    /**
+     * Returns true if callable element is a service sub process (like data-connector)
+     *
+     * @return boolean
+     */
+    public function isServiceSubProcess()
+    {
+        $ref = explode('-', $this->getProperty(CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT));
+        return count($ref) === 2 && !is_numeric($ref[1]);
     }
 }

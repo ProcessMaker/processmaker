@@ -122,21 +122,7 @@ class ProcessRequestController extends Controller
         
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
-            $setting = Setting::byKey('indexed-search');
-            if ($setting && $setting->config['enabled'] === true) {
-                if (is_numeric($filter)) {
-                    $query->whereIn('id', [$filter]);
-                } else {
-                    $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
-                    $query->whereIn('id', $matches);            
-                }
-            } else {
-                $filter = '%' . mb_strtolower($filter) . '%';
-                $query->where(function ($query) use ($filter) {
-                    $query->where(DB::raw('LOWER(name)'), 'like', $filter)
-                        ->orWhere(DB::raw('LOWER(data)'), 'like', $filter);
-                });            
-            }
+            $query->filter($filter);
         }        
 
         $pmql = $request->input('pmql', '');
@@ -188,7 +174,7 @@ class ProcessRequestController extends Controller
      *
      * @return Response
      *
-     *      * @OA\Get(
+     * @OA\Get(
      *     path="/requests/{process_request_id}",
      *     summary="Get single process request by ID",
      *     operationId="getProcessRequestById",
@@ -199,14 +185,16 @@ class ProcessRequestController extends Controller
      *         name="process_request_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the process",
      *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function show(ProcessRequest $request)
@@ -233,7 +221,7 @@ class ProcessRequestController extends Controller
      *         name="process_request_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
@@ -244,6 +232,7 @@ class ProcessRequestController extends Controller
      *         response=204,
      *         description="success",
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function update(ProcessRequest $request, Request $httpRequest)
@@ -323,7 +312,7 @@ class ProcessRequestController extends Controller
      *         name="process_request_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -331,6 +320,7 @@ class ProcessRequestController extends Controller
      *         description="success",
      *         @OA\JsonContent(ref="#/components/schemas/processRequest")
      *     ),
+     *     @OA\Response(response=404, ref="#/components/responses/404"),
      * )
      */
     public function destroy(ProcessRequest $request)

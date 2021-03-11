@@ -62,7 +62,10 @@ abstract class Base
     {
         // Prepare the docker parameters
         $environmentVariables = $this->getEnvironmentVariables();
-    
+        if (!getenv('HOME')) {
+            putenv('HOME=' . base_path());
+        }
+
         // Create tokens for the SDK if a user is set
         $token = null;
         if ($user) {
@@ -118,7 +121,7 @@ abstract class Base
         \Log::debug("Docker returned: " . substr(json_encode($response), 0, 500));
         if ($returnCode || $stdOutput) {
             // Has an error code
-            throw new RuntimeException(implode("\n", $stdOutput));
+            throw new RuntimeException("(Code: {$returnCode})" . implode("\n", $stdOutput));
         } else {
             // Success
             $response = json_decode($output, true);

@@ -314,6 +314,10 @@ export default {
       },
       buildTaskPmql() {
           let clauses = [];
+          
+          // Add default filter by user id
+          const userId = parseInt(window.ProcessMaker.user.id);
+          clauses.push('user_id = ' + userId);
 
           //Parse request
           if (this.request.length) {

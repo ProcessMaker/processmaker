@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
@@ -42,6 +43,7 @@ use Throwable;
  *   @OA\Property(property="initiated_at", type="string", format="date-time"),
  *   @OA\Property(property="riskchanges_at", type="string", format="date-time"),
  *   @OA\Property(property="subprocess_start_event_id", type="string"),
+ *   @OA\Property(property="data", type="object"),
  * ),
  * @OA\Schema(
  *   schema="processRequestToken",
@@ -60,6 +62,9 @@ use Throwable;
  *          @OA\Property(property="initiated_at", type="string", format="date-time"),
  *          @OA\Property(property="advanceStatus", type="string"),
  *          @OA\Property(property="due_notified", type="integer"),
+ *          @OA\Property(property="user", @OA\Schema(ref="#/components/schemas/users")),
+ *          @OA\Property(property="process", @OA\Schema(ref="#/components/schemas/Process")),
+ *          @OA\Property(property="process_request", @OA\Schema(ref="#/components/schemas/processRequest")),
  *       )
  *   }
  * )
@@ -149,11 +154,14 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function toSearchableArray()
     {
+        $dataToInclude = $this->data;
+        unset($dataToInclude['_request']);
+        unset($dataToInclude['_user']);
         return [
             'id' => $this->id,
             'element_name' => $this->element_name,
             'request' => isset($this->processRequest->name) ? $this->processRequest->name : "",
-            'data' => json_encode($this->data),
+            'data' => json_encode($dataToInclude),
         ];
     }
 
@@ -413,6 +421,39 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         return $this->belongsTo(ProcessRequest::class, 'subprocess_request_id');
     }
+    
+    /**
+     * Filter tokens with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filter)
+    {
+        $setting = Setting::byKey('indexed-search');
+        if ($setting && $setting->config['enabled'] === true) {
+            if (is_numeric($filter)) {
+                $query->whereIn('id', [$filter]);
+            } else {
+                $matches = ProcessRequestToken::search($filter)->take(10000)->get()->pluck('id');
+                $query->whereIn('id', $matches);
+            }
+        } else {
+            $filter = '%' . mb_strtolower($filter) . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->where(DB::raw('LOWER(element_name)'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
+                    ->orWhere('id', 'like', $filter)
+                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('due_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter);
+            });
+        }
+        
+        return $query;
+    }
 
     /**
      * PMQL field alias (started = created_at)
@@ -468,10 +509,11 @@ class ProcessRequestToken extends Model implements TokenInterface
      * PMQL value alias for status field
      *
      * @param string $value
+     * @param ProcessMaker\Query\Expression $expression
      * 
      * @return callback
      */        
-    public function valueAliasStatus($value)
+    public function valueAliasStatus($value, $expression)
     {
         $statusMap = [
             'in progress' => 'ACTIVE',
@@ -480,15 +522,19 @@ class ProcessRequestToken extends Model implements TokenInterface
         
         $value = mb_strtolower($value);
     
-        return function($query) use ($value, $statusMap) {
+        return function($query) use ($value, $statusMap, $expression) {
             if ($value === 'self service') {
-                $query->where('status', 'ACTIVE')
-                ->where('is_self_service', 1);
+                if (auth()->user()) {
+                    $taskIds = auth()->user()->availableSelfServiceTaskIds();
+                    $query->whereIn('id', $taskIds);
+                } else {
+                    $query->where('is_self_service', 1);
+                }
             } elseif (array_key_exists($value, $statusMap)) {
-                $query->where('status', $statusMap[$value])
+                $query->where('status',  $expression->operator, $statusMap[$value])
                     ->where('is_self_service', 0);
             } else {
-                $query->where('status', $value)
+                $query->where('status',  $expression->operator, $value)
                     ->where('is_self_service', 0);
             }
         };
@@ -663,5 +709,19 @@ class ProcessRequestToken extends Model implements TokenInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    public function saveToken()
+    {
+        $activity = $this->getOwnerElement();
+        $token = $this;
+        $token->status = $token->getStatus();
+        $token->element_id = $activity->getId();
+        $token->element_type = $activity->getBpmnElement()->localName;
+        $token->element_name = $activity->getName();
+        $token->process_id = $token->getInstance()->process->getKey();
+        $token->process_request_id = $token->getInstance()->getKey();
+        $token->saveOrFail();
+        $token->setId($token->getKey());        
     }
 }

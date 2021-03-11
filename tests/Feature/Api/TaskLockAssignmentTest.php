@@ -82,26 +82,29 @@ class TaskLockAssignmentTest extends TestCase
         $request = ProcessRequest::find($requestId);
 
         // Token 0: user of event start
-        $this->assertEquals($request->tokens[0]->user_id, $this->user->id);
+        $this->assertEquals($request->tokens()->first()->user_id, $this->user->id);
 
         // Token 1: user of task
-        $this->assertEquals($request->tokens[1]->user_id, $this->user1->id);
+        $activeTask = $request->tokens()->where('status', 'ACTIVE')->first();
+        $this->assertEquals($activeTask->user_id, $this->user1->id);
 
         // Complete task 1
-        $this->completeTask($request->tokens[1], ['age' => 5]);
+        $this->completeTask($activeTask, ['age' => 5]);
 
         // Reload request
         $request = ProcessRequest::find($requestId);
 
         // For the round robin algorithm the assigned user to task 2 should be user1
-        $this->assertEquals($this->user1->id, $request->tokens[2]->user_id);
+        $activeTask = $request->tokens()->where('status', 'ACTIVE')->first();
+        $this->assertEquals($this->user1->id, $activeTask->user_id);
 
         // Complete task 2,
-        $this->completeTask($request->tokens[2], ['age' => 5]);
+        $this->completeTask($activeTask, ['age' => 5]);
         $request = ProcessRequest::find($requestId);
 
         // Task 1 should be assigned to the user 1 instead of the user 2 for the assignmentLock attribute
-        $this->assertEquals($this->user1->id, $request->tokens[3]->user_id);
+        $activeTask = $request->tokens()->where('status', 'ACTIVE')->first();
+        $this->assertEquals($this->user1->id, $activeTask->user_id);
     }
 
     /**
@@ -129,26 +132,29 @@ class TaskLockAssignmentTest extends TestCase
         $request = ProcessRequest::find($requestId);
 
         // Token 0: user of event start
-        $this->assertEquals($request->tokens[0]->user_id, $this->user->id);
+        $this->assertEquals($request->tokens()->first()->user_id, $this->user->id);
 
         // Token 1: user of task
-        $this->assertEquals($request->tokens[1]->user_id, $this->user1->id);
+        $activeTask = $request->tokens()->where('status', 'ACTIVE')->first();
+        $this->assertEquals($activeTask->user_id, $this->user1->id);
 
         // Complete task 1
-        $this->completeTask($request->tokens[1], ['age' => 5]);
+        $this->completeTask($activeTask, ['age' => 5]);
 
         // Reload request
         $request = ProcessRequest::find($requestId);
 
         // For the round robin algorithm the assigned user to task 2 should be user1
-        $this->assertEquals($this->user1->id, $request->tokens[2]->user_id);
+        $activeTask = $request->tokens()->where('status', 'ACTIVE')->first();
+        $this->assertEquals($this->user1->id, $activeTask->user_id);
 
         // Complete task 2,
-        $this->completeTask($request->tokens[2], ['age' => 5]);
+        $this->completeTask($activeTask, ['age' => 5]);
         $request = ProcessRequest::find($requestId);
 
         // The round robin algorithm should assign  the user 2  to the task
-        $this->assertEquals($this->user2->id, $request->tokens[3]->user_id);
+        $activeTask = $request->tokens()->where('status', 'ACTIVE')->first();
+        $this->assertEquals($this->user2->id, $activeTask->user_id);
     }
     /**
      * Complete task

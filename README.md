@@ -4,6 +4,41 @@
 
 ProcessMaker is an open source, workflow management software suite, which includes tools to automate your workflow, design forms, create documents, assign roles and users, create routing rules, and map an individual process quickly and easily. It's relatively lightweight and doesn't require any kind of installation on the client computer. This file describes the requirements and installation steps for the server.
 
+## System Requirements
+
+* [Composer 2](https://getcomposer.org/)
+* [Node.js 14.4.0](https://nodejs.org/en/)
+* [NPM 6.14](https://www.npmjs.com/package/npm)
+* [PHP 7.4](https://php.net)
+* [PHP-FPM](https://www.php.net/manual/en/install.fpm.php)
+* [PHP GD Extension](https://www.php.net/manual/en/image.installation.php)
+* [PHP ImageMagick Extension](https://www.php.net/manual/en/book.imagick.php)
+* [PHP IMAP Extension](https://www.php.net/manual/en/imap.setup.php)
+* [Nginx](https://nginx.org/)
+* [MySql 5.7](https://dev.mysql.com/downloads/mysql/5.7.html)
+* [Redis](https://redis.io/)
+* [Docker](https://docs.docker.com/get-docker/)
+
+
+## Install
+
+Before installing, Nginx needs to be configured to use php-fpm and point to the public folder 
+
+1. Download and unzip a version from the releases page https://github.com/ProcessMaker/processmaker/releases
+1. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See https://laravel.com/docs/6.x/deployment#nginx
+1. CD into the folder and run `composer install --no-dev`
+1. Run the installer `php artisan processmaker:install` and follow the instructions
+1. Edit the .env file to update any server specific settings
+1. Install javascript assets `npm install`
+1. Compile javascript assets `npm run dev`
+1. Run laravel echo server in a separate shell `npx laravel-echo-server start`
+1. Run horizon in a separate shell `php artisan horizon`
+1. If you change any settings, make sure to run `php artisan optimize:clear` and restart horizon
+
+## Installing and upgrading an enterprise instance hosted on AWS
+
+https://processmaker.atlassian.net/wiki/spaces/PM4/pages/480149598/Server+Deployment
+
 ## Using ProcessMaker 4
 
 The online documentation for usage of ProcessMaker 4 can be found by clicking the link below.
@@ -228,7 +263,7 @@ Full OpenAPI 3.0 specification at [https://github.com/OAI/OpenAPI-Specification/
 
 **Testing with Laravel Dusk**
 
-When testing in [Laravel Dusk](https://laravel.com/docs/5.7/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app\_env value to `develop` in the same file:
+When testing in [Laravel Dusk](https://laravel.com/docs/6.x/dusk), make sure to turn off debugging mode in your `.env` so you can use the whole page and screens executing functional tests. Then, change app\_env value to `develop` in the same file:
 
 ```text
 APP_DEBUG=FALSE
@@ -243,16 +278,16 @@ Execute `php artisan dusk:make newTest` to generate a new Dusk test. The generat
 
 **More Info**
 
-Detailed installation can be found at [https://laravel.com/docs/5.7/dusk\#installation](https://laravel.com/docs/5.7/dusk#installation)
+Detailed installation can be found at [https://laravel.com/docs/6.x/dusk#installation](https://laravel.com/docs/6.x/dusk#installation)
 
-To interact with web elements [https://laravel.com/docs/5.7/dusk\#interacting-with-elements](https://laravel.com/docs/5.7/dusk#interacting-with-elements)
+To interact with web elements [https://laravel.com/docs/6.x/dusk#interacting-with-elements](https://laravel.com/docs/6.x/dusk#interacting-with-elements)
 
-List of available assertions [https://laravel.com/docs/5.7/dusk\#available-assertions](https://laravel.com/docs/5.7/dusk#available-assertions)
+List of available assertions [https://laravel.com/docs/6.x/dusk#available-assertions](https://laravel.com/docs/6.x/dusk#available-assertions)
 
 #### License
 
 Distributed under the [AGPL Version 3](https://www.gnu.org/licenses/agpl-3.0.en.html)
 
-ProcessMaker \(C\) 2002 - 2019 ProcessMaker Inc.
+ProcessMaker \(C\) 2002 - 2020 ProcessMaker Inc.
 
 For further information visit: [http://www.processmaker.com/](http://www.processmaker.com/)

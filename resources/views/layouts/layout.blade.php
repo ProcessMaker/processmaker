@@ -31,6 +31,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/sidebar.css') }}" rel="stylesheet">
+    <link href="/css/bpmn-symbols/css/bpmn.css" rel="stylesheet">
     @yield('css')
     <script type="text/javascript">
     @if(Auth::user())

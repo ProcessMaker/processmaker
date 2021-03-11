@@ -193,6 +193,33 @@ class ProcessTest extends TestCase
         $this->assertEquals('BProcess', $responseItem->name);
     }
 
+    /**
+     * Verify the new request start events do not include web entry start events
+     */
+    public function testWebEntryFilteredFromStartEvents()
+    {
+        $file = __DIR__ . "/processes/SingleTask.bpmn";
+        $regularBpmn = file_get_contents($file);
+        
+        $file = __DIR__ . "/processes/RegularStartAndWebEntry.bpmn";
+        $webEntryBpmn = file_get_contents($file);
+
+        factory(Process::class)->create(['status' => 'ACTIVE', 'bpmn' => $regularBpmn]);
+        factory(Process::class)->create(['status' => 'ACTIVE', 'bpmn' => $webEntryBpmn]);
+
+        $response = $this->apiCall('GET', route('api.processes.start'));
+        $startEvents = collect($response->json()['data'])->flatMap(function($process) {
+            return collect($process['startEvents'])->map(function($startEvent) {
+                return $startEvent['name'];
+            });
+        });
+
+        $startEvents = $startEvents->toArray();
+        sort($startEvents);
+
+        $this->assertEquals(['Start Event', 'regular'], $startEvents);
+    }
+
 
     public function testProcessEventsTrigger()
     {
@@ -788,14 +815,18 @@ class ProcessTest extends TestCase
 
         // Prepare a process
         $bpmn = trim(Process::getProcessTemplate('SingleTask.bpmn'));
-        $node = 'StartEventUID';
+
+        // Assign start event to $user
+        $bpmn = \str_replace(
+            '<startEvent id="StartEventUID"',
+            '<startEvent id="StartEventUID" pm:assignment="user" pm:assignedUsers="' . $this->user->id . '"',
+            $bpmn
+        );
 
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
             'bpmn' => $bpmn,
         ]);
-        // Need to check that sync works with param.....
-        $process->usersCanStart($node)->sync([$this->user->id => ['method' => 'START', 'node' => $node]]);
 
         $other_process = factory(Process::class)->create([
             'status' => 'ACTIVE',

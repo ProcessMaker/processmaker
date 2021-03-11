@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
@@ -65,6 +66,8 @@ use ProcessMaker\Traits\HideSystemResources;
  *           @OA\Property(property="process_category_id", type="string", format="id"),
  *           @OA\Property(property="created_at", type="string", format="date-time"),
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
+ *           @OA\Property(property="user", @OA\Schema(ref="#/components/schemas/users")),
+ *           @OA\Property(property="participants", type="array", @OA\Items(ref="#/components/schemas/users")),
  *      )
  *   },
  * )
@@ -161,10 +164,13 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function toSearchableArray()
     {
+        $dataToInclude = $this->data;
+        unset($dataToInclude['_request']);
+        unset($dataToInclude['_user']);
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'data' => json_encode($this->data),
+            'data' => json_encode($dataToInclude),
         ];
     }
 
@@ -361,6 +367,39 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         return $this->hasMany(ProcessRequestToken::class)
                 ->with('user')
                 ->whereNotIn('element_type', ['scriptTask']);
+    }
+    
+    /**
+     * Filter processes with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filter)
+    {
+        $setting = Setting::byKey('indexed-search');
+        if ($setting && $setting->config['enabled'] === true) {
+            if (is_numeric($filter)) {
+                $query->whereIn('id', [$filter]);
+            } else {
+                $matches = ProcessRequest::search($filter)->take(10000)->get()->pluck('id');
+                $query->whereIn('id', $matches);            
+            }
+        } else {
+            $filter = '%' . mb_strtolower($filter) . '%';
+            $query->where(function ($query) use ($filter) {
+                $query->where(DB::raw('LOWER(name)'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(data)'), 'like', $filter)
+                    ->orWhere(DB::raw('id'), 'like', $filter)
+                    ->orWhere(DB::raw('LOWER(status)'), 'like', $filter)
+                    ->orWhere('initiated_at', 'like', $filter)
+                    ->orWhere('created_at', 'like', $filter)
+                    ->orWhere('updated_at', 'like', $filter);
+            });
+        }
+        
+        return $query;
     }
 
     /**
@@ -573,10 +612,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
 
         return function ($query) use ($value, $statusMap, $expression) {
             if (array_key_exists($value, $statusMap)) {
-                $query->where('status', $expression->operator, $statusMap[$value]);
-            } else {
-                $query->where('status', $value);
+                $value = $statusMap[$value];
             }
+            $query->where('status', $expression->operator, $value);
         };
     }
 
@@ -610,12 +648,17 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     private function valueAliasParticipant($value, $expression)
     {
-        $user = User::where('username', $value)->firstOrFail();
-        $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+        $user = User::where('username', $value)->get()->first();
 
-        return function ($query) use ($tokens) {
-            $query->whereIn('id', $tokens->pluck('process_request_id'));
-        };
+        if ($user) {
+            $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+
+            return function ($query) use ($tokens) {
+                $query->whereIn('id', $tokens->pluck('process_request_id'));
+            };
+        } else {
+            throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
+        }
     }
 
     /**
@@ -647,6 +690,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function scopeRequestsThatUserCan($query, $permission, User $user)
     {
+        if ($permission === 'can_view' && $user->can('view-all_requests')) {
+            return $query;
+        }
         $query->whereHas('userPermissions', function ($query) use ($permission, $user) {
             $query->where('user_id', $user->getKey());
             $query->where($permission, true);

@@ -31,7 +31,8 @@
  *             parameter="status",
  *             name="status",
  *             in="query",
- *             @OA\Schema(type="string", enum={"active", "inactive"}, default="active"),
+ *             description="ACTIVE or INACTIVE",
+ *             @OA\Schema(type="string", enum={"ACTIVE", "INACTIVE"}),
  *         ),
  *         @OA\Parameter(
  *             parameter="order_direction",
@@ -49,7 +50,7 @@
  *             parameter="include",
  *             name="include",
  *             in="query",
- *             description="Include data from related models in payload. Comma seperated list.",
+ *             description="Include data from related models in payload. Comma separated list.",
  *             @OA\Schema(type="string", default=""),
  *         ),
  *         @OA\Parameter(
@@ -73,6 +74,19 @@
  *         @OA\Schema(
  *           schema="DateTime",
  *           @OA\Property(property="date", type="string"),
+ *         ),
+ *         @OA\Response(
+ *           response=404,
+ *           description="Not Found",
+ *           @OA\JsonContent(@OA\Property(property="error", type="string"))
+ *         ),
+ *         @OA\Response(
+ *           response=422,
+ *           description="Unprocessable Entity",
+ *           @OA\JsonContent(
+ *              @OA\Property(property="message", type="string"),
+ *              @OA\Property(property="errors", type="object"),
+ *           )
  *         ),
  *     ),
  *     security={

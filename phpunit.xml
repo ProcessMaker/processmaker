@@ -31,6 +31,7 @@
       <env name="TESTING_VERBOSE" value="false" />
       <env name="POPULATE_DATABASE" value="true" />
       <env name="TELESCOPE_ENABLED" value="false" />
+      <env name="LOG_AUTH_EVENTS" value="false" />
       <env name="BROADCAST_DRIVER" value="log"/>
 
       <!-- Caching config -->
@@ -41,6 +42,8 @@
       <env name="DB_ADAPTER" value="mysql" />
       <env name="DB_DATABASE" value="test" />
       <env name="DATA_DB_DATABASE" value="test" />
+      <env name="DB_TIMEZONE" value="+00:00" />
+      <env name="DATA_DB_TIMEZONE" value="+00:00" />
 
       <!-- Log config -->
       <env name="LOG_CHANNEL" value="test" />

@@ -45,7 +45,7 @@ class ProcessController extends Controller
      *
      * @return ApiCollection
      *
-     * * @OA\Get(
+     * @OA\Get(
      *     path="/processes",
      *     summary="Returns all processes that the user has access to",
      *     operationId="getProcesses",
@@ -117,13 +117,14 @@ class ProcessController extends Controller
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
+     *     @OA\Parameter(ref="#/components/parameters/include"),
      *     @OA\Response(
      *         response=200,
      *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
@@ -152,7 +153,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
@@ -224,7 +225,7 @@ class ProcessController extends Controller
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\RequestBody(
@@ -234,7 +235,7 @@ class ProcessController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="success",
-     *         @OA\JsonContent(ref="#/components/schemas/CreateNewProcess")
+     *         @OA\JsonContent(ref="#/components/schemas/Process")
      *     ),
      * )
      */
@@ -476,6 +477,7 @@ class ProcessController extends Controller
      *     summary="Returns the list of processes that the user can start",
      *     operationId="startProcesses",
      *     tags={"Processes"},
+     *     @OA\Parameter(ref="#/components/parameters/filter"),
      *     @OA\Parameter(ref="#/components/parameters/order_by"),
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
@@ -533,8 +535,18 @@ class ProcessController extends Controller
                         ->filter(function ($eventDefinition) {
                             return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
-                return !$eventIsTimerStart;
-            });
+                
+                // Filter out web entry start events
+                $eventIsWebEntry = false;
+                if (isset($event['config'])) {
+                    $config = json_decode($event['config'], true);
+                    if (isset($config['web_entry']) && $config['web_entry'] !== null) {
+                        $eventIsWebEntry = true;
+                    }
+                }
+
+                return !$eventIsTimerStart && !$eventIsWebEntry;
+            })->values();
 
             if (count($process->startEvents) === 0) {
                 $processes->forget($key);
@@ -567,12 +579,8 @@ class ProcessController extends Controller
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
-     *     ),
-     *     @OA\RequestBody(
-     *       required=true,
-     *       @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -618,7 +626,7 @@ class ProcessController extends Controller
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -644,22 +652,28 @@ class ProcessController extends Controller
      *
      * @OA\Post(
      *     path="/processes/{processId}/export",
-     *     summary="Export a single process by ID",
+     *     summary="Export a single process by ID and return a URL to download it",
      *     operationId="exportProcess",
      *     tags={"Processes"},
      *     @OA\Parameter(
-     *         description="ID of process to return",
+     *         description="ID of process to export",
      *         in="path",
      *         name="processId",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Successfully found the process",
-     *         @OA\JsonContent(ref="#/components/schemas/Process")
+     *         description="Successfully built the process for export",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="url",
+     *                 type="string",
+     *             ),
+     *         ),
      *     ),
      * )
      */
@@ -671,7 +685,7 @@ class ProcessController extends Controller
             $url = url("/processes/{$process->id}/download/{$fileKey}");
             return ['url' => $url];
         } else {
-            return response(['error' => __('Unable to Export Process')], 500);
+            return response(['message' => __('Unable to Export Process')], 500);
         }
     }
 
@@ -698,12 +712,11 @@ class ProcessController extends Controller
      *             mediaType="multipart/form-data",
      *             @OA\Schema(
      *                 @OA\Property(
-     *                     description="file to upload",
      *                     property="file",
-     *                     type="file",
-     *                     format="file",
+     *                     description="file to import",
+     *                     type="string",
+     *                     format="binary",
      *                 ),
-     *                 required={"file"}
      *             )
      *         )
      *     ),
@@ -718,12 +731,72 @@ class ProcessController extends Controller
                 422
             );
         }
+        $queue = $request->input('queue');
+        if ($queue) {
+            $path = $request->file('file')->store('imports');
+            $code = uniqid('import', true);
+            ImportProcess::dispatch(null, $code, $path, Auth::id());
+            return [
+                'code' => $code,
+            ];
+        }
         $import = ImportProcess::dispatchNow($content);
         return response([
             'status' => $import->status,
             'assignable' => $import->assignable,
             'process' => $import->process
         ]);
+    }
+
+    /**
+     * Check if the import is ready
+     *
+     * @param Request $request
+     *
+     * @OA\Head(
+     *     path="/processes/import/{code}/is_ready",
+     *     summary="Check if the import is ready",
+     *     tags={"Processes"},
+     *
+     *     @OA\Parameter(
+     *         description="Import code",
+     *         in="path",
+     *         name="code",
+     *         required=true,
+     *         @OA\Schema(
+     *           type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="check is import is ready",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="ready",
+     *                 type="boolean",
+     *             ),
+     *         ),
+     *     ),
+     * )
+     */
+    public function import_ready($code)
+    {
+        $user = Auth::user();
+        $notifications = $user
+            ->notifications()
+            ->where('type', 'ProcessMaker\Notifications\ImportReady')
+            ->get();
+        foreach ($notifications as $notification) {
+            if ($notification->data['code'] === $code) {
+                $data = $notification->data['data'];
+                $data['ready'] = true;
+                return $data;
+            }
+        }
+        return [
+            'ready' => false,
+        ];
     }
 
     /**
@@ -747,7 +820,7 @@ class ProcessController extends Controller
      *         name="process_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Response(
@@ -756,7 +829,7 @@ class ProcessController extends Controller
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ProcessEditable")
+     *         @OA\JsonContent(ref="#/components/schemas/ProcessAssignments"),
      *     ),
      * )
      */
@@ -858,7 +931,7 @@ class ProcessController extends Controller
      *         name="process_id",
      *         required=true,
      *         @OA\Schema(
-     *           type="string",
+     *           type="integer",
      *         )
      *     ),
      *     @OA\Parameter(
@@ -909,7 +982,8 @@ class ProcessController extends Controller
         // Trigger the start event
         try {
             $processRequest = WorkflowManager::triggerStartEvent($process, $event, $data);
-        } catch (Throwable $exection) {
+        } catch (Throwable $exception) {
+            throw $exception;
             return response()->json([
                 'message' => __('Unable to start process'),
             ], 422);

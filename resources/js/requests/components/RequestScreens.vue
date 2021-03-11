@@ -78,12 +78,12 @@
 
         fields: [
           {
-            title: this.$t("Screen"),
+            title: () => this.$t("Screen"),
             name: "title",
             field: "title",
           },
           {
-            title: this.$t("Description"),
+            title: () => this.$t("Description"),
             name: "description",
           },
           {

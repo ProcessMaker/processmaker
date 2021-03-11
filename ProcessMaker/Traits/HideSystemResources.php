@@ -4,12 +4,18 @@ namespace ProcessMaker\Traits;
 use Illuminate\Support\Str;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\User;
 
 trait HideSystemResources
 {
     public function resolveRouteBinding($value)
     {
         $item = parent::resolveRouteBinding($value);
+
+        if (request() && request()->is('api/*')) {
+            // Allow the API to directly access hidden resources by ID
+            return $item;
+        }
 
         if (!$item) {
             abort(404);
@@ -46,7 +52,9 @@ trait HideSystemResources
             // they could be in a separate database
             $systemProcessIds = Process::system()->pluck('id');
             $query->whereNotIn('process_id', $systemProcessIds);
-        } else {
+        } else if (static::class == User::class) {
+            return $query->where('is_system', false);
+        } else {            
             return $query->whereDoesntHave('categories', function ($query) {
                 $query->where('is_system', true);
             });

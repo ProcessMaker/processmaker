@@ -42,9 +42,9 @@
       return {
         content: [],
         loading: false,
-        firstSelect: true,
         options: [],
-        error: ''
+        error: '',
+        uncategorizedIdSet: false
       };
     },
     computed: {
@@ -106,19 +106,31 @@
           });
       },
       load(filter) {
+        this.loadUncategorized();
         ProcessMaker.apiClient
           .get(this.apiList + "?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
           .then(response => {
             this.loading = false;
-            if (this.firstSelect && _.size(response.data.data) === 1) {
-              this.firstSelect = false;
-              this.content = response.data.data;
-            }
             this.options = response.data.data;
           })
           .catch(err => {
             this.loading = false;
           });
+      },
+      loadUncategorized() {
+        if (this.uncategorizedIdSet) {
+          return;
+        }
+        ProcessMaker.apiClient
+          .get(this.apiList + "?filter=Uncategorized&per_page=1&order_by=id&order_direction=ASC")
+          .then(response => {
+            this.content = response.data.data;
+            this.uncategorizedIdSet = true;
+          });
+      },
+      resetUncategorized() {
+        this.uncategorizedIdSet = false;
+        this.loadUncategorized();
       }
     }
   };
