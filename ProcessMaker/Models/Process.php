@@ -559,7 +559,6 @@ class Process extends Model implements HasMedia, ProcessModelInterface
 
         $dataManager = new DataManager();
         $instanceData = $dataManager->getData($token);
-        \Log::debug($instanceData);
 
         $mustache = new Mustache_Engine();
         $userId = $mustache->render($userExpression, $instanceData);
