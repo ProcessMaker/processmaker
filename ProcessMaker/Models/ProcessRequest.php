@@ -798,4 +798,20 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $dataManager = new DataManager();
         return $dataManager->getRequestData($this);
     }
+
+    /**
+     * @return self
+     */
+    public function loadProcessRequestInstance()
+    {
+        $storage = $this->processVersion->getDefinitions();
+        $callableId = $this->callable_id;
+        $process = $storage->getProcess($callableId);
+        $dataStore = $storage->getFactory()->createDataStore();
+        $dataStore->setData($this->data);
+        $this->setId($this->getKey());
+        $this->setProcess($process);
+        $this->setDataStore($dataStore);
+        return $this;
+    }
 }
