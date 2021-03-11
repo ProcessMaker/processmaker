@@ -38,6 +38,7 @@ class TaskController extends Controller
 
     public function edit(ProcessRequestToken $task)
     {
+        $task = $task->loadTokenInstance();
         $dataManager = new DataManager();
         $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
                                     ->where('commentable_id', $task->id)

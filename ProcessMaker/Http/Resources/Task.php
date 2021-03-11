@@ -25,7 +25,8 @@ class Task extends ApiResource
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
         if (in_array('data', $include)) {
-            $array['data'] = $dataManager->getData($this);
+            $task = $this->resource->loadTokenInstance();
+            $array['data'] = $dataManager->getData($task);
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
@@ -55,7 +56,8 @@ class Task extends ApiResource
         if (in_array('requestData', $include)) {
             $data = new StdClass();
             if ($this->processRequest->data) {
-                $data = $dataManager->getData($this);
+                $task = $this->resource->loadTokenInstance();
+                $data = $dataManager->getData($task);
             }
             $array['request_data'] = $data;
         }
