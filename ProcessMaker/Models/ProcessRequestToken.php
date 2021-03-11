@@ -36,7 +36,7 @@ use Throwable;
  * @property \Carbon\Carbon $riskchanges_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
- * @property ProcessRequest $request
+ * @property ProcessRequest $processRequest
  *
  * @OA\Schema(
  *   schema="processRequestTokenEditable",
@@ -727,13 +727,10 @@ class ProcessRequestToken extends Model implements TokenInterface
 
     public function loadTokenInstance()
     {
-        $instance = $this->processRequest;
-        $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
-        $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
-        $instance = $engine->loadProcessRequest($this->processRequest);
-        return $instance->getTokens()->findFirst(function ($token) {
-            return $token->getId() == $this->getKey();
-        });
+        $instance = $this->processRequest->loadProcessRequestInstance();
+        $this->setInstance($instance);
+        $this->loadTokenProperties();
+        return $this;
     }
 
     public function saveToken()
