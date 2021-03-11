@@ -5,6 +5,7 @@ namespace ProcessMaker\Managers;
 use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 
 class DataManager
 {
@@ -13,6 +14,10 @@ class DataManager
         '_request',
         '_parent',
         'loopCounter',
+        'numberOfActiveInstances',
+        'numberOfInstances',
+        'numberOfCompletedInstances',
+        'numberOfTerminatedInstances',
         'loopCharacteristics',
     ];
 
@@ -57,10 +62,11 @@ class DataManager
      *
      * @return array
      */
-    public function getData($token)
+    public function getData(ProcessRequestToken $token)
     {
         if ($token->isMultiInstance()) {
             $data = $token->getProperty('data', ($token->token_properties ?? [])['data'] ?? []) ?: [];
+            $data = $this->addLoopInstanceProperties($data, $token->getDefinition(true), $token);
         } else {
             $data = $token->processRequest->data ?: [];
         }
@@ -78,7 +84,8 @@ class DataManager
 
         // Magic Variable: _parent
         if ($token->isMultiInstance()) {
-            $data['_parent'] = $this->getRequestData($token->processRequest);
+
+            $data['_parent'] = $this->getRequestData($token->processRequest, ['_user', '_request', '_parent']);
         }
 
         foreach ($this->hiddenVariables as $key) {
@@ -92,12 +99,21 @@ class DataManager
      *
      * @return array
      */
-    public function getRequestData(ProcessRequest $request)
+    public function getRequestData(ProcessRequest $request, $hidden = [])
     {
+        $hidden = \array_merge($this->hiddenVariables, $hidden);
         $data = $request->data ?: [];
-        foreach ($this->hiddenVariables as $key) {
+        foreach ($hidden as $key) {
             unset($data[$key]);
         }
+        return $data;
+    }
+
+    private function addLoopInstanceProperties(array $data, ActivityInterface $activity, ProcessRequestToken $token)
+    {
+        $data['numberOfInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfInstances', 0);
+        $data['numberOfActiveInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfActiveInstances', 0);
+        $data['numberOfCompletedInstances'] = $activity->getLoopCharacteristics()->getLoopInstanceProperty($token, 'numberOfCompletedInstances', 0);
         return $data;
     }
 }

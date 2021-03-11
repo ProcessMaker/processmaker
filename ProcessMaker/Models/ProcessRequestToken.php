@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\BpmnEngine;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
@@ -282,7 +283,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the BPMN definition of the element where the token is.
      *
-     * @return array
+     * @return array|\ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface
      */
     public function getDefinition($asObject = false, $par = null)
     {
@@ -711,6 +712,28 @@ class ProcessRequestToken extends Model implements TokenInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    public function loadTokenProperties()
+    {
+        $tokenInfo = [
+            'id' => $this->getKey(),
+            'status' => $this->status,
+            'index' => $this->element_index,
+            'element_ref' => $this->element_id,
+        ];
+        $this->setProperties(array_merge($this->token_properties ?: [], $tokenInfo));
+    }
+
+    public function loadTokenInstance()
+    {
+        $instance = $this->processRequest;
+        $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
+        $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
+        $instance = $engine->loadProcessRequest($this->processRequest);
+        return $instance->getTokens()->findFirst(function ($token) {
+            return $token->getId() == $this->getKey();
+        });
     }
 
     public function saveToken()
