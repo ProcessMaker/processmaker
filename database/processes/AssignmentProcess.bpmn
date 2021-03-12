@@ -151,7 +151,7 @@
       <bpmn:outgoing>node_51</bpmn:outgoing>
       <bpmn:signalEventDefinition signalRef="escalate_task" />
     </bpmn:startEvent>
-    <bpmn:endEvent id="node_47" name="Task was escalated">
+    <bpmn:endEvent id="node_47" name="Task was escalated" pm:screenRef="">
       <bpmn:incoming>node_52</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:exclusiveGateway id="node_50" name="task_id?" default="node_54">
@@ -163,17 +163,40 @@
     <bpmn:sequenceFlow id="node_52" name="ESCALATE TASK" sourceRef="node_50" targetRef="node_47" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;escalateTask(task_id)&#34;}}">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">task_id</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:endEvent id="node_53" name="End Event">
+    <bpmn:endEvent id="node_53" name="End Event" pm:screenRef="">
       <bpmn:incoming>node_54</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="node_54" name="" sourceRef="node_50" targetRef="node_53">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:startEvent id="node_45" name="delegate task">
+      <bpmn:outgoing>node_48</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="delegate_task" />
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="node_46" name="task_id?" default="node_58">
+      <bpmn:incoming>node_48</bpmn:incoming>
+      <bpmn:outgoing>node_56</bpmn:outgoing>
+      <bpmn:outgoing>node_58</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="node_48" sourceRef="node_45" targetRef="node_46" />
+    <bpmn:endEvent id="node_55" name="Task was delegated" pm:screenRef="">
+      <bpmn:incoming>node_56</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_56" name="TO DELEGATE USER" sourceRef="node_46" targetRef="node_55" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;delegateTask(task_id)&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">task_id</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_57" name="End Event" pm:screenRef="">
+      <bpmn:incoming>node_58</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_58" sourceRef="node_46" targetRef="node_57">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"></bpmn:conditionExpression>
     </bpmn:sequenceFlow>
   </bpmn:process>
   <bpmn:message id="user_assignment" name="user_assignment" />
   <bpmn:message id="escalate_to" name="escalate_to" />
   <bpmn:signal id="sync_assignment" name="sync_assignment" />
   <bpmn:signal id="escalate_task" name="escalate_task" />
+  <bpmn:signal id="delegate_task" name="delegate_task" />
   <bpmndi:BPMNDiagram id="BPMNDiagramId">
     <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="non_persistent_process">
       <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
@@ -351,6 +374,30 @@
       <bpmndi:BPMNEdge id="node_56_di" bpmnElement="node_54">
         <di:waypoint x="1008" y="678" />
         <di:waypoint x="1008" y="778" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_47_di" bpmnElement="node_45">
+        <dc:Bounds x="840" y="850" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_48_di" bpmnElement="node_46">
+        <dc:Bounds x="990" y="850" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_51_di" bpmnElement="node_48">
+        <di:waypoint x="858" y="868" />
+        <di:waypoint x="1008" y="868" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_57_di" bpmnElement="node_55">
+        <dc:Bounds x="1200" y="850" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_58_di" bpmnElement="node_56">
+        <di:waypoint x="1008" y="868" />
+        <di:waypoint x="1218" y="868" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_59_di" bpmnElement="node_57">
+        <dc:Bounds x="990" y="960" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_60_di" bpmnElement="node_58">
+        <di:waypoint x="1008" y="868" />
+        <di:waypoint x="1008" y="978" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
