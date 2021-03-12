@@ -3,10 +3,9 @@
     <basic-search class="mb-3" @submit="onSearch"></basic-search>
     <div class="card card-body table-card">
       <b-table
-        class="settings-table table table-hover table-responsive-lg text-break m-0 h-100 w-100"
+        class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
         :current-page="currentPage"
         :per-page="perPage"
-        hover
         :items="dataProvider"
         :fields="fields"
         :sort-by="orderBy"
@@ -22,7 +21,15 @@
           <b-form-text v-if="row.item.helper">{{ $t(row.item.helper) }}</b-form-text>
         </template>
         <template v-slot:cell(config)="row">
-          <component :is="component(settings[row.index].format)" @input="onChange(settings[row.index])" v-model="settings[row.index].config" :readonly="settings[row.index].readonly"></component>
+          <component v-if="row.item" :ref="`settingComponent_${row.index}`" :is="component(row.item)" @input="onChange(settings[row.index])" v-model="row.item.config" :setting="settings[row.index]"></component>
+        </template>
+        <template v-slot:cell(actions)="row">
+          <template v-if="row.item && row.item.format !== 'boolean'">
+            <span v-b-tooltip.hover :title="getTooltip(row)">
+              <b-button :disabled="row.item.readonly" @click="onEdit(row)" variant="link" size="lg"><i class="fa fa-pen-square"></i></b-button>
+            </span>
+            <b-button @click="onCopy(row)" variant="link" size="lg" v-b-tooltip.hover :title="$t('Copy to Clipboard')"><i class="fa fa-paste"></i></b-button>
+          </template>
         </template>
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
         <template v-slot:emptyfiltered>
@@ -72,11 +79,12 @@
 import { BasicSearch } from "SharedComponents";
 import isPMQL from "../../../modules/isPMQL";
 import SettingBoolean from './SettingBoolean';
+import SettingObject from './SettingObject';
 import SettingText from './SettingText';
 import SettingTextArea from './SettingTextArea';
 
 export default {
-  components: { BasicSearch, SettingBoolean, SettingText, SettingTextArea },
+  components: { BasicSearch, SettingBoolean, SettingObject, SettingText, SettingTextArea },
   props: ['group'],
   data() {
     return {
@@ -86,6 +94,8 @@ export default {
       from: 0,
       orderBy: 'name',
       orderDesc: false,
+      orderByPrevious: 'name',
+      orderDescPrevious: false,
       perPage: 25,
       pmql: '',
       searchQuery: '',
@@ -125,8 +135,15 @@ export default {
     this.fields.push({
       key: "config",
       label: "Configuration",
-      sortable: true,
+      sortable: false,
       tdClass: "align-middle td-config",
+    });
+    
+    this.fields.push({
+      key: "actions",
+      label: "",
+      sortable: false,
+      tdClass: "text-right",
     });
   },
   methods: {
@@ -136,11 +153,15 @@ export default {
     apiPut(setting) {
       return ProcessMaker.apiClient.put(this.settingUrl(setting.id), setting);
     },
-    component(format) {
-      switch (format) {
+    component(setting) {
+      switch (setting.format) {
         case 'text':
         case 'boolean':
-          return `setting-${format}`;
+          return `setting-${setting.format}`;
+        case 'object':
+          if (setting.ui && setting.ui.format && setting.ui.format == 'map') {
+            return `setting-object`;
+          }
         default:
           return 'setting-text-area';
       }
@@ -160,21 +181,50 @@ export default {
         this.totalRows = response.data.meta.total;
         this.from = response.data.meta.from;
         this.to = response.data.meta.to;
-        callback([]);
+        if (this.orderBy !== this.orderByPrevious || this.orderDesc !== this.orderDescPrevious) {
+          callback([]);
+        }
+        this.orderByPrevious = this.orderBy;
+        this.orderDescPrevious = this.orderDesc;
         this.$nextTick(() => {
           callback(this.settings);
         });
       });
+    },
+    getTooltip(row) {
+      if (row.item.readonly) {
+        return this.$t('Read Only');
+      } else {
+        return this.$t('Edit');
+      }
     },
     onChange(setting) {
       this.$nextTick(() => {
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             this.$refs.table.refresh();
+            this.$emit('refresh');
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
           }
         })
       });
+    },
+    onCopy(row) {
+      let value = '';
+      if (typeof row.item.config == 'string') {
+        value = row.item.config;
+      } else {
+        value = JSON.stringify(row.item.config);
+      }
+      
+      navigator.clipboard.writeText(value).then(() => {
+        ProcessMaker.alert(this.$t("The setting was copied to your clipboard."), "success");
+      }, () => {
+        ProcessMaker.alert(this.$t("The setting was not copied to your clipboard."), "danger");
+      });
+    },
+    onEdit(row) {
+      this.$refs[`settingComponent_${row.index}`].onEdit();
     },
     onSearch(query) {
       this.searchQuery = query;

@@ -21,6 +21,7 @@ class AddFieldsToSettingsTable extends Migration
             $table->string('format', 16)->after('helper')->default('array');
             $table->boolean('hidden')->after('format')->default(1);
             $table->boolean('readonly')->after('hidden')->default(0);
+            $table->json('ui')->after('readonly')->nullable();
         });
         
         if (! Permission::where('name', 'view-settings')->first()) {
@@ -48,7 +49,7 @@ class AddFieldsToSettingsTable extends Migration
     public function down()
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->dropColumn(['name','helper','group','format','hidden','readonly']);
+            $table->dropColumn(['name','helper','group','format','hidden','readonly','ui']);
         });
         
         if ($permission = Permission::where('name', 'view-settings')->first()) {
