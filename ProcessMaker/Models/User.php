@@ -444,10 +444,10 @@ class User extends Authenticatable implements HasMedia
         ]);
 
         $sqlWhere = $groupIds->map(function($groupId) {
-            return "JSON_CONTAINS(self_service_groups, '$groupId') OR 
-                    JSON_CONTAINS(self_service_groups, '$groupId', '$.groups')";
+            return "JSON_CONTAINS(self_service_groups, '\"$groupId\"') OR 
+                    JSON_CONTAINS(self_service_groups, '\"$groupId\"', '$.groups')";
         })
-        ->push("JSON_CONTAINS(self_service_groups, '$userId', '$.users')")
+        ->push("JSON_CONTAINS(self_service_groups, '\"$userId\"', '$.users')")
         ->join(" OR ");
 
         return $taskQuery->whereRaw($sqlWhere)->pluck('id');
