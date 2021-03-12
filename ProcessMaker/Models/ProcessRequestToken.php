@@ -9,9 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\BpmnEngine;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -34,7 +36,7 @@ use Throwable;
  * @property \Carbon\Carbon $riskchanges_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
- * @property ProcessRequest $request
+ * @property ProcessRequest $processRequest
  *
  * @OA\Schema(
  *   schema="processRequestTokenEditable",
@@ -281,7 +283,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the BPMN definition of the element where the token is.
      *
-     * @return array
+     * @return array|\ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface
      */
     public function getDefinition($asObject = false, $par = null)
     {
@@ -702,7 +704,7 @@ class ProcessRequestToken extends Model implements TokenInterface
 
     public function updateTokenProperties()
     {
-        $allowed = ['conditionals'];
+        $allowed = ['conditionals', 'loopCharacteristics', 'data'];
         $this->token_properties = array_filter(
             $this->getProperties(),
             function ($key) use ($allowed) {
@@ -710,6 +712,25 @@ class ProcessRequestToken extends Model implements TokenInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    public function loadTokenProperties()
+    {
+        $tokenInfo = [
+            'id' => $this->getKey(),
+            'status' => $this->status,
+            'index' => $this->element_index,
+            'element_ref' => $this->element_id,
+        ];
+        $this->setProperties(array_merge($this->token_properties ?: [], $tokenInfo));
+    }
+
+    public function loadTokenInstance()
+    {
+        $instance = $this->processRequest->loadProcessRequestInstance();
+        $this->setInstance($instance);
+        $this->loadTokenProperties();
+        return $this;
     }
 
     public function saveToken()
@@ -771,5 +792,20 @@ class ProcessRequestToken extends Model implements TokenInterface
             $this->user_id = $res['assign_to'];
         }
         return $this;
+    }
+
+    /**
+     * Returns True is the tokens belongs to a MiltiInstance Task
+     *
+     * @return boolean
+     */
+    public function isMultiInstance()
+    {
+        $definition = $this->getDefinition(true);
+        if ($definition instanceof ActivityInterface) {
+            $loop = $definition->getLoopCharacteristics();
+            return $loop && $loop->isExecutable();
+        }
+        return false;
     }
 }

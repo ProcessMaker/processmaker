@@ -18,6 +18,7 @@ use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
@@ -555,7 +556,9 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     private function getNextUserFromVariable($activity, $token)
     {
         $userExpression = $activity->getProperty('assignedUsers');
-        $instanceData = $token->getInstance()->getDataStore()->getData();
+
+        $dataManager = new DataManager();
+        $instanceData = $dataManager->getData($token);
 
         $mustache = new Mustache_Engine();
         $userId = $mustache->render($userExpression, $instanceData);
