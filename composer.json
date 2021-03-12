@@ -97,6 +97,12 @@
       "@php artisan package:discover"
     ]
   },
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/ProcessMaker/SocialiteProviders"
+    }
+  ],
   "config": {
     "preferred-install": "dist",
     "sort-packages": true,
