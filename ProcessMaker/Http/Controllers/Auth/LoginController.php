@@ -1,8 +1,10 @@
 <?php
 namespace ProcessMaker\Http\Controllers\Auth;
 
+use App;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\User;
+use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use ProcessMaker\Traits\HasControllerAddons;
@@ -40,6 +42,19 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except(['logout', 'keepAlive']);
+    }
+
+    /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLoginForm()
+    {
+        $manager = App::make(LoginManager::class);
+        $addons = $manager->list();
+        $block = $manager->getBlock();
+        return view('auth.login', compact('addons', 'block'));
     }
 
     public function loginWithIntendedCheck(Request $request) {

@@ -23,6 +23,7 @@ use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Traits\HideSystemResources;
 
 /**
@@ -472,7 +473,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $result = [];
         if (is_array($this->data)) {
-            foreach ($this->data as $key => $value) {
+            foreach ($this->getRequestData() as $key => $value) {
                 $result[] = [
                     'key' => $key,
                     'value' => $value
@@ -514,7 +515,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->errors = $errors;
         $this->status = 'ERROR';
         \Log::error($exception);
-        $this->save();
+        if (!$this->isNonPersistent()) {
+            $this->save();
+        }
     }
 
     public function childRequests()
@@ -773,5 +776,42 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $first = $this->locks()->orderBy('id')->first();
         return !$first || $first->getKey() === $lock->getKey();
+    }
+
+    /**
+     * Returns true if the request persists
+     *
+     * @return boolean
+     */
+    public function isNonPersistent()
+    {
+        return $this->getProcess()->isNonPersistent();
+    }
+
+    /**
+     * Get managed data from the process request
+     *
+     * @return array
+     */
+    public function getRequestData()
+    {
+        $dataManager = new DataManager();
+        return $dataManager->getRequestData($this);
+    }
+
+    /**
+     * @return self
+     */
+    public function loadProcessRequestInstance()
+    {
+        $storage = $this->processVersion->getDefinitions();
+        $callableId = $this->callable_id;
+        $process = $storage->getProcess($callableId);
+        $dataStore = $storage->getFactory()->createDataStore();
+        $dataStore->setData($this->data);
+        $this->setId($this->getKey());
+        $this->setProcess($process);
+        $this->setDataStore($dataStore);
+        return $this;
     }
 }

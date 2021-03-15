@@ -5,6 +5,7 @@ namespace ProcessMaker\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Notification;
@@ -37,6 +38,8 @@ class TaskController extends Controller
 
     public function edit(ProcessRequestToken $task)
     {
+        $task = $task->loadTokenInstance();
+        $dataManager = new DataManager();
         $userHasComments = Comment::where('commentable_type', ProcessRequestToken::class)
                                     ->where('commentable_id', $task->id)
                                     ->where('body','like', '%@' . \Auth::user()->username . '%')
@@ -60,7 +63,7 @@ class TaskController extends Controller
         $screen = $task->getScreen();
         $task->component = $screen ? $screen->renderComponent() : null;
         $task->screen = $screen ? $screen->toArray() : null;
-        $task->request_data = $this->addUser($task->processRequest->data, $task->user);
+        $task->request_data = $dataManager->getData($task);
         $task->bpmn_tag_name = $task->getBpmnDefinition()->localName;
         $interstitial = $task->getInterstitial();
         $task->interstitial_screen = $interstitial['interstitial_screen'];
@@ -99,17 +102,5 @@ class TaskController extends Controller
                 'files' => $files,
                 ]);
         }
-    }
-
-    private function addUser($data, $user)
-    {
-        if (!$user) {
-            return $data;
-        }
-
-        $userData = $user->attributesToArray();
-        unset($userData['remember_token']);
-
-        return array_merge($data, ['_user' => $userData]);
     }
 }
