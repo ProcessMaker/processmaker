@@ -66,6 +66,7 @@ class FormalExpression implements FormalExpressionInterface
                 return $task;
             }
         );
+        // Escalate a task to the assigned user's manager
         $this->feelExpression->register(
             'escalateTask',
             function () {
@@ -73,6 +74,19 @@ class FormalExpression implements FormalExpressionInterface
             function ($arguments, $task_id) {
                 $task = ProcessRequestToken::find($task_id);
                 $task->reassignTo('#manager')->save();
+            }
+        );
+        // Escalate a task to the assigned user's delegation user
+        $this->feelExpression->register(
+            'delegateTask',
+            function () {
+            },
+            function ($arguments, $task_id) {
+                $task = ProcessRequestToken::find($task_id);
+                if ($task->user) {
+                    $delegationUserId = $task->user->delegation_user_id;
+                    $task->reassignTo($delegationUserId)->save();
+                }
             }
         );
         $this->feelExpression->register(
