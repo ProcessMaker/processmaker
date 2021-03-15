@@ -369,10 +369,21 @@ class User extends Authenticatable implements HasMedia
             return false;
         }
 
-        return collect($task->self_service_groups)
-            ->intersect(
-                $this->groups()->pluck('groups.id')
-            )->count() > 0;
+        if (array_key_exists('users', $task->self_service_groups) && in_array(\Auth::user()->id, $task->self_service_groups['users'])) {
+            return true;
+        } else if (array_key_exists('groups', $task->self_service_groups)) {
+            $groups =  collect($task->self_service_groups['groups'])
+                ->intersect(
+                    $this->groups()->pluck('groups.id')
+                )->count() > 0;
+            return $groups;
+        } else {
+            // For older processes
+            return collect($task->self_service_groups)
+                ->intersect(
+                    $this->groups()->pluck('groups.id')
+                )->count() > 0;
+        }
     }
 
     public function updatePermissionsToRequests()
