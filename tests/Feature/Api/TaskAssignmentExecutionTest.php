@@ -144,6 +144,7 @@ class TaskAssignmentExecutionTest extends TestCase
     {
         $users = factory(User::class, 20)->create(['status'=>'ACTIVE']);
         $userWithNoGroup = factory(User::class)->create(['status'=>'ACTIVE']);
+        $unassignedUser = factory(User::class)->create(['status'=>'ACTIVE']);
 
         $group = factory(Group::class)->create();
         foreach ($users as $user) {
@@ -158,8 +159,8 @@ class TaskAssignmentExecutionTest extends TestCase
 
         $bpmn = file_get_contents(__DIR__ . '/processes/SelfServeAssignment.bpmn');
         $bpmn = str_replace(
-            ['[SCREEN_ID]', '[GROUP_ID]'],
-            [$screen->id, $group->id],
+            ['[SCREEN_ID]', '[GROUP_ID]', '[USER_ID]'],
+            [$screen->id, $group->id, $userWithNoGroup->id],
             $bpmn
         );
         $process = factory(Process::class)->create([
@@ -172,10 +173,10 @@ class TaskAssignmentExecutionTest extends TestCase
         $task = $processRequest->refresh()->tokens()->where('status', 'ACTIVE')->first();
 
         $updateTaskUrl = route('api.tasks.update', [$task->id]);
-
-        // Assert someone not in the group can not take the task
-        $this->user = $userWithNoGroup;
-        $listTasksUrl = route('api.tasks.index', ['pmql' => "user_id = {$userWithNoGroup->id}"]);
+        
+        // Assert someone not individually assigned or assigned to a group can not take the task
+        $this->user = $unassignedUser;
+        $listTasksUrl = route('api.tasks.index', ['pmql' => "user_id = {$unassignedUser->id}"]);
         $response = $this->apiCall('GET', $listTasksUrl)->json();
         $this->assertCount(0, $response['data']);
         $response = $this->apiCall('put', $updateTaskUrl, [
@@ -196,12 +197,33 @@ class TaskAssignmentExecutionTest extends TestCase
             'user_id' => $this->user->id,
         ]);
         $response->assertStatus(200);
+
+
+        // Reset task assignment
+        $task = $processRequest->refresh()->tokens()->where('status', 'ACTIVE')->first();
+        $task['is_self_service'] = true;
+        $task['user_id'] = null;
+        $task->save();
+
+        // Assert assigned individual user can claim the task
+        $this->user = $userWithNoGroup;
+        $listTasksUrl = route('api.tasks.index');
+        $response = $this->apiCall('GET', $listTasksUrl)->json();
+
+        $this->assertCount(1, $response['data']);
+        $this->assertEquals($response['data'][0]['id'], $task->id);
+        $response = $this->apiCall('put', $updateTaskUrl, [
+            'is_self_service' => false,
+            'user_id' => $this->user->id,
+        ]);
+        $response->assertStatus(200);
     }
     
     public function testSelfServeUserPersistence()
     {
         $users = factory(User::class, 20)->create(['status'=>'ACTIVE']);
         $userWithNoGroup = factory(User::class)->create(['status'=>'ACTIVE']);
+        $unassignedUser = factory(User::class)->create(['status'=>'ACTIVE']);
 
         $group = factory(Group::class)->create();
         foreach ($users as $user) {
@@ -216,8 +238,8 @@ class TaskAssignmentExecutionTest extends TestCase
 
         $bpmn = file_get_contents(__DIR__ . '/processes/SelfServeAssignment.bpmn');
         $bpmn = str_replace(
-            ['[SCREEN_ID]', '[GROUP_ID]'],
-            [$screen->id, $group->id],
+            ['[SCREEN_ID]', '[GROUP_ID]', '[USER_ID]'],
+            [$screen->id, $group->id, $userWithNoGroup->id],
             $bpmn
         );
         $process = factory(Process::class)->create([
@@ -233,9 +255,23 @@ class TaskAssignmentExecutionTest extends TestCase
         
         // Assert that the user magic variable is empty
         $this->assertNull($processRequest->data['_user']);
-        
+
         // Assert a group member can claim the task
         $this->user = $users[1];
+        $response = $this->apiCall('put', $updateTaskUrl, [
+            'is_self_service' => false,
+            'user_id' => $this->user->id,
+        ]);
+        $response->assertStatus(200);
+        
+        // Reset task assignment
+        $task = $processRequest->refresh()->tokens()->where('status', 'ACTIVE')->first();
+        $task['is_self_service'] = true;
+        $task['user_id'] = null;
+        $task->save();
+
+        // Assert individual assigned user can claim the task
+        $this->user = $userWithNoGroup;
         $response = $this->apiCall('put', $updateTaskUrl, [
             'is_self_service' => false,
             'user_id' => $this->user->id,
