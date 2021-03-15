@@ -307,6 +307,10 @@
             this.redirect(`/requests/${this.task.process_request_id}`);
           },
           closed(taskId) {
+            // avoid redirection if using a customized renderer
+            if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
+              return;
+            }
             this.redirect("/tasks");
           },
           claimTask() {
