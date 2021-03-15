@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Exception\PmqlMethodException;
-use ProcessMaker\Models\Setting;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -17,14 +17,12 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -804,7 +802,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     public function loadProcessRequestInstance()
     {
-        $storage = $this->processVersion->getDefinitions();
+        $process = $this->processVersion ?? $this->processVersion()->first() ?? $this->process ?? $this->process()->first();
+        $storage = $process->getDefinitions();
         $callableId = $this->callable_id;
         $process = $storage->getProcess($callableId);
         $dataStore = $storage->getFactory()->createDataStore();
