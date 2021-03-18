@@ -6,6 +6,7 @@ use Blade;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Managers\IndexManager;
+use ProcessMaker\Managers\LoginManager;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\PackageManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
@@ -19,10 +20,12 @@ use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Observers\ProcessCollaborationObserver;
 use ProcessMaker\Observers\ProcessObserver;
 use ProcessMaker\Observers\ProcessRequestObserver;
+use ProcessMaker\Observers\SettingObserver;
 use ProcessMaker\Observers\UserObserver;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Observers\ProcessRequestTokenObserver;
@@ -43,6 +46,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(UserObserver::class);
+        Setting::observe(SettingObserver::class);
         Process::observe(ProcessObserver::class);
         ProcessRequest::observe(ProcessRequestObserver::class);
         ProcessRequestToken::observe(ProcessRequestTokenObserver::class);
@@ -73,6 +77,10 @@ class ProcessMakerServiceProvider extends ServiceProvider
 
         $this->app->singleton(PackageManager::class, function () {
             return new PackageManager();
+        });
+        
+        $this->app->singleton(LoginManager::class, function () {
+            return new LoginManager();
         });
 
         /**

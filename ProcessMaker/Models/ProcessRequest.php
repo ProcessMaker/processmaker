@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Exception\PmqlMethodException;
-use ProcessMaker\Models\Setting;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -17,13 +17,12 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use ProcessMaker\Traits\HideSystemResources;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -472,7 +471,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $result = [];
         if (is_array($this->data)) {
-            foreach ($this->data as $key => $value) {
+            foreach ($this->getRequestData() as $key => $value) {
                 $result[] = [
                     'key' => $key,
                     'value' => $value
@@ -514,7 +513,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->errors = $errors;
         $this->status = 'ERROR';
         \Log::error($exception);
-        $this->save();
+        if (!$this->isNonPersistent()) {
+            $this->save();
+        }
     }
 
     public function childRequests()
@@ -773,5 +774,43 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $first = $this->locks()->orderBy('id')->first();
         return !$first || $first->getKey() === $lock->getKey();
+    }
+
+    /**
+     * Returns true if the request persists
+     *
+     * @return boolean
+     */
+    public function isNonPersistent()
+    {
+        return $this->getProcess()->isNonPersistent();
+    }
+
+    /**
+     * Get managed data from the process request
+     *
+     * @return array
+     */
+    public function getRequestData()
+    {
+        $dataManager = new DataManager();
+        return $dataManager->getRequestData($this);
+    }
+
+    /**
+     * @return self
+     */
+    public function loadProcessRequestInstance()
+    {
+        $process = $this->processVersion ?? $this->processVersion()->first() ?? $this->process ?? $this->process()->first();
+        $storage = $process->getDefinitions();
+        $callableId = $this->callable_id;
+        $process = $storage->getProcess($callableId);
+        $dataStore = $storage->getFactory()->createDataStore();
+        $dataStore->setData($this->data);
+        $this->setId($this->getKey());
+        $this->setProcess($process);
+        $this->setDataStore($dataStore);
+        return $this;
     }
 }
