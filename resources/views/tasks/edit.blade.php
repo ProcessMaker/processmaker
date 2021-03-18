@@ -249,8 +249,11 @@
         watch: {
           task: {
             deep: true,
-            handler(task) {
+            handler(task, oldTask) {
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
+              if (task && oldTask && task.id !== oldTask.id) {
+                history.replaceState(null, null, `/tasks/${task.id}/edit`);
+              }
             }
           },
         },
