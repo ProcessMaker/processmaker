@@ -6,7 +6,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Facades\WorkflowManager;
-use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -46,12 +45,16 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
     public function action(ProcessRequestToken $token, ScriptTaskInterface $element, ProcessRequest $instance)
     {
         $scriptRef = $element->getProperty('scriptRef');
+        Log::info('Script started: ' . $scriptRef);
         $configuration = json_decode($element->getProperty('config'), true);
 
         // Check to see if we've failed parsing.  If so, let's convert to empty array.
         if ($configuration === null) {
             $configuration = [];
         }
+        $dataStore = $token->getInstance()->getDataStore();
+        $data = $dataStore->getData();
+        $data['_request'] = $instance->attributesToArray();
         try {
             if (empty($scriptRef)) {
                 $code = $element->getScript();
@@ -70,23 +73,24 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
             }
 
             $this->unlockInstance($instance->getKey());
-            $dataManager = new DataManager();
-            $data = $dataManager->getData($token);
             $response = $script->runScript($data, $configuration);
 
             $this->withUpdatedContext(function ($engine, $instance, $element, $processModel, $token) use ($response) {
+                $dataStore = $token->getInstance()->getDataStore();
                 // Update data
                 if (is_array($response['output'])) {
                     // Validate data
                     WorkflowManager::validateData($response['output'], $processModel, $element);
-                    $dataManager = new DataManager();
-                    $dataManager->updateData($token, $response['output']);
+                    foreach ($response['output'] as $key => $value) {
+                        $dataStore->putData($key, $value);
+                    }
                     $engine->runToNextState();
                 }
                 $element->complete($token);
                 $this->engine = $engine;
                 $this->instance = $instance;
             });
+            Log::info('Script completed: ' . $scriptRef);
         } catch (Throwable $exception) {
             // Change to error status
             $token->setStatus(ScriptTaskInterface::TOKEN_STATE_FAILING);

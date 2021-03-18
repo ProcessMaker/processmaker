@@ -96,13 +96,6 @@
                                     {{ __('Enter how many seconds the Script runs before timing out (0 is unlimited).') }}
                                 </small>
                             </div>
-                            <component
-                                v-for="(cmp,index) in createScriptHooks"
-                                :key="`create-script-hook-${index}`"
-                                :is="cmp"
-                                :script="script"
-                                ref="createScriptHooks"
-                            ></component>
                         </div>
                     @else
                         <div class="modal-body">
@@ -132,7 +125,7 @@
 
     @can('create-scripts')
         <script>
-          window.DesignerScripts = new Vue({
+          new Vue({
             el: '#addScript',
             data: {
               title: '',
@@ -146,8 +139,6 @@
               users: [],
               timeout: 60,
               disabled: false,
-              createScriptHooks: [],
-              script: null,
             },
             methods: {
               onClose() {
@@ -184,9 +175,6 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The script was created.')}}', 'success');
-                    this.$refs.createScriptHooks.forEach(hook => {
-                      hook.onsave(response.data);
-                    });
                     window.location = "/designer/scripts/" + response.data.id + "/builder";
                   })
                   .catch(error => {

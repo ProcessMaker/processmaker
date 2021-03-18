@@ -182,11 +182,6 @@ Route::group(
     Route::get('security-logs', 'SecurityLogController@index')->name('security-logs.index')->middleware('can:view-security-logs');
     Route::get('security-logs/{securityLog}', 'SecurityLogController@show')->name('security-logs.show')->middleware('can:view-security-logs');
 
-    // Settings
-    Route::get('settings', 'SettingController@index')->name('settings.index')->middleware('can:view-settings');
-    Route::get('settings/groups', 'SettingController@groups')->name('settings.groups')->middleware('can:view-settings');
-    Route::put('settings/{setting}', 'SettingController@update')->name('settings.update')->middleware('can:update-settings');
-
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
 

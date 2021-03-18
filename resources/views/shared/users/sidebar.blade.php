@@ -54,7 +54,7 @@
 
     @isset($addons)
         @foreach ($addons as $addon)
-            {!! $addon['content'] ?? '' !!}
+            {!! __($addon['content']) !!}
         @endforeach
     @endisset
 
@@ -93,11 +93,5 @@
                     @{{errors.status}}
                 </div>
             </div>
-
-            @isset($addonsSettings)
-                @foreach ($addonsSettings as $addon)
-                    {!! $addon['content'] ?? '' !!}
-                @endforeach
-            @endisset
     </div>
 </div>

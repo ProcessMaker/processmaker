@@ -387,7 +387,7 @@ class GroupMemberController extends Controller
         }
 
         $query = User::nonSystem()
-            ->where('status', '!=', 'INACTIVE')
+            ->where('status', 'ACTIVE')
             ->whereNotIn('id', $members);
 
         $filter = $request->input('filter', '');
