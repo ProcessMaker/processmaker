@@ -48,14 +48,4 @@ class Process extends ModelsProcess
             return parent::setProperty($name, $value);
         }
     }
-
-    /**
-     * Return true if the process is not persistent
-     *
-     * @return boolean
-     */
-    public function isNonPersistent()
-    {
-        return strpos($this->getId(), 'non_persistent') !== false;
-    }
 }

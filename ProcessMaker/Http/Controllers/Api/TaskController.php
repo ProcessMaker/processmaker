@@ -286,15 +286,11 @@ class TaskController extends Controller
                 $task->is_self_service = 0;
                 $task->user_id = $userToAssign;
                 $task->persistUserData($userToAssign);
-            } elseif ($userToAssign === '#manager') {
-                // Reassign to manager
-                $userToAssign = $task->escalateToManager();
-                $task->persistUserData($userToAssign);
             } else {
                 // Validate if user can reassign
                 $task->authorizeReassignment(Auth::user());
                 // Reassign user
-                $task->reassignTo($userToAssign);
+                $task->user_id = $userToAssign;
                 $task->persistUserData($userToAssign);
             }
             $task->save();

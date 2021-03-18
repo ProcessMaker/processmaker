@@ -36,7 +36,7 @@
     "processmaker/docker-executor-node": "^1.0",
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
-    "processmaker/nayra": "1.3.0",
+    "processmaker/nayra": "1.2.0",
     "processmaker/pmql": "1.2.0",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
@@ -97,12 +97,6 @@
       "@php artisan package:discover"
     ]
   },
-  "repositories": [
-    {
-        "type": "vcs",
-        "url": "https://github.com/ProcessMaker/SocialiteProviders"
-    }
-  ],
   "config": {
     "preferred-install": "dist",
     "sort-packages": true,

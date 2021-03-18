@@ -7,7 +7,6 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
-        Route::get('settings', 'SettingsController@index')->name('settings.index')->middleware('can:view-settings');
         Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
         // Route::get('groups/{group}', 'GroupController@show')->name('groups.show')->middleware('can:show-groups,group');
         Route::get('groups/{group}/edit', 'GroupController@edit')->name('groups.edit')->middleware('can:edit-groups,group');

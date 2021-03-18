@@ -3410,97 +3410,6 @@
                 }
             }
         },
-        "/settings": {
-            "get": {
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "Returns all settings",
-                "operationId": "getSettings",
-                "parameters": [
-                    {
-                        "$ref": "#/components/parameters/filter"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_by"
-                    },
-                    {
-                        "$ref": "#/components/parameters/order_direction"
-                    },
-                    {
-                        "$ref": "#/components/parameters/per_page"
-                    },
-                    {
-                        "$ref": "#/components/parameters/include"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "list of settings",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {
-                                            "description": "Display a listing of the resource.",
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/settings"
-                                            }
-                                        },
-                                        "meta": {
-                                            "$ref": "#/components/schemas/metadata"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/settings/{setting_id}": {
-            "put": {
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "Update a setting",
-                "operationId": "updateSetting",
-                "parameters": [
-                    {
-                        "name": "setting_id",
-                        "in": "path",
-                        "description": "ID of setting to return",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/settingsEditable"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "204": {
-                        "description": "success"
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/404"
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/422"
-                    }
-                }
-            }
-        },
         "/tasks": {
             "get": {
                 "tags": [
@@ -3678,15 +3587,6 @@
                     },
                     {
                         "$ref": "#/components/parameters/include"
-                    },
-                    {
-                        "name": "exclude_ids",
-                        "in": "query",
-                        "description": "Comma separated list of IDs to exclude from the response",
-                        "schema": {
-                            "type": "string",
-                            "default": ""
-                        }
                     }
                 ],
                 "responses": {
@@ -5380,30 +5280,6 @@
                             "type": "object"
                         }
                     },
-                    "name": {
-                        "description": "Class Settings",
-                        "type": "string"
-                    },
-                    "helper": {
-                        "description": "Class Settings",
-                        "type": "string"
-                    },
-                    "group": {
-                        "description": "Class Settings",
-                        "type": "string"
-                    },
-                    "format": {
-                        "description": "Class Settings",
-                        "type": "string"
-                    },
-                    "hidden": {
-                        "description": "Class Settings",
-                        "type": "boolean"
-                    },
-                    "readonly": {
-                        "description": "Class Settings",
-                        "type": "boolean"
-                    },
                     "variables": {
                         "description": "Class Settings",
                         "type": "string"
@@ -5534,9 +5410,7 @@
                         "type": "string",
                         "enum": [
                             "ACTIVE",
-                            "INACTIVE",
-                            "SCHEDULED",
-                            "OUT_OF_OFFICE"
+                            "INACTIVE"
                         ]
                     },
                     "fullname": {
@@ -5558,16 +5432,6 @@
                         "description": "The attributes that are mass assignable.",
                         "type": "string",
                         "format": "date"
-                    },
-                    "delegation_user_id": {
-                        "description": "The attributes that are mass assignable.",
-                        "type": "string",
-                        "format": "id"
-                    },
-                    "manager_id": {
-                        "description": "The attributes that are mass assignable.",
-                        "type": "string",
-                        "format": "id"
                     }
                 },
                 "type": "object"

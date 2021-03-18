@@ -6,8 +6,6 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Models\User;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
-use ProcessMaker\Managers\DataManager;
-use ProcessMaker\Models\ProcessRequestToken;
 use StdClass;
 
 class Task extends ApiResource
@@ -21,12 +19,10 @@ class Task extends ApiResource
      */
     public function toArray($request)
     {
-        $dataManager = new DataManager();
         $array = parent::toArray($request);
         $include = explode(',', $request->input('include', ''));
         if (in_array('data', $include)) {
-            $task = $this->resource->loadTokenInstance();
-            $array['data'] = $dataManager->getData($task);
+            $array['data'] = $this->addUser($this->processRequest->data, $this->user);
         }
         if (in_array('user', $include)) {
             $array['user'] = new Users($this->user);
@@ -56,8 +52,7 @@ class Task extends ApiResource
         if (in_array('requestData', $include)) {
             $data = new StdClass();
             if ($this->processRequest->data) {
-                $task = $this->resource->loadTokenInstance();
-                $data = $dataManager->getData($task);
+                $data = $this->addUser($this->processRequest->data, $this->user);
             }
             $array['request_data'] = $data;
         }
@@ -96,10 +91,6 @@ class Task extends ApiResource
         $userData = $user->attributesToArray();
         unset($userData['remember_token']);
 
-        $data =  array_merge($data, ['_user' => $userData]);
-        if (!empty($this->token_properties['data'])) {
-            $data =  array_merge($data, $this->token_properties['data']);
-        }
-        return $data;
+        return array_merge($data, ['_user' => $userData]);
     }
 }

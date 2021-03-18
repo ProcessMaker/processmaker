@@ -52,14 +52,6 @@
               toggle="true"
               @change="allowReassignmentSetter">
           </form-checkbox>
-
-          <form-checkbox
-              v-if="configurables.includes('ESCALATE_TO_MANAGER')"
-              :label="$t('Escalte to Manager')"
-              :checked="escalateToManagerGetter"
-              toggle="true"
-              @change="escalateToManagerSetter">
-          </form-checkbox>
         </div>
     </div>
 </template>
@@ -79,7 +71,7 @@
       configurables: {
         type: Array,
         default() {
-          return ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT', 'ASSIGN_BY_EXPRESSION', 'ESCALATE_TO_MANAGER'];
+          return ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT', 'ASSIGN_BY_EXPRESSION'];
         },
       },
       assignmentTypes: {
@@ -146,10 +138,6 @@
       /**
        * Get the value of the edited property
        */
-      escalateToManagerGetter () {
-        const config = this.node.config && JSON.parse(this.node.config) || {};
-        return config.escalateToManager || false;
-      },
       assignmentLockGetter () {
         return _.get(this.node, "assignmentLock");
       },
@@ -242,14 +230,6 @@
       },
     },
     methods: {
-      /**
-       * Update escalateToManager property
-       */
-      escalateToManagerSetter (value) {
-        const config = this.node.config && JSON.parse(this.node.config) || {};
-        config.escalateToManager = value;
-        this.$set(this.node, "config", JSON.stringify(config));
-      },
       /**
        * Update assignmentLock property
        */
