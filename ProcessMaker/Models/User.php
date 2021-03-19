@@ -446,9 +446,6 @@ class User extends Authenticatable implements HasMedia
     public function availableSelfServiceTaskIds()
     {
         $groupIds = $this->groups()->pluck('groups.id');
-        $groupStrIds = $groupIds->map(function ($id) {
-            return "$id";
-        });
 
         $taskQuery = ProcessRequestToken::select(['id'])
         ->where([
@@ -457,12 +454,18 @@ class User extends Authenticatable implements HasMedia
             'user_id' => null
         ]);
 
-        $taskQuery->where(function($query) use($groupIds, $groupStrIds) {
-            $query->whereJsonContains('self_service_groups->groups', $groupIds);
-            $query->orwhereJsonContains('self_service_groups->groups', $groupStrIds);
-            $query->orWhereJsonContains('self_service_groups->users', $this->id);
+        $taskQuery->where(function($query) use($groupIds) {
+            // Check if `self_service_groups` contains any of the user's groups
+            foreach($groupIds as $groupId) {
+                $query->orWhereJsonContains('self_service_groups->groups', (int) $groupId);
+                // keep compatibility
+                $query->orWhereJsonContains('self_service_groups->groups', (string) $groupId);
+                $query->orWhereJsonContains('self_service_groups', (int) $groupId);
+                $query->orWhereJsonContains('self_service_groups', (string) $groupId);
+            }
+            $query->orWhereJsonContains('self_service_groups->users', (int) $this->id);
+            $query->orWhereJsonContains('self_service_groups->users', (string) $this->id);
         });
-
         return $taskQuery->pluck('id');
     }
 
