@@ -48,6 +48,12 @@
     "title": "d.m.Y H:i (31.12.2017 23:30)"
   },
   {
+    "format": "d.m.Y h:i A",
+    "momentFormat": "DD.MM.YYYY h:mm A",
+    "calendarFormat": "dd.LL.yyyy h:mm A",
+    "title": "d.m.Y h:i A (31.12.2017 11:30 pm)"
+  },
+  {
     "format": "Y-m-d H:i",
     "momentFormat": "YYYY-MM-DD HH:mm",
     "calendarFormat": "yyyy-LL-dd HH:mm",
