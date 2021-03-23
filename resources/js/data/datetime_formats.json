@@ -24,6 +24,12 @@
     "title": "d/m/Y (31/12/2017)"
   },
   {
+    "format": "d/m/Y h:i A",
+    "momentFormat": "DD/MM/YYYY h:mm A",
+    "calendarFormat": "dd/LL/yyyy h:mm a",
+    "title": "d/m/Y h:i A (31/12/2017 11:30 pm)"
+  },
+  {
     "format": "d/m/Y H:i",
     "momentFormat": "DD/MM/YYYY HH:mm",
     "calendarFormat": "dd/LL/yyyy HH:mm",
