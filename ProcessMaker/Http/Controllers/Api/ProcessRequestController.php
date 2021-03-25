@@ -152,6 +152,10 @@ class ProcessRequestController extends Controller
 
         $query->nonSystem();
 
+        if (! $user->can('view-all_requests')) {
+            $query->pmql('participant = "' . $user->username . '"');
+        }
+
         try {
             $response = $query->orderBy(
                 str_ireplace('.', '->', $request->input('order_by', 'name')),
