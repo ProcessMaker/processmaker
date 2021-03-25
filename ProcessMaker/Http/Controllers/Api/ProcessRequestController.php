@@ -153,7 +153,7 @@ class ProcessRequestController extends Controller
         $query->nonSystem();
 
         if (! $user->can('view-all_requests')) {
-            $query->pmql('participant = "' . $user->username . '"');
+            $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
         }
 
         try {
