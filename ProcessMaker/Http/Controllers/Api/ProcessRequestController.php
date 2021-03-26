@@ -375,7 +375,7 @@ class ProcessRequestController extends Controller
     {
         // Get the process definition
         $process = $request->process;
-        $catchEvent = $process->getDefinitions()->findElementById($event)->getBpmnElementInstance();
+        $catchEvent = $request->getVersionDefinitions()->findElementById($event)->getBpmnElementInstance();
         if (!($catchEvent instanceof CatchEventInterface)) {
             return abort(423, __('Invalid element, not a catch event ' . get_class($catchEvent)));
         }
