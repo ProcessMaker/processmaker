@@ -304,7 +304,9 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function getBpmnDefinition()
     {
-        $definitions = $this->processRequest->process->getDefinitions();
+        /** @var ProcessRequest $request */
+        $request = $this->processRequest ?: $this->getInstance();
+        $definitions = $request->getVersionDefinitions();
         return $definitions->findElementById($this->element_id);
     }
 
