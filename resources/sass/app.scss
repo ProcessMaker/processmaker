@@ -457,7 +457,7 @@ h1.page-title {
 }
 
 // Data table rules
-
+.b-tooltip:not([style*='transform']) { top: 0; }
 
 
 [class^='icon-'],
