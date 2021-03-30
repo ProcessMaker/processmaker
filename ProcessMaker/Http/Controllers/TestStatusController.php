@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use ProcessMaker\Jobs\TestStatusJob;
 
 class TestStatusController extends Controller
@@ -11,5 +12,13 @@ class TestStatusController extends Controller
     {
         TestStatusJob::dispatch('BroadcastService', 'Echo message received')->delay(Carbon::now()->addSeconds(5));
         return view('test.status');
+    }
+
+    public function testAcknowledgement()
+    {
+        DB::table('test_status')->insert([
+            'name' => 'Message acknowledgement',
+            'description' => 'Client received the message and send back an acknowledgement',
+        ]);
     }
 }

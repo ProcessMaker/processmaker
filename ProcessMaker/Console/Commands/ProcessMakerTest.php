@@ -94,15 +94,15 @@ class ProcessMakerTest extends Command
 
     private function testHorizonService()
     {
-        $testDispatchNow = 'Test immediate workers';
+        $testDispatchNow = 'Test immediate Jobs';
         TestStatusJob::dispatchNow($testDispatchNow);
         $this->waitTestPassed($testDispatchNow, 5);
 
-        $testDelayedWorkers = 'Test workers';
+        $testDelayedWorkers = 'Test dispatch Jobs';
         TestStatusJob::dispatch($testDelayedWorkers);
         $this->waitTestPassed($testDelayedWorkers, 5);
 
-        $testDelayedWorkers = 'Test delayed workers';
+        $testDelayedWorkers = 'Test dispatch delayed Jobs';
         TestStatusJob::dispatch($testDelayedWorkers)->delay(Carbon::now()->addSeconds(1));
         $this->waitTestPassed($testDelayedWorkers, 10);
     }
@@ -111,7 +111,7 @@ class ProcessMakerTest extends Command
     {
         // Show link to complete broadcast tests
         $this->info('To continue, please open this url: '. url('/test_status'));
-        $this->waitTestPassed('BroadcastService');
+        $this->waitTestPassed('Message acknowledgement');
     }
 
     private function waitTestPassed($name, $timeout = 60)

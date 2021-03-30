@@ -24,13 +24,15 @@ test status
     data() {
       return {
         broadcast: window.Processmaker.broadcasting.broadcaster,
-        echo: 'Waiting echo event',
+        echo: ['Waiting for message'],
       };
     },
     mounted() {
       window.Echo.private(`test.status`)
         .listen('.TestStatusEvent', (e) => {
-            this.echo = e.description;
+            this.echo.push(e.description);
+            this.echo.push('Send acknowledgement');
+            ProcessMaker.apiClient.get('test_acknowledgement')
         });
     },
   })
