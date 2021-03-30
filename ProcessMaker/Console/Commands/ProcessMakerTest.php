@@ -60,11 +60,14 @@ class ProcessMakerTest extends Command
 
     private function testDBConnection()
     {
-        // Check connection
+        // Check main connection
         $connection = DB::connection();
-        $migrations = $connection->table('migrations')->first();
+        $connection->table('migrations')->first();
         // Check migration status
         $this->checkMigrationStatus();
+        // Check data connection
+        $connection = DB::connection('data');
+        $connection->table('process_requests')->first();
     }
 
     private function checkMigrationStatus()
