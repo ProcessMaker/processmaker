@@ -2,9 +2,11 @@
 
 namespace ProcessMaker\Console\Commands;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use ProcessMaker\Jobs\TestStatusJob;
 use Throwable;
 
 class ProcessMakerTest extends Command
@@ -41,10 +43,11 @@ class ProcessMakerTest extends Command
     public function handle()
     {
         $this->test("DBConnection", [$this, 'testDBConnection']);
-        $this->test("BroadcastService", [$this, 'testBroadcastService']);
-        $this->test("EchoService", [$this, 'testEchoService']);
-        $this->test("EmailService", [$this, 'testEmailService']);
-        $this->test("DockerServie", [$this, 'testDockerServie']);
+        $this->test("Horizon", [$this, 'testHorizonService']);
+        $this->test("Broadcast", [$this, 'testBroadcastService']);
+        $this->test("Echo", [$this, 'testEchoService']);
+        $this->test("Docker", [$this, 'testDockerService']);
+        $this->test("Email", [$this, 'testEmailService']);
     }
 
     private function test($name, callable $callback)
@@ -66,8 +69,10 @@ class ProcessMakerTest extends Command
         // Check migration status
         $this->checkMigrationStatus();
         // Check data connection
-        $connection = DB::connection('data');
-        $connection->table('process_requests')->first();
+        $dataConnection = DB::connection('data');
+        $dataConnection->table('process_requests')->first();
+        // Clear test status table
+        $connection->table('test_status')->truncate();
     }
 
     private function checkMigrationStatus()
@@ -87,19 +92,50 @@ class ProcessMakerTest extends Command
         }
     }
 
+    private function testHorizonService()
+    {
+        $testDispatchNow = 'Test immediate workers';
+        TestStatusJob::dispatchNow($testDispatchNow);
+        $this->waitTestPassed($testDispatchNow, 5);
+
+        $testDelayedWorkers = 'Test workers';
+        TestStatusJob::dispatch($testDelayedWorkers);
+        $this->waitTestPassed($testDelayedWorkers, 5);
+
+        $testDelayedWorkers = 'Test delayed workers';
+        TestStatusJob::dispatch($testDelayedWorkers)->delay(Carbon::now()->addSeconds(1));
+        $this->waitTestPassed($testDelayedWorkers, 10);
+    }
+
     private function testBroadcastService()
     {
+        // Show link to complete broadcast tests
+        $this->info('To continue, please open this url: '. url('/test_status'));
+        $this->waitTestPassed('BroadcastService');
+    }
+
+    private function waitTestPassed($name, $timeout = 60)
+    {
+        for ($i = 0; $i<$timeout; $i++) {
+            $count = DB::table('test_status')->where('name', $name)->count();
+            if ($count > 0) {
+                return true;
+            }
+            sleep(1);
+        }
+        throw new Exception('FAILED: ' . $name);
     }
 
     private function testEchoService()
     {
+        $this->waitTestPassed('EchoService');
     }
 
-    private function testEmailService()
+    private function testDockerService()
     {
     }
 
-    private function testDockerServie()
+    private function testEmailService()
     {
     }
 }
