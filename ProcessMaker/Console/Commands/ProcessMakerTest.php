@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -61,9 +62,26 @@ class ProcessMakerTest extends Command
     {
         // Check connection
         $connection = DB::connection();
-        $connection->table('migrations')->first();
+        $migrations = $connection->table('migrations')->first();
         // Check migration status
-        $this->call('migrate:status');
+        $this->checkMigrationStatus();
+    }
+
+    private function checkMigrationStatus()
+    {
+        exec('php artisan migrate:status', $out, $r);
+        if ($r !== 0) {
+            throw new Exception('Unable to check migrate:status');
+        }
+        $missingMigrations = 0;
+        foreach ($out as $line) {
+            if (strpos($line, '| No')!==false) {
+                $missingMigrations++;
+            }
+        }
+        if ($missingMigrations > 0) {
+            throw new Exception("Missing {$missingMigrations} migrations");
+        }
     }
 
     private function testBroadcastService()
