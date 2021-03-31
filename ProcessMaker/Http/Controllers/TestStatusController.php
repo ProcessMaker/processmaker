@@ -21,4 +21,13 @@ class TestStatusController extends Controller
             'description' => 'Client received the message and send back an acknowledgement',
         ]);
     }
+
+    public function email()
+    {
+        DB::table('test_status')->insert([
+            'name' => 'Email received',
+            'description' => 'Email received',
+        ]);
+        return 'Email received.<script>setTimeout("window.close()", 2000);</script>';
+    }
 }

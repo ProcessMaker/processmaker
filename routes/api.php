@@ -193,5 +193,5 @@ Route::group(
         return response()->json(['error' => 'Not Found'], 404);
     })->name('fallback');
 
-    Route::get('/test_acknowledgement', [TestStatusController::class, 'testAcknowledgement'])->name('test.status');
+    Route::get('/test_acknowledgement', [TestStatusController::class, 'testAcknowledgement'])->name('test.acknowledgement');
 });

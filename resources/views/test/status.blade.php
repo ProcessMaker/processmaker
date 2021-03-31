@@ -30,9 +30,12 @@ test status
     mounted() {
       window.Echo.private(`test.status`)
         .listen('.TestStatusEvent', (e) => {
-            this.echo.push(e.description);
-            this.echo.push('Send acknowledgement');
-            ProcessMaker.apiClient.get('test_acknowledgement')
+          this.echo.push(e.description);
+          this.echo.push('Send acknowledgement');
+          ProcessMaker.apiClient.get('test_acknowledgement').then(() => {
+            this.echo = "SUCCESS";
+            setTimeout(() => window.close(), 500);
+          });
         });
     },
   })

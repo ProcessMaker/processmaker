@@ -6,7 +6,9 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use ProcessMaker\Jobs\TestStatusJob;
+use ProcessMaker\Mail\TestStatusEmail;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
 use Throwable;
@@ -111,11 +113,12 @@ class ProcessMakerTest extends Command
     private function testBroadcastService()
     {
         // Show link to complete broadcast tests
-        $this->info('To continue, please open this url: '. url('/test_status'));
+        $this->info('To continue, please open the following url:');
+        $this->warn(url('/test_status'));
         $this->waitTestPassed('Message acknowledgement');
     }
 
-    private function waitTestPassed($name, $timeout = 60)
+    private function waitTestPassed($name, $timeout = 120)
     {
         for ($i = 0; $i<$timeout; $i++) {
             $count = DB::table('test_status')->where('name', $name)->count();
@@ -146,8 +149,10 @@ class ProcessMakerTest extends Command
         if (!is_array($res) || empty($res['output'])) {
             throw new Exception("Failed execution of `{$language}` script.");
         }
-        if (json_encode($res['output']) !== '{"data1":{"foo":"bar"},"config1":{"conf":"val"}}') {
-            throw new Exception("Unexpected response of the {$language} script execution.");
+        if (json_encode($res['output']['data1']) !== '{"foo":"bar"}' ||
+            json_encode($res['output']['config1']) !== '{"conf":"val"}'
+        ) {
+            throw new Exception("Unexpected response of the {$language} script execution.\n" . json_encode($res['output']));
         }
     }
 
@@ -168,5 +173,9 @@ class ProcessMakerTest extends Command
 
     private function testEmailService()
     {
+        $email = $this->ask('Send email to');
+        Mail::to($email)->send(new TestStatusEmail());
+        $this->info('An email was sent to ' . $email . '. Please open it to complete the email test.');
+        $this->waitTestPassed('Email received');
     }
 }
