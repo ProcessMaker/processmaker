@@ -7,6 +7,8 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use ProcessMaker\Jobs\TestStatusJob;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptExecutor;
 use Throwable;
 
 class ProcessMakerTest extends Command
@@ -45,7 +47,6 @@ class ProcessMakerTest extends Command
         $this->test("DBConnection", [$this, 'testDBConnection']);
         $this->test("Horizon", [$this, 'testHorizonService']);
         $this->test("Broadcast", [$this, 'testBroadcastService']);
-        $this->test("Echo", [$this, 'testEchoService']);
         $this->test("Docker", [$this, 'testDockerService']);
         $this->test("Email", [$this, 'testEmailService']);
     }
@@ -126,13 +127,43 @@ class ProcessMakerTest extends Command
         throw new Exception('FAILED: ' . $name);
     }
 
-    private function testEchoService()
-    {
-        $this->waitTestPassed('EchoService');
-    }
-
     private function testDockerService()
     {
+        $this->testPHPDocker();
+        $this->testJavascriptDocker();
+        $this->testLuaDocker();
+    }
+
+    private function testScriptDocker($language, $code)
+    {
+        $script = new Script();
+        $script->language = $language;
+        $script->run_as_user_id = 1;
+        $executor = ScriptExecutor::where('language', $language)->firstOrFail();
+        $script->script_executor_id = $executor->id;
+        $script->code = $code;
+        $res = $script->runScript(["foo" => "bar"], ["conf"=>"val"]);
+        if (!is_array($res) || empty($res['output'])) {
+            throw new Exception("Failed execution of `{$language}` script.");
+        }
+        if (json_encode($res['output']) !== '{"data1":{"foo":"bar"},"config1":{"conf":"val"}}') {
+            throw new Exception("Unexpected response of the {$language} script execution.");
+        }
+    }
+
+    private function testPHPDocker()
+    {
+        $this->testScriptDocker('php', '<?php return ["data1" => $data, "config1" => $config];');
+    }
+
+    private function testJavascriptDocker()
+    {
+        $this->testScriptDocker('javascript', 'return {"data1": data, "config1": config};');
+    }
+
+    private function testLuaDocker()
+    {
+        $this->testScriptDocker('lua', 'res = {}; res.data1 = data; res.config1 = config; return res;');
     }
 
     private function testEmailService()
