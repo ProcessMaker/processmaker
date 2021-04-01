@@ -25,11 +25,11 @@ trait HasSelfServiceTasks
         }
 
         foreach ($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'manualTask') as $task) {
-            $response = $this->assignSelfService($task,$response);
+            $response = $this->assignSelfService($task, $response);
         }
 
         foreach ($definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'userTask') as $task) {
-            $response = $this->assignSelfService($task,$response);
+            $response = $this->assignSelfService($task, $response);
         }
 
         return $response;
