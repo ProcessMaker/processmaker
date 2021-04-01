@@ -21,6 +21,7 @@ use ProcessMaker\Managers\ModelerManager as Modeler;
 use ProcessMaker\Managers\ScriptBuilderManager as ScriptBuilder;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Events\ImportedScreenSaved;
+use ProcessMaker\Events\TestStatusEvent;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Screen;
 
@@ -200,5 +201,19 @@ class BroadcastTest extends TestCase
         ]);
         $screen = factory(Screen::class)->create();
         event(new ImportedScreenSaved($screen->id, $screen->toArray()));
+    }
+
+
+    /**
+     * Asserts that the TestStatusEvent event works.
+     *
+     * @return void
+     */
+    public function testTestStatusEventBroadcast()
+    {
+        $this->expectsEvents([
+            TestStatusEvent::class,
+        ]);
+        event(new TestStatusEvent('test', 'test status event'));
     }
 }
