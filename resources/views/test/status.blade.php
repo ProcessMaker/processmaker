@@ -13,7 +13,8 @@ test status
 @section('content')
 <div id="app" class="p-2" v-cloak>
   <div><b>Broadcaster:</b> @{{ broadcast }}</div>
-  <div><b>Echo:</b> @{{ echo }}</div>
+  <div class="d-flex"><b>Echo:</b><span class="pl-2"><div v-for="e in echo" :key="e">@{{ e }}</div></span></div>
+  <div v-if="close"><button class="btn btn-success" v-on:click="closeWindow">Tests completed, close window</button></div>
 </div>
 @endsection
 
@@ -25,6 +26,7 @@ test status
       return {
         broadcast: window.Processmaker.broadcasting.broadcaster,
         echo: ['Waiting for message'],
+        close: false,
       };
     },
     mounted() {
@@ -33,10 +35,17 @@ test status
           this.echo.push(e.description);
           this.echo.push('Send acknowledgement');
           ProcessMaker.apiClient.get('test_acknowledgement').then(() => {
-            this.echo = "SUCCESS";
+            this.echo.push("SUCCESS");
+            this.close = true;
+            Echo.leave(`test.status`);
             setTimeout(() => window.close(), 500);
           });
         });
+    },
+    methods: {
+      closeWindow() {
+        window.close();
+      },
     },
   })
 </script>
