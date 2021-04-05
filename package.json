@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.1.0",
+    "version": "4.1.17",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -63,7 +63,7 @@
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "^1.6.1",
         "@processmaker/processmaker-bpmn-moddle": "^0.11.0",
-        "@processmaker/screen-builder": "^2.5.1",
+        "@processmaker/screen-builder": "^2.5.2",
         "@processmaker/vue-form-elements": "^0.19.1",
         "babel-eslint": "^10.1.0",
         "babel-plugin-transform-object-rest-spread": "^6.26.0",
