@@ -490,7 +490,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             return $userByRule;
         }
 
-        $definitions = $token->getInstance()->process->getDefinitions();
+        $definitions = $token->getInstance()->getVersionDefinitions();
         $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
         $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock']  : false;
 

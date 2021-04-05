@@ -22,7 +22,7 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use ProcessMaker\Repositories\BpmnDocument;
 use ProcessMaker\Traits\HideSystemResources;
 
 /**
@@ -42,6 +42,7 @@ use ProcessMaker\Traits\HideSystemResources;
  * @property \Carbon\Carbon $created_at
  * @property Process $process
  * @property ProcessRequestLock[] $locks
+ * @method static ProcessRequest find($id)
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -773,5 +774,19 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $first = $this->locks()->orderBy('id')->first();
         return !$first || $first->getKey() === $lock->getKey();
+    }
+
+    /**
+     * Get the BPMN definitions version of the process that is running.
+     *
+     * @param boolean $forceParse
+     * @param mixed $engine
+     *
+     * @return BpmnDocument
+     */
+    public function getVersionDefinitions($forceParse = false, $engine = null)
+    {
+        $processVersion = $this->processVersion ?: $this->process;
+        return $processVersion->getDefinitions($forceParse, $engine);
     }
 }
