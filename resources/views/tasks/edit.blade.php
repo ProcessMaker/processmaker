@@ -169,15 +169,6 @@
                               </b-modal>
                             </span>
                           </div>
-                          <div v-if="taskDefinitionConfig.escalateToManager">
-                            <br>
-                            <span>
-                                <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
-                                        @click="escalateToManager">
-                                    <i class="fas fa-user-friends"></i> {{__('Escalate the Manager')}}
-                                </button>
-                            </span>
-                          </div>
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
@@ -258,19 +249,15 @@
         watch: {
           task: {
             deep: true,
-            handler(task) {
+            handler(task, oldTask) {
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
+              if (task && oldTask && task.id !== oldTask.id) {
+                history.replaceState(null, null, `/tasks/${task.id}/edit`);
+              }
             }
           },
         },
         computed: {
-          taskDefinitionConfig () {
-            let config = {};
-            if (this.task.definition && this.task.definition.config) {
-              return JSON.parse(this.task.definition.config);
-            }
-            return {};
-          },
           taskHasComments() {
             const commentsPackage = 'comment-editor' in Vue.options.components;
             let config = {};
@@ -311,18 +298,6 @@
           }
         },
         methods: {
-          escalateToManager() {
-            ProcessMaker.confirmModal(
-              'Confirm action', 'Are you sure to scale this task?', '', () => {
-                ProcessMaker.apiClient
-                  .put("tasks/" + this.task.id, {
-                    user_id: '#manager',
-                  })
-                  .then(response => {
-                    this.redirect("/tasks");
-                  });
-              });
-          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
@@ -335,6 +310,10 @@
             this.redirect(`/requests/${this.task.process_request_id}`);
           },
           closed(taskId) {
+            // avoid redirection if using a customized renderer
+            if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
+              return;
+            }
             this.redirect("/tasks");
           },
           claimTask() {

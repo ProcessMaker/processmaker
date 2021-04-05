@@ -14,7 +14,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Jobs\CopyRequestFiles;
-use ProcessMaker\Managers\DataManager;
 
 /**
  * Call Activity model
@@ -60,8 +59,7 @@ class CallActivity implements CallActivityInterface
         $startId = $sequenceFlow->getProperty('startEvent');
         $dataStore = $callable->getRepository()->createDataStore();
         // The entire data model is sent to the target
-        $dataManager = new DataManager();
-        $data = $dataManager->getData($token);
+        $data = $token->getInstance()->getDataStore()->getData();
 
         // Add info about parent
         $data['_parent'] = [
@@ -101,9 +99,11 @@ class CallActivity implements CallActivityInterface
     protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
     {
         // Copy data from subprocess to main process
+        $dataStore = $token->getInstance()->getDataStore();
         $data = $closedInstance->getDataStore()->getData();
-        $dataManager = new DataManager();
-        $dataManager->updateData($token, $data);
+        foreach ($data as $key => $value) {
+            $dataStore->putData($key, $value);
+        }
         $token->getInstance()->getProcess()->getEngine()->runToNextState();
 
         // Complete the sub process call

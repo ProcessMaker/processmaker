@@ -136,6 +136,10 @@ class ProcessRequestController extends Controller
             }
         }
 
+        if (! $user->can('view-all_requests')) {
+            $query->pmql('requester = "' . $user->username . '" OR participant = "' . $user->username . '"');
+        }
+
         $query->nonSystem();
 
         try {
@@ -375,7 +379,7 @@ class ProcessRequestController extends Controller
     {
         // Get the process definition
         $process = $request->process;
-        $catchEvent = $process->getDefinitions()->findElementById($event)->getBpmnElementInstance();
+        $catchEvent = $request->getVersionDefinitions()->findElementById($event)->getBpmnElementInstance();
         if (!($catchEvent instanceof CatchEventInterface)) {
             return abort(423, __('Invalid element, not a catch event ' . get_class($catchEvent)));
         }

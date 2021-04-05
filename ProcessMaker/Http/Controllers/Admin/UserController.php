@@ -53,10 +53,7 @@ class UserController extends Controller
         $currentUser = $user;
         $states = JsonData::states();
         $countries = JsonData::countries();
-        $status = [
-            ['value' => 'ACTIVE', 'text' => __('ACTIVE')],
-            ['value' => 'INACTIVE', 'text' => __('INACTIVE')],
-        ];
+        $status = [__('ACTIVE'), __('INACTIVE')];
 
         $timezones = array_reduce(
             JsonData::timezones(),
@@ -77,7 +74,6 @@ class UserController extends Controller
         );
 
         $addons = $this->getPluginAddons('edit', compact(['user']));
-        $addonsSettings = $this->getPluginAddons('edit.settings', compact(['user']));
 
         return view('admin.users.edit', compact(
             'user',
@@ -91,8 +87,7 @@ class UserController extends Controller
             'datetimeFormats',
             'availableLangs',
             'status',
-            'addons',
-            'addonsSettings',
+            'addons'
         ));
     }
 

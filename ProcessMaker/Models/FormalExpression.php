@@ -54,64 +54,6 @@ class FormalExpression implements FormalExpressionInterface
      */
     private function registerPMFunctions()
     {
-        $this->feelExpression->register(
-            'getActiveTaskAt',
-            function () {
-            },
-            function ($arguments, $element_id, $request_id) {
-                $task = ProcessRequestToken::where('element_id', $element_id)
-                    ->where('process_request_id', $request_id)
-                    ->where('status', 'ACTIVE')
-                    ->first();
-                return $task;
-            }
-        );
-        // Escalate a task to the assigned user's manager
-        $this->feelExpression->register(
-            'escalateTask',
-            function () {
-            },
-            function ($arguments, $task_id) {
-                $task = ProcessRequestToken::find($task_id);
-                $task->reassignTo('#manager')->save();
-            }
-        );
-        // Escalate a task to the assigned user's delegation user
-        $this->feelExpression->register(
-            'delegateTask',
-            function () {
-            },
-            function ($arguments, $task_id) {
-                $task = ProcessRequestToken::find($task_id);
-                if ($task->user) {
-                    $delegationUserId = $task->user->delegation_user_id;
-                    $task->reassignTo($delegationUserId)->save();
-                }
-            }
-        );
-        $this->feelExpression->register(
-            'reassignTasks',
-            function () {
-            },
-            function ($arguments, $user_id, $target_user_id) {
-                $activeTasks = ProcessRequestToken::where('user_id', $user_id)
-                    ->where('element_type', 'task')
-                    ->where('status', 'ACTIVE')
-                    ->get();
-                foreach ($activeTasks as $task) {
-                    $task->reassignTo($target_user_id)->save();
-                }
-                return $target_user_id;
-            }
-        );
-        $this->feelExpression->register(
-            'get',
-            function () {
-            },
-            function ($arguments, $o, $a) {
-                return ((array)$o)[$a];
-            }
-        );
         // date($format, $timestamp)
         $this->feelExpression->register(
             'date',
@@ -126,7 +68,7 @@ class FormalExpression implements FormalExpressionInterface
             'env',
             function () {
             },
-            function ($__data, $name) {
+            function ($name) {
                 $env = EnvironmentVariable::where('name', $name)->first();
                 if ($env) {
                     return $env->value;
@@ -139,7 +81,7 @@ class FormalExpression implements FormalExpressionInterface
             'process',
             function () {
             },
-            function ($__data, $id) {
+            function ($id) {
                 return Process::find($id);
             }
         );
@@ -148,7 +90,7 @@ class FormalExpression implements FormalExpressionInterface
             'request',
             function () {
             },
-            function ($__data, $id) {
+            function ($id) {
                 return ProcessRequest::find($id);
             }
         );
@@ -157,7 +99,7 @@ class FormalExpression implements FormalExpressionInterface
             'user',
             function () {
             },
-            function ($__data, $id) {
+            function ($id) {
                 return User::find($id);
             }
         );
@@ -166,7 +108,7 @@ class FormalExpression implements FormalExpressionInterface
             'lowercase',
             function () {
             },
-            function ($__data, $str) {
+            function ($str) {
                 return strtolower($str);
             }
         );
@@ -175,7 +117,7 @@ class FormalExpression implements FormalExpressionInterface
             'uppercase',
             function () {
             },
-            function ($__data,$str) {
+            function ($str) {
                 return strtoupper($str);
             }
         );
