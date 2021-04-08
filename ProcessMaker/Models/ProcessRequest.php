@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Exception\PmqlMethodException;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
@@ -42,6 +43,7 @@ use ProcessMaker\Repositories\BpmnDocument;
  * @property \Carbon\Carbon $created_at
  * @property Process $process
  * @property ProcessRequestLock[] $locks
+ * @property ProcessRequestToken $ownerTask
  * @method static ProcessRequest find($id)
  *
  * @OA\Schema(
@@ -828,5 +830,30 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $processVersion = $this->processVersion ?: $this->process;
         return $processVersion->getDefinitions($forceParse, $engine);
+    }
+
+    /**
+     * Notify a process update
+     *
+     * @param string $eventName
+     */
+    public function notifyProcessUpdated($eventName)
+    {
+        $event = new ProcessUpdated($this, $eventName);
+        event($event);
+        if ($this->parentRequest) {
+            $this->parentRequest->notifyProcessUpdated($eventName);
+            event($event);
+        }
+    }
+
+    /**
+     * Owner task of the sub process
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function ownerTask()
+    {
+        return $this->hasOne(ProcessRequestToken::class, 'subprocess_request_id', 'id');
     }
 }
