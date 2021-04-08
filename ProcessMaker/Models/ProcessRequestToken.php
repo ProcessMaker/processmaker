@@ -665,7 +665,11 @@ class ProcessRequestToken extends Model implements TokenInterface
         if (array_key_exists('allowInterstitial', $definition)) {
             $allowInterstitial = !!json_decode($definition['allowInterstitial']);
             if (array_key_exists('interstitialScreenRef', $definition) && $definition['interstitialScreenRef']) {
-                $interstitialScreen = Screen::find($definition['interstitialScreenRef']);
+                if (is_numeric($definition['interstitialScreenRef'])) {
+                    $interstitialScreen = Screen::find($definition['interstitialScreenRef']);
+                } else {
+                    $interstitialScreen = Screen::where('key', $definition['interstitialScreenRef'])->first();
+                }
             } else {
                 $interstitialScreen = Screen::where('key', 'interstitial')->first();
             }

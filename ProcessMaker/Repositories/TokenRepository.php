@@ -5,9 +5,9 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
@@ -95,7 +95,9 @@ class TokenRepository implements TokenRepositoryInterface
         $token->riskchanges_at = $due ? Carbon::now()->addHours($due * 0.7) : null;
         $token->saveOrFail();
         $token->setId($token->getKey());
-        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_ACTIVATED'));
+        /** @var ProcessRequest $request */
+        $request = $token->getInstance();
+        $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
     }
 
     /**
@@ -126,7 +128,9 @@ class TokenRepository implements TokenRepositoryInterface
         $token->riskchanges_at = null;
         $token->saveOrFail();
         $token->setId($token->getKey());
-        event(new ProcessUpdated($token->getInstance(), 'START_EVENT_TRIGGERED'));
+        /** @var ProcessRequest $request */
+        $request = $token->getInstance();
+        $request->notifyProcessUpdated('START_EVENT_TRIGGERED');
     }
 
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
@@ -153,7 +157,9 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
-        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_EXCEPTION'));
+        /** @var ProcessRequest $request */
+        $request = $token->getInstance();
+        $request->notifyProcessUpdated('ACTIVITY_EXCEPTION');
     }
 
     /**
@@ -179,7 +185,9 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
-        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_COMPLETED'));
+        /** @var ProcessRequest $request */
+        $request = $token->getInstance();
+        $request->notifyProcessUpdated('ACTIVITY_COMPLETED');
     }
 
     /**

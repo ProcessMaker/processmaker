@@ -303,6 +303,11 @@
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
               return;
             }
+            // If it is inside a subprocess
+            if(this.task.process_request.parent_request_id) {
+              this.redirect(`/requests/${this.task.process_request_id}/owner`);
+              return;
+            }
 
             this.redirect(`/requests/${processRequestId}`);
           },

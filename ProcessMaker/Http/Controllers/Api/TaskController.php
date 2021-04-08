@@ -126,6 +126,16 @@ class TaskController extends Controller
                             });
                         });
                     });
+                } elseif ($column === 'process_request_id') {
+                    $key = array_search($column, $filterByFields);
+                    $requestIdColumn = is_string($key) ? $key : $column;
+                    if (empty($parameters['include_sub_tasks'])) {
+                        $query->where($requestIdColumn, $fieldFilter);
+                    } else {
+                        // Include tasks from sub processes
+                        $ids = ProcessRequest::find($fieldFilter)->childRequests()->pluck('id');
+                        $query->whereIn($requestIdColumn, $ids);
+                    }
                 } else {
                     $key = array_search($column, $filterByFields);
                     $query->where(is_string($key) ? $key : $column, 'like', $fieldFilter);
