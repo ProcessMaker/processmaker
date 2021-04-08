@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea2091d1d65e35ab8c22fe8b9042acf0",
+    "content-hash": "a4377b69c6c1197979987b097dc2156c",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4314,16 +4314,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.30",
+            "version": "2.0.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "136b9ca7eebef78be14abf90d65c5e57b6bc5d36"
+                "reference": "233a920cb38636a43b18d428f9a8db1f0a1a08f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/136b9ca7eebef78be14abf90d65c5e57b6bc5d36",
-                "reference": "136b9ca7eebef78be14abf90d65c5e57b6bc5d36",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/233a920cb38636a43b18d428f9a8db1f0a1a08f4",
+                "reference": "233a920cb38636a43b18d428f9a8db1f0a1a08f4",
                 "shasum": ""
             },
             "require": {
@@ -4403,7 +4403,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.30"
+                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.31"
             },
             "funding": [
                 {
@@ -4419,7 +4419,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-12-17T05:42:04+00:00"
+            "time": "2021-04-06T13:56:45+00:00"
         },
         {
             "name": "pion/laravel-chunk-upload",
@@ -5481,16 +5481,16 @@
         },
         {
             "name": "spatie/image",
-            "version": "1.10.4",
+            "version": "1.10.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/image.git",
-                "reference": "7ea129bc7b7521864c5a540e3b1c14ea194316d3"
+                "reference": "63a963d0200fb26f2564bf7201fc7272d9b22933"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/image/zipball/7ea129bc7b7521864c5a540e3b1c14ea194316d3",
-                "reference": "7ea129bc7b7521864c5a540e3b1c14ea194316d3",
+                "url": "https://api.github.com/repos/spatie/image/zipball/63a963d0200fb26f2564bf7201fc7272d9b22933",
+                "reference": "63a963d0200fb26f2564bf7201fc7272d9b22933",
                 "shasum": ""
             },
             "require": {
@@ -5500,7 +5500,7 @@
                 "league/glide": "^1.6",
                 "php": "^7.2|^8.0",
                 "spatie/image-optimizer": "^1.1",
-                "spatie/temporary-directory": "^1.0",
+                "spatie/temporary-directory": "^1.0|^2.0",
                 "symfony/process": "^3.0|^4.0|^5.0"
             },
             "require-dev": {
@@ -5534,7 +5534,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/image/issues",
-                "source": "https://github.com/spatie/image/tree/1.10.4"
+                "source": "https://github.com/spatie/image/tree/1.10.5"
             },
             "funding": [
                 {
@@ -5546,7 +5546,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-03-10T16:11:40+00:00"
+            "time": "2021-04-07T08:42:24+00:00"
         },
         {
             "name": "spatie/image-optimizer",
