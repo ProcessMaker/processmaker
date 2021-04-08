@@ -488,24 +488,4 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->belongsTo(User::class);
     }
-
-    /**
-     * User's Delegation are user associations that allow for automatic reassignment based on specific availability of a user.
-     *
-     * @return User
-     */
-    public function delegationUser()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
-     * User's Manager are user associations that allow for automatic reassignment based on specific rules in the task assignment.
-     *
-     * @return User
-     */
-    public function manager()
-    {
-        return $this->belongsTo(User::class);
-    }
 }
