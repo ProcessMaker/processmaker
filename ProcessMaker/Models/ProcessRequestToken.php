@@ -8,9 +8,12 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\BpmnEngine;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
+use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
@@ -33,7 +36,7 @@ use Throwable;
  * @property \Carbon\Carbon $riskchanges_at
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
- * @property ProcessRequest $request
+ * @property ProcessRequest $processRequest
  *
  * @OA\Schema(
  *   schema="processRequestTokenEditable",
@@ -280,7 +283,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the BPMN definition of the element where the token is.
      *
-     * @return array
+     * @return array|\ProcessMaker\Nayra\Contracts\Bpmn\EntityInterface
      */
     public function getDefinition($asObject = false, $par = null)
     {
@@ -301,9 +304,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function getBpmnDefinition()
     {
-        /** @var ProcessRequest $request */
-        $request = $this->processRequest ?: $this->getInstance();
-        $definitions = $request->getVersionDefinitions();
+        $definitions = $this->processRequest->process->getDefinitions();
         return $definitions->findElementById($this->element_id);
     }
 
@@ -703,7 +704,7 @@ class ProcessRequestToken extends Model implements TokenInterface
 
     public function updateTokenProperties()
     {
-        $allowed = ['conditionals'];
+        $allowed = ['conditionals', 'loopCharacteristics', 'data'];
         $this->token_properties = array_filter(
             $this->getProperties(),
             function ($key) use ($allowed) {
@@ -711,6 +712,25 @@ class ProcessRequestToken extends Model implements TokenInterface
             },
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+    public function loadTokenProperties()
+    {
+        $tokenInfo = [
+            'id' => $this->getKey(),
+            'status' => $this->status,
+            'index' => $this->element_index,
+            'element_ref' => $this->element_id,
+        ];
+        $this->setProperties(array_merge($this->token_properties ?: [], $tokenInfo));
+    }
+
+    public function loadTokenInstance()
+    {
+        $instance = $this->processRequest->loadProcessRequestInstance();
+        $this->setInstance($instance);
+        $this->loadTokenProperties();
+        return $this;
     }
 
     public function saveToken()
@@ -725,5 +745,67 @@ class ProcessRequestToken extends Model implements TokenInterface
         $token->process_request_id = $token->getInstance()->getKey();
         $token->saveOrFail();
         $token->setId($token->getKey());        
+    }
+
+    /**
+     * Escalate task to manager
+     *
+     * @return int
+     */
+    public function escalateToManager()
+    {
+        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
+        if ($assignmentProcesss) {
+            $res = WorkflowManager::runProcess($assignmentProcesss, 'escalate', [
+                'task_id' => $this->id,
+                'user_id' => $this->user_id,
+                'process_id' => $this->process_id,
+                'request_id' => $this->process_request_id,
+            ]);
+            $this->user_id = $res['assign_to'];
+            return $res['assign_to'];
+        }
+        return $this->user_id;
+    }
+
+    /**
+     * Reassign task to $userId
+     *
+     * @param string $userId
+     *
+     * @return self
+     */
+    public function reassignTo($userId)
+    {
+        if ($userId === "#manager") {
+            $this->escalateToManager();
+            return $this;
+        }
+        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
+        if ($assignmentProcesss) {
+            $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
+                'task_id' => $this->id,
+                'user_id' => $userId,
+                'process_id' => $this->process_id,
+                'request_id' => $this->process_request_id,
+            ]);
+            $this->user_id = $res['assign_to'];
+        }
+        return $this;
+    }
+
+    /**
+     * Returns True is the tokens belongs to a MiltiInstance Task
+     *
+     * @return boolean
+     */
+    public function isMultiInstance()
+    {
+        $definition = $this->getDefinition(true);
+        if ($definition instanceof ActivityInterface) {
+            $loop = $definition->getLoopCharacteristics();
+            return $loop && $loop->isExecutable();
+        }
+        return false;
     }
 }

@@ -259,10 +259,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         }
 
         $process = Process::find($id);
-        /** @var ProcessRequest $request */
         $request = ProcessRequest::find($task->process_request_id);
 
-        $definitions = $request->getVersionDefinitions();
+        $definitions = $process->getDefinitions();
         if (!$definitions->findElementById($config->element_id)) {
             return;
         }

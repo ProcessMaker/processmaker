@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:pm="http://processmaker.com/BPMN/2.0/Schema.xsd" xmlns:tns="http://sourceforge.net/bpmn/definitions/_1530553328908" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://bpmn.io/schema/bpmn" exporter="ProcessMaker Modeler" exporterVersion="1.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL http://bpmn.sourceforge.net/schemas/BPMN20.xsd">
+  <bpmn:process id="non_persistent_process" name="Assignment Process" isExecutable="true">
+    <bpmn:exclusiveGateway id="node_2" name="active?" default="node_12">
+      <bpmn:incoming>node_20</bpmn:incoming>
+      <bpmn:outgoing>node_5</bpmn:outgoing>
+      <bpmn:outgoing>node_12</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="node_4" name="Assign to user_id">
+      <bpmn:incoming>node_5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_5" name="ACTIVE" sourceRef="node_2" targetRef="node_4" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;user_id&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).status=="ACTIVE"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_1" name="Assign to delegation">
+      <bpmn:incoming>node_7</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="node_6" name="has delegation?" default="node_10">
+      <bpmn:incoming>node_21</bpmn:incoming>
+      <bpmn:incoming>node_22</bpmn:incoming>
+      <bpmn:outgoing>node_7</bpmn:outgoing>
+      <bpmn:outgoing>node_10</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="node_7" name="DELEGATION" sourceRef="node_6" targetRef="node_1" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;user(user_id).delegation_user_id&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).delegation_user_id</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_9" name="Unassigned">
+      <bpmn:incoming>node_10</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_10" name="" sourceRef="node_6" targetRef="node_9" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;null&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="node_11" name="has schedule?" default="node_21">
+      <bpmn:incoming>node_12</bpmn:incoming>
+      <bpmn:outgoing>node_14</bpmn:outgoing>
+      <bpmn:outgoing>node_21</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="node_12" name="" sourceRef="node_2" targetRef="node_11">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="node_13" name="in schedule?" default="node_22">
+      <bpmn:incoming>node_14</bpmn:incoming>
+      <bpmn:outgoing>node_16</bpmn:outgoing>
+      <bpmn:outgoing>node_22</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="node_14" name="SCHEDULED" sourceRef="node_11" targetRef="node_13" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;schedule&#34;,&#34;expression&#34;:&#34;get(user(user_id).schedule, date(\&#34;D\&#34;))&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).status=="SCHEDULED"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_15" name="Assign to user_id">
+      <bpmn:incoming>node_16</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_16" name="IN SCHEDULE" sourceRef="node_13" targetRef="node_15" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;user_id&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">schedule.active and ((schedule.from &lt; schedule.to and date("H:i") &gt;= schedule.from and date("H:i") &lt; schedule.to) or (schedule.from &gt; schedule.to and (date("H:i") &gt;= schedule.from or date("H:i") &lt; schedule.to)))</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="node_21" name="" sourceRef="node_11" targetRef="node_6">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="node_22" name="" sourceRef="node_13" targetRef="node_6">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="node_24" name="has manager?" default="node_18">
+      <bpmn:incoming>node_25</bpmn:incoming>
+      <bpmn:outgoing>node_27</bpmn:outgoing>
+      <bpmn:outgoing>node_18</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="node_26" name="Escalate to Manager">
+      <bpmn:incoming>node_27</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_27" name="MANAGER" sourceRef="node_24" targetRef="node_26" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;user(user_id).manager_id&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).manager_id</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:startEvent id="assign" name="assign">
+      <bpmn:outgoing>node_20</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="user_assignment" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="node_20" name="" sourceRef="assign" targetRef="node_2" />
+    <bpmn:startEvent id="escalate" name="escalate">
+      <bpmn:outgoing>node_25</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="escalate_to" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="node_25" name="" sourceRef="escalate" targetRef="node_24" />
+    <bpmn:startEvent id="node_34" name="sync_assignment">
+      <bpmn:outgoing>node_36</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="sync_assignment" />
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="node_35" name="is active?">
+      <bpmn:incoming>node_36</bpmn:incoming>
+      <bpmn:outgoing>node_38</bpmn:outgoing>
+      <bpmn:outgoing>node_23</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="node_36" name="" sourceRef="node_34" targetRef="node_35" />
+    <bpmn:endEvent id="node_37" name="Do not change">
+      <bpmn:incoming>node_38</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_38" name="ACTIVE" sourceRef="node_35" targetRef="node_37" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;&#34;,&#34;expression&#34;:&#34;&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).status=="ACTIVE"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="node_39" name="has delegation?">
+      <bpmn:incoming>node_28</bpmn:incoming>
+      <bpmn:incoming>node_30</bpmn:incoming>
+      <bpmn:outgoing>node_41</bpmn:outgoing>
+      <bpmn:outgoing>node_49</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="node_40" name="Reassign to delegation">
+      <bpmn:incoming>node_41</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_41" name="DELEGATION" sourceRef="node_39" targetRef="node_40" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;reassignTasks(user_id, user(user_id).delegation_user_id)&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).delegation_user_id</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_44" name="Reassign to manager">
+      <bpmn:incoming>node_49</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_49" name="" sourceRef="node_39" targetRef="node_44" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;reassignTasks(user_id, \&#34;#manager\&#34;)&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_17" name="Assign to Requestor User">
+      <bpmn:incoming>node_18</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_18" name="" sourceRef="node_24" targetRef="node_17" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;request(request_id).user_id&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="node_8" name="has schedule?">
+      <bpmn:incoming>node_23</bpmn:incoming>
+      <bpmn:outgoing>node_28</bpmn:outgoing>
+      <bpmn:outgoing>node_29</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="node_19" name="in schedule?" default="node_30">
+      <bpmn:incoming>node_29</bpmn:incoming>
+      <bpmn:outgoing>node_30</bpmn:outgoing>
+      <bpmn:outgoing>node_32</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="node_23" name="" sourceRef="node_35" targetRef="node_8">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="node_28" name="" sourceRef="node_8" targetRef="node_39">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="node_29" name="SCHEDULED" sourceRef="node_8" targetRef="node_19" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;schedule&#34;,&#34;expression&#34;:&#34;get(user(user_id).schedule, date(\&#34;D\&#34;))&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).status=="SCHEDULED"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="node_30" name="" sourceRef="node_19" targetRef="node_39">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_31" name="Do not change">
+      <bpmn:incoming>node_32</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_32" name="IN SCHEDULE" sourceRef="node_19" targetRef="node_31">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">schedule.active and ((schedule.from &lt; schedule.to and date("H:i") &gt;= schedule.from and date("H:i") &lt; schedule.to) or (schedule.from &gt; schedule.to and (date("H:i") &gt;= schedule.from or date("H:i") &lt; schedule.to)))</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:startEvent id="node_43" name="escalate task">
+      <bpmn:outgoing>node_51</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="escalate_task" />
+    </bpmn:startEvent>
+    <bpmn:endEvent id="node_47" name="Task was escalated" pm:screenRef="">
+      <bpmn:incoming>node_52</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="node_50" name="task_id?" default="node_54">
+      <bpmn:incoming>node_51</bpmn:incoming>
+      <bpmn:outgoing>node_52</bpmn:outgoing>
+      <bpmn:outgoing>node_54</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="node_51" name="" sourceRef="node_43" targetRef="node_50" />
+    <bpmn:sequenceFlow id="node_52" name="ESCALATE TASK" sourceRef="node_50" targetRef="node_47" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;escalateTask(task_id)&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">task_id</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_53" name="End Event" pm:screenRef="">
+      <bpmn:incoming>node_54</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_54" name="" sourceRef="node_50" targetRef="node_53">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
+    </bpmn:sequenceFlow>
+    <bpmn:startEvent id="node_45" name="delegate task">
+      <bpmn:outgoing>node_48</bpmn:outgoing>
+      <bpmn:signalEventDefinition signalRef="delegate_task" />
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="node_46" name="task_id?" default="node_58">
+      <bpmn:incoming>node_48</bpmn:incoming>
+      <bpmn:outgoing>node_56</bpmn:outgoing>
+      <bpmn:outgoing>node_58</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="node_48" sourceRef="node_45" targetRef="node_46" />
+    <bpmn:endEvent id="node_55" name="Task was delegated" pm:screenRef="">
+      <bpmn:incoming>node_56</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_56" name="TO DELEGATE USER" sourceRef="node_46" targetRef="node_55" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;delegateTask(task_id)&#34;}}">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">task_id</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="node_57" name="End Event" pm:screenRef="">
+      <bpmn:incoming>node_58</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="node_58" sourceRef="node_46" targetRef="node_57">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"></bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmn:message id="user_assignment" name="user_assignment" />
+  <bpmn:message id="escalate_to" name="escalate_to" />
+  <bpmn:signal id="sync_assignment" name="sync_assignment" />
+  <bpmn:signal id="escalate_task" name="escalate_task" />
+  <bpmn:signal id="delegate_task" name="delegate_task" />
+  <bpmndi:BPMNDiagram id="BPMNDiagramId">
+    <bpmndi:BPMNPlane id="BPMNPlaneId" bpmnElement="non_persistent_process">
+      <bpmndi:BPMNShape id="node_2_di" bpmnElement="node_2">
+        <dc:Bounds x="280" y="110" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_4_di" bpmnElement="node_4">
+        <dc:Bounds x="500" y="110" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_5_di" bpmnElement="node_5">
+        <di:waypoint x="298" y="128" />
+        <di:waypoint x="518" y="127.5" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_6_di" bpmnElement="node_1">
+        <dc:Bounds x="500" y="380" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_7_di" bpmnElement="node_6">
+        <dc:Bounds x="280" y="380" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_8_di" bpmnElement="node_7">
+        <di:waypoint x="298" y="398" />
+        <di:waypoint x="518" y="398" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_10_di" bpmnElement="node_9">
+        <dc:Bounds x="280" y="500" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_11_di" bpmnElement="node_10">
+        <di:waypoint x="298" y="398" />
+        <di:waypoint x="298" y="518" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_12_di" bpmnElement="node_11">
+        <dc:Bounds x="280" y="230" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_13_di" bpmnElement="node_12">
+        <di:waypoint x="298" y="128" />
+        <di:waypoint x="298" y="248" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_14_di" bpmnElement="node_13">
+        <dc:Bounds x="480" y="230" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_15_di" bpmnElement="node_14">
+        <di:waypoint x="298" y="248" />
+        <di:waypoint x="498" y="248" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_16_di" bpmnElement="node_15">
+        <dc:Bounds x="690" y="230" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_17_di" bpmnElement="node_16">
+        <di:waypoint x="498" y="248" />
+        <di:waypoint x="708" y="248" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_22_di" bpmnElement="node_21">
+        <di:waypoint x="298" y="248" />
+        <di:waypoint x="298" y="398" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_23_di" bpmnElement="node_22">
+        <di:waypoint x="498" y="248" />
+        <di:waypoint x="410" y="330" />
+        <di:waypoint x="298" y="398" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_25_di" bpmnElement="node_24">
+        <dc:Bounds x="280" y="600" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_27_di" bpmnElement="node_26">
+        <dc:Bounds x="490" y="600" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_28_di" bpmnElement="node_27">
+        <di:waypoint x="298" y="618" />
+        <di:waypoint x="508" y="618" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_32_di" bpmnElement="assign">
+        <dc:Bounds x="110" y="110" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_21_di" bpmnElement="node_20">
+        <di:waypoint x="128" y="128" />
+        <di:waypoint x="298" y="128" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_33_di" bpmnElement="escalate">
+        <dc:Bounds x="110" y="600" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_26_di" bpmnElement="node_25">
+        <di:waypoint x="128" y="618" />
+        <di:waypoint x="298" y="618" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_35_di" bpmnElement="node_34">
+        <dc:Bounds x="840" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_36_di" bpmnElement="node_35">
+        <dc:Bounds x="840" y="190" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_37_di" bpmnElement="node_36">
+        <di:waypoint x="858" y="118" />
+        <di:waypoint x="858" y="208" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_38_di" bpmnElement="node_37">
+        <dc:Bounds x="1000" y="190" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_39_di" bpmnElement="node_38">
+        <di:waypoint x="858" y="208" />
+        <di:waypoint x="1018" y="208" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_40_di" bpmnElement="node_39">
+        <dc:Bounds x="840" y="440" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_41_di" bpmnElement="node_40">
+        <dc:Bounds x="1010" y="440" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_42_di" bpmnElement="node_41">
+        <di:waypoint x="858" y="458" />
+        <di:waypoint x="1028" y="458" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_45_di" bpmnElement="node_44">
+        <dc:Bounds x="840" y="550" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_50_di" bpmnElement="node_49">
+        <di:waypoint x="858" y="458" />
+        <di:waypoint x="858" y="568" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_9_di" bpmnElement="node_17">
+        <dc:Bounds x="280" y="730" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_18_di" bpmnElement="node_18">
+        <di:waypoint x="298" y="618" />
+        <di:waypoint x="298" y="748" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_3_di" bpmnElement="node_8">
+        <dc:Bounds x="840" y="290" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_19_di" bpmnElement="node_19">
+        <dc:Bounds x="980" y="290" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_20_di" bpmnElement="node_23">
+        <di:waypoint x="858" y="208" />
+        <di:waypoint x="858" y="308" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_24_di" bpmnElement="node_28">
+        <di:waypoint x="858" y="308" />
+        <di:waypoint x="858" y="458" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_29_di" bpmnElement="node_29">
+        <di:waypoint x="858" y="308" />
+        <di:waypoint x="998" y="308" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_30_di" bpmnElement="node_30">
+        <di:waypoint x="998" y="308" />
+        <di:waypoint x="930" y="380" />
+        <di:waypoint x="858" y="458" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_31_di" bpmnElement="node_31">
+        <dc:Bounds x="1120" y="290" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_34_di" bpmnElement="node_32">
+        <di:waypoint x="998" y="308" />
+        <di:waypoint x="1138" y="308" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_46_di" bpmnElement="node_43">
+        <dc:Bounds x="840" y="660" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_49_di" bpmnElement="node_47">
+        <dc:Bounds x="1200" y="660" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_52_di" bpmnElement="node_50">
+        <dc:Bounds x="990" y="660" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_53_di" bpmnElement="node_51">
+        <di:waypoint x="858" y="678" />
+        <di:waypoint x="1008" y="678" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="node_54_di" bpmnElement="node_52">
+        <di:waypoint x="1008" y="678" />
+        <di:waypoint x="1218" y="678" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_55_di" bpmnElement="node_53">
+        <dc:Bounds x="990" y="760" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_56_di" bpmnElement="node_54">
+        <di:waypoint x="1008" y="678" />
+        <di:waypoint x="1008" y="778" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_47_di" bpmnElement="node_45">
+        <dc:Bounds x="840" y="850" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="node_48_di" bpmnElement="node_46">
+        <dc:Bounds x="990" y="850" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_51_di" bpmnElement="node_48">
+        <di:waypoint x="858" y="868" />
+        <di:waypoint x="1008" y="868" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_57_di" bpmnElement="node_55">
+        <dc:Bounds x="1200" y="850" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_58_di" bpmnElement="node_56">
+        <di:waypoint x="1008" y="868" />
+        <di:waypoint x="1218" y="868" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="node_59_di" bpmnElement="node_57">
+        <dc:Bounds x="990" y="960" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="node_60_di" bpmnElement="node_58">
+        <di:waypoint x="1008" y="868" />
+        <di:waypoint x="1008" y="978" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

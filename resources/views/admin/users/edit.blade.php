@@ -272,6 +272,7 @@
 
     <script>
       var formVueInstance = new Vue({
+        mixins:addons,
         el: '#editUser',
         data() {
           return {
