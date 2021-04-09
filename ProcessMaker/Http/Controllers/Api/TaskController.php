@@ -12,6 +12,7 @@ use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Arr;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Setting;
@@ -133,7 +134,8 @@ class TaskController extends Controller
                         $query->where($requestIdColumn, $fieldFilter);
                     } else {
                         // Include tasks from sub processes
-                        $ids = ProcessRequest::find($fieldFilter)->childRequests()->pluck('id');
+                        $ids = ProcessRequest::find($fieldFilter)->childRequests()->pluck('id')->toArray();
+                        $ids = Arr::prepend($ids, $fieldFilter);
                         $query->whereIn($requestIdColumn, $ids);
                     }
                 } else {
