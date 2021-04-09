@@ -18,6 +18,7 @@ use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
 use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
@@ -188,6 +189,10 @@ class WorkflowServiceProvider extends ServiceProvider
             return new Mustache_Engine([
                 'helpers' => $op->helpers,
             ]);
+        });
+
+        $this->app->bind('workflow.FormalExpression', function ($app) {
+            return new FormalExpression();
         });
     }
 }

@@ -32,6 +32,7 @@ class FormalExpression implements FormalExpressionInterface
         'FEEL' => ['feelExpression', 'feelEncode'],
     ];
 
+    private static $pmFunctions = [];
 
     /**
      * FEEL expression object to be used to evaluate
@@ -46,6 +47,16 @@ class FormalExpression implements FormalExpressionInterface
     {
         $this->feelExpression = new ExpressionLanguage();
         $this->registerPMFunctions();
+    }
+
+    /**
+     * Register a custom PM function
+     *
+     * @param callable $callable
+     */
+    public function registerPMFunction($name, callable $callable)
+    {
+        static::$pmFunctions[$name] = $callable;
     }
 
     /**
@@ -121,6 +132,15 @@ class FormalExpression implements FormalExpressionInterface
                 return date($a, $b ?: time());
             }
         );
+        // empty($name)
+        $this->feelExpression->register(
+            'empty',
+            function () {
+            },
+            function ($data, $name) {
+                return empty($data[$name]);
+            }
+        );
         // env($name)
         $this->feelExpression->register(
             'env',
@@ -175,7 +195,7 @@ class FormalExpression implements FormalExpressionInterface
             'uppercase',
             function () {
             },
-            function ($__data,$str) {
+            function ($__data, $str) {
                 return strtoupper($str);
             }
         );
@@ -187,9 +207,19 @@ class FormalExpression implements FormalExpressionInterface
             function () {
             },
             function ($arguments, $array, $key, $default) {
-                return Arr::get($array,$key, $default);
+                return Arr::get($array, $key, $default);
             }
         );
+
+        // Register global PM functions
+        foreach (static::$pmFunctions as $name => $callable) {
+            $this->feelExpression->register(
+                $name,
+                function () {
+                },
+                $callable
+            );
+        }
     }
 
     /**
@@ -283,7 +313,7 @@ class FormalExpression implements FormalExpressionInterface
 
     /**
      *  Evaluate an expression using an specific template engine
-
+     *
      * @param \ProcessMaker\Contracts\TemplateExpressionInterface $templateEngine
      * @param string $expression
      * @param array $data
