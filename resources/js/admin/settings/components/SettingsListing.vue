@@ -1,6 +1,17 @@
 <template>
   <div class="settings-listing data-table">
-    <basic-search class="mb-3" @submit="onSearch"></basic-search>
+    <settings-import ref="import" :group="group" @import="onFinishImport"></settings-import>
+    <settings-export ref="export" :group="group"></settings-export>
+    <basic-search class="mb-3" @submit="onSearch">
+      <template v-slot:buttons>
+        <b-button variant="outline-secondary" class="ml-md-2" @click="onImport">
+          <i class="fas fa-fw fa-file-import"></i> Import
+        </b-button>
+        <b-button variant="outline-secondary" class="ml-md-2 mt-3 mt-md-0" @click="onExport">
+          <i class="fas fa-fw fa-file-export"></i> Export
+        </b-button>
+      </template>
+    </basic-search>
     <div class="card card-body table-card">
       <b-table
         class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
@@ -21,7 +32,7 @@
           <b-form-text v-if="row.item.helper">{{ $t(row.item.helper) }}</b-form-text>
         </template>
         <template v-slot:cell(config)="row">
-          <component v-if="row.item" :ref="`settingComponent_${row.index}`" :is="component(row.item)" @input="onChange(settings[row.index])" v-model="row.item.config" :setting="settings[row.index]"></component>
+          <component v-if="row.item" :ref="`settingComponent_${row.index}`" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
         </template>
         <template v-slot:cell(actions)="row">
           <template v-if="row.item && row.item.format !== 'boolean'">
@@ -79,12 +90,24 @@
 import { BasicSearch } from "SharedComponents";
 import isPMQL from "../../../modules/isPMQL";
 import SettingBoolean from './SettingBoolean';
+import SettingChoice from './SettingChoice';
 import SettingObject from './SettingObject';
 import SettingText from './SettingText';
 import SettingTextArea from './SettingTextArea';
+import SettingsImport from './SettingsImport';
+import SettingsExport from './SettingsExport';
 
 export default {
-  components: { BasicSearch, SettingBoolean, SettingObject, SettingText, SettingTextArea },
+  components: {
+    BasicSearch,
+    SettingBoolean,
+    SettingChoice,
+    SettingObject,
+    SettingText,
+    SettingTextArea,
+    SettingsImport,
+    SettingsExport
+  },
   props: ['group'],
   data() {
     return {
@@ -124,21 +147,21 @@ export default {
         tdClass: "td-group",
       });
     }
-    
+
     this.fields.push({
       key: "name",
       label: "Setting",
       sortable: true,
       tdClass: "td-name",
     });
-    
+
     this.fields.push({
       key: "config",
       label: "Configuration",
       sortable: false,
       tdClass: "align-middle td-config",
     });
-    
+
     this.fields.push({
       key: "actions",
       label: "",
@@ -157,6 +180,7 @@ export default {
       switch (setting.format) {
         case 'text':
         case 'boolean':
+        case 'choice':
           return `setting-${setting.format}`;
         case 'object':
           if (setting.ui && setting.ui.format && setting.ui.format == 'map') {
@@ -200,10 +224,10 @@ export default {
     },
     onChange(setting) {
       this.$nextTick(() => {
+        console.log('onChange Saved Setting',JSON.stringify(setting));
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
-            this.$refs.table.refresh();
-            this.$emit('refresh');
+            this.refresh();
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
           }
         })
@@ -216,7 +240,7 @@ export default {
       } else {
         value = JSON.stringify(row.item.config);
       }
-      
+
       navigator.clipboard.writeText(value).then(() => {
         ProcessMaker.alert(this.$t("The setting was copied to your clipboard."), "success");
       }, () => {
@@ -238,7 +262,7 @@ export default {
         `filter=${this.filter}&` +
         `pmql=${this.pmql}&` +
         `group=${this.group}`;
-      
+
       if (this.additionalPmql && this.additionalPmql.length) {
         url += `&additional_pmql=${this.additionalPmql}`;
       }
@@ -247,6 +271,19 @@ export default {
     },
     settingUrl(id) {
       return `${this.url}/${id}`;
+    },
+    onImport() {
+      this.$refs.import.show();
+    },
+    onExport() {
+      this.$refs.export.show();
+    },
+    onFinishImport() {
+      window.location.reload();
+    },
+    refresh() {
+      this.$refs.table.refresh();
+      this.$emit('refresh');
     }
   }
 };

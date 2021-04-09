@@ -1,31 +1,36 @@
 <template>
   <span>
-    <b-form-checkbox @input="onChange(input)" v-model="input" switch></b-form-checkbox>
+    <b-form-checkbox :key="key" @input="emitSaved(input)" v-model="input" switch></b-form-checkbox>
   </span>
 </template>
 
 <script>
+import settingMixin from "../mixins/setting";
+
 export default {
-  props: ['value'],
+  mixins: [settingMixin],
+  props: ['value', 'setting'],
   data() {
     return {
       input: this.value,
+      key: null,
     };
   },
   watch: {
     value: {
       handler: function(value) {
+        this.regenerateKey();
         this.input = value;
       },
     }
   },
   methods: {
-    onChange(value) {
-      this.$emit('change', value);
-      this.$emit('input', value);
-    },
+    regenerateKey() {
+      this.key = Math.random().toString(36).substring(7);
+    }
   },
   mounted() {
+    this.regenerateKey();
     this.input = this.value;
   }
 };

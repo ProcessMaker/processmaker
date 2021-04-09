@@ -1,5 +1,10 @@
 export default {
   methods: {
+    emitSaved(value) {
+      let setting = this.copy(this.setting);
+      setting.config = value;
+      this.$emit('saved', setting);
+    },
     copy(object) {
       return JSON.parse(JSON.stringify(object));
     },

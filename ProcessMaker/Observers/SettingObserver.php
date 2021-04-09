@@ -21,10 +21,11 @@ class SettingObserver
             $setting->config = null;
             return;
         }
-        
+
         switch ($setting->format) {
             case 'text':
             case 'textarea':
+            case 'choice':
                 $setting->config = $config;
                 break;
             case 'boolean':
@@ -41,7 +42,7 @@ class SettingObserver
                 } else {
                     $return = json_encode($config);
                 }
-                
+
                 $setting->config = $return;
                 break;
             case 'array':
@@ -56,11 +57,11 @@ class SettingObserver
                 } else {
                     $return = json_encode($config);
                 }
-                
+
                 $setting->config = $return;
                 break;
         }
-        
+
         try {
             $settings = Setting::select('key', 'config', 'format')->get();
             foreach ($settings as $setting) {
