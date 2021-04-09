@@ -30,7 +30,8 @@ Route::group(
     Route::post('groups', 'GroupController@store')->name('groups.store')->middleware('can:create-groups');
     Route::put('groups/{group}', 'GroupController@update')->name('groups.update')->middleware('can:edit-groups');
     Route::delete('groups/{group}', 'GroupController@destroy')->name('groups.destroy')->middleware('can:delete-groups');
-    Route::get('groups/{group}/users', 'GroupController@members')->name('groups.members')->middleware('can:view-groups');
+    Route::get('groups/{group}/users', 'GroupController@users')->name('groups.users')->middleware('can:view-groups');
+    Route::get('groups/{group}/groups', 'GroupController@groups')->name('groups.groups')->middleware('can:view-groups');
 
     // Group Members
     Route::get('group_members', 'GroupMemberController@index')->name('group_members.index'); //Already filtered in controller
@@ -113,7 +114,7 @@ Route::group(
     Route::get('tasks/{task}', 'TaskController@show')->name('tasks.show')->middleware('can:view,task');
     Route::put('tasks/{task}', 'TaskController@update')->name('tasks.update')->middleware('can:update,task');
     Route::get('tasks/{task}/screens/{screen}', 'TaskController@getScreen')->name('tasks.get_screen')->middleware('can:viewScreen,task,screen');
-    
+
     // Requests
     Route::get('requests', 'ProcessRequestController@index')->name('requests.index'); //Already filtered in controller
     Route::get('requests/{request}', 'ProcessRequestController@show')->name('requests.show')->middleware('can:view,request');
