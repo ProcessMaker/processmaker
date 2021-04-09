@@ -314,10 +314,13 @@ export default {
       },
       buildTaskPmql() {
           let clauses = [];
-          
+          const isSelfService = this.status.find(status => status.value === 'Self Service');
+
           // Add default filter by user id
-          const userId = parseInt(window.ProcessMaker.user.id);
-          clauses.push('user_id = ' + userId);
+          if (!isSelfService) {
+            const userId = parseInt(window.ProcessMaker.user.id);
+            clauses.push('user_id = ' + userId);
+          }
 
           //Parse request
           if (this.request.length) {

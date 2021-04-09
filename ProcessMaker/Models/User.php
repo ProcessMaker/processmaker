@@ -446,22 +446,27 @@ class User extends Authenticatable implements HasMedia
     public function availableSelfServiceTaskIds()
     {
         $groupIds = $this->groups()->pluck('groups.id');
-        $userId = $this->id;
 
-        $taskQuery = ProcessRequestToken::where([
+        $taskQuery = ProcessRequestToken::select(['id'])
+        ->where([
             'is_self_service' => true,
             'status' => 'ACTIVE',
             'user_id' => null
         ]);
 
-        $sqlWhere = $groupIds->map(function($groupId) {
-            return "JSON_CONTAINS(self_service_groups, '\"$groupId\"') OR 
-                    JSON_CONTAINS(self_service_groups, '\"$groupId\"', '$.groups')";
-        })
-        ->push("JSON_CONTAINS(self_service_groups, '\"$userId\"', '$.users')")
-        ->join(" OR ");
-
-        return $taskQuery->whereRaw($sqlWhere)->pluck('id');
+        $taskQuery->where(function($query) use($groupIds) {
+            // Check if `self_service_groups` contains any of the user's groups
+            foreach($groupIds as $groupId) {
+                $query->orWhereJsonContains('self_service_groups->groups', (int) $groupId);
+                // keep compatibility
+                $query->orWhereJsonContains('self_service_groups->groups', (string) $groupId);
+                $query->orWhereJsonContains('self_service_groups', (int) $groupId);
+                $query->orWhereJsonContains('self_service_groups', (string) $groupId);
+            }
+            $query->orWhereJsonContains('self_service_groups->users', (int) $this->id);
+            $query->orWhereJsonContains('self_service_groups->users', (string) $this->id);
+        });
+        return $taskQuery->pluck('id');
     }
 
     /**

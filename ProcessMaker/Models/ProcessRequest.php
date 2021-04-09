@@ -23,6 +23,7 @@ use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
+use ProcessMaker\Repositories\BpmnDocument;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -41,6 +42,7 @@ use Throwable;
  * @property \Carbon\Carbon $created_at
  * @property Process $process
  * @property ProcessRequestLock[] $locks
+ * @method static ProcessRequest find($id)
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -812,5 +814,19 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->setProcess($process);
         $this->setDataStore($dataStore);
         return $this;
+    }
+
+    /**
+     * Get the BPMN definitions version of the process that is running.
+     *
+     * @param boolean $forceParse
+     * @param mixed $engine
+     *
+     * @return BpmnDocument
+     */
+    public function getVersionDefinitions($forceParse = false, $engine = null)
+    {
+        $processVersion = $this->processVersion ?: $this->process;
+        return $processVersion->getDefinitions($forceParse, $engine);
     }
 }

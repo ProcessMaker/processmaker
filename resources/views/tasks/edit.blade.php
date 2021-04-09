@@ -258,8 +258,11 @@
         watch: {
           task: {
             deep: true,
-            handler(task) {
+            handler(task, oldTask) {
               window.ProcessMaker.breadcrumbs.taskTitle = task.element_name;
+              if (task && oldTask && task.id !== oldTask.id) {
+                history.replaceState(null, null, `/tasks/${task.id}/edit`);
+              }
             }
           },
         },
@@ -335,6 +338,10 @@
             this.redirect(`/requests/${this.task.process_request_id}`);
           },
           closed(taskId) {
+            // avoid redirection if using a customized renderer
+            if (this.task.component && this.task.component === 'AdvancedScreenFrame') {
+              return;
+            }
             this.redirect("/tasks");
           },
           claimTask() {
