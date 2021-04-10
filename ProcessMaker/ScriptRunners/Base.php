@@ -71,7 +71,7 @@ abstract class Base
         if ($user) {
             $token = new GenerateAccessToken($user);
             $environmentVariables[] = 'API_TOKEN=' . $token->getToken();
-            $environmentVariables[] = 'API_HOST=' . config('app.url') . '/api/1.0';
+            $environmentVariables[] = 'API_HOST=http://172.17.0.1/api/1.0';
             $environmentVariables[] = 'API_SSL_VERIFY=' . (config('app.api_ssl_verify') ? '1' : '0');
         }
 

@@ -53,6 +53,7 @@ class LdapManager
         "ad" => array("uid" => "samaccountname", "member" => "member"), //Active Directory
         "ds" => array("uid" => "uid", "member" => "uniquemember") //389 DS
     );
+
     private $arrayAttributesForUser = array("dn", "uid", "samaccountname", "givenname", "sn", "cn", "mail", "userprincipalname", "useraccountcontrol", "accountexpires", "manager");
     private $frontEnd = false;
     private $debug = false;
@@ -297,8 +298,8 @@ class LdapManager
     public function progressBar($total, $count)
     {
         try {
-            $p = (int) (($count * 100) / $total);
-            $n = (int) ($p / 2);
+            $p = (int)(($count * 100) / $total);
+            $n = (int)($p / 2);
 
             return "[" . str_repeat("|", $n) . str_repeat(" ", 50 - $n) . "] $p%";
         } catch (Exception $e) {
@@ -451,30 +452,9 @@ class LdapManager
      * @param String $text
      * @return void
      */
-    public function log($link, $text)
+    private function log($obj, $string)
     {
-        $logFile = PATH_DATA . "log/ldapAdvanced.log";
-
-        if (!file_exists($logFile) || is_writable($logFile)) {
-            $fpt = fopen($logFile, "a");
-            $ldapErrorMsg = "";
-            $ldapErrorNr = 0;
-
-            if ($link != null) {
-                $ldapErrorNr = ldap_errno($link);
-
-                if ($ldapErrorNr != 0) {
-                    $ldapErrorMsg = ldap_error($link);
-                    $text = $ldapErrorMsg . " : " . $text;
-                }
-            }
-
-            //log format:   date hour ipaddress workspace ldapErrorNr
-            fwrite($fpt, sprintf("%s %s %s %s %s \n", date("Y-m-d H:i:s"), getenv("REMOTE_ADDR"), config("system.workspace"), $ldapErrorNr, $text));
-            fclose($fpt);
-        } else {
-            error_log("file $logFile is not writable ");
-        }
+        \Illuminate\Support\Facades\Log::Critical(" var = " . print_r($obj, true) . $string);
     }
 
     /**
@@ -504,22 +484,22 @@ class LdapManager
      */
     public function ldapConnection($aAuthSource, &$resultLDAPStartTLS = false)
     {
-        $pass = explode("_", $aAuthSource["AUTH_SOURCE_PASSWORD"]);
+//        $pass = explode("_", $aAuthSource["AUTH_SOURCE_PASSWORD"]);
+//
+//        foreach ($pass as $index => $value) {
+//            if ($value == "2NnV3ujj3w") {
+//                $aAuthSource["AUTH_SOURCE_PASSWORD"] = G::decrypt($pass[0], $aAuthSource["AUTH_SOURCE_SERVER_NAME"]);
+//            }
+//        }
 
-        foreach ($pass as $index => $value) {
-            if ($value == "2NnV3ujj3w") {
-                $aAuthSource["AUTH_SOURCE_PASSWORD"] = G::decrypt($pass[0], $aAuthSource["AUTH_SOURCE_SERVER_NAME"]);
-            }
-        }
-
-        $ldapcnn = ldap_connect($aAuthSource['AUTH_SOURCE_SERVER_NAME'], $aAuthSource['AUTH_SOURCE_PORT']);
+        $ldapcnn = \ldap_connect($aAuthSource['AUTH_SOURCE_SERVER_NAME'], $aAuthSource['AUTH_SOURCE_PORT']);
         $this->stdLog($ldapcnn, "ldap_connect", $aAuthSource);
 
         $ldapServer = $aAuthSource["AUTH_SOURCE_SERVER_NAME"] . ":" . $aAuthSource["AUTH_SOURCE_PORT"];
 
-        ldap_set_option($ldapcnn, LDAP_OPT_PROTOCOL_VERSION, 3);
+        \ldap_set_option($ldapcnn, LDAP_OPT_PROTOCOL_VERSION, 3);
         $this->stdLog($ldapcnn, "ldap_set_option", $aAuthSource);
-        ldap_set_option($ldapcnn, LDAP_OPT_REFERRALS, 0);
+        \ldap_set_option($ldapcnn, LDAP_OPT_REFERRALS, 0);
         $this->stdLog($ldapcnn, "ldap_set_option", $aAuthSource);
 
         if (isset($aAuthSource["AUTH_SOURCE_ENABLED_TLS"]) && $aAuthSource["AUTH_SOURCE_ENABLED_TLS"]) {
@@ -538,9 +518,8 @@ class LdapManager
         $this->stdLog($ldapcnn, "ldap_bind", $aAuthSource);
         $this->getDiagnosticMessage($ldapcnn);
         if (!$bBind) {
-            throw new Exception("Unable to bind to server: $ldapServer . " . "LDAP-Errno: " . ldap_errno($ldapcnn) . " : " . ldap_error($ldapcnn) . " \n");
+            throw new \Exception("Unable to bind to server: $ldapServer . " . "LDAP-Errno: " . \ldap_errno($ldapcnn) . " : " . \ldap_error($ldapcnn) . " \n");
         }
-
         return $ldapcnn;
     }
 
@@ -555,38 +534,38 @@ class LdapManager
             [
                 'key' => 'USER_NOT_FOUND',
                 'code' => 525,
-                'message' => G::LoadTranslation('ID_LDAP_USER_NOT_FOUND_INVALID'),
+                'message' => 'USER_NOT_FOUND'
             ], [
                 'key' => 'NOT_PERMITTED_TO_LOGON_AT_THIS_TIME',
                 'code' => 530,
-                'message' => G::LoadTranslation('ID_LDAP_NOT_PERMITTED_TO_LOGON_AT_THIS_TIME'),
+                'message' => 'NOT_PERMITTED_TO_LOGON_AT_THIS_TIME',
             ], [
                 'key' => 'RESTRICTED_TO_SPECIFIC_MACHINES',
                 'code' => 531,
-                'message' => G::LoadTranslation('ID_LDAP_RESTRICTED_TO_SPECIFIC_MACHINES'),
+                'message' => 'RESTRICTED_TO_SPECIFIC_MACHINES',
             ], [
                 'key' => 'PASSWORD_EXPIRED',
                 'code' => 532,
-                'message' => G::LoadTranslation('ID_LDAP_PASSWORD_EXPIRED'),
+                'message' => 'PASSWORD_EXPIRED',
             ], [
                 'key' => 'ACCOUNT_DISABLED',
                 'code' => 533,
-                'message' => G::LoadTranslation('ID_LDAP_ACCOUNT_DISABLED'),
+                'message' => 'ACCOUNT_DISABLED',
             ], [
                 'key' => 'ACCOUNT_EXPIRED',
                 'code' => 701,
-                'message' => G::LoadTranslation('ID_LDAP_ACCOUNT_EXPIRED'),
+                'message' => 'ACCOUNT_EXPIRED'
             ], [
                 'key' => 'USER_MUST_RESET_PASSWORD',
                 'code' => 773,
-                'message' => G::LoadTranslation('ID_LDAP_USER_MUST_RESET_PASSWORD'),
+                'message' => 'USER_MUST_RESET_PASSWORD'
             ]
         ];
         $message = '';
         ldap_get_option($linkIdentifier, LDAP_OPT_DIAGNOSTIC_MESSAGE, $messageError);
         $this->stdLog($linkIdentifier, "ldap_get_option", ["error" => $messageError]);
         foreach ($keysError as $key => $value) {
-            if (strpos($messageError, (string) $value['code']) !== false) {
+            if (strpos($messageError, (string)$value['code']) !== false) {
                 $message = $value['message'];
                 break;
             }
@@ -599,7 +578,6 @@ class LdapManager
         if (empty($message)) {
             $message = G::LoadTranslation('ID_LDAP_ERROR_CONNECTION');
         }
-        Cache::put('ldapMessageError', $message, 2);
         $this->log($linkIdentifier, $messageError);
     }
 
@@ -1121,8 +1099,8 @@ class LdapManager
      *
      *
      * @access public
-     * @param  string $strUser UserId  (user login)
-     * @param  string $strPass Password
+     * @param string $strUser UserId  (user login)
+     * @param string $strPass Password
      * @return
      *  -1: user doesn"t exists / no existe usuario
      *  -2: wrong password / password errado
@@ -1975,6 +1953,7 @@ class LdapManager
 
         return $terminated;
     }
+
     /* activate an user previously deactivated
       if user is now in another department, we need the second parameter, the depUid
 
@@ -2379,99 +2358,226 @@ class LdapManager
         }
     }
 
+    private function transformSettings($settings)
+    {
+        return [
+            "AUTH_SOURCE_SERVER_NAME" => $settings["services.ldap.server.address"],
+            "AUTH_SOURCE_PORT" => $settings["services.ldap.server.port"],
+            "AUTH_SOURCE_ENABLED_TLS" => $settings["services.ldap.server.tls"],
+            "AUTH_SOURCE_BASE_DN" => $settings["services.ldap.base_dn"],
+            "AUTH_SOURCE_SEARCH_USER" => $settings["services.ldap.authentication.username"],
+            "LDAP_TYPE" => $settings["services.ldap.type"],
+            "AUTH_SOURCE_IDENTIFIER_FOR_USER" => $settings["services.ldap.identifiers.user"],
+            "AUTH_SOURCE_PASSWORD" => $settings["services.ldap.authentication.password"],
+            "AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP" => $settings["services.ldap.identifiers.group"],
+            "AUTH_SOURCE_IDENTIFIER_FOR_USER_CLASS" => $settings["services.ldap.identifiers.user_class"],
+        ];
+    }
+
+    private function loadLdapSettings($settings)
+    {
+        $aFields = [
+            "AUTH_SOURCE_UID" => "",
+            "AUTH_SOURCE_NAME" => "ProcessMaker",
+            "AUTH_SOURCE_PROVIDER" => "ldapAdvanced",
+            "AUTH_SOURCE_SERVER_NAME" => "ldap.forumsys.com",
+            "AUTH_SOURCE_PORT" => "389",
+            "AUTH_SOURCE_ENABLED_TLS" => "0",
+            "AUTH_SOURCE_BASE_DN" => "ou=mathematicians,dc=example,dc=com",
+            "AUTH_ANONYMOUS" => "1",
+            "AUTH_SOURCE_SEARCH_USER" => "ou=scientists,dc=example,dc=com",
+            "LDAP_TYPE" => "ad",
+            "AUTH_SOURCE_AUTO_REGISTER" => "0",
+            "AUTH_SOURCE_IDENTIFIER_FOR_USER" => "samaccountname",
+            "AUTH_SOURCE_USERS_FILTER" => "",
+            "AUTH_SOURCE_RETIRED_OU" => "",
+            "AUTH_SOURCE_SHOWGRID" => "on",
+            "AUTH_SOURCE_SIGNIN_POLICY_FOR_LDAP" => "1",
+            "AUTH_SOURCE_DATA" => "",
+            "AUTH_SOURCE_PASSWORD" => "password",
+            "USR_ROLE" => "PROCESSMAKER_OPERATOR",
+            "AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP" => "member",
+            "AUTH_SOURCE_IDENTIFIER_FOR_USER_CLASS" => "",
+            "GROUP_CLASS_IDENTIFIER" => "(objectclass=posixgroup)(objectclass=group)(objectclass=groupofuniquenames)",
+            "DEPARTMENT_CLASS_IDENTIFIER" => "(objectclass=organizationalunit)",
+            "CUSTOM_CHECK_AUTH_SOURCE_IDENTIFIER_FOR_USER" => "0",
+            "CUSTOM_CHECK_AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP" => "0",
+            "CUSTOM_CHECK_DEPARTMENT_CLASS_IDENTIFIER" => "0",
+            "CUSTOM_CHECK_GROUP_CLASS_IDENTIFIER" => "0",
+            "CUSTOM_AUTH_SOURCE_IDENTIFIER_FOR_USER" => "",
+            "CUSTOM_AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP" => "",
+            "CUSTOM_DEPARTMENT_CLASS_IDENTIFIER" => "",
+            "CUSTOM_GROUP_CLASS_IDENTIFIER" => ""
+        ];
+
+        $aFields = array_merge($aFields, $this->transformSettings($settings));
+
+        try {
+            //fixing the problem where the BaseDN has spaces.  we are removing the spaces.
+            $baseDn = explode(',', $aFields['AUTH_SOURCE_BASE_DN']);
+            foreach ($baseDn as $key => $val) $baseDn[$key] = trim($val);
+            $aFields['AUTH_SOURCE_BASE_DN'] = implode(',', $baseDn);
+
+            //$this->fromArray($aFields, BasePeer::TYPE_FIELDNAME);
+            $aFields['AUTH_SOURCE_DATA'] = ($aFields['AUTH_SOURCE_DATA'] != '' ? unserialize($aFields['AUTH_SOURCE_DATA']) : array());
+            return $aFields;
+        } catch (\Exception $oError) {
+            throw($oError);
+        }
+    }
+
     /**
      * Get a group list
      * @return <type>
      */
-    public function searchGroups()
+    public function searchGroups($settings)
     {
-        try {
-            $arrayGroup = [];
+        $arrayAuthenticationSourceData = $this->loadLdapSettings($settings);
+        $ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
 
-            //Set variables
-            $rbac = RBAC::getSingleton();
+        //Get Groups
+        // xxxx $limit = $this->getPageSizeLimitByData($arrayAuthenticationSourceData);
+        $limit = 1000;
 
-            if (is_null($rbac->authSourcesObj)) {
-                $rbac->authSourcesObj = new AuthenticationSource();
-            }
+        $flagError = false;
 
-            $arrayAuthenticationSourceData = $rbac->authSourcesObj->load($this->sAuthSource);
+        $filter = '(' . $this->arrayObjectClassFilter['group'] . ')';
 
-            if (is_null($this->ldapcnn)) {
-                $this->ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
-            }
+        $this->log($ldapcnn, 'search groups with Filter: ' . $filter);
 
-            $ldapcnn = $this->ldapcnn;
+        $cookie = '';
 
-            //Get Groups
-            $limit = $this->getPageSizeLimitByData($arrayAuthenticationSourceData);
-            $flagError = false;
+        do {
+            //xxx deprecated ldap_control_paged_result($ldapcnn, $limit, true, $cookie);
 
-            $filter = '(' . $this->arrayObjectClassFilter['group'] . ')';
+            // $this->stdLog($ldapcnn, "ldap_control_paged_result", ["pageSize" => $limit, "isCritical" => true]);
 
-            $this->log($ldapcnn, 'search groups with Filter: ' . $filter);
+            $searchResult = @ldap_search($ldapcnn, $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'], $filter, ['dn', 'cn']);
+            $context = [
+                "baseDN" => $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'],
+                "filter" => $filter,
+                "attributes" => ['dn', 'cn']
+            ];
+            $this->stdLog($ldapcnn, "ldap_search", $context);
 
-            $cookie = '';
+            if ($error = ldap_errno($ldapcnn)) {
+                $this->log($ldapcnn, 'Error in Search');
 
-            do {
-                ldap_control_paged_result($ldapcnn, $limit, true, $cookie);
-                $this->stdLog($ldapcnn, "ldap_control_paged_result", ["pageSize" => $limit, "isCritical" => true]);
+                $flagError = true;
+            } else {
+                if ($searchResult) {
+                    //Get groups from the ldap entries
+                    $countEntries = ldap_count_entries($ldapcnn, $searchResult);
+                    $this->stdLog($ldapcnn, "ldap_count_entries");
 
-                $searchResult = @ldap_search($ldapcnn, $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'], $filter, ['dn', 'cn']);
-                $context = [
-                    "baseDN" => $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'],
-                    "filter" => $filter,
-                    "attributes" => ['dn', 'cn']
-                ];
-                $this->stdLog($ldapcnn, "ldap_search", $context);
+                    if ($countEntries > 0) {
+                        $entry = ldap_first_entry($ldapcnn, $searchResult);
+                        $this->stdLog($ldapcnn, "ldap_first_entry");
 
-                if ($error = ldap_errno($ldapcnn)) {
-                    $this->log($ldapcnn, 'Error in Search');
+                        do {
+                            $arrayEntryData = $this->ldapGetAttributes($ldapcnn, $entry);
 
-                    $flagError = true;
-                } else {
-                    if ($searchResult) {
-                        //Get groups from the ldap entries
-                        $countEntries = ldap_count_entries($ldapcnn, $searchResult);
-                        $this->stdLog($ldapcnn, "ldap_count_entries");
-
-                        if ($countEntries > 0) {
-                            $entry = ldap_first_entry($ldapcnn, $searchResult);
-                            $this->stdLog($ldapcnn, "ldap_first_entry");
-
-                            do {
-                                $arrayEntryData = $this->ldapGetAttributes($ldapcnn, $entry);
-
-                                if (isset($arrayEntryData['cn']) && !is_array($arrayEntryData['cn'])) {
-                                    $arrayGroup[] = [
-                                        'dn' => $arrayEntryData['dn'],
-                                        'cn' => trim($arrayEntryData['cn']),
-                                        'users' => 0,
-                                    ];
-                                }
-                            } while ($entry = ldap_next_entry($ldapcnn, $entry));
-                        }
+                            if (isset($arrayEntryData['cn']) && !is_array($arrayEntryData['cn'])) {
+                                $arrayGroup[] = [
+                                    'dn' => $arrayEntryData['dn'],
+                                    'cn' => trim($arrayEntryData['cn']),
+                                    'users' => 0,
+                                ];
+                            }
+                        } while ($entry = ldap_next_entry($ldapcnn, $entry));
                     }
                 }
-
-                if (!$flagError) {
-                    ldap_control_paged_result_response($ldapcnn, $searchResult, $cookie);
-                    $this->stdLog($ldapcnn, "ldap_control_paged_result_response");
-                }
-            } while (($cookie !== null && $cookie != '') && !$flagError);
-
-            $str = '';
-
-            foreach ($arrayGroup as $group) {
-                $str .= ' ' . $group['cn'];
             }
 
-            $this->log($ldapcnn, 'found ' . count($arrayGroup) . ' groups: ' . $str);
+            if (!$flagError) {
+                // xxxx deprecated ldap_control_paged_result_response($ldapcnn, $searchResult, $cookie);
+                //$this->stdLog($ldapcnn, "ldap_control_paged_result_response");
+            }
+        } while (($cookie !== null && $cookie != '') && !$flagError);
 
-            return $arrayGroup;
-        } catch (Exception $e) {
-            throw $e;
+        $str = '';
+
+        foreach ($arrayGroup as $group) {
+            $str .= ' ' . $group['cn'];
         }
+
+        $this->log($ldapcnn, 'found ' . count($arrayGroup) . ' groups: ' . $str);
+
+        return $arrayGroup;
+
+    }
+
+    public function searchUsersAlt($settings)
+    {
+        $arrayAuthenticationSourceData = $this->loadLdapSettings($settings);
+        $ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
+
+        //Get Groups
+        // xxxx $limit = $this->getPageSizeLimitByData($arrayAuthenticationSourceData);
+        $limit = 1000;
+
+        $flagError = false;
+
+        $filter = '(' . $this->arrayObjectClassFilter['user'] . ')';
+
+        $this->log($ldapcnn, 'search users with Filter: ' . $filter);
+
+        $cookie = '';
+
+        do {
+            //xxx deprecated ldap_control_paged_result($ldapcnn, $limit, true, $cookie);
+
+            // $this->stdLog($ldapcnn, "ldap_control_paged_result", ["pageSize" => $limit, "isCritical" => true]);
+
+            $searchResult = @ldap_search($ldapcnn, $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'], $filter, ['dn', 'cn']);
+            $context = [
+                "baseDN" => $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'],
+                "filter" => $filter,
+                "attributes" => ['dn', 'cn']
+            ];
+            $this->stdLog($ldapcnn, "ldap_search", $context);
+
+            if ($error = ldap_errno($ldapcnn)) {
+                $this->log($ldapcnn, 'Error in Search');
+
+                $flagError = true;
+            } else {
+                if ($searchResult) {
+                    //Get groups from the ldap entries
+                    $countEntries = ldap_count_entries($ldapcnn, $searchResult);
+                    $this->stdLog($ldapcnn, "ldap_count_entries");
+
+                    if ($countEntries > 0) {
+                        $entry = ldap_first_entry($ldapcnn, $searchResult);
+                        $this->stdLog($ldapcnn, "ldap_first_entry");
+
+                        do {
+                            $arrayEntryData = $this->ldapGetAttributes($ldapcnn, $entry);
+
+                            if (isset($arrayEntryData['cn']) && !is_array($arrayEntryData['cn'])) {
+                                $arrayUser[] = $arrayEntryData;
+                            }
+                        } while ($entry = ldap_next_entry($ldapcnn, $entry));
+                    }
+                }
+            }
+
+            if (!$flagError) {
+                // xxxx deprecated ldap_control_paged_result_response($ldapcnn, $searchResult, $cookie);
+                //$this->stdLog($ldapcnn, "ldap_control_paged_result_response");
+            }
+        } while (($cookie !== null && $cookie != '') && !$flagError);
+
+        $str = '';
+
+        foreach ($arrayUser as $user) {
+            $str .= ' ' . $user['cn'];
+        }
+
+        $this->log($ldapcnn, 'found ' . count($arrayUser) . ' users: ' . $str);
+
+        return $arrayUser;
+
     }
 
     /**
@@ -3217,325 +3323,8 @@ class LdapManager
      * @param array $context
      * @param string $level
      */
-    public function stdLog($link, $message = "", $context = [], $level = "info")
-    {
-        if (empty($link)) {
-            switch ($level) {
-                case "error":
-                    Log::channel(':ldapAdvanced')->error($message, Bootstrap::context($context));
-                    break;
-                case "info":
-                default:
-                    Log::channel(':ldapAdvanced')->info($message, Bootstrap::context($context));
-                    break;
-            }
-            return;
-        }
-        $code = ldap_errno($link);
-        $detail = ldap_err2str($code);
-        $context["detail"] = $detail;
-        if ($code === 0) {
-            Log::channel(':ldapAdvanced')->info($message, Bootstrap::context($context));
-        } else {
-            Log::channel(':ldapAdvanced')->error($message, Bootstrap::context($context));
-        }
-    }
-
-}
-
---------------------------------------------------
-
-
-public function searchGroups()
-{
-    $arrayAuthenticationSourceData = $this->loadLdapSettings();
-    $ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
-
-    //Get Groups
-    // xxxx $limit = $this->getPageSizeLimitByData($arrayAuthenticationSourceData);
-    $limit = 1000;
-
-    $flagError = false;
-
-    $filter = '(' . $this->arrayObjectClassFilter['group'] . ')';
-
-    $this->log($ldapcnn, 'search groups with Filter: ' . $filter);
-
-    $cookie = '';
-
-    do {
-        //xxx deprecated ldap_control_paged_result($ldapcnn, $limit, true, $cookie);
-
-        // $this->stdLog($ldapcnn, "ldap_control_paged_result", ["pageSize" => $limit, "isCritical" => true]);
-
-        $searchResult = @ldap_search($ldapcnn, $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'], $filter, ['dn', 'cn']);
-        $context = [
-            "baseDN" => $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'],
-            "filter" => $filter,
-            "attributes" => ['dn', 'cn']
-        ];
-        $this->stdLog($ldapcnn, "ldap_search", $context);
-
-        if ($error = ldap_errno($ldapcnn)) {
-            $this->log($ldapcnn, 'Error in Search');
-
-            $flagError = true;
-        } else {
-            if ($searchResult) {
-                //Get groups from the ldap entries
-                $countEntries = ldap_count_entries($ldapcnn, $searchResult);
-                $this->stdLog($ldapcnn, "ldap_count_entries");
-
-                if ($countEntries > 0) {
-                    $entry = ldap_first_entry($ldapcnn, $searchResult);
-                    $this->stdLog($ldapcnn, "ldap_first_entry");
-
-                    do {
-                        $arrayEntryData = $this->ldapGetAttributes($ldapcnn, $entry);
-
-                        if (isset($arrayEntryData['cn']) && !is_array($arrayEntryData['cn'])) {
-                            $arrayGroup[] = [
-                                'dn' => $arrayEntryData['dn'],
-                                'cn' => trim($arrayEntryData['cn']),
-                                'users' => 0,
-                            ];
-                        }
-                    } while ($entry = ldap_next_entry($ldapcnn, $entry));
-                }
-            }
-        }
-
-        if (!$flagError) {
-            // xxxx deprecated ldap_control_paged_result_response($ldapcnn, $searchResult, $cookie);
-            //$this->stdLog($ldapcnn, "ldap_control_paged_result_response");
-        }
-    } while (($cookie !== null && $cookie != '') && !$flagError);
-
-    $str = '';
-
-    foreach ($arrayGroup as $group) {
-        $str .= ' ' . $group['cn'];
-    }
-
-    $this->log($ldapcnn, 'found ' . count($arrayGroup) . ' groups: ' . $str);
-
-    return $arrayGroup;
-
-}
-
-    private function loadLdapSettings() {
-    $aFields = [
-        "AUTH_SOURCE_UID"=> "",
-        "AUTH_SOURCE_NAME"=> "ProcessMaker",
-        "AUTH_SOURCE_PROVIDER"=> "ldapAdvanced",
-        "AUTH_SOURCE_SERVER_NAME"=> "ldap.forumsys.com",
-        "AUTH_SOURCE_PORT"=> "389",
-        "AUTH_SOURCE_ENABLED_TLS"=> "0",
-        "AUTH_SOURCE_BASE_DN"=> "ou=mathematicians,dc=example,dc=com",
-        "AUTH_ANONYMOUS"=> "1",
-        "AUTH_SOURCE_SEARCH_USER"=> "ou=scientists,dc=example,dc=com",
-        "LDAP_TYPE"=> "ad",
-        "AUTH_SOURCE_AUTO_REGISTER"=> "0",
-        "AUTH_SOURCE_IDENTIFIER_FOR_USER"=> "samaccountname",
-        "AUTH_SOURCE_USERS_FILTER"=> "",
-        "AUTH_SOURCE_RETIRED_OU"=> "",
-        "AUTH_SOURCE_SHOWGRID"=> "on",
-        "AUTH_SOURCE_SIGNIN_POLICY_FOR_LDAP"=> "1",
-        "AUTH_SOURCE_DATA"=> "",
-        "AUTH_SOURCE_PASSWORD"=> "password",
-        "USR_ROLE"=> "PROCESSMAKER_OPERATOR",
-        "AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP"=> "member",
-        "AUTH_SOURCE_IDENTIFIER_FOR_USER_CLASS"=> "",
-        "GROUP_CLASS_IDENTIFIER"=> "(objectclass=posixgroup)(objectclass=group)(objectclass=groupofuniquenames)",
-        "DEPARTMENT_CLASS_IDENTIFIER"=> "(objectclass=organizationalunit)",
-        "CUSTOM_CHECK_AUTH_SOURCE_IDENTIFIER_FOR_USER"=> "0",
-        "CUSTOM_CHECK_AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP"=> "0",
-        "CUSTOM_CHECK_DEPARTMENT_CLASS_IDENTIFIER"=> "0",
-        "CUSTOM_CHECK_GROUP_CLASS_IDENTIFIER"=> "0",
-        "CUSTOM_AUTH_SOURCE_IDENTIFIER_FOR_USER"=> "",
-        "CUSTOM_AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP"=> "",
-        "CUSTOM_DEPARTMENT_CLASS_IDENTIFIER"=> "",
-        "CUSTOM_GROUP_CLASS_IDENTIFIER"=> ""
-    ];
-
-    try {
-        //fixing the problem where the BaseDN has spaces.  we are removing the spaces.
-        $baseDn = explode(',', $aFields['AUTH_SOURCE_BASE_DN']);
-        foreach ($baseDn as $key => $val ) $baseDn[$key] = trim($val);
-        $aFields['AUTH_SOURCE_BASE_DN'] = implode (',', $baseDn);
-
-        //$this->fromArray($aFields, BasePeer::TYPE_FIELDNAME);
-        $aFields['AUTH_SOURCE_DATA'] = ($aFields['AUTH_SOURCE_DATA'] != '' ? unserialize($aFields['AUTH_SOURCE_DATA']) : array());
-        return $aFields;
-    }
-    catch (\Exception $oError) {
-        throw($oError);
-    }
-}
-
-
-    public function ldapConnection($aAuthSource, &$resultLDAPStartTLS = false)
-{
-//        $pass = explode("_", $aAuthSource["AUTH_SOURCE_PASSWORD"]);
-//
-//        foreach ($pass as $index => $value) {
-//            if ($value == "2NnV3ujj3w") {
-//                $aAuthSource["AUTH_SOURCE_PASSWORD"] = G::decrypt($pass[0], $aAuthSource["AUTH_SOURCE_SERVER_NAME"]);
-//            }
-//        }
-
-    $ldapcnn = ldap_connect($aAuthSource['AUTH_SOURCE_SERVER_NAME'], $aAuthSource['AUTH_SOURCE_PORT']);
-    $this->stdLog($ldapcnn, "ldap_connect", $aAuthSource);
-
-    $ldapServer = $aAuthSource["AUTH_SOURCE_SERVER_NAME"] . ":" . $aAuthSource["AUTH_SOURCE_PORT"];
-
-    ldap_set_option($ldapcnn, LDAP_OPT_PROTOCOL_VERSION, 3);
-    $this->stdLog($ldapcnn, "ldap_set_option", $aAuthSource);
-    ldap_set_option($ldapcnn, LDAP_OPT_REFERRALS, 0);
-    $this->stdLog($ldapcnn, "ldap_set_option", $aAuthSource);
-
-    if (isset($aAuthSource["AUTH_SOURCE_ENABLED_TLS"]) && $aAuthSource["AUTH_SOURCE_ENABLED_TLS"]) {
-        $resultLDAPStartTLS = @ldap_start_tls($ldapcnn);
-        $this->stdLog($ldapcnn, "ldap_start_tls", $aAuthSource);
-        $ldapServer = "TLS " . $ldapServer;
-    }
-
-    if ($aAuthSource["AUTH_ANONYMOUS"] == "1") {
-        $bBind = @ldap_bind($ldapcnn);
-        $this->log($ldapcnn, "bind $ldapServer like anonymous user");
-    } else {
-        $bBind = @ldap_bind($ldapcnn, $aAuthSource['AUTH_SOURCE_SEARCH_USER'], $aAuthSource['AUTH_SOURCE_PASSWORD']);
-        $this->log($ldapcnn, "bind $ldapServer with user " . $aAuthSource["AUTH_SOURCE_SEARCH_USER"]);
-    }
-    $this->stdLog($ldapcnn, "ldap_bind", $aAuthSource);
-    $this->getDiagnosticMessage($ldapcnn);
-    if (!$bBind) {
-        throw new \Exception("Unable to bind to server: $ldapServer . " . "LDAP-Errno: " . ldap_errno($ldapcnn) . " : " . ldap_error($ldapcnn) . " \n");
-    }
-
-    return $ldapcnn;
-}
-
     private function stdLog($obj, string $string, array $array = [])
-{
-    \Illuminate\Support\Facades\Log::Critical(" var = " . print_r($obj, true) . $string, $array);
-
-}
-
-    private function log($obj, $string)
-{
-    \Illuminate\Support\Facades\Log::Critical(" var = " . print_r($obj, true) . $string);
-
-}
-
-    /**
-     * Get a diagnostic message of the ldap connection status.
-     * @param resource $linkIdentifier
-     */
-    public function getDiagnosticMessage($linkIdentifier)
-{
-    //specific message
-    $keysError = [
-        [
-            'key' => 'USER_NOT_FOUND',
-            'code' => 525,
-            'message' => 'USER_NOT_FOUND'
-        ], [
-            'key' => 'NOT_PERMITTED_TO_LOGON_AT_THIS_TIME',
-            'code' => 530,
-            'message' => 'NOT_PERMITTED_TO_LOGON_AT_THIS_TIME',
-        ], [
-            'key' => 'RESTRICTED_TO_SPECIFIC_MACHINES',
-            'code' => 531,
-            'message' => 'RESTRICTED_TO_SPECIFIC_MACHINES',
-        ], [
-            'key' => 'PASSWORD_EXPIRED',
-            'code' => 532,
-            'message' => 'PASSWORD_EXPIRED',
-        ], [
-            'key' => 'ACCOUNT_DISABLED',
-            'code' => 533,
-            'message' => 'ACCOUNT_DISABLED',
-        ], [
-            'key' => 'ACCOUNT_EXPIRED',
-            'code' => 701,
-            'message' => 'ACCOUNT_EXPIRED'
-        ], [
-            'key' => 'USER_MUST_RESET_PASSWORD',
-            'code' => 773,
-            'message' => 'USER_MUST_RESET_PASSWORD'
-        ]
-    ];
-    $message = '';
-    ldap_get_option($linkIdentifier, LDAP_OPT_DIAGNOSTIC_MESSAGE, $messageError);
-    $this->stdLog($linkIdentifier, "ldap_get_option", ["error" => $messageError]);
-    foreach ($keysError as $key => $value) {
-        if (strpos($messageError, (string) $value['code']) !== false) {
-            $message = $value['message'];
-            break;
-        }
-    }
-    //standard message
-    if (empty($message)) {
-        $errorNumber = ldap_errno($linkIdentifier);
-        $message = ldap_err2str($errorNumber) . ".";
-    }
-    if (empty($message)) {
-        $message = G::LoadTranslation('ID_LDAP_ERROR_CONNECTION');
-    }
-    $this->log($linkIdentifier, $messageError);
-}
-
-    private $arrayObjectClassFilter = array(
-    "user" => "|(objectclass=inetorgperson)(objectclass=organizationalperson)(objectclass=person)(objectclass=user)",
-    "group" => "|(objectclass=posixgroup)(objectclass=group)(objectclass=groupofuniquenames)",
-    "department" => "|(objectclass=organizationalunit)"
-);
-
-    private $arrayAttributes = array(
-    "ldap" => array("uid" => "uid", "member" => "memberuid"), //OpenLDAP
-    "ad" => array("uid" => "samaccountname", "member" => "member"), //Active Directory
-    "ds" => array("uid" => "uid", "member" => "uniquemember") //389 DS
-);
-
-
-
-    public function ldapGetAttributes($ldapcnn, $entry)
-{
-    try {
-        $arrayAttributes = array();
-
-        $arrayAttributes['dn'] = ldap_get_dn($ldapcnn, $entry);
-        $this->stdLog($ldapcnn, "ldap_get_dn");
-
-        $arrayAux = ldap_get_attributes($ldapcnn, $entry);
-        $this->stdLog($ldapcnn, "ldap_get_attributes");
-
-        for ($i = 0; $i <= $arrayAux["count"] - 1; $i++) {
-            $key = strtolower($arrayAux[$i]);
-
-            switch ($arrayAux[$arrayAux[$i]]["count"]) {
-                case 0:
-                    $arrayAttributes[$key] = "";
-                    break;
-                case 1:
-                    $arrayAttributes[$key] = $arrayAux[$arrayAux[$i]][0];
-                    break;
-                default:
-                    $arrayAttributes[$key] = $arrayAux[$arrayAux[$i]];
-
-                    unset($arrayAttributes[$key]["count"]);
-                    break;
-            }
-        }
-
-        if (!isset($arrayAttributes["mail"]) && isset($arrayAttributes["userprincipalname"])) {
-            $arrayAttributes["mail"] = $arrayAttributes["userprincipalname"];
-        }
-
-        return $arrayAttributes;
-    } catch (Exception $e) {
-        throw $e;
+    {
+        \Illuminate\Support\Facades\Log::Critical(" var = " . print_r($obj, true) . $string, $array);
     }
 }
-
