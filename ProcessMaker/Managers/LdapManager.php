@@ -492,33 +492,33 @@ class LdapManager
 //            }
 //        }
 
-        $ldapcnn = \ldap_connect($aAuthSource['AUTH_SOURCE_SERVER_NAME'], $aAuthSource['AUTH_SOURCE_PORT']);
+        $ldapcnn = ldap_connect($aAuthSource['AUTH_SOURCE_SERVER_NAME'], $aAuthSource['AUTH_SOURCE_PORT']);
         $this->stdLog($ldapcnn, "ldap_connect", $aAuthSource);
 
         $ldapServer = $aAuthSource["AUTH_SOURCE_SERVER_NAME"] . ":" . $aAuthSource["AUTH_SOURCE_PORT"];
 
-        \ldap_set_option($ldapcnn, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($ldapcnn, LDAP_OPT_PROTOCOL_VERSION, 3);
         $this->stdLog($ldapcnn, "ldap_set_option", $aAuthSource);
-        \ldap_set_option($ldapcnn, LDAP_OPT_REFERRALS, 0);
+        ldap_set_option($ldapcnn, LDAP_OPT_REFERRALS, 0);
         $this->stdLog($ldapcnn, "ldap_set_option", $aAuthSource);
 
         if (isset($aAuthSource["AUTH_SOURCE_ENABLED_TLS"]) && $aAuthSource["AUTH_SOURCE_ENABLED_TLS"]) {
-            $resultLDAPStartTLS = @ldap_start_tls($ldapcnn);
+            $resultLDAPStartTLS = ldap_start_tls($ldapcnn);
             $this->stdLog($ldapcnn, "ldap_start_tls", $aAuthSource);
             $ldapServer = "TLS " . $ldapServer;
         }
 
         if ($aAuthSource["AUTH_ANONYMOUS"] == "1") {
-            $bBind = @ldap_bind($ldapcnn);
+            $bBind = ldap_bind($ldapcnn);
             $this->log($ldapcnn, "bind $ldapServer like anonymous user");
         } else {
-            $bBind = @ldap_bind($ldapcnn, $aAuthSource['AUTH_SOURCE_SEARCH_USER'], $aAuthSource['AUTH_SOURCE_PASSWORD']);
+            $bBind = ldap_bind($ldapcnn, $aAuthSource['AUTH_SOURCE_SEARCH_USER'], $aAuthSource['AUTH_SOURCE_PASSWORD']);
             $this->log($ldapcnn, "bind $ldapServer with user " . $aAuthSource["AUTH_SOURCE_SEARCH_USER"]);
         }
         $this->stdLog($ldapcnn, "ldap_bind", $aAuthSource);
         $this->getDiagnosticMessage($ldapcnn);
         if (!$bBind) {
-            throw new \Exception("Unable to bind to server: $ldapServer . " . "LDAP-Errno: " . \ldap_errno($ldapcnn) . " : " . \ldap_error($ldapcnn) . " \n");
+            throw new \Exception("Unable to bind to server: $ldapServer . " . "LDAP-Errno: " . ldap_errno($ldapcnn) . " : " . ldap_error($ldapcnn) . " \n");
         }
         return $ldapcnn;
     }
@@ -1532,6 +1532,7 @@ class LdapManager
                     $users[] = $user;
                 }
             }
+            ldap_close($ldapcnn);
             return $users;
         } catch (Exception $e) {
             throw $e;
@@ -2437,7 +2438,7 @@ class LdapManager
             "AUTH_SOURCE_PORT" => "389",
             "AUTH_SOURCE_ENABLED_TLS" => "0",
             "AUTH_SOURCE_BASE_DN" => "ou=mathematicians,dc=example,dc=com",
-            "AUTH_ANONYMOUS" => "1",
+            "AUTH_ANONYMOUS" => "0",
             "AUTH_SOURCE_SEARCH_USER" => "ou=scientists,dc=example,dc=com",
             "LDAP_TYPE" => "ad",
             "AUTH_SOURCE_AUTO_REGISTER" => "0",
@@ -2496,7 +2497,7 @@ class LdapManager
 
         $filter = '(' . $this->arrayObjectClassFilter['group'] . ')';
 
-        $this->log($ldapcnn, 'search groups with Filter: ' . $filter);
+//        $this->log($ldapcnn, 'search groups with Filter: ' . $filter);
 
         $cookie = '';
 
@@ -2505,7 +2506,7 @@ class LdapManager
 
             // $this->stdLog($ldapcnn, "ldap_control_paged_result", ["pageSize" => $limit, "isCritical" => true]);
 
-            $searchResult = @ldap_search($ldapcnn, $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'], $filter, ['dn', 'cn', 'ou']);
+            $searchResult = ldap_search($ldapcnn, $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'], $filter, ['dn', 'cn', 'ou']);
             $context = [
                 "baseDN" => $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'],
                 "filter" => $filter,
@@ -2554,7 +2555,7 @@ class LdapManager
                 //$this->stdLog($ldapcnn, "ldap_control_paged_result_response");
             }
         } while (($cookie !== null && $cookie != '') && !$flagError);
-
+        ldap_close($ldapcnn);
         return $arrayGroup;
     }
 
