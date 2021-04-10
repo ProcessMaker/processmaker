@@ -48,7 +48,12 @@ class LdapController extends Controller
             $settingsLoaded[$setting['key']] = $setting['config'];
         }
         $manager = new LdapManager();
-        $response = $manager->searchUsersAlt($settingsLoaded);
+        $response = $manager->searchUsersByGroup(
+            $settingsLoaded,
+            [
+                'GRP_LDAP_DN' => $request->input('GROUP_DN'),
+                'GRP_UID' => $request->input('GROUP_UID')
+            ]);
         return $response;
     }
 }

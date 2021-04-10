@@ -45,7 +45,7 @@ class LdapManager
     private static $instance = null;
     private $arrayObjectClassFilter = array(
         "user" => "|(objectclass=inetorgperson)(objectclass=organizationalperson)(objectclass=person)(objectclass=user)",
-        "group" => "|(objectclass=posixgroup)(objectclass=group)(objectclass=groupofuniquenames)",
+        "group" => "|(objectclass=posixgroup)(objectclass=group)(objectclass=groupofuniquenames)(objectclass=organizationalunit)",
         "department" => "|(objectclass=organizationalunit)"
     );
     private $arrayAttributes = array(
@@ -1321,46 +1321,50 @@ class LdapManager
      * @param String $keyword search criteria
      * @return array Users that match the search criteria
      */
-    public function searchUsers($keyword, $start = null, $limit = null)
+    public function searchUsers($keyword, $start = null, $limit = null, $settings)
     {
         $arrayUser = array();
         $totalUser = 0;
         $countUser = 0;
-
+//
         $paged = !is_null($start) && !is_null($limit);
+//
+//        $rbac = RBAC::getSingleton();
+//
+//        if (is_null($rbac->authSourcesObj)) {
+//            $rbac->authSourcesObj = new AuthenticationSource();
+//        }
 
-        $rbac = RBAC::getSingleton();
+//        $arrayAuthenticationSourceData = $rbac->authSourcesObj->load($this->sAuthSource);
 
-        if (is_null($rbac->authSourcesObj)) {
-            $rbac->authSourcesObj = new AuthenticationSource();
-        }
+        $arrayAuthenticationSourceData = $this->loadLdapSettings($settings);
+        $ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
 
-        $arrayAuthenticationSourceData = $rbac->authSourcesObj->load($this->sAuthSource);
         $attributeUserSet = array();
         $attributeSetAdd = array();
 
-        if (isset($arrayAuthenticationSourceData["AUTH_SOURCE_DATA"]["AUTH_SOURCE_GRID_ATTRIBUTE"]) && !empty($arrayAuthenticationSourceData["AUTH_SOURCE_DATA"]["AUTH_SOURCE_GRID_ATTRIBUTE"])
+        if (isset($arrayAuthenticationSourceData["AUTH_SOURCE_GRID_ATTRIBUTE"]) && !empty($arrayAuthenticationSourceData["AUTH_SOURCE_GRID_ATTRIBUTE"])
         ) {
-            foreach ($arrayAuthenticationSourceData["AUTH_SOURCE_DATA"]["AUTH_SOURCE_GRID_ATTRIBUTE"] as $value) {
+            foreach ($arrayAuthenticationSourceData["AUTH_SOURCE_GRID_ATTRIBUTE"] as $value) {
                 $attributeSetAdd[] = $value['attributeLdap'];
                 $attributeUserSet[$value['attributeUser']] = $value['attributeLdap'];
             }
         }
 
-        if (is_null($this->ldapcnn)) {
-            $this->ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
-        }
-
-        $ldapcnn = $this->ldapcnn;
+//        if (is_null($this->ldapcnn)) {
+//            $this->ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
+//        }
+//
+//        $ldapcnn = $this->ldapcnn;
 
         //Get Users
-        if (!isset($arrayAuthenticationSourceData["AUTH_SOURCE_DATA"]["AUTH_SOURCE_USERS_FILTER"])) {
-            $arrayAuthenticationSourceData["AUTH_SOURCE_DATA"]["AUTH_SOURCE_USERS_FILTER"] = "";
+        if (!isset($arrayAuthenticationSourceData["AUTH_SOURCE_USERS_FILTER"])) {
+            $arrayAuthenticationSourceData["AUTH_SOURCE_USERS_FILTER"] = "";
         }
 
-        $uidUserIdentifier = (isset($arrayAuthenticationSourceData["AUTH_SOURCE_DATA"]["AUTH_SOURCE_IDENTIFIER_FOR_USER"])) ? $arrayAuthenticationSourceData["AUTH_SOURCE_DATA"]["AUTH_SOURCE_IDENTIFIER_FOR_USER"] : "uid";
+        $uidUserIdentifier = (isset($arrayAuthenticationSourceData["AUTH_SOURCE_IDENTIFIER_FOR_USER"])) ? $arrayAuthenticationSourceData["AUTH_SOURCE_IDENTIFIER_FOR_USER"] : "uid";
 
-        $filterUsers = trim($arrayAuthenticationSourceData["AUTH_SOURCE_DATA"]["AUTH_SOURCE_USERS_FILTER"]);
+        $filterUsers = trim($arrayAuthenticationSourceData["AUTH_SOURCE_USERS_FILTER"]);
 
         $filter = ($filterUsers != "") ? $filterUsers : "(" . $this->arrayObjectClassFilter["user"] . ")";
         $filter = "(&$filter(|(dn=$keyword)(uid=$keyword)(samaccountname=$keyword)(givenname=$keyword)(sn=$keyword)(cn=$keyword)(mail=$keyword)(userprincipalname=$keyword)))";
@@ -1481,8 +1485,57 @@ class LdapManager
                 }
             }
         }
-
         return ($paged) ? array("numRecTotal" => $totalUser, "data" => $arrayUser) : $arrayUser;
+    }
+
+    function transformLdapEntry( $entry ) {
+        $retEntry = array();
+        for ( $i = 0; $i < $entry['count']; $i++ ) {
+            $attribute = $entry[$i];
+            if ( $entry[$attribute]['count'] == 1 ) {
+                $retEntry[$attribute] = $entry[$attribute][0];
+            } else {
+                for ( $j = 0; $j < $entry[$attribute]['count']; $j++ ) {
+                    $retEntry[$attribute][] = $entry[$attribute][$j];
+                }
+            }
+        }
+        return $retEntry;
+    }
+
+    public function searchUsersByGroup($settings, array $arrayGroupData)
+    {
+        try {
+            $arrayData = array();
+            $arrayAuthenticationSourceData = $this->loadLdapSettings($settings);
+            $ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
+
+            $totalUser = 0;
+            $countUser = 0;
+
+            //Set variables
+            $dn = trim($arrayGroupData["GRP_LDAP_DN"]);
+
+            //Get Group members
+            $memberAttribute = $this->arrayAttributes[$arrayAuthenticationSourceData["LDAP_TYPE"]]["member"];
+
+            $filter = "(" . $this->arrayObjectClassFilter["user"] . ")";
+
+            $this->debugLog("class.ldapAdvanced.php > function ldapGetUsersFromGroup() > \$filter ----> $filter");
+
+            $searchResult = ldap_search($ldapcnn, $dn, $filter, []);
+            $entries = ldap_get_entries($ldapcnn, $searchResult);
+            $users = [];
+            foreach ($entries as $entry) {
+                $user = $this->transformLdapEntry($entry);
+                if (!empty($user)) {
+                    $users[] = $user;
+                }
+            }
+            return $users;
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -2366,7 +2419,7 @@ class LdapManager
             "AUTH_SOURCE_ENABLED_TLS" => $settings["services.ldap.server.tls"],
             "AUTH_SOURCE_BASE_DN" => $settings["services.ldap.base_dn"],
             "AUTH_SOURCE_SEARCH_USER" => $settings["services.ldap.authentication.username"],
-            "LDAP_TYPE" => $settings["services.ldap.type"],
+            "LDAP_TYPE" => $settings["services.ldap.type"] != null ? $settings["services.ldap.type"] : 'ldap',
             "AUTH_SOURCE_IDENTIFIER_FOR_USER" => $settings["services.ldap.identifiers.user"],
             "AUTH_SOURCE_PASSWORD" => $settings["services.ldap.authentication.password"],
             "AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP" => $settings["services.ldap.identifiers.group"],
@@ -2398,7 +2451,7 @@ class LdapManager
             "USR_ROLE" => "PROCESSMAKER_OPERATOR",
             "AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP" => "member",
             "AUTH_SOURCE_IDENTIFIER_FOR_USER_CLASS" => "",
-            "GROUP_CLASS_IDENTIFIER" => "(objectclass=posixgroup)(objectclass=group)(objectclass=groupofuniquenames)",
+            "GROUP_CLASS_IDENTIFIER" => "(objectclass=posixgroup)(objectclass=group)(objectclass=groupofuniquenames)(objectclass=organizationalunit)",
             "DEPARTMENT_CLASS_IDENTIFIER" => "(objectclass=organizationalunit)",
             "CUSTOM_CHECK_AUTH_SOURCE_IDENTIFIER_FOR_USER" => "0",
             "CUSTOM_CHECK_AUTH_SOURCE_IDENTIFIER_FOR_USER_GROUP" => "0",
@@ -2434,7 +2487,7 @@ class LdapManager
     {
         $arrayAuthenticationSourceData = $this->loadLdapSettings($settings);
         $ldapcnn = $this->ldapConnection($arrayAuthenticationSourceData);
-
+        $arrayGroup = [];
         //Get Groups
         // xxxx $limit = $this->getPageSizeLimitByData($arrayAuthenticationSourceData);
         $limit = 1000;
@@ -2452,11 +2505,11 @@ class LdapManager
 
             // $this->stdLog($ldapcnn, "ldap_control_paged_result", ["pageSize" => $limit, "isCritical" => true]);
 
-            $searchResult = @ldap_search($ldapcnn, $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'], $filter, ['dn', 'cn']);
+            $searchResult = @ldap_search($ldapcnn, $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'], $filter, ['dn', 'cn', 'ou']);
             $context = [
                 "baseDN" => $arrayAuthenticationSourceData['AUTH_SOURCE_BASE_DN'],
                 "filter" => $filter,
-                "attributes" => ['dn', 'cn']
+                "attributes" => ['dn', 'cn', 'ou']
             ];
             $this->stdLog($ldapcnn, "ldap_search", $context);
 
@@ -2481,6 +2534,13 @@ class LdapManager
                                 $arrayGroup[] = [
                                     'dn' => $arrayEntryData['dn'],
                                     'cn' => trim($arrayEntryData['cn']),
+                                    'ou' => trim($arrayEntryData['ou']),
+                                    'users' => 0,
+                                ];
+                            } else {
+                                $arrayGroup[] = [
+                                    'dn' => $arrayEntryData['dn'],
+                                    'ou' => trim($arrayEntryData['ou']),
                                     'users' => 0,
                                 ];
                             }
@@ -2495,16 +2555,7 @@ class LdapManager
             }
         } while (($cookie !== null && $cookie != '') && !$flagError);
 
-        $str = '';
-
-        foreach ($arrayGroup as $group) {
-            $str .= ' ' . $group['cn'];
-        }
-
-        $this->log($ldapcnn, 'found ' . count($arrayGroup) . ' groups: ' . $str);
-
         return $arrayGroup;
-
     }
 
     public function searchUsersAlt($settings)

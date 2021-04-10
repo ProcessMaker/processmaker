@@ -191,7 +191,7 @@ Route::group(
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
 
     Route::get('ldap/groups', 'LdapController@getGroups')->name('ldap.groups');
-    Route::get('ldap/users', 'LdapController@getUsers')->name('ldap.users');
+    Route::post('ldap/users', 'LdapController@getUsers')->name('ldap.users');
 
     // Returns a json error message instead of HTML
     Route::fallback(function(){
