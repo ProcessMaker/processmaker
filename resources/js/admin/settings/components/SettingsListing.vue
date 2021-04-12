@@ -224,7 +224,6 @@ export default {
     },
     onChange(setting) {
       this.$nextTick(() => {
-        console.log('onChange Saved Setting',JSON.stringify(setting));
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             this.refresh();
