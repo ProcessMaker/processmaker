@@ -95,7 +95,11 @@ export default {
       return available;
     },
     changed() {
-      return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
+      if (_.isEmpty(this.input) && _.isEmpty(this.transformed)) {
+        return false;
+      } else {
+        return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
+      }
     },
     text() {
       let lines = [];
@@ -126,14 +130,23 @@ export default {
             }
           });
         } else {
-          this.keys.forEach(key => {
-            let match = value.find(item => item.key.name == key.name);
-            if (match) {
-              this.transformed[key.name] = match.value;
-            } else {
-              this.transformed[key.name] = null;
-            }
-          });
+          if (this.ui('fixedKeys')) {
+            this.keys.forEach(key => {
+              let match = value.find(item => item.key.name == key.name);
+              if (match) {
+                this.transformed[key.name] = match.value;
+              } else {
+                this.transformed[key.name] = null;
+              }
+            });
+          } else {
+            this.transformed = {};
+            this.table.forEach(row => {
+              if (row.key.name && row.key.name.length && row.value && row.value.length) {
+                this.transformed[row.key.name] = row.value;
+              }
+            });
+          }
         }
       },
       deep: true,
