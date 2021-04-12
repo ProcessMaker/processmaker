@@ -90,6 +90,7 @@
 import { BasicSearch } from "SharedComponents";
 import isPMQL from "../../../modules/isPMQL";
 import SettingBoolean from './SettingBoolean';
+import SettingCheckboxes from './SettingCheckboxes';
 import SettingChoice from './SettingChoice';
 import SettingObject from './SettingObject';
 import SettingText from './SettingText';
@@ -102,6 +103,7 @@ export default {
     BasicSearch,
     SettingBoolean,
     SettingChoice,
+    SettingCheckboxes,
     SettingObject,
     SettingText,
     SettingTextArea,
@@ -180,6 +182,7 @@ export default {
       switch (setting.format) {
         case 'text':
         case 'boolean':
+        case 'checkboxes':
         case 'choice':
           return `setting-${setting.format}`;
         case 'object':

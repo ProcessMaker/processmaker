@@ -46,6 +46,7 @@ class SettingObserver
                 $setting->config = $return;
                 break;
             case 'array':
+            case 'checkboxes':
             default:
                 if (is_string($config)) {
                     try {

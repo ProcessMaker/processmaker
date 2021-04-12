@@ -177,6 +177,7 @@ class Setting extends Model implements HasMedia
                     return $this->attributes['config'];
                 }
             case 'array':
+            case 'checkboxes':
             default:
                 if (is_string($this->attributes['config'])) {
                     return $this->attributes['config'] = json_decode($this->attributes['config'], true);
