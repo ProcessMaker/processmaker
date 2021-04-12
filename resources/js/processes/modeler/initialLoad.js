@@ -21,7 +21,9 @@ import {
   eventBasedGateway,
   intermediateMessageCatchEvent,
   intermediateSignalThrowEvent,
-  signalEndEvent
+  signalEndEvent,
+  conditionalStartEvent,
+  process,
 } from '@processmaker/modeler';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -79,6 +81,8 @@ let nodeTypes = [
   intermediateSignalThrowEvent,
   signalEndEvent,
   eventBasedGateway,
+  conditionalStartEvent,
+  process,
 ];
 
 ProcessMaker.nodeTypes.push(startEvent);
@@ -132,7 +136,7 @@ ProcessMaker.EventBus.$on(
         params: {
           type: 'FORM',
           interactive: true
-        }        
+        }
       }
     });
 
