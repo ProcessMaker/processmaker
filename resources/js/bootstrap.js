@@ -57,6 +57,7 @@ import XHR from 'i18next-xhr-backend';
 import VueI18Next from '@panter/vue-i18next';
 import {install as VuetableInstall} from 'vuetable-2';
 import Pagination from "./components/common/Pagination";
+import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
 import MonacoEditor from "vue-monaco";
 import RequestChannel from './tasks/components/ProcessRequestChannel';
 
@@ -64,6 +65,7 @@ window.Vue.use(VueI18Next);
 VuetableInstall(window.Vue);
 window.Vue.component('pagination', Pagination);
 window.Vue.component('monaco-editor', MonacoEditor);
+window.Vue.component('screen-select', ScreenSelect);
 let translationsLoaded = false
 let mdates = JSON.parse(
     document.head.querySelector("meta[name=\"i18n-mdate\"]").content
