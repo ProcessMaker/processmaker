@@ -100,7 +100,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
-        /** @var ProcessRequest $request */
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
     }
@@ -138,7 +137,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
-        /** @var ProcessRequest $request */
         $request = $token->getInstance();
         $request->notifyProcessUpdated('START_EVENT_TRIGGERED');
     }
@@ -171,7 +169,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
-        /** @var ProcessRequest $request */
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_EXCEPTION');
     }
@@ -203,7 +200,6 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
-        /** @var ProcessRequest $request */
         $request = $token->getInstance();
         $request->notifyProcessUpdated('ACTIVITY_COMPLETED');
     }

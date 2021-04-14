@@ -211,7 +211,7 @@ class FormalExpression implements FormalExpressionInterface
             }
         );
 
-        // Register global PM functions
+        // Register global PM functions from packages
         foreach (static::$pmFunctions as $name => $callable) {
             $this->feelExpression->register(
                 $name,
