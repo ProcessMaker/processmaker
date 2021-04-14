@@ -5,9 +5,9 @@ namespace ProcessMaker\Repositories;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest as Instance;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken as Token;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\Collection;
@@ -100,7 +100,8 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
-        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_ACTIVATED'));
+        $request = $token->getInstance();
+        $request->notifyProcessUpdated('ACTIVITY_ACTIVATED');
     }
 
     /**
@@ -136,7 +137,8 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->saveOrFail();
         $token->setId($token->getKey());
-        event(new ProcessUpdated($token->getInstance(), 'START_EVENT_TRIGGERED'));
+        $request = $token->getInstance();
+        $request->notifyProcessUpdated('START_EVENT_TRIGGERED');
     }
 
     private function assignTaskUser(ActivityInterface $activity, TokenInterface $token, Instance $instance)
@@ -167,7 +169,8 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
-        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_EXCEPTION'));
+        $request = $token->getInstance();
+        $request->notifyProcessUpdated('ACTIVITY_EXCEPTION');
     }
 
     /**
@@ -197,7 +200,8 @@ class TokenRepository implements TokenRepositoryInterface
         $token->updateTokenProperties();
         $token->save();
         $token->setId($token->getKey());
-        event(new ProcessUpdated($token->getInstance(), 'ACTIVITY_COMPLETED'));
+        $request = $token->getInstance();
+        $request->notifyProcessUpdated('ACTIVITY_COMPLETED');
     }
 
     /**
