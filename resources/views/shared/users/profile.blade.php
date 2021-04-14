@@ -76,7 +76,7 @@
             <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell}}
             </div>
         </div>
-<hr>
+    <hr>
     <h5 class="mt-1 mb-3">{{__('Address')}}</h5>
     <div class="row">
         <div class="form-group col">
@@ -143,4 +143,18 @@
             </div>
         </div>
     </div>
+    @if (config('users.properties'))
+        <hr>
+        <h5 class="mt-1 mb-3">{{__('Additional Information')}}</h5>
+        @foreach (config('users.properties') as $variable => $label)
+            <div class="row">
+                <div class="form-group col">
+                    {!! Form::label("meta.$variable", __($label)) !!}
+                    {!! Form::text("meta.$variable", null, ['id' => "meta.$variable",'class'=>
+                    'form-control', 'v-model' => "formData.meta.$variable",
+                    'v-bind:class' => '{\'form-control\':true}']) !!}
+                </div>
+            </div>
+        @endforeach
+    @endif
 </div>

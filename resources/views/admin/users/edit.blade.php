@@ -276,6 +276,7 @@
         el: '#editUser',
         data() {
           return {
+            meta: @json(config('users.properties')),
             formData: @json($user),
             langs: @json($availableLangs),
             timezones: @json($timezones),
@@ -314,6 +315,17 @@
         },
         created() {
           this.hasPermission()
+          if (this.meta) {
+            let keys = Object.keys(this.meta);
+            if (!this.formData.meta) {
+                this.formData.meta = {};
+            }
+            keys.forEach(key => {
+               if (!this.formData.meta[key]) {
+                   this.formData.meta[key] = null;
+               }
+            });
+          }
         },
         computed: {
           isCurrentUser() {

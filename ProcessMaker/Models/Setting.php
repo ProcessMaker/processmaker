@@ -54,7 +54,7 @@ class Setting extends Model implements HasMedia
     use ExtendedPMQL;
     use HasMediaTrait;
     use SerializeToIso8601;
-    
+
     protected $connection = 'processmaker';
 
     //Disk
@@ -84,7 +84,7 @@ class Setting extends Model implements HasMedia
         'key',
         'config'
     ];
-    
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -124,7 +124,7 @@ class Setting extends Model implements HasMedia
     {
         return self::where('key', $key)->first();
     }
-    
+
     /**
      * Get config by key
      *
@@ -141,17 +141,17 @@ class Setting extends Model implements HasMedia
             return null;
         }
     }
-    
+
     public function scopeHidden($query)
     {
         return $query->where('hidden', true);
     }
-    
+
     public function scopeNotHidden($query)
     {
         return $query->where('hidden', false);
     }
-    
+
     public function getGroupAttribute()
     {
         if ($this->attributes['group'] === null) {
@@ -160,12 +160,13 @@ class Setting extends Model implements HasMedia
             return $this->attributes['group'] = $this->attributes['group'];
         }
     }
-    
+
     public function getConfigAttribute()
     {
         switch ($this->format) {
             case 'text':
             case 'textarea':
+            case 'choice':
                 return $this->attributes['config'] = $this->attributes['config'];
             case 'boolean':
                 return $this->attributes['config'] = (boolean) $this->attributes['config'];
@@ -176,6 +177,7 @@ class Setting extends Model implements HasMedia
                     return $this->attributes['config'];
                 }
             case 'array':
+            case 'checkboxes':
             default:
                 if (is_string($this->attributes['config'])) {
                     return $this->attributes['config'] = json_decode($this->attributes['config'], true);
@@ -184,7 +186,7 @@ class Setting extends Model implements HasMedia
                 }
         }
     }
-    
+
     /**
      * Filter settings with a string
      *
@@ -201,7 +203,7 @@ class Setting extends Model implements HasMedia
                 ->orWhere(DB::raw('LOWER(`helper`)'), 'like', $filter)
                 ->orWhere(DB::raw('LOWER(`group`)'), 'like', $filter);
         });
-        
+
         return $query;
     }
 
@@ -218,7 +220,7 @@ class Setting extends Model implements HasMedia
         $query->where(function ($query) use ($filter) {
             $query->where(DB::raw('LOWER(`group`)'), 'like', $filter);
         });
-        
+
         return $query;
     }
 

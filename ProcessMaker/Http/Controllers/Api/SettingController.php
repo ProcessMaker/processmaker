@@ -2,11 +2,14 @@
 
 namespace ProcessMaker\Http\Controllers\Api;
 
+use DB;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Jobs\ImportSettings;
 use ProcessMaker\Models\Setting;
+use Throwable;
 
 class SettingController extends Controller
 {
@@ -21,7 +24,7 @@ class SettingController extends Controller
         'created_at',
         'updated_at',
     ];
-    
+
     /**
      * A whitelist of attributes that should not be
      * sanitized by our SanitizeInput middleware.
@@ -33,14 +36,14 @@ class SettingController extends Controller
     public function groups(Request $request)
     {
         $query = Setting::query();
-        
+
         $query->select('group')->groupBy('group');
-        
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filterGroups($filter);
         }
-        
+
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
@@ -49,23 +52,23 @@ class SettingController extends Controller
                 return response(['error' => 'PMQL error'], 400);
             }
         }
-        
+
         $query->notHidden();
-    
+
         $orderBy = 'group';
         $orderDirection = 'ASC';
-        
+
         if($request->has('order_by') && in_array($request->input('order_by'), $this->fields)){
           $orderBy = $request->input('order_by');
         }
-    
+
         if($request->has('order_direction')){
           $orderDirection = $request->input('order_direction');
         }
-        
+
         $response = $query->orderBy($orderBy, $orderDirection)
             ->paginate($request->input('per_page', 1000));
-    
+
         return new ApiCollection($response);
     }
 
@@ -107,7 +110,7 @@ class SettingController extends Controller
     public function index(Request $request)
     {
         $query = Setting::query();
-               
+
         $group = $request->input('group');
         if (!empty($group)) {
             if ($group === 'System') {
@@ -116,12 +119,12 @@ class SettingController extends Controller
                 $query->where('group', $group);
             }
         }
-        
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filter($filter);
         }
-        
+
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
@@ -130,12 +133,12 @@ class SettingController extends Controller
                 return response(['error' => 'PMQL error'], 400);
             }
         }
-        
+
         $query->notHidden();
 
         $orderBy = 'name';
         $orderDirection = 'ASC';
-        
+
         if ($request->has('order_by') && in_array($request->input('order_by'), $this->fields)){
             $orderBy = $request->input('order_by');
         }
@@ -143,8 +146,8 @@ class SettingController extends Controller
         if ($request->has('order_direction')){
             $orderDirection = $request->input('order_direction');
         }
-        
-        $response = $query->orderBy($orderBy, $orderDirection)
+
+        $response = $query->orderBy(DB::raw("CAST(ui->>'$.order' AS UNSIGNED)"), 'asc')->orderBy($orderBy, $orderDirection)
             ->paginate($request->input('per_page', 25));
 
         return new ApiCollection($response);
@@ -188,7 +191,28 @@ class SettingController extends Controller
     {
         $setting->config = $request->input('config');
         $setting->save();
-        
+
         return response([], 204);
+    }
+
+    public function import(Request $request)
+    {
+        $content = $request->file('file')->get();
+
+        try {
+            $imported = ImportSettings::dispatchNow($content);
+        } catch (Throwable $e) {
+            return response([
+                'error' => $e->getMessage(),
+            ], 400);
+        }
+
+        return [
+            'data' => $imported,
+            'meta' => [
+                'count' => $imported->count(),
+                'total' => $imported->count(),
+            ],
+        ];
     }
 }

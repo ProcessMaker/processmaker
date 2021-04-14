@@ -4,14 +4,9 @@
       Empty
     </div>
     <div v-else>
-      <template v-if="! ui('sensitive')">
-        {{ input }}
-      </template>
-      <template v-else>
-        {{ hidden }}
-      </template>
+      {{ display }}
     </div>
-    <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden" @shown="onModalShown">
+    <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
       <template v-slot:modal-header class="d-block">
         <div>
           <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
@@ -20,19 +15,11 @@
         </div>
         <button type="button" aria-label="Close" class="close" @click="onCancel">×</button>
       </template>
-      <template v-if="! ui('sensitive')">
-        <b-form-input ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="off" type="text"></b-form-input>
-      </template>
-      <template v-else>
-        <b-input-group>
-          <b-form-input class="border-right-0" ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="new-password" :type="type"></b-form-input>
-          <b-input-group-append>
-            <b-button variant="secondary" @click="togglePassword">
-              <i class="fas" :class="icon"></i>
-            </b-button>
-          </b-input-group-append>
-        </b-input-group>
-      </template>
+      <div>
+        <b-form-group>
+          <b-form-radio v-for="(option, value) in ui('options')" v-model="transformed" :key="value" :value="value">{{ option }}</b-form-radio>
+        </b-form-group>
+      </div>
       <div slot="modal-footer" class="w-100 m-0 d-flex">
         <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
             {{ $t('Cancel') }}
@@ -54,9 +41,9 @@ export default {
   data() {
     return {
       input: null,
+      selected: null,
       showModal: false,
       transformed: null,
-      type: 'password'
     };
   },
   computed: {
@@ -70,16 +57,15 @@ export default {
     changed() {
       return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
     },
-    icon() {
-      if (this.type == 'password') {
-        return 'fa-eye';
+    display() {
+      const options = this.ui('options');
+      const keys = Object.keys(options);
+      if (keys.includes(this.input)) {
+        return options[this.input];
       } else {
-        return 'fa-eye-slash';
+        return this.input;
       }
     },
-    hidden() {
-      return '•'.repeat(this.input.length);
-    }
   },
   watch: {
     value: {
@@ -96,25 +82,13 @@ export default {
       this.showModal = true;
     },
     onModalHidden() {
-      this.type = 'password';
       this.transformed = this.copy(this.input);
-    },
-    onModalShown() {
-      this.$refs.input.focus();
     },
     onSave() {
       this.input = this.copy(this.transformed);
       this.showModal = false;
       this.emitSaved(this.input);
     },
-    togglePassword() {
-      if (this.type == 'text') {
-        this.type = 'password';
-      } else {
-        this.type = 'text';
-      }
-      this.$refs.input.focus();
-    }
   },
   mounted() {
     if (this.value === null) {

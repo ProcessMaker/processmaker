@@ -76,8 +76,7 @@ export default {
     onSave() {
       this.input = this.copy(this.transformed);
       this.showModal = false;
-      this.$emit('change', this.input);
-      this.$emit('input', this.input);
+      this.emitSaved(this.input);
     },
   },
   mounted() {
@@ -90,7 +89,7 @@ export default {
     if (this.input == "null" || this.input === null) {
       this.input = '';
     }
-    
+
 
     this.transformed = this.copy(this.input);
   }
@@ -99,9 +98,9 @@ export default {
 
 <style lang="scss" scoped>
   @import '../../../../sass/colors';
-  
+
   $disabledBackground: lighten($secondary, 20%);
-  
+
   .btn:disabled,
   .btn.disabled {
     background: $disabledBackground;

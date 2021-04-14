@@ -95,7 +95,11 @@ export default {
       return available;
     },
     changed() {
-      return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
+      if (_.isEmpty(this.input) && _.isEmpty(this.transformed)) {
+        return false;
+      } else {
+        return JSON.stringify(this.input) !== JSON.stringify(this.transformed);
+      }
     },
     text() {
       let lines = [];
@@ -126,14 +130,23 @@ export default {
             }
           });
         } else {
-          this.keys.forEach(key => {
-            let match = value.find(item => item.key.name == key.name);
-            if (match) {
-              this.transformed[key.name] = match.value;
-            } else {
-              this.transformed[key.name] = null;
-            }
-          });
+          if (this.ui('fixedKeys')) {
+            this.keys.forEach(key => {
+              let match = value.find(item => item.key.name == key.name);
+              if (match) {
+                this.transformed[key.name] = match.value;
+              } else {
+                this.transformed[key.name] = null;
+              }
+            });
+          } else {
+            this.transformed = {};
+            this.table.forEach(row => {
+              if (row.key.name && row.key.name.length && row.value && row.value.length) {
+                this.transformed[row.key.name] = row.value;
+              }
+            });
+          }
         }
       },
       deep: true,
@@ -189,8 +202,7 @@ export default {
     onSave() {
       this.input = this.copy(this.transformed);
       this.showModal = false;
-      this.$emit('change', this.input);
-      this.$emit('input', this.input);
+      this.emitSaved(this.input);
     },
     setTable() {
       this.table = [];
@@ -223,36 +235,36 @@ export default {
 
 <style lang="scss">
   @import '../../../../sass/colors';
-  
+
   $disabledBackground: lighten($secondary, 20%);
   $multiselect-height: 38px;
 
     .setting-add-button {
       margin-top: 5px;
     }
-  
+
     .setting-object-table th,
     .setting-object-table td {
       padding: 8px 0;
     }
-    
+
     .thKey {
       width: 300px;
     }
-    
+
     .multiselect {
       display: inline-block !important;
       max-width: 300px;
       width: 300px;
     }
-    
+
     .multiselect,
     .multiselect__tags {
       height: $multiselect-height;
       min-height: $multiselect-height;
       max-height: $multiselect-height;
     }
-    
+
     .multiselect__placeholder {
       display: block;
       line-height: 20px;
@@ -271,17 +283,17 @@ export default {
     .multiselect__tags {
       font-size: 16px;
     }
-    
+
     .multiselect__option--highlight {
       background: #ddd;
       color: #222;
     }
-    
+
     .multiselect__option--disabled {
       background: none !important;
       color: #ccc;
     }
-    
+
     .form-control-multiselect {
       position: relative;
       -webkit-box-flex: 1;
