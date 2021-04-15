@@ -1,4 +1,7 @@
 <?php
+
+use ProcessMaker\Http\Controllers\TestStatusController;
+
 Route::group(
     [
         'middleware' => ['auth:api', 'setlocale', 'bindings', 'sanitize'],
@@ -196,4 +199,6 @@ Route::group(
     Route::fallback(function(){
         return response()->json(['error' => 'Not Found'], 404);
     })->name('fallback');
+
+    Route::get('/test_acknowledgement', [TestStatusController::class, 'testAcknowledgement'])->name('test.acknowledgement');
 });

@@ -94,6 +94,9 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::fallback(function () {
         return response()->view('errors.404', [], 404);
     })->name('fallback');
+
+    Route::get('/test_status', 'TestStatusController@test')->name('test.status');
+    Route::get('/test_email', 'TestStatusController@email')->name('test.email');
 });
 
 // Add our broadcasting routes

@@ -38,3 +38,7 @@ Broadcast::channel('ProcessMaker.Models.ProcessRequestToken.{id}', function ($us
     $token = ProcessRequestToken::find($id);
     return $user->getKey() === $token->user_id;
 });
+
+Broadcast::channel('test.status', function ($user) {
+    return true;
+});
