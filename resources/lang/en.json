@@ -758,7 +758,7 @@
   "Textarea": "Textarea",
   "Th": "T",
   "There are {{items}} validation errors in your form.": "There are {{items}} validation errors in your form.",
-  "There are {{items}} validation error in your form.": "There are {{items}} validation error in your form." ,
+  "There is a validation error in your form.": "There is a validation error in your form.",
   "The :attribute must be a file of type: jpg, jpeg, png, or gif.": "The :attribute must be a file of type: jpg, jpeg, png, or gif.",
   "The Auth-Client must have at least :min item chosen.": "The Auth-Client must have at least :min item chosen.",
   "The auth client was ": "The auth client was ",
