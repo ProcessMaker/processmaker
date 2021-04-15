@@ -22,17 +22,19 @@
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home"
-                           role="tab" aria-controls="nav-home" aria-selected="true">{{__('Group Details')}} </a>
+                        role="tab" aria-controls="nav-home" aria-selected="true">{{__('Group Details')}}</a>
                         <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-users" role="tab"
-                           aria-controls="nav-profile" aria-selected="false">{{__('Group Members')}}</a>
+                        aria-controls="nav-profile" aria-selected="false">{{__('Users')}}</a>
+                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-groups" role="tab"
+                        aria-controls="nav-profile" aria-selected="false">{{__('Groups')}}</a>
                         <a class="nav-item nav-link" id="nav-permissions-tab" data-toggle="tab" href="#nav-permissions"
-                           role="tab" aria-controls="nav-permissions"
-                           aria-selected="false">{{__('Group Permissions')}}</a>
+                        role="tab" aria-controls="nav-permissions"
+                        aria-selected="false">{{__('Group Permissions')}}</a>
                     </div>
                 </nav>
 
                 <div class="tab-content" id="nav-tabContent">
-                    <div class="card card-body border-top-0 tab-pane p-3 fade show active" id="nav-home" role="tabpanel"
+                    <div class="card card-body border-top-0 tab-pane p-3 show active" id="nav-home" role="tabpanel"
                          aria-labelledby="nav-home-tab">
                         <div class="form-group">
                             {!! Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false) !!}
@@ -75,7 +77,7 @@
                             {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onUpdate', 'id'=>'saveGroup']) !!}
                         </div>
                     </div>
-                    <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
+                    <div class="card card-body border-top-0 tab-pane p-3" id="nav-users" role="tabpanel" aria-labelledby="nav-profile-tab">
                         <div id="search-bar" class="search mb-3" vcloak>
                             <div class="d-flex flex-column flex-md-row">
                                 <div class="flex-grow-1">
@@ -99,7 +101,31 @@
                         </div>
                         <users-in-group ref="listing" :filter="filter" :group-id="formData.id"></users-in-group>
                     </div>
-                    <div class="card card-body border-top-0 tab-pane p-3 fade" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
+                    <div class="card card-body border-top-0 tab-pane p-3" id="nav-groups" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div id="search-bar" class="search mb-3" vcloak>
+                            <div class="d-flex flex-column flex-md-row">
+                                <div class="flex-grow-1">
+                                    <div id="search" class="mb-3 mb-md-0">
+                                        <div class="input-group w-100">
+                                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex ml-md-2 flex-column flex-md-row">
+                                    <button type="button" class="btn btn-secondary" data-toggle="modal" id="addGroupModal"
+                                            data-target="#addGroup" @click="loadGroups">
+                                        <i class="fas fa-plus"></i>
+                                        {{__('Group')}}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <groups-in-group ref="groupListing" :filter="filter" :group-id="formData.id"></groups-in-group>
+                    </div>
+                    <div class="card card-body border-top-0 tab-pane p-3" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
                         <div class="accordion" id="accordionPermissions">
                             <div class="mb-3 custom-control custom-switch">
                                 <input v-model="selectAll" type="checkbox" class="custom-control-input" id="selectAll" @click="select">
@@ -175,6 +201,65 @@
                     </div>
                 </div>
             </div>
+            <div class="modal" tabindex="-1" role="dialog" id="addGroup">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{__('Add Groups')}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    @click="onCloseAddGroup">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-user">
+                                {!!Form::label('groups', __('Groups') . '<small class="ml-1">*</small>', [], false)!!}
+                                <multiselect v-model="selectedGroups"
+                                             placeholder="{{__('Select group or type here to search groups')}}"
+                                             :options="availableGroups"
+                                             :multiple="true"
+                                             track-by="name"
+                                             :show-labels="false"
+                                             :searchable="true"
+                                             :internal-search="false"
+                                             @search-change="loadGroups"
+                                             label="name">
+    
+                                    <template slot="noResult" >
+                                        {{ __('No elements found. Consider changing the search query.') }}
+                                    </template>
+    
+                                    <template slot="noOptions" >
+                                        {{ __('No Data Available') }}
+                                    </template>
+    
+                                    <template slot="tag" slot-scope="props">
+                                        <span class="multiselect__tag  d-flex align-items-center"
+                                              style="width:max-content;">
+                                            <span class="option__desc mr-1">
+                                                <span class="option__title">@{{ props.option.name }}</span>
+                                            </span>
+                                            <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                                               class="multiselect__tag-icon"></i>
+                                        </span>
+                                    </template>
+    
+                                    <template slot="option" slot-scope="props">
+                                        <div class="option__desc d-flex align-items-center">
+                                            <span class="option__title mr-1">@{{ props.option.name }}</span>
+                                        </div>
+                                    </template>
+                                </multiselect>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    data-dismiss="modal" @click="onCloseAddGroup">{{__('Cancel')}}</button>
+                            <button type="button" class="btn btn-secondary ml-2" @click="onSaveGroups" id="saveGroups">{{__('Save')}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
@@ -200,7 +285,9 @@
             selectAll: false,
             selectedPermissions: [],
             selectedUsers: [],
-            availableUsers: []
+            availableUsers: [],
+            selectedGroups: [],
+            availableGroups: [],
           }
         },
         created() {
@@ -247,6 +334,9 @@
           onCloseAddUser() {
             this.selectedUsers = [];
           },
+          onCloseAddGroup() {
+            this.selectedGroups = [];
+          },
           onSave() {
             let that = this;
             this.selectedUsers.forEach(function (user) {
@@ -260,6 +350,22 @@
                   that.$refs['listing'].fetch();
                   $('#addUser').modal('hide');
                   that.selectedUsers = [];
+                });
+            })
+          },
+          onSaveGroups() {
+            let that = this;
+            this.selectedGroups.forEach(function (group) {
+              ProcessMaker.apiClient
+                .post('group_members', {
+                  'group_id': that.formData.id,
+                  'member_type': 'ProcessMaker\\Models\\Group',
+                  'member_id': group.id
+                })
+                .then(response => {
+                  that.$refs['groupListing'].fetch();
+                  $('#addGroup').modal('hide');
+                  that.selectedGroups = [];
                 });
             })
           },
@@ -298,6 +404,17 @@
               .then(response => {
                 this.availableUsers = response.data.data
               });
+          },
+          loadGroups(filter) {
+            filter = typeof filter === 'string' ? '?filter=' + filter + '&' : '?';
+            ProcessMaker.apiClient
+                .get(
+                    "group_members_available" + filter +
+                    "group_id=" + this.formData.id
+                )
+                .then(response => {
+                    this.availableGroups = response.data.data
+                });
           },
           permissionUpdate() {
             ProcessMaker.apiClient.put("/permissions", {

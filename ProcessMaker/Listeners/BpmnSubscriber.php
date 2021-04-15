@@ -43,6 +43,9 @@ class BpmnSubscriber
      */
     public function onProcessCompleted(ProcessInstanceCompletedEvent $event)
     {
+        if ($event->instance->isNonPersistent()) {
+            return;
+        }
         Log::info('Process completed: ' . json_encode($event->instance->getProperties()));
 
         $notifiables = $event->instance->getNotifiables('completed');
@@ -57,6 +60,9 @@ class BpmnSubscriber
      */
     public function onProcessCreated(ProcessInstanceCreatedEvent $event)
     {
+        if ($event->instance->isNonPersistent()) {
+            return;
+        }
         Log::info('Process created: ' . json_encode($event->instance->getProperties()));
 
         $notifiables = $event->instance->getNotifiables('started');
@@ -71,6 +77,9 @@ class BpmnSubscriber
     public function onActivityActivated(ActivityActivatedEvent $event)
     {
         $token = $event->token;
+        if ($token->getInstance()->isNonPersistent()) {
+            return;
+        }
         Log::info('Activity activated: ' . json_encode($token->getProperties()));
 
         $notifiables = $token->getNotifiables('assigned');
@@ -86,6 +95,9 @@ class BpmnSubscriber
     public function onActivityCompleted(ActivityCompletedEvent $event)
     {
         $token = $event->token;
+        if ($token->getInstance()->isNonPersistent()) {
+            return;
+        }
         Log::info('Activity completed: ' . json_encode($token->getProperties()));
 
         if ($token->element_type == 'task') {
@@ -181,11 +193,15 @@ class BpmnSubscriber
             $formalExp = new FormalExpression();
             $formalExp->setLanguage('FEEL');
             $formalExp->setBody($expression);
-            $expressionResult = $formalExp($instance->data);
-            $data = array_merge($instance->data, [$variable => $expressionResult]);
-            $instance->data = $data;
-            $instance->getDataStore()->setData($instance->data);
-            $instance->saveOrFail();
+            $data = $instance->getDataStore()->getData();
+            $expressionResult = $formalExp($data);
+            $data = array_merge($data, [$variable => $expressionResult]);
+            $data = $data;
+            $instance->getDataStore()->setData($data);
+            if (!$instance->isNonPersistent()) {
+                $instance->data = $data;
+                $instance->saveOrFail();
+            }
         } catch (\Exception $e) {
             Log::error('The expression used in the flow generated and error: ', [$e->getMessage()]);
             $instance->logError($e, $transition->getOwner());

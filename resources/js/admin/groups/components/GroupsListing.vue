@@ -98,7 +98,7 @@ export default {
           callback: this.formatStatus
         },
         {
-          title: () => this.$t("# Users"),
+          title: () => this.$t("# Members"),
           name: "group_members_count",
           sortField: "group_members_count"
         },

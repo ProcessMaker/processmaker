@@ -14,7 +14,7 @@ Vue.filter('php', function(value) {
       line = line.replace('{dataVariable}',  `$data`);
       line = line.replace('{configVariable}',  `$config`);
       line = line.replace('{apiExample}',  `$api->users()->getUserById(1)['email']`);
-      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/sdk-php#documentation-for-api-endpoints`);
+      line = line.replace('{apiDocsUrl}', `https://github.com/ProcessMaker/docker-executor-php/tree/master/docs/sdk`);
       format = ' * ' + line;
     }
     content.push(format);

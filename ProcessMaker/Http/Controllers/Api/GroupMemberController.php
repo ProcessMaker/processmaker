@@ -260,6 +260,7 @@ class GroupMemberController extends Controller
      */
     public function groupsAvailable(Request $request)
     {
+        $group_id = $request->input('group_id', null);
         $member_id = $request->input('member_id', null);
         $member_type = $request->input('member_type', null);
         $assignedResult = collect([]);
@@ -277,7 +278,12 @@ class GroupMemberController extends Controller
         }
 
         $members = [];
-        if ($member_id && $member_type) {
+        if ($group_id) {
+            $members = GroupMember::where('member_type', Group::class)
+                ->where('group_id', $group_id)
+                ->get()->pluck('member_id');
+            $members->push($group_id);
+        } elseif ($member_id && $member_type) {
             //Load groups already assigned.
             $members = GroupMember::where('member_type', $member_type)
                 ->where('member_id', $member_id)
@@ -387,7 +393,7 @@ class GroupMemberController extends Controller
         }
 
         $query = User::nonSystem()
-            ->where('status', 'ACTIVE')
+            ->where('status', '!=', 'INACTIVE')
             ->whereNotIn('id', $members);
 
         $filter = $request->input('filter', '');

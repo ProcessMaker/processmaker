@@ -12,6 +12,7 @@ use ProcessMaker\Http\Resources\Task as Resource;
 use ProcessMaker\Http\Resources\TaskCollection;
 use ProcessMaker\Query\SyntaxError;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Arr;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Setting;
@@ -126,6 +127,17 @@ class TaskController extends Controller
                             });
                         });
                     });
+                } elseif ($column === 'process_request_id') {
+                    $key = array_search($column, $filterByFields);
+                    $requestIdColumn = is_string($key) ? $key : $column;
+                    if (empty($parameters['include_sub_tasks'])) {
+                        $query->where($requestIdColumn, $fieldFilter);
+                    } else {
+                        // Include tasks from sub processes
+                        $ids = ProcessRequest::find($fieldFilter)->childRequests()->pluck('id')->toArray();
+                        $ids = Arr::prepend($ids, $fieldFilter);
+                        $query->whereIn($requestIdColumn, $ids);
+                    }
                 } else {
                     $key = array_search($column, $filterByFields);
                     $query->where(is_string($key) ? $key : $column, 'like', $fieldFilter);
@@ -286,11 +298,15 @@ class TaskController extends Controller
                 $task->is_self_service = 0;
                 $task->user_id = $userToAssign;
                 $task->persistUserData($userToAssign);
+            } elseif ($userToAssign === '#manager') {
+                // Reassign to manager
+                $userToAssign = $task->escalateToManager();
+                $task->persistUserData($userToAssign);
             } else {
                 // Validate if user can reassign
                 $task->authorizeReassignment(Auth::user());
                 // Reassign user
-                $task->user_id = $userToAssign;
+                $task->reassignTo($userToAssign);
                 $task->persistUserData($userToAssign);
             }
             $task->save();

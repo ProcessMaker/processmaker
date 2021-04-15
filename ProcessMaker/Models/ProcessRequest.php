@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 use Laravel\Scout\Searchable;
 use Log;
+use ProcessMaker\Events\ProcessUpdated;
 use ProcessMaker\Exception\PmqlMethodException;
-use ProcessMaker\Models\Setting;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\IntermediateCatchEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface;
@@ -17,13 +18,13 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Nayra\Engine\ExecutionInstanceTrait;
 use ProcessMaker\Traits\ExtendedPMQL;
+use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\SqlsrvSupportTrait;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Throwable;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Repositories\BpmnDocument;
 
 /**
  * Represents an Eloquent model of a Request which is an instance of a Process.
@@ -42,6 +43,8 @@ use ProcessMaker\Traits\HideSystemResources;
  * @property \Carbon\Carbon $created_at
  * @property Process $process
  * @property ProcessRequestLock[] $locks
+ * @property ProcessRequestToken $ownerTask
+ * @method static ProcessRequest find($id)
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -472,7 +475,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $result = [];
         if (is_array($this->data)) {
-            foreach ($this->data as $key => $value) {
+            foreach ($this->getRequestData() as $key => $value) {
                 $result[] = [
                     'key' => $key,
                     'value' => $value
@@ -514,7 +517,9 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $this->errors = $errors;
         $this->status = 'ERROR';
         \Log::error($exception);
-        $this->save();
+        if (!$this->isNonPersistent()) {
+            $this->save();
+        }
     }
 
     public function childRequests()
@@ -773,5 +778,82 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         $first = $this->locks()->orderBy('id')->first();
         return !$first || $first->getKey() === $lock->getKey();
+    }
+
+    /**
+     * Returns true if the request persists
+     *
+     * @return boolean
+     */
+    public function isNonPersistent()
+    {
+        return $this->getProcess()->isNonPersistent();
+    }
+
+    /**
+     * Get managed data from the process request
+     *
+     * @return array
+     */
+    public function getRequestData()
+    {
+        $dataManager = new DataManager();
+        return $dataManager->getRequestData($this);
+    }
+
+    /**
+     * @return self
+     */
+    public function loadProcessRequestInstance()
+    {
+        $process = $this->processVersion ?? $this->processVersion()->first() ?? $this->process ?? $this->process()->first();
+        $storage = $process->getDefinitions();
+        $callableId = $this->callable_id;
+        $process = $storage->getProcess($callableId);
+        $dataStore = $storage->getFactory()->createDataStore();
+        $dataStore->setData($this->data);
+        $this->setId($this->getKey());
+        $this->setProcess($process);
+        $this->setDataStore($dataStore);
+        return $this;
+    }
+
+    /**
+     * Get the BPMN definitions version of the process that is running.
+     *
+     * @param boolean $forceParse
+     * @param mixed $engine
+     *
+     * @return BpmnDocument
+     */
+    public function getVersionDefinitions($forceParse = false, $engine = null)
+    {
+        $processVersion = $this->processVersion ?: $this->process;
+        return $processVersion->getDefinitions($forceParse, $engine);
+    }
+
+    /**
+     * Notify a process update
+     *
+     * @param string $eventName
+     */
+    public function notifyProcessUpdated($eventName)
+    {
+        $event = new ProcessUpdated($this, $eventName);
+        event($event);
+        if ($this->parentRequest) {
+            $this->parentRequest->notifyProcessUpdated($eventName);
+            event($event);
+        }
+    }
+
+    /**
+     * Owner task of the sub process
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function ownerTask()
+    {
+        return $this->hasOne(ProcessRequestToken::class, 'subprocess_request_id', 'id');
     }
 }

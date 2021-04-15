@@ -18,8 +18,10 @@ use ProcessMaker\Listeners\CommentsSubscriber;
 use ProcessMaker\Managers\ExportManager;
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Managers\WorkflowManager;
+use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Bpmn\Models\EventDefinitionBus;
 use ProcessMaker\Nayra\Bpmn\Models\SignalEventDefinition;
+use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\EventDefinitionInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowNodeInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FormalExpressionInterface;
@@ -109,7 +111,6 @@ class WorkflowServiceProvider extends ServiceProvider
 
             //Initialize custom properties for ProcessMaker
             $bpmnRepository->setBpmnElementMapping(self::PROCESS_MAKER_NS, '', []);
-            $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'userTask', $mapping[BpmnDocument::BPMN_MODEL]['task']);
             $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'manualTask', $mapping[BpmnDocument::BPMN_MODEL]['task']);
             $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'association', BpmnDocument::SKIP_ELEMENT);
             $bpmnRepository->setBpmnElementMapping(BpmnDocument::BPMN_MODEL, 'textAnnotation', BpmnDocument::SKIP_ELEMENT);
@@ -123,18 +124,6 @@ class WorkflowServiceProvider extends ServiceProvider
                         FlowNodeInterface::BPMN_PROPERTY_INCOMING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_INCOMING]],
                         FlowNodeInterface::BPMN_PROPERTY_OUTGOING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_OUTGOING]],
                         StartEventInterface::BPMN_PROPERTY_EVENT_DEFINITIONS => ['n', EventDefinitionInterface::class],
-                    ]
-                ]
-            );
-
-            $bpmnRepository->setBpmnElementMapping(
-                BpmnDocument::BPMN_MODEL,
-                'timerEventDefinition',
-                [TimerEventDefinitionInterface::class,
-                    [
-                        TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DATE]],
-                        TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_CYCLE]],
-                        TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION => ['1', [BpmnDocument::BPMN_MODEL, TimerEventDefinitionInterface::BPMN_PROPERTY_TIME_DURATION]],
                     ]
                 ]
             );
@@ -171,17 +160,13 @@ class WorkflowServiceProvider extends ServiceProvider
                 ]
             );
 
-            // Override the CallActivity Definition
+            // Remove reference check for CallActivity::calledElement
+            $callActivityMap = $mapping[BpmnDocument::BPMN_MODEL]['callActivity'];
+            unset($callActivityMap[1][CallActivityInterface::BPMN_PROPERTY_CALLED_ELEMENT]);
             $bpmnRepository->setBpmnElementMapping(
                 BpmnDocument::BPMN_MODEL,
                 'callActivity',
-                [
-                    CallActivityInterface::class,
-                    [
-                        FlowNodeInterface::BPMN_PROPERTY_INCOMING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_INCOMING]],
-                        FlowNodeInterface::BPMN_PROPERTY_OUTGOING => ['n', [BpmnDocument::BPMN_MODEL, FlowNodeInterface::BPMN_PROPERTY_OUTGOING]],
-                    ]
-                ]
+                $callActivityMap
             );
             return $bpmnRepository;
         });
@@ -204,6 +189,10 @@ class WorkflowServiceProvider extends ServiceProvider
             return new Mustache_Engine([
                 'helpers' => $op->helpers,
             ]);
+        });
+
+        $this->app->bind('workflow.FormalExpression', function ($app) {
+            return new FormalExpression();
         });
     }
 }

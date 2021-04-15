@@ -3,9 +3,11 @@
 namespace ProcessMaker\Models;
 
 use Carbon\Carbon;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
@@ -25,6 +27,12 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  *   schema="settingsEditable",
  *   @OA\Property(property="key", type="string"),
  *   @OA\Property(property="config", type="array", @OA\Items(type="object")),
+ *   @OA\Property(property="name", type="string"),
+ *   @OA\Property(property="helper", type="string"),
+ *   @OA\Property(property="group", type="string"),
+ *   @OA\Property(property="format", type="string"),
+ *   @OA\Property(property="hidden", type="boolean"),
+ *   @OA\Property(property="readonly", type="boolean"),
  *   @OA\Property(property="variables", type="string"),
  *   @OA\Property(property="sansSerifFont", type="string"),
  * ),
@@ -43,8 +51,9 @@ use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
  */
 class Setting extends Model implements HasMedia
 {
-    use SerializeToIso8601;
+    use ExtendedPMQL;
     use HasMediaTrait;
+    use SerializeToIso8601;
 
     protected $connection = 'processmaker';
 
@@ -54,10 +63,6 @@ class Setting extends Model implements HasMedia
     public const COLLECTION_CSS_LOGIN = 'login';
     public const COLLECTION_CSS_LOGO = 'logo';
     public const COLLECTION_CSS_ICON = 'icon';
-
-    protected $casts = [
-        'config' => 'array',
-    ];
 
     /**
      * The attributes that aren't mass assignable.
@@ -78,6 +83,17 @@ class Setting extends Model implements HasMedia
     protected $fillable = [
         'key',
         'config'
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'hidden' => 'boolean',
+        'readonly' => 'boolean',
+        'ui' => 'object',
     ];
 
     /**
@@ -107,6 +123,105 @@ class Setting extends Model implements HasMedia
     public static function byKey($key)
     {
         return self::where('key', $key)->first();
+    }
+
+    /**
+     * Get config by key
+     *
+     * @param $key
+     *
+     * @return null|Setting
+     */
+    public static function configByKey($key)
+    {
+        $setting = self::byKey($key);
+        if ($setting) {
+            return $setting->config;
+        } else {
+            return null;
+        }
+    }
+
+    public function scopeHidden($query)
+    {
+        return $query->where('hidden', true);
+    }
+
+    public function scopeNotHidden($query)
+    {
+        return $query->where('hidden', false);
+    }
+
+    public function getGroupAttribute()
+    {
+        if ($this->attributes['group'] === null) {
+            return $this->attributes['group'] = 'System';
+        } else {
+            return $this->attributes['group'] = $this->attributes['group'];
+        }
+    }
+
+    public function getConfigAttribute()
+    {
+        switch ($this->format) {
+            case 'text':
+            case 'textarea':
+            case 'choice':
+                return $this->attributes['config'] = $this->attributes['config'];
+            case 'boolean':
+                return $this->attributes['config'] = (boolean) $this->attributes['config'];
+            case 'object':
+                if (is_string($this->attributes['config'])) {
+                    return $this->attributes['config'] = json_decode($this->attributes['config']);
+                } elseif (is_object($this->attributes['config'])) {
+                    return $this->attributes['config'];
+                }
+            case 'array':
+            case 'checkboxes':
+            default:
+                if (is_string($this->attributes['config'])) {
+                    return $this->attributes['config'] = json_decode($this->attributes['config'], true);
+                } elseif (is_array($this->attributes['config'])) {
+                    return $this->attributes['config'];
+                }
+        }
+    }
+
+    /**
+     * Filter settings with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilter($query, $filter)
+    {
+        $filter = '%' . mb_strtolower($filter) . '%';
+        $query->where(function ($query) use ($filter) {
+            $query->where(DB::raw('LOWER(`key`)'), 'like', $filter)
+                ->orWhere(DB::raw('LOWER(`name`)'), 'like', $filter)
+                ->orWhere(DB::raw('LOWER(`helper`)'), 'like', $filter)
+                ->orWhere(DB::raw('LOWER(`group`)'), 'like', $filter);
+        });
+
+        return $query;
+    }
+
+    /**
+     * Filter settings groups with a string
+     *
+     * @param $query
+     *
+     * @param $filter string
+     */
+    public function scopeFilterGroups($query, $filter)
+    {
+        $filter = '%' . mb_strtolower($filter) . '%';
+        $query->where(function ($query) use ($filter) {
+            $query->where(DB::raw('LOWER(`group`)'), 'like', $filter);
+        });
+
+        return $query;
     }
 
     public static function getLogin()

@@ -7,6 +7,8 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
+        Route::get('settings', 'SettingsController@index')->name('settings.index')->middleware('can:view-settings');
+        Route::get('settings/export', 'SettingsController@export')->name('settings.export')->middleware('can:view-settings');
         Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
         // Route::get('groups/{group}', 'GroupController@show')->name('groups.show')->middleware('can:show-groups,group');
         Route::get('groups/{group}/edit', 'GroupController@edit')->name('groups.edit')->middleware('can:edit-groups,group');
@@ -79,6 +81,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('request/{request}/files/{media}', 'RequestController@downloadFiles')->middleware('can:view,request');
     Route::get('requests', 'RequestController@index')->name('requests.index');
     Route::get('requests/{request}', 'RequestController@show')->name('requests.show');
+    Route::get('requests/{request}/owner', 'RequestController@showOwner')->name('requests.showOwner');
     Route::get('requests/{request}/screen/{screen}', 'RequestController@screenPreview')->name('requests.screen-preview');
 
     Route::get('tasks/search', 'TaskController@search')->name('tasks.search');
