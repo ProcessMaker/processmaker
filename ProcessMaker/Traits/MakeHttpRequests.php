@@ -326,6 +326,10 @@ trait MakeHttpRequests
         //           item['type'] location of the property defined in 'key'. It can be BODY, PARAM (in the query string), HEADER
 
         $url = $endpoint['url'];
+        // If url does not include the protocol and server name complete it with the local server
+        if (substr($url, 0,1) === '/') {
+            $url = url($url);
+        }
 
         // If exists a query string in the call, add it to the URL
         if (array_key_exists('queryString', $config)) {
