@@ -20,7 +20,7 @@
         <div class="card card-body">
         <img class="about-logo" src="/img/md-blk-logo.png">
         <hr>
-        <div>ProcessMaker 4 v4.2.2</div>
+        <div>ProcessMaker 4 v4.2.3</div>
         <hr>
         <a href="https://github.com/ProcessMaker/processmaker/issues/new" target="_blank">{{__('Report an issue')}}  <i class="fas fa-caret-right fa-lg float-right mr-1"></i></a>
         <hr>
