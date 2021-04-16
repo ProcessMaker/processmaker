@@ -87,9 +87,9 @@ trait MakeHttpRequests
 
         $headers = $this->addHeaders($endpoint, $config, $data);
 
-        if (isset($config['outboundConfig']) || isset($config['dataMapping'])) {
+        if (isset($config['dataMapping'])) {
             // If it is the old version of data sources use dataMapping
-            $configParameter = isset($config['outboundConfig']) ? 'outboundConfig' : 'dataMapping';
+            $configParameter = $config['dataMapping'];
             $mappedData = [];
             foreach ($config[$configParameter] as $map) {
                 $mappedData[$map['key']] =  $map['value'];
