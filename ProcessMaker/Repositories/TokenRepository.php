@@ -89,7 +89,26 @@ class TokenRepository implements TokenRepositoryInterface
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
         $token->user_id = $user ? $user->getKey() : null;
-        $token->is_self_service = $token->getAssignmentRule() === 'self_service' ? 1 : 0;
+
+        if ($token->getAssignmentRule() === 'self_service') {
+            // Logic duplicated from ProcessMaker/Models/Process.php getNextuser()
+            // TODO: move to shared method in token model
+            $definitions = $token->getInstance()->getVersionDefinitions();
+            $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
+            $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock']  : false;
+            $isAssignmentLock = filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true;
+
+            if ($isAssignmentLock && $token->user_id !== null) {
+                // It's a lock assignment and user has been assigned, so do
+                // not ask the user to claim the task again
+                $token->is_self_service = 0;
+            } else {
+                $token->is_self_service = 1;
+            }
+        } else {
+            $token->is_self_service = 0;
+        }
+
         $selfServiceTasks = $token->processRequest->processVersion->self_service_tasks;        
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
         //Default 3 days of due date
