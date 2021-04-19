@@ -87,31 +87,19 @@ trait MakeHttpRequests
 
         $headers = $this->addHeaders($endpoint, $config, $data);
 
-        $body = $this->getMustache()->render($endpoint['body'], $data);
-        $bodyType = null;
-        if (isset($endpoint['body_type'])) {
-            $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
-        }
-        $request = [$method, $url, $headers, $body, $bodyType];
-        $request = $this->addAuthorizationHeaders(...$request);
-        return $request;
-    }
-
-    /**
-     * Prepare data to be used in body (mustache)
-     *
-     * @param array $requestData
-     * @param array $outboundConfig
-     * @param string $type PARAM HEADER BODY
-     *
-     * @return array
-     */
-    private function prepareData(array $requestData, array $outboundConfig, $type)
-    {
-        $data = $requestData;
-        foreach ($outboundConfig as $outbound) {
-            if ($outbound['type'] === $type) {
-                $data[$outbound['key']] = $this->evalExpression($outbound['value'], $requestData);
+        if (isset($config['dataMapping']) && !isset($config['outboundConfig'])) {
+            // If it is the old version of data sources use dataMapping
+            $configParameter = isset($config['outboundConfig']) ? 'outboundConfig' : 'dataMapping';
+            $mappedData = [];
+            foreach ($config[$configParameter] as $map) {
+                $mappedData[$map['key']] =  $map['value'];
+            }
+            if (empty($endpoint['body'])) {
+                $endpoint['body'] = json_encode($mappedData);
+            } else {
+                foreach ($config[$configParameter] as $map) {
+                    $data[$map['key']] = $this->getMustache()->render($map['value'], $data);
+                }
             }
         }
         return $data;
@@ -338,28 +326,13 @@ trait MakeHttpRequests
 
         $merged = array_merge($data, $content, $headers);
         $responseData = array_merge($content, $headers);
-
         foreach ($config['dataMapping'] as $map) {
-            $processVar = $this->getMustache()->render($map['key'], $data);
-            $value = $map['value'];
-            $url = $this->endpoints[$config['endpoint']]['url'];
-
-            // if value is empty all the response is mapped
-            if (trim($value) === '') {
-                $mapped[$processVar] = $responseData;
-                continue;
-            }
-
-            // if is a collection connector, by default it is not necessary to send data.data and we add it by default
-            if (preg_match('/\/api\/[0-9\.]+\/collections/m', $url) === 1) {
-                $value = $this->addCollectionsRootObject($value);
-            }
-
             //If mustache, a process variable can be used as the property name of the API response
-            $evaluatedApiVar = (str_contains($value, '{{'))
-                ? $this->getMustache()->render($value, $merged)
-                : Arr::get($responseData, $value);
+            $evaluatedApiVar = (str_contains( $map['value'], '{{'))
+                ? $this->getMustache()->render($map['value'], $merged)
+                : Arr::get($responseData, $map['value']);
 
+            $processVar = $this->getMustache()->render($map['key'], $data);
             $mapped[$processVar] = $evaluatedApiVar;
         }
 
