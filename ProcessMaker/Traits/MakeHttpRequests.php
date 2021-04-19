@@ -87,7 +87,7 @@ trait MakeHttpRequests
 
         $headers = $this->addHeaders($endpoint, $config, $data);
 
-        if (isset($config['outboundConfig']) || isset($config['dataMapping'])) {
+        if (isset($config['dataMapping']) && !isset($config['outboundConfig'])) {
             // If it is the old version of data sources use dataMapping
             $configParameter = isset($config['outboundConfig']) ? 'outboundConfig' : 'dataMapping';
             $mappedData = [];
@@ -270,11 +270,14 @@ trait MakeHttpRequests
         }, $response->getHeaders());
 
         $merged = array_merge($data, $content, $headers);
+        $responseData = array_merge($content, $headers);
         foreach ($config['dataMapping'] as $map) {
+            //If mustache, a process variable can be used as the property name of the API response
             $evaluatedApiVar = (str_contains( $map['value'], '{{'))
                 ? $this->getMustache()->render($map['value'], $merged)
-                : Arr::get($merged, $map['value']);
-            $processVar = $this->getMustache()->render($map['key'], $merged);
+                : Arr::get($responseData, $map['value']);
+
+            $processVar = $this->getMustache()->render($map['key'], $data);
             $mapped[$processVar] = $evaluatedApiVar;
         }
 
