@@ -518,7 +518,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      * 
      * @return callback
      */        
-    public function valueAliasStatus($value, $expression)
+    public function valueAliasStatus($value, $expression, $callback = null, User $user = null)
     {
         $statusMap = [
             'in progress' => 'ACTIVE',
@@ -527,10 +527,14 @@ class ProcessRequestToken extends Model implements TokenInterface
         
         $value = mb_strtolower($value);
     
-        return function($query) use ($value, $statusMap, $expression) {
+        return function($query) use ($value, $statusMap, $expression, $user) {
             if ($value === 'self service') {
-                if (auth()->user()) {
-                    $taskIds = auth()->user()->availableSelfServiceTaskIds();
+                if (!$user) {
+                    $user = auth()->user();
+                }
+                
+                if ($user) {
+                    $taskIds = $user->availableSelfServiceTaskIds();
                     $query->whereIn('id', $taskIds);
                 } else {
                     $query->where('is_self_service', 1);
