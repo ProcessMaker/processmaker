@@ -1438,5 +1438,6 @@
   "All Request Data": "All Request Data",
   "No Request Data": "No Request Data",
   "Specify Request Variable": "Specify Data Variable",
-  "Specify Expression": "Specify Expression"
+  "Specify Expression": "Specify Expression",
+  "The Data Connector resource to access when this Watcher runs": "The Data Connector resource to access when this Watcher runs"
 }
