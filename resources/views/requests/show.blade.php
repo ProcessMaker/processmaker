@@ -582,7 +582,7 @@
            */
           cleanScreenButtons() {
             if (this.showScreenSummary) {
-              this.$refs.screen.screen[0].items.forEach(item => {
+              this.$refs.screen.config[0].items.forEach(item => {
                 item.config.disabled = true;
                 if (item.component === 'FormButton') {
                   item.config.event = '';
