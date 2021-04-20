@@ -215,7 +215,11 @@ class ScriptController extends Controller
         $watcher = $request->get('watcher', uniqid('scr', true));
         $code = $script->code;
 
-        ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
+        if ($request->get('sync') === true) {
+            return ExecuteScript::dispatchNow($script, $request->user(), $code, $data, $watcher, $config, true);
+        } else {
+            ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
+        }
         return ['status' => 'success', 'key' => $watcher];
     }
 
