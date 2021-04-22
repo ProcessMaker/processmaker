@@ -64,6 +64,9 @@ class ExecuteScript implements ShouldQueue
             }
             $this->sendResponse(200, $response);
         } catch (Throwable $exception) {
+            if ($this->sync) {
+                throw $exception;
+            }
             $this->sendResponse(500, [
                 'exception' => get_class($exception),
                 'message' => $exception->getMessage(),
