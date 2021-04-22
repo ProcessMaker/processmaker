@@ -3,7 +3,7 @@ const validateScreenRef = () => ProcessMaker.EventBus.$on('modeler-validate', (n
     return;
   }
 
-  if (node.screenRef != null) {
+  if (node.screenRef) {
     return;
   }
 
