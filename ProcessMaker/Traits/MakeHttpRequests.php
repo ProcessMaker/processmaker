@@ -87,70 +87,6 @@ trait MakeHttpRequests
 
         $headers = $this->addHeaders($endpoint, $config, $data);
 
-        if (isset($config['dataMapping']) && !isset($config['outboundConfig'])) {
-            // If it is the old version of data sources use dataMapping
-            $configParameter = isset($config['outboundConfig']) ? 'outboundConfig' : 'dataMapping';
-            $mappedData = [];
-            foreach ($config[$configParameter] as $map) {
-                $mappedData[$map['key']] =  $map['value'];
-            }
-            if (empty($endpoint['body'])) {
-                $endpoint['body'] = json_encode($mappedData);
-            } else {
-                foreach ($config[$configParameter] as $map) {
-                    $data[$map['key']] = $this->getMustache()->render($map['value'], $data);
-                }
-            }
-        }
-        return $data;
-    }
-
-    /**
-     * Evaluate a BPMN expression
-     * ex.
-     *      foo
-     *      _request.id
-     *      _user.id
-     *      {{ form.age }}
-     *      "{{ form.lastname }} {{ form.firstname }}"
-     *
-     * @return mixed
-     */
-    private function evalExpression($expression, array $data)
-    {
-        try {
-            $formal = new FormalExpression();
-            $formal->setBody($expression);
-            return $formal($data);
-        } catch (Exception $exception) {
-            return "{$expression}: " . $exception->getMessage();
-        }
-    }
-
-    /**
-     * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
-     *
-     * @param array $data, request data
-     * @param array $config, datasource configuration
-     *
-     * @return array
-     */
-    private function prepareRequestWithOutboundConfig(array $requestData, array &$config)
-    {
-        $outboundConfig = $config['outboundConfig'] ?? [];
-        $data = $this->prepareData($requestData, $outboundConfig, 'PARAM');
-        $endpoint = $this->endpoints[$config['endpoint']];
-        $method = $this->getMustache()->render($endpoint['method'], $data);
-
-        $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $data);
-
-        $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
-            ? $this->credentials['verify_certificate']
-            : true;
-
-        $data = $this->prepareData($requestData, $outboundConfig, 'HEADER');
-        $headers = $this->addHeaders($endpoint, $config, $data);
-        $data = $this->prepareData($requestData, $outboundConfig, 'BODY');
         $body = $this->getMustache()->render($endpoint['body'], $data);
         $bodyType = null;
         if (isset($endpoint['body_type'])) {
@@ -326,13 +262,28 @@ trait MakeHttpRequests
 
         $merged = array_merge($data, $content, $headers);
         $responseData = array_merge($content, $headers);
-        foreach ($config['dataMapping'] as $map) {
-            //If mustache, a process variable can be used as the property name of the API response
-            $evaluatedApiVar = (str_contains( $map['value'], '{{'))
-                ? $this->getMustache()->render($map['value'], $merged)
-                : Arr::get($responseData, $map['value']);
 
+        foreach ($config['dataMapping'] as $map) {
             $processVar = $this->getMustache()->render($map['key'], $data);
+            $value = $map['value'];
+            $url = $this->endpoints[$config['endpoint']]['url'];
+
+            // if value is empty all the response is mapped
+            if (trim($value) === '') {
+                $mapped[$processVar] = $responseData;
+                continue;
+            }
+
+            // if is a collection connector, by default it is not necessary to send data.data and we add it by default
+            if (preg_match('/\/api\/[0-9\.]+\/collections/m', $url) === 1) {
+                $value = $this->addCollectionsRootObject($value);
+            }
+
+            //If mustache, a process variable can be used as the property name of the API response
+            $evaluatedApiVar = (str_contains($value, '{{'))
+                ? $this->getMustache()->render($value, $merged)
+                : Arr::get($responseData, $value);
+
             $mapped[$processVar] = $evaluatedApiVar;
         }
 
