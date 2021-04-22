@@ -88,7 +88,10 @@ trait MakeHttpRequests
         $headers = $this->addHeaders($endpoint, $config, $data);
 
         $body = $this->getMustache()->render($endpoint['body'], $data);
-        $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
+        $bodyType = null;
+        if (isset($endpoint['body_type'])) {
+            $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
+        }
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
         return $request;

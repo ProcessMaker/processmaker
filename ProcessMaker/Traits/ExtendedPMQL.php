@@ -2,9 +2,10 @@
 
 namespace ProcessMaker\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
+use ProcessMaker\Models\User;
 use ProcessMaker\Query\Expression;
 use ProcessMaker\Query\Traits\PMQL;
-use Illuminate\Database\Eloquent\Builder;
 
 trait ExtendedPMQL
 {
@@ -22,12 +23,12 @@ trait ExtendedPMQL
      *
      * @return mixed
      */    
-    public function scopePMQL(Builder $builder, string $query, callable $callback = null)
+    public function scopePMQL(Builder $builder, string $query, callable $callback = null, User $user = null)
     {
         if (! $callback) {
             // If a callback isn't passed to the scope, we handle it here
-            return $this->parentScopePMQL($builder, $query, function($expression) use ($builder) {
-                return $this->handle($expression, $builder);
+            return $this->parentScopePMQL($builder, $query, function($expression) use ($builder, $user) {
+                return $this->handle($expression, $builder, $user);
             });
         } else {
             // If a callback is passed to the scope, we skip handling it here
@@ -44,7 +45,7 @@ trait ExtendedPMQL
      *
      * @return mixed
      */    
-    private function handle(Expression $expression, Builder $builder)
+    private function handle(Expression $expression, Builder $builder, User $user = null)
     {
         // Setup our needed variables
         $field = $expression->field->field();
@@ -72,7 +73,7 @@ trait ExtendedPMQL
             // function if its field name matches a specific word.
             $method = "valueAlias{$fieldMethodName}";
             if (method_exists($model, $method)) {
-                return $model->{$method}($value, $expression, $builder);
+                return $model->{$method}($value, $expression, $builder, $user);
             }
 
             // A field wildcard passes any fields not caught by a field or value
@@ -81,7 +82,7 @@ trait ExtendedPMQL
             // no callback.
             $method = "fieldWildcard";
             if (method_exists($model, $method)) {
-                return $model->{$method}($value, $expression, $builder);
+                return $model->{$method}($value, $expression, $builder, $user);
             }    
         }
     }

@@ -518,26 +518,34 @@ class ProcessRequestToken extends Model implements TokenInterface
      * 
      * @return callback
      */        
-    public function valueAliasStatus($value, $expression)
+    public function valueAliasStatus($value, $expression, $callback = null, User $user = null)
     {
         $statusMap = [
-            'in progress' => 'ACTIVE',
-            'completed' => 'CLOSED',
+            'in progress' => ['ACTIVE'],
+            'completed' => ['CLOSED', 'COMPLETED'],
         ];
         
         $value = mb_strtolower($value);
     
-        return function($query) use ($value, $statusMap, $expression) {
+        return function($query) use ($value, $statusMap, $expression, $user) {
             if ($value === 'self service') {
-                if (auth()->user()) {
-                    $taskIds = auth()->user()->availableSelfServiceTaskIds();
+                if (!$user) {
+                    $user = auth()->user();
+                }
+                
+                if ($user) {
+                    $taskIds = $user->availableSelfServiceTaskIds();
                     $query->whereIn('id', $taskIds);
                 } else {
                     $query->where('is_self_service', 1);
                 }
             } elseif (array_key_exists($value, $statusMap)) {
-                $query->where('status',  $expression->operator, $statusMap[$value])
-                    ->where('is_self_service', 0);
+                $query->where('is_self_service', 0);
+                if ($expression->operator == '=') {
+                    $query->whereIn('status', $statusMap[$value]);
+                } elseif ($expression->operator == '!=') {
+                    $query->whereNotIn('status', $statusMap[$value]);
+                }
             } else {
                 $query->where('status',  $expression->operator, $value)
                     ->where('is_self_service', 0);

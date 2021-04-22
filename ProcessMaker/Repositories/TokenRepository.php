@@ -89,7 +89,18 @@ class TokenRepository implements TokenRepositoryInterface
         $this->addUserToData($token->getInstance(), $user);
         $this->addRequestToData($token->getInstance());
         $token->user_id = $user ? $user->getKey() : null;
-        $token->is_self_service = $token->getAssignmentRule() === 'self_service' ? 1 : 0;
+
+        $token->is_self_service = 0;
+        if ($token->getAssignmentRule() === 'self_service') {
+            if ($user) {
+                // A user is already assigned (from assignmentLock) so do not
+                // treat this as a self-service task
+                $token->is_self_service = 0;
+            } else {
+                $token->is_self_service = 1;
+            }
+        }
+
         $selfServiceTasks = $token->processRequest->processVersion->self_service_tasks;        
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
         //Default 3 days of due date
