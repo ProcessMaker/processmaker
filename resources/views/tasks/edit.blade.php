@@ -172,10 +172,11 @@
                           <div v-if="taskDefinitionConfig.escalateToManager">
                             <br>
                             <span>
-                                <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
+                                <button v-if="task.advanceStatus === 'open' && !isSelfService" type="button" class="btn btn-outline-secondary btn-block"
                                         @click="escalateToManager">
                                     <i class="fas fa-user-friends"></i> {{__('Escalate the Manager')}}
                                 </button>
+                                <div v-else="isSelfService">{{ __('The task must be claimed to enable manager escalation.') }}</div>
                             </span>
                           </div>
                         </li>
