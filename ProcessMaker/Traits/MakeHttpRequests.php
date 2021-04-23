@@ -87,22 +87,6 @@ trait MakeHttpRequests
 
         $headers = $this->addHeaders($endpoint, $config, $data);
 
-        if (isset($config['dataMapping'])) {
-            // If it is the old version of data sources use dataMapping
-            $configParameter = $config['dataMapping'];
-            $mappedData = [];
-            foreach ($config[$configParameter] as $map) {
-                $mappedData[$map['key']] =  $map['value'];
-            }
-            if (empty($endpoint['body'])) {
-                $endpoint['body'] = json_encode($mappedData);
-            } else {
-                foreach ($config[$configParameter] as $map) {
-                    $data[$map['key']] = $this->getMustache()->render($map['value'], $data);
-                }
-            }
-        }
-
         $body = $this->getMustache()->render($endpoint['body'], $data);
         $bodyType = null;
         if (isset($endpoint['body_type'])) {
@@ -273,11 +257,29 @@ trait MakeHttpRequests
         }, $response->getHeaders());
 
         $merged = array_merge($data, $content, $headers);
+        $responseData = array_merge($content, $headers);
+
         foreach ($config['dataMapping'] as $map) {
-            $evaluatedApiVar = (str_contains( $map['value'], '{{'))
-                ? $this->getMustache()->render($map['value'], $merged)
-                : Arr::get($merged, $map['value']);
-            $processVar = $this->getMustache()->render($map['key'], $merged);
+            $processVar = $this->getMustache()->render($map['key'], $data);
+            $value = $map['value'];
+            $url = $this->endpoints[$config['endpoint']]['url'];
+
+            // if value is empty all the response is mapped
+            if (trim($value) === '') {
+                $mapped[$processVar] = $responseData;
+                continue;
+            }
+
+            // if is a collection connector, by default it is not necessary to send data.data and we add it by default
+            if (preg_match('/\/api\/[0-9\.]+\/collections/m', $url) === 1) {
+                $value = $this->addCollectionsRootObject($value);
+            }
+
+            //If mustache, a process variable can be used as the property name of the API response
+            $evaluatedApiVar = (str_contains($value, '{{'))
+                ? $this->getMustache()->render($value, $merged)
+                : Arr::get($responseData, $value);
+
             $mapped[$processVar] = $evaluatedApiVar;
         }
 
@@ -432,5 +434,33 @@ trait MakeHttpRequests
     function isJson($str) {
         json_decode($str);
         return (json_last_error() == JSON_ERROR_NONE);
+    }
+
+    private function addCollectionsRootObject($value)
+    {
+        preg_match_all('/\{\{(.*?)\}\}/m', $value, $matches, PREG_SET_ORDER, 0);
+        if (count($matches) > 0) {
+            $matchesWithNewVal = [];
+            foreach ($matches as $match) {
+                $val = $match[1];
+                if (strpos($val, 'data.data') === false && strpos($val, 'data') === false) {
+                    $match[] = 'data.data.' . trim($val);
+                } else {
+                    $match[] = trim($val);
+                }
+                $matchesWithNewVal[] = $match;
+            }
+
+            foreach ($matchesWithNewVal as $match) {
+                $value = str_replace($match[0], '{{' . $match[2] . '}}', $value);
+            }
+        } else {
+            if (strpos($value, 'data.data') === false && strpos($value, 'data') === false) {
+                $value = 'data.data.' . trim($value);
+            } else {
+                $value = trim($value);
+            }
+        }
+        return $value;
     }
 }
