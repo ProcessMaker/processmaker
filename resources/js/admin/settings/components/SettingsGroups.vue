@@ -4,7 +4,12 @@
       <b-tab :title="group" v-for="(group, index) in groups" :key="group">
         <b-card class="border-top-0 p-0" no-body>
           <b-card-body class="p-3">
-            <settings-listing :group="group" @refresh="refresh"></settings-listing>
+            <settings-listing
+              :group="group"
+              @refresh="refresh"
+              @refresh-all="refreshAll"
+              ref="listings"
+            ></settings-listing>
           </b-card-body>
         </b-card>
       </b-tab>
@@ -42,6 +47,13 @@ export default {
         });
         this.groups.sort();
       });
+    },
+    refreshAll() {
+      if (Array.isArray(this.$refs.listings)) {
+        this.$refs.listings.forEach(listing => {
+          listing.refresh();
+        })
+      }
     }
   },
   mounted() {

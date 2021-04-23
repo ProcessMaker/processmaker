@@ -1,7 +1,12 @@
 <template>
   <div class="setting-object">
     <div class="setting-object-value">
-      {{ trimmed(text) }}
+      <div v-if="text">
+        {{ trimmed(text) }}
+      </div>
+      <div v-else class="font-italic text-black-50">
+        Empty
+      </div>
     </div>
     <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
       <template v-slot:modal-header class="d-block">
@@ -105,10 +110,16 @@ export default {
       let lines = [];
       if (this.input && typeof this.input == 'object') {
         Object.keys(this.input).forEach(key => {
-          lines.push(key + ' → ' + this.input[key]);
+          if (this.input[key] !== null) {
+            lines.push(key + ' → ' + this.input[key]);
+          }
         })
       }
-      return lines.join(', ');
+      if (lines.length) {
+        return lines.join(', ');
+      } else {
+        return '';
+      }
     }
   },
   watch: {
