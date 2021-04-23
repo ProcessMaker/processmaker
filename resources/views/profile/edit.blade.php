@@ -83,6 +83,7 @@
             el: '#profileForm',
             mixins:addons,
             data: {
+                meta: @json(config('users.properties')),
                 formData: @json($currentUser),
                 langs: @json($availableLangs),
                 timezones: @json($timezones),
@@ -107,6 +108,19 @@
                         initials: @json($currentUser['firstname'][0]) + @json($currentUser['lastname'][0])
                     }
                 ]
+            },
+            created() {
+              if (this.meta) {
+                let keys = Object.keys(this.meta);
+                if (!this.formData.meta) {
+                    this.formData.meta = {};
+                }
+                keys.forEach(key => {
+                   if (!this.formData.meta[key]) {
+                       this.formData.meta[key] = null;
+                   }
+                });
+              }
             },
             methods: {
                 profileUpdate() {
