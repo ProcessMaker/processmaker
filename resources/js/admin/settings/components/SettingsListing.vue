@@ -229,8 +229,12 @@ export default {
       this.$nextTick(() => {
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
-            this.refresh();
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
+            if (setting.ui.refreshOnSave) {
+              this.$emit('refresh-all');
+            } else {
+              this.refresh();
+            }
           }
         })
       });
