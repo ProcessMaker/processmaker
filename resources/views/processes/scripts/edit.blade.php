@@ -156,14 +156,16 @@
             })
               .then(response => {
                 ProcessMaker.alert(this.$t('The script was saved.'), 'success');
-                this.$refs.editScriptHooks.forEach(hook => {
+                (this.$refs.editScriptHooks || []).forEach(hook => {
                   hook.onsave(this.formData);
                 });
                 this.onClose();
               })
               .catch(error => {
-                if (error.response.status && error.response.status === 422) {
+                if (_.get(error, 'response.status') === 422) {
                   this.errors = error.response.data.errors;
+                } else {
+                  throw error;
                 }
               });
           }
