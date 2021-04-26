@@ -184,15 +184,17 @@
                 })
                   .then(response => {
                     ProcessMaker.alert('{{__('The script was created.')}}', 'success');
-                    this.$refs.createScriptHooks.forEach(hook => {
+                    (this.$refs.createScriptHooks || []).forEach(hook => {
                       hook.onsave(response.data);
                     });
                     window.location = "/designer/scripts/" + response.data.id + "/builder";
                   })
                   .catch(error => {
                     this.disabled = false;
-                    if (error.response.status && error.response.status === 422) {
+                    if (_.get(error, 'response.status') === 422) {
                       this.addError = error.response.data.errors;
+                    } else {
+                        throw error;
                     }
                   })
               }
