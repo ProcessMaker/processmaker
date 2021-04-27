@@ -32,7 +32,7 @@
               track-by="name"
               label="name"
               :show-labels="false"
-              class="ml-2 mr-2"
+              class="setting-object-multiselect ml-2 mr-2"
             ></multiselect>
           </div>
         </template>
@@ -250,20 +250,21 @@ export default {
   $disabledBackground: lighten($secondary, 20%);
   $multiselect-height: 38px;
 
-    .setting-add-button {
-      margin-top: 5px;
-    }
+  .setting-add-button {
+    margin-top: 5px;
+  }
 
-    .setting-object-table th,
-    .setting-object-table td {
-      padding: 8px 0;
-    }
+  .setting-object-table th,
+  .setting-object-table td {
+    padding: 8px 0;
+  }
 
-    .thKey {
-      width: 300px;
-    }
+  .thKey {
+    width: 300px !important;
+  }
 
-    .multiselect {
+  .setting-object-multiselect {
+    &.multiselect {
       display: inline-block !important;
       max-width: 300px;
       width: 300px;
@@ -313,4 +314,6 @@ export default {
       min-width: 0;
       margin-bottom: 0;
     }
+    
+  }
 </style>
