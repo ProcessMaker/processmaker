@@ -93,6 +93,7 @@ import SettingBoolean from './SettingBoolean';
 import SettingCheckboxes from './SettingCheckboxes';
 import SettingChoice from './SettingChoice';
 import SettingObject from './SettingObject';
+import SettingScreen from './SettingScreen';
 import SettingText from './SettingText';
 import SettingTextArea from './SettingTextArea';
 import SettingsImport from './SettingsImport';
@@ -105,6 +106,7 @@ export default {
     SettingChoice,
     SettingCheckboxes,
     SettingObject,
+    SettingScreen,
     SettingText,
     SettingTextArea,
     SettingsImport,
@@ -188,6 +190,9 @@ export default {
         case 'object':
           if (setting.ui && setting.ui.format && setting.ui.format == 'map') {
             return `setting-object`;
+          }
+          if (setting.ui && setting.ui.format && setting.ui.format == 'screen') {
+            return `setting-screen`;
           }
         default:
           return 'setting-text-area';
@@ -297,6 +302,13 @@ export default {
 
 <style lang="scss">
 @import '../../../../sass/colors';
+
+.preview-renderer {
+  .form-group {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
 
 .b-pagination {
   .page-item {
