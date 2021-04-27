@@ -6,6 +6,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 
 /**
@@ -66,6 +67,25 @@ class CommentsSubscriber
         }
     }
 
+    /**
+     * When a task is skipped.
+     * 
+     * ex. When a MultiInstance Task with Empty Input Items
+     *
+     * @param $event
+     */
+    public function onActivitySkipped(ActivityInterface $activity, ProcessRequestToken $token)
+    {
+        $taskName = $token->getOwnerElement()->getName();
+        Comment::create([
+            'type' => 'LOG',
+            'user_id' => null,
+            'commentable_type' => ProcessRequest::class,
+            'commentable_id' => $token->getInstance()->getId(),
+            'subject' => 'Task Skipped',
+            'body' => __("The task :task_name was skipped", ['task_name' => $taskName]),
+        ]);
+    }
 
     /**
      * Subscription.
@@ -76,5 +96,6 @@ class CommentsSubscriber
     {
         $events->listen(ActivityInterface::EVENT_ACTIVITY_COMPLETED, static::class . '@onActivityCompleted');
         $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
+        $events->listen(ActivityInterface::EVENT_ACTIVITY_SKIPPED, static::class . '@onActivitySkipped');
     }
 }
