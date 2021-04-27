@@ -232,6 +232,10 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
 }, (error) => {
     window.ProcessMaker.EventBus.$emit("api-client-error", error);
     if (error.response && error.response.status && error.response.status === 401) {
+        //stop 401 error consuming endpoints with data-sources
+        if (error.config.url.includes('requests/') && error.config.url.includes('/data_sources/')) {
+          return;
+        }
         window.location = "/login";
     } else {
       if (_.has(error, 'config.url') && !error.config.url.match('/debug')) {
