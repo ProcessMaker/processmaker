@@ -59,16 +59,21 @@ class DataManager
      * Get data for the $token
      *
      * @param ProcessRequestToken $token
+     * @param bool $whenTokenSaved If true returns the Request Data as when the Token was saved
      *
      * @return array
      */
-    public function getData(ProcessRequestToken $token)
+    public function getData(ProcessRequestToken $token, bool $whenTokenSaved = false)
     {
         if ($token->isMultiInstance()) {
             $data = $token->getProperty('data', ($token->token_properties ?? [])['data'] ?? []) ?: [];
             $data = $this->addLoopInstanceProperties($data, $token->getDefinition(true), $token);
         } else {
-            $data = $token->processRequest->data ?: [];
+            if ($whenTokenSaved) {
+                $data = $token->data ?: [];
+            } else {
+                $data = $token->processRequest->data ?: [];
+            }
         }
 
         // Magic Variable: _user
@@ -84,8 +89,11 @@ class DataManager
 
         // Magic Variable: _parent
         if ($token->isMultiInstance()) {
-
-            $data['_parent'] = $this->getRequestData($token->processRequest, ['_user', '_request', '_parent']);
+            if ($whenTokenSaved) {
+                $data['_parent'] = $token->data ?: [];
+            } else {
+                $data['_parent'] = $this->getRequestData($token->processRequest, ['_user', '_request', '_parent']);
+            }
         }
 
         foreach ($this->hiddenVariables as $key) {

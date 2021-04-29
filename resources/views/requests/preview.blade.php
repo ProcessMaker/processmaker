@@ -41,7 +41,7 @@
         el: "#request",
         data() {
           return {
-            data: @json($request->data),
+            data: @json($data),
             screenRequested: @json($screen),
             request: @json($request),
           };

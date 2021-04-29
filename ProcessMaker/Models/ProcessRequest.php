@@ -302,6 +302,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $tokens = $this->tokens()
             ->whereNotIn('element_type', ['startEvent', 'end_event'])
             ->where('status', 'CLOSED')
+            ->orderBy('completed_at')
             ->get();
         $screens = [];
         foreach ($tokens as $token) {
@@ -311,7 +312,8 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
                 if ($screen) {
                     $screen->element_name = $token->element_name;
                     $screen->element_type = $token->element_type;
-                    $screen->data = $token->data;
+                    $dataManager = new DataManager();
+                    $screen->data = $dataManager->getData($token, true);
                     $screen->screen_id = $screen->id;
                     $screen->id = $token->id;
                     $screens[] = $screen;
