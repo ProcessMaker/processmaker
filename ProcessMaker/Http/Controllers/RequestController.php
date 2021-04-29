@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
@@ -187,7 +188,7 @@ class RequestController extends Controller
         }
     }
 
-    public function screenPreview(ProcessRequest $request, ScreenVersion $screen)
+    public function screenPreview(ProcessRequest $request, ProcessRequestToken $task, ScreenVersion $screen)
     {
         $this->authorize('view', $request);
         if (!$this->canUserPrintScreen($request)) {
@@ -195,9 +196,12 @@ class RequestController extends Controller
             return redirect('403');
         }
 
+        $dataManager = new DataManager();
+        $data = $dataManager->getData($task);
+
         $manager = app(ScreenBuilderManager::class);
         event(new ScreenBuilderStarting($manager, ($request->summary_screen) ? $request->summary_screen->type : 'FORM'));
-        return view('requests.preview', compact('request', 'screen', 'manager'));
+        return view('requests.preview', compact('request', 'screen', 'manager', 'data'));
     }
 
     /**
