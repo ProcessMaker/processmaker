@@ -1444,5 +1444,9 @@
   "The task must be claimed to enable manager escalation.": "The task must be claimed to enable manager escalation.",
   "Run Watcher on Screen Load": "Run Watcher on Screen Load",
   "The Request variable is a new/existing variable": "The Request variable is a new/existing variable",
-  "Leave blank to map all response data": "Leave blank to map all response data"
+  "Leave blank to map all response data": "Leave blank to map all response data",
+  "Create Signals": "Create Signals",
+  "Delete Signals": "Delete Signals",
+  "Edit Signals": "Edit Signals",
+  "View Signals": "View Signals"
 }
