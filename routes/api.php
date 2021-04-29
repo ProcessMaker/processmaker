@@ -165,11 +165,11 @@ Route::group(
     Route::delete('comments/{comment}', 'CommentController@destroy')->name('comments.destroy')->middleware('can:delete-comments');
 
     // Global signals
-    Route::get('signals', 'SignalController@index')->name('signals.index')->middleware('can:view-processes');
-    Route::get('signals/{signalId}', 'SignalController@show')->name('signals.show')->middleware('can:view-processes');
-    Route::post('signals', 'SignalController@store')->name('signals.store')->middleware('can:edit-processes');
-    Route::put('signals/{signalId}', 'SignalController@update')->name('signals.update')->middleware('can:edit-processes');
-    Route::delete('signals/{signalId}', 'SignalController@destroy')->name('signals.destroy')->middleware('can:edit-processes');
+    Route::get('signals', 'SignalController@index')->name('signals.index')->middleware('can:view-signals');
+    Route::get('signals/{signalId}', 'SignalController@show')->name('signals.show')->middleware('can:view-signals');
+    Route::post('signals', 'SignalController@store')->name('signals.store')->middleware('can:create-signals');
+    Route::put('signals/{signalId}', 'SignalController@update')->name('signals.update')->middleware('can:edit-signals');
+    Route::delete('signals/{signalId}', 'SignalController@destroy')->name('signals.destroy')->middleware('can:delete-signals');
 
     //UI customization
     Route::post('customize-ui', 'CssOverrideController@store')->name('customize-ui.store');
