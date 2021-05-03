@@ -180,6 +180,10 @@ export default {
         if (! field.field) {
           field.field = column.field;
         }
+
+        if (column.format === 'datetime' || column.format === 'date') {
+          field.callback = 'formatDate';
+        }
               
         if (column.sortable && ! field.sortField) {
           field.sortField = column.field;
