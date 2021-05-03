@@ -23,6 +23,7 @@ use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\CatchEventInterface;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use ProcessMaker\Query\SyntaxError;
@@ -47,6 +48,8 @@ class ProcessRequestController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
+     * @param bool $getTotal used by Saved Search package to only return a total count instead of actual results
+     * @param User $user used by Saved Search package to return accurate counts
      *
      * @return ApiCollection
      *
@@ -88,10 +91,14 @@ class ProcessRequestController extends Controller
      *     ),
      * )
      */
-    public function index(Request $request)
+    public function index(Request $request, $getTotal = false, User $user = null)
     {
+        // If a specific user is specified, use it; otherwise use the authorized user
+        if (! $user) {
+            $user = Auth::user();
+        }
+        
         // Update request permissions for the user
-        $user = Auth::user();
         $user->updatePermissionsToRequests();
 
         // Filter request with user permissions
@@ -143,11 +150,15 @@ class ProcessRequestController extends Controller
         $query->nonSystem();
 
         try {
-            $response = $query->orderBy(
-                str_ireplace('.', '->', $request->input('order_by', 'name')),
-                $request->input('order_direction', 'ASC')
-            )->paginate($request->input('per_page', 10));
-            $total = $response->total();
+            if ($getTotal === true) {
+                return $query->count();
+            } else {
+                $response = $query->orderBy(
+                    str_ireplace('.', '->', $request->input('order_by', 'name')),
+                    $request->input('order_direction', 'ASC')
+                )->paginate($request->input('per_page', 10));
+                $total = $response->total();
+            }
         } catch(QueryException $e) {
             throw $e;
             $rawMessage = $e->getMessage();

@@ -47,6 +47,8 @@ class TaskController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
+     * @param bool $getTotal used by Saved Search package to only return a total count instead of actual results
+     * @param User $user used by Saved Search package to return accurate counts
      *
      * @return Response
      *
@@ -88,8 +90,14 @@ class TaskController extends Controller
      *     ),
      * )
      */
-    public function index(Request $request)
+    public function index(Request $request, $getTotal = false, User $user = null)
     {
+        // If a specific user is specified, use it; otherwise use the authorized user
+        // This is necessary to produce accurate counts for Saved Searches
+        if (! $user) {
+            $user = Auth::user();
+        }
+
         $query = ProcessRequestToken::with(['processRequest', 'user']);
 
         $query->select('process_request_tokens.*');
@@ -156,12 +164,6 @@ class TaskController extends Controller
             }
         }
 
-        $inOverdueQuery = ProcessRequestToken::where('user_id', Auth::user()->id)
-            ->where('status', 'ACTIVE')
-            ->where('due_at', '<', Carbon::now());
-
-        $inOverdue = $inOverdueQuery->count();
-
         $statusFilter = $request->input('statusfilter', '');
         if ($statusFilter) {
             $statusFilter = array_map(function($value) {
@@ -173,25 +175,37 @@ class TaskController extends Controller
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
             try {
-                $query->pmql($pmql);
+                $query->pmql($pmql, null, $user);
             } catch (QueryException $e) {
                 return response(['message' => __('Your PMQL search could not be completed.')], 400);
             } catch (SyntaxError $e) {
                 return response(['message' => __('Your PMQL contains invalid syntax.')], 400);
             }
         }
+        
+        // If only the total is being requested (by a Saved Search), send it now
+        if ($getTotal === true) {
+            return $query->count();
+        }
+        
+        $inOverdueQuery = ProcessRequestToken::where('user_id', $user->id)
+            ->where('status', 'ACTIVE')
+            ->where('due_at', '<', Carbon::now());
+
+        $inOverdue = $inOverdueQuery->count();
+        
         $response = $this->handleOrderByRequestName($request, $query->get());
 
         // Only filter results if the user id was specified
-        if ($request->input('user_id') === $request->user()->id) {
-            $response = $response->filter(function($processRequestToken) use ($request) {
+        if ($request->input('user_id') === $user->id) {
+            $response = $response->filter(function($processRequestToken) use ($request, $user) {
                 if ($request->input('status') === 'CLOSED') {
-                    return Auth::user()->can('view', $processRequestToken->processRequest);
+                    return $user->can('view', $processRequestToken->processRequest);
                 }
-                return Auth::user()->can('view', $processRequestToken);
+                return $user->can('view', $processRequestToken);
             })->values();
         }
-        
+                
         //Map each item through its resource
         $response = $response->map(function ($processRequestToken) use ($request) {
             return new Resource($processRequestToken);

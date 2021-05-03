@@ -77,6 +77,36 @@ class Group extends Model
     {
         return $this->hasMany(GroupMember::class);
     }
+    
+    public function getUsersAttribute()
+    {
+        return $this->groupMembers->where('member_type', User::class)->map(function ($member) {
+            return $member->member;
+        });
+    }
+    
+    public function getRecursiveUsersAttribute(Group $parent = null)
+    {
+        // Parent is used to determine the top level group in order to prevent
+        // infinite loops in the case of two groups nested within each other
+        if (! $parent) {
+            $parent = $this;
+        }
+        
+        $users = collect();
+        
+        $users = $users->merge($this->users);
+        
+        $this->groupMembers->where('member_type', self::class)->each(function ($member) use (&$users, $parent) {
+            if ($member->member->id != $parent->id) {
+                $users = $users->merge($member->member->getRecursiveUsersAttribute($parent));
+            }
+        });
+        
+        return $users->unique(function ($user) {
+            return $user->id;
+        })->sortBy('id')->values();
+    }
 
     /**
      * Scope to only return active groups.
