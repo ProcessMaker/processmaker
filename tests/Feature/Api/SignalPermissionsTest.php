@@ -1,0 +1,110 @@
+<?php
+namespace Tests\Feature\Api;
+
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\User;
+use Tests\TestCase;
+use Tests\Feature\Shared\RequestHelper;
+use \SignalSeeder;
+
+class PermissionsTest extends TestCase {
+
+    use RequestHelper;
+    
+    public $withPermissions = true;
+
+    private function createUser()
+    {
+        $this->user = factory(User::class)->create(['status' => 'ACTIVE']);
+    }
+
+    public function setUpSignalAssets(): void
+    {
+        factory(ProcessCategory::class)->create(['is_system' => true]);
+        (new SignalSeeder)->run();
+    }
+
+    private function assertForbidden($method, $url, $data = [])
+    {
+        $response = $this->apiCall($method, $url, $data);
+        $response->assertStatus(403);
+    }
+    
+    private function assertSuccess($method, $url, $data = [])
+    {
+        $response = $this->apiCall($method, $url, $data);
+        $response->assertStatus(200);
+    }
+
+    private function givePermission($permission)
+    {
+        $this->user->giveDirectPermission($permission);
+        $this->user->refresh();
+        $this->flushSession();
+    }
+
+    public function testViewPermission()
+    {
+        $this->createUser();
+        $indexRoute = route('api.signals.index');
+        $showRoute = route('api.signals.show', 'anything');
+        $this->assertForbidden('GET', $indexRoute);
+        $this->assertForbidden('GET', $showRoute);
+        $this->givePermission('view-signals');
+        $this->assertSuccess('GET', $indexRoute);
+        $this->assertSuccess('GET', $showRoute);
+    }
+
+    public function testCreatePermission()
+    {
+        $this->createUser();
+        $storeRoute = route('api.signals.store');
+        $data = [
+            'id' => 'anything',
+            'name' => 'anything',
+        ];
+        $this->assertForbidden('POST', $storeRoute, $data);
+        $this->givePermission('create-signals');
+        $this->assertSuccess('POST', $storeRoute, $data);
+    }
+
+    public function testEditPermission()
+    {
+        $this->createUser();
+        $this->givePermission('create-signals');
+        $storeRoute = route('api.signals.store');
+        $data = [
+            'id' => 'anything',
+            'name' => 'anything',
+        ];
+        $this->assertSuccess('POST', $storeRoute, $data);
+
+        $data['name'] = 'other';
+        $updateRoute = route('api.signals.update', 'anything');
+        $this->assertForbidden('PUT', $updateRoute, $data);
+        $this->givePermission('edit-signals');
+        $this->assertSuccess('PUT', $updateRoute, $data);
+    }
+
+    public function testDeletePermission()
+    {
+        $this->createUser();
+        $this->givePermission('create-signals');
+        $storeRoute = route('api.signals.store');
+        $data = [
+            'id' => 'anything',
+            'name' => 'anything',
+        ];
+        $this->assertSuccess('POST', $storeRoute, $data);
+
+        $data['name'] = 'other';
+        $deleteRoute = route('api.signals.destroy', 'anything');
+        $response = $this->apiCall('DELETE', $deleteRoute);
+        $response->assertStatus(403);
+
+        $this->givePermission('delete-signals');
+
+        $response = $this->apiCall('DELETE', $deleteRoute);
+        $response->assertStatus(201);
+    }
+}
