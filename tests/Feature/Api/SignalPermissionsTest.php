@@ -107,4 +107,33 @@ class PermissionsTest extends TestCase {
         $response = $this->apiCall('DELETE', $deleteRoute);
         $response->assertStatus(201);
     }
+
+    public function testWebViewPermission()
+    {
+        $this->createUser();
+        $indexRoute = route('signals.index');
+        $response = $this->webCall('GET', $indexRoute);
+        $response->assertStatus(403);
+        $this->givePermission('view-signals');
+        $response = $this->webCall('GET', $indexRoute);
+        $response->assertStatus(200);
+    }
+    
+    public function testWebEditPermission()
+    {
+        $storeRoute = route('api.signals.store');
+        $data = [
+            'id' => 'anything',
+            'name' => 'anything',
+        ];
+        $this->apiCall('POST', $storeRoute, $data);
+        
+        $this->createUser();
+        $indexRoute = route('signals.edit', 'anything');
+        $response = $this->webCall('GET', $indexRoute);
+        $response->assertStatus(403);
+        $this->givePermission('edit-signals');
+        $response = $this->webCall('GET', $indexRoute);
+        $response->assertStatus(200);
+    }
 }
