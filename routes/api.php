@@ -191,6 +191,7 @@ Route::group(
     Route::get('settings/groups', 'SettingController@groups')->name('settings.groups')->middleware('can:view-settings');
     Route::post('settings/import', 'SettingController@import')->name('settings.import')->middleware('can:update-settings');
     Route::put('settings/{setting}', 'SettingController@update')->name('settings.update')->middleware('can:update-settings');
+    Route::get('settings/group/{group}/buttons', 'SettingController@buttons')->name('settings.buttons')->middleware('can:view-settings');
 
     // debugging javascript errors
     Route::post('debug', 'DebugController@store')->name('debug.store')->middleware('throttle');
