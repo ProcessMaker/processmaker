@@ -247,4 +247,13 @@ class SignalManager
 
         array_push($errors[$field], $message);
     }
+
+    public static function permissions($user) {
+        return [
+            'create-signals' => $user->can('create-signals'),
+            'view-signals' => $user->can('view-signals'),
+            'edit-signals' => $user->can('edit-signals'),
+            'delete-signals' => $user->can('delete-signals'),
+        ];
+    }
 }

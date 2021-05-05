@@ -58,6 +58,7 @@ div.main {
     process: @json($process),
     xml: @json($process->bpmn),
     processName: @json($process->name),
+    signalPermissions: @json($signalPermissions),
   }
   const warnings = @json($process->warnings);
  
