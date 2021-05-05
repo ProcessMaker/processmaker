@@ -37,7 +37,7 @@
                 @click="onDelete(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
-                v-if="isDeletable(props.rowData) && permission.includes('edit-processes')"
+                :disabled="!isDeletable(props.rowData) || !permission.includes('edit-processes')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
