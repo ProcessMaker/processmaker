@@ -28,7 +28,7 @@
                 @click="onEdit(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Edit')"
-                v-if="permission.includes('edit-processes')"
+                v-if="permission.includes('edit-signals')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -37,7 +37,7 @@
                 @click="onDelete(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
-                v-if="isDeletable(props.rowData) && permission.includes('edit-processes')"
+                v-if="isDeletable(props.rowData) && permission.includes('delete-signals')"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
