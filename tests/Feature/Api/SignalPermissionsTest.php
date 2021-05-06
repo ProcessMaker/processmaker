@@ -7,7 +7,7 @@ use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 use \SignalSeeder;
 
-class PermissionsTest extends TestCase {
+class SignalPermissionsTest extends TestCase {
 
     use RequestHelper;
     
