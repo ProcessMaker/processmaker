@@ -172,7 +172,7 @@ class SignalManager
     {
         $result = [];
 
-        if ( !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $newSignal->getId()) ) {
+        if ( !preg_match('/^[a-zA-Z_][\w.-]*$/', $newSignal->getId()) ) {
             self::addError($result, 'id','The signal ID should be an alphanumeric string');
         }
 
