@@ -235,7 +235,7 @@ export default {
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
-            if (setting.ui.refreshOnSave) {
+            if (_.get(setting, 'ui.refreshOnSave')) {
               this.$emit('refresh-all');
             } else {
               this.refresh();
