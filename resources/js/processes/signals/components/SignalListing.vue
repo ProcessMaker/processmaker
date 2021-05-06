@@ -110,7 +110,8 @@ export default {
                 .replace('_delete', '');
     },
     isCollection(data) {
-      return data.id !== this.getIdCollection(data);
+      const myRegex = new RegExp('\\bcollection_[0-9]_(create|update|delete)\\b', 'g');
+      return !!data.id.match(myRegex);
     },
     onReview(data, index) {
       if (this.isCollection(data)) {
