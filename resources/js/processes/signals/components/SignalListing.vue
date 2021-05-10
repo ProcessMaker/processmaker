@@ -115,7 +115,7 @@ export default {
     },
     onReview(data, index) {
       if (this.isCollection(data)) {
-        window.location = "/collections/" + this.getIdCollection(data) + "/edit";
+        window.location = "/collections/" + this.getIdCollection(data);
         return;
       }
       this.onDelete(data, index);
