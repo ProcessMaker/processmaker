@@ -186,6 +186,10 @@ class SignalManager
             self::addError($result, 'id','The signal ID already exists');
         }
 
+        if (strlen(trim($newSignal->getId())) === 0) {
+            self::addError($result, 'id','The signal ID is required');
+        }
+
         if (strlen(trim($newSignal->getName())) === 0) {
             self::addError($result, 'name','The signal name is required');
         }

@@ -103,8 +103,8 @@ class SignalController extends Controller
     public function store(Request $request)
     {
         $newSignal = new SignalData(
-            $request->input('id'),
-            $request->input('name'),
+            $request->input('id', ''),
+            $request->input('name', ''),
             $request->input('detail', '')
         );
 
