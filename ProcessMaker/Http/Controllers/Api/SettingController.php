@@ -72,6 +72,19 @@ class SettingController extends Controller
         return new ApiCollection($response);
     }
 
+    public function buttons($group)
+    {
+        $buttons = Setting::where('group', $group)
+            ->where('hidden', true)
+            ->where('format', 'button')
+            ->get()
+            ->toArray();
+        foreach($buttons as $i => $button) {
+            $buttons[$i]['ui'] = \is_string($button['ui']) ? json_decode($button['ui']) : $button['ui'];
+        }
+        return $buttons;
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -49,6 +49,14 @@
           </div>
         </template>
       </b-table>
+      <div class="text-right p-2">
+        <b-button
+          v-for="(btn,index) in buttons"
+          :key="`btn-${index}`"
+          v-bind="btn.ui.props"
+          @click="window[btn.handler] && window[btn.handler]()"
+          >{{btn.name}}</b-button>
+      </div>
       <div v-if="totalRows" class="settings-table-footer text-secondary d-flex align-items-center p-2 w-100">
         <div class="flex-grow-1">
           <span v-if="totalRows">
@@ -115,6 +123,7 @@ export default {
   props: ['group'],
   data() {
     return {
+      buttons: [],
       currentPage: 1,
       fields: [],
       filter: '',
@@ -172,8 +181,16 @@ export default {
       sortable: false,
       tdClass: "text-right",
     });
+
+    this.loadButtons();
   },
   methods: {
+    loadButtons() {
+      ProcessMaker.apiClient.get(`/settings/group/${this.group}/buttons`)
+        .then((response) => {
+          this.buttons = response.data;
+        });
+    },
     apiGet() {
       return ProcessMaker.apiClient.get(this.pageUrl(this.currentPage));
     },
@@ -235,7 +252,7 @@ export default {
         this.apiPut(setting).then(response => {
           if (response.status == 204) {
             ProcessMaker.alert(this.$t("The setting was updated."), "success");
-            if (setting.ui.refreshOnSave) {
+            if (_.get(setting, 'ui.refreshOnSave')) {
               this.$emit('refresh-all');
             } else {
               this.refresh();

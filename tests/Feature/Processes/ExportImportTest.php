@@ -19,6 +19,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\AnonymousUser;
+use ProcessMaker\Jobs\ImportProcess;
 
 class ExportImportTest extends TestCase
 {
@@ -588,5 +589,19 @@ class ExportImportTest extends TestCase
         //$this->assertEquals($screens['Nested Screen'], $screen->config[0]['items'][0]['config']['screen']);
         $this->assertEquals('script-' . $scripts['Script for Watcher'], $nested->watchers[0]['script']['id']);
         $this->assertEquals($scripts['Script for Watcher'], $nested->watchers[0]['script_id']);
+    }
+
+    public function testNestedScreensRecursion()
+    {
+        $this->spy(Screen::class, function ($mock) {
+            $mock->shouldNotReceive('findOrFail');
+        });
+
+        $content = file_get_contents(
+            __DIR__ . '/../../Fixtures/nested_screen_process.json'
+        );
+        $result = ImportProcess::dispatchNow($content);
+        $processId = $result->process->id;
+        $this->apiCall('POST', "/processes/{$processId}/export");
     }
 }

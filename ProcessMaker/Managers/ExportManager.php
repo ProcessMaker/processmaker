@@ -75,7 +75,8 @@ class ExportManager
         $newReferences = [];
         foreach ($this->dependencies as $dependencie) {
             if (is_a($owner, $dependencie['owner'])) {
-                $newReferences = call_user_func($dependencie['referencesToExport'], $owner, $newReferences, $this);
+                $recursive = false; // We search nested dependencies below
+                $newReferences = call_user_func($dependencie['referencesToExport'], $owner, $newReferences, $this, $recursive);
             }
         }
         $newReferences = $this->uniqueDiff($newReferences, $references);
