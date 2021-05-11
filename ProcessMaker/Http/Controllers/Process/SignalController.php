@@ -22,7 +22,13 @@ class SignalController extends Controller
      */
     public function index(Request $request)
     {
-        return view('processes.signals.index');
+        $collections = [];
+
+        if(hasPackage('package-collections')) {
+            $collections = \ProcessMaker\Plugins\Collections\Models\Collection::pluck('id')->toArray();
+        }
+
+        return view('processes.signals.index', compact('collections'));
     }
 
     /**
