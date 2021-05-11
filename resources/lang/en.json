@@ -1452,5 +1452,9 @@
   "You do not have permission to add new signals": "You do not have permission to add new signals",
   "You do not have permission to view signals": "You do not have permission to view signals",
   "You do not have permission to delete signals": "You do not have permission to delete signals",
-  "You do not have permission to edit signals": "You do not have permission to edit signals"
+  "You do not have permission to edit signals": "You do not have permission to edit signals",
+  "The value or source can be a string or a mustache expression": "The value or source can be a string or a mustache expression",
+  "The value can be a string or a mustache expression.": "The value can be a string or a mustache expression.",
+  "For example": "For example",
+  "will use the value stored in variable var1": "will use the value stored in variable var1"
 }
