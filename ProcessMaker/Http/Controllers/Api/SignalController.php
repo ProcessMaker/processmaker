@@ -103,8 +103,8 @@ class SignalController extends Controller
     public function store(Request $request)
     {
         $newSignal = new SignalData(
-            $request->input('id'),
-            $request->input('name'),
+            $request->input('id', ''),
+            $request->input('name', ''),
             $request->input('detail', '')
         );
 
@@ -130,7 +130,7 @@ class SignalController extends Controller
 
         $errorValidations = SignalManager::validateSignal($newSignal, $oldSignal);
         if (count($errorValidations) > 0) {
-            return response(implode('; ', $errorValidations), 422);
+            return response(["errors" => $errorValidations], 422);
         }
 
         SignalManager::replaceSignal($newSignal, $oldSignal, ['detail' => $request->input('detail', '')]);

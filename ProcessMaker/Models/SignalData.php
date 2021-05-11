@@ -76,10 +76,10 @@ class SignalData
         $this->detail = $detail;
     }
 
-    public function __construct(string $id, string $name, $detail = '')
+    public function __construct($id, $name, $detail = '')
     {
-        $this->id = $id;
-        $this->name = $name;
+        $this->id = $id ?? '';
+        $this->name = $name ?? '';
         $this->detail = $detail ?? '';
     }
 

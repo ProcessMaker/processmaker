@@ -34,12 +34,13 @@
               </b-btn>
               <b-btn
                 variant="link"
-                @click="onDelete(props.rowData, props.rowIndex)"
+                @click="onReview(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
-                :disabled="!isDeletable(props.rowData) || !permission.includes('edit-processes')"
+                :disabled="(!isDeletable(props.rowData) || !permission.includes('edit-processes')) && !isCollection(props.rowData)"
               >
-                <i class="fas fa-trash-alt fa-lg fa-fw"></i>
+                <i v-if="isCollection(props.rowData)" class="fas fa-external-link-alt fa-lg fa-fw"></i>
+                <i v-else class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
             </div>
           </div>
@@ -63,7 +64,7 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "permission"],
+  props: ["filter", "permission", "collections"],
   data() {
     return {
       orderBy: "id",
@@ -101,6 +102,23 @@ export default {
     },
     onEdit(data, index) {
       window.location = "/designer/signals/" + data.id + "/edit";
+    },
+    getIdCollection(data) {
+      return data.id.replace('collection_', '')
+                .replace('_create', '')
+                .replace('_update', '')
+                .replace('_delete', '');
+    },
+    isCollection(data) {
+      const myRegex = new RegExp('\\bcollection_[0-9]_(create|update|delete)\\b', 'g');
+      return (!!data.id.match(myRegex)) && this.collections.includes(parseInt(this.getIdCollection(data)));
+    },
+    onReview(data, index) {
+      if (this.isCollection(data)) {
+        window.location = "/collections/" + this.getIdCollection(data);
+        return;
+      }
+      this.onDelete(data, index);
     },
     onDelete(data, index) {
       let that = this;

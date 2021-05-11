@@ -172,7 +172,7 @@ class SignalManager
     {
         $result = [];
 
-        if ( !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $newSignal->getId()) ) {
+        if ( !preg_match('/^[a-zA-Z_][\w.-]*$/', $newSignal->getId()) ) {
             self::addError($result, 'id','The signal ID should be an alphanumeric string');
         }
 
@@ -184,6 +184,10 @@ class SignalManager
 
         if ($signalIdExists) {
             self::addError($result, 'id','The signal ID already exists');
+        }
+
+        if (strlen(trim($newSignal->getId())) === 0) {
+            self::addError($result, 'id','The signal ID is required');
         }
 
         if (strlen(trim($newSignal->getName())) === 0) {
