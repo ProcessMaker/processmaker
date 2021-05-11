@@ -510,7 +510,13 @@ export default {
 
         item.inspector.forEach(property => {
           if (property.config.validation) {
-            rules[property.field] = property.config.validation;
+            if (property.config.validation.includes('regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*(?<![.])$/')) {
+              let validationRuleArray = property.config.validation.split('|');
+              validationRuleArray[0] = 'regex:/^(?:[A-Za-z])(?:[0-9A-Z_.a-z])*[^.]$/';
+              rules[property.field] = validationRuleArray.join('|');
+            } else {
+              rules[property.field] = property.config.validation;
+            }
           }
         });
 
