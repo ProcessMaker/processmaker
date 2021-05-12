@@ -73,7 +73,6 @@ export default {
         { id: 'NONE', name: this.$t('No Request Data') },
         { id: 'ALL_REQUEST_DATA', name: this.$t('All Request Data') },
         { id: 'REQUEST_VARIABLE', name: this.$t('Specify Request Variable') },
-        { id: 'EXPRESSION', name: this.$t('Specify Expression') },
       ];
     },
   },
