@@ -72,7 +72,12 @@ class DataManager
             if ($whenTokenSaved) {
                 $data = $token->data ?: [];
             } else {
-                $data = $token->processRequest->data ?: [];
+                $instance = $token->getInstance();
+                if ($instance) {
+                    $data = $instance->getDataStore()->getData();
+                } else {
+                    $data = $token->processRequest->data ?: [];
+                }
             }
         }
 
@@ -85,14 +90,15 @@ class DataManager
         }
 
         // Magic Variable: _request
-        $data['_request'] = $token->processRequest->attributesToArray();
+        $request = $token->getInstance() ?: $token->processRequest;
+        $data['_request'] = $request->attributesToArray();
 
         // Magic Variable: _parent
         if ($token->isMultiInstance()) {
             if ($whenTokenSaved) {
                 $data['_parent'] = $token->data ?: [];
             } else {
-                $data['_parent'] = $this->getRequestData($token->processRequest, ['_user', '_request', '_parent']);
+                $data['_parent'] = $this->getRequestData($request, ['_user', '_request', '_parent']);
             }
         }
 
