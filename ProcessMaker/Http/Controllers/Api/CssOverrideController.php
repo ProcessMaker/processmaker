@@ -92,7 +92,7 @@ class CssOverrideController extends Controller
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
-        $this->compileSass(json_decode($request->input('variables', '[]'), true));
+        $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
 
         return new ApiResource($setting);
     }
@@ -138,7 +138,7 @@ class CssOverrideController extends Controller
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
-        $this->compileSass(json_decode($request->input('variables', '[]'), true));
+        $this->compileSass($request->user('api')->id, json_decode($request->input('variables', '[]'), true));
 
         return response([], 204);
     }
@@ -177,26 +177,26 @@ class CssOverrideController extends Controller
     /**
      * run jobs compile
      */
-    private function compileSass()
+    private function compileSass($userId)
     {
         // Compile the Sass files
         $this->dispatch(new CompileSass([
             'tag' => 'sidebar',
             'origin' => 'resources/sass/sidebar/sidebar.scss',
             'target' => 'public/css/sidebar.css',
-            'user' => Auth::user()->getKey()
+            'user' => $userId
         ]));
         $this->dispatch(new CompileSass([
             'tag' => 'app',
             'origin' => 'resources/sass/app.scss',
             'target' => 'public/css/app.css',
-            'user' => Auth::user()->getKey()
+            'user' => $userId
         ]));
         $this->dispatch(new CompileSass([
             'tag' => 'queues',
             'origin' => 'resources/sass/admin/queues.scss',
             'target' => 'public/css/admin/queues.css',
-            'user' => Auth::user()->getKey()
+            'user' => $userId
         ]));
     }
 

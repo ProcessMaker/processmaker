@@ -1457,5 +1457,16 @@
   "The value can be a string or a mustache expression.": "The value can be a string or a mustache expression.",
   "For example": "For example",
   "will use the value stored in variable var1": "will use the value stored in variable var1",
-  "Select the variable to watch on this screen or type any request variable name": "Select the variable to watch on this screen or type any request variable name"
+  "Select the variable to watch on this screen or type any request variable name": "Select the variable to watch on this screen or type any request variable name",
+  "Tooltip": "Tooltip",
+  "Tooltip Contains": "Tooltip Contains",
+  "HTML, Mustache support": "HTML, Mustache support",
+  "Top Left": "Top Left",
+  "Top Right": "Top Right",
+  "Right Top": "Right Top",
+  "Right Bottom": "Right Bottom",
+  "Bottom Left": "Bottom Left",
+  "Bottom Right": "Bottom Right",
+  "Left Top": "Left Top",
+  "Left Bottom": "Left Bottom"
 }
