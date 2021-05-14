@@ -60,7 +60,7 @@
   "Are you sure you want to complete this request?": "Are you sure you want to complete this request?",
   "Are you sure you want to delete {{item}}?": "Are you sure you want to delete {{item}}?",
   "Are you sure you want to delete the auth client": "Are you sure you want to delete the auth client",
-  "Are you sure you want to delete the screen": "Are you sure you want to delete the screen",
+  "Are you sure you want to delete the screen": "Are you sure you want to delete the screen {{item}}? Deleting this asset will break any active tasks that are assigned.",
   "Are you sure you want to delete the user": "Are you sure you want to delete the user",
   "Are you sure you want to remove the user from the group ": "Are you sure you want to remove the user from the group ",
   "Are you sure you want to remove this record?": "Are you sure you want to remove this record?",
