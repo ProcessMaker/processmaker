@@ -88,18 +88,17 @@
           if (! this.isInGroup) {
             ProcessMaker.apiClient.get(this.url)
               .then(response => {
-                this.currentCount = response.data.meta.total;
-                this.loaded = true;
+                this.setCount(response.data.meta.total);
               })
               .catch(error => {
-                console.error(error);
+                this.show();
               });
           }
         }
       },
       setCount(count) {
         this.currentCount = count;
-        this.loaded = true;
+        this.show();
       },
       show() {
         this.loaded = true;
