@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Console;
+namespace Tests\Feature\Console;
 
 use Tests\TestCase;
 use Faker\Factory as Faker;

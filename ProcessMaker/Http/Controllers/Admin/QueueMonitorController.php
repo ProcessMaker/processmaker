@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Http\Controllers;
+namespace ProcessMaker\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 

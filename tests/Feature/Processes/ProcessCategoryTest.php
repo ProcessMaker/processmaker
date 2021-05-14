@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Processes;
 
 use Tests\TestCase;
 use ProcessMaker\Models\ProcessCategory;

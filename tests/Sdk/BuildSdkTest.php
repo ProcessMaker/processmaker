@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Model;
+namespace Tests\Sdk;
 
 use Tests\TestCase;
 use ProcessMaker\BuildSdk;

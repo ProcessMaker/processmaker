@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Processes;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\UploadedFile;

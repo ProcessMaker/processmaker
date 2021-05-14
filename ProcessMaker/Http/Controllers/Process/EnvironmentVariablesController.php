@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Http\Controllers\process;
+namespace ProcessMaker\Http\Controllers\Process;
 
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\EnvironmentVariable;
