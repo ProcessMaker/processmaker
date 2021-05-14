@@ -151,8 +151,7 @@ class RequestTest extends TestCase
             'status' => 'CANCELED',
         ]);
 
-        $response = $this->webCall('GET', '/requests/completed');
-        $crawler = new Crawler($response->getContent());
-        $this->assertContains('2', trim($crawler->filter('.bg-primary h1')->first()->text()));
+        $response = $this->apiCall('GET', '/requests?total=true&pmql=(status = "Completed")');
+        $response->assertJson(['meta' => ['total' => 2]]);
     }
 }

@@ -39,17 +39,6 @@ class RequestController extends Controller
             $this->authorize('view-all_requests');
         }
 
-        //load counters
-        $query = ProcessRequest::query();
-        if (!Auth::user()->is_administrator && !Auth::user()->can('view-all_requests')) {
-            $query->startedMe(Auth::user()->id);
-        }
-
-        $allRequest = $this->calculate('allRequest');
-        $startedMe = $this->calculate('startedMe');
-        $inProgress = $this->calculate('inProgress');
-        $completed = $this->calculate('completed');
-
         $title = 'My Requests';
 
         $types = ['all'=>'All Requests','in_progress'=>'Requests In Progress','completed'=>'Completed Requests'];
@@ -61,37 +50,8 @@ class RequestController extends Controller
         $currentUser = Auth::user()->only(['id', 'username', 'fullname', 'firstname', 'lastname', 'avatar']);
 
         return view('requests.index', compact(
-            ['allRequest', 'startedMe', 'inProgress', 'completed', 'type','title', 'currentUser']
+            ['type','title', 'currentUser']
         ));
-    }
-    private function calculate($type)
-    {
-        $result = 0;
-        $query = ProcessRequest::query();
-        if (!Auth::user()->is_administrator && !Auth::user()->can('view-all_requests')) {
-            $query->startedMe(Auth::user()->id);
-        }
-
-        $hiddenProcessIds = Process::whereHas('category', function($q) {
-            $q->where('is_system', true);
-        })->pluck('id');
-        $query->whereNotIn('process_id', $hiddenProcessIds);
-
-        switch ($type) {
-            case 'allRequest':
-               $result = $query->nonSystem()->count();
-               break;
-            case 'startedMe':
-                $result = ProcessRequest::startedMe(Auth::user()->id)->nonSystem()->inProgress()->count();
-                break;
-            case 'inProgress':
-                $result =$query->inProgress()->nonSystem()->count();
-                break;
-            case 'completed':
-                $result = $query->completed()->nonSystem()->count();
-                break;
-        }
-        return $result;
     }
 
     /**

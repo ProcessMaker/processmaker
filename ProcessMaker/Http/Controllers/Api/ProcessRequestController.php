@@ -152,6 +152,8 @@ class ProcessRequestController extends Controller
         try {
             if ($getTotal === true) {
                 return $query->count();
+            } elseif ($request->input('total') == 'true') {
+                return ['meta' => ['total' => $query->count()]];
             } else {
                 $response = $query->orderBy(
                     str_ireplace('.', '->', $request->input('order_by', 'name')),
