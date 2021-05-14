@@ -18,49 +18,39 @@
 <div class="px-3 page-content mb-0" id="requests-listing">
     <div class="row">
         <div class="col-sm-12">
-            <template>
-                <div class="card-deck-flex">
-
-                    <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
-                        text-variant="white" class="bg-info d-flex flex-row card-border border-0">
-                        <i slot="header" class='fas fa-id-badge fa-2x'></i>
-                        <a href="{{ route('requests_by_type', ['type' => '']) }}" class="card-link text-light">
-                            <h1 class="m-0 font-weight-bold">{{$startedMe}}</h1>
-                            <h6 class="card-text">{{__('My Requests')}}</h6>
-                        </a>
-                    </b-card>
-
-                    <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
-                        text-variant="white" class="bg-success d-flex flex-row card-border border-0">
-                        <i slot="header" class='fas fa-clipboard-list fa-2x'></i>
-                        <a href="{{ route('requests_by_type', ['type' => 'in_progress']) }}" class="card-link text-light">
-                            <h1 class="m-0 font-weight-bold">{{$inProgress}}</h1>
-                            <h6 class="card-text">{{__('In Progress')}}</h6>
-                        </a>
-                    </b-card>
-
-                    <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
-                        text-variant="white" class="bg-primary d-flex flex-row card-border border-0">
-                        <i slot="header" class='fas fa-clipboard-check fa-2x'></i>
-                        <a href="{{ route('requests_by_type', ['type' => 'completed']) }}" class="card-link text-light">
-                            <h1 class="m-0 font-weight-bold">{{$completed}}</h1>
-                            <h6 class="card-text">{{__('Completed')}}</h6>
-                        </a>
-                    </b-card>
-                    @can('view-all_requests')
-                    <b-card header-class="card-size-header px-4 px-xl-5 d-flex d-md-none d-lg-flex align-items-center justify-content-center border-0"
-                        text-variant="white" class="bg-warning d-flex flex-row  card-border border-0">
-                        <i slot="header" class='fas fa-clipboard fa-2x'></i>
-                        <a href="{{ route('requests_by_type', ['type' => 'all']) }}" class="card-link text-light">
-                            <h1 class="m-0 font-weight-bold">{{$allRequest}}</h1>
-                            <h6 class="card-text">{{__('All Requests')}}</h6>
-                        </a>
-                    </b-card>
-                    @endcan
-
-                </div>
-                <advanced-search ref="advancedSearch" type="requests" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" :param-status="status" :param-requester="requester" @change="onChange" @submit="onSearch"></advanced-search>
-            </template>
+            <counter-card-group>
+                <counter-card
+                    color="info"
+                    icon="id-badge"
+                    link="{{ route('requests_by_type', ['type' => '']) }}"
+                    title="My Requests"
+                    url='requests?total=true&pmql=(status = "In Progress") AND (requester = "{{ Auth::user()->username }}")'
+                ></counter-card>
+                <counter-card
+                    color="success"
+                    icon="clipboard-list"
+                    link="{{ route('requests_by_type', ['type' => 'in_progress']) }}"
+                    title="In Progress"
+                    url='requests?total=true&pmql=(status = "In Progress")'
+                ></counter-card>
+                <counter-card
+                    color="primary"
+                    icon="clipboard-check"
+                    link="{{ route('requests_by_type', ['type' => 'completed']) }}"
+                    title="Completed"
+                    url='requests?total=true&pmql=(status = "Completed")'
+                ></counter-card>
+                @can('view-all_requests')
+                    <counter-card
+                        color="warning"
+                        icon="clipboard"
+                        link="{{ route('requests_by_type', ['type' => 'all']) }}"
+                        title="All Requests"
+                        url='requests?total=true'
+                    ></counter-card>
+                @endcan
+            </counter-card-group>
+            <advanced-search ref="advancedSearch" type="requests" :permission="{{ Auth::user()->hasPermissionsFor('users', 'groups') }}" :param-status="status" :param-requester="requester" @change="onChange" @submit="onSearch"></advanced-search>
             <requests-listing ref="requestList" :filter="filter" :pmql="pmql"></requests-listing>
         </div>
     </div>
