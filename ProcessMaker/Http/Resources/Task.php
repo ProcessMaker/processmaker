@@ -71,7 +71,7 @@ class Task extends ApiResource
          * @deprecated since 4.1 Use instead `/api/1.0/users`
          */
         
-         // Used to assign users for self service tasks
+         // Used to retrieve the assignable users for self service tasks
         if (in_array('assignableUsers', $include)) {
             $definition = $this->getDefinition();
             $assignment = $definition['assignment'];
