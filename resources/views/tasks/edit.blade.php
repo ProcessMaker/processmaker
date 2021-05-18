@@ -441,10 +441,6 @@
             height: 20px;
         }
 
-        .multiselect__tags-wrap {
-            display: flex !important;
-        }
-
         .multiselect__tags-wrap img {
             height: 15px;
             border-radius: 50%;
@@ -460,12 +456,6 @@
 
         .multiselect__option--selected.multiselect__option--highlight {
             background: #00bf9c !important;
-        }
-
-        .multiselect__tags {
-            border: 1px solid #b6bfc6 !important;
-            border-radius: 0.125em !important;
-            height: calc(1.875rem + 2px) !important;
         }
 
         .multiselect__tag {
