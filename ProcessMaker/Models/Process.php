@@ -485,9 +485,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         || $activity instanceof ServiceTaskInterface ? 'script' : 'requester';
         $assignmentType = $activity->getProperty('assignment', $default);
 
-        $userByRule = $this->getNextUserByRule($activity, $token);
-        if ($userByRule !== null) {
-            return $userByRule;
+        if ($assignmentType === 'rule_expression') {
+            $userByRule = $this->getNextUserByRule($activity, $token);
+            if ($userByRule !== null) {
+                return $userByRule;
+            }
         }
 
         $definitions = $token->getInstance()->getVersionDefinitions();

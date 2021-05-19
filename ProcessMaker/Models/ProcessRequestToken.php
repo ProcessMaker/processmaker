@@ -635,6 +635,14 @@ class ProcessRequestToken extends Model implements TokenInterface
         $activity = $this->getBpmnDefinition()->getBpmnElementInstance();
         $assignmentRules = $activity->getProperty('assignmentRules', null);
 
+        $assignment = $activity->getProperty('assignment', null);
+
+        if ($assignment !== 'rule_expression') {
+            return $assignment;
+        }
+
+        // Below is for rule_expression only
+
         $instanceData = $assignmentRules ? $this->getInstance()->getDataStore()->getData() : null;
         if ($assignmentRules && $instanceData) {
             $list = json_decode($assignmentRules);
@@ -649,7 +657,7 @@ class ProcessRequestToken extends Model implements TokenInterface
                 }
             }
         }
-        return $activity->getProperty('assignment', null);
+        return $assignment;
     }
 
     /**
