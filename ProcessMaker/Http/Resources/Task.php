@@ -6,6 +6,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Users;
 use ProcessMaker\Models\User;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
+use ProcessMaker\Models\GroupMember;
 use StdClass;
 
 class Task extends ApiResource
