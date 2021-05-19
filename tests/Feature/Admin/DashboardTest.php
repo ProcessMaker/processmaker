@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Admin;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Models\Permission;
 
-class Dashboard extends TestCase
+class DashboardTest extends TestCase
 {
     use RequestHelper;
     

@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Processes;
 
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;

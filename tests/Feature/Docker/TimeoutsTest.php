@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Api;
+namespace Tests\Feature\Docker;
 
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;

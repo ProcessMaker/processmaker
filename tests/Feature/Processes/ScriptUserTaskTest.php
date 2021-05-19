@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Processes;
 
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\CompleteActivity;
@@ -12,7 +12,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Feature\Shared\RequestHelper;
 
-class ScriptsUserTaskTest extends TestCase
+class ScriptUserTaskTest extends TestCase
 {
     use RequestHelper;
 
