@@ -8,6 +8,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Models\GroupMember;
 use StdClass;
 
 class Task extends ApiResource
@@ -75,14 +76,27 @@ class Task extends ApiResource
         /**
          * @deprecated since 4.1 Use instead `/api/1.0/users`
          */
-        if (in_array('assignableUsers', $include)) {
-            $currentUser = \Auth::user();
-            $users = User::where('status', 'ACTIVE')
-                ->where('id', '!=', $currentUser->id)
-                ->where('is_system', 'false')
-                ->limit(100)
-                ->get();
-            $array['assignable_users'] = $users;
+         
+         // Used to retrieve the assignable users for self service tasks
+         if (in_array('assignableUsers', $include)) {
+            $definition = $this->getDefinition();
+            $assignment = $definition['assignment'];
+            $users = [];
+            if ($assignment == 'self_service') {
+                $selfServiceUsers = $array['self_service_groups']['users'];
+                $selfServiceGroups = $array['self_service_groups']['groups'];
+
+                if ($selfServiceUsers !== [""]) {
+                    $assignedUsers = $this->getAssignedUsers($selfServiceUsers);
+                    $users = array_unique(array_merge($users, $assignedUsers));
+                }
+
+                if ($selfServiceGroups !== [""]) {
+                    $assignedUsers = $this->getAssignedGroupMembers($selfServiceGroups);
+                    $users = array_unique(array_merge($users, $assignedUsers));
+                }
+            } 
+            $array['assignable_users'] = $users;   
         }
         return $array;
     }
@@ -101,5 +115,25 @@ class Task extends ApiResource
             $data =  array_merge($data, $this->token_properties['data']);
         }
         return $data;
+    }
+
+    private function getAssignedUsers($users)
+    {
+        foreach($users as $user) {
+            $assignedUsers[] = User::where('status', 'ACTIVE')->where('id', $user)->first();
+        }
+        return $assignedUsers;
+    }
+
+    private function getAssignedGroupMembers($groups)
+    {
+        \Log::debug("groups", ["groups" =>$groups]);
+        foreach($groups as $group) {
+            $groupMembers = GroupMember::where('group_id', $group)->get();
+            foreach ($groupMembers as $member) {
+                $assignedUsers[] = User::where('status', 'ACTIVE')->where('id', $member->member_id)->first();
+            }
+        }
+        return $assignedUsers;
     }
 }
