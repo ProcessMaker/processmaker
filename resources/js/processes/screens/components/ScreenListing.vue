@@ -251,11 +251,10 @@ export default {
           let that = this;
           ProcessMaker.confirmModal(
             this.$t("Caution!"),
-            this.$t("Are you sure you want to delete the screen") +
-              " " +
-              data.title +
-              this.$t("?"),
-            "",
+             this.$t("Are you sure you want to delete the screen {{item}}? Deleting this asset will break any active tasks that are assigned.", {
+                item: data.title,
+              }),
+              "",
             function() {
               ProcessMaker.apiClient
                 .delete("screens/" + data.id)
