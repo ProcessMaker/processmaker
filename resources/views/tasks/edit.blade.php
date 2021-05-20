@@ -430,17 +430,21 @@
             this.$set(this, 'task', val);
           },
           submit(task) {
-            let message = this.$t('Task Completed Successfully');
-            const taskId = task.id;
-            ProcessMaker.apiClient
-            .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
-            .then(() => {
-              window.ProcessMaker.alert(message, 'success', 5, true);
-            })
-            .catch(error => {
-              // If there are errors, the user will be redirected to the request page
-              // to view error details. This is done in loadTask in Task.vue
-            });
+            if (this.isSelfService) {
+              ProcessMaker.alert(this.$t('Claim the Task to continue.'), 'warning');
+            } else {
+              let message = this.$t('Task Completed Successfully');
+              const taskId = task.id;
+              ProcessMaker.apiClient
+              .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
+              .then(() => {
+                window.ProcessMaker.alert(message, 'success', 5, true);
+              })
+              .catch(error => {
+                // If there are errors, the user will be redirected to the request page
+                // to view error details. This is done in loadTask in Task.vue
+              });
+            }
 
           },
           taskUpdated(task) {
