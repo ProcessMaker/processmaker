@@ -91,7 +91,9 @@ class DataManager
 
         // Magic Variable: _request
         $request = $token->getInstance() ?: $token->processRequest;
-        $data['_request'] = $request->attributesToArray();
+        if (!(isset($data['not_override_request']) && $data['not_override_request'] === true)) {
+            $data['_request'] = $request->attributesToArray();
+        }
 
         // Magic Variable: _parent
         if ($token->isMultiInstance()) {
