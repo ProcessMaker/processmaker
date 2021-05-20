@@ -36,7 +36,7 @@
                 variant="link"
                 @click="onReview(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
-                :title="$t('Delete')"
+                :title="isCollection(props.rowData) ? $t('View Collection') : $t('Delete')"
                 :disabled="(!isDeletable(props.rowData) || !permission.includes('edit-processes')) && !isCollection(props.rowData)"
               >
                 <i v-if="isCollection(props.rowData)" class="fas fa-external-link-alt fa-lg fa-fw"></i>
