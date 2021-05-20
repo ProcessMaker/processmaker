@@ -34,7 +34,7 @@
                     <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
                     {{__('This task is unassigned, click Claim Task to assign yourself.')}}
                 </div>
-                <div v-else class="container-fluid h-100 d-flex flex-column">
+                <div class="container-fluid h-100 d-flex flex-column">
                     @can('editData', $task->processRequest)
                         <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
                             <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
