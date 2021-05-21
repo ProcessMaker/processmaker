@@ -24,9 +24,19 @@ class SignalController extends Controller
     {
         $collections = [];
 
-        if(hasPackage('package-collections')) {
-            $collections = \ProcessMaker\Plugins\Collections\Models\Collection::pluck('id')->toArray();
-        }
+        /*if(hasPackage('package-collections')) {
+            \ProcessMaker\Plugins\Collections\Models\Collection::get()->map(function ($item) {
+                if ($item->signal_create)  { 
+                    $collections[] = 'collection_' . $item->id . '_create';
+                }
+                if ($item->signal_update)  { 
+                    $collections[] = 'collection_' . $item->id . '_update';
+                }
+                if ($item->signal_delete)  { 
+                    $collections[] = 'collection_' . $item->id . '_delete';
+                }
+            });
+        }*/
 
         return view('processes.signals.index', compact('collections'));
     }
