@@ -64,7 +64,7 @@ import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
   mixins: [datatableMixin, dataLoadingMixin],
-  props: ["filter", "permission", "collections"],
+  props: ["filter", "permission"],
   data() {
     return {
       orderBy: "id",
@@ -111,8 +111,6 @@ export default {
     },
     isCollection(data) {
       return data.type === 'collection';
-      const myRegex = new RegExp('\\bcollection_[0-9]_(create|update|delete)\\b', 'g');
-      return (!!data.id.match(myRegex)) && this.collections.includes(parseInt(this.getIdCollection(data)));
     },
     onReview(data, index) {
       if (this.isCollection(data)) {
