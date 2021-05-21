@@ -95,7 +95,7 @@
       loadUsers(filter) {
         this.loading = true;
         ProcessMaker.apiClient
-          .get("users?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+          .get("users?order_direction=asc" + (typeof filter === 'string' ? '&filter=' + filter : ''))
           .then(response => {
             this.loading = false;
             this.options = response.data.data.map(item => {
