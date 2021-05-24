@@ -3,6 +3,7 @@
 namespace ProcessMaker\Http\Controllers\Api;
 
 use DOMXPath;
+use Illuminate\Support\Arr;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
@@ -35,6 +36,42 @@ class SignalController extends Controller
         }
 
         $signals = SignalManager::getAllSignals(false, $query->get()->all());
+
+        $collections = [];
+        $collectionsEnabled = [];
+
+        if(hasPackage('package-collections')) {
+            $collection = \ProcessMaker\Plugins\Collections\Models\Collection::get();
+            
+            foreach ($collection as $item) {
+                $collectionsEnabled[] = $item->id;
+                if (!$item->signal_create) {
+                    $collections[] = 'collection_' . $item->id . '_create';
+                }
+                if (!$item->signal_update) {
+                    $collections[] = 'collection_' . $item->id . '_update';
+                }
+                if (!$item->signal_delete) {
+                    $collections[] = 'collection_' . $item->id . '_delete';
+                }
+            };
+        }
+
+        //verify active signals
+        $replace = ['collection_', '_create', '_update', '_delete'];
+        $signals = $signals->transform(function($item) use($collections, $collectionsEnabled, $replace) {
+            if (!in_array($item['id'], $collections)) {
+                $item['type'] = 'signal';
+
+                if (preg_match('/\bcollection_[0-9]_(create|update|delete)\b/', $item['id']) && in_array(str_replace($replace, '', $item['id']), $collectionsEnabled)) {
+                    $item['type'] = 'collection';
+                }
+                return $item;
+            }
+        });
+
+        //remove items nulls
+        $signals = $signals->filter();
 
         $filter = $request->input('filter', '');
         if ($filter) {

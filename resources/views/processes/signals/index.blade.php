@@ -40,7 +40,7 @@
             </div>
         </div>
         <div class="container-fluid">
-            <signals-listing ref="signalList" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}" v-on:reload="reload" :collections="@json($collections)"/>
+            <signals-listing ref="signalList" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}" v-on:reload="reload"/>
         </div>
     </div>
 
