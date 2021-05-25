@@ -75,23 +75,20 @@ class Task extends ApiResource
          // Used to retrieve the assignable users for self service tasks
         if (in_array('assignableUsers', $include)) {
             $definition = $this->getDefinition();
-            if (isset($definition['assignment'])) {
-                $assignment = $definition['assignment'];
+            if (isset($definition['assignment']) && $definition['assignment'] == 'self_service') {
                 $users = [];
-                if ($assignment == 'self_service') {
-                    $selfServiceUsers = $array['self_service_groups']['users'];
-                    $selfServiceGroups = $array['self_service_groups']['groups'];
-    
-                    if ($selfServiceUsers !== [""]) {
-                        $assignedUsers = $this->getAssignedUsers($selfServiceUsers);
-                        $users = array_unique(array_merge($users, $assignedUsers));
-                    }
-    
-                    if ($selfServiceGroups !== [""]) {
-                        $assignedUsers = $this->getAssignedGroupMembers($selfServiceGroups);
-                        $users = array_unique(array_merge($users, $assignedUsers));
-                    }
-                } 
+                $selfServiceUsers = $array['self_service_groups']['users'];
+                $selfServiceGroups = $array['self_service_groups']['groups'];
+
+                if ($selfServiceUsers !== [""]) {
+                    $assignedUsers = $this->getAssignedUsers($selfServiceUsers);
+                    $users = array_unique(array_merge($users, $assignedUsers));
+                }
+
+                if ($selfServiceGroups !== [""]) {
+                    $assignedUsers = $this->getAssignedGroupMembers($selfServiceGroups);
+                    $users = array_unique(array_merge($users, $assignedUsers));
+                }
                 $array['assignable_users'] = $users;   
             }
         }
