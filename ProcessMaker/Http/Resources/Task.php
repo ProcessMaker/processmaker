@@ -75,23 +75,25 @@ class Task extends ApiResource
          // Used to retrieve the assignable users for self service tasks
         if (in_array('assignableUsers', $include)) {
             $definition = $this->getDefinition();
-            $assignment = $definition['assignment'];
-            $users = [];
-            if ($assignment == 'self_service') {
-                $selfServiceUsers = $array['self_service_groups']['users'];
-                $selfServiceGroups = $array['self_service_groups']['groups'];
-
-                if ($selfServiceUsers !== [""]) {
-                    $assignedUsers = $this->getAssignedUsers($selfServiceUsers);
-                    $users = array_unique(array_merge($users, $assignedUsers));
-                }
-
-                if ($selfServiceGroups !== [""]) {
-                    $assignedUsers = $this->getAssignedGroupMembers($selfServiceGroups);
-                    $users = array_unique(array_merge($users, $assignedUsers));
-                }
-            } 
-            $array['assignable_users'] = $users;   
+            if (isset($definition['assignment'])) {
+                $assignment = $definition['assignment'];
+                $users = [];
+                if ($assignment == 'self_service') {
+                    $selfServiceUsers = $array['self_service_groups']['users'];
+                    $selfServiceGroups = $array['self_service_groups']['groups'];
+    
+                    if ($selfServiceUsers !== [""]) {
+                        $assignedUsers = $this->getAssignedUsers($selfServiceUsers);
+                        $users = array_unique(array_merge($users, $assignedUsers));
+                    }
+    
+                    if ($selfServiceGroups !== [""]) {
+                        $assignedUsers = $this->getAssignedGroupMembers($selfServiceGroups);
+                        $users = array_unique(array_merge($users, $assignedUsers));
+                    }
+                } 
+                $array['assignable_users'] = $users;   
+            }
         }
         return $array;
     }
