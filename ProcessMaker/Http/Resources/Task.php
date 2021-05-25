@@ -80,9 +80,8 @@ class Task extends ApiResource
          // Used to retrieve the assignable users for self service tasks
          if (in_array('assignableUsers', $include)) {
             $definition = $this->getDefinition();
-            $assignment = $definition['assignment'];
-            $users = [];
-            if ($assignment == 'self_service') {
+            if (isset($definition['assignment']) && $definition['assignment'] == 'self_service') {
+                $users = [];
                 $selfServiceUsers = $array['self_service_groups']['users'];
                 $selfServiceGroups = $array['self_service_groups']['groups'];
 
@@ -95,8 +94,8 @@ class Task extends ApiResource
                     $assignedUsers = $this->getAssignedGroupMembers($selfServiceGroups);
                     $users = array_unique(array_merge($users, $assignedUsers));
                 }
-            } 
-            $array['assignable_users'] = $users;   
+                $array['assignable_users'] = $users;   
+            }
         }
         return $array;
     }
