@@ -45,6 +45,7 @@
 
         <b-navbar-nav class="d-flex align-items-center">
                 <b-nav-item v-for="item in {{ json_encode ($menuItems) }}"
+                            :key="item.id"
                             :href="item.link"
                             :link-classes="item.attributes.class_link"
                             :target="item.attributes.target"
