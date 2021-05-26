@@ -98,6 +98,81 @@ trait MakeHttpRequests
     }
 
     /**
+     * Prepare data to be used in body (mustache)
+     *
+     * @param array $requestData
+     * @param array $outboundConfig
+     * @param string $type PARAM HEADER BODY
+     *
+     * @return array
+     */
+    private function prepareData(array $requestData, array $outboundConfig, $type)
+    {
+        $data = $requestData;
+        foreach ($outboundConfig as $outbound) {
+            if ($outbound['type'] === $type) {
+                $data[$outbound['key']] = $this->evalExpression($outbound['value'], $requestData);
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Evaluate a BPMN expression
+     * ex.
+     *      foo
+     *      _request.id
+     *      _user.id
+     *      {{ form.age }}
+     *      "{{ form.lastname }} {{ form.firstname }}"
+     *
+     * @return mixed
+     */
+    private function evalExpression($expression, array $data)
+    {
+        try {
+            $formal = new FormalExpression();
+            $formal->setBody($expression);
+            return $formal($data);
+        } catch (Exception $exception) {
+            return "{$expression}: " . $exception->getMessage();
+        }
+    }
+
+    /**
+     * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
+     *
+     * @param array $data, request data
+     * @param array $config, datasource configuration
+     *
+     * @return array
+     */
+    private function prepareRequestWithOutboundConfig(array $requestData, array &$config)
+    {
+        $data = $this->prepareData($requestData, $config['outboundConfig'], 'PARAM');
+        $endpoint = $this->endpoints[$config['endpoint']];
+        $method = $this->getMustache()->render($endpoint['method'], $data);
+
+        $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $data);
+
+        $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
+            ? $this->credentials['verify_certificate']
+            : true;
+
+        $data = $this->prepareData($requestData, $config['outboundConfig'], 'HEADER');
+        $headers = $this->addHeaders($endpoint, $config, $data);
+        $data = $this->prepareData($requestData, $config['outboundConfig'], 'BODY');
+        $body = $this->getMustache()->render($endpoint['body'], $data);
+        $bodyType = null;
+        if (isset($endpoint['body_type'])) {
+            $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
+        }
+        $request = [$method, $url, $headers, $body, $bodyType];
+        $request = $this->addAuthorizationHeaders(...$request);
+        return $request;
+    }
+
+    /**
      * Add authorization parameters
      *
      * @param array ...$config
