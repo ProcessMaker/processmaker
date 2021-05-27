@@ -216,7 +216,11 @@ trait MakeHttpRequests
 
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
-                $value = Arr::get($merged, $map['value'], '');
+                if ($map['value']) {
+                    $value = Arr::get($merged, $map['value'], '');
+                } else {
+                    $value = $content;
+                }
                 Arr::set($mapped, $map['key'], $value);
             }
         }
