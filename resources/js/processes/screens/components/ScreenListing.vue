@@ -25,7 +25,7 @@
             @click="onAction('edit-screen', props.rowData, props.rowIndex)"
             v-if="permission.includes('edit-screens')"
           >{{props.rowData.title}}</b-link>
-          <span v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
+          <span v-else>{{props.rowData.title}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
