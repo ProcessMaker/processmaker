@@ -25,7 +25,7 @@
             v-if="permission.includes('edit-scripts')"
             @click="onAction('edit-script', props.rowData, props.rowIndex)"
           >{{props.rowData.title}}</b-link>
-          <span v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
+          <span v-else>{{props.rowData.title}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
