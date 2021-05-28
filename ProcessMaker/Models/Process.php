@@ -1203,7 +1203,6 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 $process->getBpmnElementInstance()->getTransitions($engine->getRepository());
             }
         } catch (Throwable $exception) {
-            throw $exception;
             $warning = [
                 'title' => __('Process invalid for execution'),
                 'text' => __('Process invalid for execution'),
