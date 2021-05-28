@@ -51,8 +51,12 @@ export default {
           this.spin = 0;
           var instance = response.data;
           window.location = "/requests/" + instance.id;
-        }).catch(() => {
+        }).catch((err) => {
           this.disabled = false;
+          const data = err.response.data;
+          if (data.message) {
+            ProcessMaker.alert(data.message, 'danger');
+          }
         });
     },
     showRequestDetails: function(id) {

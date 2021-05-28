@@ -1204,8 +1204,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             }
         } catch (Throwable $exception) {
             $warning = [
-                'title' => __('Process invalid for execution'),
-                'text' => __('Process invalid for execution'),
+                'title' => __('Invalid process'),
+                'text' => __('Check the process design'),
             ];
             if ($addWarnings) {
                 $warnings = $this->warnings;
