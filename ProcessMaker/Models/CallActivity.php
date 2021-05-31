@@ -10,7 +10,6 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Jobs\CopyRequestFiles;
@@ -37,11 +36,13 @@ class CallActivity implements CallActivityInterface
     {
         $this->attachEvent(
             ActivityInterface::EVENT_ACTIVITY_ACTIVATED,
-            function ($self, TokenInterface $token, FlowInterface $sequenceFlow) {
-                $instance = $this->callSubprocess($token, $sequenceFlow);
+            function (ActivityInterface $callActivity, TokenInterface $token) {
+                $config = json_decode($callActivity->getProperty('config'), true);
+                $startId = is_array($config) && isset($config['startEvent']) ? $config['startEvent'] : null;
+                $instance = $this->callSubprocess($token, $startId);
                 $this->getRepository()
                     ->getTokenRepository()
-                    ->persistCallActivityActivated($token, $instance, $sequenceFlow);
+                    ->persistCallActivityActivated($token, $instance, $startId);
                 $this->linkProcesses($token, $instance);
                 $this->syncronizeInstances($token->getInstance(), $instance);
             }
@@ -53,11 +54,9 @@ class CallActivity implements CallActivityInterface
      *
      * @return ExecutionInstanceInterface
      */
-    protected function callSubprocess(TokenInterface $token, FlowInterface $sequenceFlow)
+    protected function callSubprocess(TokenInterface $token, $startId)
     {
         $callable = $this->getCalledElement();
-        // Capability to specify the target start event on the sequence flow to the call activity.
-        $startId = $sequenceFlow->getProperty('startEvent');
         $dataStore = $callable->getRepository()->createDataStore();
         // The entire data model is sent to the target
         $dataManager = new DataManager();
@@ -74,9 +73,6 @@ class CallActivity implements CallActivityInterface
         if ($configString) {
             $config = json_decode($configString, true);
             $data['_parent']['config'] = $config;
-            if (isset($config['startEvent'])) {
-                $startId = $config['startEvent'];
-            }
         }
 
         $startEvent = $startId ? $callable->getOwnerDocument()->getElementInstanceById($startId) : null;
