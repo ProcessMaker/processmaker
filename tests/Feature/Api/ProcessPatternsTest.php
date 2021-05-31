@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\GlobalDataStore;
 use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
@@ -57,6 +58,7 @@ class ProcessPatternsTest extends TestCase
         $tests = [];
         $tests = $this->prepareTestCases('Conditional_StartEvent.bpmn', $tests);
         $tests = $this->prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
+        $tests = $this->prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
         return $tests;
     }
 
@@ -105,7 +107,7 @@ class ProcessPatternsTest extends TestCase
         foreach ($startEvents as $startEvent) {
             $data = [];
             $result = [];
-            $this->runProcess($bpmnFile, $data, $startEvent->getAttribute('id'), $result, []);
+            $this->runProcess($bpmnFile, $data, $startEvent->getAttribute('id'), $result, [], []);
         }
     }
 
@@ -120,7 +122,16 @@ class ProcessPatternsTest extends TestCase
     private function runProcessWithContext($bpmnFile, $context = [])
     {
         $events = isset($context['events']) ? $context['events'] : [];
-        $this->runProcess($bpmnFile, $context['data'], $context['startEvent'], $context['result'], $events);
+        $output = isset($context['output']) ? $context['output'] : [];
+        if (isset($context['requires'])) {
+            foreach($context['requires'] as $index => $process) {
+                $this->createProcess([
+                    'id' => $index + 1,
+                    'bpmn' => file_get_contents("{$this->basePath}{$process}"),
+                ]);
+            }
+        }
+        $this->runProcess($bpmnFile, $context['data'], $context['startEvent'], $context['result'], $events, $output);
     }
 
     /**
@@ -134,7 +145,7 @@ class ProcessPatternsTest extends TestCase
      *
      * @return void
      */
-    private function runProcess($bpmnFile, $data = [], $startEvent, $expectedResult, $events)
+    private function runProcess($bpmnFile, $data = [], $startEvent, $expectedResult, $events, $output)
     {
         Cache::store('global_variables')->flush();
         $process = $this->createProcess(file_get_contents("{$this->basePath}{$bpmnFile}"));
@@ -146,7 +157,7 @@ class ProcessPatternsTest extends TestCase
             $this->artisan('schedule:run');
             $this->artisan('schedule:run');
         } else {
-            $this->startProcess($process, $startEvent, $data);
+            $request = $this->startProcess($process, $startEvent, $data);
         }
         $pending = 1;
         while ($pending) {
@@ -201,6 +212,10 @@ class ProcessPatternsTest extends TestCase
         $errors = $this->getRequestsErrors();
         // Assertion: Check the process run as expected
         $this->assertEquals($expectedResult, $tasks, "FAILED: {$bpmnFile}\n{$errors}");
+        if ($output) {
+            $request->refresh();
+            $this->assertData($output, $request->data);
+        }
     }
 
     private function getRequestsErrors()
@@ -214,5 +229,47 @@ class ProcessPatternsTest extends TestCase
             }
         }
         return \implode("\n", $errors);
+    }
+
+    /**
+     * Assert that $data contains the expected $subset
+     *
+     * @param mixed $subset
+     * @param mixed $data
+     * @param string $message
+     * @param bool $skip
+     *
+     * @return mixed
+     */
+    private function assertData($subset, $data, $message = 'data', $skip = false)
+    {
+        if (!is_array($subset) || !is_array($data)) {
+            if ($skip) {
+                return $subset == $data;
+            } else {
+                return $this->assertEquals($subset, $data, $message . ' = ' . \json_encode($data) . ' does not match ' . \json_encode($subset));
+            }
+        }
+        foreach ($subset as $key => $value) {
+            if (substr($key, 0, 1) !== '*') {
+                $this->assertData($value, $data[$key], "{$message}.{$key}");
+                unset($subset[$key]);
+                unset($data[$key]);
+            }
+        }
+        foreach ($subset as $key => $value) {
+            foreach ($data as $key1 => $value1) {
+                if ($this->assertData($value, $value1, "{$message}.{$key}", true)) {
+                    unset($subset[$key]);
+                    unset($data[$key1]);
+                    break;
+                }
+            }
+        }
+        if ($skip) {
+            return count($subset) === 0;
+        } else {
+            $this->assertCount(0, $subset, "{$message} does not match");
+        }
     }
 }
