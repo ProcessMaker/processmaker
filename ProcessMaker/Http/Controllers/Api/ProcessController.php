@@ -976,7 +976,7 @@ class ProcessController extends Controller
         $validation = [];
         if (!$process->validateBpmnDefinition(false, $validation)) {
             return response()->json([
-                'message' => $validation['title'],
+                'message' => $validation['title'] . ': ' . $validation['text'],
             ], 422);
         }
         // Trigger the start event
