@@ -491,7 +491,7 @@ class TokenRepository implements TokenRepositoryInterface
      * @param ExecutionInstanceInterface $subprocess
      * @return void
      */
-    public function persistCallActivityActivated(TokenInterface $token, ExecutionInstanceInterface $subprocess, FlowInterface $sequenceFlow)
+    public function persistCallActivityActivated(TokenInterface $token, ExecutionInstanceInterface $subprocess, $startId)
     {
         $process = $token->getInstance()->getProcess();
         if ($process->isNonPersistent()) {
@@ -510,7 +510,7 @@ class TokenRepository implements TokenRepositoryInterface
         $subprocess->parent_request_id = $source->getKey();
         $subprocess->saveOrFail();
         $token->subprocess_request_id = $subprocess->id;
-        $token->subprocess_start_event_id = $sequenceFlow->getProperty('startEvent');
+        $token->subprocess_start_event_id = $startId;
         $token->updateTokenProperties();
         $token->saveOrFail();
     }
