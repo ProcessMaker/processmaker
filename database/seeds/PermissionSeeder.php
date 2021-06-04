@@ -33,6 +33,12 @@ class PermissionSeeder extends Seeder
             'edit-environment_variables',
             'view-environment_variables',
         ],
+        'API Connectors' => [
+            'create-api_connectors',
+            'delete-api_connectors',
+            'edit-api_connectors',
+            'view-api_connectors',
+        ],
         'Groups' => [
             'create-groups',
             'delete-groups',

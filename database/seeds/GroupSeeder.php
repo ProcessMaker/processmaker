@@ -45,6 +45,7 @@ class GroupSeeder extends Seeder
                 'create-scripts',
                 'edit-scripts',
                 'delete-scripts',
+                'view-api_connectors',
                 'view-environment_variables',
                 'view-users',
                 'view-groups',

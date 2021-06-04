@@ -160,6 +160,13 @@ class GenerateMenus
                     'id' => 'process-environment'
                 ]);
             }
+            if (\Auth::check() && \Auth::user()->can('view-api_connectors')) {
+                $submenu->add(__('API Connectors'), [
+                    'route' => 'api-connectors.index',
+                    'icon' => 'fa-database',
+                    'id' => 'process-api'
+                ]);
+            }
             if (\Auth::check() && \Auth::user()->can('edit-processes')) {
                 $submenu->add(__('Signals'), [
                     'route' => 'signals.index',

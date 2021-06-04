@@ -26,6 +26,8 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('admin', 'AdminController@index')->name('admin.index');
 
     Route::namespace('Process')->prefix('designer')->group(function () {
+        Route::get('api-connectors', 'ApiConnectorsController@index')->name('api-connectors.index')->middleware('can:view-api_connectors');
+
         Route::get('environment-variables', 'EnvironmentVariablesController@index')->name('environment-variables.index')->middleware('can:view-environment_variables');
         Route::get('environment-variables/{environment_variable}/edit', 'EnvironmentVariablesController@edit')->name('environment-variables.edit')->middleware('can:edit-environment_variables,environment_variable ');
 
