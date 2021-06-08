@@ -1,22 +1,24 @@
 <template>
   <div ref="colorpicker">
-    <!--<input type="text" class="form-control" v-model="colorValue" @focus="showPicker()" @input="updateFromInput"/>-->
-    <span class="input-group-addon">
-      <span class="badge badge-pill" :style="background" @click="togglePicker()"> {{colorValue}}</span>
-      <picker :value="colors" @input="updateFromPicker" v-if="displayPicker"></picker>
-    </span>
+    <button type="button" class="badge badge-pill border-0 outline-0" :style="style" @click="togglePicker()" v-uni-id="'picker-button'"> {{colorValue}}</button>
+    <label class="pl-2" v-uni-for="'picker-button'">{{ title }}</label>
+    <picker :value="colors" @input="updateFromPicker" v-if="displayPicker"></picker>
   </div>
 </template>
 
 <script>
 
   import {Sketch} from 'vue-color';
+  import { createUniqIdsMixin } from "vue-uniq-ids";
+  const uniqIdsMixin = createUniqIdsMixin();
+  const tinycolor = require("tinycolor2");
 
   export default {
     components: {
       'picker': Sketch,
     },
-    props: ['color'],
+    mixins: [uniqIdsMixin],
+    props: ['color', 'title'],
     data() {
       return {
         colors: {
@@ -27,9 +29,18 @@
       }
     },
     computed: {
-      background() {
-        return 'background-color:' + this.colorValue;
-      },
+      style() {
+        let styles = [];
+        styles.push('background-color: ' + this.colorValue);
+        
+        if (tinycolor(this.colorValue).getBrightness() < 160) {
+          styles.push('color: white');
+        } else {
+          styles.push('color: black');
+        }
+        
+        return styles.join('; ');
+      }
     },
     mounted() {
       this.setColor(this.color || '#000000');
