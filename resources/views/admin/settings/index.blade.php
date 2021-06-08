@@ -17,6 +17,11 @@
 @section('content')
     <div class="px-3" id="settings">
         <settings-groups></settings-groups>
+        @isset($addons)
+            @foreach ($addons as $addon)
+                {!! $addon['content'] ?? '' !!}
+            @endforeach
+        @endisset
     </div>
 @endsection
 
