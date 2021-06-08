@@ -19,70 +19,93 @@
         <div class="row" role="document">
             <div class="col">
                 <div class="card card-body p-3">
-                    <div class="form-group">
-                        {!! Form::label('fileLogin', __('Custom Login Logo')) !!}
-                        <small class="d-block">{{ __('We recommended a transparent PNG at :size pixels.', ['size' => '292x52']) }}</small>
-                        <div class="input-group">
-                            <input type="text" name="fileLogin" class="form-control" v-model="fileLogin.selectedFile"
-                                   placeholder="{{__('Choose a login logo image')}}">
-                            <button type="button" @click="browseLogin" class="btn btn-secondary"><i class="fas fa-upload"></i>
-                                {{__('Upload file')}}
-                            </button>
-                            <input type="file" class="custom-file-input" :class="{'is-invalid': errors.logo}"
-                                   ref="customFileLogin" @change.prevent="onFileChangeLogin"
-                                   accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
-                            <div class="invalid-feedback d-block" v-for="error in errors.fileLogin">@{{error}}</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('fileLogo', __('Custom Logo')) !!}
-                        <small class="d-block">{{ __('Use a transparent PNG at :size pixels for best results.', ['size' => '150x40']) }}</small>
-                        <div class="input-group">
-                            <input type="text" name="fileLogo" class="form-control" v-model="fileLogo.selectedFile"
-                                   placeholder="{{__('Choose logo image')}}">
-                            <button type="button" @click="browseLogo" class="btn btn-secondary"><i class="fas fa-upload"></i>
-                                {{__('Upload file')}}
-                            </button>
-                            <input type="file" class="custom-file-input" :class="{'is-invalid': errors.logo}"
-                                   ref="customFileLogo" @change.prevent="onFileChangeLogo"
-                                   accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
-                            <div class="invalid-feedback" v-for="error in errors.fileLogo">@{{error}}</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('fileIcon', __('Custom Icon')) !!}
-                        <small class="d-block">{{ __('Use a transparent PNG at :size pixels for best results.', ['size' => '40x40']) }}</small>
-                        <div class="input-group">
-                            <input type="text" name="fileIcon" class="form-control" v-model="fileIcon.selectedFile"
-                                   placeholder="{{__('Choose icon image')}}">
-                            <button type="button" @click="browseIcon" class="btn btn-secondary"><i class="fas fa-upload"></i>
-                                {{__('Upload file')}}
-                            </button>
-                            <input type="file" class="custom-file-input" :class="{'is-invalid': errors.icon}"
-                                   ref="customFileIcon" @change.prevent="onFileChangeIcon"
-                                   accept="image/x-png,image/gif,image/jpeg" style="height: 1em;">
-                            <div class="invalid-feedback d-block" v-for="error in errors.fileIcon">@{{error}}</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('colors', __('Custom Colors')) !!}
-                        <small class="d-block">{{ __('Click on the color value to use the color picker.') }}</small>
-                        <ul class="list-group w-100">
+                    <b-form-group
+                        :description="$t('Use a transparent PNG at @{{size}} pixels for best results.', { size: '292x52'})"
+                        :label="$t('Custom Login Logo')"
+                        label-for="custom-login-logo"
+                        class="mb-3"
+                        :state="fieldState('fileLogin')"
+                        :invalid-feedback="errorMessage('fileLogin')"
+                    >
+                        <b-form-file
+                            id="custom-login-logo"
+                            :placeholder="placeholder(fileLogin, $t('Choose a login logo image'))"
+                            ref="customFileLogin"
+                            accept="image/x-png,image/gif,image/jpeg"
+                            @change.prevent="onFileChangeLogin"
+                        ></b-form-file>
+                    </b-form-group>
+
+                    <b-form-group
+                        :description="$t('Use a transparent PNG at @{{size}} pixels for best results.', { size: '150x40'})"
+                        :label="$t('Custom Logo')"
+                        label-for="custom-logo"
+                        class="mb-3"
+                        :state="fieldState('fileLogo')"
+                        :invalid-feedback="errorMessage('fileLogo')"
+                    >
+                        <b-form-file
+                            id="custom-logo"
+                            :placeholder="placeholder(fileLogo, $t('Choose logo image'))"
+                            ref="customFileLogo"
+                            accept="image/x-png,image/gif,image/jpeg"
+                            @change.prevent="onFileChangeLogo"
+                        ></b-form-file>
+                    </b-form-group>
+
+                    <b-form-group
+                        :description="$t('Use a transparent PNG at @{{size}} pixels for best results.', { size: '40x40'})"
+                        :label="$t('Custom Icon')"
+                        label-for="custom-icon"
+                        class="mb-3"
+                        :state="fieldState('fileIcon')"
+                        :invalid-feedback="errorMessage('fileIcon')"
+                    >
+                        <b-form-file
+                            id="custom-icon"
+                            :placeholder="placeholder(fileIcon, $t('Choose icon image'))"
+                            ref="customFileIcon"
+                            accept="image/x-png,image/gif,image/jpeg"
+                            @change.prevent="onFileChangeIcon"
+                        ></b-form-file>
+                    </b-form-group>
+                    
+                    <b-form-group
+                        :description="$t('Enter the alt text that should accompany the logos and icon.')"
+                        label="Alternative Text"
+                        label-for="alt-text"
+                        class="mb-3"
+                        :state="fieldState('altText')"
+                        :invalid-feedback="errorMessage('altText')"
+                    >
+                        <b-form-input v-model="altText" id="alt-text"></b-form-input>
+                    </b-form-group>
+                    
+                    <b-form-group
+                        :description="$t('Click on the color value to select custom colors.')"
+                        :label="$t('Custom Colors')"
+                        label-for="color-list"
+                        class="mb-3"
+                        :state="fieldState('variables')"
+                        :invalid-feedback="errorMessage('variables')"
+                    >
+                        <ul class="list-group w-100" id="color-list">
                             <li class="list-group-item" v-for="item in customColors">
-                                <div class="input-group">
-                                    <div v-bind:class = "(item.value == '#000000') ? 'text-light input-group-prepend' : 'input-group-prepend'">
-                                        <color-picker :color="item.value" v-model="item.value"></color-picker>
-                                    </div>
-                                    <div class="input-group-append">
-                                        <span class="pl-2">@{{ item.title }}</span>
-                                    </div>
-                                </div>
+                                <color-picker :color="item.value" :title="item.title" v-model="item.value"></color-picker>
                             </li>
-                        </ul>
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('fileIcon', __('Custom Font')) !!}
+                        </ul>                        
+                    </b-form-group>
+
+                    <b-form-group
+                        :description="$t('Select which font to use throughout the system.')"
+                        :label="$t('Custom Font')"
+                        label-for="custom-font"
+                        class="mb-3"
+                        :state="fieldState('sansSerifFont')"
+                        :invalid-feedback="errorMessage('sansSerifFont')"
+                    >
                         <multiselect v-model="selectedSansSerifFont"
+                                     id="custom-font"
                                      placeholder="{{__('Type to search')}}"
                                      :options="fontsDefault"
                                      :multiple="false"
@@ -104,17 +127,32 @@
                                 <span :style="font(props.option.id)">@{{ props.option.title }}</span>
                             </template>
                         </multiselect>
-                    </div>
-                    <div class="form-group">
-                        <!-- Do not use FormHtmlEditor since we dont want inline -->
-                        {!! Form::label('fileIcon', __('Login Page Footer')) !!}
-                        <editor v-model="loginFooter" :init="editorSettings"></editor>
-                    </div>
+                    </b-form-group>
+
+                    <b-form-group
+                        :description="$t('Enter footer HTML to display on the login page.')"
+                        :label="$t('Login Page Footer')"
+                        label-for="login-footer"
+                        class="mb-3"
+                        :state="fieldState('loginFooter')"
+                        :invalid-feedback="errorMessage('loginFooter')"
+                    >
+                        <editor id="login-footer" v-model="loginFooter" :init="editorSettings"></editor>
+                    </b-form-group>
+                    
                     <br>
                     <div class="d-flex">
-                        {!! Form::button('<i class="fas fa-undo"></i> ' . __('Reset'), ['class'=>'btn btn-outline-danger', '@click' => 'onReset', ':disabled' => '!config' ]) !!}
-                        {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary ml-auto', '@click' => 'onClose']) !!}
-                        {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-3', '@click' => 'onSubmit']) !!}
+                        <b-button variant="outline-danger" @click="onReset">
+                            <i class="fas fa-undo"></i> @{{ $t('Reset') }}
+                        </b-button>
+                        
+                        <b-button variant="outline-secondary" class="ml-auto" @click="onClose">
+                            @{{ $t('Cancel') }}
+                        </b-button>
+                        
+                        <b-button variant="secondary" class="ml-3" @click="onSubmit">
+                            @{{ $t('Save') }}
+                        </b-button>
                     </div>
                 </div>
             </div>
@@ -155,11 +193,13 @@
     <script>
 
       const loginFooterSetting = @json($loginFooter);
+      const altTextSetting = @json($altText);
 
       new Vue({
         el: '#editCss',
         data() {
           return {
+            altText: '',
             loginFooter: '',
             editorSettings: {
               content_css: '/css/app.css',
@@ -345,8 +385,33 @@
           });
 
           this.loginFooter = _.get(loginFooterSetting, 'config.html', '');
+          this.altText = altTextSetting;
         },
         methods: {
+          placeholder(object, string) {
+            let filename = _.get(object, 'selectedFile');
+            
+            if (filename) {
+              return filename;
+            } else {
+              return string;
+            }
+          },
+          fieldState(field) {
+            if (_.get(this.errors, field)) {
+              return false;
+            } else {
+              return true;
+            }
+          },
+          errorMessage(field) {
+            const errors = _.get(this.errors, field);
+            if (errors) {
+              return errors.join(' ');
+            } else {
+              return '';
+            }
+          },
           resetErrors() {
             this.errors = Object.assign({}, {
               login: null,
@@ -372,6 +437,7 @@
             formData.append('variables', JSON.stringify(this.customColors));
             formData.append('sansSerifFont', JSON.stringify(this.selectedSansSerifFont));
             formData.append('loginFooter', this.loginFooter);
+            formData.append('altText', this.altText);
 
             this.onCreate(formData);
           },
@@ -392,6 +458,7 @@
                 formData.append('variables', JSON.stringify(this.colorDefault));
                 formData.append('sansSerifFont', JSON.stringify({id:"'Open Sans'", value:'Open Sans'}));
                 formData.append('loginFooter', '');
+                formData.append('altText', 'ProcessMaker');
 
                 this.onCreate(formData);
               }
@@ -403,6 +470,10 @@
                 this.$refs.modalLoading.show();
               })
               .catch(error => {
+                ProcessMaker.alert(
+                  _.get(error, 'response.data.message', this.$t('The given data was invalid.')),
+                  'danger'
+                );
                 if (error.response.status && error.response.status === 422) {
                   this.errors = error.response.data.errors;
                 }
@@ -426,7 +497,6 @@
             this.$refs.customFileLogin.click();
           },
           onFileChangeLogin(e) {
-            console.log('onFileChangeLogin');
             let files = e.target.files || e.dataTransfer.files;
 
             if (!files.length) {
@@ -434,13 +504,12 @@
             }
 
             this.fileLogin.selectedFile = files[0].name;
-            this.fileLogin.file = this.$refs.customFileLogin.files[0];
+            this.fileLogin.file = files[0];
           },
           browseLogo() {
             this.$refs.customFileLogo.click();
           },
           onFileChangeLogo(e) {
-            console.log('onFileChangeLogo');
             let files = e.target.files || e.dataTransfer.files;
 
             if (!files.length) {
@@ -448,13 +517,12 @@
             }
 
             this.fileLogo.selectedFile = files[0].name;
-            this.fileLogo.file = this.$refs.customFileLogo.files[0];
+            this.fileLogo.file = files[0];
           },
           browseIcon() {
             this.$refs.customFileIcon.click();
           },
           onFileChangeIcon(e) {
-            console.log('onFileChangeIcon');
             let files = e.target.files || e.dataTransfer.files;
 
             if (!files.length) {
@@ -462,7 +530,7 @@
             }
 
             this.fileIcon.selectedFile = files[0].name;
-            this.fileIcon.file = this.$refs.customFileIcon.files[0];
+            this.fileIcon.file = files[0];
           },
         }
       });
