@@ -6,7 +6,7 @@
           @php
             $logo = \ProcessMaker\Models\Setting::getLogo();
           @endphp
-          <img src={{$logo}}>
+          <img src={{$logo}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}">
         </a>
       </li>
       <li v-else v-cloak class="logo-closed">
@@ -14,7 +14,7 @@
           @php
             $icon = \ProcessMaker\Models\Setting::getIcon();
           @endphp
-          <img src={{$icon}}>
+          <img src={{$icon}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}">
         </a>
       </li>
     </ul>

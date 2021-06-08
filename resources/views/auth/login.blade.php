@@ -9,7 +9,7 @@ Login
     @php
       $loginLogo = \ProcessMaker\Models\Setting::getLogin();
     @endphp
-    <img src={{$loginLogo}}>
+    <img src={{$loginLogo}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}">
   </div>
 
   <div class="row">
