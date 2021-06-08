@@ -89,6 +89,7 @@ class CssOverrideController extends Controller
         $setting->saveOrFail();
 
         $this->setLoginFooter($request);
+        $this->setAltText($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
@@ -108,6 +109,21 @@ class CssOverrideController extends Controller
             'key' => 'login-footer'
         ], [
             'config' => ['html' => $footerContent]
+        ]);
+    }
+
+    private function setAltText(Request $request)
+    {
+        $altText = $request->input('altText', '');
+        if ($altText === "null") {
+            $altText = "";
+        }
+
+        Setting::updateOrCreate([
+            'key' => 'logo-alt-text',
+        ], [
+            'format' => 'text',
+            'config' => $altText,
         ]);
     }
 
@@ -135,6 +151,9 @@ class CssOverrideController extends Controller
             $this->uploadFile($setting->refresh(), $request, 'fileIcon', Setting::COLLECTION_CSS_ICON, Setting::DISK_CSS);
             Cache::forget('css-icon');
         }
+        
+        $this->setLoginFooter($request);
+        $this->setAltText($request);
 
         $this->writeColors(json_decode($request->input('variables', '[]'), true));
         $this->writeFonts(json_decode($request->input("sansSerifFont", '')));
