@@ -110,6 +110,7 @@ Route::group(
     Route::delete('process_categories/{process_category}', 'ProcessCategoryController@destroy')->name('process_categories.destroy')->middleware('can:delete-process-categories');
 
     // Permissions
+    Route::get('permissions', 'PermissionController@index')->name('permissions.index');
     Route::put('permissions', 'PermissionController@update')->name('permissions.update')->middleware('can:edit-users');
 
     // Tasks
