@@ -56,7 +56,7 @@
           v-for="(btn,index) in buttons"
           :key="`btn-${index}`"
           v-bind="btn.ui.props"
-          @click="window[btn.handler] && window[btn.handler]()"
+          @click="handler(btn)"
           >{{btn.name}}</b-button>
       </div>
       <div v-if="totalRows" class="settings-table-footer text-secondary d-flex align-items-center p-2 w-100">
@@ -312,6 +312,24 @@ export default {
     },
     onFinishImport() {
       window.location.reload();
+    },
+    /**
+     * Javascript handler for configuration button
+     * 
+     *  props: Properties of the button
+     *  handler: JavaScript global function
+     *
+     * Example of Settings properties:
+     *   name=Test button
+     *   format=button
+     *   hidden=true
+     *   ui={"props":{"variant":"primary"},"handler":"mailTest"}
+     * 
+     */
+    handler(btn) {
+      if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
+        window[btn.ui.handler](this);
+      }
     },
     refresh() {
       this.$refs.table.refresh();
