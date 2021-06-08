@@ -29,7 +29,9 @@ class SettingServiceProvider extends ServiceProvider
             try {
                 $settings = Setting::select('key', 'config', 'format')->get();
                 foreach ($settings as $setting) {
-                    config([$setting->key => $setting->config]);
+                    if ($setting->config !== null) {
+                        config([$setting->key => $setting->config]);
+                    }
                 }
                 config(['settings_loaded' => true]);
             } catch (Exception $e) {

@@ -1471,5 +1471,9 @@
   "Left Top": "Left Top",
   "Left Bottom": "Left Bottom",
   "Claim the Task to continue.": "Claim the Task to continue.",
-  "View Collection": "View Collection"
+  "View Collection": "View Collection",
+  "Enter the alt text that should accompany the logos and icon.": "Enter the alt text that should accompany the logos and icon.",
+  "Click on the color value to select custom colors.": "Click on the color value to select custom colors.",
+  "Select which font to use throughout the system.": "Select which font to use throughout the system.",
+  "Enter footer HTML to display on the login page.": "Enter footer HTML to display on the login page."
 }
