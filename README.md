@@ -4,6 +4,10 @@
 
 ProcessMaker is an open source, workflow management software suite, which includes tools to automate your workflow, design forms, create documents, assign roles and users, create routing rules, and map an individual process quickly and easily. It's relatively lightweight and doesn't require any kind of installation on the client computer. This file describes the requirements and installation steps for the server.
 
+## Getting Started
+
+If you are new to ProcessMaker 4 and would like to load the software locally, we recommend you download the Dockerized version from https://github.com/ProcessMaker/pm4core-docker
+
 ## System Requirements
 
 * [Composer 2](https://getcomposer.org/)
