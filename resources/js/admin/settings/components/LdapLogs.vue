@@ -1,67 +1,129 @@
 <template>
-  <div class="ldap-logs">
-    <b-tabs no-fade>
-      <b-tab :title="group" v-for="(group, index) in groups" :key="group">
-        <b-card class="border-top-0 p-0" no-body>
-          <b-card-body class="p-3">
-            <settings-listing
-              :group="group"
-              @refresh="refresh"
-              @refresh-all="refreshAll"
-              ref="listings"
-            ></settings-listing>
-          </b-card-body>
-        </b-card>
-      </b-tab>
-    </b-tabs>
+  <div class="data-table">
+    <data-loading
+      :for="/logs\?page/"
+      v-show="shouldShowLoader"
+      :empty="$t('No Data Available')"
+      :empty-desc="$t('')"
+      empty-icon="noData"
+    />
+    <div v-show="!shouldShowLoader"  class="card card-body table-card">
+      <vuetable
+        :dataManager="dataManager"
+        :sortOrder="sortOrder"
+        :css="css"
+        :api-mode="false"
+        @vuetable:pagination-data="onPaginationData"
+        :fields="fields"
+        :data="data"
+        data-path="data"
+        :noDataTemplate="$t('No Data Available')"
+        pagination-path="meta"
+      >
+        <template slot="message" slot-scope="props">
+            <ul>
+                <li v-for="(item, key) in props.rowData.message" :key="key">
+                    {{ key + ": " + item }}
+                </li>
+            </ul>
+        </template>
+      </vuetable>
+      <pagination
+        :single="$t('Log')"
+        :plural="$t('Logs')"
+        :perPageSelectEnabled="true"
+        @changePerPage="changePerPage"
+        @vuetable-pagination:change-page="onPageChange"
+        ref="pagination"
+      ></pagination>
+    </div>
   </div>
 </template>
 
+
 <script>
-import SettingsListing from './SettingsListing';
+import datatableMixin from "../../../components/common/mixins/datatable";
+import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 
 export default {
-  components: { SettingsListing },
+  mixins: [datatableMixin, dataLoadingMixin],
+  props: ["filter", "permission"],
   data() {
     return {
-      groups: [],
-      url: '/settings/groups'
+      localLoadOnStart: true,
+      orderBy: "created_at",
+      data: [],
+      // Our listing of logs
+      sortOrder: [
+        {
+          field: "created_at",
+          sortField: "created_at",
+          direction: "desc"
+        },
+      ],
+      fields: [
+        {
+          title: () => this.$t("ID"),
+          name: "id",
+          sortField: "id"
+        },
+        {
+          title: () => this.$t("Tag"),
+          name: "tag",
+          sortField: "tag"
+        },
+        {
+          title: () => this.$t("Service"),
+          name: "service",
+          sortField: "service"
+        },
+        {
+          title: () => this.$t("Message"),
+          name: "__slot:message",
+          field: "message"
+        },
+        {
+          title: () => this.$t("Created"),
+          name: "created_at",
+          sortField: "created_at",
+          callback: "formatDate"
+        }
+      ]
     };
   },
-  methods: {
-    apiGet() {
-      return ProcessMaker.apiClient.get(this.url);
-    },
-    refresh() {
-      this.apiGet().then(response => {
-        response.data.data.forEach(group => {
-          if (! this.groups.includes(group.group)) {
-            this.groups.push(group.group);
-          }
-        });
-        this.groups.forEach((group, index) => {
-          let match = response.data.data.find(serverGroup => serverGroup.group === group);
-          if (!match) {
-            this.groups.splice(index, 1);
-          }
-        });
-        this.groups.sort();
+  created() {
+      ProcessMaker.EventBus.$on("api-data-logs", (val) => {
+        this.localLoadOnStart = val;
+        this.fetch();
+        this.apiDataLoading = false;
+        this.apiNoResults = false;
       });
-    },
-    refreshAll() {
-      if (Array.isArray(this.$refs.listings)) {
-        this.$refs.listings.forEach(listing => {
-          listing.refresh();
-        })
-      }
+  },
+  methods: {
+    fetch() {
+      this.loading = true;
+      // Load from our api client
+      ProcessMaker.apiClient
+        .get(
+          "logs?page=" +
+            this.page +
+            "&per_page=" +
+            this.perPage +
+            "&filter=" +
+            this.filter +
+            "&order_by=" +
+            this.orderBy +
+            "&order_direction=" +
+            this.orderDirection
+        )
+        .then(response => {
+          this.data = this.transform(response.data);
+          this.loading = false;
+        });
     }
-  },
-  mounted() {
-    this.refresh();
-  },
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-  //
 </style>
