@@ -8,6 +8,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
         Route::get('settings', 'SettingsController@index')->name('settings.index')->middleware('can:view-settings');
+        Route::get('ldap-logs', 'LdapLogsController@index')->name('ldap.index')->middleware('can:view-settings');
         Route::get('settings/export', 'SettingsController@export')->name('settings.export')->middleware('can:view-settings');
         Route::get('groups', 'GroupController@index')->name('groups.index')->middleware('can:view-groups');
         // Route::get('groups/{group}', 'GroupController@show')->name('groups.show')->middleware('can:show-groups,group');
