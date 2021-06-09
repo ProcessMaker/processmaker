@@ -33,7 +33,7 @@
         </template>
         <template v-slot:cell(config)="row">
           <keep-alive>
-            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
+            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :key="row.item.key" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
           </keep-alive>
         </template>
         <template v-slot:cell(actions)="row">
@@ -125,6 +125,7 @@ export default {
   props: ['group'],
   data() {
     return {
+      tableKey: 0,
       buttons: [],
       currentPage: 1,
       fields: [],
