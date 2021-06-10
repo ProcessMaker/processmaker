@@ -1,6 +1,6 @@
 <template>
   <div class="settings-groups">
-    <b-tabs no-fade>
+    <b-tabs ref="tabs" no-fade>
       <b-tab :title="group" v-for="(group, index) in groups" :key="group">
         <b-card class="border-top-0 p-0" no-body>
           <b-card-body class="p-3">
@@ -29,6 +29,12 @@ export default {
     };
   },
   methods: {
+    openTab(name) {
+      const index = this.groups.indexOf(name);
+      if (index >-1) {
+        this.$refs.tabs.currentTab = index;
+      }
+    },
     apiGet() {
       return ProcessMaker.apiClient.get(this.url);
     },
@@ -46,6 +52,7 @@ export default {
           }
         });
         this.groups.sort();
+        this.$emit('groups-refreshed');
       });
     },
     refreshAll() {
