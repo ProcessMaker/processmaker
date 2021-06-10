@@ -699,16 +699,36 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     private function valueAliasParticipant($value, $expression)
     {
-        $user = User::where('username', $value)->get()->first();
 
-        if ($user) {
-            $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+        if (is_array($value)) {
+            $userIds = User::whereIn('username', $value)->pluck('id');
+            $processRequestIds =
+                ProcessRequestToken::whereIn('user_id', $userIds)
+                    ->groupBy('process_request_id')
+                    ->pluck('process_request_id');
 
-            return function ($query) use ($tokens) {
-                $query->whereIn('id', $tokens->pluck('process_request_id'));
-            };
+            if ($expression->operator === 'IN') {
+                return function ($query) use ($processRequestIds) {
+                    $query->whereIn('id', $processRequestIds);
+                };
+            } else {
+                return function ($query) use ($processRequestIds) {
+                    $query->whereNotIn('id', $processRequestIds);
+                };
+            }
+            
         } else {
-            throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
+            $user = User::where('username', $value)->get()->first();
+
+            if ($user) {
+                $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
+
+                return function ($query) use ($tokens) {
+                    $query->whereIn('id', $tokens->pluck('process_request_id'));
+                };
+            } else {
+                throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
+            }
         }
     }
 
