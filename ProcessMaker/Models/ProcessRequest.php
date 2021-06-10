@@ -594,7 +594,14 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function valueAliasRequest($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            $processes = Process::where('name', $expression->operator, $value)->get();
+            if ($expression->operator === 'IN') {
+                $processes = Process::whereIn('name', $value)->get();
+
+            } elseif ($expression->operator === 'NOT IN') {
+                $processes = Process::whereNotIn('name', $value)->get();
+            } else {
+                $processes = Process::where('name', $expression->operator, $value)->get();
+            }
             $query->whereIn('process_id', $processes->pluck('id'));
         };
     }
