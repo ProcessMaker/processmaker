@@ -55,6 +55,8 @@ trait ExtendedPMQL
             // Check the type of our value; set as string if possible
             if (is_a($expression->value, 'ProcessMaker\\Query\\LiteralValue')) {
                 $value = $expression->value->value();
+            } elseif (is_a($expression->value, 'ProcessMaker\\Query\\ArrayValue')) {
+                $value = $expression->value->value();
             } else {
                 $value = $expression->value;
             }
