@@ -622,14 +622,37 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             'canceled' => 'CANCELED',
         ];
 
-        $value = mb_strtolower($value);
+        if (is_array($value)) {
 
-        return function ($query) use ($value, $statusMap, $expression) {
-            if (array_key_exists($value, $statusMap)) {
-                $value = $statusMap[$value];
-            }
-            $query->where('status', $expression->operator, $value);
-        };
+            $value = array_map('mb_strtolower', (array) $value);
+            $value = array_map(function($v) use ($statusMap) {
+                if (array_key_exists($v, $statusMap)) {
+                    return $statusMap[$v];
+                }
+                return null;
+            }, $value);
+            $value = array_filter($value);
+
+            return function ($query) use ($value, $expression) {
+                if ($expression->operator === 'IN') {
+                    $query->whereIn('status', $value);
+                } else {
+                    $query->whereNotIn('status', $value);
+                }
+            };
+
+        } else {
+
+            $value = mb_strtolower($value);
+
+            return function ($query) use ($value, $statusMap, $expression) {
+                if (array_key_exists($value, $statusMap)) {
+                    $value = $statusMap[$value];
+                }
+                $query->where('status', $expression->operator, $value);
+            };
+
+        }
     }
 
     /**
