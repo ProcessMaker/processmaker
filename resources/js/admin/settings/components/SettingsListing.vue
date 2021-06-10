@@ -55,6 +55,7 @@
         <b-button
           v-for="(btn,index) in buttons"
           :key="`btn-${index}`"
+          class="ml-2"
           v-bind="btn.ui.props"
           @click="handler(btn)"
           >{{btn.name}}</b-button>
