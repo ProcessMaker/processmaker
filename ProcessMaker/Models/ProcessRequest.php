@@ -664,15 +664,29 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     private function valueAliasRequester($value, $expression)
     {
-        $user = User::where('username', $value)->get()->first();
+        if (is_array($value)) {
+            $userIds = User::whereIn('username', $value)->pluck('id');
+            if ($expression->operator === 'IN') {
+                return function ($query) use ($userIds) {
+                    $query->whereIn('user_id', $userIds);
+                };
+            } else {
+                return function ($query) use ($userIds) {
+                    $query->whereNotIn('user_id', $userIds);
+                };
+            }
 
-        if ($user) {
-            $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
-            return function ($query) use ($requests) {
-                $query->whereIn('id', $requests->pluck('id'));
-            };
         } else {
-            throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
+            $user = User::where('username', $value)->get()->first();
+
+            if ($user) {
+                $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
+                return function ($query) use ($requests) {
+                    $query->whereIn('id', $requests->pluck('id'));
+                };
+            } else {
+                throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
+            }
         }
     }
 
