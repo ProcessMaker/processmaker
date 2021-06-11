@@ -55,6 +55,8 @@ trait ExtendedPMQL
             // Check the type of our value; set as string if possible
             if (is_a($expression->value, 'ProcessMaker\\Query\\LiteralValue')) {
                 $value = $expression->value->value();
+            } elseif (is_a($expression->value, 'ProcessMaker\\Query\\ArrayValue')) {
+                $value = $expression->value->value();
             } else {
                 $value = $expression->value;
             }
@@ -73,7 +75,30 @@ trait ExtendedPMQL
             // function if its field name matches a specific word.
             $method = "valueAlias{$fieldMethodName}";
             if (method_exists($model, $method)) {
-                return $model->{$method}($value, $expression, $builder, $user);
+                if (is_array($value)) {
+                    // For "IN" and "NOT IN" Operators, convert to a series of "where"s
+                    return function($query) use ($model, $method, $value, $expression, $builder, $user) {
+                        $originalOperator = $expression->operator;
+
+                        // Always use equal operator in alias methods because
+                        // we can negate results with whereNotExists for "not in"
+                        $expression->setOperator('='); 
+
+                        foreach ($value as $v) {
+                            if($originalOperator === Expression::OPERATOR_IN) {
+                                $query->orWhere(
+                                    $model->{$method}($v, $expression, $builder, $user)
+                                );
+                            } else {
+                                $query->whereNotExists(
+                                    $model->{$method}($v, $expression, $builder, $user)
+                                );
+                            }
+                        }
+                    };
+                } else {
+                    return $model->{$method}($value, $expression, $builder, $user);
+                }
             }
 
             // A field wildcard passes any fields not caught by a field or value
