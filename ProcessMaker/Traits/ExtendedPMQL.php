@@ -85,7 +85,7 @@ trait ExtendedPMQL
                         $expression->setOperator('='); 
 
                         foreach ($value as $v) {
-                            if($originalOperator === 'IN') {
+                            if($originalOperator === Expression::OPERATOR_IN) {
                                 $query->orWhere(
                                     $model->{$method}($v, $expression, $builder, $user)
                                 );
