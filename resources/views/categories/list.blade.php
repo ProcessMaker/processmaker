@@ -7,7 +7,7 @@
                     <div class="input-group w-100">
                         <input v-model="filter" class="form-control" placeholder="{{ __('Search') }}">
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" data-original-title="Search">
+                            <button type="button" class="btn btn-primary" aria-label="Search">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>

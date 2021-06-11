@@ -19,7 +19,7 @@
                     <b-input-group>
                         <b-form-input v-model="filter" :placeholder="$t('Search') + '...'"></b-form-input>
                         <b-input-group-append>
-                            <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                            <button type="button" class="btn btn-primary" aria-label="Search"><i class="fas fa-search"></i></button>
                         </b-input-group-append>
                     </b-input-group>
                 </b-col>

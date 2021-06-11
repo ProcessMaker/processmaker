@@ -59,7 +59,7 @@
                              <div class="input-group w-100 mb-3">
                                  <input v-model="userGroupsFilter" class="form-control" placeholder="{{__('Search')}}">
                                  <div class="input-group-append">
-                                     <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                                     <button type="button" class="btn btn-primary" aria-label="Search"><i class="fas fa-search"></i></button>
                                  </div>
                              </div>
                             <div id="user-groups-listing">
