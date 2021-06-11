@@ -594,14 +594,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     public function valueAliasRequest($value, $expression)
     {
         return function ($query) use ($value, $expression) {
-            if ($expression->operator === 'IN') {
-                $processes = Process::whereIn('name', $value)->get();
-
-            } elseif ($expression->operator === 'NOT IN') {
-                $processes = Process::whereNotIn('name', $value)->get();
-            } else {
-                $processes = Process::where('name', $expression->operator, $value)->get();
-            }
+            $processes = Process::where('name', $expression->operator, $value)->get();
             $query->whereIn('process_id', $processes->pluck('id'));
         };
     }
@@ -622,37 +615,14 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             'canceled' => 'CANCELED',
         ];
 
-        if (is_array($value)) {
+        $value = mb_strtolower($value);
 
-            $value = array_map('mb_strtolower', (array) $value);
-            $value = array_map(function($v) use ($statusMap) {
-                if (array_key_exists($v, $statusMap)) {
-                    return $statusMap[$v];
-                }
-                return null;
-            }, $value);
-            $value = array_filter($value);
-
-            return function ($query) use ($value, $expression) {
-                if ($expression->operator === 'IN') {
-                    $query->whereIn('status', $value);
-                } else {
-                    $query->whereNotIn('status', $value);
-                }
-            };
-
-        } else {
-
-            $value = mb_strtolower($value);
-
-            return function ($query) use ($value, $statusMap, $expression) {
-                if (array_key_exists($value, $statusMap)) {
-                    $value = $statusMap[$value];
-                }
-                $query->where('status', $expression->operator, $value);
-            };
-
-        }
+        return function ($query) use ($value, $statusMap, $expression) {
+            if (array_key_exists($value, $statusMap)) {
+                $value = $statusMap[$value];
+            }
+            $query->where('status', $expression->operator, $value);
+        };
     }
 
     /**
@@ -664,29 +634,15 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     private function valueAliasRequester($value, $expression)
     {
-        if (is_array($value)) {
-            $userIds = User::whereIn('username', $value)->pluck('id');
-            if ($expression->operator === 'IN') {
-                return function ($query) use ($userIds) {
-                    $query->whereIn('user_id', $userIds);
-                };
-            } else {
-                return function ($query) use ($userIds) {
-                    $query->whereNotIn('user_id', $userIds);
-                };
-            }
+        $user = User::where('username', $value)->get()->first();
 
+        if ($user) {
+            $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
+            return function ($query) use ($requests) {
+                $query->whereIn('id', $requests->pluck('id'));
+            };
         } else {
-            $user = User::where('username', $value)->get()->first();
-
-            if ($user) {
-                $requests = ProcessRequest::where('user_id', $expression->operator, $user->id)->get();
-                return function ($query) use ($requests) {
-                    $query->whereIn('id', $requests->pluck('id'));
-                };
-            } else {
-                throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
-            }
+            throw new PmqlMethodException('requester', 'The specified requester username does not exist.');
         }
     }
 
@@ -699,36 +655,16 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      */
     private function valueAliasParticipant($value, $expression)
     {
+        $user = User::where('username', $value)->get()->first();
 
-        if (is_array($value)) {
-            $userIds = User::whereIn('username', $value)->pluck('id');
-            $processRequestIds =
-                ProcessRequestToken::whereIn('user_id', $userIds)
-                    ->groupBy('process_request_id')
-                    ->pluck('process_request_id');
+        if ($user) {
+            $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
 
-            if ($expression->operator === 'IN') {
-                return function ($query) use ($processRequestIds) {
-                    $query->whereIn('id', $processRequestIds);
-                };
-            } else {
-                return function ($query) use ($processRequestIds) {
-                    $query->whereNotIn('id', $processRequestIds);
-                };
-            }
-            
+            return function ($query) use ($tokens) {
+                $query->whereIn('id', $tokens->pluck('process_request_id'));
+            };
         } else {
-            $user = User::where('username', $value)->get()->first();
-
-            if ($user) {
-                $tokens = ProcessRequestToken::where('user_id', $expression->operator, $user->id)->get();
-
-                return function ($query) use ($tokens) {
-                    $query->whereIn('id', $tokens->pluck('process_request_id'));
-                };
-            } else {
-                throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
-            }
+            throw new PmqlMethodException('participant', 'The specified participant username does not exist.');
         }
     }
 
