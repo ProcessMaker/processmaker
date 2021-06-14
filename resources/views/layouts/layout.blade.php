@@ -77,7 +77,7 @@
   <div id="sidebar" class="d-print-none" :class="{expanded: expanded}">
       @yield('sidebar')
   </div>
-  <div class="d-flex flex-grow-1 flex-column overflow-hidden">
+  <div class="d-flex flex-grow-1 flex-column">
     <div class="flex-grow-1">
         @include('layouts.navbar')
     </div>

@@ -18,12 +18,30 @@
         <div v-if="alerts.length > 0" class="alert-wrapper">
             <b-alert v-for="(item, index) in alerts" :key="index" class="d-none d-lg-block alertBox" :show="item.alertShow" :variant="item.alertVariant" dismissible fade @dismissed="alertDismissed(item)" @dismiss-count-down="alertDownChanged($event, item)" style="white-space:pre-line">@{{item.alertText}}</b-alert>
         </div>
-
         @php
             $menuItems = [];
             $existsMenuProvider = Menu::get('customtopnav') !== null;
-            $customNav = $existsMenuProvider ? Menu::get('customtopnav')->items->all() : [];
+            $items = $existsMenuProvider ? Menu::get('customtopnav')->items->all() : [];
+
+            $customNav = [];
+            foreach($items as $item) {
+                if (!$item->hasParent()) {
+                    $customNav[] = $item;
+                    if ($item->hasChildren()) {
+                        $item->childItems = $item->children();
+                        $item->hasSubItems = true;
+                    }
+                    else {
+                        $item->hasSubItems = false;
+                    }
+                }
+            }
+
             $defaultNav = Menu::get('topnav')->items->all();
+            foreach($defaultNav as $item) {
+                $item->hasSubItems = false;
+            }
+
             foreach(array_merge($customNav, $defaultNav) as $item) {
                 $newItem = (array) $item;
                 $newItem['link'] = $item->url();
@@ -43,8 +61,9 @@
             }
         @endphp
 
-        <b-navbar-nav class="d-flex align-items-center">
-                <b-nav-item v-for="item in {{ json_encode ($menuItems) }}"
+        <b-navbar-nav class="d-flex align-items-center" style="z-index:100">
+            <div v-for="item in {{ json_encode ($menuItems) }}">
+                <b-nav-item v-if="item.hasSubItems == false"
                             :href="item.link"
                             :link-classes="item.attributes.class_link"
                             :target="item.attributes.target"
@@ -52,6 +71,20 @@
                 >
                     <span v-html="item.title"></span>
                 </b-nav-item>
+                <b-nav-item-dropdown v-else
+                    :text="item.title"
+                    toggle-class="nav-link-custom"
+                    right
+                >
+                    <b-dropdown-item v-for="subItem in item.childItems"
+                        :href="subItem.url"
+                        :target="subItem.attributes.target"
+                    >
+                        <span :class="subItem.attributes.class_link" v-html="subItem.title"></span>
+                    </b-dropdown-item>
+                </b-nav-item-dropdown>
+
+            </div>
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
@@ -91,5 +124,4 @@
         margin-left: 0.5rem;
         margin-right: 1rem;
     }
-    #navbar { margin-left:-10px }
 </style>
