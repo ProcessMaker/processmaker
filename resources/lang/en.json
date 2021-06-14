@@ -1480,5 +1480,11 @@
   "Logs": "Logs",
   "Tag": "Tag",
   "Service": "Service",
-  "Toggle Show Password": "Toggle Show Password"
+  "Toggle Show Password": "Toggle Show Password",
+  "Show": "Show",
+  "Hide": "Hide",
+  "Run Simulation": "Run Simulation",
+  "Toggle Configuration": "Toggle Configuration",
+  "Javascript": "Javascript",
+  "Expand Editor": "Expand Editor"
 }
