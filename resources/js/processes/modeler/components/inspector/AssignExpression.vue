@@ -4,7 +4,7 @@
       <label class="m-0">
         {{ $t('Expressions') }}
       </label>
-      <b-button class="add-button align-top d-inline rounded-0" variant="secondary" size="sm" @click="showAddCard()">+</b-button>
+      <b-button :aria-label="$t('Add FEEL Expression')" class="add-button align-top d-inline rounded-0" variant="secondary" size="sm" @click="showAddCard()">+</b-button>
     </div>
     <div class="helper-text mb-3"><small class="d-block">{{ $t('Expressions are evaluated top to bottom') }}</small></div>
 

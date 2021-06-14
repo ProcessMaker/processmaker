@@ -39,7 +39,7 @@
         <template #cell(value)="data">
           <div class="d-flex w-100">
             <b-form-input class="mr-2" v-model="data.item.value" @keyup.enter="onSave()" spellcheck="false" autocomplete="off"></b-form-input>
-            <b-button v-if="!ui('single')" class="mr-2" @click="onDelete(data)" variant="link"><i class="fa fa-trash"></i></b-button>
+            <b-button :aria-label="$t('Delete')" v-if="!ui('single')" class="mr-2" @click="onDelete(data)" variant="link"><i class="fa fa-trash"></i></b-button>
           </div>
         </template>
       </b-table>

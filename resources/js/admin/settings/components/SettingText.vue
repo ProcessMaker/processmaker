@@ -27,7 +27,7 @@
         <b-input-group>
           <b-form-input class="border-right-0" ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="new-password" :type="type"></b-form-input>
           <b-input-group-append>
-            <b-button variant="secondary" @click="togglePassword">
+            <b-button :aria-label="$t('Toggle Show Password')" variant="secondary" @click="togglePassword">
               <i class="fas" :class="icon"></i>
             </b-button>
           </b-input-group-append>

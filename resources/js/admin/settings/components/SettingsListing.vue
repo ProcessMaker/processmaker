@@ -37,9 +37,9 @@
         <template v-slot:cell(actions)="row">
           <template v-if="row.item && row.item.format !== 'boolean'">
             <span v-b-tooltip.hover :title="getTooltip(row)">
-              <b-button :disabled="row.item.readonly" @click="onEdit(row)" variant="link" size="lg"><i class="fa fa-pen-square"></i></b-button>
+              <b-button :aria-label="$t('Edit')" :disabled="row.item.readonly" @click="onEdit(row)" variant="link" size="lg"><i class="fa fa-pen-square"></i></b-button>
             </span>
-            <b-button @click="onCopy(row)" variant="link" size="lg" v-b-tooltip.hover :title="$t('Copy to Clipboard')"><i class="fa fa-paste"></i></b-button>
+            <b-button :aria-label="$t('Copy to Clipboard')" @click="onCopy(row)" variant="link" size="lg" v-b-tooltip.hover :title="$t('Copy to Clipboard')"><i class="fa fa-paste"></i></b-button>
           </template>
         </template>
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
