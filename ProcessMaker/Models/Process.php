@@ -817,10 +817,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         // Filter the start events assigned to the user
         $response = [];
         foreach ($this->start_events as $startEvent) {
-            if (isset($startEvent['assignment']) && $startEvent['assignment'] === 'user') {
+            if (isset($startEvent['assignment']) && $startEvent['assignment'] === 'user' && isset($startEvent['assignedUsers'])) {
                 $users = explode(',', $startEvent['assignedUsers']);
                 $access = in_array($user->id, $users);
-            } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'group') {
+            } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'group' && isset($startEvent['assignedGroups'])) {
                 $access = false;
                 foreach (explode(',', $startEvent['assignedGroups']) as $groupId) {
                     $access = $this->doesUserBelongsGroup($user->id, $groupId);
