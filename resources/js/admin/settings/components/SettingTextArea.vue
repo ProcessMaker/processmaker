@@ -13,7 +13,7 @@
           <h5 class="mb-0" v-else>{{ setting.key }}</h5>
           <small class="form-text text-muted" v-if="setting.helper">{{ $t(setting.helper) }}</small>
         </div>
-        <button type="button" aria-label="Close" class="close" @click="onCancel">×</button>
+        <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
       </template>
       <b-form-textarea ref="input" v-model="transformed" rows="10" spellcheck="false"></b-form-textarea>
       <div slot="modal-footer" class="w-100 m-0 d-flex">

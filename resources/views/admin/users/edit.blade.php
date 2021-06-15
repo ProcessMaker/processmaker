@@ -59,7 +59,7 @@
                              <div class="input-group w-100 mb-3">
                                  <input v-model="userGroupsFilter" class="form-control" placeholder="{{__('Search')}}">
                                  <div class="input-group-append">
-                                     <button type="button" class="btn btn-primary" aria-label="Search"><i class="fas fa-search"></i></button>
+                                     <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                                  </div>
                              </div>
                             <div id="user-groups-listing">
@@ -107,7 +107,7 @@
                                         <div class="modal-content p-3">
                                             <div class="modal-header p-0 mb-3">
                                                 <h5 class="modal-title m-0">{{__('New Token')}}</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
@@ -158,7 +158,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{__('Upload Avatar')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>

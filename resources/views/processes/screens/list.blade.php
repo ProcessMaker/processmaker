@@ -6,7 +6,7 @@
                         <div class="input-group w-100">
                             <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-primary" aria-label="Search"><i class="fas fa-search"></i></button>
+                                <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                             </div>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">{{__('Create Screen')}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
