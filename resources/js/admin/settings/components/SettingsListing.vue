@@ -32,7 +32,9 @@
           <b-form-text v-if="row.item.helper">{{ $t(row.item.helper) }}</b-form-text>
         </template>
         <template v-slot:cell(config)="row">
-          <component v-if="row.item" :ref="`settingComponent_${row.index}`" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
+          <keep-alive>
+            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
+          </keep-alive>
         </template>
         <template v-slot:cell(actions)="row">
           <template v-if="row.item && row.item.format !== 'boolean'">
@@ -211,6 +213,8 @@ export default {
           if (setting.ui && setting.ui.format && setting.ui.format == 'screen') {
             return `setting-screen`;
           }
+        case 'component':
+          return window['__setting_component_' + setting.ui.component];
         default:
           return 'setting-text-area';
       }

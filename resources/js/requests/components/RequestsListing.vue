@@ -132,8 +132,12 @@ export default {
           field.field = column.field;
         }
 
-        if (column.format === 'datetime' || column.format === 'date') {
-          field.callback = 'formatDate';
+        if (column.format === 'datetime') {
+        field.callback = 'formatDateUser|datetime';
+        }
+
+        if (column.format === 'date') {
+        field.callback = 'formatDateUser|date';
         }
 
         if (column.sortable === true && !field.sortField) {

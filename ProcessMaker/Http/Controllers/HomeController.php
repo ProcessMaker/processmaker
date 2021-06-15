@@ -11,7 +11,13 @@ class HomeController extends Controller
     public function index(Request $request)
     {
       if (Auth::check()) {
-        return redirect('/requests');
+          if (class_exists(\ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::class)) {
+              $user = \Auth::user();
+              $homePage = \ProcessMaker\Package\PackageDynamicUI\Models\DynamicUI::getHomePage($user);
+              return redirect($homePage);
+          }
+
+          return redirect('/requests');
       }
     }
 }

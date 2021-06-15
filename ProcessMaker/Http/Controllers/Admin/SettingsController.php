@@ -5,9 +5,12 @@ namespace ProcessMaker\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Setting;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class SettingsController extends Controller
 {
+    use HasControllerAddons;
+
     /**
      * Get the list of settings.
      *
@@ -16,7 +19,8 @@ class SettingsController extends Controller
     public function index()
     {
         if (Setting::notHidden()->count()) {
-            return view('admin.settings.index');
+            $addons = $this->getPluginAddons('index', []);
+            return view('admin.settings.index', compact('addons'));
         } else {
             abort(404);
         }

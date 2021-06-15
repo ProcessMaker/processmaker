@@ -20,6 +20,22 @@ class PermissionController extends Controller
     public $doNotSanitize = [
        //
     ];
+
+    /**
+     * List permissions
+     *
+     * @param Request $request
+     *
+     * @return Response
+     * 
+     */
+    public function index(Request $request)
+    {
+        $all_permissions = Permission::all();
+        return $all_permissions->sortBy('title')->groupBy('group')->sortKeys();
+    }
+
+
     /**
      * Update permissions
      *
