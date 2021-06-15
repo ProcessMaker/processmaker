@@ -50,8 +50,8 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('name', __('Category Name'))!!}<small class="ml-1">*</small>
-                            {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
+                            {!!Form::label('category-name', __('Category Name'))!!}<small class="ml-1">*</small>
+                            {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'id' => 'category-name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                             <small class="form-text text-muted" v-if="! errors.name">
                                 {{ __('The category name must be distinct.') }}
