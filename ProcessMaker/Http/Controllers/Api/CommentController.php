@@ -128,6 +128,9 @@ class CommentController extends Controller
      */
     public function update(Comment $comment, Request $request)
     {
+        if ($comment->user_id !== Auth::user()->id) {
+            abort(403);
+        }
         $data['user_id'] = Auth::user()->id;
         $request->merge($data);
         $request->validate(Comment::rules());
@@ -149,6 +152,10 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
+        if ($comment->user_id !== Auth::user()->id) {
+            abort(403);
+        }
+
         //delete related comments
         Comment::where('commentable_id', $comment->getKey())
             ->where('commentable_type', Comment::class)
