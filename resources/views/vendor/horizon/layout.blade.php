@@ -105,6 +105,10 @@
     <!-- Global Horizon Object -->
     <script>
         window.Horizon = @json($horizonScriptVariables);
+        window.onload = function() {
+            // Accessability for FOUR-2338
+            document.getElementById('newTagInput').setAttribute('aria-label', 'Monitor New Tag');
+        }
     </script>
     <script src="{{asset(mix('app.js', 'vendor/horizon'))}}"></script>
 @endsection

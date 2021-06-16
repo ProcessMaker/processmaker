@@ -6,7 +6,7 @@
                     <div class="input-group w-100">
                         <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                            <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">{{__('Create Process')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}" @click="onClose">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -87,7 +87,7 @@
                         <div class="form-group">
                             {!! Form::label('fileName', __('Upload BPMN File (optional)')) !!}
                             <div class="input-group">
-                                <input type="text" name="fileName" class="form-control" v-model="selectedFile">
+                                <input type="text" name="fileName" class="form-control" v-model="selectedFile" disabled="true">
                                 <div class="input-group-append">
                                     <button type="button" @click="browse" class="btn btn-secondary"><i
                                             class="fas fa-upload"></i>

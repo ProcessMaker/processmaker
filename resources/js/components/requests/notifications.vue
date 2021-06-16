@@ -6,6 +6,7 @@
       href="#"
       aria-expanded="false"
       id="exPopover1-bottom"
+      :title="$t('Notifications')"
     >
       <i class="fas fa-bell fa-lg font-size-23"></i>
       <b-badge pill variant="danger" v-if="totalMessages>0 && totalMessages<=9">{{totalMessages}}</b-badge>

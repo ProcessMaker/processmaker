@@ -4,7 +4,7 @@
       <label class="m-0">
         {{ $t('Assigned Users / Groups') }}
       </label>
-      <b-button class="add-button rounded-0" variant="secondary" size="sm" @click="showCard = true">+</b-button>
+      <b-button :aria-label="$t('Add Self Service')" class="add-button rounded-0" variant="secondary" size="sm" @click="showCard = true">+</b-button>
     </div>
     <div v-if="showCard" class="card mb-2">
       <div class="card-header">
@@ -52,7 +52,7 @@
               {{ assignment.name }} 
             </div>
             <div class="col-1"> 
-              <b-button class="p-0 text-dark delete-button" variant="link" @click="showDeleteConfirmation(itemIndex, assignment.name, assignmentIndex)" :title="$t('Delete')">
+              <b-button class="p-0 text-dark delete-button" variant="link" @click="showDeleteConfirmation(itemIndex, assignment.name, assignmentIndex)" :title="$t('Delete')" :aria-label="$t('Delete')">
                 <i class="fas fa-trash-alt"/>
               </b-button>
             </div>

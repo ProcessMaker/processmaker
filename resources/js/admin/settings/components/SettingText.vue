@@ -18,7 +18,7 @@
           <h5 class="mb-0" v-else>{{ setting.key }}</h5>
           <small class="form-text text-muted" v-if="setting.helper">{{ $t(setting.helper) }}</small>
         </div>
-        <button type="button" aria-label="Close" class="close" @click="onCancel">×</button>
+        <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
       </template>
       <template v-if="! ui('sensitive')">
         <b-form-input ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="off" type="text"></b-form-input>
@@ -27,7 +27,7 @@
         <b-input-group>
           <b-form-input class="border-right-0" ref="input" v-model="transformed" @keyup.enter="onSave" spellcheck="false" autocomplete="new-password" :type="type"></b-form-input>
           <b-input-group-append>
-            <b-button variant="secondary" @click="togglePassword">
+            <b-button :aria-label="$t('Toggle Show Password')" variant="secondary" @click="togglePassword">
               <i class="fas" :class="icon"></i>
             </b-button>
           </b-input-group-append>

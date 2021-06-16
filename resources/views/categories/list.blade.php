@@ -7,7 +7,7 @@
                     <div class="input-group w-100">
                         <input v-model="filter" class="form-control" placeholder="{{ __('Search') }}">
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-primary" data-original-title="Search">
+                            <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -44,14 +44,14 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">@{{ getTitle() }}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="onClose">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}" @click="onClose">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            {!!Form::label('name', __('Category Name'))!!}<small class="ml-1">*</small>
-                            {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name',
+                            {!!Form::label('category-name', __('Category Name'))!!}<small class="ml-1">*</small>
+                            {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'id' => 'category-name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                             <small class="form-text text-muted" v-if="! errors.name">
                                 {{ __('The category name must be distinct.') }}

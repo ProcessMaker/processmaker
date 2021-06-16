@@ -81,7 +81,7 @@
     <div class="row">
         <div class="form-group col">
             {!! Form::label('country', __('Country')) !!}
-            <b-form-select v-model="formData.country" :options="countries" placeholder="Select" class="form-control">
+            <b-form-select id="country" v-model="formData.country" :options="countries" placeholder="Select" class="form-control">
                 <template slot="first">
                     <option :value="null" disabled>{{__('Select')}}</option>
                 </template>

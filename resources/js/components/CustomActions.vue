@@ -1,8 +1,8 @@
 <template>
   <div class="custom-actions">
-    <button type="button" class="btn btn-sm" @click="itemAction('view-item', rowData, rowIndex)"><i class="glyphicon glyphicon-zoom-in"></i></button>
-    <button type="button" class="btn btn-sm" @click="itemAction('edit-item', rowData, rowIndex)"><i class="glyphicon glyphicon-pencil"></i></button>
-    <button type="button" class="btn btn-sm" @click="itemAction('delete-item', rowData, rowIndex)"><i class="glyphicon glyphicon-trash"></i></button>
+    <button type="button" class="btn btn-sm" :aria-label="$t('View')" @click="itemAction('view-item', rowData, rowIndex)"><i class="glyphicon glyphicon-zoom-in"></i></button>
+    <button type="button" class="btn btn-sm" :aria-label="$t('Edit')" @click="itemAction('edit-item', rowData, rowIndex)"><i class="glyphicon glyphicon-pencil"></i></button>
+    <button type="button" class="btn btn-sm" :aria-label="$t('Delete')" @click="itemAction('delete-item', rowData, rowIndex)"><i class="glyphicon glyphicon-trash"></i></button>
   </div>
 </template>
 

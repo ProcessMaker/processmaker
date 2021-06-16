@@ -21,7 +21,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">@{{title}}</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -75,7 +75,7 @@
                             <div class="input-group w-100">
                                 <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
                                 <div class="input-group-append">
-                                    <button type="button" class="btn btn-primary" data-original-title="Search"><i class="fas fa-search"></i></button>
+                                    <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                                 </div>
                             </div>
                         </div>

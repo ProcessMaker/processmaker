@@ -15,7 +15,7 @@
           <h5 class="mb-0" v-else>{{ setting.key }}</h5>
           <small class="form-text text-muted" v-if="setting.helper">{{ $t(setting.helper) }}</small>
         </div>
-        <button type="button" aria-label="Close" class="close" @click="onCancel">×</button>
+        <button type="button" :aria-label="$t('Close')" class="close" @click="onCancel">×</button>
       </template>
       <div v-if="!ui('single')" class="position-absolute w-100 d-flex justify-content-end">
         <b-button class="setting-add-button" @click="onAdd()" variant="secondary" size="sm"><i class="fa fa-plus"></i> Add</b-button>
@@ -39,7 +39,7 @@
         <template #cell(value)="data">
           <div class="d-flex w-100">
             <b-form-input class="mr-2" v-model="data.item.value" @keyup.enter="onSave()" spellcheck="false" autocomplete="off"></b-form-input>
-            <b-button v-if="!ui('single')" class="mr-2" @click="onDelete(data)" variant="link"><i class="fa fa-trash"></i></b-button>
+            <b-button :aria-label="$t('Delete')" v-if="!ui('single')" class="mr-2" @click="onDelete(data)" variant="link"><i class="fa fa-trash"></i></b-button>
           </div>
         </template>
       </b-table>
