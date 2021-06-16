@@ -1,6 +1,6 @@
 <template>
   <div class="settings-groups">
-    <b-tabs ref="tabs" no-fade>
+    <b-tabs ref="tabs" no-fade v-model="currentTab">
       <b-tab :title="group" v-for="(group, index) in groups" :key="group">
         <b-card class="border-top-0 p-0" no-body>
           <b-card-body class="p-3">
@@ -24,6 +24,7 @@ export default {
   components: { SettingsListing },
   data() {
     return {
+      currentTab: 0,
       groups: [],
       url: '/settings/groups'
     };
@@ -32,7 +33,7 @@ export default {
     openTab(name) {
       const index = this.groups.indexOf(name);
       if (index >-1) {
-        this.$refs.tabs.currentTab = index;
+        this.currentTab = index;
       }
     },
     apiGet() {
