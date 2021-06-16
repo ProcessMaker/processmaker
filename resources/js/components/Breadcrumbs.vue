@@ -1,6 +1,6 @@
 <template>
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb border-top border-bottom">
+        <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
             <li v-for="(route, index) in list" class="breadcrumb-item" :class="{active: isActive(index)}" :key="index">
               <router-link v-if="route.router" :to="route.link" v-slot="{ href, navigate }">

@@ -1,13 +1,14 @@
-<b-navbar id="navbar" v-cloak toggleable="lg" type="light" variant="light" class="d-print-none">
+<div id="navbar">
+<b-navbar id="navbar1" v-cloak toggleable="lg" type="light" variant="light" class="d-print-none">
     <div class="d-flex d-lg-none w-100">
         @php
             $loginLogo = \ProcessMaker\Models\Setting::getLogin();
         @endphp
         <b-navbar-brand href="#" class="d-lg-none pl-2"><img class="navbar-logo" src={{$loginLogo}}></b-navbar-brand>
-        <b-navbar-toggle class="ml-auto" target="nav_collapse"></b-navbar-toggle>
+        <b-navbar-toggle class="ml-auto" :target="['nav-collapse', 'breadcrumbs-collapse']"></b-navbar-toggle>
     </div>
 
-    <b-collapse is-nav id="nav_collapse">
+    <b-collapse is-nav id="nav-collapse">
         <confirmation-modal class="d-none d-lg-block" id="confirmModal" v-if='confirmShow' :title="confirmTitle" :message="confirmMessage"
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
@@ -117,6 +118,16 @@
         </b-navbar-nav>
     </b-collapse>
 </b-navbar>
+
+
+<b-navbar id="navbar2" v-cloak toggleable="lg" type="light" variant="light" class="p-0 d-print-none">
+    <b-collapse is-nav id="breadcrumbs-collapse" class="border-top border-bottom">
+        @yield('breadcrumbs')
+    </b-collapse>
+</b-navbar>
+
+
+</div>
 <style lang="scss" scoped>
     .separator {
         border-right: 1px solid rgb(227, 231, 236);
