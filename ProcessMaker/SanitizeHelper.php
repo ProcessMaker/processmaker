@@ -24,6 +24,8 @@ class SanitizeHelper {
         '<fieldset>',
         '<label>',
         '<output>',
+        '{{',
+        '}}',
     ];
 
     /**
@@ -39,6 +41,7 @@ class SanitizeHelper {
         if (is_string($value) && $strip_tags) {
             // Remove most injectable code
             $value = strip_tags($value);
+            $value = self::sanitizeVueExp($value);
 
             // Return the sanitized string
             return $value;
