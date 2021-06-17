@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="form-group"> 
-            <label>{{ $t( label ) }}</label>
-            <select
+            <label for="assignmentsDropDownList">{{ $t( label ) }}</label>
+            <select id="assignmentsDropDownList"
                 ref="assignmentsDropDownList"
                 class="form-control"
                 v-model="assignment"

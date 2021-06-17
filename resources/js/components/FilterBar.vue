@@ -2,7 +2,7 @@
     <div class="filter-bar justify-content-between">
       <form class="form-inline ">
         <div class="form-group ">
-          <input type="text" v-model="filterText" class="form-control" @keyup="doFilter" placeholder="Search...">
+          <input type="text" v-model="filterText" class="form-control" @keyup="doFilter" :aria-label="$t('Search...')" :placeholder="$t('Search...')">
           <i @click.prevent="doFilter"></i>
         </div>
       </form>

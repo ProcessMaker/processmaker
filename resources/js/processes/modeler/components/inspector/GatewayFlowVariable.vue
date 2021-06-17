@@ -4,14 +4,14 @@
       <small class="form-text text-muted">{{$t("If the expression evaluates to true, create or update the following variable")}}</small>
       <div class="form-group">
           <label>{{ $t("Variable Name") }}</label>
-          <input class="form-control" ref="variableName" type="text"
+          <input class="form-control" ref="variableName" type="text" :aria-label="$t('Variable Name')"
                    v-model="config.update_data.variable">
           <small class="form-text text-muted">{{$t("A variable name is a symbolic name to reference information.")}}</small>
         </div>
 
         <div class="form-group">
           <label>{{ $t("Value") }}</label>
-          <input class="form-control" ref="expression" type="text"
+          <input class="form-control" ref="expression" type="text" :aria-label="$t('Value')"
                    v-model="config.update_data.expression">
         </div>
     </div>

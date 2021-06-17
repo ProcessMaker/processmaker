@@ -47,7 +47,7 @@ Login
               </div>
               <div class="form-check">
                 <label class="form-check-label">
-              <input class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
+              <input id="remember" class="form-check-input" type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }} aria-label="{{__('Remember me')}}">
               {{ __('Remember me') }}</label>
               </div>
               <div class="form-group">

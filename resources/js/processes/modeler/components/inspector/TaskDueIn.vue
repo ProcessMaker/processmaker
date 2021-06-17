@@ -1,7 +1,7 @@
 <template>
     <div class="form-group">
         <label>{{ $t("Due In") }}</label>
-        <input class="form-control"
+        <input class="form-control" :aria-label="$t('Enter the hours until this Task is overdue')"
                type="number"
                :placeholder="$t('72 hours')"
                :value="dueInGetter"

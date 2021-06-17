@@ -4,7 +4,10 @@
             <div class="flex-grow-1">
                 <div class="search-bar-basic d-flex w-100">
                     <div class="search-bar-inputs flex-grow w-100 mb-3 mb-md-0">
-                        <input ref="search_input" type="text" class="search-bar-manual-input form-control" :placeholder="placeholder ? placeholder : $t('Search')" v-model="query" @keyup.enter="runSearch">
+                        <input ref="search_input" :aria-label="placeholder ? placeholder : $t('Search')"
+                               :placeholder="placeholder ? placeholder : $t('Search')"
+                               type="text" class="search-bar-manual-input form-control"
+                                v-model="query" @keyup.enter="runSearch">
                     </div>
                     <div class="search-bar-actions d-flex flex-shrink">
                         <b-btn class="btn-search-run" variant="primary" @click="runSearch" v-b-tooltip.hover :title="$t('Search')"><i class="fas fa-search"></i></b-btn>

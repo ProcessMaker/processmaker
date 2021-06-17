@@ -1,8 +1,9 @@
 <template>
     <div>
         <div class="form-group">
-            <label>{{ $t('Type') }}</label>
-            <select class="form-control"
+            <label for="select_type">{{ $t('Type') }}</label>
+            <select id="select_type"
+                    class="form-control"
                     :disabled="disabled"
                     :value="assignmentGetter"
                     @input="assignmentSetter">
@@ -14,8 +15,9 @@
         </div>
 
         <div class="form-group" v-if="assignmentGetter">
-            <label class="text-capitalize">{{ $t(assignmentGetter)}}</label>
-            <multiselect v-model="content"
+            <label for="assignment_getter" class="text-capitalize">{{ $t(assignmentGetter)}}</label>
+            <multiselect id="assignment_getter"
+                         v-model="content"
                          track-by="id"
                          label="name"
                          :class="{'border border-danger':error}"

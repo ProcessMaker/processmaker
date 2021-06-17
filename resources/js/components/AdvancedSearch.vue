@@ -4,7 +4,8 @@
             <div class="flex-grow-1">
                 <div v-if="! advanced" class="search-bar-advanced d-flex flex-column flex-md-row w-100">
                     <div v-if="type == 'requests'" class="search-bar-inputs flex-grow d-flex flex-column flex-md-row w-100">
-                        <multiselect v-model="process"
+                        <label for="process_name_filter" class="d-none">{{$t('Process')}}</label>
+                        <multiselect id="process_name_filter" v-model="process"
                                      @search-change="getProcesses"
                                      @input="buildPmql"
                                      :show-labels="false"
@@ -14,6 +15,7 @@
                                      :options="processOptions"
                                      :track-by="'id'"
                                      :multiple="true"
+                                     :aria-label="$t('Process')"
                                      :placeholder="$t('Process')">
                             <template slot="noResult">
                                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -25,7 +27,8 @@
                                 <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('processes') }}</span>
                             </template>
                         </multiselect>
-                        <multiselect v-model="status"
+                      <label for="process_status_filter" class="d-none">{{$t('status')}}</label>
+                      <multiselect id="process_status_filter" v-model="status"
                                      :show-labels="false"
                                      @input="buildPmql"
                                      :loading="isLoading.status"
@@ -34,6 +37,7 @@
                                      :options="statusOptions"
                                      track-by="value"
                                      :multiple="true"
+                                     :aria-label="$t('Status')"
                                      :placeholder="$t('Status')">
                             <template slot="noResult">
                                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -45,7 +49,9 @@
                                 <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('statuses') }}</span>
                             </template>
                         </multiselect>
-                        <multiselect v-model="requester"
+                      <label for="process_requester_filter" class="d-none">{{$t('Requester')}}</label>
+                      <multiselect id="process_requester_filter"
+                                   v-model="requester"
                                      @search-change="getRequesters"
                                      @input="buildPmql"
                                      :show-labels="false"
@@ -55,6 +61,7 @@
                                      :options="requesterOptions"
                                      :track-by="'id'"
                                      :multiple="true"
+                                     :aria-label="$t('Requester')"
                                      :placeholder="$t('Requester')">
                             <template slot="noResult">
                                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -72,7 +79,8 @@
                                 <span class="ml-1">{{props.option.fullname}}</span>
                             </template>
                         </multiselect>
-                        <multiselect v-model="participants"
+                      <label for="process_participant_filter" class="d-none">{{$t('Participants')}}</label>
+                      <multiselect id="process_participant_filter" v-model="participants"
                                      @search-change="getParticipants"
                                      @input="buildPmql"
                                      :show-labels="false"
@@ -82,6 +90,7 @@
                                      :options="participantsOptions"
                                      :track-by="'id'"
                                      :multiple="true"
+                                     :aria-label="$t('Participants')"
                                      :placeholder="$t('Participants')">
                             <template slot="noResult">
                                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -101,7 +110,9 @@
                         </multiselect>
                     </div>
                     <div v-if="type == 'tasks'" class="search-bar-inputs flex-grow d-flex flex-column flex-md-row w-100">
-                        <multiselect v-model="request"
+                      <label for="process_request_filter" class="d-none">{{$t('Request')}}</label>
+                      <multiselect id="process_request_filter"
+                                  v-model="request"
                                      @search-change="getRequests"
                                      @input="buildPmql"
                                      :show-labels="false"
@@ -111,6 +122,7 @@
                                      :options="requestOptions"
                                      :track-by="'id'"
                                      :multiple="true"
+                                     :aria-label="$t('Request')"
                                      :placeholder="$t('Request')">
                             <template slot="noResult">
                                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -122,7 +134,9 @@
                                 <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('requests') }}</span>
                             </template>
                         </multiselect>
-                        <multiselect v-model="name"
+                      <label for="process_task_filter" class="d-none">{{$t('Task')}}</label>
+                      <multiselect id="process_task_filter"
+                                     v-model="name"
                                      @search-change="getNames"
                                      @input="buildPmql"
                                      :show-labels="false"
@@ -132,6 +146,7 @@
                                      :options="nameOptions"
                                      :track-by="'name'"
                                      :multiple="true"
+                                     :aria-label="$t('Task')"
                                      :placeholder="$t('Task')">
                             <template slot="noResult">
                                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -143,7 +158,9 @@
                                 <span class="multiselect__single" v-if="values.length > 1 && !isOpen">{{ values.length }} {{ $t('names') }}</span>
                             </template>
                         </multiselect>
-                        <multiselect v-model="status"
+                      <label for="process_status_options_filter" class="d-none">{{$t('Status')}}</label>
+                      <multiselect id="process_status_options_filter"
+                                      v-model="status"
                                      :show-labels="false"
                                      @input="buildPmql"
                                      :loading="isLoading.status"
@@ -152,6 +169,7 @@
                                      :options="statusOptions"
                                      track-by="value"
                                      :multiple="true"
+                                     :aria-label="$t('Status')"
                                      :placeholder="$t('Status')">
                             <template slot="noResult">
                                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -176,7 +194,7 @@
                 </div>
                 <div class="search-bar-advanced d-flex w-100" v-if="advanced">
                     <div class="search-bar-inputs flex-grow w-100">
-                        <input ref="search_input" type="text" class="search-bar-manual-input form-control" :placeholder="$t('Advanced Search (PMQL)')" v-model="pmql" @keyup.enter="runSearch(true)">
+                        <input ref="search_input" type="text" class="search-bar-manual-input form-control" :placeholder="$t('Advanced Search (PMQL)')" :aria-label="$t('Advanced Search (PMQL)')" v-model="pmql" @keyup.enter="runSearch(true)">
                     </div>
                     <div class="search-bar-actions d-flex flex-shrink btn-search-advanced">
                         <b-btn class="btn-search-toggle" variant="success" @click="toggleAdvanced" v-b-tooltip.hover :title="$t('Basic Mode')"><i class="fas fa-ellipsis-h"></i></b-btn>

@@ -35,7 +35,7 @@
                                 </b-card>
                             </div>
 
-                            <input type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json">
+                            <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json" aria-label="{{__('Select a file')}}">
                             <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
                                 <i class="fas fa-upload"></i>
                                 {{__('Browse')}}
@@ -72,7 +72,8 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <multiselect v-model="item.value"
+                                                <label for="process_name_filter" class="d-none">{{__('Type to search task')}}</label>
+                                                <multiselect id="search-task-text" v-model="item.value"
                                                              placeholder="{{__('Type to search task')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
@@ -94,8 +95,10 @@
                                                         {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
-                                                <multiselect v-model="item.value"
-                                                             placeholder="{{__('Type to search')}}"
+                                                <label for="search-user-text" class="d-none">{{__('Type to search a user')}}</label>
+                                                <multiselect id="search-user-text"
+                                                             v-model="item.value"
+                                                             placeholder="{{__('Type to search a user')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
                                                              track-by="id"
@@ -116,8 +119,10 @@
                                                         {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
-                                                <multiselect v-model="item.value"
-                                                             placeholder="{{__('Type to search')}}"
+                                                <label for="search-script-text" class="d-none">{{__('Type to search a script')}}</label>
+                                                <multiselect id="search-script-text"
+                                                             v-model="item.value"
+                                                             placeholder="{{__('Type to search a script')}}"
                                                              :options="users"
                                                              :multiple="false"
                                                              track-by="id"
@@ -136,8 +141,10 @@
                                                         {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
-                                                <multiselect v-model="item.value"
-                                                             placeholder="{{__('Type to search process')}}"
+                                                <label for="search-user-text" class="d-none">{{__('Type to search a process')}}</label>
+                                                <multiselect id="search-user-text"
+                                                             v-model="item.value"
+                                                             placeholder="{{__('Type to search a process')}}"
                                                              :options="processes"
                                                              :multiple="false"
                                                              track-by="id"
@@ -165,7 +172,9 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <multiselect v-model="cancelRequest"
+                                                <label for="search-user-groups-text" class="d-none">{{__('Type to search')}}</label>
+                                                <multiselect id="search-user-groups-text"
+                                                            v-model="cancelRequest"
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="true"
@@ -194,7 +203,9 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <multiselect v-model="processEditData"
+                                                <label for="search-user-groups-text-assing" class="d-none">{{__('Type to search')}}</label>
+                                                <multiselect id="search-user-groups-text-assing"
+                                                             v-model="processEditData"
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="true"

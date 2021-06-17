@@ -10,6 +10,7 @@
             :class="{'border border-danger':error}"
             :loading="loading"
             :placeholder="$t('type here to search')"
+            :aria-label="$t('type here to search')"
             :options="options"
             :multiple="multiple"
             :show-labels="false"

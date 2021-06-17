@@ -1,7 +1,8 @@
 <template>
     <div class="form-group">
-        <label>{{ $t(label) }}</label>
-        <multiselect v-model="content"
+        <label for="screen-select">{{ $t(label) }}</label>
+        <multiselect id="screen-select"
+                     v-model="content"
                      ref="screen-select"
                      track-by="id"
                      label="title"

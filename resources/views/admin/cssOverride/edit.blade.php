@@ -104,8 +104,9 @@
                         :state="fieldState('sansSerifFont')"
                         :invalid-feedback="errorMessage('sansSerifFont')"
                     >
-                        <multiselect v-model="selectedSansSerifFont"
-                                     id="custom-font"
+                        <label for="custom-font" class="d-none">{{__('Select which font to use throughout the system.')}}</label>
+                        <multiselect id="custom-font"
+                                     v-model="selectedSansSerifFont"
                                      placeholder="{{__('Type to search')}}"
                                      :options="fontsDefault"
                                      :multiple="false"

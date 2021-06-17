@@ -53,7 +53,7 @@
                                      :enable-orientation="false" :enable-resize="false">
                         </vue-croppie>
                     </div>
-                    <input type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange">
+                    <input id="customFile" type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange" aria-label="{{__('select file')}}">
                 </div>
 
                 <div class="modal-footer">

@@ -77,6 +77,7 @@
                                 {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-1',
                                 'v-model' => 'formData.timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.timeout}']) !!}
                                 {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
+                                'aria-label' => __('Use the slider to select a range'),
                                 'v-model' => 'formData.timeout', 'min' => 0, 'max' => 300]) !!}
                                 <div class="invalid-feedback" v-if="errors.timeout">@{{errors.timeout[0]}}</div>
                             </div>
