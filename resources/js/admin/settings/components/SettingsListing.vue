@@ -33,7 +33,7 @@
         </template>
         <template v-slot:cell(config)="row">
           <keep-alive>
-            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
+            <component v-if="row.item" :ref="`settingComponent_${row.index}`" :key="row.item.key" :is="component(row.item)" @saved="onChange" v-model="row.item.config" :setting="settings[row.index]"></component>
           </keep-alive>
         </template>
         <template v-slot:cell(actions)="row">
@@ -55,8 +55,9 @@
         <b-button
           v-for="(btn,index) in buttons"
           :key="`btn-${index}`"
+          class="ml-2"
           v-bind="btn.ui.props"
-          @click="window[btn.handler] && window[btn.handler]()"
+          @click="handler(btn)"
           >{{btn.name}}</b-button>
       </div>
       <div v-if="totalRows" class="settings-table-footer text-secondary d-flex align-items-center p-2 w-100">
@@ -125,6 +126,7 @@ export default {
   props: ['group'],
   data() {
     return {
+      tableKey: 0,
       buttons: [],
       currentPage: 1,
       fields: [],
@@ -312,6 +314,24 @@ export default {
     },
     onFinishImport() {
       window.location.reload();
+    },
+    /**
+     * Javascript handler for configuration button
+     * 
+     *  props: Properties of the button
+     *  handler: JavaScript global function
+     *
+     * Example of Settings properties:
+     *   name=Test button
+     *   format=button
+     *   hidden=true
+     *   ui={"props":{"variant":"primary"},"handler":"mailTest"}
+     * 
+     */
+    handler(btn) {
+      if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
+        window[btn.ui.handler](this);
+      }
     },
     refresh() {
       this.$refs.table.refresh();

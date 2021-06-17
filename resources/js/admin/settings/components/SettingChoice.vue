@@ -59,6 +59,9 @@ export default {
     },
     display() {
       const options = this.ui('options');
+      if (!options) {
+        return this.input;
+      }
       const keys = Object.keys(options);
       if (keys.includes(this.input)) {
         return options[this.input];
