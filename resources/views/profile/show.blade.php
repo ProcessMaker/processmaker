@@ -53,7 +53,8 @@
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="3">
+                        <!-- v-pre used to prevent xss by vue compilation  -->
+                        <td colspan="3" v-pre>
                             {{$user->address}}<br>
                             {{$user->city}}, {{$user->state}} {{$user->postal}} {{$user->country}}
                         </td>
