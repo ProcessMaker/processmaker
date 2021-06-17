@@ -24,8 +24,6 @@ class SanitizeHelper {
         '<fieldset>',
         '<label>',
         '<output>',
-        '{{',
-        '}}',
     ];
 
     /**
