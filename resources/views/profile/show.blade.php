@@ -55,8 +55,8 @@
                     <tr>
                         <!-- v-pre used to prevent xss by vue compilation  -->
                         <td colspan="3" v-pre>
-                            {{$user->address}}<br>
-                            {{$user->city}}, {{$user->state}} {{$user->postal}} {{$user->country}}
+                            {{ \ProcessMaker\SanitizeHelper::sanitizeVueExp($user->address) }}<br>
+                            {{ \ProcessMaker\SanitizeHelper::sanitizeVueExp($user->city) }}, {{ \ProcessMaker\SanitizeHelper::sanitizeVueExp($user->state) }} {{ \ProcessMaker\SanitizeHelper::sanitizeVueExp($user->postal) }} {{ \ProcessMaker\SanitizeHelper::sanitizeVueExp($user->country) }}
                         </td>
                     </tr>
                     @endif

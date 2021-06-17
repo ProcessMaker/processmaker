@@ -155,4 +155,14 @@ class SanitizeHelper {
             return '';
         }
     }
+
+    public static function sanitizeVueExp($string)
+    {
+        // strip {{, }}
+        $codes = [
+            '{{' => '',
+            '}}' => '',
+        ];
+        return str_replace(array_keys($codes), array_values($codes), $string);
+    }
 }
