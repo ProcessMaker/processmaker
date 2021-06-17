@@ -167,9 +167,9 @@ class User extends Authenticatable implements HasMedia
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
-            'phone' => ['regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
-            'fax' => ['regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
-            'cell' => ['regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
+            'phone' => ['nullable', 'regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
+            'fax' => ['nullable', 'regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
+            'cell' => ['nullable', 'regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
             'status' => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
             'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
             'birthdate' => 'date|nullable' 
