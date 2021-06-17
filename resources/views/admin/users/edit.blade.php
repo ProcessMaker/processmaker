@@ -57,7 +57,7 @@
                         <div class="tab-pane show" id="nav-groups" role="tabpanel"
                              aria-labelledby="nav-groups-tab">
                              <div class="input-group w-100 mb-3">
-                                 <input v-model="userGroupsFilter" class="form-control" placeholder="{{__('Search')}}">
+                                 <input id="search-groups" v-model="userGroupsFilter" class="form-control" placeholder="{{__('Search')}}" aria-label="{{__('Search')}}">
                                  <div class="input-group-append">
                                      <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                                  </div>
@@ -78,12 +78,12 @@
                         <div class="tab-pane" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <div class="accordion" id="accordionPermissions">
                                 <div class="mb-2 custom-control custom-switch">
-                                    <input v-model="formData.is_administrator" type="checkbox" class="custom-control-input" id="is_administrator" @input="adminHasChanged = true">
-                                    <label class="custom-control-label" for="is_administrator">{{ __('Make this user a Super Admin') }}</label>
+                                    <input id="is_administrator" type="checkbox" v-model="formData.is_administrator"  class="custom-control-input"  @input="adminHasChanged = true">
+                                    <label for="is_administrator" class="custom-control-label">{{ __('Make this user a Super Admin') }}</label>
                                 </div>
                                 <div class="mb-3 custom-control custom-switch">
-                                    <input v-model="selectAll" type="checkbox" class="custom-control-input" id="selectAll" @click="select" :disabled="formData.is_administrator">
-                                    <label class="custom-control-label" for="selectAll">{{ __('Assign all permissions to this user') }}</label>
+                                    <input id="selectAll" type="checkbox" v-model="selectAll" class="custom-control-input" @click="select" :disabled="formData.is_administrator">
+                                    <label for="selectAll" class="custom-control-label">{{ __('Assign all permissions to this user') }}</label>
                                 </div>
                                 @include('admin.shared.permissions')
                                 <div class="d-flex justify-content-end mt-3">
@@ -120,7 +120,7 @@
                                                 </div>
 
                                                 <div>
-                                                    <textarea ref="text" style="height: 400px" class="form-control">@{{ newToken.accessToken }}</textarea>
+                                                    <textarea id="generated-token" ref="text" style="height: 400px" class="form-control" aria-label="Generated Token">@{{ newToken.accessToken }}</textarea>
                                                 </div>
                                             </div>
 
@@ -181,7 +181,7 @@
                                      :enable-resize="false">
                         </vue-croppie>
                     </div>
-                    <input type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange">
+                    <input id="upload-image" type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange" aria-label="{{__('Select a file')}}">
                 </div>
 
                 <div class="modal-footer">

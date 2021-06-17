@@ -31,6 +31,7 @@
               :options="availableKeys"
               track-by="name"
               label="name"
+              aria-label="name"
               :show-labels="false"
               class="setting-object-multiselect ml-2 mr-2"
             ></multiselect>

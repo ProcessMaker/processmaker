@@ -124,7 +124,8 @@
                                       v-cloak>
                                 <div class="form-group">
                                     {!!Form::label('user', __('User'))!!}
-                                    <select-from-api v-model="selectedUser"
+                                    <select-from-api id='user'
+                                                  v-model="selectedUser"
                                                   placeholder="{{__('Select the user to reassign to the task')}}"
                                                   api="users"
                                                   :multiple="false"

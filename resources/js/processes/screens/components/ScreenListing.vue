@@ -93,10 +93,9 @@
       <form>
         <div class="form-group">
           <label for="title">{{$t('Name')}}<small class="ml-1">*</small></label>
-          <input
+          <input id="title"
             type="text"
             class="form-control"
-            id="title"
             v-model="dupScreen.title"
             v-bind:class="{ 'is-invalid': errors.title }"
           />

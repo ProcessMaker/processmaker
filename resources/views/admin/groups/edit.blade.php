@@ -83,7 +83,7 @@
                                 <div class="flex-grow-1">
                                     <div id="search" class="mb-3 mb-md-0">
                                         <div class="input-group w-100">
-                                            <input v-model="usersFilter" class="form-control" placeholder="{{__('Search')}}">
+                                            <input id="users-filter" v-model="usersFilter" class="form-control" placeholder="{{__('Search')}}" aria-label="{{__('Search')}}">
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                                             </div>
@@ -107,7 +107,7 @@
                                 <div class="flex-grow-1">
                                     <div id="search" class="mb-3 mb-md-0">
                                         <div class="input-group w-100">
-                                            <input v-model="groupsFilter" class="form-control" placeholder="{{__('Search')}}">
+                                            <input id="groups-filter" v-model="groupsFilter" class="form-control" placeholder="{{__('Search')}}" aria-label="{{__('Search')}}">
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                                             </div>
@@ -128,7 +128,7 @@
                     <div class="card card-body border-top-0 tab-pane p-3" id="nav-permissions" role="tabpanel" aria-labelledby="nav-permissions">
                         <div class="accordion" id="accordionPermissions">
                             <div class="mb-3 custom-control custom-switch">
-                                <input v-model="selectAll" type="checkbox" class="custom-control-input" id="selectAll" @click="select">
+                                <input id="selectAll" type="checkbox" v-model="selectAll" class="custom-control-input" @click="select">
                                 <label class="custom-control-label" for="selectAll">{{ __('Assign all permissions to this group') }}</label>
                             </div>
                             @include('admin.shared.permissions')
@@ -154,7 +154,8 @@
                         <div class="modal-body">
                             <div class="form-user">
                                 {!!Form::label('users', __('Users') . '<small class="ml-1">*</small>', [], false)!!}
-                                <multiselect v-model="selectedUsers"
+                                <multiselect id="users"
+                                             v-model="selectedUsers"
                                              placeholder="{{__('Select user or type here to search users')}}"
                                              :options="availableUsers"
                                              :multiple="true"
@@ -214,7 +215,8 @@
                         <div class="modal-body">
                             <div class="form-user">
                                 {!!Form::label('groups', __('Groups') . '<small class="ml-1">*</small>', [], false)!!}
-                                <multiselect v-model="selectedGroups"
+                                <multiselect id="groups"
+                                             v-model="selectedGroups"
                                              placeholder="{{__('Select group or type here to search groups')}}"
                                              :options="availableGroups"
                                              :multiple="true"

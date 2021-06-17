@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="form-group">
-      <label>Signal Payload</label>
-        <multiselect
+      <label for="signal_payload_type">{{ $t('Signal Payload') }}</label>
+        <multiselect id="signal_payload_type"
             v-model="selectedPayloadType"
             @input="payloadChange"
             placeholder="Select Option"
@@ -24,12 +24,12 @@
 
     <div class="form-group" v-if="showVariable">
       <label>{{ variableLabel }}</label>
-      <input class="form-control" type="text" v-model="config.payload[0].variable">
+      <input class="form-control" type="text" v-model="config.payload[0].variable" :aria-label="$t(variableHelper)">
       <small class="form-text text-muted">{{ variableHelper }}</small>
     </div>
     <div class="form-group" v-if="showExpression">
       <label>{{$t('Expression')}}</label>
-      <input class="form-control" type="text" v-model="config.payload[0].expression">
+      <input class="form-control" type="text" v-model="config.payload[0].expression" :aria-label="$t('Expression')">
     </div>
   </div>
 </template>

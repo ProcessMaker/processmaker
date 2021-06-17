@@ -1,7 +1,8 @@
 <template>
     <div class="form-group">
-        <label>{{ $t(label) }}</label>
-        <multiselect v-model="content"
+        <label for="script-select">{{ $t(label) }}</label>
+        <multiselect id="script-select"
+                     v-model="content"
                      track-by="id"
                      label="title"
                      :class="{'is-invalid':error}"

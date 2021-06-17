@@ -11,12 +11,11 @@
             <div class="card-body">
                 @foreach ($permissions as $permission)
                     <div class="mb-2 custom-control custom-switch">
-                        <input type="checkbox"
+                        <input id="permission_{{ $permission->name }}" type="checkbox"
                                :disabled="formData.is_administrator"
                                value="{{ $permission->name }}"
                                v-model="selectedPermissions"
                                class="custom-control-input"
-                               id="permission_{{ $permission->name }}"
                                @if ($permission->action == 'create')@@change="checkCreate('edit-{{ $permission->resource_name }}', $event)"@endif
                                @if ($permission->action == 'edit')@@change="checkEdit('create-{{ $permission->resource_name }}', $event)"@endif
                         >

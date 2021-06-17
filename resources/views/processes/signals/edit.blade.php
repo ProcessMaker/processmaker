@@ -50,6 +50,7 @@
             </div>
             <div class="form-group">
               {!! Form::textarea('detail', null, ['id' => 'detail', 'rows' => 4, 'class'=> 'form-control', 'v-bind:placeholder' => '$t("Additional Details (optional)")',
+              'aria-label' => __('Additional Details (optional)'),
               'v-model' => 'formData.detail', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.detail}']) !!}
               <div class="invalid-feedback" v-if="errors.detail">@{{errors.detail[0]}}</div>
             </div>

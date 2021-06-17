@@ -1,7 +1,8 @@
 <template>
     <div class="form-group">
-        <label>{{ $t(label) }}</label>
-        <multiselect v-model="content"
+        <label for="select-user-name">{{ $t(label) }}</label>
+        <multiselect id="select-user-name"
+                     v-model="content"
                      track-by="id"
                      label="fullname"
                      :class="{'border border-danger':error}"

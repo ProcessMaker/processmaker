@@ -73,7 +73,8 @@
                             </category-select>
                             <div class="form-group p-0">
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
-                                <multiselect v-model="canCancel"
+                                <multiselect id="cancelRequest"
+                                             v-model="canCancel"
                                              :options="activeUsersAndGroups"
                                              :multiple="true"
                                              :show-labels="false"
@@ -90,7 +91,8 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
-                                <multiselect v-model="screenCancel"
+                                <multiselect id="cancelScreen"
+                                             v-model="screenCancel"
                                              :options="screens"
                                              :multiple="false"
                                              :show-labels="false"
@@ -108,7 +110,8 @@
                             </div>
                             <div class="form-group p-0">
                                 {!! Form::label('editData', __('Edit Data')) !!}
-                                <multiselect v-model="canEditData"
+                                <multiselect id="editData"
+                                             v-model="canEditData"
                                              :options="activeUsersAndGroups"
                                              :multiple="true"
                                              :show-labels="false"
@@ -125,7 +128,8 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
-                                <multiselect v-model="screenRequestDetail"
+                                <multiselect id="requestDetailScreen"
+                                             v-model="screenRequestDetail"
                                              :options="screens"
                                              :multiple="false"
                                              :show-labels="false"
@@ -164,27 +168,27 @@
                                         <td class="notify">{{__('Notify Requester')}}</td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input v-model="formData.notifications.requester.started"
-                                                       type="checkbox" class="custom-control-input"
-                                                       id="notify-requester-started">
+                                                <input id="notify-requester-started" type="checkbox"
+                                                       v-model="formData.notifications.requester.started"
+                                                        class="custom-control-input">
                                                 <label class="custom-control-label"
                                                        for="notify-requester-started"></label>
                                             </div>
                                         </td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input v-model="formData.notifications.requester.canceled"
-                                                       type="checkbox" class="custom-control-input"
-                                                       id="notify-requester-canceled">
+                                                <input id="notify-requester-canceled" type="checkbox"
+                                                       v-model="formData.notifications.requester.canceled"
+                                                       class="custom-control-input">
                                                 <label class="custom-control-label"
                                                        for="notify-requester-canceled"></label>
                                             </div>
                                         </td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input v-model="formData.notifications.requester.completed"
-                                                       type="checkbox" class="custom-control-input"
-                                                       id="notify-requester-completed">
+                                                <input id="notify-requester-completed" type="checkbox"
+                                                       v-model="formData.notifications.requester.completed"
+                                                       class="custom-control-input">
                                                 <label class="custom-control-label"
                                                        for="notify-requester-completed"></label>
                                             </div>
@@ -199,18 +203,18 @@
                                         </td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input v-model="formData.notifications.participants.canceled"
-                                                       type="checkbox" class="custom-control-input"
-                                                       id="notify-participants-canceled">
+                                                <input id="notify-participants-canceled" type="checkbox"
+                                                       v-model="formData.notifications.participants.canceled"
+                                                       class="custom-control-input">
                                                 <label class="custom-control-label"
                                                        for="notify-participants-canceled"></label>
                                             </div>
                                         </td>
                                         <td class="action">
                                             <div class="custom-control custom-switch">
-                                                <input v-model="formData.notifications.participants.completed"
-                                                       type="checkbox" class="custom-control-input"
-                                                       id="notify-participants-completed">
+                                                <input id="notify-participants-completed" type="checkbox"
+                                                       v-model="formData.notifications.participants.completed"
+                                                       class="custom-control-input">
                                                 <label class="custom-control-label"
                                                        for="notify-participants-completed"></label>
                                             </div>

@@ -21,7 +21,7 @@
                 <div class="flex-grow-1">
                     <div id="search" class="mb-3 mb-md-0">
                         <div class="input-group w-100">
-                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                            <input id="search-box" v-model="filter" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                             </div>

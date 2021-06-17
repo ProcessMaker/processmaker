@@ -4,7 +4,7 @@
             <div class="flex-grow-1">
                 <div id="search" class="mb-3 mb-md-0">
                     <div class="input-group w-100">
-                        <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                        <input id="search-box" v-model="filter" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
                         <div class="input-group-append">
                             <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                         </div>
@@ -87,15 +87,16 @@
                         <div class="form-group">
                             {!! Form::label('fileName', __('Upload BPMN File (optional)')) !!}
                             <div class="input-group">
-                                <input type="text" name="fileName" class="form-control" v-model="selectedFile" disabled="true">
+                                <input id="fileName" type="text" name="fileName" class="form-control" v-model="selectedFile" disabled="true">
                                 <div class="input-group-append">
                                     <button type="button" @click="browse" class="btn btn-secondary"><i
                                             class="fas fa-upload"></i>
                                         {{__('Upload file')}}
                                     </button>
                                 </div>
-                                <input type="file" class="custom-file-input"
+                                <input id='bpmn-file' type="file" class="custom-file-input"
                                        :class="{'is-invalid': addError.bpmn && addError.bpmn.length}"
+                                       aria-label="{{__('Select a file')}}"
                                        ref="customFile" @change="onFileChange" accept=".bpmn,.xml" style="height: 0;">
                                 <div class="invalid-feedback" v-for="error in addError.bpmn">@{{error}}</div>
                             </div>

@@ -11,7 +11,7 @@
           <i class="fas fa-cog fa-spin text-secondary"></i> Importing...
         </h5>
         <p class="text-center" v-else>
-          <input type="file" ref="file" class="d-none" @change="handleFile" accept=".json">
+          <input id="settings-import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".json" :aria-label="$t('Select a file')">
           <button type="button" @click="$refs.file.click()" class="btn btn-secondary">
               <i class="fas fa-upload"></i>
               {{ $t('Browse')}}

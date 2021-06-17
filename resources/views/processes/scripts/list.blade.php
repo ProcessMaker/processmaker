@@ -4,7 +4,7 @@
                 <div class="flex-grow-1">
                     <div id="search" class="mb-3 mb-md-0">
                         <div class="input-group w-100">
-                            <input v-model="filter" class="form-control" placeholder="{{__('Search')}}">
+                            <input id="search-box" v-model="filter" class="form-control" placeholder="{{__('Search')}}"  aria-label="{{__('Search')}}">
                             <div class="input-group-append">
                                 <button type="button" class="btn btn-primary" aria-label="{{__('Search')}}"><i class="fas fa-search"></i></button>
                             </div>
@@ -89,6 +89,7 @@
                                     {!! Form::text('timeout', null, ['id' => 'timeout', 'class'=> 'form-control col-2',
                                     'v-model' => 'timeout', 'pattern' => '[0-9]*', 'v-bind:class' => '{"form-control":true, "is-invalid":addError.timeout}']) !!}
                                     {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
+                                    'aria-label' => __('Use the slider to select a range'),
                                     'v-model' => 'timeout', 'min' => 0, 'max' => 300]) !!}
                                     <div class="invalid-feedback" v-for="timeout in addError.timeout">@{{timeout}}</div>
                                 </div>

@@ -58,6 +58,7 @@
           v-if="perPageSelectEnabled"
           v-model="perPage"
           class="pagination-nav-item pagination-nav-drop"
+          :aria-label="$t('Per page')"
         >
           <option value="10">10</option>
           <option value="25">25</option>

@@ -46,63 +46,6 @@
                     <label class="custom-control-label" for="notify-participants-due">{{ $t('Due') }}</label>
                 </div>
             </div>
-            
-            <!-- <table id="table-notifications" class="table">
-                <thead>
-                    <tr>
-                        <th class="notify"></th>
-                        <th class="action">Assigned</th>
-                        <th class="action">Completed</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="notify">Requester</td>
-                        <td class="action">
-                            <div class="custom-control custom-switch">
-                                <input v-model="notifications.requester.assigned" type="checkbox" class="custom-control-input" id="notify-requester-assigned">
-                                <label class="custom-control-label" for="notify-requester-assigned"></label>
-                            </div>
-                        </td>
-                        <td class="action">
-                            <div class="custom-control custom-switch">
-                                <input v-model="notifications.requester.completed"  type="checkbox" class="custom-control-input" id="notify-requester-completed">
-                                <label class="custom-control-label" for="notify-requester-completed"></label>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="notify">Assignee</td>
-                        <td class="action">
-                            <div class="custom-control custom-switch">
-                                <input v-model="notifications.assignee.assigned"  type="checkbox" class="custom-control-input" id="notify-assignee-assigned">
-                                <label class="custom-control-label" for="notify-assignee-assigned"></label>
-                            </div>
-                        </td>
-                        <td class="action">
-                            <div class="custom-control custom-switch">
-                                <input v-model="notifications.assignee.completed"  type="checkbox" class="custom-control-input" id="notify-assignee-completed">
-                                <label class="custom-control-label" for="notify-assignee-completed"></label>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="notify">Participants</td>
-                        <td class="action">
-                            <div class="custom-control custom-switch">
-                                <input v-model="notifications.participants.assigned"  type="checkbox" class="custom-control-input" id="notify-participants-assigned">
-                                <label class="custom-control-label" for="notify-participants-assigned"></label>
-                            </div>
-                        </td>
-                        <td class="action">
-                            <div class="custom-control custom-switch">
-                                <input v-model="notifications.participants.completed"  type="checkbox" class="custom-control-input" id="notify-participants-completed">
-                                <label class="custom-control-label" for="notify-participants-completed"></label>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table> -->
         </div>
     </div>
 </template>
