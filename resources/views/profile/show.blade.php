@@ -67,10 +67,10 @@
             <div class="card card-body">
                 <div align="center">
                     <avatar-image size="150" :input-data="avatar"></avatar-image>
-                    <h1 style="font-weight:100">{{$user->firstname}} {{$user->lastname}}</h1>
-                    <h4>{{$user->title}}</h4>
+                    <h1 style="font-weight:100" v-pre>{{ sanitizeVueExp($user->firstname) }} {{ sanitizeVueExp($user->lastname) }}</h1>
+                    <h4 v-pre>{{ sanitizeVueExp($user->title) }}</h4>
                     <hr>
-                    <h5 class="mt-2">{{__('Current Local Time')}}</h5>
+                    <h5 class="mt-2" v-pre>{{__('Current Local Time')}}</h5>
                     <div><i class="far fa-calendar-alt fa-lg text-secondary pr-1"></i>
                         @{{moment().format() }}</div>
                 </div>
