@@ -1,4 +1,7 @@
 <?php
+
+use ProcessMaker\SanitizeHelper;
+
 use function GuzzleHttp\json_encode;
 
 /**
@@ -66,4 +69,9 @@ function pmUser()
         return Auth::guard('api')->user();
     }
     return null;
+}
+
+function sanitizeVueExp($expression)
+{
+    return SanitizeHelper::sanitizeVueExp($expression);
 }

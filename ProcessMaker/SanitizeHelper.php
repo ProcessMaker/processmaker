@@ -1,6 +1,7 @@
 <?php
 namespace ProcessMaker;
 
+use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use function GuzzleHttp\json_decode;
@@ -38,6 +39,7 @@ class SanitizeHelper {
         if (is_string($value) && $strip_tags) {
             // Remove most injectable code
             $value = strip_tags($value);
+            $value = self::sanitizeVueExp($value);
 
             // Return the sanitized string
             return $value;
@@ -131,5 +133,37 @@ class SanitizeHelper {
             }
         }
         return $elements;
+    }
+
+    public static function sanitizeEmail($email)
+    {
+        $validator = Validator::make(['email' => $email], [
+            'email'=>'required|email'
+        ]);
+        if ($validator->fails()) {
+            return '';
+        } else {
+            return $email;
+        }
+    }
+
+    public static function sanitizePhoneNumber($number)
+    {
+        $regexp = "/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/";
+        if (preg_match($regexp, $number)) {
+            return $number;
+        } else {
+            return '';
+        }
+    }
+
+    public static function sanitizeVueExp($string)
+    {
+        // strip {{, }}
+        $codes = [
+            '{{' => '',
+            '}}' => '',
+        ];
+        return str_replace(array_keys($codes), array_values($codes), $string);
     }
 }
