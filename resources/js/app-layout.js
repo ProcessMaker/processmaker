@@ -60,36 +60,6 @@ window.ProcessMaker.nodeTypes.get = function (id) {
   return this.find(node => node.id === id);
 };
 
-// Setup breadcrumbs as a Vue component so that we can cloak it until Vue
-// has finished loading.
-
-if (document.getElementById("breadcrumbs")) {
-  window.ProcessMaker.breadcrumbs = new Vue({
-    el: '#breadcrumbs',
-    data () {
-      return {
-        taskTitle: '',
-      };
-    },
-    methods: {
-      getRoutes() {
-        if (this.$refs.breadcrumbs) {
-          return this.$refs.breadcrumbs.list;
-        } else {
-          return [];
-        }
-      },
-      setRoutes(routes) {
-        if (this.$refs.breadcrumbs) {
-          return this.$refs.breadcrumbs.updateRoutes(routes);
-        } else {
-          return false;
-        }
-      }
-    }
-  });
-}
-
 // Assign our navbar component to our global ProcessMaker object
 window.ProcessMaker.navbar = new Vue({
   el: "#navbar",
@@ -119,7 +89,8 @@ window.ProcessMaker.navbar = new Vue({
       sessionTitle: "",
       sessionMessage: "",
       sessionTime: "",
-      sessionWarnSeconds: ""
+      sessionWarnSeconds: "",
+      taskTitle: "",
     };
   },
   methods: {
@@ -148,6 +119,18 @@ window.ProcessMaker.navbar = new Vue({
     saveLocalAlerts (array) {
       const nextScreenAlerts = array.filter(alert => alert.stayNextScreen);
       window.localStorage.processmakerAlerts = JSON.stringify(nextScreenAlerts);
+    },
+    getRoutes () {
+      if (this.$refs.breadcrumbs) {
+        return this.$refs.breadcrumbs.list;
+      }
+      return [];
+    },
+    setRoutes (routes) {
+      if (this.$refs.breadcrumbs) {
+        return this.$refs.breadcrumbs.updateRoutes(routes);
+      }
+      return false;
     }
   },
   mounted () {
@@ -162,6 +145,9 @@ window.ProcessMaker.navbar = new Vue({
       });
   }
 });
+
+// Breadcrumbs are now part of the navbar component. Alias it here.
+window.ProcessMaker.breadcrumbs = window.ProcessMaker.navbar;
 
 // Set our own specific alert function at the ProcessMaker global object that could
 // potentially be overwritten by some custom theme support

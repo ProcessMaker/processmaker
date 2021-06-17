@@ -77,12 +77,11 @@
   <div id="sidebar" class="d-print-none" :class="{expanded: expanded}">
       @yield('sidebar')
   </div>
-  <div class="d-flex flex-grow-1 flex-column">
+  <div class="d-flex flex-grow-1 flex-column overflow-hidden">
     <div class="flex-grow-1">
         @include('layouts.navbar')
     </div>
     <div class="flex-grow-1 d-flex flex-column overflow-hidden h-100" id="mainbody">
-      @yield('breadcrumbs')
       <div class="main flex-grow-1 h-100 overflow-auto {{$content_margin ?? 'py-3'}}">
         @yield('content')
       </div>
