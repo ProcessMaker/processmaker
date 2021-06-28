@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Jobs;
 
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -39,15 +40,15 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
-        extract($this->loadContext());
-        $this->engine = $engine;
-        $this->instance = $instance;
-
-        //Do the action
-        $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
-
-        //Run engine to the next state
         try {
+            extract($this->loadContext());
+            $this->engine = $engine;
+            $this->instance = $instance;
+
+            //Do the action
+            $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
+
+            //Run engine to the next state
             $this->engine->runToNextState();
         } catch (Throwable $exception) {
             // Change the Request to error status
@@ -76,6 +77,9 @@ abstract class BpmnAction implements ShouldQueue
         //Load the process definition
         if (isset($this->instanceId)) {
             $instance = $this->lockInstance($this->instanceId);
+            if (!$instance) {
+                throw new Exception('Unable to lock instance ' . $this->instanceId);
+            }
             $processModel = $instance->process;
             $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
             $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
@@ -161,7 +165,7 @@ abstract class BpmnAction implements ShouldQueue
                 } elseif ($lock->id == $currentLock->id) {
                     $instance->unlock();
                     $lock->activate();
-                    return true;
+                    return $instance;
                 }
                 usleep(500);
             }
