@@ -16,6 +16,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Jobs\StartEventConditional;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ProcessRequestLock;
 use ProcessMaker\Models\ScheduledTask;
 use ProcessMaker\Models\TimerExpression;
 use ProcessMaker\Nayra\Bpmn\Models\BoundaryEvent;
@@ -34,6 +35,17 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 {
     private static $today = null;
     protected $registerStartEvents = false;
+
+    /**
+     * Removes from the process_request_lock table all locks that are active more
+     * time that the threshold defined in with MAX_REQUEST_LOCK_MINUTES env. variable
+     */
+    private function removeExpiredLocks()
+    {
+        $maxDuration = round(config('app.bpmn_actions_max_lock_time') * 2);
+        $thresholdDate = Carbon::now()->subSecond($maxDuration);
+        ProcessRequestLock::where('created_at', '<=', $thresholdDate)->delete();
+    }
 
     /**
      *
@@ -128,6 +140,8 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             if (!Schema::hasTable('scheduled_tasks')) {
                 return;
             }
+
+            $this->removeExpiredLocks();
 
             $tasks = ScheduledTask::all();
 
