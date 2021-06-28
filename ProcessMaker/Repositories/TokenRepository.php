@@ -20,6 +20,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
@@ -421,6 +422,10 @@ class TokenRepository implements TokenRepositoryInterface
     {
         if ($activity instanceof  ScriptTaskInterface) {
             return 'scriptTask';
+        }
+
+        if ($activity instanceof  ServiceTaskInterface) {
+            return 'serviceTask';
         }
 
         if ($activity instanceof  CallActivityInterface) {
