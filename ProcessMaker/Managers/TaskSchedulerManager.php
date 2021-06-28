@@ -38,7 +38,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
     /**
      * Removes from the process_request_lock table all locks that are active more
-     * time that the threshold defined in with MAX_REQUEST_LOCK_MINUTES env. variable
+     * time that the threshold configured with BPMN_ACTIONS_MAX_LOCK_TIME env. variable
      */
     private function removeExpiredLocks()
     {
