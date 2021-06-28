@@ -65,4 +65,26 @@ class RequestLockTest extends TestCase
         $this->assertCount(2, $locksInQueue);
         $this->assertCount(1, $locksActive);
     }
+
+    public function testActivateLocksThenUnlock()
+    {
+        $request = factory(ProcessRequest::class)->create();
+        $tokenId = null;
+        $lock1 = $request->requestLock($tokenId);
+        $lock2 = $request->requestLock($tokenId);
+        $request->unlock();
+        $lock1->activate();
+        $request->unlock();
+        $locksInQueue = $request->locks()->get();
+        $locksActive = $request->locks()->whereNotNull('due_at')->get();
+        $this->assertCount(1, $locksInQueue);
+        $this->assertCount(0, $locksActive);
+
+        $lock2->activate();
+        $request->unlock();
+        $locksInQueue = $request->locks()->get();
+        $locksActive = $request->locks()->whereNotNull('due_at')->get();
+        $this->assertCount(0, $locksInQueue);
+        $this->assertCount(0, $locksActive);
+    }
 }
