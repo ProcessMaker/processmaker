@@ -4,6 +4,7 @@ namespace ProcessMaker\Console\Commands;
 
 use Illuminate\Console\Command;
 use ProcessMaker\Jobs\RunScriptTask;
+use ProcessMaker\Jobs\RunServiceTask;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ProcessRequestLock;
 
@@ -61,7 +62,13 @@ class RetryScriptTasks extends Command
             $bar->advance();
             $instance = $token->processRequest;
             $process = $instance->process;
-            RunScriptTask::dispatch($process, $instance, $token, []);
+
+            if ($token->element_type === 'scriptTask') {
+                RunScriptTask::dispatch($process, $instance, $token, []);
+            }
+            if ($token->element_type === 'serviceTask') {
+                RunServiceTask::dispatch($process, $instance, $token, []);
+            }
         }
 
         $bar->finish();
@@ -69,7 +76,7 @@ class RetryScriptTasks extends Command
 
     private function retrieveTaskList()
     {
-        $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->where('element_type', 'scriptTask');
+        $tasks = ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE'))->whereIn('element_type', ['scriptTask', 'serviceTask']);
 
         if ($this->option('process') && $this->option('request')) {
             exit($this->error('Please specify either a Process ID or a Request ID, not both.'));
