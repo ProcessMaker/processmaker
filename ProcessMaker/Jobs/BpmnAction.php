@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Jobs;
 
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -30,6 +29,8 @@ abstract class BpmnAction implements ShouldQueue
      * @var ProcessRequest
      */
     protected $instance;
+
+    protected $tokenId = null;
 
     /**
      * Execute the job.
@@ -143,21 +144,31 @@ abstract class BpmnAction implements ShouldQueue
      */
     protected function lockInstance($instanceId)
     {
-        $instance = ProcessRequest::findOrFail($instanceId);
-        if (config('queue.default') === 'sync') {
-            return $instance;
-        }
-        $lock = $instance->lock($this->tokenId ?? null);
-        do {
-            $ready = $instance->hasLock($lock);
-            if ($ready) {
-                $instance = ProcessRequest::findOrFail($instanceId);
-                $lock->save();
-            } else {
+        try {
+            $instance = ProcessRequest::findOrFail($instanceId);
+            if (config('queue.default') === 'sync') {
+                return $instance;
+            }
+            $lock = $instance->requestLock($this->tokenId);
+            for ($tries=0; $tries < 120; $tries++) {
+                $currentLock = $instance->currentLock();
+                if (!$currentLock) {
+                    if (ProcessRequest::find($instanceId)) {
+                        $lock = $instance->requestLock($this->tokenId);
+                    } else {
+                        return false;
+                    }
+                } elseif ($lock->id == $currentLock->id) {
+                    $instance->unlock();
+                    $lock->activate();
+                    return true;
+                }
                 usleep(500);
             }
-        } while (!$ready);
-        return $instance;
+        } catch (Throwable $exception) {
+            return false;
+        }
+        return false;
     }
 
     /**
