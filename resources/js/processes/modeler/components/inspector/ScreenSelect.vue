@@ -57,7 +57,6 @@
     },
     watch: {
      content: {
-        immediate: true,
         handler() {
           this.validate();
           let selected = ''
@@ -69,24 +68,12 @@
         }
       },
       value: {
-        immediate: true,
         handler() {
           // Load selected item.
           if (this.value) {
-            this.loading = true;
-            ProcessMaker.apiClient
-              .get("screens/" + this.value)
-              .then(response => {
-                this.loading = false;
-                this.content = response.data;
-              })
-              .catch(error => {
-                this.loading = false;
-                if (error.response.status == 404) {
-                  this.content = '';
-                  this.error = this.$t('Selected screen not found');
-                }
-              });
+            if (!(this.content && this.content.id === this.value)) {
+              this.loadScreen(this.value);
+            }
           } else {
             this.content = '';
           }
@@ -105,6 +92,22 @@
           return this.params.interactive;
         }
         return false;
+      },
+      loadScreen(value) {
+        this.loading = true;
+        ProcessMaker.apiClient
+          .get("screens/" + value)
+          .then(response => {
+            this.loading = false;
+            this.content = response.data;
+          })
+          .catch(error => {
+            this.loading = false;
+            if (error.response.status == 404) {
+              this.content = '';
+              this.error = this.$t('Selected screen not found');
+            }
+          });
       },
       load(filter) {
         let params = Object.assign(
@@ -141,6 +144,9 @@
     },
     mounted() {
       this.validate();
+      if (this.value) {
+        this.loadScreen(this.value);
+      }
     }
   };
 </script>
