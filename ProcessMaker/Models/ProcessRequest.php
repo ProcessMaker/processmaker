@@ -43,6 +43,7 @@ use ProcessMaker\Traits\HideSystemResources;
  * @property Process $process
  * @property ProcessRequestLock[] $locks
  * @method static ProcessRequest find($id)
+ * @method static ProcessRequest findOrFail($id)
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -757,23 +758,27 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @return ProcessRequestLock
      */
-    public function lock($tokenId)
+    public function requestLock($tokenId)
     {
         return $this->locks()->create(['process_request_token_id' => $tokenId]);
     }
 
+    /**
+     * @return void
+     */
     public function unlock()
     {
-        $first = $this->locks()->orderBy('id')->first();
-        if ($first) {
-            $first->delete();
-        }
+        $this->locks()->whereNotNull('due_at')->delete();
     }
 
-    public function hasLock(ProcessRequestLock $lock)
+    /**
+     * Get current lock for $this request
+     *
+     * @return ProcessRequestLock
+     */
+    public function currentLock()
     {
-        $first = $this->locks()->orderBy('id')->first();
-        return !$first || $first->getKey() === $lock->getKey();
+        return $this->locks()->whereNotDue()->orderBy('id')->limit(1)->first();
     }
 
     /**
