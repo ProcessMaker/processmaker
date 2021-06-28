@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use ProcessMaker\Models\ProcessRequest;
 
 class AddDueAtProcessRequestLocks extends Migration
 {
@@ -13,9 +14,13 @@ class AddDueAtProcessRequestLocks extends Migration
      */
     public function up()
     {
-        Schema::table('process_request_locks', function (Blueprint $table) {
+        $model = new ProcessRequest();
+        Schema::connection($model->getConnectionName())->table('process_request_locks', function (Blueprint $table) {
             $table->datetime('due_at')->nullable();
             $table->index(['id', 'process_request_id', 'due_at']);
+            $table->foreign('process_request_id')
+            ->references('id')->on('process_requests')
+            ->onDelete('cascade');
         });
     }
 
@@ -26,9 +31,11 @@ class AddDueAtProcessRequestLocks extends Migration
      */
     public function down()
     {
-        Schema::table('process_request_locks', function (Blueprint $table) {
+        $model = new ProcessRequest();
+        Schema::connection($model->getConnectionName())->table('process_request_locks', function (Blueprint $table) {
             $table->dropColumn('due_at');
             $table->dropIndex(['id', 'process_request_id', 'due_at']);
+            $table->dropForeign(['process_request_id']);
         });
     }
 }
