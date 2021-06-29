@@ -377,10 +377,13 @@ class User extends Authenticatable implements HasMedia
     public function updatePermissionsToRequests()
     {
         // Update existing request_user_permissions
-        $permissions = RequestUserPermission::with('request')->whereHas('request', function ($query) {
-            $query->where('request_user_permissions.user_id', $this->getKey());
-            $query->whereRaw('process_requests.updated_at > request_user_permissions.updated_at');
-        })->get();
+        $permissions = RequestUserPermission::with('request')
+            ->select('request_user_permissions.*')
+            ->leftJoin('process_requests', 'request_user_permissions.request_id', '=', 'process_requests.id')
+            ->where('request_user_permissions.user_id', $this->getKey())
+            ->whereRaw('process_requests.updated_at > request_user_permissions.updated_at')
+            ->get();
+
         foreach ($permissions as $permission) {
             $permission->can_view = $this->can('view', $permission->request);
             $permission->save();
