@@ -28,6 +28,8 @@ class CallActivity implements CallActivityInterface
         catchSubprocessError as catchSubprocessErrorBase;
     }
 
+    private $subProcessRequestVersion;
+
     /**
      * Initialize the Call Activity element.
      *
@@ -177,7 +179,11 @@ class CallActivity implements CallActivityInterface
             // Capability to reuse other processes inside a process
             $process = is_numeric($refs[1]) ? Process::findOrFail($refs[1]) : Process::where('package_key', $refs[1])->firstOrFail();
             $engine = $this->getProcess()->getEngine();
-            $definitions = $engine->getDefinition($process->getLatestVersion());
+            if ($this->subProcessRequestVersion) {
+                $definitions = $engine->getDefinition($this->subProcessRequestVersion);
+            } else {
+                $definitions = $engine->getDefinition($process->getLatestVersion());
+            }
             $response = $definitions->getElementInstanceById($refs[0]);
             return $response;
         }
@@ -207,6 +213,8 @@ class CallActivity implements CallActivityInterface
     public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
     {
         if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && !empty($token->subprocess_request_id)) {
+            // Set subprocess request (to get the right process version)
+            $this->subProcessRequestVersion = $token->subProcessRequest->processVersion;
             $subprocess = $this->getProcess()->getEngine()->loadProcessRequest($token->subProcessRequest);
             $this->linkProcesses($token, $subprocess);
         }
