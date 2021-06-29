@@ -24,7 +24,6 @@ jobs:
           # Needed for MS SQL Docker install
           ACCEPT_EULA: 'Y'
           SA_PASSWORD: 'P4ssW0rd1!'
-
     working_directory: ~/repo
 
     steps:
