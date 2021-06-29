@@ -144,4 +144,78 @@ class CallActivityTest extends TestCase
         $this->assertEquals(99, $file3->getCustomProperty('parent'));
         $this->assertEquals('overwrite.jpg', $file3->file_name);
     }
+
+    public function testCallActivityWithUpdateInProgress()
+    {
+        ScriptExecutor::setTestConfig('php');
+
+        // Script task requires passport installed (oauth token)
+        Artisan::call('passport:install',['-vvv' => true]);
+        
+        // Create the processes
+        $child = $this->createProcess([
+            'id' => 2,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/child-with-form-task.bpmn')
+        ]);
+
+        $parent = $this->createProcess([
+            'id' => 1,
+            'bpmn' => str_replace(
+                ['[child_id]','[start_event_id]'],
+                [$child->id, 'node_8'],
+                file_get_contents(__DIR__ . '/processes/parent.bpmn')
+            )
+        ]);
+
+        // Start a process instance
+        $instance = $this->startProcess($parent, 'node_1');
+        $subInstance = ProcessRequest::where('parent_request_id', $instance->id)->firstOrFail();
+
+        $activeTask = $subInstance->tokens()->where('status', 'ACTIVE')->firstOrFail();
+        $response = $this->apiCall('PUT', route('api.tasks.update', [$activeTask]), [
+            'status' => 'COMPLETED',
+            'data' => [],
+        ]);
+        
+        $activeTokens = $instance->refresh()->tokens()->where('status', 'ACTIVE')->get();
+        $activeSubTokens = $subInstance->refresh()->tokens()->where('status', 'ACTIVE')->get();
+
+        // Assert both processes are COMPLETED
+        $this->assertCount(0, $activeTokens);
+        $this->assertCount(0, $activeSubTokens);
+        $this->assertEquals('COMPLETED', $instance->status);
+        $this->assertEquals('COMPLETED', $subInstance->status);
+
+        /**
+         * Start the same process again, this time update the child process
+         * while it's in progress.
+         */
+
+        // Start the process instance again
+        $instance = $this->startProcess($parent, 'node_1');
+        $subInstance = ProcessRequest::where('parent_request_id', $instance->id)->firstOrFail();
+
+        // Update the process to create a new process version
+        $child->description = 'updated';
+        $child->saveOrFail();
+        
+        // Now complete the task, same as before
+        $activeTask = $subInstance->tokens()->where('status', 'ACTIVE')->firstOrFail();
+        $response = $this->apiCall('PUT', route('api.tasks.update', [$activeTask]), [
+            'status' => 'COMPLETED',
+            'data' => [],
+        ]);
+        
+        $activeTokens = $instance->refresh()->tokens()->where('status', 'ACTIVE')->get();
+        $activeSubTokens = $subInstance->refresh()->tokens()->where('status', 'ACTIVE')->get();
+        
+        /**
+         * Fails. Active token count should be zero like the first instance.
+         * This passes if you comment out `$child->saveOrFail();` above
+         */
+        $this->assertCount(0, $activeTokens);
+        $this->assertCount(0, $activeSubTokens);
+        $this->assertEquals('COMPLETED', $instance->status);
+        $this->assertEquals('COMPLETED', $subInstance->status);
+    }
 }
