@@ -78,6 +78,7 @@ class DataManager
      *
      * @param array $data
      * @param ProcessRequestToken $token
+     *
      * @return array
      */
     private function loadUserData(array $data = [], ProcessRequestToken $token = null)
@@ -98,6 +99,7 @@ class DataManager
      * @param array $data
      * @param ProcessRequestToken|null $token
      * @param boolean $whenTokenSaved
+     *
      * @return array
      */
     private function loadTokenData(array $data = [], ProcessRequestToken $token = null, bool $whenTokenSaved = false)
