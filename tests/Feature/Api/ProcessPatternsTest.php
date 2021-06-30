@@ -154,8 +154,7 @@ class ProcessPatternsTest extends TestCase
         if ($start->getEventDefinitions()->count() > 0) {
             $globalData = new GlobalDataStore();
             $globalData->setData($data);
-            $this->artisan('schedule:run');
-            $this->artisan('schedule:run');
+            $this->artisan('bpmn:timer');
         } else {
             $request = $this->startProcess($process, $startEvent, $data);
         }
