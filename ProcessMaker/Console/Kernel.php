@@ -30,11 +30,11 @@ class Kernel extends ConsoleKernel
         $schedule->call(function() {
             $scheduleManager = new TaskSchedulerManager();
             $scheduleManager->scheduleTasks();
-        })->everyMinute();
+        })->everyMinute()->onOneServer();
         $schedule->call(function() {
             $scheduleManager = new TaskSchedulerManager();
             $scheduleManager->evaluateConditionals();
-        })->everyMinute();
+        })->everyMinute()->onOneServer();
     }
 
     /**
