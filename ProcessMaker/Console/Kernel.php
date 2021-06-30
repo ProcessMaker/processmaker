@@ -1,12 +1,9 @@
 <?php
+
 namespace ProcessMaker\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use ProcessMaker\Managers\TaskSchedulerManager;
-use ProcessMaker\Managers\WorkflowEventManager;
-use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ScheduledTask;
 
 class Kernel extends ConsoleKernel
 {
@@ -27,14 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function() {
-            $scheduleManager = new TaskSchedulerManager();
-            $scheduleManager->scheduleTasks();
-        })->everyMinute()->onOneServer();
-        $schedule->call(function() {
-            $scheduleManager = new TaskSchedulerManager();
-            $scheduleManager->evaluateConditionals();
-        })->everyMinute()->onOneServer();
+        $schedule->command('bpmn:timer')
+            ->everyMinute()
+            ->onOneServer();
     }
 
     /**
@@ -44,7 +36,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
         require base_path('routes/console.php');
     }
 }
