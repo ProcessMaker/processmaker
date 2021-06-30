@@ -205,7 +205,7 @@ class CommentTest extends TestCase
     public function testDeleteComment()
     {
         //Remove comment
-        $url = self::API_TEST_URL . '/' . factory(Comment::class)->create()->id;
+        $url = self::API_TEST_URL . '/' . factory(Comment::class)->create(['user_id' => $this->user->getKey()])->id;
         $response = $this->apiCall('DELETE', $url);
 
         //Validate the header status code

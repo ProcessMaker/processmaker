@@ -18,10 +18,10 @@
         </a>
       </li>
     </ul>
-    <ul class="nav flex-column">
+    <ul class="nav flex-column" aria-label="menu-sidebar">
       @if ($sidebar)
         @foreach($sidebar->topMenu()->items as $section)
-          <li class="section" v-if="expanded === true" v-cloak>{{$section->title}}</li>
+          <li class="section" v-if="expanded === true" aria-label="{{$section->title}}" v-cloak>{{$section->title}}</li>
           @foreach($section->children() as $item)
             <sidebaricon :item='@lavaryMenuJson($item)'></sidebaricon>
           @endforeach
