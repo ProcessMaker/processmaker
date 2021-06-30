@@ -592,6 +592,41 @@ class ProcessTest extends TestCase
     }
 
     /**
+     * Test update process try to update owner user
+     */
+    public function testUpdateProcessWithoutChangingOwnerUser()
+    {
+        //Seeder Permissions
+        (new \PermissionSeeder())->run($this->user);
+
+        //Create a process
+        $response = $this->assertCorrectModelCreation(
+            Process::class,
+            [
+                'user_id' => static::$DO_NOT_SEND,
+                'process_category_id' => static::$DO_NOT_SEND,
+                'has_timer_start_events' => static::$DO_NOT_SEND,
+            ]
+        );
+        $response = $response->json();
+        $process = Process::find($response['id']);
+        $ownerId = $process->user_id;
+        // Change of user with admin permissions
+        $this->user = factory(User::class)->create([
+            'is_administrator' => true,
+        ]);
+        $route = route('api.processes.update', ['process' => $response['id']]);
+        $data = [
+            'name' => 'Process Updated',
+            'description' => 'Process description updated',
+            'user_id' => 100,
+        ];
+        $response = $this->actingAs($this->user, 'web')->apiCall('PUT', $route, $data);
+        $this->assertStatus(200, $response);
+        $this->assertEquals($ownerId, $response['user_id']);
+    }
+
+    /**
      * Test update process
      */
     public function testUpdateProcessWithCategoryNull()
