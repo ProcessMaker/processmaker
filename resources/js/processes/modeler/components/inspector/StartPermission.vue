@@ -15,8 +15,8 @@
         </div>
 
         <div class="form-group" v-if="assignmentGetter">
-            <label for="assignment_getter" class="text-capitalize">{{ $t(assignmentGetter)}}</label>
-            <multiselect id="assignment_getter"
+            <label class="text-capitalize">{{ $t(assignmentGetter)}}</label>
+            <multiselect aria-label="assignment_getter"
                          v-model="content"
                          track-by="id"
                          label="name"

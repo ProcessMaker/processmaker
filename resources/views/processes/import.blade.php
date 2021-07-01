@@ -72,8 +72,9 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <label for="process_name_filter" class="d-none">{{__('Type to search task')}}</label>
-                                                <multiselect id="search-task-text" v-model="item.value"
+                                                <label class="d-none">{{__('Type to search task')}}</label>
+                                                <multiselect aria-label="search-task-text"
+                                                             v-model="item.value"
                                                              placeholder="{{__('Type to search task')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
@@ -95,8 +96,8 @@
                                                         {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
-                                                <label for="search-user-text" class="d-none">{{__('Type to search a user')}}</label>
-                                                <multiselect id="search-user-text"
+                                                <label class="d-none">{{__('Type to search a user')}}</label>
+                                                <multiselect aria-label="search-user-text"
                                                              v-model="item.value"
                                                              placeholder="{{__('Type to search a user')}}"
                                                              :options="usersAndGroups"
@@ -119,8 +120,8 @@
                                                         {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
-                                                <label for="search-script-text" class="d-none">{{__('Type to search a script')}}</label>
-                                                <multiselect id="search-script-text"
+                                                <label class="d-none">{{__('Type to search a script')}}</label>
+                                                <multiselect aria-label="search-script-text"
                                                              v-model="item.value"
                                                              placeholder="{{__('Type to search a script')}}"
                                                              :options="users"
@@ -141,8 +142,8 @@
                                                         {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
-                                                <label for="search-user-text" class="d-none">{{__('Type to search a process')}}</label>
-                                                <multiselect id="search-user-text"
+                                                <label class="d-none">{{__('Type to search a process')}}</label>
+                                                <multiselect aria-label="search-user-text"
                                                              v-model="item.value"
                                                              placeholder="{{__('Type to search a process')}}"
                                                              :options="processes"
@@ -172,8 +173,8 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <label for="search-user-groups-text" class="d-none">{{__('Type to search')}}</label>
-                                                <multiselect id="search-user-groups-text"
+                                                <label class="d-none">{{__('Type to search')}}</label>
+                                                <multiselect aria-label="search-user-groups-text"
                                                             v-model="cancelRequest"
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"
@@ -203,8 +204,8 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <label for="search-user-groups-text-assing" class="d-none">{{__('Type to search')}}</label>
-                                                <multiselect id="search-user-groups-text-assing"
+                                                <label class="d-none">{{__('Type to search')}}</label>
+                                                <multiselect aria-label="search-user-groups-text-assing"
                                                              v-model="processEditData"
                                                              placeholder="{{__('Type to search')}}"
                                                              :options="usersAndGroups"

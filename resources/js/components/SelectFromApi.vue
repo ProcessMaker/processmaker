@@ -1,5 +1,6 @@
 <template>
   <multiselect
+    :aria-label="'api-select-' + _uid"
     :value="selectedOption"
     @input="change"
     :placeholder="placeholder"

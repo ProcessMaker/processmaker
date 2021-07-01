@@ -1,5 +1,6 @@
 <template>
   <multiselect
+    :aria-label="'user-select-' + _uid"
     :value="value"
     @input="change"
     :placeholder="$t('Select')"

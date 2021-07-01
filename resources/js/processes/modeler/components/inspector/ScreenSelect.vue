@@ -1,7 +1,7 @@
 <template>
     <div class="form-group">
-        <label for="screen-select">{{ $t(label) }}</label>
-        <multiselect id="screen-select"
+        <label>{{ $t(label) }}</label>
+        <multiselect aria-label="screen-select"
                      v-model="content"
                      ref="screen-select"
                      track-by="id"

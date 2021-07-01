@@ -91,7 +91,7 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
-                                <multiselect id="cancelScreen"
+                                <multiselect aria-label="cancelScreen"
                                              v-model="screenCancel"
                                              :options="screens"
                                              :multiple="false"
@@ -128,7 +128,7 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
-                                <multiselect id="requestDetailScreen"
+                                <multiselect aria-label="requestDetailScreen"
                                              v-model="screenRequestDetail"
                                              :options="screens"
                                              :multiple="false"
