@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6b37906d3a052a15ef5889e096d049d5",
+    "content-hash": "49db7226e23439102723730d5f94c858",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4746,16 +4746,16 @@
         },
         {
             "name": "processmaker/pmql",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/pmql.git",
-                "reference": "f3bfd811f999da9ed05815c5683c187e9ad94423"
+                "reference": "7b7758a98f7e5c38a1c285a73d2c3dcbfebf16d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/f3bfd811f999da9ed05815c5683c187e9ad94423",
-                "reference": "f3bfd811f999da9ed05815c5683c187e9ad94423",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/7b7758a98f7e5c38a1c285a73d2c3dcbfebf16d9",
+                "reference": "7b7758a98f7e5c38a1c285a73d2c3dcbfebf16d9",
                 "shasum": ""
             },
             "require": {
@@ -4786,9 +4786,9 @@
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
             "support": {
                 "issues": "https://github.com/ProcessMaker/pmql/issues",
-                "source": "https://github.com/ProcessMaker/pmql/tree/v1.3.0"
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.4.0"
             },
-            "time": "2021-06-11T14:24:36+00:00"
+            "time": "2021-07-01T14:32:17+00:00"
         },
         {
             "name": "psr/cache",
@@ -11381,5 +11381,5 @@
         "php": ">=7.2.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }
