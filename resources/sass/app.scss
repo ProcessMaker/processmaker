@@ -694,3 +694,56 @@ h1.page-title {
   }
 
 }
+
+.skip-navigation {
+  position: absolute;
+  opacity: 0.9;
+  z-index: 1;
+  width: 12em;
+  left: calc(50% - 6em);
+  top: 0px;
+  text-align: center;
+  outline: none;
+
+  -moz-animation: hideSkipNavigation 1s ease-in 3s forwards;
+  -webkit-animation: hideSkipNavigation 1s ease-in 3s forwards;
+  -o-animation: hideSkipNavigation 1s ease-in 3s forwards;
+  animation: hideSkipNavigation 1s ease-in 3s forwards;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+.skip-navigation:focus {
+  -moz-animation: showSkipNavigation 1s ease-in 3s forwards;
+  -webkit-animation: showSkipNavigation 1s ease-in 3s forwards;
+  -o-animation: showSkipNavigation 1s ease-in 3s forwards;
+  animation: showSkipNavigation 1s ease-in 3s forwards;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+.skip-navigation:focus-visible {
+  text-decoration: underline;
+}
+@keyframes hideSkipNavigation {
+  to {
+    opacity: 0;
+    top: -50px;
+  }
+}
+@-webkit-keyframes hideSkipNavigation {
+  to {
+    opacity: 0;
+    top: -50px;
+  }
+}
+@keyframes showSkipNavigation {
+  to {
+    opacity: 0.9;
+    top: 0px;
+  }
+}
+@-webkit-keyframes showSkipNavigation {
+  to {
+    opacity: 0.9;
+    top: 0px;
+  }
+}
