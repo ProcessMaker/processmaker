@@ -1,7 +1,7 @@
 <template>
     <div class="form-group">
         <label>{{ $t(label) }}</label>
-        <multiselect aria-label="select-user-name"
+        <multiselect :aria-label="$t(label)"
                      v-model="content"
                      track-by="id"
                      label="fullname"

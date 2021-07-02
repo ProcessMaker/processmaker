@@ -2,7 +2,7 @@
     <div class="multiselect-icons">
       <b-input-group>
         <multiselect
-          :aria-label="'icon-select-' + _uid"
+          :id="'icon-select-' + _uid"
           ref="multiselect"
           v-model="icon"
           track-by="value"

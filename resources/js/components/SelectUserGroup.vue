@@ -2,7 +2,7 @@
     <div class="form-group">
         <label v-if="label">{{ label }}</label>
         <multi-select
-            :aria-label="'category-select-' + _uid"
+            :id="'category-select-' + _uid"
             v-model="content"
             track-by="id"
             label="fullname"
@@ -16,7 +16,7 @@
             :show-labels="false"
             :searchable="true"
             :internal-search="false"
-            @open="load"
+            @open="load(null)"
             @search-change="load">
 
             <template slot="noResult">

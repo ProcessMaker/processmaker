@@ -2,7 +2,7 @@
   <div class="form-group">
     <label>{{ $t(label) }}<small class="ml-1">*</small></label>
     <multiselect v-model="content"
-                 :aria-label="'category-select-' + _uid"
+                 :aria-label="$t(label)"
                  track-by="id"
                  label="name"
                  :class="{'border border-danger':error}"
