@@ -694,3 +694,24 @@ h1.page-title {
   }
 
 }
+
+.skip-navigation {
+  position: absolute;
+  opacity: 0;
+  z-index: 1;
+  width: 12em;
+  left: calc(50% - 6em);
+  top: 0px;
+  text-align: center;
+  transform: translateY(-100%);
+  transition: opacity 2s, transform 2s;
+  outline: none;
+}
+.skip-navigation:focus {
+  opacity: 0.9;
+  transform: translateY(0);
+  transition: opacity .5s, transform .5s;
+}
+.skip-navigation:focus-visible {
+  text-decoration: underline;
+}
