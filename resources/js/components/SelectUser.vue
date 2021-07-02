@@ -1,5 +1,6 @@
 <template>
   <multiselect
+    :id="'user-select-' + _uid"
     :value="value"
     @input="change"
     :placeholder="$t('Select')"
@@ -11,7 +12,7 @@
     :internal-search="false"
     label="fullname"
     @search-change="loadUsers"
-    @open="loadUsers"
+    @open="loadUsers(null)"
   >
     <template slot="noResult">
       <slot name="noResult">{{ $t('No elements found. Consider changing the search query.') }}</slot>

@@ -2,6 +2,7 @@
     <div class="form-group">
         <label v-if="label">{{ label }}</label>
         <multi-select
+            :id="'category-select-' + _uid"
             v-model="content"
             track-by="id"
             label="fullname"
@@ -10,13 +11,12 @@
             :class="{'border border-danger':error}"
             :loading="loading"
             :placeholder="$t('type here to search')"
-            :aria-label="$t('type here to search')"
             :options="options"
             :multiple="multiple"
             :show-labels="false"
             :searchable="true"
             :internal-search="false"
-            @open="load"
+            @open="load(null)"
             @search-change="load">
 
             <template slot="noResult">
