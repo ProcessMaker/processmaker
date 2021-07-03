@@ -86,7 +86,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true, 'task')"
-                                                             @open="loadUsers($event, true, 'task')"
+                                                             @open="loadUsers(null, true, 'task')"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -110,7 +110,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
-                                                             @open="loadUsers($event, true)"
+                                                             @open="loadUsers(null, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -132,7 +132,7 @@
                                                              label="fullname"
                                                              v-if="item.type == 'script'"
                                                              @search-change="loadUsers($event, false)"
-                                                             @open="loadUsers"
+                                                             @open="loadUsers()"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -154,7 +154,7 @@
                                                              label="name"
                                                              v-if="item.type == 'callActivity'"
                                                              @search-change="loadProcess($event)"
-                                                             @open="loadProcess"
+                                                             @open="loadProcess()"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -186,7 +186,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
-                                                             @open="loadUsers($event, true)"
+                                                             @open="loadUsers(null, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -217,7 +217,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
-                                                             @open="loadUsers($event, true)"
+                                                             @open="loadUsers(null, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}

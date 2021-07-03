@@ -15,7 +15,7 @@
                      :searchable="true"
                      :internal-search="false"
                      :required="required"
-                     @open="load"
+                     @open="load()"
                      @search-change="load">
             <template slot="noResult" >
                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -40,13 +40,8 @@
 </template>
 
 <script>
-  import Multiselect from "vue-multiselect";
-
   export default {
     props: ["value", "label", "helper", "params", "required", "placeholder"],
-    components: {
-      Multiselect
-    },
     data() {
       return {
         content: "",

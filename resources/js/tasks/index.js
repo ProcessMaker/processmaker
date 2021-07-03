@@ -1,6 +1,5 @@
 import Vue from "vue";
 import TasksList from "./components/TasksList";
-import Multiselect from 'vue-multiselect'
 import AdvancedSearch from "../components/AdvancedSearch";
 
 new Vue({
@@ -11,7 +10,7 @@ new Vue({
     status: [],
     inOverdueMessage: "",
   },
-  components: { TasksList, Multiselect, AdvancedSearch },
+  components: { TasksList, AdvancedSearch },
   created() {
     let params = new URL(document.location).searchParams;
     let statusParam = params.get("status");

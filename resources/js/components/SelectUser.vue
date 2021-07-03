@@ -11,7 +11,7 @@
     :internal-search="false"
     label="fullname"
     @search-change="loadUsers"
-    @open="loadUsers"
+    @open="loadUsers()"
   >
     <template slot="noResult">
       <slot name="noResult">{{ $t('No elements found. Consider changing the search query.') }}</slot>
