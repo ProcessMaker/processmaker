@@ -1490,8 +1490,6 @@
   "Javascript": "Javascript",
   "Expand Editor": "Expand Editor",
   "Homepage": "Homepage",
-
-
   "Use the slider to select a range": "Use the slider to select a range",
   "Select a file": "Select a file",
   "Generated Token": "Generated Token",
@@ -1499,5 +1497,9 @@
   "Search a user": "Search a user",
   "Search a group": "Search a group",
   "Search a screen": "Search a screen",
-  "Search a script": "Search a script"
+  "Search a script": "Search a script",
+  "Aria Label": "Aria Label",
+  "Attribute designed to help assistive technology (e.g. screen readers) attach a label": "Attribute designed to help assistive technology (e.g. screen readers) attach a label",
+  "Tab Order": "Tab Order",
+  "Order in which a user will move focus from one control to another by pressing the Tab key": "Order in which a user will move focus from one control to another by pressing the Tab key"
 }
