@@ -1,4 +1,5 @@
 import Vue from "vue";
+import CreateEnvironmentVariableModal from "./components/CreateEnvironmentVariableModal";
 import VariablesListing from "./components/VariablesListing";
 
 // Bootstrap our Variables listing
@@ -8,6 +9,7 @@ new Vue({
         filter: ""
     },
     components: {
+        CreateEnvironmentVariableModal,
         VariablesListing
     },
     methods: {
