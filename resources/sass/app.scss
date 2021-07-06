@@ -744,14 +744,15 @@ nav {
   }
 }
 
+.custom-select,
 .custom-file-label {
   border-color: $form-control-border-color;
-  
-  &::after {
-    background-color: $secondary;
-    border-color: $secondary;
-    border-radius: 0;
-    color: white;
-    text-transform: uppercase;
-  }
+}
+
+.custom-file-label::after {
+  background-color: $secondary;
+  border-color: $secondary;
+  border-radius: 0;
+  color: white;
+  text-transform: uppercase;
 }
