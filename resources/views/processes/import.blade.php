@@ -72,8 +72,9 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <label for="process_name_filter" class="d-none">{{__('Type to search task')}}</label>
-                                                <multiselect id="search-task-text" v-model="item.value"
+                                                <label for="search-task-text" class="d-none">{{__('Type to search task')}}</label>
+                                                <multiselect id="search-task-text"
+                                                             v-model="item.value"
                                                              placeholder="{{__('Type to search task')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
@@ -132,7 +133,7 @@
                                                              label="fullname"
                                                              v-if="item.type == 'script'"
                                                              @search-change="loadUsers($event, false)"
-                                                             @open="loadUsers()"
+                                                             @open="loadUsers(null)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -154,7 +155,7 @@
                                                              label="name"
                                                              v-if="item.type == 'callActivity'"
                                                              @search-change="loadProcess($event)"
-                                                             @open="loadProcess()"
+                                                             @open="loadProcess(null)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
