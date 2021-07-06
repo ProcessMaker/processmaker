@@ -1,5 +1,6 @@
 import Vue from "vue";
 import ScriptListing from "./components/ScriptListing";
+import CreateScriptModal from "./components/CreateScriptModal";
 import CategorySelect from "../categories/components/CategorySelect";
 
 Vue.component('category-select', CategorySelect);
@@ -10,6 +11,7 @@ new Vue({
         filter: ""
     },
     components: {
+        CreateScriptModal,
         ScriptListing
     },
     methods: {
