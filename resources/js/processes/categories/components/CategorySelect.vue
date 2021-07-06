@@ -1,6 +1,6 @@
 <template>
-  <div class="form-group">
-    <label>{{ $t(label) }}<small class="ml-1">*</small></label>
+  <div class="form-group" required>
+    <label>{{ $t(label) }}</label>
     <multiselect v-model="content"
                  :aria-label="$t(label)"
                  track-by="id"

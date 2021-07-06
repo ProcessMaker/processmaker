@@ -730,3 +730,28 @@ nav {
 .skip-navigation:focus-visible {
   text-decoration: underline;
 }
+
+.form-group[required="required"] {
+  label::after,
+  legend::after {
+    content: "*";
+    display: inline-block;
+    font-size: 80%;
+    font-weight: 400;
+    margin-left: 2px;
+    opacity: .5;
+    vertical-align: top;
+  }
+}
+
+.custom-file-label {
+  border-color: $form-control-border-color;
+  
+  &::after {
+    background-color: $secondary;
+    border-color: $secondary;
+    border-radius: 0;
+    color: white;
+    text-transform: uppercase;
+  }
+}
