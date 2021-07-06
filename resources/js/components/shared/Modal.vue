@@ -1,6 +1,7 @@
 <template>
   <b-modal
     :id="id"
+    ref="pmModal"
     :title="title"
     footer-class="pm-modal-footer"
     cancel-variant="outline-secondary"
@@ -29,6 +30,12 @@
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
+      },
+      show() {
+        this.$refs.pmModal.show();
+      },
+      hide() {
+        this.$refs.pmModal.hide();
       }
     }
   };
