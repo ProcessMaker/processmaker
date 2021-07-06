@@ -1498,6 +1498,8 @@
   "Search a group": "Search a group",
   "Search a screen": "Search a screen",
   "Search a script": "Search a script",
+  "{{count}} Item": "{{count}} Item",
+  "{{count}} Items": "{{count}} Items",
   "Aria Label": "Aria Label",
   "Attribute designed to help assistive technology (e.g. screen readers) attach a label": "Attribute designed to help assistive technology (e.g. screen readers) attach a label",
   "Tab Order": "Tab Order",
