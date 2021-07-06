@@ -1,8 +1,8 @@
 <template>
   <span :class="classContainer">
     <template v-for="(value, key) in options">
-      <a :href="value.id">
-        <template v-if="value.src" class="align-center">
+      <template v-if="value.src" class="align-center">
+        <a :href="value.id" :key="key">
           <img
             :src="timestamp(value.src)"
             :width="sizeImage"
@@ -10,17 +10,18 @@
             :class="image"
             :title="value.tooltip"
           >
-        </template>
-        <template v-else>
-          <button
-            class="avatar-image-button rounded-circle bg-warning border-0 align-middle text-white text-center text-uppercase text-nowrap"
-            :style="styleButton"
-            :title="value.tooltip"
-            :href="value.id"
-          >{{value.initials}}</button>
-        </template>
-      </a>
-      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1">{{value.name}}</span>
+        </a>
+      </template>
+      <template v-else>
+        <button
+          :key="key"
+          class="avatar-image-button rounded-circle bg-warning border-0 align-middle text-white text-center text-uppercase text-nowrap"
+          :style="styleButton"
+          :title="value.tooltip"
+          @click="buttonClick(value.id)"
+        >{{value.initials}}</button>
+      </template>
+      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1" :key="key">{{value.name}}</span>
     </template>
   </span>
 </template>
@@ -93,8 +94,16 @@ export default {
         "px; padding:0; cursor: pointer;";
     },
     formatValue(value) {
+      let profileUrl = null;
+      if (value.id) {
+        if (value.id === '#') {
+          profileUrl = '#';
+        } else {
+          profileUrl = "/profile/" + value.id
+        }
+      }
       return {
-        id: value.id ? "/profile/" + value.id : null,
+        id: profileUrl,
         src: value.src ? value.src : value.avatar ? value.avatar : "",
         tooltip: value.tooltip
           ? value.tooltip
@@ -127,6 +136,11 @@ export default {
         options.push(this.formatValue(data));
       }
       this.options = options;
+    },
+    buttonClick(url) {
+      if (url && url !== '#') {
+        window.location.href = url;
+      }
     }
   },
   mounted() {
