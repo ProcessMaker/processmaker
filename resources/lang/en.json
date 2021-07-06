@@ -1499,5 +1499,7 @@
   "Search a user": "Search a user",
   "Search a group": "Search a group",
   "Search a screen": "Search a screen",
-  "Search a script": "Search a script"
+  "Search a script": "Search a script",
+  "{{count}} Item": "{{count}} Item",
+  "{{count}} Items": "{{count}} Items"
 }

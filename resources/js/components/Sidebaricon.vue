@@ -54,18 +54,18 @@
     computed: {
       ariaLabel() {
         if (this.item.attributes.count !== undefined) {
-          return `${this.item.title}, ${this.count} ${this.plural(this.$t('Item'), this.count)}`;
+          return this.item.title + ', ' + this.pluralize(this.count);
         } else {
           return this.item.title;
         }
       },
     },
     methods: {
-      plural(noun, count) {
+      pluralize(count) {
         if (count == 1) {
-          return noun;
+          return this.$t('{{count}} Item', { count });
         } else {
-          return noun + 's';
+          return this.$t('{{count}} Items', { count });
         }
       },
       toggle() {
