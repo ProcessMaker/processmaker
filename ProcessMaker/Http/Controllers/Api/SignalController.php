@@ -63,7 +63,7 @@ class SignalController extends Controller
             if (!in_array($item['id'], $collections)) {
                 $item['type'] = 'signal';
 
-                if (preg_match('/\bcollection_[0-9]_(create|update|delete)\b/', $item['id']) && in_array(str_replace($replace, '', $item['id']), $collectionsEnabled)) {
+                if (preg_match('/\bcollection_[0-9]+_(create|update|delete)\b/', $item['id']) && in_array(str_replace($replace, '', $item['id']), $collectionsEnabled)) {
                     $item['type'] = 'collection';
                 }
                 return $item;
