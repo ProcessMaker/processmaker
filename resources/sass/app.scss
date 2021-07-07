@@ -653,6 +653,21 @@ h1.page-title {
   padding-left: 0em;
 }
 
+#sidebar .sidebar-expansion {
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.login-logo-default {
+  max-width: 292px;
+}
+
+nav {
+  ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+}
+
 @include media-breakpoint-up(lg) {
   .profile-sidebar {
     max-width: 350px;
