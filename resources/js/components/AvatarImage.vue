@@ -2,7 +2,7 @@
   <span :class="classContainer">
     <template v-for="(value, key) in options">
       <template v-if="value.src" class="align-center">
-        <a :href="value.id" :key="key">
+        <a :href="value.id" :key="'link-' + key">
           <img
             :src="timestamp(value.src)"
             :width="sizeImage"
@@ -14,14 +14,14 @@
       </template>
       <template v-else>
         <button
-          :key="key"
+          :key="'button-' + key"
           class="avatar-image-button rounded-circle bg-warning border-0 align-middle text-white text-center text-uppercase text-nowrap"
           :style="styleButton"
           :title="value.tooltip"
           @click="buttonClick(value.id)"
         >{{value.initials}}</button>
       </template>
-      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1" :key="key">{{value.name}}</span>
+      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1" :key="'name-' + key">{{value.name}}</span>
     </template>
   </span>
 </template>
