@@ -16,7 +16,7 @@
             </div>
             @if ($config->permissions['create'])
                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                    <button type="button" @click="showModal()" class="btn btn-secondary" aria-label="{{ __('Create Category') }}" aria-haspopup="dialog" @click="emptyData">
+                    <button type="button" class="btn btn-secondary" @click="showModal()" aria-label="{{ __('Create Category') }}" aria-haspopup="dialog">
                         <i class="fas fa-plus"></i> {{ __('Category') }}
                     </button>
                 </div>
