@@ -1,18 +1,18 @@
 <div class="profile-sidebar">
     <div class="card card-body p-3">
         <h5 class="mb-3 font-weight-bold">{{__('Avatar')}}</h5>
-        <div align="center" data-toggle="modal" data-target="#updateAvatarModal">
+        <div align="center" @click="openAvatarModal()">
             <avatar-image size="198" class-image="m-1"
                           :input-data="options" hide-name="true"></avatar-image>
         </div>
         <div class="w-100 mt-3">
             <div v-if="! formData.avatar">
-                <button data-toggle="modal" data-target="#updateAvatarModal" type="button" class="btn btn-secondary w-100">
+                <button @click="openAvatarModal()" type="button" class="btn btn-secondary w-100">
                     <i class="fas fa-upload"></i> {{__('Upload Avatar')}}
                 </button>
             </div>
             <div v-else class="d-flex">
-                <button data-toggle="modal" data-target="#updateAvatarModal" type="button" class="btn btn-outline-secondary w-50">
+                <button @click="openAvatarModal()" type="button" class="btn btn-outline-secondary w-50">
                     <i class="fas fa-edit"></i> {{__('Change')}}
                 </button>
                 <button type="button" @click="deleteAvatar" class="btn btn-outline-danger w-50 ml-3">
