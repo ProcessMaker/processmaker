@@ -2,7 +2,13 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i></a></li>
-            <li v-for="(route, index) in list" class="breadcrumb-item" :class="{active: isActive(index)}" :key="index">
+            <li v-for="(route, index) in list"
+              class="breadcrumb-item"
+              :class="{active: isActive(index)}"
+              :key="index"
+              :role="isActive(index) ? 'heading' : null"
+              :aria-level="isActive(index) ? '1' : null"
+            >
               <router-link v-if="route.router" :to="route.link" v-slot="{ href, navigate }">
                 <a :href="href" @click="navigate">{{ route.title }}</a>
               </router-link>
