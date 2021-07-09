@@ -28,7 +28,7 @@
                          :show-labels="false"
                          :searchable="true"
                          :internal-search="false"
-                         @open="load"
+                         @open="load()"
                          @search-change="load"
                          :disabled="disabled">
                 <template slot="noResult" >
