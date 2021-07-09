@@ -9,6 +9,7 @@
 @endsection
 
 @section('content')
+    <div class="sr-only">{{ __('A mouse and keyboard are required to use the modeler.') }}</div>
     <div id="modeler-app">
     </div>
 @endsection
