@@ -730,3 +730,12 @@ nav {
 .skip-navigation:focus-visible {
   text-decoration: underline;
 }
+
+.sr-only {
+  position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}

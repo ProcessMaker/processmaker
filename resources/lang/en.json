@@ -1503,5 +1503,7 @@
   "Aria Label": "Aria Label",
   "Attribute designed to help assistive technology (e.g. screen readers) attach a label": "Attribute designed to help assistive technology (e.g. screen readers) attach a label",
   "Tab Order": "Tab Order",
-  "Order in which a user will move focus from one control to another by pressing the Tab key": "Order in which a user will move focus from one control to another by pressing the Tab key"
+  "Order in which a user will move focus from one control to another by pressing the Tab key": "Order in which a user will move focus from one control to another by pressing the Tab key",
+  "A mouse and keyboard are required to use screen builder.": "A mouse and keyboard are required to use screen builder.",
+  "A mouse and keyboard are required to use the modeler.": "A mouse and keyboard are required to use the modeler."
 }
