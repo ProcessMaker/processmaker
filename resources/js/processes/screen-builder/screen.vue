@@ -447,14 +447,18 @@ export default {
       }
 
       this.allControls((item, pageName) => {
-        if (!this.hasAriaLabel(item)) {
-          warnings.push(
-            this.$t('{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the variable section or an Aria Label in the Advanced section.', {
-              name: item.config.name,
-              pageName,
-            })
-          );
+        if (!this.needsAriaLabel(item)) {
+          return;
         }
+        if (this.hasAriaLabel(item)) {
+          return;
+        }
+        warnings.push(
+          this.$t('{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.', {
+            name: item.config.name,
+            pageName,
+          })
+        );
       });
 
       return warnings;
@@ -484,6 +488,18 @@ export default {
         return true;
       }
       return false;
+    },
+    needsAriaLabel(item) {
+      return [
+        'FormInput',
+        'FormSelectList',
+        'FormDatePicker',
+        'FormCheckbox',
+        'FileUpload',
+        'FileDownload',
+        'FormButton',
+        'FormTextArea'
+      ].includes(item.component);
     },
     mountWhenTranslationAvailable() {
       let d = new Date();
