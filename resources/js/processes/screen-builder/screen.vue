@@ -443,7 +443,7 @@ export default {
     ariaWarnings() {
       const warnings = [];
       if (this.type !== formTypes.form) {
-        return;
+        return warnings;
       }
 
       this.allControls((item, pageName) => {
