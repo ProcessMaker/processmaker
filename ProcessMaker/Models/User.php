@@ -163,7 +163,8 @@ class User extends Authenticatable implements HasMedia
         };
 
         return [
-            'username' => ['required', 'alpha_spaces', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
+            // The following characters where not included in the regexp: & %  ' " ? /
+            'username' => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
