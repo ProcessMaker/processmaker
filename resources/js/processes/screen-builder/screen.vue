@@ -354,7 +354,6 @@ export default {
         minimap: false
       },
       mockMagicVariables,
-      validationWarnings: [],
       previewComponents: [],
       optionsMenu: options,
       rendererKey: 0,
@@ -413,13 +412,6 @@ export default {
       }
 
       const validationErrors = [];
-      this.validationWarnings.splice(0);
-
-      if (this.type === formTypes.form && !this.containsSubmitButton()) {
-        this.validationWarnings.push(
-          this.$t("Warning: Screens without save buttons cannot be executed.")
-        );
-      }
 
       this.config.forEach(page => {
         validationErrors.push(
@@ -435,6 +427,80 @@ export default {
 
   },
   methods: {
+    validationWarnings() {
+      const warnings = [];
+      
+      if (this.type === formTypes.form && !this.containsSubmitButton()) {
+        warnings.push(
+          this.$t("Warning: Screens without save buttons cannot be executed.")
+        );
+      }
+      
+      warnings.push(...this.ariaWarnings());
+
+      return warnings;
+    },
+    ariaWarnings() {
+      const warnings = [];
+      if (this.type !== formTypes.form) {
+        return warnings;
+      }
+
+      this.allControls((item, pageName) => {
+        if (!this.needsAriaLabel(item)) {
+          return;
+        }
+        if (this.hasAriaLabel(item)) {
+          return;
+        }
+        warnings.push(
+          this.$t('{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.', {
+            name: item.config.name,
+            pageName,
+          })
+        );
+      });
+
+      return warnings;
+    },
+    allControls(callback) {
+      this.config.forEach(page => {
+        this.getControlsFromItems(callback, page.items, page.name);
+      });
+    },
+    getControlsFromItems(callback, items, currentPageName) {
+      if (!Array.isArray(items)) {
+        return;
+      }
+
+      items.forEach(item => {
+        if (Array.isArray(item)) {
+          this.getControlsFromItems(callback, item, currentPageName);
+        } else if (Array.isArray(item.items)) {
+          this.getControlsFromItems(callback, item.items, currentPageName);
+        } else {
+          callback(item, currentPageName);
+        }
+      });
+    },
+    hasAriaLabel(item) {
+      if (item.config && (item.config.label || item.config.ariaLabel)) {
+        return true;
+      }
+      return false;
+    },
+    needsAriaLabel(item) {
+      return [
+        'FormInput',
+        'FormSelectList',
+        'FormDatePicker',
+        'FormCheckbox',
+        'FileUpload',
+        'FileDownload',
+        'FormButton',
+        'FormTextArea'
+      ].includes(item.component);
+    },
     mountWhenTranslationAvailable() {
       let d = new Date();
       if(ProcessMaker.i18n.exists('Save') === false) {
@@ -659,11 +725,9 @@ export default {
           "danger"
         );
       } else {
-        if (this.validationWarnings.length > 0) {
-          this.validationWarnings.forEach(warning =>
-            ProcessMaker.alert(warning, "warning")
-          );
-        }
+        this.validationWarnings().forEach(warning =>
+          ProcessMaker.alert(warning, "warning")
+        );
         ProcessMaker.apiClient
           .put("screens/" + this.screen.id, {
             title: this.screen.title,
