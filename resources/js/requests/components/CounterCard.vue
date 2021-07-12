@@ -7,8 +7,8 @@
   >
     <i slot="header" class="fas fa-2x" :class="iconClass"></i>
     <a :href="link" class="card-link text-light">
-      <h1 v-if="showCount" class="m-0 font-weight-bold">{{ currentCount }}</h1>
-      <h6 class="card-text">{{ $t(title) }}</h6>
+      <div v-if="showCount" class="counter-card-count m-0 font-weight-bold">{{ currentCount }}</div>
+      <div class="counter-card-title">{{ $t(title) }}</div>
     </a>
   </b-card>
 </template>
@@ -106,3 +106,14 @@
     }
   }
 </script>
+
+<style scoped>
+  .counter-card-count {
+      font-size: 2.5rem;
+      line-height: 1.2;
+  }
+
+  .counter-card-title {
+    line-height: 1.2;
+  }
+</style>

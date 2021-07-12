@@ -572,4 +572,83 @@ class UsersTest extends TestCase
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(204);
     }
+
+    /**
+     * Create and validate username
+     */
+    public function testCreateUserValidateUsername()
+    {
+        // Valid cases
+        $usernames = [
+            "admin",
+            "john.doe",
+            "heaney-esperanza",
+            "jackeline53@rowe.com",
+            "antonette06@yahoo.com",
+            "metz.tierra@quigley.com",
+            "roberts-kaitlin@gmail.com",
+            "elise~reichert+1@gmail.com",
+            "oleta#runolfsdottir@mertz.net",
+            "simple@example.com",
+            "very.common@example.com",
+            "disposable.style.email.with+symbol@example.com",
+            "other.email-with-hyphen@example.com",
+            "fully-qualified-domain@example.com",
+            // may go to user.name@example.com inbox depending on mail server
+            "user.name+tag+sorting@example.com",
+            // (one-letter local-part)
+            "x@example.com",
+            "example-indeed@strange-example.com",
+            "example@s.example",
+            // (space between the quotes)
+            // (bangified host route used for uucp mailers)
+            'mailhost!username@example.org',
+            // (local part ending with non-alphanumeric character from the list of allowed printable characters)
+            'user-@example.org',
+        ];
+
+        $faker = Faker::create();
+        $url = self::API_TEST_URL;
+        foreach($usernames as $username) {
+            $response = $this->apiCall('POST', $url, $data =[
+                'username' => $username,
+                'firstname' => $faker->firstName(),
+                'lastname' => $faker->lastName(),
+                'email' => $faker->email,
+                'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+                'password' => $faker->sentence(10)
+            ]);
+            //Validate the header status code
+            $response->assertStatus(201);
+        }
+
+        // Invalid cases
+        $usernames = [
+            "123",
+            "test/test@test.com",
+            // (space between the quotes)
+            '" "@example.org',
+            // (quoted double dot)
+            '"john..doe"@example.org',
+            // (bangified host route used for uucp mailers)
+            'mailhost!username@example.org',
+            // (% escaped mail route to user@example.com via example.org)
+            'user%example.com@example.org',
+        ];
+
+        $faker = Faker::create();
+        $url = self::API_TEST_URL;
+        foreach($usernames as $username) {
+            $response = $this->apiCall('POST', $url, $data =[
+                'username' => $username,
+                'firstname' => $faker->firstName(),
+                'lastname' => $faker->lastName(),
+                'email' => $faker->email,
+                'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+                'password' => $faker->sentence(10)
+            ]);
+            //Validate the header status code
+            $response->assertStatus(422);
+        }
+    }
 }

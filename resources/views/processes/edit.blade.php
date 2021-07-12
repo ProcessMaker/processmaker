@@ -98,7 +98,7 @@
                                              :show-labels="false"
                                              placeholder="{{ __('Type to search') }}"
                                              @search-change="loadScreens($event)"
-                                             @open="loadScreens"
+                                             @open="loadScreens()"
                                              track-by="id"
                                              label="title">
                                     <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
@@ -135,7 +135,7 @@
                                              :show-labels="false"
                                              placeholder="{{ __('Type to search') }}"
                                              @search-change="loadScreens($event)"
-                                             @open="loadScreens"
+                                             @open="loadScreens()"
                                              track-by="id"
                                              label="title">
                                     <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>

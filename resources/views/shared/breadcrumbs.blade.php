@@ -11,7 +11,7 @@
                     @endphp
 
                     @if ($loop->last)
-                        <li class="breadcrumb-item active">
+                        <li role="heading" aria-level="1" class="breadcrumb-item active">
                     @else
                         <li class="breadcrumb-item">
                     @endif
