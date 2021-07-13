@@ -11,7 +11,7 @@
       ></avatar-image>
     </div>
 
-    <b-popover target="profileMenu" placement="bottomleft" offset="3" triggers="click blur">
+    <b-popover container="#userMenu" :target="getTarget" placement="bottomleft" offset="3" triggers="click blur">
       <template>
         <ul class="list-group list-group-flush px-1">
           <li class="list-group-item px-2">
@@ -106,6 +106,7 @@ export default {
       this.username = user.username;
       this.information = [
         {
+          id: '#',
           src: user.avatar
             ? user.avatar + "?" + new Date().getTime()
             : user.avatar,
@@ -123,6 +124,13 @@ export default {
         .then(response => {
           this.formatData(response.data);
         });
+    },
+    getTarget() {
+      const button = document.querySelector('#avatarMenu button:first-child');
+      if (button) {
+        return button;
+      }
+      return document.querySelector('#avatarMenu a:first-child');
     }
   },
   mounted() {
