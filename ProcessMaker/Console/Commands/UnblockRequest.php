@@ -28,7 +28,7 @@ class UnblockRequest extends Command
      *
      * @var string
      */
-    protected $description = 'Retry failed script tasks for a specific request or process';
+    protected $description = 'Command to unblock all halted script and service tasks of a request';
 
     /**
      * Create a new command instance.
@@ -83,6 +83,12 @@ class UnblockRequest extends Command
         }
     }
 
+    /**
+     * Find all script and service tasks of a request that are halted for some reason
+     *
+     * @param $requestId
+     * @return mixed
+     */
     private function getOpenTasks($requestId) {
         return ProcessRequestToken::whereIn('status', array('FAILING', 'ACTIVE', 'ERROR'))
             ->whereIn('element_type', ['scriptTask', 'serviceTask', 'task'])
