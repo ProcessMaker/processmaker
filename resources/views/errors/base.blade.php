@@ -18,7 +18,7 @@
                 <a class="btn btn-primary btn-block" href="javascript:history.back()" role="button"><i class="fas fa-backward"></i></a>
             </div>
             <div class="col">
-                <a class="btn btn-primary btn-block" href="/" role="button"><i class="fas fa-home"></i></a>
+                <a class="btn btn-primary btn-block" aria-label="{{__('Home')}}" href="/" role="button"><i class="fas fa-home"></i></a>
             </div>
         </div>
     </div>
