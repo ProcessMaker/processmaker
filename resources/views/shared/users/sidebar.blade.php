@@ -2,7 +2,7 @@
     <div class="card card-body p-3">
         <h5 class="mb-3 font-weight-bold">{{__('Avatar')}}</h5>
         <div align="center" @click="openAvatarModal()">
-            <avatar-image size="198" class-image="m-1"
+            <avatar-image size="198"
                           :input-data="options" hide-name="true"></avatar-image>
         </div>
         <div class="w-100 mt-3">
