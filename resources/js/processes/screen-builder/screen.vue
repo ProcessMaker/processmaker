@@ -460,7 +460,7 @@ export default {
     },
   },
   mounted() {
-    this.countElements = debounce(this.countElements, 4000);
+    this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
   },
