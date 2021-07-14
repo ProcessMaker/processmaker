@@ -1,7 +1,26 @@
 <template>
   <div class="card h-100">
-      <div v-for="page in printablePages" :key="page" class="card">
-      <div class="card-body h-100" style="pointer-events:none;">
+    <b-overlay
+          id="overlay-background"
+          :show="disabled"
+          :variant="variant"
+          :opacity="opacity"
+          :blur="blur"
+          rounded="sm"
+        >
+    <div class="w-100 d-print-none" align="right">
+      <button
+        type="button"
+        @click="print"
+        class="btn btn-secondary ml-2"
+        :aria-label="$t('Print')"
+        :disabled="disabled"
+      >
+        <i class="fas fa-print"></i> {{ $t("Print") }}
+      </button>
+    </div>
+    <div v-for="page in printablePages" :key="page" class="card">
+      <div class="card-body h-100" style="pointer-events: none">
         <component
           ref="print"
           :is="component"
@@ -13,9 +32,20 @@
           submiturl=""
           token-id=""
         />
-
       </div>
     </div>
+    <div class="w-100 d-print-none" align="right">
+      <button
+        type="button"
+        @click="print"
+        class="btn btn-secondary ml-2"
+        :aria-label="$t('Print')"
+        :disabled="disabled"
+      >
+        <i class="fas fa-print"></i> {{ $t("Print") }}
+      </button>
+    </div>
+  </b-overlay>
   </div>
 </template>
 
@@ -45,6 +75,10 @@
     data() {
       return {
         interval: null,
+        disabled: true,
+        variant: 'transparent',
+        opacity: 0.85,
+        blur: '2px',
       }
     },
     computed: {
@@ -72,8 +106,7 @@
       }
     },
     mounted() {
-      this.loadPages();
-
+      $('#cover-spin').show(0);
       window.ProcessMaker.apiClient.requestCount = 0;
       window.ProcessMaker.apiClient.requestCountFlag = true;
       window.addEventListener('load', () => {
@@ -84,10 +117,11 @@
         setTimeout(() => {
           this.closeRequestCount();
           if (window.ProcessMaker.apiClient.requestCountFlag) {
-            this.print();
+            this.disabled = false;
           }
-        }, 10000);
+        }, 30000);
       });
+      this.loadPages();
     },
     methods: {
       closeRequestCount() {
@@ -98,7 +132,7 @@
         if (this.canPrint && window.ProcessMaker.apiClient.requestCount === 0) {
           clearInterval(this.interval);
           this.closeRequestCount();
-          this.print();
+          this.disabled = false;
         }
       },
       loadPages() {
@@ -168,3 +202,4 @@
     }
   }
 </script>
+
