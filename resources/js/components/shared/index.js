@@ -7,7 +7,9 @@ import DataFormatSelector from './DataFormatSelector';
 import DataLoadingBasic from './DataLoadingBasic';
 import DataMaskSelector from './DataMaskSelector';
 import FileUploadButton from './FileUploadButton';
+import FormErrorsMixin from './FormErrorsMixin';
 import IconSelector from './IconSelector';
+import Modal from './Modal';
 
 export {
   BasicSearch,
@@ -19,5 +21,7 @@ export {
   DataLoadingBasic,
   DataMaskSelector,
   FileUploadButton,
-  IconSelector
+  FormErrorsMixin,
+  IconSelector,
+  Modal,
 };

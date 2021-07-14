@@ -26,49 +26,25 @@
         </div>
     </div>
 
-    <div class="modal" tabindex="-1" role="dialog" id="updateAvatarModal" ref="updateAvatarModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{__('Upload Avatar')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <div class="modal-body">
-                    <div>
-                        <div v-if="!image" class="no-avatar" align="center">{{__('Click the browse button below to get started')}}</div>
-                        <div align="center">
-                            <button type="button" @click="browse" class="btn btn-secondary mt-5 mb-2" ><i class="fas fa-upload"></i>
-                                {{__('Browse')}}
-                            </button>
-                        </div>
-                        <div align="center">
-                            {{__('Image types accepted: .gif, .jpg, .jpeg, .png')}}
-                        </div>
-                        <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie"
-                                     :viewport="{ width: 380, height: 380, type: 'circle' }"
-                                     :boundary="{ width: 400, height: 400 }"
-                                     :enable-orientation="false" :enable-resize="false">
-                        </vue-croppie>
-                    </div>
-                    <input id="customFile" type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange" aria-label="{{__('select file')}}">
-                </div>
-
-                <div class="modal-footer">
-                    <div class="text-right">
-                        <button type="button" @click="hideModal" class="btn btn-outline-secondary">
-                            {{__('Cancel')}}
-                        </button>
-                        <button type="button" @click="saveAvatar" class="btn btn-secondary ml-2">
-                            {{__('Save')}}
-                        </button>
-                    </div>
-                </div>
+    <pm-modal ref="updateAvatarModal" id="updateAvatarModal" title="{{__('Upload Avatar')}}" @hidden="hiddenModal" @ok.prevent="saveAvatar" style="display: none;">
+        <div>
+            <div v-if="!image" class="no-avatar" align="center">{{__('Click the browse button below to get started')}}</div>
+            <div align="center">
+                <button type="button" @click="browse" class="btn btn-secondary mt-5 mb-2" ><i class="fas fa-upload"></i>
+                    {{__('Browse')}}
+                </button>
             </div>
+            <div align="center">
+                {{__('Image types accepted: .gif, .jpg, .jpeg, .png')}}
+            </div>
+            <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie"
+                         :viewport="{ width: 380, height: 380, type: 'circle' }"
+                         :boundary="{ width: 400, height: 400 }"
+                         :enable-orientation="false" :enable-resize="false">
+            </vue-croppie>
         </div>
-    </div>
+        <input id="customFile" type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange" aria-label="{{__('select file')}}">
+    </pm-modal>
 @endsection
 
 @section('sidebar')
@@ -123,6 +99,9 @@
               }
             },
             methods: {
+                openAvatarModal() {
+                  modalVueInstance.$refs.updateAvatarModal.show();
+                },
                 profileUpdate() {
                     this.resetErrors();
                     if (!this.validatePassword()) return false;
@@ -190,7 +169,7 @@
     </script>
     
     <script>
-        new Vue({
+        let modalVueInstance = new Vue({
             el: '#updateAvatarModal',
             data() {
                 return {
@@ -221,11 +200,11 @@
                 browse() {
                     this.$refs.customFile.click();
                 },
-                openModal() {
-                    this.$refs.updateAvatarModal.hidden = false;
-                },
                 hideModal() {
-                    $('#updateAvatarModal').modal("hide")
+                    this.$refs.updateAvatarModal.hide();
+                },
+                hiddenModal() {
+                    this.image = '';
                 },
                 onFileChange(e) {
                     let files = e.target.files || e.dataTransfer.files;

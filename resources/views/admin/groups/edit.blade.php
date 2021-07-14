@@ -91,8 +91,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                                    <button type="button" class="btn btn-secondary" data-toggle="modal" id="addUserModal"
-                                            data-target="#addUser" @click="loadUsers">
+                                    <button type="button" class="btn btn-secondary" @click="showAddUserModal" aria-label="{{ __('Add User') }}" aria-haspopup="dialog">
                                         <i class="fas fa-plus"></i>
                                         {{__('User')}}
                                     </button>
@@ -115,8 +114,7 @@
                                     </div>
                                 </div>
                                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                                    <button type="button" class="btn btn-secondary" data-toggle="modal" id="addGroupModal"
-                                            data-target="#addGroup" @click="loadGroups">
+                                    <button type="button" class="btn btn-secondary" @click="showAddGroupModal" aria-label="{{ __('Add Group') }}" aria-haspopup="dialog">
                                         <i class="fas fa-plus"></i>
                                         {{__('Group')}}
                                     </button>
@@ -141,127 +139,92 @@
                 </div>
             </div>
 
-            <div class="modal" tabindex="-1" role="dialog" id="addUser">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{__('Add Users')}}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}"
-                                    @click="onCloseAddUser">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-user">
-                                {!!Form::label('users', __('Users') . '<small class="ml-1">*</small>', [], false)!!}
-                                <multiselect id="users"
-                                             v-model="selectedUsers"
-                                             placeholder="{{__('Select user or type here to search users')}}"
-                                             :options="availableUsers"
-                                             :multiple="true"
-                                             track-by="fullname"
-                                             :custom-label="customLabel"
-                                             :show-labels="false"
-                                             :searchable="true"
-                                             :internal-search="false"
-                                             @search-change="loadUsers"
-                                             label="fullname">
-
-                                    <template slot="noResult" >
-                                        {{ __('No elements found. Consider changing the search query.') }}
-                                    </template>
-
-                                    <template slot="noOptions" >
-                                        {{ __('No Data Available') }}
-                                    </template>
-
-                                    <template slot="tag" slot-scope="props">
-                                        <span class="multiselect__tag  d-flex align-items-center"
-                                              style="width:max-content;">
-                                            <span class="option__desc mr-1">
-                                                <span class="option__title">@{{ props.option.fullname }}</span>
-                                            </span>
-                                            <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
-                                               class="multiselect__tag-icon"></i>
-                                        </span>
-                                    </template>
-
-                                    <template slot="option" slot-scope="props">
-                                        <div class="option__desc d-flex align-items-center">
-                                            <span class="option__title mr-1">@{{ props.option.fullname }} (@{{ props.option.username }})</span>
-                                        </div>
-                                    </template>
-                                </multiselect>
+            <pm-modal ref="addUser" id="addUser" title="{{__('Add Users')}}" @hidden="onCloseAddUser" @ok.prevent="onSave" style="display: none;">
+                <div class="form-user">
+                    {!!Form::label('users', __('Users') . '<small class="ml-1">*</small>', [], false)!!}
+                    <multiselect id="users"
+                                 v-model="selectedUsers"
+                                 placeholder="{{__('Select user or type here to search users')}}"
+                                 :options="availableUsers"
+                                 :multiple="true"
+                                 track-by="fullname"
+                                 :custom-label="customLabel"
+                                 :show-labels="false"
+                                 :searchable="true"
+                                 :internal-search="false"
+                                 @search-change="loadUsers"
+                                 label="fullname">
+        
+                        <template slot="noResult" >
+                            {{ __('No elements found. Consider changing the search query.') }}
+                        </template>
+        
+                        <template slot="noOptions" >
+                            {{ __('No Data Available') }}
+                        </template>
+        
+                        <template slot="tag" slot-scope="props">
+                            <span class="multiselect__tag  d-flex align-items-center"
+                                  style="width:max-content;">
+                                <span class="option__desc mr-1">
+                                    <span class="option__title">@{{ props.option.fullname }}</span>
+                                </span>
+                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                                   class="multiselect__tag-icon"></i>
+                            </span>
+                        </template>
+        
+                        <template slot="option" slot-scope="props">
+                            <div class="option__desc d-flex align-items-center">
+                                <span class="option__title mr-1">@{{ props.option.fullname }} (@{{ props.option.username }})</span>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary"
-                                    data-dismiss="modal" @click="onCloseAddUser">{{__('Cancel')}}</button>
-                            <button type="button" class="btn btn-secondary ml-2" @click="onSave" id="saveMembers">{{__('Save')}}</button>
-                        </div>
-                    </div>
+                        </template>
+                    </multiselect>
                 </div>
-            </div>
-            <div class="modal" tabindex="-1" role="dialog" id="addGroup">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">{{__('Add Groups')}}</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}"
-                                    @click="onCloseAddGroup">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-user">
-                                {!!Form::label('groups', __('Groups') . '<small class="ml-1">*</small>', [], false)!!}
-                                <multiselect id="groups"
-                                             v-model="selectedGroups"
-                                             placeholder="{{__('Select group or type here to search groups')}}"
-                                             :options="availableGroups"
-                                             :multiple="true"
-                                             track-by="name"
-                                             :show-labels="false"
-                                             :searchable="true"
-                                             :internal-search="false"
-                                             @search-change="loadGroups"
-                                             label="name">
-    
-                                    <template slot="noResult" >
-                                        {{ __('No elements found. Consider changing the search query.') }}
-                                    </template>
-    
-                                    <template slot="noOptions" >
-                                        {{ __('No Data Available') }}
-                                    </template>
-    
-                                    <template slot="tag" slot-scope="props">
-                                        <span class="multiselect__tag  d-flex align-items-center"
-                                              style="width:max-content;">
-                                            <span class="option__desc mr-1">
-                                                <span class="option__title">@{{ props.option.name }}</span>
-                                            </span>
-                                            <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
-                                               class="multiselect__tag-icon"></i>
-                                        </span>
-                                    </template>
-    
-                                    <template slot="option" slot-scope="props">
-                                        <div class="option__desc d-flex align-items-center">
-                                            <span class="option__title mr-1">@{{ props.option.name }}</span>
-                                        </div>
-                                    </template>
-                                </multiselect>
+            </pm-modal>
+            
+            <pm-modal ref="addGroup" id="addGroup" title="{{__('Add Groups')}}" @hidden="onCloseAddGroup" @ok.prevent="onSaveGroups" style="display: none;">
+                <div class="form-user">
+                    {!!Form::label('groups', __('Groups') . '<small class="ml-1">*</small>', [], false)!!}
+                    <multiselect id="groups"
+                                 v-model="selectedGroups"
+                                 placeholder="{{__('Select group or type here to search groups')}}"
+                                 :options="availableGroups"
+                                 :multiple="true"
+                                 track-by="name"
+                                 :show-labels="false"
+                                 :searchable="true"
+                                 :internal-search="false"
+                                 @search-change="loadGroups"
+                                 label="name">
+
+                        <template slot="noResult" >
+                            {{ __('No elements found. Consider changing the search query.') }}
+                        </template>
+
+                        <template slot="noOptions" >
+                            {{ __('No Data Available') }}
+                        </template>
+
+                        <template slot="tag" slot-scope="props">
+                            <span class="multiselect__tag  d-flex align-items-center"
+                                  style="width:max-content;">
+                                <span class="option__desc mr-1">
+                                    <span class="option__title">@{{ props.option.name }}</span>
+                                </span>
+                                <i aria-hidden="true" tabindex="1" @click="props.remove(props.option)"
+                                   class="multiselect__tag-icon"></i>
+                            </span>
+                        </template>
+
+                        <template slot="option" slot-scope="props">
+                            <div class="option__desc d-flex align-items-center">
+                                <span class="option__title mr-1">@{{ props.option.name }}</span>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary"
-                                    data-dismiss="modal" @click="onCloseAddGroup">{{__('Cancel')}}</button>
-                            <button type="button" class="btn btn-secondary ml-2" @click="onSaveGroups" id="saveGroups">{{__('Save')}}</button>
-                        </div>
-                    </div>
+                        </template>
+                    </multiselect>
                 </div>
-            </div>
+            </pm-modal>
         </div>
     </div>
 @endsection
@@ -274,7 +237,6 @@
         mixins:addons,
         data() {
           return {
-            showAddUserModal: false,
             formData: @json($group),
             usersFilter: '',
             groupsFilter: '',
@@ -341,34 +303,32 @@
             this.selectedGroups = [];
           },
           onSave() {
-            let that = this;
-            this.selectedUsers.forEach(function (user) {
+            this.selectedUsers.forEach(user => {
               ProcessMaker.apiClient
                 .post('group_members', {
-                  'group_id': that.formData.id,
+                  'group_id': this.formData.id,
                   'member_type': 'ProcessMaker\\Models\\User',
                   'member_id': user.id
                 })
                 .then(response => {
-                  that.$refs['listing'].fetch();
-                  $('#addUser').modal('hide');
-                  that.selectedUsers = [];
+                  this.$refs['listing'].fetch();
+                  this.$refs.addUser.hide();
+                  this.selectedUsers = [];
                 });
             })
           },
           onSaveGroups() {
-            let that = this;
-            this.selectedGroups.forEach(function (group) {
+            this.selectedGroups.forEach(group => {
               ProcessMaker.apiClient
                 .post('group_members', {
-                  'group_id': that.formData.id,
+                  'group_id': this.formData.id,
                   'member_type': 'ProcessMaker\\Models\\Group',
                   'member_id': group.id
                 })
                 .then(response => {
-                  that.$refs['groupListing'].fetch();
-                  $('#addGroup').modal('hide');
-                  that.selectedGroups = [];
+                  this.$refs['groupListing'].fetch();
+                  this.$refs.addGroup.hide();
+                  this.selectedGroups = [];
                 });
             })
           },
@@ -428,6 +388,14 @@
                 ProcessMaker.alert(this.$t('Group Permissions Updated Successfully'), 'success');
                 this.onClose();
               })
+          },
+          showAddUserModal() {
+            this.loadUsers();
+            this.$refs.addUser.show();
+          },
+          showAddGroupModal() {
+            this.loadGroups();
+            this.$refs.addGroup.show();
           }
         }
       });

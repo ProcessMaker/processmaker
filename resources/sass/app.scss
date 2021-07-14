@@ -73,6 +73,10 @@ html {
   max-width: 100%;
 }
 
+#navbar1 .nav-item:first-child .nav-link {
+  padding-left: 0;
+}
+
 button:focus.navbar-toggler {
   outline: 0;
 }
@@ -451,9 +455,27 @@ h1.page-title {
   font-weight: 400;
 }
 
+.popout,
+.popout:focus {
+  outline: 0 !important;
+}
+
 .popout a,
 .popout button {
   padding: 0 10px;
+}
+
+.button-dismiss,
+.popout .btn-link {
+  box-shadow: none;
+  &:focus {
+    box-shadow: 0 0 0 $input-btn-focus-width rgba($primary, .25);
+    color: $link-hover-color;
+  }
+  
+  &:focus:not(:focus-visible) {
+    box-shadow: none;
+  }
 }
 
 .b-tooltip:not([style*='transform']) { 
@@ -729,6 +751,32 @@ nav {
 }
 .skip-navigation:focus-visible {
   text-decoration: underline;
+}
+
+.form-group[required="required"] {
+  label::after,
+  legend::after {
+    content: "*";
+    display: inline-block;
+    font-size: 80%;
+    font-weight: 400;
+    margin-left: 2px;
+    opacity: .5;
+    vertical-align: top;
+  }
+}
+
+.custom-select,
+.custom-file-label {
+  border-color: $form-control-border-color;
+}
+
+.custom-file-label::after {
+  background-color: $secondary;
+  border-color: $secondary;
+  border-radius: 0;
+  color: white;
+  text-transform: uppercase;
 }
 
 .sr-only {
