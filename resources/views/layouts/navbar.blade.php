@@ -63,7 +63,7 @@
         @endphp
 
         <b-navbar-nav class="d-flex align-items-center" style="z-index:100">
-            <div v-for="item in {{ json_encode ($menuItems) }}">
+            <template v-for="item in {{ json_encode ($menuItems) }}">
                 <b-nav-item v-if="item.hasSubItems == false"
                             :href="item.link"
                             :link-classes="item.attributes.class_link"
@@ -85,7 +85,7 @@
                     </b-dropdown-item>
                 </b-nav-item-dropdown>
 
-            </div>
+            </template>
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">

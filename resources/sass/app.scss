@@ -73,6 +73,10 @@ html {
   max-width: 100%;
 }
 
+#navbar1 .nav-item:first-child .nav-link {
+  padding-left: 0;
+}
+
 button:focus.navbar-toggler {
   outline: 0;
 }
