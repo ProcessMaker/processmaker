@@ -64,12 +64,14 @@ class CallActivity implements CallActivityInterface
         $dataManager = new DataManager();
         $data = $dataManager->getData($token);
 
-        // Add info about parent
-        $data['_parent'] = [
-            'process_id' => $token->getInstance()->process_id,
-            'request_id' => $token->getInstance()->id,
-            'node_id' => $token->element_id,
-        ];
+        // Add info about parent (Note MultiInstance also adds _parent info)
+        if (!isset($data['_parent'])) {
+            $data['_parent'] = [];
+        }
+
+        $data['_parent']['process_id'] = $token->getInstance()->process_id;
+        $data['_parent']['request_id'] = $token->getInstance()->id;
+        $data['_parent']['node_id'] = $token->element_id;
 
         $configString = $this->getProperty('config');
         if ($configString) {
