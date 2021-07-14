@@ -129,17 +129,17 @@
           <button type="button" class="btn btn-sm text-capitalize">
             <i class="fas fa-angle-double-up"></i>
             {{ $t('Open Console') }}
-            <span
-              v-if="allErrors === 0"
-              class="badge badge-success"
-            >
-              <i class="fas fa-check-circle"></i>
-              {{ $t(allErrors) }}
+            <span v-if="allErrors === 0 && allWarnings === 0" class="badge badge-success">
+              <i class="fas fa-check-circle "/>
             </span>
 
-            <span v-else class="badge badge-danger">
-              <i class="fas fa-times-circle"></i>
+            <span v-if="allErrors > 0" class="badge badge-danger">
+              <i class="fas fa-times-circle "/>
               {{ $t(allErrors) }}
+            </span>
+            <span v-if="allWarnings > 0" class="badge badge-warning">
+              <i class="fas fa-exclamation-triangle "/>
+              {{ $t(allWarnings) }}
             </span>
           </button>
         </div>
@@ -149,6 +149,21 @@
           class="validation-panel position-absolute border-top border-left overflow-auto"
           :class="{'d-block':showValidationErrors && validationErrors.length}"
         >
+          <b-button
+            variant="link"
+            class="validation__message d-flex align-items-center p-3 text-capitalize"
+            v-for="(validation,index) in warnings"
+            :key="index"
+            @click="focusInspector(validation)"
+          >
+            <i class="fas fa-exclamation-triangle text-warning d-block mr-3"></i>
+            <span class="ml-2 text-dark font-weight-bold text-left">
+              {{ validation.reference }}
+              <span
+                class="d-block font-weight-normal"
+              >{{ validation.message }}</span>
+            </span>
+          </b-button>
           <b-button
             variant="link"
             class="validation__message d-flex align-items-center p-3 text-capitalize"
@@ -165,7 +180,7 @@
             </span>
           </b-button>
           <span
-            v-if="!allErrors"
+            v-if="!allErrors && !allWarnings"
             class="d-flex justify-content-center align-items-center h-100 text-capitalize"
           >{{ $t('No Errors') }}</span>
         </div>
@@ -404,6 +419,9 @@ export default {
     displayPreview() {
       return this.mode === "preview";
     },
+    allWarnings() {
+      return this.warnings.length;
+    },
     allErrors() {
       return this.validationErrors.length;
     },
@@ -428,7 +446,18 @@ export default {
       });
 
       return validationErrors;
-    }
+    },
+    warnings() {
+      const warnings = [];
+      const watchersWithScripts = this.watchers
+        .filter(watcher => watcher.script.id.substr(0, 7) === 'script-').length;
+      if (watchersWithScripts > 0) {
+        warnings.push({
+          message: this.$t('Using watchers with Scripts can slow the performance of your screen.'),
+        });
+      }
+      return warnings;
+    },
   },
   mounted() {
     this.mountWhenTranslationAvailable();
@@ -700,7 +729,7 @@ export default {
     $validation-panel-bottom: 3.5rem;
     $validation-panel-right: 0;
     $validation-panel-height: 10rem;
-    $validation-panel-width: 23rem;
+    $validation-panel-width: 41rem;
     $primary-white: #f7f7f7;
 
     html,
