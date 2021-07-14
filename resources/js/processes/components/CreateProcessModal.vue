@@ -88,7 +88,6 @@
       },
       onFileChange (e) {
         let files = e.target.files || e.dataTransfer.files;
-        console.log('onFileChange', files);
 
         if (!files.length) {
           return;
