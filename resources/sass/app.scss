@@ -455,9 +455,27 @@ h1.page-title {
   font-weight: 400;
 }
 
+.popout,
+.popout:focus {
+  outline: 0 !important;
+}
+
 .popout a,
 .popout button {
   padding: 0 10px;
+}
+
+.button-dismiss,
+.popout .btn-link {
+  box-shadow: none;
+  &:focus {
+    box-shadow: 0 0 0 $input-btn-focus-width rgba($primary, .25);
+    color: $link-hover-color;
+  }
+  
+  &:focus:not(:focus-visible) {
+    box-shadow: none;
+  }
 }
 
 .b-tooltip:not([style*='transform']) { 
