@@ -42,6 +42,13 @@
               <b-button :aria-label="$t('Edit')" :disabled="row.item.readonly" @click="onEdit(row)" variant="link" size="lg"><i class="fa fa-pen-square"></i></b-button>
             </span>
             <b-button :aria-label="$t('Copy to Clipboard')" @click="onCopy(row)" variant="link" size="lg" v-b-tooltip.hover :title="$t('Copy to Clipboard')"><i class="fa fa-paste"></i></b-button>
+
+            <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
+              <b-button :aria-label="$t('Clear')" :disabled="row.item.readonly" @click="onClear(row)" variant="link" size="lg"><i class="fas fa-trash-alt"></i></b-button>
+            </span>
+            <span v-else class="invisible">
+              <b-button variant="link" size="lg"><i class="fas fa-trash-alt"></i></b-button>
+            </span>
           </template>
         </template>
         <template v-slot:bottom-row><div class="bottom-padding"></div></template>
@@ -280,6 +287,15 @@ export default {
       }, () => {
         ProcessMaker.alert(this.$t("The setting was not copied to your clipboard."), "danger");
       });
+    },
+    onClear(row) {
+      if (['array', 'checkboxes'].includes(row.item.format)) {
+        row.item.config = [];
+      }
+      else {
+        row.item.config = null;
+      }
+      this.onChange(row.item);
     },
     onEdit(row) {
       this.$refs[`settingComponent_${row.index}`].onEdit();
