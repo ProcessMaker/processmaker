@@ -1,6 +1,6 @@
 {
   "name": "processmaker/processmaker",
-  "version": "4.2.9",
+  "version": "4.2.10",
   "description": "BPM PHP Software",
   "keywords": [
     "php bpm processmaker"
@@ -36,7 +36,7 @@
     "processmaker/docker-executor-node": "^1.0",
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
-    "processmaker/nayra": "1.5.0",
+    "processmaker/nayra": "1.6.0",
     "processmaker/pmql": "1.4.0",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
