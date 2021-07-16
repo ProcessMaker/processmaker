@@ -130,8 +130,10 @@ class TaskController extends Controller
                             $user = User::find($fieldFilter);
                             $query->where(function ($query) use ($user) {
                                 foreach($user->groups as $group) {
-                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey()));
+                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey())); // backwards compatibility
+                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups->groups', strval($group->getKey()));
                                 }
+                                $query->orWhereJsonContains('process_request_tokens.self_service_groups->users', strval($user->getKey()));
                             });
                         });
                     });
