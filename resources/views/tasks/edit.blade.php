@@ -111,7 +111,7 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
                                           :input-data="task.user"></avatar-image>
-                          <div v-if="task.definition.allowReassignment === 'true'">
+                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin === 'true'">
                             <br>
                             <span>
                                 <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
@@ -214,6 +214,7 @@
 
     const task = @json($task);
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+    const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
 
   </script>
     @foreach($manager->getScripts() as $script)
