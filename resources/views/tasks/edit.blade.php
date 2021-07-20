@@ -31,10 +31,17 @@
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
                 <div v-if="isSelfService" class="alert alert-primary" role="alert">
-                    <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
-                    {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                    <b-row align-v="center">
+                      <b-col md="auto">
+                        <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                      </b-col>
+                      <b-col>
+                        {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                        {{__('You must claim the task before you can complete it.')}}
+                      </b-col>
+                    </b-row>
                 </div>
-                <div v-else class="container-fluid h-100 d-flex flex-column">
+                <div class="container-fluid h-100 d-flex flex-column">
                     @can('editData', $task->processRequest)
                         <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
                             <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
@@ -396,6 +403,10 @@
             this.$set(this, 'task', val);
           },
           submit(task) {
+            if (this.isSelfService) {
+              window.ProcessMaker.alert(this.$t('You must claim the task before you can complete it.'), 'danger');
+              return;
+            }
             let message = this.$t('Task Completed Successfully');
             const taskId = task.id;
             ProcessMaker.apiClient
