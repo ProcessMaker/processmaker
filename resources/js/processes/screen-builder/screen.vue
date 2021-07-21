@@ -517,7 +517,14 @@ export default {
         const validator = new Validator(data, rules);
 
         // Validation will not run until you call passes/fails on it
-        if (!validator.passes()) {
+        let passes;
+        try {
+          passes = validator.passes();
+        } catch (err) {
+          console.warn(`${item.component} (${item.config && item.config.name})`, err.message, err, rules);
+          passes = false;
+        }
+        if (!passes) {
           Object.keys(validator.errors.errors).forEach(field => {
             validator.errors.errors[field].forEach(error => {
               validationErrors.push({
