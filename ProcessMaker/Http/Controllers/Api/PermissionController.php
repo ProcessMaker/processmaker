@@ -29,7 +29,7 @@ class PermissionController extends Controller
      *
      *     @OA\Put(
      *     path="/permissions",
-     *     summary="Update the permissions of an user",
+     *     summary="Update the permissions of a user",
      *     tags={"Permissions"},
      *
      *     @OA\RequestBody(
@@ -38,11 +38,16 @@ class PermissionController extends Controller
      *          @OA\Property(
      *              property="user_id",
      *              type="integer",
-     *              description="Id of the user whose permissions are configured"),
+     *              description="ID of the user whose permissions are configured"),
      *          @OA\Property(
      *              property="group_id",
      *              type="integer",
-     *              description="Id of the group whose permissions are configured"),
+     *              description="ID of the group whose permissions are configured"),
+     *          @OA\Property(
+     *              property="is_administrator",
+     *              type="boolean",
+     *              default=false,
+     *              description="Whether the user should have Super Admin privileges"),
      *          @OA\Property(
      *              property="permission_names",
      *              type="array",
