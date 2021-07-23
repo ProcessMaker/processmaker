@@ -390,7 +390,9 @@
             ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
               .then(response => {
                 ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
-                window.ProcessMaker.events.$emit('update-profile-avatar');
+                if (this.formData.id == window.ProcessMaker.user.id) {
+                  window.ProcessMaker.events.$emit('update-profile-avatar');
+                }
               })
               .catch(error => {
                 this.errors = error.response.data.errors;
