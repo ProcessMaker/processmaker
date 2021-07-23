@@ -61,6 +61,10 @@ class PermissionController extends Controller
         //Obtain the requested user or group
         if ($request->input('user_id')) {
             $entity = User::findOrFail($request->input('user_id'));
+            if ($request->has('is_administrator')) {
+                $entity->is_administrator = filter_var($request->input('is_administrator'), FILTER_VALIDATE_BOOLEAN);
+                $entity->save();
+            }
         } elseif ($request->input('group_id')) {
             $entity = Group::findOrFail($request->input('group_id'));
         }
