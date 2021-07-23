@@ -398,10 +398,8 @@
               });
           },
           permissionUpdate() {
-            if (this.adminHasChanged) {
-              this.profileUpdate(false)
-            }
             ProcessMaker.apiClient.put("/permissions", {
+              is_administrator: this.formData.is_administrator,
               permission_names: this.selectedPermissions,
               user_id: this.formData.id
             })
