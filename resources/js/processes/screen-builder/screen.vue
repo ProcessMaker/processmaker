@@ -636,7 +636,7 @@ export default {
         try {
           passes = validator.passes();
         } catch (err) {
-          console.warn(`${item.component} (${item.config && item.config.name})`, err.message, err, rules);
+          // Prevent errors during validation break the screen builder loading
           passes = false;
         }
         if (!passes) {
