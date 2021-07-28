@@ -347,6 +347,6 @@ class TaskController extends Controller
     public function getScreen(Request $request, ProcessRequestToken $task, Screen $screen)
     {
         // Authorized in policy
-        return new ApiResource($screen);
+        return new ApiResource($screen->versionFor($task->processRequest));
     }
 }

@@ -12,7 +12,11 @@
     <testsuites>
       <testsuite name="Features">
         <directory>tests/Feature</directory>
+        <directory>tests/Managers</directory>
         <directory>tests/Model</directory>
+        <directory>tests/Resources</directory>
+        <directory>tests/sdk</directory>
+        <directory>tests/Traits</directory>
         <directory>tests/unit</directory>
       </testsuite>
   </testsuites>
