@@ -25,14 +25,14 @@ class ScreenTest extends TestCase {
             []
         );
         $task = $processRequest->tokens()->where('status', 'ACTIVE')->firstOrFail();
-        $screen = $task->getScreen();
+        $screen = $task->getScreen()->parent;
 
         $url = route('api.screens.show', [$screen]);
         $result = $this->apiCall('GET', $url);
         $json = $result->json();
 
-        $this->assertCount(5, $json['config'][0]['items']);
-        $this->assertEquals('FormHtmlViewer', $json['config'][0]['items'][2]['component']);
-        $this->assertEquals('FormHtmlViewer', $json['config'][0]['items'][3]['component']);
+        $this->assertCount(4, $json['config'][0]['items']);
+        $this->assertEquals('FormNestedScreen', $json['config'][0]['items'][2]['component']);
+        $this->assertEquals('FormButton', $json['config'][0]['items'][3]['component']);
     }
 }

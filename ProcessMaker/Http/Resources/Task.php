@@ -8,6 +8,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Models\ProcessRequestToken;
+use ProcessMaker\Http\Resources\ScreenVersion as ScreenVersionResource;
 use ProcessMaker\Models\GroupMember;
 use StdClass;
 
@@ -47,7 +48,7 @@ class Task extends ApiResource
                 if ($screen->type === 'ADVANCED') {
                     $array['screen'] = $screen;
                 } else {
-                    $resource = new ScreenResource($screen);
+                    $resource = new ScreenVersionResource($screen);
                     $array['screen'] = $resource->toArray($request);
                 }
             } else {

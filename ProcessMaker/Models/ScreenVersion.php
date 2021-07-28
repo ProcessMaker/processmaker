@@ -3,9 +3,10 @@
 namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Traits\HasCategories;
 
-class ScreenVersion extends Model
+class ScreenVersion extends Model implements ScreenInterface
 {
     use HasCategories;
 

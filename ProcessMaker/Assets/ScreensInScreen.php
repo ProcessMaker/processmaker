@@ -4,8 +4,10 @@ namespace ProcessMaker\Assets;
 
 use DOMXPath;
 use Illuminate\Support\Arr;
+use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Exception\MaximumRecursionException;
 use ProcessMaker\Managers\ExportManager;
@@ -32,7 +34,7 @@ class ScreensInScreen
             );
         }
 
-        $config = $screen->config;
+        $config = $screen->versionFor($processRequest)->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$screens, $manager, $recursive) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {

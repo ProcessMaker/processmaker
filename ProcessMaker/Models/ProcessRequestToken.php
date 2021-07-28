@@ -324,7 +324,18 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function getScreen()
     {
         $definition = $this->getDefinition();
-        return empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
+
+        if (empty($definition['screenRef'])) {
+            return null;
+        }
+        
+        $screen = Screen::find($definition['screenRef']);
+        
+        if (!$screen) {
+            return null;
+        }
+
+        return $screen->versionFor($this->processRequest);
     }
 
     /**
@@ -653,7 +664,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         $screen = $this->getScreen();
         $script = $this->getScript();
         if ($screen) {
-            $this->version_id = $screen->getLatestVersion()->getKey();
+            $this->version_id = $screen->getKey();
             $this->version_type = ScreenVersion::class;
         } elseif ($script) {
             $this->version_id = $script->getLatestVersion()->getKey();
