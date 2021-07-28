@@ -55,7 +55,7 @@
 
           <form-checkbox
               v-if="configurables.includes('ESCALATE_TO_MANAGER')"
-              :label="$t('Escalte to Manager')"
+              :label="$t('Escalate to User Manager')"
               :checked="escalateToManagerGetter"
               toggle="true"
               @change="escalateToManagerSetter">
