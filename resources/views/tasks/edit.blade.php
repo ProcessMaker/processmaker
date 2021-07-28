@@ -118,7 +118,7 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
                                           :input-data="task.user"></avatar-image>
-                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin === 'true'">
+                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin">
                             <br>
                             <span>
                                 <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
@@ -253,6 +253,8 @@
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
+          userIsAdmin,
+          submitting: false,
         },
         watch: {
           task: {
@@ -408,8 +410,12 @@
               window.ProcessMaker.alert(this.$t('You must claim the task before you can complete it.'), 'danger');
               return;
             }
+            if (this.submitting) {
+              return;
+            }
             let message = this.$t('Task Completed Successfully');
             const taskId = task.id;
+            this.submitting = true;
             ProcessMaker.apiClient
             .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
             .then(() => {
@@ -418,8 +424,9 @@
             .catch(error => {
               // If there are errors, the user will be redirected to the request page
               // to view error details. This is done in loadTask in Task.vue
-            });
-
+            }).finally(() => {
+              this.submitting = false;
+            })
           },
           taskUpdated(task) {
             this.task = task;
