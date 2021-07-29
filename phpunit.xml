@@ -65,5 +65,6 @@
       <env name="SKINS_PATH" value="tests/storage/skins" />
 
       <env name="THEMES_CACHE" value="false" />
+      <env name="SESSION_SECURE_COOKIE" value="true" />
     </php>
 </phpunit>

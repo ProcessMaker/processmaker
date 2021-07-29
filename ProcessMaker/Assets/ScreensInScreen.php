@@ -15,6 +15,7 @@ class ScreensInScreen
 {
     public $type = Screen::class;
     public $owner = Screen::class;
+    private $processRequest = null;
     private $recursion = 0;
 
     /**
@@ -25,7 +26,7 @@ class ScreensInScreen
      *
      * @return array
      */
-    public function referencesToExport(ScreenInterface $screen, ProcessRequest $processRequest = null, array $screens = [])
+    public function referencesToExport(ScreenInterface $screen, array $screens = [])
     {
         if ($this->recursion > 10) {
             throw new MaximumRecursionException(
@@ -33,14 +34,14 @@ class ScreensInScreen
             );
         }
 
-        $config = $screen->versionFor($processRequest)->config;
+        $config = $screen->versionFor($this->processRequest)->config;
         if (is_array($config)) {
-            $this->findInArray($config, function ($item) use (&$screens, $processRequest) {
+            $this->findInArray($config, function ($item) use (&$screens) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
                     $screens[] = [Screen::class, $item['config']['screen']];
                     $screen = Screen::findOrFail($item['config']['screen']);
                     $this->recursion++;
-                    $screens = $this->referencesToExport($screen, $processRequest, $screens);
+                    $screens = $this->referencesToExport($screen, $screens);
                     $this->recursion--;
                 }
             });
@@ -90,5 +91,16 @@ class ScreensInScreen
                 call_user_func($callback, $item, implode('.', array_merge($path, [$key])));
             }
         }
+    }
+
+    /**
+     * Set the process requests for version context
+     *
+     * @param ProcessRequest $processRequest
+     * @return void
+     */
+    public function setProcessRequest(ProcessRequest $processRequest)
+    {
+        $this->processRequest = $processRequest;
     }
 }

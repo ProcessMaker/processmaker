@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Processes;
 
 use Illuminate\Http\UploadedFile;
 use ProcessMaker\Models\Screen;

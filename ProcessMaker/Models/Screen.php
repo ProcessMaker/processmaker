@@ -182,7 +182,8 @@ class Screen extends Model implements ScreenInterface
     {
         $screenIds = [];
         $screenFinder = new ScreensInScreen();
-        foreach($screenFinder->referencesToExport($this, $processRequest) as $screen) {
+        $screenFinder->setProcessRequest($processRequest);
+        foreach($screenFinder->referencesToExport($this) as $screen) {
             $screenIds[] = $screen[1];
         }
         return $screenIds;

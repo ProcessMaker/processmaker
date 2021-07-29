@@ -5,6 +5,7 @@ namespace Tests\Feature\Api;
 use Tests\TestCase;
 use PermissionSeeder;
 use Faker\Factory as Faker;
+use Illuminate\Support\Carbon;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -16,9 +17,11 @@ use ProcessMaker\Models\ScriptExecutor;
 use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Facades\WorkflowManager;
 use Illuminate\Support\Facades\Notification;
+use Mockery;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
+use ProcessMaker\Models\ScriptVersion;
 use ProcessMaker\Notifications\ScriptResponseNotification;
 use ProcessMaker\PolicyExtension;
 
@@ -604,5 +607,37 @@ class ScriptsTest extends TestCase
 
         $response = $this->apiCall('post', $url);
         $response->assertStatus(403);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testExecuteVersion()
+    {
+        $mock = Mockery::mock('overload:ProcessMaker\Jobs\ExecuteScript');
+        $returnMock = Mockery::mock();
+        $returnMock->shouldReceive('onQueue');
+        $mock->shouldReceive('dispatch')->once()
+            ->withArgs(function($script, $_user, $code) {
+                if ($script->code === 'original code' && $code === 'original code') {
+                    return true;
+                }
+                return false;
+            })->andReturn($returnMock);
+
+        $script = factory(Script::class)->create([
+            'code' => 'original code',
+        ]);
+        $task = factory(ProcessRequestToken::class)->create();
+        
+        Carbon::setTestNow(Carbon::now()->addMinute(1));
+        $script->update(['code' => 'new code']);
+
+        $url = route('api.scripts.execute', [$script, 'task_id' => $task->id]);
+        
+        $response = $this->apiCall('post', $url);
+        $response->assertStatus(200);
+        Carbon::setTestNow();
     }
 }
