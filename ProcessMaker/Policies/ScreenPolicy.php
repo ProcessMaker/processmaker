@@ -36,15 +36,15 @@ class ScreenPolicy
             return false;
         }
 
-        $taskScreen = $task->getScreen();
+        $taskScreenVersion = $task->getScreenVersion();
         
-        if ($taskScreen->id === $screen->id) {
+        if ($taskScreenVersion->screen_id === $screen->id) {
             return true;
         }
 
         // Check for nested screen
         $screenFinder = new ScreensInScreen();
-        $nestedScreens = $screenFinder->referencesToExport($taskScreen);
+        $nestedScreens = $screenFinder->referencesToExport($taskScreenVersion->parent, $task->processRequest);
 
         $nestedScreenIds = array_map(function($screen) {
             return $screen[1];

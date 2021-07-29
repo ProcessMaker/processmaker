@@ -25,7 +25,7 @@ class ScreenTest extends TestCase {
             []
         );
         $task = $processRequest->tokens()->where('status', 'ACTIVE')->firstOrFail();
-        $screen = $task->getScreen()->parent;
+        $screen = $task->getScreen();
 
         $url = route('api.screens.show', [$screen]);
         $result = $this->apiCall('GET', $url);

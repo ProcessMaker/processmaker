@@ -40,10 +40,10 @@ class Task extends ApiResource
             $array['process_request'] = new Users($this->processRequest);
         }
         if (in_array('component', $include)) {
-            $array['component'] = $this->getScreen() ? $this->getScreen()->renderComponent() : null;
+            $array['component'] = $this->getScreenVersion() ? $this->getScreenVersion()->parent->renderComponent() : null;
         }
         if (in_array('screen', $include)) {
-            $screen = $this->getScreen();
+            $screen = $this->getScreenVersion();
             if ($screen) {
                 if ($screen->type === 'ADVANCED') {
                     $array['screen'] = $screen;
