@@ -44,7 +44,8 @@ class ScreenPolicy
 
         // Check for nested screen
         $screenFinder = new ScreensInScreen();
-        $nestedScreens = $screenFinder->referencesToExport($taskScreenVersion->parent, $task->processRequest);
+        $screenFinder->setProcessRequest($task->processRequest);
+        $nestedScreens = $screenFinder->referencesToExport($taskScreenVersion->parent);
 
         $nestedScreenIds = array_map(function($screen) {
             return $screen[1];

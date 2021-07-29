@@ -330,7 +330,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the screen assigned to the task at the time the request started
      *
-     * @return Screen
+     * @return ScreenInterface
      */
     public function getScreenVersion()
     {
@@ -350,7 +350,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function getScreenAndNestedIds()
     {
-        $taskScreen = $this->getScreenVersion();
+        $taskScreen = $this->getScreen();
         if ($taskScreen) {
             $screenIds = $taskScreen->nestedScreenIds($this->processRequest);
             $screenIds[] = $taskScreen->id;
@@ -363,12 +363,28 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the script assigned to the task.
      *
-     * @return Screen
+     * @return Script
      */
     public function getScript()
     {
         $definition = $this->getDefinition();
         return empty($definition['scriptRef']) ? null : Script::find($definition['scriptRef']);
+    }
+    
+    /**
+     * Get the script assigned to the task at the time the request started
+     *
+     * @return ScriptInterface
+     */
+    public function getScriptVersion()
+    {
+        $script = $this->getScript();
+        
+        if (!$script) {
+            return null;
+        }
+
+        return $script->versionFor($this->processRequest);
     }
 
     /**
@@ -657,12 +673,12 @@ class ProcessRequestToken extends Model implements TokenInterface
     public function saveVersion()
     {
         $screenVersion = $this->getScreenVersion();
-        $script = $this->getScript();
+        $scriptVersion = $this->getScriptVersion();
         if ($screenVersion) {
             $this->version_id = $screenVersion->getKey();
             $this->version_type = ScreenVersion::class;
-        } elseif ($script) {
-            $this->version_id = $script->getLatestVersion()->getKey();
+        } elseif ($scriptVersion) {
+            $this->version_id = $scriptVersion->getKey();
             $this->version_type = ScriptVersion::class;
         }
     }

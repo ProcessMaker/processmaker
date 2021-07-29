@@ -11,6 +11,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use ProcessMaker\Models\User;
+use ProcessMaker\Contracts\ScriptInterface;
 
 class ExecuteScript implements ShouldQueue
 {
@@ -37,7 +38,7 @@ class ExecuteScript implements ShouldQueue
      * @param $watcher
      * @param array $configuration
      */
-    public function __construct(Script $script, User $current_user, $code, array $data, $watcher, array $configuration = [], $sync = false)
+    public function __construct(ScriptInterface $script, User $current_user, $code, array $data, $watcher, array $configuration = [], $sync = false)
     {
         $this->script = $script;
         $this->current_user = $current_user;
