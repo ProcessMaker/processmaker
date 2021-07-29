@@ -9,6 +9,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
 use Mustache_Engine;
 use ProcessMaker\Exception\HttpResponseException;
 use ProcessMaker\Models\FormalExpression;
@@ -53,14 +54,8 @@ trait MakeHttpRequests
     public function request(array $data = [], array $config = [])
     {
         try {
-            // if using the new version of data connectors
-            if (array_key_exists('outboundConfig', $config) || array_key_exists('dataMapping', $config)) {
-                $request = $this->prepareRequestWithOutboundConfig($data, $config);
-                return $this->responseWithHeaderData($this->call(...$request), $data, $config);
-            } else {
-                $request = $this->prepareRequest($data, $config);
-                return $this->response($this->call(...$request), $data, $config);
-            }
+            $request = $this->prepareRequestWithOutboundConfig($data, $config);
+            return $this->responseWithHeaderData($this->call(...$request), $data, $config);
         } catch (ClientException $exception) {
             throw new HttpResponseException($exception->getResponse());
         }
@@ -111,20 +106,26 @@ trait MakeHttpRequests
         $data = $requestData;
         foreach ($outboundConfig as $outbound) {
             if ($outbound['type'] === $type) {
-                $data[$outbound['key']] = $this->evalExpression($outbound['value'], $requestData);
+                // Default format for mapping input is { Mustache }
+                if (isset($outbound['format']) && $outbound['format'] === 'feel') {
+                    $data[$outbound['key']] = $this->evalExpression($outbound['value'], $requestData);
+                } else {
+                    $data[$outbound['key']] = $this->evalMustache($outbound['value'], $requestData);
+                }
             }
         }
         return $data;
     }
 
     /**
-     * Evaluate a BPMN expression
+     * Evaluate a BPMN FEEL expression
      * ex.
-     *      foo
-     *      _request.id
-     *      _user.id
-     *      {{ form.age }}
-     *      "{{ form.lastname }} {{ form.firstname }}"
+     *      foo             => bar
+     *      _request.id     => 1001
+     *      _user.id        => 101
+     *      10              => 10
+     *      {{ form.age }}  => 21
+     *      "{{ form.lastname }} {{ form.firstname }}" => John Doe
      *
      * @return mixed
      */
@@ -140,6 +141,25 @@ trait MakeHttpRequests
     }
 
     /**
+     * Evaluate a mustache expression
+     * ex.
+     *      foo             => "foo"
+     *      10              => "10"
+     *      {{ user.id }}  => "101"
+     *      {{ form.age }}  => "21"
+     *      {{ form.lastname }} {{ form.firstname }} => "John Doe"
+     * @return string
+     */
+    private function evalMustache($expression, array $data)
+    {
+        try {
+            return $this->getMustache()->render($expression, $data);
+        } catch (Exception $exception) {
+            return "{$expression}: " . $exception->getMessage();
+        }
+    }
+
+    /**
      * Prepares data for the http request replacing mustache with pm instance and OutboundConfig
      *
      * @param array $data, request data
@@ -149,24 +169,29 @@ trait MakeHttpRequests
      */
     private function prepareRequestWithOutboundConfig(array $requestData, array &$config)
     {
-        $data = $this->prepareData($requestData, $config['outboundConfig'], 'PARAM');
+        $outboundConfig = $config['outboundConfig'] ?? [];
         $endpoint = $this->endpoints[$config['endpoint']];
-        $method = $this->getMustache()->render($endpoint['method'], $data);
-
-        $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $data);
-
         $this->verifySsl = array_key_exists('verify_certificate', $this->credentials)
             ? $this->credentials['verify_certificate']
             : true;
 
-        $data = $this->prepareData($requestData, $config['outboundConfig'], 'HEADER');
+        // Prepare URL
+        $data = $this->prepareData($requestData, $outboundConfig, 'PARAM');
+        $method = $this->evalMustache($endpoint['method'], $data);
+        $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $data);
+
+        // Prepare Headers
+        $data = $this->prepareData($requestData, $outboundConfig, 'HEADER');
         $headers = $this->addHeaders($endpoint, $config, $data);
-        $data = $this->prepareData($requestData, $config['outboundConfig'], 'BODY');
+
+        // Prepare Body
+        $data = $this->prepareData($requestData, $outboundConfig, 'BODY');
         $body = $this->getMustache()->render($endpoint['body'], $data);
         $bodyType = null;
         if (isset($endpoint['body_type'])) {
             $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
         }
+
         $request = [$method, $url, $headers, $body, $bodyType];
         $request = $this->addAuthorizationHeaders(...$request);
         return $request;
@@ -354,11 +379,13 @@ trait MakeHttpRequests
                 $value = $this->addCollectionsRootObject($value);
             }
 
-            //If mustache, a process variable can be used as the property name of the API response
-            $evaluatedApiVar = (str_contains($value, '{{'))
-                ? $this->getMustache()->render($value, $merged)
-                : Arr::get($responseData, $value);
-
+            // Default format for mapping response is FEEL unless $value contains {{}}
+            $format = $map['format'] ?? (str_contains($value, '{{') ? 'mustache' : 'feel');
+            if ($format === 'mustache') {
+                $evaluatedApiVar = $this->evalMustache($map['value'], $merged);
+            } else {
+                $evaluatedApiVar = $this->evalExpression($map['value'], $merged);
+            }
             $mapped[$processVar] = $evaluatedApiVar;
         }
 
@@ -397,7 +424,7 @@ trait MakeHttpRequests
      *
      * @return string
      */
-    private function addQueryStringsParamsToUrl($endpoint, array $config,  array $data)
+    private function addQueryStringsParamsToUrl($endpoint, array $config, array $data)
     {
         // Note that item['key'] corresponds to an endpoint property (in the header, querystring, etc.)
         //           item['value'] corresponds to a PM request variable or mustache expression
@@ -415,54 +442,23 @@ trait MakeHttpRequests
             $url .= $separator . $config['queryString'];
         }
 
-        if (!array_key_exists('outboundConfig', $config)) {
-            $url = $this->getMustache()->render($url, $data);
-            return $url;
-        }
-
-        $outboundConfig = $config['outboundConfig'];
-
-        $dataSourceParams = [];
-        if(array_key_exists('params', $endpoint)) {
-            $dataSourceParams = array_filter($endpoint['params'], function ($item) {
-                return $item['required'] === true;
-            });
-        }
-
-        $configParams = array_filter($outboundConfig, function ($item) {
-            return $item['type'] === 'PARAM';
-        });
-
-        foreach ($configParams as $cfgParam) {
-            $existsInDataSourceParams = false;
-            foreach ($dataSourceParams as &$param) {
-                if ($param['key'] === $cfgParam['key']) {
-                    $param['value'] = $cfgParam['value'];
-                    $existsInDataSourceParams = true;
+        // Evaluate mustache expressions in URL
+        $url = $this->evalMustache($url, $data);
+        // Add params from datasource configuration
+        $parsedUrl = $this->parseUrl($url);
+        $query = [];
+        parse_str($parsedUrl['query'], $query);
+        if (array_key_exists('params', $endpoint)) {
+            foreach ($endpoint['params'] as $param) {
+                $key = $this->evalMustache($param['key'], $data);
+                $value = $this->evalMustache($param['value'], $data);
+                if ($value !== '' || $param['required']) {
+                    $query[$key] = $value;
                 }
             }
-            if (!$existsInDataSourceParams) {
-                array_push($dataSourceParams, [
-                    'key' => $cfgParam['key'],
-                    'value' => $cfgParam['value']
-                ]);
-            }
         }
-
-        $dataForUrl = [];
-        foreach ($dataSourceParams as $param) {
-            $separator = strpos($url, '?') ? '&' : '?';
-            $url .= $separator .
-                    $this->getMustache()->render($param['key'], $data) .
-                    '=' .
-                    $this->getMustache()->render($param['value'], $data);
-            $dataForUrl[$param['key']] = $this->getMustache()->render($param['value'], $data);
-        }
-
-
-        // if some placeholders are left, use directly request data
-        $url = $this->getMustache()->render($url, array_merge($data, $dataForUrl));
-
+        $parsedUrl['query'] = http_build_query($query);
+        $url = $this->unparseUrl($parsedUrl);
         return $url;
     }
 
@@ -541,5 +537,50 @@ trait MakeHttpRequests
             }
         }
         return $value;
+    }
+
+    /**
+     * Multibyte parse_url
+     *
+     * @param string $url
+     * @return array
+     */
+    public function parseUrl($url)
+    {
+        $enc_url = preg_replace_callback(
+            '%[^:/@?&=#]+%usD',
+            function ($matches) {
+                return urlencode($matches[0]);
+            },
+            $url
+        );
+        $parts = parse_url($enc_url);
+        if ($parts === false) {
+            throw new InvalidArgumentException('Malformed URL: ' . $url);
+        }
+        foreach ($parts as $name => $value) {
+            $parts[$name] = urldecode($value);
+        }
+        return $parts;
+    }
+
+    /**
+     * Unparse url array
+     *
+     * @param array $parsed_url
+     * @return string
+     */
+    private function unparseUrl(array $parsed_url)
+    {
+        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+        $pass     = ($user || $pass) ? "$pass@" : '';
+        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+        return "$scheme$user$pass$host$port$path$query$fragment";
     }
 }
