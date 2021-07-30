@@ -99,7 +99,7 @@ class ScreensInScreen
      * @param ProcessRequest $processRequest
      * @return void
      */
-    public function setProcessRequest(ProcessRequest $processRequest)
+    public function setProcessRequest(ProcessRequest $processRequest = null)
     {
         $this->processRequest = $processRequest;
     }
