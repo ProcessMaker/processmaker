@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Model;
+namespace Tests\Traits;
 
 use Tests\TestCase;
 use ProcessMaker\Models\Screen;
