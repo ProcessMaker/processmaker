@@ -386,11 +386,7 @@ class ScriptsTest extends TestCase
     public function testPreviewScript()
     {
         Notification::fake();
-        if (!file_exists(config('app.processmaker_scripts_home')) || !file_exists(config('app.processmaker_scripts_docker'))) {
-            $this->markTestSkipped(
-                'This test requires docker'
-            );
-        }
+        config()->set('script-runners.php.runner', 'MockRunner');
 
         $url = route('api.scripts.preview', $this->getScript('lua')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);
@@ -582,6 +578,7 @@ class ScriptsTest extends TestCase
         $asp->boot();
         $this->user = factory(User::class)->create();
         $this->user->giveDirectPermission('view-scripts');
+        app()->instance(PolicyExtension::class, null); // clear in case packages are installed in test context
 
         ImportProcess::dispatchNow(
             file_get_contents(__DIR__ . '/../../Fixtures/process_with_script_watcher.json')
@@ -609,35 +606,37 @@ class ScriptsTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
     public function testExecuteVersion()
     {
-        $mock = Mockery::mock('overload:ProcessMaker\Jobs\ExecuteScript');
-        $returnMock = Mockery::mock();
-        $returnMock->shouldReceive('onQueue');
-        $mock->shouldReceive('dispatch')->once()
-            ->withArgs(function($script, $_user, $code) {
-                if ($script->code === 'original code' && $code === 'original code') {
-                    return true;
-                }
-                return false;
-            })->andReturn($returnMock);
+        Notification::fake();
+        config()->set('script-runners.php.runner', 'MockRunner');
 
         $script = factory(Script::class)->create([
-            'code' => 'original code',
+            'run_as_user_id' => $this->user->id,
+            'language' => 'php',
+            'code' => '<?php return["version" => "original"];',
         ]);
         $task = factory(ProcessRequestToken::class)->create();
         
         Carbon::setTestNow(Carbon::now()->addMinute(1));
-        $script->update(['code' => 'new code']);
+        $script->update(['code' => '<?php return["version" => "new"];']);
 
         $url = route('api.scripts.execute', [$script, 'task_id' => $task->id]);
-        
         $response = $this->apiCall('post', $url);
         $response->assertStatus(200);
+
+        Notification::assertSentTo(
+            [$this->user],
+            ScriptResponseNotification::class,
+            function ($notification, $channels) {
+                $response = $notification->getResponse();
+
+                // Assert the code executed was the version when the
+                // process request (and token) were created
+                return $response['output']['version'] === 'original';
+            }
+        );
+
         Carbon::setTestNow();
     }
 }
