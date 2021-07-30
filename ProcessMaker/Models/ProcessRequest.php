@@ -288,7 +288,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         $definition = $endEvents->first()->getDefinition();
         $screen = empty($definition['screenRef']) ? null : Screen::find($definition['screenRef']);
 
-        return $screen;
+        if ($screen) {
+            return $screen->versionFor($this);
+        }
+        return null;
     }
 
     /**
