@@ -121,7 +121,7 @@
                           <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin">
                             <br>
                             <span>
-                                <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
+                                <button v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'" type="button" class="btn btn-outline-secondary btn-block"
                                         @click="show">
                                     <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                 </button>
