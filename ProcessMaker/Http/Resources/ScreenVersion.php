@@ -21,10 +21,9 @@ class ScreenVersion extends ApiResource
 
         if (in_array('nested', $include)) {
             
-            $taskId = $request->route('task')->id;
+            $task = $request->route('task');
             $processRequest = null;
-            if ($taskId) {
-                $task = ProcessRequestToken::findOrFail($taskId);
+            if ($task) {
                 $processRequest = $task->processRequest;
             }
 
