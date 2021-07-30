@@ -61,7 +61,7 @@ trait HasVersioning
     public function versionFor(ProcessRequest $processRequest = null)
     {
         if (!$processRequest) {
-            return $this;
+            return $this->getLatestVersion();
         }
 
         $requestStartedAt = $processRequest->created_at;
