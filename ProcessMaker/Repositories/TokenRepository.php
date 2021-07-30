@@ -351,8 +351,17 @@ class TokenRepository implements TokenRepositoryInterface
     {
     }
 
-    public function store(TokenInterface $token, $saveChildElements = false): \this
+    public function store(TokenInterface $token, $saveChildElements = false)
     {
+        // Update Nayra properties to process request token model
+        foreach ($token->getProperties() as $key => $value) {
+            if (array_key_exists($key, $token->getAttributes())) {
+                $token->{$key} = $value;
+            }
+        }
+
+        $token->saveOrFail();
+        return $this;
     }
 
     /**
