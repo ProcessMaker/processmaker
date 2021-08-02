@@ -13,6 +13,7 @@ use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\Traits\HideSystemResources;
 use ProcessMaker\Validation\CategoryRule;
 use ProcessMaker\Assets\ScreensInScreen;
+use ProcessMaker\Contracts\ScreenInterface;
 
 /**
  * Class Screen
@@ -61,7 +62,7 @@ use ProcessMaker\Assets\ScreensInScreen;
  * )
  *
  */
-class Screen extends Model
+class Screen extends Model implements ScreenInterface
 {
     use SerializeToIso8601;
     use HideSystemResources;
@@ -177,10 +178,11 @@ class Screen extends Model
      * 
      * @return int[] nested screen IDs
      */
-    public function nestedScreenIds()
+    public function nestedScreenIds(ProcessRequest $processRequest = null)
     {
         $screenIds = [];
         $screenFinder = new ScreensInScreen();
+        $screenFinder->setProcessRequest($processRequest);
         foreach($screenFinder->referencesToExport($this) as $screen) {
             $screenIds[] = $screen[1];
         }

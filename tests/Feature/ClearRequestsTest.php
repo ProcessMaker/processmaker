@@ -276,7 +276,6 @@ class ClearRequestsTest extends TestCase
   
     public function testCommandClearRequests()
     {
-        Artisan::call('migrate:fresh');
         // Run process with timers
         $this->runProcessWithTimers();
 

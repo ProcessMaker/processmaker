@@ -319,6 +319,22 @@ class ProcessRequestToken extends Model implements TokenInterface
     }
 
     /**
+     * Get the screen assigned to the task at the time the request started
+     *
+     * @return ScreenInterface
+     */
+    public function getScreenVersion()
+    {
+        $screen = $this->getScreen();
+        
+        if (!$screen) {
+            return null;
+        }
+
+        return $screen->versionFor($this->processRequest);
+    }
+
+    /**
      * Get the ID of the task screen (if set) and any nested screens
      * 
      * @return int[] Array of screen IDs
@@ -327,7 +343,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     {
         $taskScreen = $this->getScreen();
         if ($taskScreen) {
-            $screenIds = $taskScreen->nestedScreenIds();
+            $screenIds = $taskScreen->nestedScreenIds($this->processRequest);
             $screenIds[] = $taskScreen->id;
         } else {
             $screenIds = [];
@@ -338,22 +354,28 @@ class ProcessRequestToken extends Model implements TokenInterface
     /**
      * Get the script assigned to the task.
      *
-     * @return Screen
+     * @return Script
      */
     public function getScript()
     {
         $definition = $this->getDefinition();
         return empty($definition['scriptRef']) ? null : Script::find($definition['scriptRef']);
     }
-
+    
     /**
-     * Get the form assigned to the task.
+     * Get the script assigned to the task at the time the request started
      *
-     * @return Screen
+     * @return ScriptInterface
      */
-    public function getScreenVersion()
+    public function getScriptVersion()
     {
-        return ScreenVersion::find($this->version_id);
+        $script = $this->getScript();
+        
+        if (!$script) {
+            return null;
+        }
+
+        return $script->versionFor($this->processRequest);
     }
 
     /**
@@ -614,13 +636,13 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function saveVersion()
     {
-        $screen = $this->getScreen();
-        $script = $this->getScript();
-        if ($screen) {
-            $this->version_id = $screen->getLatestVersion()->getKey();
+        $screenVersion = $this->getScreenVersion();
+        $scriptVersion = $this->getScriptVersion();
+        if ($screenVersion) {
+            $this->version_id = $screenVersion->getKey();
             $this->version_type = ScreenVersion::class;
-        } elseif ($script) {
-            $this->version_id = $script->getLatestVersion()->getKey();
+        } elseif ($scriptVersion) {
+            $this->version_id = $scriptVersion->getKey();
             $this->version_type = ScriptVersion::class;
         }
     }
