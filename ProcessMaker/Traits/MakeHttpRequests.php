@@ -447,7 +447,7 @@ trait MakeHttpRequests
         // Add params from datasource configuration
         $parsedUrl = $this->parseUrl($url);
         $query = [];
-        parse_str($parsedUrl['query'], $query);
+        parse_str($parsedUrl['query'] ?? '', $query);
         if (array_key_exists('params', $endpoint)) {
             foreach ($endpoint['params'] as $param) {
                 $key = $this->evalMustache($param['key'], $data);
