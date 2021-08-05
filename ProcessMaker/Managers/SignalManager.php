@@ -212,7 +212,6 @@ class SignalManager
                     'id' => $node->parentNode->getAttribute('id'),
                     'name' => $node->parentNode->getAttribute('name'),
                     'type' => $node->parentNode->localName,
-                    'catchEvent' => $node->parentNode->getBpmnElementInstance(),
                 ]);
             }
             return $carry;
