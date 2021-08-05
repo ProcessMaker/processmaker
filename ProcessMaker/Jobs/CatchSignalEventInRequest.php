@@ -60,7 +60,7 @@ class CatchSignalEventInRequest extends BpmnAction implements ShouldQueue
         // Get all the catch events defined in the $definitions
         $catches = SignalManager::getSignalCatchEvents($this->signalRef, $definitions);
         foreach ($catches as $catch) {
-            $catchEvent = $catch['catchEvent'];
+            $catchEvent = $definitions->getElementInstanceById($catch['id']);
             if ($catchEvent->getTokens($instance)->count() < 1) {
                 continue;
             }
