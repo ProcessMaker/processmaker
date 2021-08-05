@@ -4,6 +4,8 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -228,4 +230,24 @@ class SettingController extends Controller
             ],
         ];
     }
+
+    public function upload(Request $request)
+    {
+        if (!Auth::user()->is_administrator) {
+            throw new AuthorizationException(__('Not authorized to complete this request.'));
+        }
+
+        $settingKey = $request->input('setting_key');
+        $setting = Setting::byKey($settingKey);
+        $this->uploadFile($setting->refresh(), $request, 'file', $settingKey, 'settings');
+    }
+
+    private function uploadFile(Setting $setting, Request $request, $filename, $collectionName, $diskName)
+    {
+        $data = $request->all();
+        if (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
+            Storage::disk('settings')->put($collectionName, $request->file($filename));
+        }
+    }
+
 }
