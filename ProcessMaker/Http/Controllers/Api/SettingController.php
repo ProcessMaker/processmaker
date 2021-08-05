@@ -246,7 +246,7 @@ class SettingController extends Controller
     {
         $data = $request->all();
         if (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
-            Storage::disk('settings')->put($collectionName, $request->file($filename));
+            Storage::disk('settings')->put($collectionName, file_get_contents($request->file($filename)));
         }
     }
 

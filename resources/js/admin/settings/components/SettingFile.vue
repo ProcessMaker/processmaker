@@ -1,10 +1,10 @@
 <template>
   <div class="setting-text">
-    <div v-if="input === null || !input.length" class="font-italic text-black-50">
+    <div v-if="value == null || !value.length" class="font-italic text-black-50">
       Empty
     </div>
     <div v-else>
-      Uploaded
+      {{value}}
     </div>
     <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden" @shown="onModalShown">
       <div>
@@ -138,6 +138,7 @@ export default {
     },
   },
   mounted() {
+    console.log('mounted', this.value, this.setting);
     if (typeof this.value == 'object' || typeof this.value == 'array') {
       this.input = JSON.stringify(this.value, null, 2);
     } else {

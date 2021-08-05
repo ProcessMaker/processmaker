@@ -167,6 +167,7 @@ class Setting extends Model implements HasMedia
         switch ($this->format) {
             case 'text':
             case 'textarea':
+            case 'file':
             case 'choice':
                 return $this->attributes['config'] = $this->attributes['config'];
             case 'boolean':
