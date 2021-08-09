@@ -52,6 +52,11 @@ class CommentsSubscriber
         $flowSource = $incomingFlow->getProperties()["source"];
         if ($flowSource instanceof GatewayInterface) {
             $properties = $incomingFlow->getProperties();
+            $sourceProps = $flowSource->getProperties();
+            $sourceLabel = array_key_exists('name', $sourceProps) && $sourceProps['name']
+                        ? $sourceProps['name']
+                        : __('Gateway');
+
             $flowLabel = array_key_exists('name', $properties) && $properties['name']
                         ? $properties['name']
                         : __('Label Undefined');
@@ -61,7 +66,7 @@ class CommentsSubscriber
                 'commentable_type' => ProcessRequest::class,
                 'commentable_id' => $token->process_request_id,
                 'subject' => 'Gateway',
-                'body' => __('Gateway: :flow_label', ['flow_label' => $flowLabel]),
+                'body' => $sourceLabel . ': ' . $flowLabel
             ]);
         }
     }
