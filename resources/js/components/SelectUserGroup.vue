@@ -121,15 +121,7 @@
                 this.selected.groups.push(parseInt(item.id.substr(6)));
               }
             });
-          } else {
-            this.results.push(value);
-            if (typeof value.id === "number") {
-              this.selected.users.push(value);
-            } else {
-              this.selected.groups.push(value);
-            }
           }
-          
         }
       }
     },
