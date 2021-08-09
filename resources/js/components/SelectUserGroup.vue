@@ -108,7 +108,13 @@
         set (value) {
           this.selected.users = [];
           this.selected.groups = [];
-          if (value.length) {
+          if (value === null) {
+            return;
+          }
+
+          // If it is array (this happens when the Select User/Group is selected)
+          // add value just if it is not empty
+          if (Array.isArray(value) && value.length) {
             value.forEach(item => {
               this.results.push(item);
               if (typeof item.id === "number") {
@@ -118,6 +124,18 @@
               }
             });
           }
+
+          //If an object arrives as value (this happens with Self Service and assign by expression)
+          if (!Array.isArray(value) && value)
+          {
+            this.results.push(value);
+            if (typeof value.id === "number") {
+              this.selected.users.push(value);
+            } else {
+              this.selected.groups.push(value);
+            }
+          }
+
         }
       }
     },
