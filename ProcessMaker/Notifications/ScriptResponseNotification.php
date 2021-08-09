@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Models\Script;
 
+/**
+ * @deprecated version 4.1.21
+ */
 class ScriptResponseNotification extends Notification
 {
     use Queueable;
