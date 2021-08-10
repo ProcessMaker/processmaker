@@ -21,6 +21,7 @@ use ProcessMaker\Managers\ModelerManager as Modeler;
 use ProcessMaker\Managers\ScriptBuilderManager as ScriptBuilder;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Events\ImportedScreenSaved;
+use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Screen;
 
@@ -200,5 +201,19 @@ class BroadcastTest extends TestCase
         ]);
         $screen = factory(Screen::class)->create();
         event(new ImportedScreenSaved($screen->id, $screen->toArray()));
+    }
+
+    /**
+     * Asserts that the BuildScriptExecutor event works.
+     *
+     * @return void
+     */
+    public function testScriptResponseEventBroadcast()
+    {
+        $this->expectsEvents([
+            ScriptResponseEvent::class,
+        ]);
+        $user = factory(User::class)->create();
+        event(new ScriptResponseEvent($user, 200, ['foo' => 'bar'], ['config_one' => 1], 'nonce001'));
     }
 }

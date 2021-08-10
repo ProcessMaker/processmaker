@@ -2,15 +2,15 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Support\Facades\Event;
+use ProcessMaker\Events\ScriptResponseEvent;
+use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
-use Tests\TestCase;
 use Tests\Feature\Shared\BenchmarkHelper;
 use Tests\Feature\Shared\LoggingHelper;
 use Tests\Feature\Shared\RequestHelper;
-use Illuminate\Support\Facades\Notification;
-use ProcessMaker\Notifications\ScriptResponseNotification;
-use ProcessMaker\Exception\ScriptTimeoutException;
+use Tests\TestCase;
 
 class TimeoutsTest extends TestCase
 {
@@ -37,7 +37,7 @@ class TimeoutsTest extends TestCase
         ScriptExecutor::setTestConfig('lua');
         ScriptExecutor::setTestConfig('php');
     }
-    
+
     /**
      * Make sure we have a personal access client set up
      *
@@ -52,14 +52,16 @@ class TimeoutsTest extends TestCase
      */
     private function assertTimeoutExceeded($data)
     {
-        Notification::fake();
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
         $this->assertLogIsEmpty();
-        
+
         $url = route(
             'api.scripts.preview',
             $this->getScript($data['language'], $data['timeout'])->id
         );
-        
+
         $this->benchmarkStart();
         $response = $this->apiCall('POST', $url, [
             'code' => $data['code'],
@@ -71,14 +73,10 @@ class TimeoutsTest extends TestCase
         $this->assertLessThan(intval($data['timeout']) + 2, $this->benchmark());
 
         // Assertion: An exception is notified to usr through broadcast channel
-        Notification::assertSentTo(
-            [$this->user],
-            ScriptResponseNotification::class,
-            function ($notification, $channels) {
-                $response = $notification->getResponse();
-                return $response['exception'] === ScriptTimeoutException::class && in_array('broadcast', $channels);
-            }
-        );
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            $response = $event->response;
+            return $response['exception'] === ScriptTimeoutException::class;
+        });
     }
 
     /**
@@ -86,7 +84,9 @@ class TimeoutsTest extends TestCase
      */
     private function assertTimeoutNotExceeded($data)
     {
-        Notification::fake();
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
         $this->benchmarkStart();
         $url = route(
             'api.scripts.preview',
@@ -99,14 +99,10 @@ class TimeoutsTest extends TestCase
         $response->assertStatus(200);
 
         // Assertion: The script output is sent to usr through broadcast channel
-        Notification::assertSentTo(
-            [$this->user],
-            ScriptResponseNotification::class,
-            function ($notification, $channels) {
-                $response = $notification->getResponse();
-                return $response['output'] === ['response' => 1];
-            }
-        );
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            $response = $event->response;
+            return $response['output'] === ['response' => 1];
+        });
     }
 
     /**
