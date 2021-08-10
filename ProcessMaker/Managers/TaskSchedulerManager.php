@@ -146,51 +146,58 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             $tasks = ScheduledTask::all();
 
             foreach ($tasks as $task) {
-                $config = json_decode($task->configuration);
+                try {
+                    $config = json_decode($task->configuration);
 
-                $lastExecution = new DateTime($task->last_execution, new DateTimeZone('UTC'));
+                    $lastExecution = new DateTime($task->last_execution, new DateTimeZone('UTC'));
 
-                if ($lastExecution === null) {
-                    continue;
-                }
-                $owner = $task->processRequestToken ?: $task->processRequest ?: $task->process;
-                $ownerDateTime = $owner->created_at;
-                $nextDate = $this->nextDate($today, $config, $lastExecution, $ownerDateTime);
-
-                // if no execution date exists we go to the next task
-                if (empty($nextDate)) {
-                    continue;
-                }
-
-                // Since the task scheduler has a presition of 1 minute (crontab)
-                // the times must be rounded or trucated to the nearest HH:MM:00 before compare
-                $method = config('app.timer_events_seconds') . 'DateTime';
-                $todayWithoutSeconds = $this->$method($today);
-                $nextDateWithoutSeconds = $this->$method($nextDate);
-                if ($nextDateWithoutSeconds <= $todayWithoutSeconds) {
-                    switch ($task->type) {
-                        case 'TIMER_START_EVENT':
-                            $this->executeTimerStartEvent($task, $config);
-                            $task->last_execution = $today->format('Y-m-d H:i:s');
-                            $task->save();
-                            break;
-                        case 'INTERMEDIATE_TIMER_EVENT':
-                            $executed = $this->executeIntermediateTimerEvent($task, $config);
-                            $task->last_execution = $today->format('Y-m-d H:i:s');
-                            if ($executed) {
-                                $task->save();
-                            }
-                            break;
-                        case 'BOUNDARY_TIMER_EVENT':
-                            $executed = $this->executeBoundaryTimerEvent($task, $config);
-                            $task->last_execution = $today->format('Y-m-d H:i:s');
-                            if ($executed) {
-                                $task->save();
-                            }
-                            break;
-                        default:
-                            throw new Exception('Unknown timer event: ' . $task->type);
+                    if ($lastExecution === null) {
+                        continue;
                     }
+                    $owner = $task->processRequestToken ?: $task->processRequest ?: $task->process;
+                    $ownerDateTime = $owner->created_at;
+                    $nextDate = $this->nextDate($today, $config, $lastExecution, $ownerDateTime);
+
+                    // if no execution date exists we go to the next task
+                    if (empty($nextDate)) {
+                        continue;
+                    }
+
+                    // Since the task scheduler has a presition of 1 minute (crontab)
+                    // the times must be rounded or trucated to the nearest HH:MM:00 before compare
+                    $method = config('app.timer_events_seconds') . 'DateTime';
+                    $todayWithoutSeconds = $this->$method($today);
+                    $nextDateWithoutSeconds = $this->$method($nextDate);
+                    if ($nextDateWithoutSeconds <= $todayWithoutSeconds) {
+                        switch ($task->type) {
+                            case 'TIMER_START_EVENT':
+                                $this->executeTimerStartEvent($task, $config);
+                                $task->last_execution = $today->format('Y-m-d H:i:s');
+                                $task->save();
+                                break;
+                            case 'INTERMEDIATE_TIMER_EVENT':
+                                $executed = $this->executeIntermediateTimerEvent($task, $config);
+                                $task->last_execution = $today->format('Y-m-d H:i:s');
+                                if ($executed) {
+                                    $task->save();
+                                }
+                                break;
+                            case 'BOUNDARY_TIMER_EVENT':
+                                $executed = $this->executeBoundaryTimerEvent($task, $config);
+                                $task->last_execution = $today->format('Y-m-d H:i:s');
+                                if ($executed) {
+                                    $task->save();
+                                }
+                                break;
+                            default:
+                                throw new Exception('Unknown timer event: ' . $task->type);
+                        }
+                    }
+                } catch(\Throwable $ex) {
+                    Log::Error("Failed Scheduled Task: ", [
+                        'Task data' => print_r($task->getAttributes(), true),
+                        'Exception' => $ex->__toString()
+                    ]);
                 }
             }
         } catch (PDOException $e) {
