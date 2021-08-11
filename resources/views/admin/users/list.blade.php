@@ -63,7 +63,7 @@
                 </div>
                 <div class="form-group">
                     {!!Form::label('status', __('Status'));!!}<small class="ml-1">*</small>
-                    {!!Form::select('size',[null => __('Select')]+['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], 'Active',
+                    {!!Form::select('status',[null => __('Select')]+['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], 'Active',
                     [
                     'class'=> 'form-control', 'v-model'=> 'config.status',
                     'v-bind:class' => '{\'form-control\':true, \'is-invalid\':config.addError.status}']);!!}
