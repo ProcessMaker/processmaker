@@ -74,7 +74,7 @@
                                 <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
                                 </div>
                             </div>
-                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id" ref="categorySelect">
+                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
                             </category-select>
                         </div>
                     @else
@@ -129,8 +129,8 @@
                   title: null,
                   type: '',
                   description: null,
+                  screen_category_id: '',
                 });
-                this.$refs.categorySelect.resetUncategorized();
               },
               resetErrors() {
                 this.errors = Object.assign({}, {
