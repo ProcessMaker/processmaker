@@ -34,7 +34,7 @@
         </b-form-group>
         <category-select :label="$t('Category')" api-get="process_categories"
           api-list="process_categories" v-model="process_category_id"
-          :errors="addError.process_category_id" ref="categorySelect"
+          :errors="addError.process_category_id"
         ></category-select>
         <b-form-group
           :label="$t('Upload BPMN File (optional)')"
@@ -104,7 +104,6 @@
         this.addError = {};
         this.selectedFile = '';
         this.file = null;
-        this.$refs.categorySelect.resetUncategorized();
       },
       onSubmit () {
         this.errors = Object.assign({}, {

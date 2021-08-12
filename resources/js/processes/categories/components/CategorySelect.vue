@@ -14,7 +14,9 @@
                  :searchable="true"
                  :internal-search="false"
                  @open="load()"
-                 @search-change="load">
+                 @search-change="load"
+                 @select="(selected) => this.lastSelectedId = selected.id"
+                 >
       <template slot="noResult">
         {{ $t('No elements found. Consider changing the search query.') }}
       </template>
@@ -40,7 +42,8 @@
         loading: false,
         options: [],
         error: '',
-        uncategorizedIdSet: false
+        uncategorizedCategory: null,
+        lastSelectedId: null,
       };
     },
     computed: {
@@ -48,35 +51,37 @@
     },
     watch: {
       content: {
-        handler(value) {
+        handler() {
+          this.setUncategorizedDefault();
           this.$emit("input", this.content instanceof Array ? this.content.map(item => item.id).join(',') : (this.content ? this.content.id : ''));
           this.$emit("update:duplicateScreenCategory", this.content);
         }
       },
       value: {
-        immediate: true,
-        handler(value) {
-          if (!value) {
-            this.load();
-          }
-          if (value) {
-            const content = [];
-            const selected = String(value).split(',');
-            this.loading = selected.length;
-            selected.forEach(category => {
-              this.getOptionData(category, content);
-            });
-          } else {
-            this.content.splice(0);
-          }
+        handler() {
+          this.setUpOptions();
         },
       }
     },
     methods: {
+      setUpOptions() {
+        if (this.value) {
+          const content = [];
+          const selected = String(this.value).split(',');
+          this.loading = selected.length;
+          selected.forEach(category => {
+            this.getOptionData(category, content);
+          });
+        } else {
+          this.content.splice(0);
+          this.setUncategorizedDefault();
+        }
+      },
       completeSelectedLoading(content) {
         this.loading = false;
         this.content.splice(0);
         this.content.push(...content);
+        this.setUncategorizedDefault();
       },
       getOptionData(id, content) {
         const option = this.options.concat(this.content).find(item => item.id == id);
@@ -102,7 +107,6 @@
           });
       },
       load(filter) {
-        this.loadUncategorized();
         ProcessMaker.apiClient
           .get(this.apiList + "?order_direction=asc&status=active" + (typeof filter === 'string' ? '&filter=' + filter : ''))
           .then(response => {
@@ -114,20 +118,43 @@
           });
       },
       loadUncategorized() {
-        if (this.uncategorizedIdSet) {
-          return;
-        }
-        ProcessMaker.apiClient
+        return ProcessMaker.apiClient
           .get(this.apiList + "?filter=Uncategorized&per_page=1&order_by=id&order_direction=ASC")
           .then(response => {
-            this.content = response.data.data;
-            this.uncategorizedIdSet = true;
+            this.uncategorizedCategory = response.data.data[0];
           });
       },
-      resetUncategorized() {
-        this.uncategorizedIdSet = false;
-        this.loadUncategorized();
-      }
+      setUncategorizedDefault() {
+        if (!this.uncategorizedCategory) {
+          return;
+        }
+
+        if (this.content.length === 0) {
+          // No categories so give it the Uncategorized category
+          this.content.push(this.uncategorizedCategory);
+          return;
+        }
+
+        if (this.lastSelectedId === this.uncategorizedCategory.id) {
+          // The user picked Uncategorized so remove all other categories
+          this.lastSelectedId = null;
+          this.content = [this.uncategorizedCategory];
+          return;
+        }
+
+        const uncategorizedCategoryIndex = this.content.findIndex(c => {
+          return c.id === this.uncategorizedCategory.id;
+        });
+        if (uncategorizedCategoryIndex >= 0 && this.content.length > 1) {
+          // The use picked a category so remove Uncategorized
+          this.content.splice(uncategorizedCategoryIndex, 1);
+        }
+      },
+    },
+    mounted() {
+      this.loadUncategorized().then(() => {
+        this.setUpOptions();
+      });
     }
   };
 </script>
