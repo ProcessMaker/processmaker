@@ -75,6 +75,7 @@
   "Assign Call Activity": "Assign Call Activity",
   "Assign Start Event": "Assign Start Event",
   "Assign task": "Assign task",
+  "Assign data source watcher in :screen": "Assign data source watcher in :screen",
   "Assign user to task": "Assign user to task",
   "Assign": "Assign",
   "Assigned Group": "Assigned Group",
@@ -1520,5 +1521,6 @@
   "Out of Office": "Out of Office",
   "Scheduled": "Scheduled",
   "Lock User Assignment": "Lock User Assignment",
-  "Assignee Manager Escalation": "Assignee Manager Escalation"
+  "Assignee Manager Escalation": "Assignee Manager Escalation",
+  "Data Sources Package not installed.": "Data Sources Package not installed."
 }

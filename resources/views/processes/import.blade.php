@@ -164,6 +164,31 @@
                                                         {{ __('No Data Available') }}
                                                     </template>
                                                 </multiselect>
+                                                <multiselect v-model="item.value"
+                                                             placeholder="{{__('Type to search')}}"
+                                                             :options="dataSources"
+                                                             :multiple="false"
+                                                             track-by="id"
+                                                             :show-labels="false"
+                                                             :searchable="true"
+                                                             :internal-search="false"
+                                                             label="name"
+                                                             v-if="item.type == 'watcherDataSource'"
+                                                             @search-change="loadDataSources($event)"
+                                                             @open="loadDataSources(null)"
+                                                             class="assignable-input">
+                                                    <template slot="noResult" >
+                                                        {{ __('No elements found. Consider changing the search query.') }}
+                                                    </template>
+                                                    <template slot="noOptions" >
+                                                        <template v-if="!dataSourcesInstalled">
+                                                          {{ __('Data Sources Package not installed.') }}
+                                                        </template>
+                                                        <template v-else>
+                                                          {{ __('No Data Available') }}
+                                                        </template>
+                                                    </template>
+                                                </multiselect>
                                             </td>
                                         </tr>
                                         <tr>
@@ -350,6 +375,8 @@
           cancelRequest: [],
           processEditData: [],
           importingCode: importingCode ? importingCode[1] : null,
+          dataSources: [],
+          dataSourcesInstalled: true,
         },
         filters: {
           titleCase: function (value) {
@@ -439,6 +466,17 @@
                       });
                     });
                   });
+                });
+          },
+          loadDataSources(filter) {
+            filter =
+              ProcessMaker.apiClient
+                .get("data_sources?order_by=name&order_direction=asc" + (typeof filter === 'string' ? '&filter=' + filter : ''))
+                .then(response => {
+                  this.dataSources = response.data.data;
+                }).catch(error => {
+                  this.dataSources = [];
+                  this.dataSourcesInstalled = false;
                 });
           },
           formatAssignee(data) {

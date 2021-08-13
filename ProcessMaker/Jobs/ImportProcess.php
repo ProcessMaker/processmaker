@@ -231,6 +231,7 @@ class ImportProcess implements ShouldQueue
         $this->parseAssignableTasks();
         $this->parseAssignableCallActivity();
         $this->parseAssignableScripts();
+        $this->parseAssignableWatchers();
 
         if (!$this->assignable->count()) {
             $this->assignable = null;
@@ -332,6 +333,35 @@ class ImportProcess implements ShouldQueue
                 'prefix' => __('Run script'),
                 'suffix' => __('as'),
             ]);
+        }
+    }
+    
+    /**
+     * Look for any watchers in screens and add them to the assignable list.
+     *
+     * @return void
+     */
+    private function parseAssignableWatchers()
+    {
+        foreach ($this->new[Screen::class] as $screen) {
+
+            if (empty($screen->watchers)) {
+                continue;
+            }
+
+            foreach ($screen->watchers as $index => $watcher) {
+                $refParts = explode('-', $watcher['script']['id']);
+                if ($refParts[0] !== 'data_source') {
+                    continue;
+                }
+                $this->assignable[] = (object) [
+                    'type' => 'watcherDataSource',
+                    'id' => strval($screen->id) . "|" . strval($index),
+                    'name' => $watcher['name'],
+                    'prefix' => __('Assign data source watcher in :screen', ['screen' => $screen->title]),
+                    'suffix' => __('to'),
+                ];
+            }
         }
     }
 

@@ -19,6 +19,7 @@ use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Jobs\ExportProcess;
 use ProcessMaker\Jobs\ImportProcess;
+use ProcessMaker\Models\Screen;
 use ProcessMaker\Nayra\Bpmn\Models\TimerEventDefinition;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Nayra\Exceptions\ElementNotFoundException;
@@ -856,12 +857,15 @@ class ProcessController extends Controller
             //Update assignments in scripts
             $xmlAssignable = [];
             $callActivity = [];
+            $watcherDataSources = [];
             foreach ($assignable as $assign) {
                 if ($assign['type'] === 'script' && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
                     Script::where('id', $assign['id'])
                         ->update(['run_as_user_id' => $assign['value']['id']]);
                 } elseif ($assign['type'] === 'callActivity') {
                     $callActivity[] = $assign;
+                } elseif ($assign['type'] === 'watcherDataSource') {
+                    $watcherDataSources[] = $assign;
                 } else {
                     $xmlAssignable[] = $assign;
                 }
@@ -905,6 +909,21 @@ class ProcessController extends Controller
                         }
                     }
                 }
+            }
+
+            // Update data source watchers
+            foreach ($watcherDataSources as $watcherDataSource) {
+                $parts = explode("|", $watcherDataSource['id']);
+                $screenId = $parts[0];
+                $watcherIndex = intval($parts[1]);
+                $screen = Screen::findOrFail($screenId);
+                $watchers = $screen->watchers;
+                $watchers[$watcherIndex]['script_id'] = $watcherDataSource['value']['id'];
+                $watchers[$watcherIndex]['script'] = $watcherDataSource['value'];
+                $watchers[$watcherIndex]['script']['id'] = 'data_source-' . strval($watcherDataSource['value']['id']);
+                $watchers[$watcherIndex]['script']['title'] = $watcherDataSource['value']['name'];
+                $screen->watchers = $watchers;
+                $screen->saveOrFail();
             }
 
             $process->bpmn = $definitions->saveXML();
