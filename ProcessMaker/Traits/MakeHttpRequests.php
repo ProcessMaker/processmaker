@@ -98,12 +98,12 @@ trait MakeHttpRequests
      * @param array $requestData
      * @param array $outboundConfig
      * @param string $type PARAM HEADER BODY
+     * @param array $data initial data
      *
      * @return array
      */
-    private function prepareData(array $requestData, array $outboundConfig, $type)
+    private function prepareData(array $requestData, array $outboundConfig, $type, $data = [])
     {
-        $data = $requestData;
         foreach ($outboundConfig as $outbound) {
             if ($outbound['type'] === $type) {
                 // Default format for mapping input is { Mustache }
@@ -176,13 +176,12 @@ trait MakeHttpRequests
             : true;
 
         // Prepare URL
-        $data = $this->prepareData($requestData, $outboundConfig, 'PARAM');
-        $method = $this->evalMustache($endpoint['method'], $data);
-        $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $data);
+        $params = $this->prepareData($requestData, $outboundConfig, 'PARAM');
+        $method = $this->evalMustache($endpoint['method'], $requestData);
+        $url = $this->addQueryStringsParamsToUrl($endpoint, $config, $requestData, $params);
 
         // Prepare Headers
-        $data = $this->prepareData($requestData, $outboundConfig, 'HEADER');
-        $headers = $this->addHeaders($endpoint, $config, $data);
+        $headers = $this->addHeaders($endpoint, $config, $requestData);
 
         // Prepare Body
         $data = $this->prepareData($requestData, $outboundConfig, 'BODY');
@@ -379,16 +378,20 @@ trait MakeHttpRequests
                 $value = $this->addCollectionsRootObject($value);
             }
 
-            // Default format for mapping response is FEEL unless $value contains {{}}
-            $format = $map['format'] ?? (str_contains($value, '{{') ? 'mustache' : 'feel');
+            $format = $map['format'] ?? 'dotNotation';
             if ($format === 'mustache') {
                 $evaluatedApiVar = $this->evalMustache($map['value'], $merged);
-            } else {
+            } elseif ($format === 'feel') {
                 $evaluatedApiVar = $this->evalExpression($map['value'], $merged);
+            } else { // dot notation + mustache. eg `data.users{{index}}.attributes.firstname`
+                if ($map['value']) {
+                    $evaluatedApiVar = Arr::get($merged, $this->evalMustache($map['value'], $merged), '');
+                } else {
+                    $evaluatedApiVar = $content;
+                }
             }
             $mapped[$processVar] = $evaluatedApiVar;
         }
-
         return $mapped;
     }
 
@@ -421,10 +424,11 @@ trait MakeHttpRequests
      * @param $endpoint
      * @param array $config
      * @param array $data
+     * @param array $params
      *
      * @return string
      */
-    private function addQueryStringsParamsToUrl($endpoint, array $config, array $data)
+    private function addQueryStringsParamsToUrl($endpoint, array $config, array $data, array $params = [])
     {
         // Note that item['key'] corresponds to an endpoint property (in the header, querystring, etc.)
         //           item['value'] corresponds to a PM request variable or mustache expression
@@ -436,14 +440,8 @@ trait MakeHttpRequests
             $url = url($url);
         }
 
-        // If exists a query string in the call, add it to the URL
-        if (array_key_exists('queryString', $config)) {
-            $separator = strpos($url, '?') ? '&' : '?';
-            $url .= $separator . $config['queryString'];
-        }
-
         // Evaluate mustache expressions in URL
-        $url = $this->evalMustache($url, $data);
+        $url = $this->evalMustache($url, array_merge($data, $params));
         // Add params from datasource configuration
         $parsedUrl = $this->parseUrl($url);
         $query = [];
@@ -451,12 +449,20 @@ trait MakeHttpRequests
         if (array_key_exists('params', $endpoint)) {
             foreach ($endpoint['params'] as $param) {
                 $key = $this->evalMustache($param['key'], $data);
-                $value = $this->evalMustache($param['value'], $data);
+                // Get value from outbound configuration, if not defined get the default value
+                $value = $params[$key] ?? $this->evalMustache($param['value'], $data);
                 if ($value !== '' || $param['required']) {
                     $query[$key] = $value;
                 }
             }
         }
+
+        // If exists a query string in the call, add/replace it into the URL
+        if (array_key_exists('queryString', $config)) {
+            parse_str($config['queryString'], $fromSelectListPmql);
+            $query = array_merge($query, $fromSelectListPmql);
+        }
+
         $parsedUrl['query'] = http_build_query($query);
         $url = $this->unparseUrl($parsedUrl);
         return $url;
@@ -579,7 +585,7 @@ trait MakeHttpRequests
         $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
         $pass     = ($user || $pass) ? "$pass@" : '';
         $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $query    = !empty($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
         $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
