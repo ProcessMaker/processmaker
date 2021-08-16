@@ -148,13 +148,14 @@ class ExportImportTest extends TestCase
         });
         $this->assertEquals($assignable['id'], strval($this->screen02->id) . "|0");
 
-        $assignable['value'] = ['id' => 123];
+        $assignable['value'] = ['id' => 123, 'name' => 'data source name'];
         $response = $this->apiCall('POST', route('api.processes.import.assignments', [$this->process]), [
             "assignable" => [$assignable],
         ]);
 
         $updatedWatcher = $this->screen02->refresh()->watchers[0];
         $this->assertEquals('data_source-123', $updatedWatcher['script']['id']);
+        $this->assertEquals('data source name', $updatedWatcher['script']['title']);
         $this->assertEquals(123, $updatedWatcher['script_id']);
         $this->assertEquals('package-data-sources/data-source-task-service', $updatedWatcher['script_key']);
     }
