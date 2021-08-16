@@ -72,6 +72,7 @@
   "Assign Call Activity": "Assign Call Activity",
   "Assign Start Event": "Assign Start Event",
   "Assign task": "Assign task",
+  "Assign data source watcher in :screen": "Assign data source watcher in :screen",
   "Assign user to task": "Assign user to task",
   "Assign": "Assign",
   "Assigned Group": "Assigned Group",
@@ -1438,5 +1439,6 @@
   "No Request Data": "No Request Data",
   "Specify Request Variable": "Specify Data Variable",
   "Specify Expression": "Specify Expression",
-  "You must claim the task before you can complete it.": "You must claim the task before you can complete it."
+  "You must claim the task before you can complete it.": "You must claim the task before you can complete it.",
+  "Data Sources Package not installed.": "Data Sources Package not installed."
 }

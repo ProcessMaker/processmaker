@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Faker\Factory as Faker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Arr;
 use phpDocumentor\Reflection\PseudoType;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
@@ -44,6 +45,7 @@ class ExportImportTest extends TestCase
         // Create a pre-existing screen and script
         factory(Screen::class, 1)->create(['title' => 'Existing Screen']);
         factory(Script::class, 1)->create(['title' => 'Existing Script']);
+        factory(Script::class, 1)->create(['title' => 'Watcher Script']); // To check if '2' is appended to title
 
         // Assert that they now exist
         $this->assertDatabaseHas('screens', ['title' => 'Existing Screen']);
@@ -74,6 +76,7 @@ class ExportImportTest extends TestCase
         // Check screen refs & script refs
         $this->checkScreenRefs();
         $this->checkScriptRefs();
+        $this->checkWatchers($response);
     }
 
     /**
@@ -128,6 +131,33 @@ class ExportImportTest extends TestCase
                 $this->assertEquals($map[$name], $scriptRef);
             }
         }
+    }
+
+    private function checkWatchers($response)
+    {
+        $newWatcherScript = Script::where('title', 'Watcher Script 2')->firstOrFail();
+        $scriptWatcherConfig = $this->screen02->watchers[1];
+
+        $this->assertEquals('script-' . $newWatcherScript->id, $scriptWatcherConfig['script']['id']);
+        $this->assertEquals($newWatcherScript->id, $scriptWatcherConfig['script_id']);
+        $this->assertEquals(null, $scriptWatcherConfig['script_key']);
+        $this->assertEquals($newWatcherScript->title, $scriptWatcherConfig['script']['title']);
+
+        $assignable = Arr::first($response->json()['assignable'], function($a) {
+            return $a['type'] === 'watcherDataSource';
+        });
+        $this->assertEquals($assignable['id'], strval($this->screen02->id) . "|0");
+
+        $assignable['value'] = ['id' => 123, 'name' => 'data source name'];
+        $response = $this->apiCall('POST', route('api.processes.import.assignments', [$this->process]), [
+            "assignable" => [$assignable],
+        ]);
+
+        $updatedWatcher = $this->screen02->refresh()->watchers[0];
+        $this->assertEquals('data_source-123', $updatedWatcher['script']['id']);
+        $this->assertEquals('data source name', $updatedWatcher['script']['title']);
+        $this->assertEquals(123, $updatedWatcher['script_id']);
+        $this->assertEquals('package-data-sources/data-source-task-service', $updatedWatcher['script_key']);
     }
 
     /**
