@@ -27,6 +27,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        $schedule->call(function() {
+            $scheduleManager = new TaskSchedulerManager();
+            $scheduleManager->evaluateConditionals();
+        })->everyMinute();
         $schedule->command('bpmn:timer')
             ->everyMinute()
             ->onOneServer();

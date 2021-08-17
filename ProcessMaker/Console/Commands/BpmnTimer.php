@@ -30,6 +30,5 @@ class BpmnTimer extends Command
     {
         $scheduleManager = new TaskSchedulerManager();
         $scheduleManager->scheduleTasks();
-        $scheduleManager->evaluateConditionals();
     }
 }
