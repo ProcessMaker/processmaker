@@ -587,8 +587,8 @@ export default {
       }
       this.mode = mode;
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
+      this.rendererKey++;
       if (mode == 'preview') {
-        this.rendererKey++;
         this.preview.config = cloneDeep(this.config);
         this.preview.computed = cloneDeep(this.computed);
         this.preview.customCSS = cloneDeep(this.customCSS);
