@@ -51,7 +51,7 @@
                                     ])
                                 !!}
                                 <small class="form-text text-muted"
-                                       v-if="! errors.name">{{ __('The process name must be distinct.') }}</small>
+                                       v-if="! errors.name">{{ __('The process name must be unique.') }}</small>
                                 <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
                             </div>
                             <div class="form-group">

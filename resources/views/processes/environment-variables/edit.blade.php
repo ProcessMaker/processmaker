@@ -24,7 +24,7 @@
                         {!!Form::label('name', __('Name')  . '<small class="ml-1">*</small>', [], false)!!}
                         {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'formData.name',
                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                        <small class="form-text text-muted" v-if="! errors.name">{{__('The environment variable name must be distinct.') }}</small>
+                        <small class="form-text text-muted" v-if="! errors.name">{{__('The environment variable name must be unique.') }}</small>
                         <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
                     </div>
                     <div class="form-group">
