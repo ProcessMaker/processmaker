@@ -32,7 +32,7 @@
 
           <h3>
             <i :class="icon(task)"></i>
-            <a class="text-info" v-bind:href="task.url" @click.stop="remove(task)">{{task.name}}</a>
+            <a class="text-info" href="#" @click.stop="remove(task, task.url)">{{task.name}}</a>
           </h3>
           <div class="muted">
             {{task.processName}}
@@ -103,11 +103,15 @@ export default {
           });
         });
     },
-    remove(message) {
-      ProcessMaker.removeNotifications([message.id]);
-      if (this.totalMessages > 0) {
-        this.totalMessages--;
-      }
+    remove(message, redirectTo = null) {
+      ProcessMaker.removeNotifications([message.id]).then(() => {
+        if (this.totalMessages > 0) {
+          this.totalMessages--;
+        }
+        if (redirectTo) {
+          window.location.href = redirectTo
+        }
+      });
     },
     formatDateTime(iso8601) {
       return moment(iso8601).format("MM/DD/YY HH:mm");
