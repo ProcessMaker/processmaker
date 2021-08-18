@@ -28,7 +28,7 @@
             <li class="py-2 border-bottom" v-for="(task, index) in messages" :key="`message-${index}`">
               <div v-if="index <= 5">
                 <div>
-                  <a class="notification-link text-primary" :href="url(task)" @click.stop="remove(task)">{{task.name}}</a>
+                  <a class="notification-link text-primary" href="#" @click.stop="remove(task, task.url)">{{task.name}}</a>
                   <div class="text-muted" v-if="task.processName && task.userName">
                     {{task.processName}}
                     <br>
@@ -147,11 +147,15 @@ export default {
           });
         });
     },
-    remove(message) {
-      ProcessMaker.removeNotifications([message.id]);
-      if (this.totalMessages > 0) {
-        this.totalMessages--;
-      }
+    remove(message, redirectTo = null) {
+      ProcessMaker.removeNotifications([message.id]).then(() => {
+        if (this.totalMessages > 0) {
+          this.totalMessages--;
+        }
+        if (redirectTo) {
+          window.location.href = redirectTo
+        }
+      });
     },
     formatDateTime(iso8601) {
       return moment(iso8601).format("MM/DD/YY HH:mm");
