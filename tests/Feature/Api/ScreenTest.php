@@ -374,7 +374,7 @@ class ScreenTest extends TestCase
 
         $params['screen_category_id'] = '';
         $response = $this->apiCall('POST', $url, $params);
-        $this->assertEquals('The screen category id field is required.', $err($response));
+        $this->assertEquals('The Screen category id field is required.', $err($response));
 
         $category1 = factory(ScreenCategory::class)->create(['status' => 'ACTIVE']);
         $category2 = factory(ScreenCategory::class)->create(['status' => 'ACTIVE']);
