@@ -44,7 +44,7 @@
                             'maxlength' => '255',
                             'v-model' => 'formData.name',
                             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-                            <small class="form-text text-muted">{{__('Group name must be distinct')}}</small>
+                            <small class="form-text text-muted">{{__('Group name must be unique')}}</small>
                             <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                         </div>
                         <div class="form-group mt-3">

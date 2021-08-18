@@ -4,8 +4,149 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3dc3bc9d7fb96001e19840502b64056c",
+    "content-hash": "852fd7f84956cea0291bf1b37bad7a36",
     "packages": [
+        {
+            "name": "aws/aws-crt-php",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/awslabs/aws-crt-php.git",
+                "reference": "3942776a8c99209908ee0b287746263725685732"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/awslabs/aws-crt-php/zipball/3942776a8c99209908ee0b287746263725685732",
+                "reference": "3942776a8c99209908ee0b287746263725685732",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35|^5.4.3"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "AWS SDK Common Runtime Team",
+                    "email": "aws-sdk-common-runtime@amazon.com"
+                }
+            ],
+            "description": "AWS Common Runtime for PHP",
+            "homepage": "http://aws.amazon.com/sdkforphp",
+            "keywords": [
+                "amazon",
+                "aws",
+                "crt",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/awslabs/aws-crt-php/issues",
+                "source": "https://github.com/awslabs/aws-crt-php/tree/v1.0.2"
+            },
+            "time": "2021-09-03T22:57:30+00:00"
+        },
+        {
+            "name": "aws/aws-sdk-php",
+            "version": "3.193.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aws/aws-sdk-php.git",
+                "reference": "5294e06519479b9f41d6e18a88d077c4837a58ff"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/5294e06519479b9f41d6e18a88d077c4837a58ff",
+                "reference": "5294e06519479b9f41d6e18a88d077c4837a58ff",
+                "shasum": ""
+            },
+            "require": {
+                "aws/aws-crt-php": "^1.0.2",
+                "ext-json": "*",
+                "ext-pcre": "*",
+                "ext-simplexml": "*",
+                "guzzlehttp/guzzle": "^5.3.3|^6.2.1|^7.0",
+                "guzzlehttp/promises": "^1.4.0",
+                "guzzlehttp/psr7": "^1.7.0",
+                "mtdowling/jmespath.php": "^2.6",
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "andrewsville/php-token-reflection": "^1.4",
+                "aws/aws-php-sns-message-validator": "~1.0",
+                "behat/behat": "~3.0",
+                "doctrine/cache": "~1.4",
+                "ext-dom": "*",
+                "ext-openssl": "*",
+                "ext-pcntl": "*",
+                "ext-sockets": "*",
+                "nette/neon": "^2.3",
+                "paragonie/random_compat": ">= 2",
+                "phpunit/phpunit": "^4.8.35|^5.4.3",
+                "psr/cache": "^1.0",
+                "psr/simple-cache": "^1.0",
+                "sebastian/comparator": "^1.2.3"
+            },
+            "suggest": {
+                "aws/aws-php-sns-message-validator": "To validate incoming SNS notifications",
+                "doctrine/cache": "To use the DoctrineCacheAdapter",
+                "ext-curl": "To send requests using cURL",
+                "ext-openssl": "Allows working with CloudFront private distributions and verifying received SNS messages",
+                "ext-sockets": "To use client-side monitoring"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Aws\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Amazon Web Services",
+                    "homepage": "http://aws.amazon.com"
+                }
+            ],
+            "description": "AWS SDK for PHP - Use Amazon Web Services in your PHP project",
+            "homepage": "http://aws.amazon.com/sdkforphp",
+            "keywords": [
+                "amazon",
+                "aws",
+                "cloud",
+                "dynamodb",
+                "ec2",
+                "glacier",
+                "s3",
+                "sdk"
+            ],
+            "support": {
+                "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
+                "issues": "https://github.com/aws/aws-sdk-php/issues",
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.193.1"
+            },
+            "time": "2021-09-09T18:28:04+00:00"
+        },
         {
             "name": "babenkoivan/elastic-adapter",
             "version": "v1.13.0",
@@ -3478,6 +3619,67 @@
             "time": "2020-01-05T04:49:34+00:00"
         },
         {
+            "name": "mtdowling/jmespath.php",
+            "version": "2.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jmespath/jmespath.php.git",
+                "reference": "9b87907a81b87bc76d19a7fb2d61e61486ee9edb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jmespath/jmespath.php/zipball/9b87907a81b87bc76d19a7fb2d61e61486ee9edb",
+                "reference": "9b87907a81b87bc76d19a7fb2d61e61486ee9edb",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 || ^7.0 || ^8.0",
+                "symfony/polyfill-mbstring": "^1.17"
+            },
+            "require-dev": {
+                "composer/xdebug-handler": "^1.4 || ^2.0",
+                "phpunit/phpunit": "^4.8.36 || ^7.5.15"
+            },
+            "bin": [
+                "bin/jp.php"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.6-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "JmesPath\\": "src/"
+                },
+                "files": [
+                    "src/JmesPath.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Declaratively specify how to extract elements from a JSON document",
+            "keywords": [
+                "json",
+                "jsonpath"
+            ],
+            "support": {
+                "issues": "https://github.com/jmespath/jmespath.php/issues",
+                "source": "https://github.com/jmespath/jmespath.php/tree/2.6.1"
+            },
+            "time": "2021-06-14T00:11:39+00:00"
+        },
+        {
             "name": "mustache/mustache",
             "version": "v2.13.0",
             "source": {
@@ -4181,6 +4383,69 @@
             "time": "2015-12-19T14:08:53+00:00"
         },
         {
+            "name": "php-imap/php-imap",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barbushin/php-imap.git",
+                "reference": "1df5b8b17527829a990475292b6794f06aaa4843"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barbushin/php-imap/zipball/1df5b8b17527829a990475292b6794f06aaa4843",
+                "reference": "1df5b8b17527829a990475292b6794f06aaa4843",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "ext-iconv": "*",
+                "ext-imap": "*",
+                "ext-mbstring": "*",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16",
+                "jakub-onderka/php-parallel-lint": "^1.0",
+                "paragonie/random_compat": "^1",
+                "phpunit/phpunit": "^5.7"
+            },
+            "suggest": {
+                "ext-fileinfo": "To facilitate IncomingMailAttachment::getMimeType() auto-detection"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PhpImap\\": "src/PhpImap"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Barbushin",
+                    "email": "barbushin@gmail.com",
+                    "homepage": "http://linkedin.com/in/barbushin"
+                }
+            ],
+            "description": "Manage mailboxes, filter/get/delete emails in PHP (supports IMAP/POP3/NNTP)",
+            "homepage": "https://github.com/barbushin/php-imap",
+            "keywords": [
+                "imap",
+                "mail",
+                "mailbox",
+                "php",
+                "pop3",
+                "receive emails"
+            ],
+            "support": {
+                "issues": "https://github.com/barbushin/php-imap/issues",
+                "source": "https://github.com/barbushin/php-imap/tree/master"
+            },
+            "time": "2020-04-10T11:43:19+00:00"
+        },
+        {
             "name": "phpoption/phpoption",
             "version": "1.7.5",
             "source": {
@@ -4544,6 +4809,49 @@
             "time": "2021-04-04T19:34:46+00:00"
         },
         {
+            "name": "processmaker/connector-send-email",
+            "version": "1.9.2",
+            "dist": {
+                "type": "path",
+                "url": "/Users/nolan/src/pm-packages/ProcessMaker/connector-send-email",
+                "reference": "0a703acca6352a2db9f997b9af92056463583a13"
+            },
+            "require": {
+                "aws/aws-sdk-php": "^3.183",
+                "mustache/mustache": "^2.12.0",
+                "wildbit/swiftmailer-postmark": "^3.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Packages\\Connectors\\Email\\PluginServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Packages\\Connectors\\Email\\": "src/",
+                    "ProcessMaker\\ScriptRunners\\": "tests/ScriptRunners/",
+                    "ProcessMaker\\Packages\\Connectors\\Email\\Seeds\\": "database/seeds"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": []
+            },
+            "authors": [
+                {
+                    "name": "ProcessMaker 4 Development Team",
+                    "email": "support@processmaker.com"
+                }
+            ],
+            "description": "ProcessMaker BPM Connectors that provide Email service",
+            "transport-options": {
+                "symlink": true,
+                "relative": false
+            }
+        },
+        {
             "name": "processmaker/docker-executor-lua",
             "version": "1.0.0",
             "source": {
@@ -4743,6 +5051,88 @@
                 "source": "https://github.com/ProcessMaker/nayra/tree/v1.6.0"
             },
             "time": "2021-07-15T15:00:07+00:00"
+        },
+        {
+            "name": "processmaker/package-actions-by-email",
+            "version": "1.3.0",
+            "dist": {
+                "type": "path",
+                "url": "/Users/nolan/src/pm-packages/ProcessMaker/package-actions-by-email",
+                "reference": "ab021229eea9a7911e0a4fa03c7ebfd6d7d97d14"
+            },
+            "require": {
+                "mustache/mustache": "^2.12.0",
+                "php-imap/php-imap": "^3.0",
+                "processmaker/connector-send-email": "^1.1.16"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Packages\\Connectors\\ActionsByEmail\\PluginServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Packages\\Connectors\\ActionsByEmail\\": "src/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": []
+            },
+            "authors": [
+                {
+                    "name": "ProcessMaker 4 Development Team",
+                    "email": "support@processmaker.com"
+                }
+            ],
+            "description": "ProcessMaker Connector for Actions By Email",
+            "transport-options": {
+                "symlink": true,
+                "relative": false
+            }
+        },
+        {
+            "name": "processmaker/package-webentry",
+            "version": "2.3.0",
+            "dist": {
+                "type": "path",
+                "url": "/Users/nolan/src/pm-packages/ProcessMaker/package-webentry",
+                "reference": "864ac98f6f2111d521efbfcf9149876e00dbf648"
+            },
+            "require-dev": {
+                "processmaker/processmaker": "^4.1"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "ProcessMaker\\Package\\WebEntry\\WebEntryServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ProcessMaker\\Package\\WebEntry\\": "src",
+                    "TestHelpers\\": "tests/Helpers"
+                }
+            },
+            "authors": [
+                {
+                    "name": "Nolan Ehrstrom",
+                    "email": "nolan.ehrstrom@processmaker.com"
+                },
+                {
+                    "name": "Dante Loayza",
+                    "email": "dante.loayza@processmaker.com"
+                }
+            ],
+            "description": "Provide to end users the ability to complete tasks from outside the core system",
+            "transport-options": {
+                "symlink": true,
+                "relative": false
+            }
         },
         {
             "name": "processmaker/pmql",
@@ -9004,6 +9394,50 @@
                 "source": "https://github.com/WhichBrowser/Parser-PHP/tree/v2.1.1"
             },
             "time": "2021-01-04T16:36:15+00:00"
+        },
+        {
+            "name": "wildbit/swiftmailer-postmark",
+            "version": "3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wildbit/swiftmailer-postmark.git",
+                "reference": "44ccab7834de8b220d292647ecb2cb683f9962ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wildbit/swiftmailer-postmark/zipball/44ccab7834de8b220d292647ecb2cb683f9962ee",
+                "reference": "44ccab7834de8b220d292647ecb2cb683f9962ee",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.0|^7.0",
+                "swiftmailer/swiftmailer": "^6.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Postmark\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Postmark",
+                    "email": "support@postmarkapp.com"
+                }
+            ],
+            "description": "A Swiftmailer Transport for Postmark.",
+            "support": {
+                "issues": "https://github.com/wildbit/swiftmailer-postmark/issues",
+                "source": "https://github.com/wildbit/swiftmailer-postmark/tree/3.3.0"
+            },
+            "time": "2020-09-10T10:54:20+00:00"
         },
         {
             "name": "zircote/swagger-php",
