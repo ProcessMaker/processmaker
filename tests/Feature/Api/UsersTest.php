@@ -402,7 +402,7 @@ class UsersTest extends TestCase
         ]);
         //Validate the header status code
         $response->assertStatus(422);
-        $response->assertSeeText('The username has already been taken');
+        $response->assertSeeText('The Username has already been taken');
     }
 
     /**
@@ -541,7 +541,7 @@ class UsersTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The password field is required.', $json['errors']['password'][0]);
+        $this->assertEquals('The Password field is required.', $json['errors']['password'][0]);
 
         $payload['password'] = 'abc';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
