@@ -547,7 +547,7 @@ class UsersTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The password must be at least 6 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The Password must be at least 6 characters.', $json['errors']['password'][0]);
         
         $payload['password'] = 'abc123';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
@@ -561,7 +561,7 @@ class UsersTest extends TestCase
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The password must be at least 6 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The Password must be at least 6 characters.', $json['errors']['password'][0]);
         
         $payload['password'] = 'abc123';
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
