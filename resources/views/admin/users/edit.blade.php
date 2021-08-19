@@ -248,11 +248,11 @@
           return {
             meta: @json(config('users.properties')),
             formData: @json($user),
-            langs: @json($availableLangs),
-            timezones: @json($timezones),
-            datetimeFormats: @json($datetimeFormats),
-            countries: @json($countries),
-            states: @json($states),
+            langsValues: @json($availableLangs, true),
+            timezonesValues: @json($timezones, true),
+            datetimeFormatsValues: @json($datetimeFormats, true),
+            countriesValues: @json($countries, true),
+            statesValues: @json($states, true),
             userId: @json($user->id),
             image: '',
             status: @json($status),
@@ -300,6 +300,21 @@
           isCurrentUser() {
             return this.currentUserId == this.formData.id
           },
+          langs() {
+            return this.formatDataSelect(this.langsValues);
+          },
+          timezones() {
+            return this.formatDataSelect(this.timezonesValues);
+          },
+          datetimeFormats() {
+            return this.formatDataSelect(this.datetimeFormatsValues);
+          },
+          countries() {
+            return this.formatDataSelect(this.countriesValues);
+          },
+          states() {
+            return this.formatDataSelect(this.statesValues);
+          },
         },
         mounted() {
           let created = (new URLSearchParams(window.location.search)).get('created');
@@ -310,11 +325,21 @@
         watch: {
           selectedPermissions: function () {
             this.selectAll = this.areAllPermissionsSelected();
-          }
+          },
         },
         methods: {
           openAvatarModal() {
             modalVueInstance.$refs.updateAvatarModal.show();
+          },
+          formatDataSelect (objectData) {
+            let data = [];
+            for (const property in objectData) {
+              data.push({
+                value: property,
+                text: objectData[property]
+              })
+            }
+            return data;
           },
           areAllPermissionsSelected() {
             return this.selectedPermissions.length === this.permissions.length;
