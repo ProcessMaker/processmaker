@@ -1,11 +1,10 @@
 {
-
     "_readme": [
         "This file locks the dependencies of your project to a known state",
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "709e66ee228d06ee15dc8f5c2684f786",
+    "content-hash": "c490b915e21e0e34d96534aca25a209b",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -280,23 +279,23 @@
         },
         {
             "name": "darkaonline/l5-swagger",
-            "version": "6.0.6",
+            "version": "6.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DarkaOnLine/L5-Swagger.git",
-                "reference": "d0745ba413f679528fe6ba304b4095a6527f6e46"
+                "reference": "496992e73c588b76b2ccabddd6852296c29ae626"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/d0745ba413f679528fe6ba304b4095a6527f6e46",
-                "reference": "d0745ba413f679528fe6ba304b4095a6527f6e46",
+                "url": "https://api.github.com/repos/DarkaOnLine/L5-Swagger/zipball/496992e73c588b76b2ccabddd6852296c29ae626",
+                "reference": "496992e73c588b76b2ccabddd6852296c29ae626",
                 "shasum": ""
             },
             "require": {
                 "laravel/framework": "^6.0",
-                "php": "^7.2 || ^8.0",
+                "php": "^7.2",
                 "swagger-api/swagger-ui": "^3.0",
-                "symfony/yaml": "^4.1 || ^5.0",
+                "symfony/yaml": "^4.1",
                 "zircote/swagger-php": "~2.0|3.*"
             },
             "require-dev": {
@@ -342,7 +341,7 @@
             ],
             "support": {
                 "issues": "https://github.com/DarkaOnLine/L5-Swagger/issues",
-                "source": "https://github.com/DarkaOnLine/L5-Swagger/tree/6.0.6"
+                "source": "https://github.com/DarkaOnLine/L5-Swagger/tree/6.x"
             },
             "funding": [
                 {
@@ -350,7 +349,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-01-11T12:34:15+00:00"
+            "time": "2020-08-18T06:29:54+00:00"
         },
         {
             "name": "defuse/php-encryption",
@@ -3858,48 +3857,6 @@
             "time": "2021-04-09T13:42:10+00:00"
         },
         {
-            "name": "org_heigl/ghostscript",
-            "version": "2.3.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/heiglandreas/Org_Heigl_Ghostscript.git",
-                "reference": "fd73693a3f213427b585b45fa744c9cc60679f25"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/heiglandreas/Org_Heigl_Ghostscript/zipball/fd73693a3f213427b585b45fa744c9cc60679f25",
-                "reference": "fd73693a3f213427b585b45fa744c9cc60679f25",
-                "shasum": ""
-            },
-            "require-dev": {
-                "mockery/mockery": "^1.0",
-                "phpdocumentor/phpdocumentor": "^2.9",
-                "phpunit/phpunit": "^5.5||^6.0||^7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Org_Heigl\\Ghostscript\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Andreas Heigl",
-                    "email": "andreas@heigl.org"
-                }
-            ],
-            "description": "A PHP-Wrapper around the Ghostscript-CLI",
-            "support": {
-                "issues": "https://github.com/heiglandreas/Org_Heigl_Ghostscript/issues",
-                "source": "https://github.com/heiglandreas/Org_Heigl_Ghostscript/tree/2.3.2"
-            },
-            "time": "2020-09-23T05:00:00+00:00"
-        },
-        {
             "name": "paragonie/random_compat",
             "version": "v9.99.100",
             "source": {
@@ -5811,25 +5768,24 @@
         },
         {
             "name": "spatie/pdf-to-image",
-            "version": "v2.x-dev",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/pdf-to-image.git",
-                "reference": "6718a89065c34dfadfbb2ca61eb1c3e6a956e503"
+                "reference": "ea81a2d5f4fb0ca9f4c4fc0d4f8813135e993b2d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/pdf-to-image/zipball/6718a89065c34dfadfbb2ca61eb1c3e6a956e503",
-                "reference": "6718a89065c34dfadfbb2ca61eb1c3e6a956e503",
+                "url": "https://api.github.com/repos/spatie/pdf-to-image/zipball/ea81a2d5f4fb0ca9f4c4fc0d4f8813135e993b2d",
+                "reference": "ea81a2d5f4fb0ca9f4c4fc0d4f8813135e993b2d",
                 "shasum": ""
             },
             "require": {
-                "org_heigl/ghostscript": "^2.2",
-                "php": "^7.0"
+                "ext-imagick": "*",
+                "php": "^7.2|^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.2",
-                "spatie/temporary-directory": "^1.1"
+                "phpunit/phpunit": "^8.0|^9.0"
             },
             "type": "library",
             "autoload": {
@@ -5860,9 +5816,15 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/pdf-to-image/issues",
-                "source": "https://github.com/spatie/pdf-to-image/tree/v2"
+                "source": "https://github.com/spatie/pdf-to-image/tree/2.1.0"
             },
-            "time": "2017-06-20T05:58:45+00:00"
+            "funding": [
+                {
+                    "url": "https://www.patreon.com/spatie",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2020-11-12T11:27:19+00:00"
         },
         {
             "name": "spatie/temporary-directory",
@@ -8504,35 +8466,31 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v5.3.6",
+            "version": "v4.4.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "4500fe63dc9c6ffc32d3b1cb0448c329f9c814b7"
+                "reference": "3abcc4db06d4e776825eaa3ed8ad924d5bc7432a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/4500fe63dc9c6ffc32d3b1cb0448c329f9c814b7",
-                "reference": "4500fe63dc9c6ffc32d3b1cb0448c329f9c814b7",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/3abcc4db06d4e776825eaa3ed8ad924d5bc7432a",
+                "reference": "3abcc4db06d4e776825eaa3ed8ad924d5bc7432a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2.5",
-                "symfony/deprecation-contracts": "^2.1",
+                "php": ">=7.1.3",
                 "symfony/polyfill-ctype": "~1.8"
             },
             "conflict": {
-                "symfony/console": "<4.4"
+                "symfony/console": "<3.4"
             },
             "require-dev": {
-                "symfony/console": "^4.4|^5.0"
+                "symfony/console": "^3.4|^4.0|^5.0"
             },
             "suggest": {
                 "symfony/console": "For validating YAML files using the lint command"
             },
-            "bin": [
-                "Resources/bin/yaml-lint"
-            ],
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -8559,7 +8517,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v5.3.6"
+                "source": "https://github.com/symfony/yaml/tree/v4.4.29"
             },
             "funding": [
                 {
@@ -8575,7 +8533,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-29T06:20:01+00:00"
+            "time": "2021-07-27T16:19:30+00:00"
         },
         {
             "name": "teamtnt/laravel-scout-tntsearch-driver",
@@ -11408,5 +11366,5 @@
         "php": ">=7.2.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }
