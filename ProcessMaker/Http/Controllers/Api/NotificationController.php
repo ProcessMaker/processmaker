@@ -388,12 +388,12 @@ class NotificationController extends Controller
      *              property="id",
      *              type="integer",
      *              description="Polymorphic relation id",
-     *              @OA\Items (type="integer")),
+     *              ),
      *          @OA\Property(
      *              property="type",
      *              type="string",
      *              description="Polymorphic relation type",
-     *              @OA\Items (type="string"))
+     *              )
      *       ),
      *     ),
      *     @OA\Response(
