@@ -1506,5 +1506,7 @@
   "Order in which a user will move focus from one control to another by pressing the Tab key": "Order in which a user will move focus from one control to another by pressing the Tab key",
   "A mouse and keyboard are required to use screen builder.": "A mouse and keyboard are required to use screen builder.",
   "A mouse and keyboard are required to use the modeler.": "A mouse and keyboard are required to use the modeler.",
-  "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.": "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section."
+  "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.": "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.",
+  "File uplodaded": "File uplodaded",
+  "Uploading...": "Uploading..."
 }

@@ -110,6 +110,7 @@ import isPMQL from "../../../modules/isPMQL";
 import SettingBoolean from './SettingBoolean';
 import SettingCheckboxes from './SettingCheckboxes';
 import SettingChoice from './SettingChoice';
+import SettingFile from './SettingFile';
 import SettingObject from './SettingObject';
 import SettingScreen from './SettingScreen';
 import SettingText from './SettingText';
@@ -123,6 +124,7 @@ export default {
     SettingBoolean,
     SettingChoice,
     SettingCheckboxes,
+    SettingFile,
     SettingObject,
     SettingScreen,
     SettingText,
@@ -224,6 +226,8 @@ export default {
           }
         case 'component':
           return window['__setting_component_' + setting.ui.component];
+        case 'file':
+          return 'setting-file';
         default:
           return 'setting-text-area';
       }
