@@ -200,6 +200,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'requester',
         'assignee',
         'participants',
+        'managers',
     ];
 
     public $taskNotificationTypes = [
