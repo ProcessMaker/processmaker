@@ -118,7 +118,6 @@ class ProcessesTest extends TestCase
         $data = [
             'name' => 'Stored new process',
             'description' => 'My description',
-            'status' => 'ACTIVE'
         ];
 
         // Our user has no permissions, so this should return 403.
@@ -142,16 +141,20 @@ class ProcessesTest extends TestCase
         $this->user = factory(User::class)->create([
             'is_administrator' => false,
         ]);
+        $manager = factory(User::class)->create([
+            'is_administrator' => false,
+        ]);
         // Set the URL, permission, and data with which to test.
-        $url = 'processes/' . $process->id;
+        $url = route('api.processes.update', [$process->id]);
         $permission = 'edit-processes';
         $data = [
             'name' => 'Updated Name',
             'description' => 'My description',
+            'manager_id' => $manager->id
         ];
 
         // Our user has no permissions, so this should return 403.
-        $response = $this->webCall('PUT', $url, $data);
+        $response = $this->apiCall('PUT', $url, $data);
         $response->assertStatus(403);
 
         // Attach the permission to our user.
@@ -159,9 +162,14 @@ class ProcessesTest extends TestCase
         $this->user->refresh();
 
         // Our user now has permissions, so this should return 200.
-        $response = $this->webCall('PUT', $url, $data);
-        $response->assertRedirect('/processes');
-        $this->assertDatabaseHas('processes', ['name' => 'Updated Name']);
+        $response = $this->apiCall('PUT', $url, $data);
+        $response->assertStatus(200);
+        
+        // Assert the values have been updated
+        $process->refresh();
+        $this->assertEquals('Updated Name', $process->name);
+        $this->assertEquals('My description', $process->description);
+        $this->assertEquals($manager->id, $process->manager->id);
     }
 
     public function testArchive()
