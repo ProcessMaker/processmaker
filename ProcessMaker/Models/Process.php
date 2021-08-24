@@ -70,7 +70,7 @@ use Throwable;
  *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="category", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
- *
+ *   @OA\Property(property="manager_id", type="integer", format="id"),
  * ),
  * @OA\Schema(
  *   schema="Process",
