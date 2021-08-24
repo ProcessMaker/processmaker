@@ -49,7 +49,8 @@ use Throwable;
  * @property string $description
  * @property string $name
  * @property string $status
- * @property array start_events
+ * @property array $start_events
+ * @property int $manager_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
