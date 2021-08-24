@@ -260,7 +260,9 @@ class ProcessController extends Controller
         }
 
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
-        $process->manager_id = (int) $request->input('manager_id');
+        if ($request->has('manager_id')) {
+            $process->manager_id = $request->input('manager_id', null);
+        }
 
         // Catch errors to send more specific status
         try {
