@@ -71,6 +71,12 @@
                                 :errors="errors.category"
                                 >
                             </category-select>
+                            <div class="form-group">
+                                <label class="typo__label">{{__('Process Manager')}}</label>
+                                <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
+                                </select-user>
+                                <div class="invalid-feedback" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
+                            </div>
                             <div class="form-group p-0">
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
                                 <multiselect id="cancelRequest"
@@ -269,7 +275,8 @@
             screenRequestDetail: @json($screenRequestDetail),
             screenCancel: @json($screenCancel),
             activeUsersAndGroups: @json($list),
-            pause_timer_start_events: false
+            pause_timer_start_events: false,
+            manager: @json($process->manager),
           }
         },
         methods: {
@@ -319,6 +326,7 @@
             this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
             this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
             this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
+            this.formData.manager_id = this.formatValueScreen(this.manager);
             ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
               .then(response => {
                 ProcessMaker.alert('{{__('The process was saved.')}}', 'success', 5, true);

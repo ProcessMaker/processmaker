@@ -70,7 +70,7 @@ use Throwable;
  *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="category", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
- *
+ *   @OA\Property(property="manager_id", type="integer", format="id"),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -219,6 +219,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'self_service_tasks' => 'array',
         'signal_events' => 'array',
         'conditional_events' => 'array',
+        'properties' => 'array',
     ];
 
     /**
@@ -1217,4 +1218,32 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         }
         return true;
     }
+
+    private function setProperty($name, $value)
+    {
+        $properties = $this->properties;
+        $properties[$name] = $value;
+        $this->properties = $properties;
+    }
+
+    private function getProperty($name)
+    {
+       return isset($this->properties[$name]) ? $this->properties[$name] : null;
+    }
+
+    public function setManagerIdAttribute($value)
+    {
+        $this->setProperty('manager_id', $value);
+    }
+    
+    public function getManagerIdAttribute()
+    {
+        return $this->getProperty('manager_id');
+    }
+    
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
+
 }
