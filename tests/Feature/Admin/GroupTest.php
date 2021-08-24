@@ -40,4 +40,25 @@ class GroupTest extends TestCase
         $response->assertViewIs('admin.groups.edit');
         $response->assertSee('Edit Group');
     }
+
+    /**
+     * Test to make sure the manager user is loaded
+     *
+     * @return void
+     */
+    public function testEditRouteHasManager()
+    {
+        $group = factory(Group::class)->create();
+        $groupId = $group->getKey();
+        // get the URL
+        $response = $this->webCall('GET', '/admin/groups/' . $groupId . '/edit');
+
+        $response->assertStatus(200);
+        // check the correct view is called
+        $response->assertViewIs('admin.groups.edit');
+        $response->assertSee('Group Manager');
+        $response->assertViewHas('group', function ($formData) use ($group) {
+            return $formData->manager_id === $group->manager_id;
+        });
+    }
 }
