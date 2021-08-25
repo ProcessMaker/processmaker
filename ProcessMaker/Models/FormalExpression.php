@@ -199,6 +199,43 @@ class FormalExpression implements FormalExpressionInterface
                 return strtoupper($str);
             }
         );
+        // count($array)
+        $this->feelExpression->register(
+            'count',
+            function () {
+            },
+            function ($__data, $array) {
+                return count($array);
+            }
+        );
+        //group_manager($user_id, $assigned_groups)
+        $this->feelExpression->register(
+            'group_manager',
+            function () {
+            },
+            function ($__data, $user_id, $assigned_groups) {
+                if (!$user_id) {
+                    return null;
+                }
+                $user = User::find($user_id);
+                if (!$user) {
+                    return null;
+                }
+                $user_groups = $user->groups()->get();
+                foreach ($user_groups as $group) {
+                    if (in_array($group->id, $assigned_groups) && $group->manager_id) {
+                        return $group->manager_id;
+                    }
+                }
+                if (!$user->manager_id) {
+                    // If no manager is found, then assign the task to the Process Manager.
+                    $request = ProcessRequest::find($__data['_request']['id']);
+                    $process = $request->processVersion;
+                    return $process->manager_id;
+                }
+                return $user->manager_id;
+            }
+        );
 
         // arrayget($array, $key, $default)
         // similar to laravel's Arr:get: arrayget($myarray, 'field1.subfield2', false)

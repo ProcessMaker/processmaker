@@ -535,12 +535,27 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         if ($user) {
             $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
             if ($assignmentProcesss) {
-                $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
-                    'user_id' => $user,
-                    'process_id' => $this->id,
-                    'request_id' => $token->getInstance()->getId(),
-                ]);
-                $user = $res['assign_to'];
+                $config = json_decode($activity->getProperty('config', '{}'), true);
+                $escalateToManager = $config['escalateToManager'] ?? false;
+                if ($escalateToManager) {
+                    $assignedGroups = $activity->getProperty('assignedGroups', '');
+                    $assignedGroups = $assignedGroups ? \explode(',', $assignedGroups) : [];
+                    $res = WorkflowManager::runProcess($assignmentProcesss, 'escalate', [
+                        'assignment_type' => $assignmentType,
+                        'assigned_groups' => $assignedGroups,
+                        'user_id' => $user,
+                        'process_id' => $this->id,
+                        'request_id' => $token->getInstance()->getId(),
+                    ]);
+                    $user = $res['assign_to'];
+                } else {
+                    $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
+                        'user_id' => $user,
+                        'process_id' => $this->id,
+                        'request_id' => $token->getInstance()->getId(),
+                    ]);
+                    $user = $res['assign_to'];
+                }
             }
         }
         return $user ? User::where('id', $user)->first() : null;
