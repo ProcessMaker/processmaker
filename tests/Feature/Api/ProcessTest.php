@@ -193,6 +193,40 @@ class ProcessTest extends TestCase
         $this->assertEquals('BProcess', $responseItem->name);
     }
 
+
+    public function testProcessManagerCanStartARequest()
+    {
+        $processManagerUser = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+
+        $this->user = $processManagerUser;
+
+        $regularBpmn = Process::getProcessTemplate('SingleTask.bpmn');
+        $processManagerBpmn = str_replace('id="StartEventUID"', 'id="StartEventUID" pm:assignment="process_manager"',  $regularBpmn);
+
+        $processManager = factory(Process::class)->create([
+            'bpmn' => $processManagerBpmn,
+            'properties' => ['manager_id' => $processManagerUser->id]
+        ]);
+
+        $process = factory(Process::class)->create([
+            'bpmn' => $regularBpmn,
+            'properties' => ['manager_id' => $processManagerUser->id]
+        ]);
+
+        // Call endpoint that lists the processes that the user can start
+        $response = $this->apiCall('GET', route('api.processes.start', ['order_by' => 'category.name,name']));
+        $this->assertStatus(200, $response);
+
+        $responseData = $response->getData()->data;
+
+        //just the process that can be started by the process manager can be accesible
+        $this->assertEquals(count($responseData), 1);
+        $this->assertEquals($responseData[0]->id, $processManager->id);
+    }
+
     /**
      * Verify the new request start events do not include web entry start events
      */
