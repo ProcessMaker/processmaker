@@ -81,11 +81,11 @@
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
                                 <multiselect id="cancelRequest"
                                              v-model="canCancel"
-                                             :options="activeUsersAndGroups"
+                                             :options="activeUsersAndGroupsWithManager"
                                              :multiple="true"
                                              :show-labels="false"
                                              placeholder="{{__('Type to search')}}"
-                                             track-by="fullname"
+                                             track-by="id"
                                              label="fullname"
                                              group-values="items"
                                              group-label="label">
@@ -122,7 +122,7 @@
                                              :multiple="true"
                                              :show-labels="false"
                                              placeholder="{{__('Type to search')}}"
-                                             track-by="fullname"
+                                             track-by="id"
                                              label="fullname"
                                              group-values="items"
                                              group-label="label">
@@ -279,6 +279,17 @@
             manager: @json($process->manager),
           }
         },
+        computed: {
+            activeUsersAndGroupsWithManager() {
+                const usersAndGroups = _.cloneDeep(this.activeUsersAndGroups);
+                usersAndGroups[0]['items'].push({
+                    type: 'pseudouser',
+                    id: 'manager',
+                    fullname: this.$t('Process Manager')
+                });
+                return usersAndGroups;
+            }
+        },
         methods: {
           loadScreens(filter) {
             ProcessMaker.apiClient
@@ -304,6 +315,7 @@
 
             response['users'] = [];
             response['groups'] = [];
+            response['pseudousers'] = [];
 
             data.forEach(item => {
               if (item.type == 'user') {
@@ -312,6 +324,10 @@
 
               if (item.type == 'group') {
                 response['groups'].push(parseInt(item.id));
+              }
+              
+              if (item.type === 'pseudouser') {
+                response['pseudousers'].push(item.id);
               }
             });
             return response;
