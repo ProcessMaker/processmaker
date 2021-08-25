@@ -49,7 +49,8 @@ use Throwable;
  * @property string $description
  * @property string $name
  * @property string $status
- * @property array start_events
+ * @property array $start_events
+ * @property int $manager_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
@@ -70,7 +71,7 @@ use Throwable;
  *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="category", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
- *
+ *   @OA\Property(property="manager_id", type="integer", format="id"),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -218,6 +219,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'self_service_tasks' => 'array',
         'signal_events' => 'array',
         'conditional_events' => 'array',
+        'properties' => 'array',
     ];
 
     /**

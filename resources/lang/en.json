@@ -1510,6 +1510,7 @@
   "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.": "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.",
   "File uplodaded": "File uplodaded",
   "Uploading...": "Uploading...",
+  "Process Manager": "Process Manager",
   "Out of Office": "Out of Office",
   "Scheduled": "Scheduled"
 }
