@@ -1509,5 +1509,10 @@
   "A mouse and keyboard are required to use the modeler.": "A mouse and keyboard are required to use the modeler.",
   "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.": "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.",
   "File uplodaded": "File uplodaded",
-  "Uploading...": "Uploading..."
+  "Uploading...": "Uploading...",
+  "Process Manager": "Process Manager",
+  "BPMN validation issues. Request cannot be started.": "BPMN validation issues. Request cannot be started.",
+  "Process Manager not configured.": "Process Manager not configured.",
+  "Out of Office": "Out of Office",
+  "Scheduled": "Scheduled"
 }
