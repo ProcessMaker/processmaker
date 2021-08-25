@@ -926,4 +926,32 @@ class ProcessTest extends TestCase
         $processJson = $response->json()['data'][0];
         $this->assertEquals($processJson['manager_id'], $process->manager->id);
     }
+
+    public function testUpdateCancelRequest()
+    {
+        $process = factory(Process::class)->create();
+        $url = route('api.processes.update', $process);
+
+        $payload = [
+            'name' => 'Process',
+            'description' => 'Description.',
+            'cancel_request' => [
+                'users' => [],
+                'groups' => [],
+            ]
+        ];
+        $response = $this->apiCall('PUT', $url, $payload);
+        $process->refresh();
+        $this->assertNull($process->properties);
+
+        $payload['cancel_request']['pseudousers'] = ['manager'];
+        $response = $this->apiCall('PUT', $url, $payload);
+        $process->refresh();
+        $this->assertTrue($process->properties['manager_can_cancel_request']);
+        
+        $payload['cancel_request']['pseudousers'] = [];
+        $response = $this->apiCall('PUT', $url, $payload);
+        $process->refresh();
+        $this->assertFalse($process->properties['manager_can_cancel_request']);
+    }
 }
