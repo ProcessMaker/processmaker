@@ -346,7 +346,7 @@
   "Files (API)": "Files (API)",
   "Files": "Files",
   "Filter Controls": "Filter Controls",
-  "Filter": "Filter",
+  "Filter": "Filter",G
   "Finding Requests available to you...": "Finding Requests available to you...",
   "First Name": "First Name",
   "Flow splits implicitly": "Flow splits implicitly",
@@ -371,6 +371,7 @@
   "Group name must be distinct": "Group name must be distinct",
   "Group Permissions Updated Successfully": "Group Permissions Updated Successfully",
   "Group Permissions": "Group Permissions",
+  "Group Manager": "Group Manager",
   "group": "group",
   "Group": "Group",
   "Groups": "Groups",
@@ -1509,5 +1510,7 @@
   "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.": "{{name}} on page {{pageName}} is not accessible to screen readers. Please add a Label in the Variable section or an Aria Label in the Advanced section.",
   "File uplodaded": "File uplodaded",
   "Uploading...": "Uploading...",
-  "Process Manager": "Process Manager"
+  "Process Manager": "Process Manager",
+  "Out of Office": "Out of Office",
+  "Scheduled": "Scheduled"
 }
