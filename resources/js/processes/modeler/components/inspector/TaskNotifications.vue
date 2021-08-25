@@ -46,6 +46,21 @@
                     <label class="custom-control-label" for="notify-participants-due">{{ $t('Due') }}</label>
                 </div>
             </div>
+            <div class="notification-settings-group">
+                <div class="notification-settings-header">{{ $t('Process managers') }}</div>
+                <div class="custom-control custom-switch">
+                    <input v-model="managersAssigned"  type="checkbox" class="custom-control-input" id="notify-managers-assigned">
+                    <label class="custom-control-label" for="notify-managers-assigned">{{ $t('Assigned') }}</label>
+                </div>
+                <div class="custom-control custom-switch">
+                    <input v-model="managersCompleted"  type="checkbox" class="custom-control-input" id="notify-managers-completed">
+                    <label class="custom-control-label" for="notify-managers-completed">{{ $t('Completed') }}</label>
+                </div>
+                <div class="custom-control custom-switch">
+                    <input v-model="managersDue"  type="checkbox" class="custom-control-input" id="notify-managers-due">
+                    <label class="custom-control-label" for="notify-managers-due">{{ $t('Due') }}</label>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -65,6 +80,10 @@
         assigned: false,
         completed: false,
       };
+      this.managers = {
+        assigned: false,
+        completed: false,
+      };
     };
 
     export default {
@@ -80,8 +99,11 @@
               assigneeCompleted: false,
               assigneeDue: false,
               participantsAssigned: false,
-              participantsCompleted: false,              
-              participantsDue: false,              
+              participantsCompleted: false,
+              participantsDue: false,
+              managersAssigned: false,
+              managersCompleted: false,
+              managersDue: false,
             };
         },
         watch: {
@@ -112,6 +134,15 @@
           participantsDue: function(value) {
             this.notifications.participants.due = value;
           },
+          managersAssigned: function(value) {
+            this.notifications.managers.assigned = value;
+          },
+          managersCompleted: function(value) {
+            this.notifications.managers.completed = value;
+          },
+          managersDue: function(value) {
+            this.notifications.managers.due = value;
+          },
           modelerId: function(newValue, oldValue) {
             this.loadNotifications();
           }
@@ -127,6 +158,9 @@
             this.participantsAssigned = this.notifications.participants.assigned;
             this.participantsCompleted = this.notifications.participants.completed;
             this.participantsDue = this.notifications.participants.due;
+            this.managersAssigned = this.notifications.managers.assigned;
+            this.managersCompleted = this.notifications.managers.completed;
+            this.managersDue = this.notifications.managers.due;
           }
         },
         computed: {
