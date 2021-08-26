@@ -55,7 +55,7 @@ trait ProcessTrait
      * @param mixed $value
      * @return void
      */
-    private function setProperty($name, $value)
+    public function setProperty($name, $value)
     {
         $properties = $this->properties;
         $properties[$name] = $value;
@@ -68,7 +68,7 @@ trait ProcessTrait
      * @param string $name
      * @return mixed
      */
-    private function getProperty($name)
+    public function getProperty($name)
     {
        return isset($this->properties[$name]) ? $this->properties[$name] : null;
     }

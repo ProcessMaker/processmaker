@@ -265,17 +265,6 @@ class ProcessController extends Controller
             $process->manager_id = $request->input('manager_id', null);
         }
 
-        // Catch errors to send more specific status
-        try {
-            $process->saveOrFail();
-        } catch (TaskDoesNotHaveUsersException $e) {
-            return response(
-                ['message' => $e->getMessage(),
-                    'errors' => ['bpmn' => $e->getMessage()]],
-                422
-            );
-        }
-
         //If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
             $this->cancelRequestAssignment($process, $request);
@@ -296,21 +285,42 @@ class ProcessController extends Controller
             $this->saveTaskNotifications($process, $request);
         }
 
+        // Catch errors to send more specific status
+        try {
+            $process->saveOrFail();
+        } catch (TaskDoesNotHaveUsersException $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()]],
+                422
+            );
+        }
+
         return new Resource($process->refresh());
     }
 
     private function cancelRequestAssignment(Process $process, Request $request)
     {
+        $cancelRequest = $request->input('cancel_request');
+
         //Adding method to users array
         $cancelUsers = [];
-        foreach ($request->input('cancel_request')['users'] as $item) {
+        foreach ($cancelRequest['users'] as $item) {
             $cancelUsers[$item] = ['method' => 'CANCEL'];
         }
 
         //Adding method to groups array
         $cancelGroups = [];
-        foreach ($request->input('cancel_request')['groups'] as $item) {
+        foreach ($cancelRequest['groups'] as $item) {
             $cancelGroups[$item] = ['method' => 'CANCEL'];
+        }
+
+        if (isset($cancelRequest['pseudousers'])) {
+            if (in_array('manager', $cancelRequest['pseudousers'])) {
+                $process->setProperty('manager_can_cancel_request', true);
+            } else {
+                $process->setProperty('manager_can_cancel_request', false);
+            }
         }
 
         //Syncing users and groups that can cancel this process
