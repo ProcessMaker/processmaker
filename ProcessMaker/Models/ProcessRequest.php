@@ -252,7 +252,7 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
             case 'participants':
                 return $this->participants()->get()->pluck('id');
                 break;
-            case 'managers':
+            case 'manager':
                 $process = $this->process()->first();
                 return collect([$process->properties['manager_id'] ?? null]);
                 break;
