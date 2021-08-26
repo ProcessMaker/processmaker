@@ -1244,31 +1244,4 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         return true;
     }
 
-    private function setProperty($name, $value)
-    {
-        $properties = $this->properties;
-        $properties[$name] = $value;
-        $this->properties = $properties;
-    }
-
-    private function getProperty($name)
-    {
-       return isset($this->properties[$name]) ? $this->properties[$name] : null;
-    }
-
-    public function setManagerIdAttribute($value)
-    {
-        $this->setProperty('manager_id', $value);
-    }
-    
-    public function getManagerIdAttribute()
-    {
-        return $this->getProperty('manager_id');
-    }
-    
-    public function manager()
-    {
-        return $this->belongsTo(User::class, 'manager_id');
-    }
-
 }
