@@ -74,6 +74,13 @@ class ProcessPolicy
             return true;
         }
 
+        if (
+            $process->manager_id === $user->id && 
+            $process->getProperty('manager_can_cancel_request') === true
+        ) {
+            return true;
+        }
+
         return false;
     }
 

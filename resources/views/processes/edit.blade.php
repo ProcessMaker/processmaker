@@ -279,14 +279,15 @@
             manager: @json($process->manager),
           }
         },
+        mounted() {
+            if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
+                this.canCancel.push(this.processManagerOption());
+            }
+        },
         computed: {
             activeUsersAndGroupsWithManager() {
                 const usersAndGroups = _.cloneDeep(this.activeUsersAndGroups);
-                usersAndGroups[0]['items'].push({
-                    type: 'pseudouser',
-                    id: 'manager',
-                    fullname: this.$t('Process Manager')
-                });
+                usersAndGroups[0]['items'].unshift(this.processManagerOption());
                 return usersAndGroups;
             }
         },
@@ -355,6 +356,13 @@
                   that.errors = error.response.data.errors;
                 }
               });
+          },
+          processManagerOption() {
+            return {
+                type: 'pseudouser',
+                id: 'manager',
+                fullname: this.$t('Process Manager')
+            };
           }
         }
       });
