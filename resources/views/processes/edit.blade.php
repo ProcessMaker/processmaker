@@ -170,62 +170,92 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <td class="notify">{{__('Notify Requester')}}</td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-                                                <input id="notify-requester-started" type="checkbox"
-                                                       v-model="formData.notifications.requester.started"
-                                                        class="custom-control-input">
-                                                <label class="custom-control-label"
-                                                       for="notify-requester-started"></label>
-                                            </div>
-                                        </td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-                                                <input id="notify-requester-canceled" type="checkbox"
-                                                       v-model="formData.notifications.requester.canceled"
-                                                       class="custom-control-input">
-                                                <label class="custom-control-label"
-                                                       for="notify-requester-canceled"></label>
-                                            </div>
-                                        </td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-                                                <input id="notify-requester-completed" type="checkbox"
-                                                       v-model="formData.notifications.requester.completed"
-                                                       class="custom-control-input">
-                                                <label class="custom-control-label"
-                                                       for="notify-requester-completed"></label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="notify">{{__('Notify Participants')}}</td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-
-                                            </div>
-                                        </td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-                                                <input id="notify-participants-canceled" type="checkbox"
-                                                       v-model="formData.notifications.participants.canceled"
-                                                       class="custom-control-input">
-                                                <label class="custom-control-label"
-                                                       for="notify-participants-canceled"></label>
-                                            </div>
-                                        </td>
-                                        <td class="action">
-                                            <div class="custom-control custom-switch">
-                                                <input id="notify-participants-completed" type="checkbox"
-                                                       v-model="formData.notifications.participants.completed"
-                                                       class="custom-control-input">
-                                                <label class="custom-control-label"
-                                                       for="notify-participants-completed"></label>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <td class="notify">{{__('Notify Process Manager')}}</td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-manager-started" type="checkbox"
+                                                           v-model="formData.notifications.manager.started"
+                                                            class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-manager-started"></label>
+                                                </div>
+                                            </td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-manager-canceled" type="checkbox"
+                                                           v-model="formData.notifications.manager.canceled"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-manager-canceled"></label>
+                                                </div>
+                                            </td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-manager-completed" type="checkbox"
+                                                           v-model="formData.notifications.manager.completed"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-manager-completed"></label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="notify">{{__('Notify Requester')}}</td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-requester-started" type="checkbox"
+                                                           v-model="formData.notifications.requester.started"
+                                                            class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-requester-started"></label>
+                                                </div>
+                                            </td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-requester-canceled" type="checkbox"
+                                                           v-model="formData.notifications.requester.canceled"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-requester-canceled"></label>
+                                                </div>
+                                            </td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-requester-completed" type="checkbox"
+                                                           v-model="formData.notifications.requester.completed"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-requester-completed"></label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="notify">{{__('Notify Participants')}}</td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+    
+                                                </div>
+                                            </td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-participants-canceled" type="checkbox"
+                                                           v-model="formData.notifications.participants.canceled"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-participants-canceled"></label>
+                                                </div>
+                                            </td>
+                                            <td class="action">
+                                                <div class="custom-control custom-switch">
+                                                    <input id="notify-participants-completed" type="checkbox"
+                                                           v-model="formData.notifications.participants.completed"
+                                                           class="custom-control-input">
+                                                    <label class="custom-control-label"
+                                                           for="notify-participants-completed"></label>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
