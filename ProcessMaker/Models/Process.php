@@ -496,7 +496,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         if ($assignmentType === 'rule_expression') {
             $userByRule = $this->getNextUserByRule($activity, $token);
             if ($userByRule !== null) {
-                return $userByRule;
+                $user = $this->scalateToManagerIfEnabled($userByRule->id, $activity, $token, $assignmentType);
+                return $user ? User::where('id', $user)->first() : null;
             }
         }
 
@@ -541,6 +542,12 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             default:
                 $user = null;
         }
+        $user = $this->scalateToManagerIfEnabled($user, $activity, $token, $assignmentType);
+        return $user ? User::where('id', $user)->first() : null;
+    }
+
+    private function scalateToManagerIfEnabled($user, $activity, $token, $assignmentType)
+    {
         if ($user) {
             $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
             if ($assignmentProcesss) {
@@ -567,7 +574,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 }
             }
         }
-        return $user ? User::where('id', $user)->first() : null;
+        return $user;
     }
 
     /**
