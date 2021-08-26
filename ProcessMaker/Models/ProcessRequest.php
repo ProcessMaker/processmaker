@@ -248,14 +248,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         switch ($notifiableType) {
             case 'requester':
                 return collect([$this->user_id]);
-                break;
             case 'participants':
                 return $this->participants()->get()->pluck('id');
-                break;
             case 'manager':
-                $process = $this->process()->first();
-                return collect([$process->properties['manager_id'] ?? null]);
-                break;
+                return collect([$this->process()->first()->manager_id]);
             default:
                 return collect([]);
         }

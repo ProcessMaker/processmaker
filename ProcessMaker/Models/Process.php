@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Mustache_Engine;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
+use ProcessMaker\AssignmentRules\ProcessManagerAssigned;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Exception\InvalidUserAssignmentException;
@@ -189,6 +190,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'requester',
         'assignee',
         'participants',
+        'manager',
     ];
 
     public $requestNotificationTypes = [
@@ -525,6 +527,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 break;
             case 'previous_task_assignee':
                 $rule = new PreviousTaskAssignee();
+                $user = $rule->getNextUser($activity, $token, $this, $token->getInstance());
+                break;
+            case 'process_manager':
+                $rule = new ProcessManagerAssigned();
                 $user = $rule->getNextUser($activity, $token, $this, $token->getInstance());
                 break;
             case 'manual':

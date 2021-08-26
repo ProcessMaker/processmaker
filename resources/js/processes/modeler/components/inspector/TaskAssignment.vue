@@ -110,6 +110,10 @@
               value: "rule_expression",
               label: "Rule Expression"
             },
+            {
+              value: "process_manager",
+              label: "Process Manager"
+            },
           ];
         },
       },
