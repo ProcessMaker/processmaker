@@ -852,7 +852,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                         break;
                     }
                 }
-            } else {
+            } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'process_manager') {
+                $access = $this->manager && $this->manager->id && $this->manager->id === $user->id;
+            }
+            else {
                 $access = false;
             }
             if ($access) {

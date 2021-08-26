@@ -45,9 +45,19 @@ class ProcessPolicy
             request()->query('event')
         )->pluck('id');
 
+        $userCanStartAsProcessManager = array_reduce($process->getStartEvents(),
+            function ($carry, $item) use($process, $user) {
+                if (array_key_exists('assignment', $item)) {
+                    $carry = $carry || ($item['assignment'] === 'process_manager' && $process->manager_id === $user->id);
+                }
+                return $carry;
+            },
+            False);
+
         if (
             $usersCanStart->contains($user->id) ||
-            $usersCanStart->contains(app(AnonymousUser::class)->id)
+            $usersCanStart->contains(app(AnonymousUser::class)->id) ||
+            $userCanStartAsProcessManager
         ) {
             return true;
         }
