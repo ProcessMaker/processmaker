@@ -60,7 +60,7 @@ class ProcessTest extends TestCase
                 'count' => $perPage,
                 'per_page' => $perPage,
                 'current_page' => $page,
-                'total_pages' => (int) ceil(($initialCount + $countProcesses) / $perPage),
+                'total_pages' => (int)ceil(($initialCount + $countProcesses) / $perPage),
             ]
         );
     }
@@ -185,7 +185,7 @@ class ProcessTest extends TestCase
         if (is_array($responseData)) {
             $responseItem = $responseData[0];
         } elseif (is_object($responseData)) {
-           $responseItem = $responseData->{'0'};
+            $responseItem = $responseData->{'0'};
         }
 
         // The returned list should be ordered category and then by process name, alphabetically
@@ -194,27 +194,41 @@ class ProcessTest extends TestCase
     }
 
 
+    /**
+     * Verifies if a process manager can start a request
+     */
     public function testProcessManagerCanStartARequest()
     {
+        // Create a non admin user:
         $processManagerUser = factory(User::class)->create([
             'password' => Hash::make('password'),
             'is_administrator' => false,
         ]);
-
+        $otherUser = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
         $this->user = $processManagerUser;
 
-        $regularBpmn = Process::getProcessTemplate('SingleTask.bpmn');
-        $processManagerBpmn = str_replace('id="StartEventUID"', 'id="StartEventUID" pm:assignment="process_manager"',  $regularBpmn);
+        $noAssignedBpmn = Process::getProcessTemplate('SingleTask.bpmn');
+        $processManagerBpmn = str_replace('id="StartEventUID"', 'id="StartEventUID" pm:assignment="process_manager"', $noAssignedBpmn);
+        $assignedBpmn = str_replace('id="StartEventUID"', 'id="StartEventUID" pm:assignment="user" pm:assignedUsers="' . $this->user->id . '"', $noAssignedBpmn);
 
-        $processManager = factory(Process::class)->create([
+        $processWithManager = factory(Process::class)->create([
             'bpmn' => $processManagerBpmn,
             'properties' => ['manager_id' => $processManagerUser->id]
         ]);
 
-        $process = factory(Process::class)->create([
-            'bpmn' => $regularBpmn,
-            'properties' => ['manager_id' => $processManagerUser->id]
+        $processAssigned = factory(Process::class)->create([
+            'bpmn' => $assignedBpmn,
+            'properties' => ['manager_id' => $otherUser->id]
         ]);
+
+        $processForOtherUser = factory(Process::class)->create([
+            'bpmn' => $noAssignedBpmn,
+            'properties' => ['manager_id' => $otherUser->id]
+        ]);
+
 
         // Call endpoint that lists the processes that the user can start
         $response = $this->apiCall('GET', route('api.processes.start', ['order_by' => 'category.name,name']));
@@ -222,9 +236,10 @@ class ProcessTest extends TestCase
 
         $responseData = $response->getData()->data;
 
-        //just the process that can be started by the process manager can be accesible
-        $this->assertEquals(count($responseData), 1);
-        $this->assertEquals($responseData[0]->id, $processManager->id);
+        //just the process with assignment as process manager and the process assigned to the user should be returned
+        $this->assertEquals(count($responseData), 2);
+        $this->assertTrue(in_array($responseData[0]->id, [$processWithManager->id, $processAssigned->id]));
+        $this->assertTrue(in_array($responseData[1]->id, [$processWithManager->id, $processAssigned->id]));
     }
 
     /**
@@ -234,7 +249,7 @@ class ProcessTest extends TestCase
     {
         $file = __DIR__ . "/processes/SingleTask.bpmn";
         $regularBpmn = file_get_contents($file);
-        
+
         $file = __DIR__ . "/processes/RegularStartAndWebEntry.bpmn";
         $webEntryBpmn = file_get_contents($file);
 
@@ -242,8 +257,8 @@ class ProcessTest extends TestCase
         factory(Process::class)->create(['status' => 'ACTIVE', 'bpmn' => $webEntryBpmn]);
 
         $response = $this->apiCall('GET', route('api.processes.start'));
-        $startEvents = collect($response->json()['data'])->flatMap(function($process) {
-            return collect($process['startEvents'])->map(function($startEvent) {
+        $startEvents = collect($response->json()['data'])->flatMap(function ($process) {
+            return collect($process['startEvents'])->map(function ($startEvent) {
                 return $startEvent['name'];
             });
         });
@@ -302,8 +317,8 @@ class ProcessTest extends TestCase
         $this->assertStatus(201, $response);
 
         // Verify that the initial data was stored
-        $requestRoute =route('api.requests.show', ['request'=>$response->getData()->id]) . '?include=data';
-        $requestResponse = $this->apiCall('GET',$requestRoute );
+        $requestRoute = route('api.requests.show', ['request' => $response->getData()->id]) . '?include=data';
+        $requestResponse = $this->apiCall('GET', $requestRoute);
 
         // Assert structure
         $requestResponse->assertJsonStructure([
@@ -560,7 +575,7 @@ class ProcessTest extends TestCase
         //A validation error should be displayed
         $response->assertStatus(422);
     }
-    
+
     /**
      * Test the creation of processes with invalid XML posted
      */
@@ -915,7 +930,7 @@ class ProcessTest extends TestCase
         ]);
         $array = array_diff($base->toArray(), [static::$DO_NOT_SEND]);
         //Add a bpmn content
-        $array['bpmn'] = file_get_contents(__DIR__.'/processes/C.4.0-export.bpmn');
+        $array['bpmn'] = file_get_contents(__DIR__ . '/processes/C.4.0-export.bpmn');
         $response = $this->apiCall('POST', $route, $array);
         $response->assertStatus(422);
         $error = $response->json();
@@ -949,12 +964,12 @@ class ProcessTest extends TestCase
         ]);
         $response->assertStatus(200);
         $process->refresh();
-        
+
         $url = route('api.processes.show', $process);
         $response = $this->apiCall('GET', $url);
         $response->assertStatus(200);
         $this->assertEquals($manager->id, $process->manager->id);
-        
+
         $url = route('api.processes.index', $process);
         $response = $this->apiCall('GET', $url . '?filter=Process+with+manager');
         $processJson = $response->json()['data'][0];
