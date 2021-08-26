@@ -242,6 +242,36 @@ class ProcessTest extends TestCase
         $this->assertTrue(in_array($responseData[1]->id, [$processWithManager->id, $processAssigned->id]));
     }
 
+    public function testProcessManagerCanStartProcessWithTwoStartEvents()
+    {
+        // Create a non admin user:
+        $processManagerUser = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+        $otherUser = factory(User::class)->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => false,
+        ]);
+
+        $processBpmn = \file_get_contents(__DIR__ . '/processes/SingleTaskProcessManager.bpmn');
+        $processBpmn = str_replace('{$otherUser_id}', $otherUser->id, $processBpmn);
+
+        $process = factory(Process::class)->create([
+            'bpmn' => $processBpmn,
+            'properties' => ['manager_id' => $processManagerUser->id]
+        ]);
+
+        // Call endpoint that lists the processes that the user can start
+        $this->user = $otherUser;
+        $response = $this->apiCall('POST', route('api.process_events.trigger', [$process->id, 'event' => 'node_3']));
+        $this->assertStatus(201, $response);
+
+        $this->user = $processManagerUser;
+        $response = $this->apiCall('POST', route('api.process_events.trigger', [$process->id, 'event' => 'node_1']));
+        $this->assertStatus(201, $response);
+    }
+
     /**
      * Verify the new request start events do not include web entry start events
      */
