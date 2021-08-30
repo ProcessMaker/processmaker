@@ -550,13 +550,13 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     private function scalateToManagerIfEnabled($user, $activity, $token, $assignmentType)
     {
         if ($user) {
-            if (app('workflow.UserManager')) {
+            $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
+            if (app('workflow.UserManager') && $assignmentProcesss) {
                 $config = json_decode($activity->getProperty('config', '{}'), true);
                 $escalateToManager = $config['escalateToManager'] ?? false;
                 if ($escalateToManager) {
                     $user = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
-                    $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
                     $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
                         'user_id' => $user,
                         'process_id' => $this->id,
