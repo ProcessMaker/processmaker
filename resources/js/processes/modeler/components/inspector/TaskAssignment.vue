@@ -39,10 +39,26 @@
             
           <form-checkbox
               v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
-              :label="$t('Lock Task Assignment to User')"
+              :label="$t('Lock User Assignment')"
               :checked="assignmentLockGetter"
               toggle="true"
               @change="assignmentLockSetter">
+          </form-checkbox>
+
+          <form-checkbox
+              v-if="configurables.includes('ESCALATE_TO_MANAGER')"
+              :label="$t('Escalate to Manager')"
+              :checked="escalateToManagerGetter"
+              toggle="true"
+              @change="escalateToManagerSetter">
+          </form-checkbox>
+
+          <form-checkbox
+              v-if="configurables.includes('ASSIGNEE_MANAGER_ESCALATION')"
+              :label="$t('Assignee Manager Escalation')"
+              :checked="assigneeManagerEscalationGetter"
+              toggle="true"
+              @change="assigneeManagerEscalationSetter">
           </form-checkbox>
 
           <form-checkbox
@@ -53,13 +69,6 @@
               @change="allowReassignmentSetter">
           </form-checkbox>
 
-          <form-checkbox
-              v-if="configurables.includes('ESCALATE_TO_MANAGER')"
-              :label="$t('Escalate to User Manager')"
-              :checked="escalateToManagerGetter"
-              toggle="true"
-              @change="escalateToManagerSetter">
-          </form-checkbox>
         </div>
     </div>
 </template>
@@ -79,42 +88,13 @@
       configurables: {
         type: Array,
         default() {
-          return ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT', 'ASSIGN_BY_EXPRESSION', 'ESCALATE_TO_MANAGER'];
+          return ProcessMaker.modeler.configurables;
         },
       },
       assignmentTypes: {
         type: Array,
         default() {
-          return [
-            {
-              value: "user_group",
-              label: "Users / Groups"
-            },
-            {
-              value: "previous_task_assignee",
-              label: "Previous Task Assignee"
-            },
-            {
-              value: "requester",
-              label: "Request Starter"
-            },
-            {
-              value: "user_by_id",
-              label: "By User ID"
-            },
-            {
-              value: "self_service",
-              label: "Self Service"
-            },
-            {
-              value: "rule_expression",
-              label: "Rule Expression"
-            },
-            {
-              value: "process_manager",
-              label: "Process Manager"
-            },
-          ];
+          return ProcessMaker.modeler.assignmentTypes;
         },
       },
     },
@@ -153,6 +133,10 @@
       escalateToManagerGetter () {
         const config = this.node.config && JSON.parse(this.node.config) || {};
         return config.escalateToManager || false;
+      },
+      assigneeManagerEscalationGetter () {
+        const config = this.node.config && JSON.parse(this.node.config) || {};
+        return config.assigneeManagerEscalation || false;
       },
       assignmentLockGetter () {
         return _.get(this.node, "assignmentLock");
@@ -252,6 +236,11 @@
       escalateToManagerSetter (value) {
         const config = this.node.config && JSON.parse(this.node.config) || {};
         config.escalateToManager = value;
+        this.$set(this.node, "config", JSON.stringify(config));
+      },
+      assigneeManagerEscalationSetter (value) {
+        const config = this.node.config && JSON.parse(this.node.config) || {};
+        config.assigneeManagerEscalation = value;
         this.$set(this.node, "config", JSON.stringify(config));
       },
       /**
