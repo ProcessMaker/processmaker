@@ -605,6 +605,8 @@ class UsersTest extends TestCase
             'mailhost!username@example.org',
             // (local part ending with non-alphanumeric character from the list of allowed printable characters)
             'user-@example.org',
+            '123', 
+            'abc', 
         ];
 
         $faker = Faker::create();
@@ -624,7 +626,8 @@ class UsersTest extends TestCase
 
         // Invalid cases
         $usernames = [
-            "123",
+            "12",
+            "ab",
             "test/test@test.com",
             // (space between the quotes)
             '" "@example.org',
