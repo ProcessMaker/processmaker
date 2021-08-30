@@ -60,7 +60,7 @@ div.main {
     xml: @json($process->bpmn),
     processName: @json($process->name),
     // list of toggles in assignment rules
-    configurables: ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT', 'ASSIGN_BY_EXPRESSION'],
+    configurables: ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT'],
     // list of items for assignment Types dropdown list
     assignmentTypes: [
       { value: "user_group", label: "Users / Groups" },

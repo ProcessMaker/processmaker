@@ -37,36 +37,12 @@
             v-model="specialAssignments" 
           />
             
-          <form-checkbox
-              v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
-              :label="$t('Lock User Assignment')"
-              :checked="assignmentLockGetter"
-              toggle="true"
-              @change="assignmentLockSetter">
-          </form-checkbox>
-
-          <form-checkbox
-              v-if="configurables.includes('ESCALATE_TO_MANAGER')"
-              :label="$t('Escalate to Manager')"
-              :checked="escalateToManagerGetter"
-              toggle="true"
-              @change="escalateToManagerSetter">
-          </form-checkbox>
-
-          <form-checkbox
-              v-if="configurables.includes('ASSIGNEE_MANAGER_ESCALATION')"
-              :label="$t('Assignee Manager Escalation')"
-              :checked="assigneeManagerEscalationGetter"
-              toggle="true"
-              @change="assigneeManagerEscalationSetter">
-          </form-checkbox>
-
-          <form-checkbox
-              v-if="configurables.includes('ALLOW_REASSIGNMENT')"
-              :label="$t('Allow Reassignment')"
-              :checked="allowReassignmentGetter"
-              toggle="true"
-              @change="allowReassignmentSetter">
+          <form-checkbox v-for="configurable in configurables"
+            :key="configurable"
+            :label="configurableLabel(configurable)"
+            :checked="getConfigurableValue(configurable)"
+            toggle="true"
+            @change="setConfigurableValue($event, configurable)">
           </form-checkbox>
 
         </div>
@@ -126,17 +102,6 @@
        */
       process () {
         return this.$root.$children[0].process;
-      },
-      /**
-       * Get the value of the edited property
-       */
-      escalateToManagerGetter () {
-        const config = this.node.config && JSON.parse(this.node.config) || {};
-        return config.escalateToManager || false;
-      },
-      assigneeManagerEscalationGetter () {
-        const config = this.node.config && JSON.parse(this.node.config) || {};
-        return config.assigneeManagerEscalation || false;
       },
       assignmentLockGetter () {
         return _.get(this.node, "assignmentLock");
@@ -230,18 +195,38 @@
       },
     },
     methods: {
-      /**
-       * Update escalateToManager property
-       */
-      escalateToManagerSetter (value) {
-        const config = this.node.config && JSON.parse(this.node.config) || {};
-        config.escalateToManager = value;
-        this.$set(this.node, "config", JSON.stringify(config));
+      getConfigurableValue(configurable) {
+        switch (configurable) {
+          case 'LOCK_TASK_ASSIGNMENT':
+            return this.assignmentLockGetter;
+          case 'ALLOW_REASSIGNMENT':
+            return this.allowReassignmentGetter;
+          default:
+            const config = this.node.config && JSON.parse(this.node.config) || {};
+            return config[window._.camelCase(configurable)] || false;
+        }
       },
-      assigneeManagerEscalationSetter (value) {
-        const config = this.node.config && JSON.parse(this.node.config) || {};
-        config.assigneeManagerEscalation = value;
-        this.$set(this.node, "config", JSON.stringify(config));
+      setConfigurableValue(value, configurable) {
+        switch (configurable) {
+          case 'LOCK_TASK_ASSIGNMENT':
+            return this.assignmentLockSetter(value);
+          case 'ALLOW_REASSIGNMENT':
+            return this.allowReassignmentSetter(value);
+          default:
+            const config = this.node.config && JSON.parse(this.node.config) || {};
+            config[window._.camelCase(configurable)] = value;
+            this.$set(this.node, "config", JSON.stringify(config));
+        }
+      },
+      configurableLabel(configurable) {
+        switch (configurable) {
+          case 'LOCK_TASK_ASSIGNMENT':
+            return this.$t('Lock User Assignment');
+          case 'ALLOW_REASSIGNMENT':
+            return this.$t('Allow Reassignment');
+          default:
+            return window._.startCase(configurable.toLowerCase());
+        }
       },
       /**
        * Update assignmentLock property
