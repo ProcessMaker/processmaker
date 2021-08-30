@@ -169,6 +169,16 @@
                                         <tr>
                                             <td class="assignable-name text-right">
                                                 {{ __('Assign') }}
+                                                <strong>{{ __('Process Manager') }}</strong> {{ __('to') }}
+                                                <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
+                                            </td>
+                                            <td class="assignable-entity">
+                                              <select-user v-model="manager" :multiple="false"></select-user>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="assignable-name text-right">
+                                                {{ __('Assign') }}
                                                 <strong>{{ __('Cancel Request') }}</strong> {{ __('to') }}
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
@@ -177,7 +187,7 @@
                                                 <multiselect id="search-user-groups-text"
                                                             v-model="cancelRequest"
                                                              placeholder="{{__('Type to search')}}"
-                                                             :options="usersAndGroups"
+                                                             :options="usersAndGroupsWithManger"
                                                              :multiple="true"
                                                              track-by="id"
                                                              :show-labels="false"
@@ -336,6 +346,7 @@
           usersAndGroups: [],
           users: [],
           processes: [],
+          manager: null,
           cancelRequest: [],
           processEditData: [],
           importingCode: importingCode ? importingCode[1] : null,
@@ -345,6 +356,30 @@
             value = value.toString();
             return value.charAt(0).toUpperCase() + value.slice(1);
           }
+        },
+        computed: {
+          usersAndGroupsWithManger() {
+
+
+
+            console.log('usersAndGroupsWithManger computed', this.usersAndGroups);
+
+
+
+            
+            const usersAndGroups = _.cloneDeep(this.usersAndGroups);
+            const users = _.get(usersAndGroups, '0.items');
+            if (!users) {
+              return [];
+            }
+            users.unshift({
+                id: 'manager',
+                fullname: this.$t('Process Manager')
+            });
+            _.set(usersAndGroups, '0.items', users);
+            console.log('usersAndGroups', usersAndGroups);
+            return usersAndGroups;
+          },
         },
         methods: {
           loadUsers(filter, getGroups, type) {
@@ -420,7 +455,9 @@
             response['groups'] = [];
 
             data.forEach(item => {
-              if (typeof item.id === "number") {
+              if (item.id === 'manager') {
+                response['pseudousers'] = ['manager'];
+              } else if (typeof item.id === "number") {
                 response['users'].push(parseInt(item.id));
               } else {
                 id = item.id.split('-');
@@ -434,7 +471,8 @@
               {
                 "assignable": this.assignable,
                 'cancel_request': this.formatAssignee(this.cancelRequest),
-                'edit_data': this.formatAssignee(this.processEditData)
+                'edit_data': this.formatAssignee(this.processEditData),
+                'manager_id': this.manager,
               })
               .then(response => {
                 ProcessMaker.alert(this.$t('All assignments were saved.'), 'success');
