@@ -102,6 +102,7 @@ class TaskController extends Controller
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,
                 'files' => $files,
+                'addons' => $this->getPluginAddons('edit', []),
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
             ]);
         }

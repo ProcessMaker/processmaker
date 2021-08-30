@@ -228,6 +228,7 @@
     <script src="{{mix('js/tasks/show.js')}}"></script>
     <script>
       const main = new Vue({
+        mixins:addons,
         el: "#task",
         data: {
           //Edit data
@@ -312,18 +313,6 @@
           }
         },
         methods: {
-          escalateToManager() {
-            ProcessMaker.confirmModal(
-              'Confirm action', 'Are you sure to scale this task?', '', () => {
-                ProcessMaker.apiClient
-                  .put("tasks/" + this.task.id, {
-                    user_id: '#manager',
-                  })
-                  .then(response => {
-                    this.redirect("/tasks");
-                  });
-              });
-          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
