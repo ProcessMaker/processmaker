@@ -170,16 +170,11 @@
                               </b-modal>
                             </span>
                           </div>
-                          <div v-if="taskDefinitionConfig.escalateToManager">
-                            <br>
-                            <span>
-                                <button v-if="task.advanceStatus === 'open' && !isSelfService" type="button" class="btn btn-outline-secondary btn-block"
-                                        @click="escalateToManager">
-                                    <i class="fas fa-user-friends"></i> {{__('Escalate the Manager')}}
-                                </button>
-                                <div v-else="isSelfService">{{ __('The task must be claimed to enable manager escalation.') }}</div>
-                            </span>
-                          </div>
+                          @isset($assignedToAddons)
+                              @foreach ($assignedToAddons as $addon)
+                                  {!! $addon['content'] ?? '' !!}
+                              @endforeach
+                          @endisset
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>

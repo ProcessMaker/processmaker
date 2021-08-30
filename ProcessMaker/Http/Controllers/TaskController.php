@@ -13,11 +13,13 @@ use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Traits\HasControllerAddons;
 use ProcessMaker\Traits\SearchAutocompleteTrait;
 
 class TaskController extends Controller
 {
     use SearchAutocompleteTrait;
+    use HasControllerAddons;
 
     private static $dueLabels = [
         'open' => 'Due',
@@ -100,7 +102,8 @@ class TaskController extends Controller
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,
                 'files' => $files,
-                ]);
+                'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
+            ]);
         }
     }
 }
