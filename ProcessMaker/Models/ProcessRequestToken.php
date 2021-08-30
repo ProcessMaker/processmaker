@@ -10,6 +10,7 @@ use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\BpmnEngine;
+use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
@@ -780,16 +781,10 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function escalateToManager()
     {
-        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
-        if ($assignmentProcesss) {
-            $res = WorkflowManager::runProcess($assignmentProcesss, 'escalate', [
-                'task_id' => $this->id,
-                'user_id' => $this->user_id,
-                'process_id' => $this->process_id,
-                'request_id' => $this->process_request_id,
-            ]);
-            $this->user_id = $res['assign_to'];
-            return $res['assign_to'];
+        if (app('workflow.UserManager')) {
+            $escalateTo = WorkflowUserManager::escalateToManager($this, $this->user_id);
+            $this->user_id = $escalateTo;
+            return $escalateTo;
         }
         return $this->user_id;
     }
