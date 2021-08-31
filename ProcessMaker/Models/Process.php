@@ -650,7 +650,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $users = $this->getAssignableUsers($processTaskUuid);
         }
         if (empty($users)) {
-            throw new UserOrGroupAssignmentEmptyException($processTaskUuid);
+            return null;
         }
         sort($users);
         if ($last) {
@@ -701,7 +701,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             $users = $this->getAssignableUsers($processTaskUuid);
         }
         if (empty($users)) {
-            throw new TaskDoesNotHaveUsersException($processTaskUuid);
+            return null;
         }
         sort($users);
         if ($last) {
