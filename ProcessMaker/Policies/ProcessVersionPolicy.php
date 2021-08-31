@@ -55,4 +55,28 @@ class ProcessVersionPolicy
         return false;
     }
 
+    /**
+     * Determine whether the user can edit data.
+     *
+     * @param  \ProcessMaker\Models\User  $user
+     * @param  \ProcessMaker\ProcessVersion  $processVersion
+     * @return mixed
+     */
+    public function editData(User $user, ProcessVersion $processVersion)
+    {
+        $groupIds = $user->groups->pluck('id');
+        
+        // TODO: get from current version
+        if ($processVersion->process->groupsCanEditData->whereIn('id', $groupIds)->count()) {
+            return true;
+        }
+
+        // TODO: get from current version
+        if ($processVersion->process->usersCanEditData->where('id', $user->id)->count()) {
+            return true;
+        }
+
+        return false;
+    }
+
 }
