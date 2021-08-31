@@ -781,7 +781,7 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function escalateToManager()
     {
-        if (app('workflow.UserManager')) {
+        if (app()->bound('workflow.UserManager')) {
             $escalateTo = WorkflowUserManager::escalateToManager($this, $this->user_id);
             $this->user_id = $escalateTo;
             return $escalateTo;
