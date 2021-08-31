@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use DOMElement;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
@@ -616,19 +617,23 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      */
     private function getNextUserFromVariable($activity, $token)
     {
-        $userExpression = $activity->getProperty('assignedUsers');
+        try {
+            $userExpression = $activity->getProperty('assignedUsers');
 
-        $dataManager = new DataManager();
-        $instanceData = $dataManager->getData($token);
+            $dataManager = new DataManager();
+            $instanceData = $dataManager->getData($token);
 
-        $mustache = new Mustache_Engine();
-        $userId = $mustache->render($userExpression, $instanceData);
+            $mustache = new Mustache_Engine();
+            $userId = $mustache->render($userExpression, $instanceData);
 
-        $user = User::find($userId);
-        if (!$user) {
-            throw new InvalidUserAssignmentException($userExpression, $userId);
+            $user = User::find($userId);
+            if (!$user) {
+                throw new InvalidUserAssignmentException($userExpression, $userId);
+            }
+            return $user->id;
+        } catch (Exception $exception) {
+            return null;
         }
-        return $user->id;
     }
 
     /**
