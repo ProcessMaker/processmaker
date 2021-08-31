@@ -17,6 +17,7 @@ use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Exception\InvalidUserAssignmentException;
 use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
+use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
 use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Managers\DataManager;
@@ -492,12 +493,14 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $default = $activity instanceof ScriptTaskInterface
         || $activity instanceof ServiceTaskInterface ? 'script' : 'requester';
         $assignmentType = $activity->getProperty('assignment', $default);
+        $config = json_decode($activity->getProperty('config', '{}'), true);
+        $escalateToManager = $config['escalateToManager'] ?? false;
 
         if ($assignmentType === 'rule_expression') {
             $userByRule = $this->getNextUserByRule($activity, $token);
             if ($userByRule !== null) {
                 $user = $this->scalateToManagerIfEnabled($userByRule->id, $activity, $token, $assignmentType);
-                return $user ? User::where('id', $user)->first() : null;
+                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
             }
         }
 
@@ -508,7 +511,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         if (filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true) {
             $user = $this->getLastUserAssignedToTask($activity->getId(), $token->getInstance()->getId());
             if ($user) {
-                return User::where('id', $user)->first();
+                return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, User::where('id', $user)->first());
             }
         }
 
@@ -543,7 +546,32 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 $user = null;
         }
         $user = $this->scalateToManagerIfEnabled($user, $activity, $token, $assignmentType);
-        return $user ? User::where('id', $user)->first() : null;
+        return $this->checkAssignment($token->processRequest, $activity, $assignmentType, $escalateToManager, $user ? User::where('id', $user)->first() : null);
+    }
+
+    /**
+     * If user assignment is not valid reassign to Process Manager
+     *
+     * @param ProcessRequest $request
+     * @param ActivityInterface $activity
+     * @param string $assignmentType
+     * @param bool $escalateToManager
+     * @param User|null $user
+     *
+     * @return User|null
+     */
+    private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
+    {
+        if ($user === null) {
+            if ($assignmentType === 'self_service' && !$escalateToManager) {
+                return null;
+            }
+            $user = $request->processVersion->manager;
+            if (!$user) {
+                throw new ThereIsNoProcessManagerAssignedException($activity);
+            }
+        }
+        return $user;
     }
 
     private function scalateToManagerIfEnabled($user, $activity, $token, $assignmentType)
