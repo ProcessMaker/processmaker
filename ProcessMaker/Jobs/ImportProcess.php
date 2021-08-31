@@ -588,7 +588,7 @@ class ImportProcess implements ShouldQueue
             $new->status = $process->status;
             $new->created_at = $this->formatDate($process->created_at);
             $new->deleted_at = $this->formatDate($process->deleted_at);
-            $new->properties = $process->properties;
+            $new->properties = isset($process->properties) ? (array) $process->properties : null;
             $new->save();
 
             $new->categories()->saveMany($this->new['process_categories']);

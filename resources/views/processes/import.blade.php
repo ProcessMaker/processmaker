@@ -359,26 +359,20 @@
         },
         computed: {
           usersAndGroupsWithManger() {
-
-
-
-            console.log('usersAndGroupsWithManger computed', this.usersAndGroups);
-
-
-
-            
             const usersAndGroups = _.cloneDeep(this.usersAndGroups);
             const users = _.get(usersAndGroups, '0.items');
             if (!users) {
               return [];
             }
-            users.unshift({
+            users.unshift(this.managerOption);
+            _.set(usersAndGroups, '0.items', users);
+            return usersAndGroups;
+          },
+          managerOption() {
+            return {
                 id: 'manager',
                 fullname: this.$t('Process Manager')
-            });
-            _.set(usersAndGroups, '0.items', users);
-            console.log('usersAndGroups', usersAndGroups);
-            return usersAndGroups;
+            };
           },
         },
         methods: {
@@ -538,6 +532,11 @@
             }
             this.assignable = response.data.assignable;
             this.processId = response.data.process.id;
+            
+            if (_.get(response, 'data.process.properties.manager_can_cancel_request', false)) {
+              this.cancelRequest.push(this.managerOption);
+            }
+
             message = this.$t('The process was imported.');
             let variant = 'success';
             for (let item in this.options) {
