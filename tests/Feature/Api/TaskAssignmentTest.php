@@ -7,12 +7,13 @@ use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessTaskAssignment;
 use ProcessMaker\Models\User;
-use Tests\TestCase;
+use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
 
 class TaskAssignmentTest extends TestCase
 {
-
+    use ProcessTestingTrait;
     use RequestHelper;
 
     const API_TEST_URL = '/task_assignments';
@@ -127,5 +128,54 @@ class TaskAssignmentTest extends TestCase
         $this->assertEquals($group->id, $assignment->assignment_id);
         $this->assertEquals($task_uid, $assignment->process_task_id);
         $this->assertEquals('ProcessMaker\Models\Group', $assignment->assignment_type);
+    }
+
+    /**
+     * Invalid user assignment is reassigned to the process manager
+     */
+    public function testInvalidUserAssignmentReassignToProcess()
+    {
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidUserAssignment.bpmn'),
+        ]);
+        $process->manager_id = factory(User::class)->create()->id;
+        $process->save();
+        $instance = $this->startProcess($process, 'node_1');
+        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+    }
+
+    /**
+     * Invalid group assignment (empty group) is catch and reassigned to the process manager
+     */
+    public function testEmptyGroupAssignmentReassignToProcess()
+    {
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidGroupAssignment.bpmn'),
+        ]);
+        $process->manager_id = factory(User::class)->create()->id;
+        $process->save();
+        $group = factory(Group::class)->create([
+            'id' => 100,
+        ]);
+        $this->assertEquals(0, $group->groupMembers()->count());
+        $instance = $this->startProcess($process, 'node_1');
+        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+    }
+
+    /**
+     * Invalid group assignment (group does not exists) is catch and reassigned to the process manager
+     */
+    public function testInvalidGroupAssignmentReassignToProcess()
+    {
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidGroupAssignment.bpmn'),
+        ]);
+        $process->manager_id = factory(User::class)->create()->id;
+        $process->save();
+        $instance = $this->startProcess($process, 'node_1');
+        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
     }
 }
