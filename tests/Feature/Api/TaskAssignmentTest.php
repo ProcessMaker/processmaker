@@ -133,7 +133,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Invalid user assignment is reassigned to the process manager
      */
-    public function testInvalidUserAssignmentReassignToProcess()
+    public function testInvalidUserAssignmentReassignToProcessManager()
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
@@ -148,7 +148,7 @@ class TaskAssignmentTest extends TestCase
     /**
      * Invalid group assignment (empty group) is catch and reassigned to the process manager
      */
-    public function testEmptyGroupAssignmentReassignToProcess()
+    public function testEmptyGroupAssignmentReassignToProcessManager()
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
@@ -167,11 +167,26 @@ class TaskAssignmentTest extends TestCase
     /**
      * Invalid group assignment (group does not exists) is catch and reassigned to the process manager
      */
-    public function testInvalidGroupAssignmentReassignToProcess()
+    public function testInvalidGroupAssignmentReassignToProcessManager()
     {
         $process = factory(Process::class)->create([
             'status' => 'ACTIVE',
             'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidGroupAssignment.bpmn'),
+        ]);
+        $process->manager_id = factory(User::class)->create()->id;
+        $process->save();
+        $instance = $this->startProcess($process, 'node_1');
+        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+    }
+
+    /**
+     * Invalid previous users assignment is catch and reassigned to the process manager
+     */
+    public function testInvalidPreviousUsersAssignmentReassignToProcessManager()
+    {
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidPreviousUserAssignment.bpmn'),
         ]);
         $process->manager_id = factory(User::class)->create()->id;
         $process->save();
