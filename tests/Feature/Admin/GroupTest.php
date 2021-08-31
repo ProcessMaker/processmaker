@@ -40,47 +40,4 @@ class GroupTest extends TestCase
         $response->assertViewIs('admin.groups.edit');
         $response->assertSee('Edit Group');
     }
-
-    /**
-     * Test to make sure the group manager user is loaded
-     *
-     * @return void
-     */
-    public function testEditGroupHasManager()
-    {
-        $group = factory(Group::class)->create();
-        $groupId = $group->getKey();
-        // get the URL
-        $response = $this->webCall('GET', '/admin/groups/' . $groupId . '/edit');
-
-        $response->assertStatus(200);
-        // check the correct view is called
-        $response->assertViewIs('admin.groups.edit');
-        $response->assertSee('Group Manager');
-        $response->assertViewHas('group', function ($formData) use ($group) {
-            return $formData->manager_id === $group->manager_id;
-        });
-    }
-
-    /**
-     * Test to make sure a group (without manager) can be edited
-     *
-     * @return void
-     */
-    public function testEditGroupWithoutManager()
-    {
-        $groupId = factory(Group::class)->create([
-            'manager_id' => null,
-        ])->getKey();
-        // get the URL
-        $response = $this->webCall('GET', '/admin/groups/' . $groupId . '/edit');
-
-        $response->assertStatus(200);
-        // check the correct view is called
-        $response->assertViewIs('admin.groups.edit');
-        $response->assertSee('Group Manager');
-        $response->assertViewHas('group', function ($formData) {
-            return $formData->manager_id === null;
-        });
-    }
 }
