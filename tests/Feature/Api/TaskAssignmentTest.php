@@ -193,4 +193,19 @@ class TaskAssignmentTest extends TestCase
         $instance = $this->startProcess($process, 'node_1');
         $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
     }
+
+    /**
+     * Invalid user by ID assignment is catch and reassigned to the process manager
+     */
+    public function testInvalidUserByIDAssignmentReassignToProcessManager()
+    {
+        $process = factory(Process::class)->create([
+            'status' => 'ACTIVE',
+            'bpmn' => file_get_contents(__DIR__ . '/processes/InvalidUserByIDAssignment.bpmn'),
+        ]);
+        $process->manager_id = factory(User::class)->create()->id;
+        $process->save();
+        $instance = $this->startProcess($process, 'node_1');
+        $this->assertEquals($process->manager_id, $instance->tokens()->where('status', 'ACTIVE')->first()->user_id);
+    }
 }
