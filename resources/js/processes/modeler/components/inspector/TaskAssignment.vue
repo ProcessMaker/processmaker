@@ -37,7 +37,7 @@
             v-model="specialAssignments" 
           />
             
-          <form-checkbox v-for="configurable in configurables"
+          <form-checkbox v-for="configurable in optionsConfigurables"
             :key="configurable"
             :label="configurableLabel(configurable)"
             :checked="getConfigurableValue(configurable)"
@@ -192,6 +192,24 @@
       specialAssignmentsListGetter () {
         const value = this.node.get("assignmentRules") || "[]";
         return JSON.parse(value);
+      },
+      optionsConfigurables () {
+        console.log(this.configurables);
+        let options = ['self_service', 'rule_expression'];
+        console.log(this.assignments);
+
+        if (this.assignment === 'user_group' && (this.assignments['groups'].length > 0 || this.assignments['users'].length > 0)) {
+          options.push('user_group');
+        }
+
+        let data = [];
+        this.configurables.forEach(element => {
+          if (!(options.includes(this.assignment) && element === 'ESCALATE_TO_MANAGER')) {
+              data.push(element);
+          }
+        });
+
+        return data;
       },
     },
     methods: {
