@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
 use DateTime;
 use Tests\TestCase;
 
@@ -50,5 +51,16 @@ class FormalExpressionTest extends TestCase
         $date = new DateTime("now", new \DateTimeZone('Africa/Djibouti'));
         $date->setTimestamp($timestamp);
         $this->assertEquals($date->format('Y-m-d H:i:s'), $feelDate);
+
+
+        // Set the current date and time in UTC for this test
+        $testNow = Carbon::setTestNow(new Carbon('2021-08-31 12:00:00', 'UTC'));
+        // Time config to test
+        $userScheduleTime = "08:00";
+        $formalExp->setBody("date('H:i', null, 'America/La_Paz')");
+        $feelDate = $formalExp([]);
+
+        // Check the expression date('H:i', null, user_tz) == user_schedule_time
+        $this->assertTrue($userScheduleTime === $feelDate);
     }
 }
