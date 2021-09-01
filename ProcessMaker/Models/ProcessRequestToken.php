@@ -6,10 +6,12 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\BpmnEngine;
+use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Models\Setting;
 use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
@@ -413,6 +415,25 @@ class ProcessRequestToken extends Model implements TokenInterface
     }
 
     /**
+     * Check if this task can be escalated to the manager by the assignee
+     * 
+     * @return true if the task can be escalated
+     * @throws AuthorizationException if it can not
+     */
+    public function authorizeAssigneeEscalateToManager()
+    {
+        $definitions = $this->getDefinition();
+        if (isset($definitions['config'])) {
+            $config = json_decode($definitions['config'], true);
+            if (Arr::get($config, 'assigneeManagerEscalation', false)) {
+                return true;
+            }
+        }
+        
+        throw new AuthorizationException("Not authorized to escalate to manager");
+    }
+
+    /**
      * Scheduled task for this token
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -780,16 +801,10 @@ class ProcessRequestToken extends Model implements TokenInterface
      */
     public function escalateToManager()
     {
-        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
-        if ($assignmentProcesss) {
-            $res = WorkflowManager::runProcess($assignmentProcesss, 'escalate', [
-                'task_id' => $this->id,
-                'user_id' => $this->user_id,
-                'process_id' => $this->process_id,
-                'request_id' => $this->process_request_id,
-            ]);
-            $this->user_id = $res['assign_to'];
-            return $res['assign_to'];
+        if (app()->bound('workflow.UserManager')) {
+            $escalateTo = WorkflowUserManager::escalateToManager($this, $this->user_id);
+            $this->user_id = $escalateTo;
+            return $escalateTo;
         }
         return $this->user_id;
     }
