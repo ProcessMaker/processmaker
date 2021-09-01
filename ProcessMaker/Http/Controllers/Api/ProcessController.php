@@ -908,7 +908,6 @@ class ProcessController extends Controller
             }
 
             $process->bpmn = $definitions->saveXML();
-            $process->saveOrFail();
         }
 
         //If we are specifying cancel assignments...
@@ -920,6 +919,13 @@ class ProcessController extends Controller
         if ($request->has('edit_data')) {
             $this->editDataAssignments($process, $request);
         }
+
+        //If we are specifying a manager id
+        if ($request->has('manager_id')) {
+            $process->manager_id = $request->input('manager_id');
+        }
+            
+        $process->saveOrFail();
 
         return response([
             'process' => $process->refresh()
