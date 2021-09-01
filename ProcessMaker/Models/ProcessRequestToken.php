@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Facades\WorkflowManager;
@@ -411,6 +412,25 @@ class ProcessRequestToken extends Model implements TokenInterface
         } else {
             throw new AuthorizationException("Not authorized to view this task");
         }
+    }
+
+    /**
+     * Check if this task can be escalated to the manager by the assignee
+     * 
+     * @return true if the task can be escalated
+     * @throws AuthorizationException if it can not
+     */
+    public function authorizeAssigneeEscalateToManager()
+    {
+        $definitions = $this->getDefinition();
+        if (isset($definitions['config'])) {
+            $config = json_decode($definitions['config'], true);
+            if (Arr::get($config, 'assigneeManagerEscalation', false)) {
+                return true;
+            }
+        }
+        
+        throw new AuthorizationException("Not authorized to escalate to manager");
     }
 
     /**

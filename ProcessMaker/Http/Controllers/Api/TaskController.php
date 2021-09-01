@@ -316,6 +316,7 @@ class TaskController extends Controller
                 $task->persistUserData($userToAssign);
             } elseif ($userToAssign === '#manager') {
                 // Reassign to manager
+                $task->authorizeAssigneeEscalateToManager();
                 $userToAssign = $task->escalateToManager();
                 $task->persistUserData($userToAssign);
             } else {
