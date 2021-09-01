@@ -8,9 +8,11 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Managers\SignalManager;
+use ProcessMaker\Traits\HasControllerAddons;
 
 class ModelerController extends Controller
 {
+    use HasControllerAddons;
 
     /**
      * Invokes the Process Modeler for rendering.

@@ -1516,5 +1516,7 @@
   "BPMN validation issues. Request cannot be started.": "BPMN validation issues. Request cannot be started.",
   "Process Manager not configured.": "Process Manager not configured.",
   "Out of Office": "Out of Office",
-  "Scheduled": "Scheduled"
+  "Scheduled": "Scheduled",
+  "Lock User Assignment": "Lock User Assignment",
+  "Assignee Manager Escalation": "Assignee Manager Escalation"
 }
