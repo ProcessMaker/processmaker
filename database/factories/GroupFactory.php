@@ -12,7 +12,11 @@ $factory->define(Group::class, function (Faker $faker) {
         'name' => $faker->sentence(3),
         'description' => $faker->sentence,
         'manager_id' => function () {
-            return factory(User::class)->create()->getKey();
+            $userId = null;
+            if (hasPackage('package-advanced-user-manager')) {
+                $userId =  factory(User::class)->create()->getKey();
+            }
+            return $userId;
         },
         'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
     ];
