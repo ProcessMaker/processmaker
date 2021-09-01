@@ -30,6 +30,9 @@ $factory->define(ProcessRequest::class, function (Faker $faker) {
         },
         'process_collaboration_id' => function () {
             return factory(ProcessCollaboration::class)->create()->getKey();
+        },
+        'process_version_id' => function(array $processRequest) {
+            return Process::find($processRequest['process_id'])->getLatestVersion()->id;
         }
     ];
 });
