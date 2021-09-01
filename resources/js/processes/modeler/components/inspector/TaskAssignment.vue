@@ -194,9 +194,7 @@
         return JSON.parse(value);
       },
       optionsConfigurables () {
-        console.log(this.configurables);
         let options = ['self_service', 'rule_expression'];
-        console.log(this.assignments);
 
         if (this.assignment === 'user_group' && (this.assignments['groups'].length > 0 || this.assignments['users'].length > 0)) {
           options.push('user_group');
