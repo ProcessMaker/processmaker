@@ -563,6 +563,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      */
     private function checkAssignment(ProcessRequest $request, ActivityInterface $activity, $assignmentType, $escalateToManager, User $user = null)
     {
+        if ($activity instanceof ScriptTaskInterface
+            || $activity instanceof ServiceTaskInterface) {
+            return $user;
+        }
         if ($user === null) {
             if ($assignmentType === 'self_service' && !$escalateToManager) {
                 return null;
