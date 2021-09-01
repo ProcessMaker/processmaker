@@ -13,7 +13,8 @@ class GroupTest extends TestCase
      */
     public function testGroupWithManager()
     {
-        $group = \factory(Group::class)->make();
+        $manager = factory(User::class)->create();
+        $group = factory(Group::class)->create(['manager_id' => $manager->id]);
         $this->assertInstanceOf(Group::class, $group);
         $this->assertInstanceOf(User::class, $group->manager);
         $this->assertEquals($group->manager_id, $group->manager->id);
