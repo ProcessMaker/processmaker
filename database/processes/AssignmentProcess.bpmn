@@ -43,14 +43,14 @@
       <bpmn:outgoing>node_16</bpmn:outgoing>
       <bpmn:outgoing>node_22</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="node_14" name="SCHEDULED" sourceRef="node_11" targetRef="node_13" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;schedule&#34;,&#34;expression&#34;:&#34;get(user(user_id).schedule, date(\&#34;D\&#34;))&#34;}}">
+    <bpmn:sequenceFlow id="node_14" name="SCHEDULED" sourceRef="node_11" targetRef="node_13" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;schedule&#34;,&#34;expression&#34;:&#34;get(user(user_id).schedule, date(\&#34;D\&#34;, null, user(user_id).timezone))&#34;}}">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).status=="SCHEDULED"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:endEvent id="node_15" name="Assign to user_id">
       <bpmn:incoming>node_16</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="node_16" name="IN SCHEDULE" sourceRef="node_13" targetRef="node_15" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;assign_to&#34;,&#34;expression&#34;:&#34;user_id&#34;}}">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">schedule.active and ((schedule.from &lt; schedule.to and date("H:i") &gt;= schedule.from and date("H:i") &lt; schedule.to) or (schedule.from &gt; schedule.to and (date("H:i") &gt;= schedule.from or date("H:i") &lt; schedule.to)))</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">schedule.active and ((schedule.from &lt; schedule.to and date(&quot;H:i&quot;, null, user(user_id).timezone) &gt;= schedule.from and date(&quot;H:i&quot;,null, user(user_id).timezone) &lt; schedule.to) or (schedule.from &gt; schedule.to and (date(&quot;H:i&quot;, null, user(user_id).timezone) &gt;= schedule.from or date(&quot;H:i&quot;, null, user(user_id).timezone) &lt; schedule.to)))</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="node_21" name="" sourceRef="node_11" targetRef="node_6">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
@@ -135,7 +135,7 @@
     <bpmn:sequenceFlow id="node_28" name="" sourceRef="node_8" targetRef="node_39">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" />
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="node_29" name="SCHEDULED" sourceRef="node_8" targetRef="node_19" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;schedule&#34;,&#34;expression&#34;:&#34;get(user(user_id).schedule, date(\&#34;D\&#34;))&#34;}}">
+    <bpmn:sequenceFlow id="node_29" name="SCHEDULED" sourceRef="node_8" targetRef="node_19" pm:config="{&#34;update_data&#34;:{&#34;variable&#34;:&#34;schedule&#34;,&#34;expression&#34;:&#34;get(user(user_id).schedule, date(\&#34;D\&#34;, null, user(user_id).timezone))&#34;}}">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">user(user_id).status=="SCHEDULED"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="node_30" name="" sourceRef="node_19" targetRef="node_39">
@@ -145,7 +145,7 @@
       <bpmn:incoming>node_32</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="node_32" name="IN SCHEDULE" sourceRef="node_19" targetRef="node_31">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">schedule.active and ((schedule.from &lt; schedule.to and date("H:i") &gt;= schedule.from and date("H:i") &lt; schedule.to) or (schedule.from &gt; schedule.to and (date("H:i") &gt;= schedule.from or date("H:i") &lt; schedule.to)))</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">schedule.active and ((schedule.from &lt; schedule.to and date("H:i", null, user(user_id).timezone) &gt;= schedule.from and date("H:i", null, user(user_id).timezone) &lt; schedule.to) or (schedule.from &gt; schedule.to and (date("H:i", null, user(user_id).timezone) &gt;= schedule.from or date("H:i", null, user(user_id).timezone) &lt; schedule.to)))</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:startEvent id="node_43" name="escalate task">
       <bpmn:outgoing>node_51</bpmn:outgoing>
@@ -402,3 +402,5 @@
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
+
+
