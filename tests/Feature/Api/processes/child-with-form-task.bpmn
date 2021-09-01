@@ -7,7 +7,7 @@
     <bpmn:endEvent id="node_9" name="End Event" pm:screenRef="">
       <bpmn:incoming>node_6</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:task id="node_2" name="w2" pm:screenRef="2" pm:allowInterstitial="false" pm:assignment="user_group" pm:assignedUsers="2" pm:assignedGroups="" pm:assignmentLock="false" pm:allowReassignment="false">
+    <bpmn:task id="node_2" name="w2" pm:screenRef="2" pm:allowInterstitial="false" pm:assignment="user_group" pm:assignedUsers="1" pm:assignedGroups="" pm:assignmentLock="false" pm:allowReassignment="false">
       <bpmn:incoming>node_4</bpmn:incoming>
       <bpmn:outgoing>node_6</bpmn:outgoing>
     </bpmn:task>
