@@ -19,6 +19,7 @@ use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -550,20 +551,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     {
         if ($user) {
             $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
-            if ($assignmentProcesss) {
+            if (app()->bound('workflow.UserManager') && $assignmentProcesss) {
                 $config = json_decode($activity->getProperty('config', '{}'), true);
                 $escalateToManager = $config['escalateToManager'] ?? false;
                 if ($escalateToManager) {
-                    $assignedGroups = $activity->getProperty('assignedGroups', '');
-                    $assignedGroups = $assignedGroups ? \explode(',', $assignedGroups) : [];
-                    $res = WorkflowManager::runProcess($assignmentProcesss, 'escalate', [
-                        'assignment_type' => $assignmentType,
-                        'assigned_groups' => $assignedGroups,
-                        'user_id' => $user,
-                        'process_id' => $this->id,
-                        'request_id' => $token->getInstance()->getId(),
-                    ]);
-                    $user = $res['assign_to'];
+                    $user = WorkflowUserManager::escalateToManager($token, $user);
                 } else {
                     $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
                         'user_id' => $user,

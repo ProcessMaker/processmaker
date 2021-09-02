@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Models;
 
+use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
@@ -128,8 +129,16 @@ class FormalExpression implements FormalExpressionInterface
             'date',
             function () {
             },
-            function ($arguments, $a, $b = null) {
-                return date($a, $b ?: time());
+            function ($arguments, $a, $b = null, $timezone = null) {
+                if (empty($timezone)) {
+                    $timezone = config('app.timezone');
+                }
+                if ($b) {
+                    return Carbon::createFromTimestamp($b, $timezone)->format($a);
+                }
+                else {
+                    return Carbon::now($timezone)->format($a);
+                }
             }
         );
         // empty($name)
