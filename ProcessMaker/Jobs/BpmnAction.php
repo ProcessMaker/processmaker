@@ -33,6 +33,8 @@ abstract class BpmnAction implements ShouldQueue
 
     protected $tokenId = null;
 
+    protected $disableGlobalEvents = false;
+
     /**
      * Execute the job.
      *
@@ -82,12 +84,12 @@ abstract class BpmnAction implements ShouldQueue
             }
             $processModel = $instance->process;
             $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
-            $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
+            $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
             $instance = $engine->loadProcessRequest($instance);
         } else {
             $processModel = Definitions::find($this->definitionsId);
             $definitions = $processModel->getDefinitions();
-            $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
+            $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
             $instance = null;
         }
 

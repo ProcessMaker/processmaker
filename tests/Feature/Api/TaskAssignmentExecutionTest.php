@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use ProcessMaker\Exception\ThereIsNoProcessManagerAssignedException;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -283,5 +284,86 @@ class TaskAssignmentExecutionTest extends TestCase
         $this->assertIsArray($processRequest->data['_user']);
         $this->assertArrayHasKey('id', $processRequest->data['_user']);
         $this->assertEquals($this->user->id, $processRequest->data['_user']['id']);
+    }
+
+    /**
+     * Execute a process with Process Manager assignment
+     */
+    public function testProcessManagerAssignment()
+    {
+        $manager = factory(User::class)->create(['status'=>'ACTIVE']);
+
+        // Create a new process
+        $this->process = factory(Process::class)->create();
+
+        // Load process with single task assigned to Process Manager
+        $this->process->bpmn = file_get_contents(__DIR__ . '/processes/AssignedToProcessManager.bpmn');
+        $this->process->manager_id = $manager->id;
+        $this->process->save();
+
+        //Start a process request
+        $route = route('api.process_events.trigger',
+            [$this->process->id, 'event' => 'node_1']);
+        $data = [];
+        $response = $this->apiCall('POST', $route, $data);
+
+        //Verify status
+        $response->assertStatus(201);
+
+        //Verify the structure
+        $response->assertJsonStructure($this->requestStructure);
+        $request = $response->json();
+
+        $requestId = $request['id'];
+
+        $request = ProcessRequest::find($requestId);
+
+        //Token 0: user of event start
+        $this->assertEquals($this->user->id, $request->tokens[0]->user_id);
+
+        //Token 1: user of task should be Process Manager
+        $this->assertEquals($manager->id, $request->tokens[1]->user_id);
+    }
+
+    /**
+     * Execute a process with Process Manager assignment, but without a Manager defined
+     */
+    public function testProcessManagerAssignmentWithoutAManagerAssociated()
+    {
+        // Create a new process
+        $this->process = factory(Process::class)->create();
+
+        // Load process with single task assigned to Process Manager
+        $this->process->bpmn = file_get_contents(__DIR__ . '/processes/AssignedToProcessManager.bpmn');
+        $this->process->save();
+
+        //Start a process request
+        $route = route('api.process_events.trigger',
+            [$this->process->id, 'event' => 'node_1']);
+        $data = [];
+        $response = $this->apiCall('POST', $route, $data);
+
+        //Verify status
+        $response->assertStatus(201);
+
+        //Verify the structure
+        $response->assertJsonStructure($this->requestStructure);
+        $request = $response->json();
+
+        $requestId = $request['id'];
+
+        $request = ProcessRequest::find($requestId);
+
+        //Token 0: user of event start
+        $this->assertEquals($this->user->id, $request->tokens[0]->user_id);
+
+        //Token 1: user of task should be null
+        $this->assertEquals(null, $request->tokens[1]->user_id);
+
+        //Error message should be set
+        $task = $request->tokens[1]->getDefinition(true);
+        $error = new ThereIsNoProcessManagerAssignedException($task);
+        $this->assertEquals($error->getMessage(), $request->errors[0]['message']);
+        $this->assertEquals($task->getId(), $request->errors[0]['element_id']);
     }
 }

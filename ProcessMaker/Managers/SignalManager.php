@@ -215,7 +215,7 @@ class SignalManager
                 $carry->push ([
                     'id' => $node->parentNode->getAttribute('id'),
                     'name' => $node->parentNode->getAttribute('name'),
-                    'type' => $node->parentNode->localName
+                    'type' => $node->parentNode->localName,
                 ]);
             }
             return $carry;
