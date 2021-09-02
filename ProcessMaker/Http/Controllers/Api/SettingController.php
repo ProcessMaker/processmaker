@@ -258,7 +258,9 @@ class SettingController extends Controller
                     $settingsData[str_replace('.', '_', $item->key)] = $item->config;
                 }
                 $copyTo = $mustache->render(str_replace('.', '_', $setting->ui->copy_to), $settingsData);
-                copy (storage_path('app/private/settings/') . $collectionName, $copyTo);
+                if ($copyTo) {
+                    copy (storage_path('app/private/settings/') . $collectionName, $copyTo);
+                }
             }
 
             if (property_exists($setting->ui, 'dispatch_event') && $setting->ui->dispatch_event) {
