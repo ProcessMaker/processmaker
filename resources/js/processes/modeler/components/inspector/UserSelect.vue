@@ -47,7 +47,11 @@
     watch: {
       content: {
         handler() {
-          this.$emit("input", this.content.id);
+          if (!this.content) {
+            this.$emit("input", null);
+          } else {
+            this.$emit("input", this.content.id);
+          }
         }
       },
       value: {

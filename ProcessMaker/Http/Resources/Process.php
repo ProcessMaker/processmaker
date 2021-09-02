@@ -26,6 +26,7 @@ class Process extends ApiResource
         if (in_array('svg', $include)) {
             $array['svg'] = $this->svg;
         }
+        $array['manager_id'] = $this->manager_id;
         return $array;
     }
 }
