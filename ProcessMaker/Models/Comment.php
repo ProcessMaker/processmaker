@@ -123,4 +123,44 @@ class Comment extends Model
             ->where('commentable_type', Comment::class)
             ->with('user');
     }
+    
+    /**
+     * Get element_name attribute for notifications
+     */
+    public function getElementNameAttribute()
+    {
+        if ($this->commentable instanceof ProcessRequest) {
+            return $this->commentable->name;
+        } elseif ($this->commentable instanceof ProcessRequestToken) {
+            return $this->commentable->getDefinition()['name'];
+        } elseif ($this->commentable instanceof Media) {
+            return $this->commentable->manager_name;
+        } elseif ($this->commentable instanceof Comment) {
+            return $this->commentable->element_name;
+        } else {          
+            return get_class($this->commentable);
+        }
+    }
+    
+    /**
+     * Get url attribute for notifications
+     */
+    public function getUrlAttribute($id = null)
+    {
+        if (! $id) {
+            $id = $this->id;
+        }
+        
+        if ($this->commentable instanceof ProcessRequest) {
+            return sprintf('/requests/%s#comment-%s', $this->commentable->id, $id);
+        } elseif ($this->commentable instanceof ProcessRequestToken) {
+            return sprintf('/tasks/%s/edit#comment-%s', $this->commentable->id, $id);
+        } elseif ($this->commentable instanceof Media) {
+            return $this->commentable->manager_url;
+        } elseif ($this->commentable instanceof Comment) {
+            return $this->commentable->getUrlAttribute($this->id);
+        } else {          
+            return '/';
+        }
+    }
 }
