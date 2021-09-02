@@ -58,14 +58,6 @@
                             <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
                         <div class="form-group mt-3">
-                            {!! Form::label('manager_id', __('Group Manager')) !!}
-                            <user-select
-                                id="manager_id"
-                                v-model="formData.manager_id"
-                            ></user-select>
-                            <div class="invalid-feedback" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
-                        </div>
-                        <div class="form-group mt-3">
                             {!! Form::label('status', __('Status')) !!}
                             {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, [
                             'id' => 'status',

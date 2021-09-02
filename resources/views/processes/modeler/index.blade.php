@@ -59,6 +59,7 @@ div.main {
     process: @json($process),
     xml: @json($process->bpmn),
     processName: @json($process->name),
+    signalPermissions: @json($signalPermissions),
     // list of toggles in assignment rules
     configurables: ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT'],
     // list of items for assignment Types dropdown list
