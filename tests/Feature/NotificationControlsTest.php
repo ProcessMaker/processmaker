@@ -14,6 +14,8 @@ use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\ProcessNotificationSetting;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\User;
+use ProcessMaker\Notifications\ProcessCanceledNotification;
+use ProcessMaker\Notifications\ProcessCreatedNotification;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
@@ -46,12 +48,28 @@ class NotificationControlsTest extends TestCase
 
         // Get the process we'll be testing on
         $process = Process::where('name', 'Leave Absence Request')->first();
+        
+        // Assign a process manager
+        $process->manager_id = $adminUser->getKey();
+        $process->save();
+        
+        // Allow the process manager to receive canceled notificaitons
+        factory(ProcessNotificationSetting::class)->create([
+            'process_id' => $process->getKey(),
+            'notifiable_type' => 'manager',
+            'notification_type' => 'canceled',
+        ]);
 
         // Assert that our database has the notification settings we expect
         $this->assertDatabaseHas('process_notification_settings', [
             'process_id' => $process->id,
             'notifiable_type' => 'requester',
             'notification_type' => 'started',
+        ]);
+        $this->assertDatabaseHas('process_notification_settings', [
+            'process_id' => $process->id,
+            'notifiable_type' => 'manager',
+            'notification_type' => 'canceled',
         ]);
 
         // Assert that our database currently has no notifications
@@ -61,9 +79,26 @@ class NotificationControlsTest extends TestCase
         $url = route('api.process_events.trigger', [$process->id, 'event' => 'node_2']);
         $response = $this->apiCall('POST', $url);
         $response->assertStatus(201);
+        
+        // Obtain request ID
+        $responseId = $response->getData()->id;
 
-        // Assert that our database now has a notification
-        $this->assertDatabaseHas('notifications', ['type' => 'ProcessMaker\Notifications\ProcessCreatedNotification']);
+        // Assert that our database now has a process created notification
+        $this->assertDatabaseHas('notifications', [
+            'type' => ProcessCreatedNotification::class,
+        ]);
+        
+        // Cancel the process
+        $url = route('api.requests.update', [$responseId]);
+        $response = $this->apiCall('PUT', $url, ['status' => 'CANCELED']);
+        $response->assertStatus(204);
+        
+        // Assert that our database now has a process canceled notification
+        $this->assertDatabaseHas('notifications', [
+            'type' => ProcessCanceledNotification::class,
+            'notifiable_type' => User::class,
+            'notifiable_id' => $adminUser->getKey(),
+        ]);
     }
 
     /**

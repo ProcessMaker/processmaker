@@ -47,7 +47,7 @@ class CompileSass implements ShouldQueue
     public function handle()
     {
         chdir(app()->basePath());
-        $this->runCmd("docker run --rm -v $(pwd):$(pwd) -w $(pwd) processmaker4/docker-sass-compiler "
+        $this->runCmd("node_modules/sass/sass.js --no-source-map "
             . $this->properties['origin'] . ' ' . $this->properties['target']);
 
         if (Str::contains($this->properties['tag'], 'app')) {
