@@ -108,7 +108,7 @@ class RequestController extends Controller
         }
         $request->request_detail_screen = Screen::find($request->process->request_detail_screen_id);
 
-        $canCancel = Auth::user()->can('cancel', $request->process);
+        $canCancel = Auth::user()->can('cancel', $request->processVersion);
         $canViewComments = (Auth::user()->hasPermissionsFor('comments')->count() > 0) || class_exists(PackageServiceProvider::class);
         $canManuallyComplete = Auth::user()->is_administrator && $request->status === 'ERROR';
 

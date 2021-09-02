@@ -116,6 +116,14 @@ class ExportProcess implements ShouldQueue
         }
 
         $this->process->bpmn = $this->definitions->saveXML();
+
+        if (!is_array($this->process->properties)) {
+            $this->process->properties = [];
+        }
+        
+        $properties = $this->process->properties;
+        $properties['manager_id'] = null;
+        $this->process->properties = $properties;
     }
 
     private function assignedToAnonymous($task)
