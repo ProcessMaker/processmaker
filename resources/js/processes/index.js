@@ -1,5 +1,4 @@
 import Vue from "vue";
-import CreateProcessModal from "./components/CreateProcessModal";
 import ProcessesListing from "./components/ProcessesListing";
 import CategorySelect from "./categories/components/CategorySelect";
 
@@ -11,10 +10,8 @@ new Vue({
         filter: "",
         processModal: false,
         processId: null,
-        showModal: false,
     },
     components: {
-        CreateProcessModal,
         ProcessesListing
     },
     methods: {

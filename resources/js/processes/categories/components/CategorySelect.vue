@@ -1,8 +1,8 @@
 <template>
-  <div class="form-group" required>
-    <label>{{ $t(label) }}</label>
+  <div class="form-group">
+    <label :for="'category-select-' + _uid">{{ $t(label) }}<small class="ml-1">*</small></label>
     <multiselect v-model="content"
-                 :aria-label="$t(label)"
+                 :id="'category-select-' + _uid"
                  track-by="id"
                  label="name"
                  :class="{'border border-danger':error}"
@@ -13,7 +13,7 @@
                  :show-labels="false"
                  :searchable="true"
                  :internal-search="false"
-                 @open="load()"
+                 @open="load"
                  @search-change="load">
       <template slot="noResult">
         {{ $t('No elements found. Consider changing the search query.') }}
@@ -32,8 +32,13 @@
 
 
 <script>
+  import Multiselect from "vue-multiselect";
+
   export default {
     props: ["value", "errors", "label", "helper", "params", "apiGet", "apiList"],
+    components: {
+      Multiselect
+    },
     data() {
       return {
         content: [],
@@ -133,5 +138,5 @@
 </script>
 
 <style lang="scss" scoped>
-  @import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
+  @import "~vue-multiselect/dist/vue-multiselect.min.css";
 </style>

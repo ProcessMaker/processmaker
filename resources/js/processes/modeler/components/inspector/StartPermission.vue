@@ -10,14 +10,13 @@
                 <option value="">{{ $t('Select...') }}</option>
                 <option value="user">{{ $t('User') }}</option>
                 <option value="group">{{ $t('Group') }}</option>
-                <option value="process_manager">{{ $t('Process Manager') }}</option>
             </select>
             <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
         </div>
 
-        <div class="form-group" v-if="assignmentGetter && assignmentGetter !== 'process_manager'">
-            <label class="text-capitalize">{{ $t(assignmentGetter)}}</label>
-            <multiselect :aria-label="$t(assignmentGetter)"
+        <div class="form-group" v-if="assignmentGetter">
+            <label for="assignment_getter" class="text-capitalize">{{ $t(assignmentGetter)}}</label>
+            <multiselect id="assignment_getter"
                          v-model="content"
                          track-by="id"
                          label="name"
@@ -29,7 +28,7 @@
                          :show-labels="false"
                          :searchable="true"
                          :internal-search="false"
-                         @open="load()"
+                         @open="load"
                          @search-change="load"
                          :disabled="disabled">
                 <template slot="noResult" >
@@ -214,7 +213,7 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
+    @import "~vue-multiselect/dist/vue-multiselect.min.css";
 
     .form-group {
       padding: 0px;

@@ -45,7 +45,6 @@ use ProcessMaker\Repositories\BpmnDocument;
  * @property ProcessRequestLock[] $locks
  * @property ProcessRequestToken $ownerTask
  * @method static ProcessRequest find($id)
- * @method static ProcessRequest findOrFail($id)
  *
  * @OA\Schema(
  *   schema="processRequestEditable",
@@ -248,10 +247,10 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
         switch ($notifiableType) {
             case 'requester':
                 return collect([$this->user_id]);
+                break;
             case 'participants':
                 return $this->participants()->get()->pluck('id');
-            case 'manager':
-                return collect([$this->process()->first()->manager_id]);
+                break;
             default:
                 return collect([]);
         }
@@ -764,27 +763,23 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @return ProcessRequestLock
      */
-    public function requestLock($tokenId)
+    public function lock($tokenId)
     {
         return $this->locks()->create(['process_request_token_id' => $tokenId]);
     }
 
-    /**
-     * @return void
-     */
     public function unlock()
     {
-        $this->locks()->whereNotNull('due_at')->delete();
+        $first = $this->locks()->orderBy('id')->first();
+        if ($first) {
+            $first->delete();
+        }
     }
 
-    /**
-     * Get current lock for $this request
-     *
-     * @return ProcessRequestLock
-     */
-    public function currentLock()
+    public function hasLock(ProcessRequestLock $lock)
     {
-        return $this->locks()->whereNotDue()->orderBy('id')->limit(1)->first();
+        $first = $this->locks()->orderBy('id')->first();
+        return !$first || $first->getKey() === $lock->getKey();
     }
 
     /**

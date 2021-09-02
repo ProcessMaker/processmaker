@@ -25,7 +25,6 @@ class SettingObserver
         switch ($setting->format) {
             case 'text':
             case 'textarea':
-            case 'file':
             case 'choice':
                 $setting->config = $config;
                 break;

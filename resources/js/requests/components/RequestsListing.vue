@@ -27,6 +27,7 @@
           <avatar-image
             v-for="participant in props.rowData.participants"
             :key="participant.id"
+            class="d-inline-flex pull-left align-items-center"
             size="25"
             hide-name="true"
             :input-data="participant"

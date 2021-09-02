@@ -83,9 +83,7 @@ class RunServiceTask extends BpmnAction implements ShouldQueue
         } catch (Throwable $exception) {
             // Change to error status
             $token->setStatus(ServiceTaskInterface::TOKEN_STATE_FAILING);
-            $error = $element->getRepository()->createError();
-            $error->setName($exception->getMessage());
-            $token->setProperty('error', $error);
+            $token->getInstance()->logError($exception, $element);
             Log::info('Service task failed: ' . $implementation . ' - ' . $exception->getMessage());
         }
     }

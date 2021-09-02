@@ -18,7 +18,7 @@
     <div class="row">
       <div class="col-8">
         <div class="card card-body">
-        <img class="about-logo" src="/img/processmaker-login.svg" alt="ProcessMaker">
+        <img class="about-logo" src="/img/md-blk-logo.png">
         <hr>
         <div>{{ $version }}</div>
         <hr>

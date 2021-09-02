@@ -71,21 +71,15 @@
                                 :errors="errors.category"
                                 >
                             </category-select>
-                            <div class="form-group">
-                                <label class="typo__label">{{__('Process Manager')}}</label>
-                                <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
-                                </select-user>
-                                <div class="invalid-feedback" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
-                            </div>
                             <div class="form-group p-0">
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
                                 <multiselect id="cancelRequest"
                                              v-model="canCancel"
-                                             :options="activeUsersAndGroupsWithManager"
+                                             :options="activeUsersAndGroups"
                                              :multiple="true"
                                              :show-labels="false"
                                              placeholder="{{__('Type to search')}}"
-                                             track-by="id"
+                                             track-by="fullname"
                                              label="fullname"
                                              group-values="items"
                                              group-label="label">
@@ -97,14 +91,14 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('cancelScreen', __('Cancel Screen')) !!}
-                                <multiselect aria-label="{{ __('Cancel Screen') }}"
+                                <multiselect id="cancelScreen"
                                              v-model="screenCancel"
                                              :options="screens"
                                              :multiple="false"
                                              :show-labels="false"
                                              placeholder="{{ __('Type to search') }}"
                                              @search-change="loadScreens($event)"
-                                             @open="loadScreens()"
+                                             @open="loadScreens"
                                              track-by="id"
                                              label="title">
                                     <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
@@ -122,7 +116,7 @@
                                              :multiple="true"
                                              :show-labels="false"
                                              placeholder="{{__('Type to search')}}"
-                                             track-by="id"
+                                             track-by="fullname"
                                              label="fullname"
                                              group-values="items"
                                              group-label="label">
@@ -134,14 +128,14 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
-                                <multiselect aria-label="{{ __('Request Detail Screen') }}"
+                                <multiselect id="requestDetailScreen"
                                              v-model="screenRequestDetail"
                                              :options="screens"
                                              :multiple="false"
                                              :show-labels="false"
                                              placeholder="{{ __('Type to search') }}"
                                              @search-change="loadScreens($event)"
-                                             @open="loadScreens()"
+                                             @open="loadScreens"
                                              track-by="id"
                                              label="title">
                                     <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
@@ -170,92 +164,62 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="notify">{{__('Notify Process Manager')}}</td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-                                                    <input id="notify-manager-started" type="checkbox"
-                                                           v-model="formData.notifications.manager.started"
-                                                            class="custom-control-input">
-                                                    <label class="custom-control-label"
-                                                           for="notify-manager-started"></label>
-                                                </div>
-                                            </td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-                                                    <input id="notify-manager-canceled" type="checkbox"
-                                                           v-model="formData.notifications.manager.canceled"
-                                                           class="custom-control-input">
-                                                    <label class="custom-control-label"
-                                                           for="notify-manager-canceled"></label>
-                                                </div>
-                                            </td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-                                                    <input id="notify-manager-completed" type="checkbox"
-                                                           v-model="formData.notifications.manager.completed"
-                                                           class="custom-control-input">
-                                                    <label class="custom-control-label"
-                                                           for="notify-manager-completed"></label>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="notify">{{__('Notify Requester')}}</td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-                                                    <input id="notify-requester-started" type="checkbox"
-                                                           v-model="formData.notifications.requester.started"
-                                                            class="custom-control-input">
-                                                    <label class="custom-control-label"
-                                                           for="notify-requester-started"></label>
-                                                </div>
-                                            </td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-                                                    <input id="notify-requester-canceled" type="checkbox"
-                                                           v-model="formData.notifications.requester.canceled"
-                                                           class="custom-control-input">
-                                                    <label class="custom-control-label"
-                                                           for="notify-requester-canceled"></label>
-                                                </div>
-                                            </td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-                                                    <input id="notify-requester-completed" type="checkbox"
-                                                           v-model="formData.notifications.requester.completed"
-                                                           class="custom-control-input">
-                                                    <label class="custom-control-label"
-                                                           for="notify-requester-completed"></label>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="notify">{{__('Notify Participants')}}</td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-    
-                                                </div>
-                                            </td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-                                                    <input id="notify-participants-canceled" type="checkbox"
-                                                           v-model="formData.notifications.participants.canceled"
-                                                           class="custom-control-input">
-                                                    <label class="custom-control-label"
-                                                           for="notify-participants-canceled"></label>
-                                                </div>
-                                            </td>
-                                            <td class="action">
-                                                <div class="custom-control custom-switch">
-                                                    <input id="notify-participants-completed" type="checkbox"
-                                                           v-model="formData.notifications.participants.completed"
-                                                           class="custom-control-input">
-                                                    <label class="custom-control-label"
-                                                           for="notify-participants-completed"></label>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                    <tr>
+                                        <td class="notify">{{__('Notify Requester')}}</td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input id="notify-requester-started" type="checkbox"
+                                                       v-model="formData.notifications.requester.started"
+                                                        class="custom-control-input">
+                                                <label class="custom-control-label"
+                                                       for="notify-requester-started"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input id="notify-requester-canceled" type="checkbox"
+                                                       v-model="formData.notifications.requester.canceled"
+                                                       class="custom-control-input">
+                                                <label class="custom-control-label"
+                                                       for="notify-requester-canceled"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input id="notify-requester-completed" type="checkbox"
+                                                       v-model="formData.notifications.requester.completed"
+                                                       class="custom-control-input">
+                                                <label class="custom-control-label"
+                                                       for="notify-requester-completed"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="notify">{{__('Notify Participants')}}</td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input id="notify-participants-canceled" type="checkbox"
+                                                       v-model="formData.notifications.participants.canceled"
+                                                       class="custom-control-input">
+                                                <label class="custom-control-label"
+                                                       for="notify-participants-canceled"></label>
+                                            </div>
+                                        </td>
+                                        <td class="action">
+                                            <div class="custom-control custom-switch">
+                                                <input id="notify-participants-completed" type="checkbox"
+                                                       v-model="formData.notifications.participants.completed"
+                                                       class="custom-control-input">
+                                                <label class="custom-control-label"
+                                                       for="notify-participants-completed"></label>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -305,21 +269,8 @@
             screenRequestDetail: @json($screenRequestDetail),
             screenCancel: @json($screenCancel),
             activeUsersAndGroups: @json($list),
-            pause_timer_start_events: false,
-            manager: @json($process->manager),
+            pause_timer_start_events: false
           }
-        },
-        mounted() {
-            if (_.get(this.formData, 'properties.manager_can_cancel_request')) {
-                this.canCancel.push(this.processManagerOption());
-            }
-        },
-        computed: {
-            activeUsersAndGroupsWithManager() {
-                const usersAndGroups = _.cloneDeep(this.activeUsersAndGroups);
-                usersAndGroups[0]['items'].unshift(this.processManagerOption());
-                return usersAndGroups;
-            }
         },
         methods: {
           loadScreens(filter) {
@@ -346,7 +297,6 @@
 
             response['users'] = [];
             response['groups'] = [];
-            response['pseudousers'] = [];
 
             data.forEach(item => {
               if (item.type == 'user') {
@@ -355,10 +305,6 @@
 
               if (item.type == 'group') {
                 response['groups'].push(parseInt(item.id));
-              }
-              
-              if (item.type === 'pseudouser') {
-                response['pseudousers'].push(item.id);
               }
             });
             return response;
@@ -373,7 +319,6 @@
             this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
             this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
             this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
-            this.formData.manager_id = this.formatValueScreen(this.manager);
             ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
               .then(response => {
                 ProcessMaker.alert('{{__('The process was saved.')}}', 'success', 5, true);
@@ -386,13 +331,6 @@
                   that.errors = error.response.data.errors;
                 }
               });
-          },
-          processManagerOption() {
-            return {
-                type: 'pseudouser',
-                id: 'manager',
-                fullname: this.$t('Process Manager')
-            };
           }
         }
       });

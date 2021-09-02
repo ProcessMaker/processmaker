@@ -11,8 +11,7 @@ use ProcessMaker\Query\Traits\PMQL;
  * Represents a group definition.
  *
  * @property string $id
- * @property string $descripcion
- * @property User $manager
+ * @property string $name
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
@@ -20,7 +19,6 @@ use ProcessMaker\Query\Traits\PMQL;
  *   schema="groupsEditable",
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
- *   @OA\Property(property="manager_id", type="int", format="id"),
  *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
  * ),
  * @OA\Schema(
@@ -47,7 +45,6 @@ class Group extends Model
     protected $fillable = [
         'name',
         'description',
-        'manager_id',
         'status',
     ];
 
@@ -86,16 +83,6 @@ class Group extends Model
         return $this->groupMembers->where('member_type', User::class)->map(function ($member) {
             return $member->member;
         });
-    }
-
-    /**
-     * Manager of the group.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function manager()
-    {
-        return $this->belongsTo(User::class, 'manager_id');
     }
     
     public function getRecursiveUsersAttribute(Group $parent = null)

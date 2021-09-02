@@ -1,4 +1,20 @@
 import Vue from "vue";
 import SignalsListing from "./components/SignalListing";
 
-Vue.component('signals-listing', SignalsListing);
+new Vue({
+    el: "#listSignals",
+    data: {
+        filter: ""
+    },
+    components: {SignalsListing},
+    methods: {
+        reload () {
+            this.$refs.signalList.dataManager([
+                {
+                    field: "name",
+                    direction: "desc"
+                }
+            ]);
+        }
+    }
+});

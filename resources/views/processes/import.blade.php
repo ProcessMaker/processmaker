@@ -72,9 +72,8 @@
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
                                             <td class="assignable-entity">
-                                                <label for="search-task-text" class="d-none">{{__('Type to search task')}}</label>
-                                                <multiselect id="search-task-text"
-                                                             v-model="item.value"
+                                                <label for="process_name_filter" class="d-none">{{__('Type to search task')}}</label>
+                                                <multiselect id="search-task-text" v-model="item.value"
                                                              placeholder="{{__('Type to search task')}}"
                                                              :options="usersAndGroups"
                                                              :multiple="false"
@@ -87,7 +86,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true, 'task')"
-                                                             @open="loadUsers(null, true, 'task')"
+                                                             @open="loadUsers($event, true, 'task')"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -111,7 +110,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
-                                                             @open="loadUsers(null, true)"
+                                                             @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -133,7 +132,7 @@
                                                              label="fullname"
                                                              v-if="item.type == 'script'"
                                                              @search-change="loadUsers($event, false)"
-                                                             @open="loadUsers(null)"
+                                                             @open="loadUsers"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -155,7 +154,7 @@
                                                              label="name"
                                                              v-if="item.type == 'callActivity'"
                                                              @search-change="loadProcess($event)"
-                                                             @open="loadProcess(null)"
+                                                             @open="loadProcess"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -169,16 +168,6 @@
                                         <tr>
                                             <td class="assignable-name text-right">
                                                 {{ __('Assign') }}
-                                                <strong>{{ __('Process Manager') }}</strong> {{ __('to') }}
-                                                <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
-                                            </td>
-                                            <td class="assignable-entity">
-                                              <select-user v-model="manager" :multiple="false"></select-user>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="assignable-name text-right">
-                                                {{ __('Assign') }}
                                                 <strong>{{ __('Cancel Request') }}</strong> {{ __('to') }}
                                                 <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
                                             </td>
@@ -187,7 +176,7 @@
                                                 <multiselect id="search-user-groups-text"
                                                             v-model="cancelRequest"
                                                              placeholder="{{__('Type to search')}}"
-                                                             :options="usersAndGroupsWithManger"
+                                                             :options="usersAndGroups"
                                                              :multiple="true"
                                                              track-by="id"
                                                              :show-labels="false"
@@ -197,7 +186,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
-                                                             @open="loadUsers(null, true)"
+                                                             @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -228,7 +217,7 @@
                                                              group-values="items"
                                                              group-label="type"
                                                              @search-change="loadUsers($event, true)"
-                                                             @open="loadUsers(null, true)"
+                                                             @open="loadUsers($event, true)"
                                                              class="assignable-input">
                                                     <template slot="noResult" >
                                                         {{ __('No elements found. Consider changing the search query.') }}
@@ -346,7 +335,6 @@
           usersAndGroups: [],
           users: [],
           processes: [],
-          manager: null,
           cancelRequest: [],
           processEditData: [],
           importingCode: importingCode ? importingCode[1] : null,
@@ -356,24 +344,6 @@
             value = value.toString();
             return value.charAt(0).toUpperCase() + value.slice(1);
           }
-        },
-        computed: {
-          usersAndGroupsWithManger() {
-            const usersAndGroups = _.cloneDeep(this.usersAndGroups);
-            const users = _.get(usersAndGroups, '0.items');
-            if (!users) {
-              return [];
-            }
-            users.unshift(this.managerOption);
-            _.set(usersAndGroups, '0.items', users);
-            return usersAndGroups;
-          },
-          managerOption() {
-            return {
-                id: 'manager',
-                fullname: this.$t('Process Manager')
-            };
-          },
         },
         methods: {
           loadUsers(filter, getGroups, type) {
@@ -449,9 +419,7 @@
             response['groups'] = [];
 
             data.forEach(item => {
-              if (item.id === 'manager') {
-                response['pseudousers'] = ['manager'];
-              } else if (typeof item.id === "number") {
+              if (typeof item.id === "number") {
                 response['users'].push(parseInt(item.id));
               } else {
                 id = item.id.split('-');
@@ -465,8 +433,7 @@
               {
                 "assignable": this.assignable,
                 'cancel_request': this.formatAssignee(this.cancelRequest),
-                'edit_data': this.formatAssignee(this.processEditData),
-                'manager_id': this.manager,
+                'edit_data': this.formatAssignee(this.processEditData)
               })
               .then(response => {
                 ProcessMaker.alert(this.$t('All assignments were saved.'), 'success');
@@ -532,11 +499,6 @@
             }
             this.assignable = response.data.assignable;
             this.processId = response.data.process.id;
-            
-            if (_.get(response, 'data.process.properties.manager_can_cancel_request', false)) {
-              this.cancelRequest.push(this.managerOption);
-            }
-
             message = this.$t('The process was imported.');
             let variant = 'success';
             for (let item in this.options) {

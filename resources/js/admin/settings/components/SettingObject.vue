@@ -58,9 +58,11 @@
 
 <script>
 import settingMixin from "../mixins/setting";
+import Multiselect from 'vue-multiselect'
 
 export default {
   mixins: [settingMixin],
+  components: { Multiselect },
   props: ['value', 'setting'],
   data() {
     return {

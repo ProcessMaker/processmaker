@@ -58,51 +58,12 @@ class DataManager
     /**
      * Get data for the $token
      *
-     * @param ProcessRequestToken|null $token
+     * @param ProcessRequestToken $token
      * @param bool $whenTokenSaved If true returns the Request Data as when the Token was saved
      *
      * @return array
      */
-    public function getData(ProcessRequestToken $token = null, bool $whenTokenSaved = false)
-    {
-        $data = [];
-        $data = $this->loadUserData($data, $token);
-        if ($token) {
-            $data = $this->loadTokenData($data, $token, $whenTokenSaved);
-        }
-        return $data;
-    }
-
-    /**
-     * Load magic variable _user 
-     *
-     * @param array $data
-     * @param ProcessRequestToken $token
-     *
-     * @return array
-     */
-    private function loadUserData(array $data = [], ProcessRequestToken $token = null)
-    {
-        // Magic Variable: _user
-        $user = $token && $token->user ? $token->user : Auth::user();
-        if ($user) {
-            $userData = $user->attributesToArray();
-            unset($userData['remember_token']);
-            $data['_user'] = $userData;
-        }
-        return $data;
-    }
-
-    /**
-     * Load data that $token can see in the $request
-     *
-     * @param array $data
-     * @param ProcessRequestToken|null $token
-     * @param boolean $whenTokenSaved
-     *
-     * @return array
-     */
-    private function loadTokenData(array $data = [], ProcessRequestToken $token = null, bool $whenTokenSaved = false)
+    public function getData(ProcessRequestToken $token, bool $whenTokenSaved = false)
     {
         if ($token->isMultiInstance()) {
             $data = $token->getProperty('data', ($token->token_properties ?? [])['data'] ?? []) ?: [];

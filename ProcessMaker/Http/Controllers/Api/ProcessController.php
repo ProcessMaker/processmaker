@@ -11,7 +11,6 @@ use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Http\Resources\ProcessCollection;
 use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Models\Process;
@@ -97,7 +96,7 @@ class ProcessController extends Controller
             ->where($where)
             ->get();
 
-        return new ProcessCollection($processes);
+        return new ApiCollection($processes);
     }
 
     /**
@@ -261,8 +260,16 @@ class ProcessController extends Controller
         }
 
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
-        if ($request->has('manager_id')) {
-            $process->manager_id = $request->input('manager_id', null);
+
+        // Catch errors to send more specific status
+        try {
+            $process->saveOrFail();
+        } catch (TaskDoesNotHaveUsersException $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()]],
+                422
+            );
         }
 
         //If we are specifying cancel assignments...
@@ -285,42 +292,21 @@ class ProcessController extends Controller
             $this->saveTaskNotifications($process, $request);
         }
 
-        // Catch errors to send more specific status
-        try {
-            $process->saveOrFail();
-        } catch (TaskDoesNotHaveUsersException $e) {
-            return response(
-                ['message' => $e->getMessage(),
-                    'errors' => ['bpmn' => $e->getMessage()]],
-                422
-            );
-        }
-
         return new Resource($process->refresh());
     }
 
     private function cancelRequestAssignment(Process $process, Request $request)
     {
-        $cancelRequest = $request->input('cancel_request');
-
         //Adding method to users array
         $cancelUsers = [];
-        foreach ($cancelRequest['users'] as $item) {
+        foreach ($request->input('cancel_request')['users'] as $item) {
             $cancelUsers[$item] = ['method' => 'CANCEL'];
         }
 
         //Adding method to groups array
         $cancelGroups = [];
-        foreach ($cancelRequest['groups'] as $item) {
+        foreach ($request->input('cancel_request')['groups'] as $item) {
             $cancelGroups[$item] = ['method' => 'CANCEL'];
-        }
-
-        if (isset($cancelRequest['pseudousers'])) {
-            if (in_array('manager', $cancelRequest['pseudousers'])) {
-                $process->setProperty('manager_can_cancel_request', true);
-            } else {
-                $process->setProperty('manager_can_cancel_request', false);
-            }
         }
 
         //Syncing users and groups that can cancel this process
@@ -908,6 +894,7 @@ class ProcessController extends Controller
             }
 
             $process->bpmn = $definitions->saveXML();
+            $process->saveOrFail();
         }
 
         //If we are specifying cancel assignments...
@@ -919,13 +906,6 @@ class ProcessController extends Controller
         if ($request->has('edit_data')) {
             $this->editDataAssignments($process, $request);
         }
-
-        //If we are specifying a manager id
-        if ($request->has('manager_id')) {
-            $process->manager_id = $request->input('manager_id');
-        }
-            
-        $process->saveOrFail();
 
         return response([
             'process' => $process->refresh()

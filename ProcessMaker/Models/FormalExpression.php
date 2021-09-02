@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Models;
 
-use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use ProcessMaker\Exception\ExpressionFailedException;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
@@ -129,16 +128,8 @@ class FormalExpression implements FormalExpressionInterface
             'date',
             function () {
             },
-            function ($arguments, $a, $b = null, $timezone = null) {
-                if (empty($timezone)) {
-                    $timezone = config('app.timezone');
-                }
-                if ($b) {
-                    return Carbon::createFromTimestamp($b, $timezone)->format($a);
-                }
-                else {
-                    return Carbon::now($timezone)->format($a);
-                }
+            function ($arguments, $a, $b = null) {
+                return date($a, $b ?: time());
             }
         );
         // empty($name)
@@ -206,43 +197,6 @@ class FormalExpression implements FormalExpressionInterface
             },
             function ($__data, $str) {
                 return strtoupper($str);
-            }
-        );
-        // count($array)
-        $this->feelExpression->register(
-            'count',
-            function () {
-            },
-            function ($__data, $array) {
-                return count($array);
-            }
-        );
-        //group_manager($user_id, $assigned_groups)
-        $this->feelExpression->register(
-            'group_manager',
-            function () {
-            },
-            function ($__data, $user_id, $assigned_groups) {
-                if (!$user_id) {
-                    return null;
-                }
-                $user = User::find($user_id);
-                if (!$user) {
-                    return null;
-                }
-                $user_groups = $user->groups()->get();
-                foreach ($user_groups as $group) {
-                    if (in_array($group->id, $assigned_groups) && $group->manager_id) {
-                        return $group->manager_id;
-                    }
-                }
-                if (!$user->manager_id) {
-                    // If no manager is found, then assign the task to the Process Manager.
-                    $request = ProcessRequest::find($__data['_request']['id']);
-                    $process = $request->processVersion;
-                    return $process->manager_id;
-                }
-                return $user->manager_id;
             }
         );
 

@@ -131,7 +131,7 @@ class ProcessController extends Controller
      */
     private function listUsersAndGroups()
     {
-        $users = User::nonSystem()->active()->select('id', 'firstname', 'lastname')->get();
+        $users = User::active()->select('id', 'firstname', 'lastname')->get();
         $groups = Group::active()->select('id', 'name as fullname')->get();
 
         $users->map(function ($item) {
@@ -146,11 +146,11 @@ class ProcessController extends Controller
 
         return [
             [
-                'label' => __('Users'),
+                'label' => 'Users',
                 'items' => $users,
             ],
             [
-                'label' => __('Groups'),
+                'label' => 'Groups',
                 'items' => $groups,
             ],
         ];

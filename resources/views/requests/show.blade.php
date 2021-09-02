@@ -255,7 +255,8 @@
                                 <template>
                                     <li class="list-group-item">
                                         <h5>{{__('Cancel Request')}}</h5>
-                                        <button type="button" class="btn btn-outline-danger btn-block" @click="onCancel" aria-haspopup="dialog">
+                                        <button type="button" class="btn btn-outline-danger btn-block"
+                                                data-toggle="modal" data-target="#cancelModal">
                                             <i class="fas fa-stop-circle"></i> {{__('Cancel')}}
                                         </button>
                                     </li>
@@ -305,6 +306,30 @@
                         </ul>
                     </div>
                 </template>
+            </div>
+            <div class="modal" tabindex="-1" role="dialog" id="cancelModal">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{__('Caution!')}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p data-v-27f69fb6="" class=""><span
+                                        data-v-27f69fb6=""><b>{{__('Are you sure you want cancel this request ?')}}</b></span>
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    data-dismiss="modal">{{__('Cancel')}}</button>
+                            <button type="button" class="btn btn-secondary" @click="okCancel" :disabled="disabled">
+                                {{__('Confirm')}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -583,15 +608,8 @@
                 this.disabled = false;
               });
           },
-          onCancel() {
-            ProcessMaker.confirmModal(
-                this.$t("Caution!"),
-                this.$t('Are you sure you want cancel this request?'),
-                "",
-                () => {
-                  this.okCancel();
-                }
-            );
+          cancelRequest() {
+            this.showCancelRequest = true;
           },
           completeRequest() {
             ProcessMaker.confirmModal(

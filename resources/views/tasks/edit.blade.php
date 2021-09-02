@@ -114,7 +114,7 @@
                           <div v-if="task.definition.allowReassignment === 'true'">
                             <br>
                             <span>
-                                <button v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'" type="button" class="btn btn-outline-secondary btn-block"
+                                <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
                                         @click="show">
                                     <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                 </button>
@@ -170,11 +170,16 @@
                               </b-modal>
                             </span>
                           </div>
-                          @isset($assignedToAddons)
-                              @foreach ($assignedToAddons as $addon)
-                                  {!! $addon['content'] ?? '' !!}
-                              @endforeach
-                          @endisset
+                          <div v-if="taskDefinitionConfig.escalateToManager">
+                            <br>
+                            <span>
+                                <button v-if="task.advanceStatus === 'open' && !isSelfService" type="button" class="btn btn-outline-secondary btn-block"
+                                        @click="escalateToManager">
+                                    <i class="fas fa-user-friends"></i> {{__('Escalate the Manager')}}
+                                </button>
+                                <div v-else="isSelfService">{{ __('The task must be claimed to enable manager escalation.') }}</div>
+                            </span>
+                          </div>
                         </li>
                         <li class="list-group-item">
                             <i class="far fa-calendar-alt"></i>
@@ -228,7 +233,6 @@
     <script src="{{mix('js/tasks/show.js')}}"></script>
     <script>
       const main = new Vue({
-        mixins:addons,
         el: "#task",
         data: {
           //Edit data
@@ -252,7 +256,6 @@
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
-          submitting: false,
         },
         watch: {
           task: {
@@ -313,6 +316,18 @@
           }
         },
         methods: {
+          escalateToManager() {
+            ProcessMaker.confirmModal(
+              'Confirm action', 'Are you sure to scale this task?', '', () => {
+                ProcessMaker.apiClient
+                  .put("tasks/" + this.task.id, {
+                    user_id: '#manager',
+                  })
+                  .then(response => {
+                    this.redirect("/tasks");
+                  });
+              });
+          },
           completed(processRequestId) {
             // avoid redirection if using a customized renderer
             if(this.task.component && this.task.component === 'AdvancedScreenFrame') {
@@ -419,13 +434,8 @@
             if (this.isSelfService) {
               ProcessMaker.alert(this.$t('Claim the Task to continue.'), 'warning');
             } else {
-              if (this.submitting) {
-                return;
-              }
-
               let message = this.$t('Task Completed Successfully');
               const taskId = task.id;
-              this.submitting = true;
               ProcessMaker.apiClient
               .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
               .then(() => {
@@ -434,9 +444,7 @@
               .catch(error => {
                 // If there are errors, the user will be redirected to the request page
                 // to view error details. This is done in loadTask in Task.vue
-              }).finally(() => {
-                this.submitting = false;
-              })
+              });
             }
 
           },

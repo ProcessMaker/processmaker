@@ -2,7 +2,6 @@
 
 namespace ProcessMaker\Listeners;
 
-use Exception;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Bpmn\Events\ActivityActivatedEvent;
@@ -22,8 +21,6 @@ use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
-use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TransitionInterface;
 use ProcessMaker\Notifications\ProcessCreatedNotification;
 use ProcessMaker\Notifications\ProcessCompletedNotification;
@@ -118,23 +115,6 @@ class BpmnSubscriber
     public function onActivityClosed(ActivityClosedEvent $event)
     {
         Log::info('ActivityClosed: ' . json_encode($event->token->getProperties()));
-    }
-
-
-    /**
-     * When an activity fails
-     *
-     */
-    public function onActivityException(ActivityInterface $activity, ProcessRequestToken $token)
-    {
-        $error = $token->getProperty('error');
-        if ($error instanceof ErrorInterface) {
-            $msg = $error->getName();
-            $token->logError(new Exception($msg), $activity);
-        } elseif ($error) {
-            $msg = "$error";
-            $token->logError(new Exception($msg), $activity);
-        }
     }
 
     /**
@@ -247,8 +227,6 @@ class BpmnSubscriber
         $events->listen(ActivityInterface::EVENT_ACTIVITY_ACTIVATED, static::class . '@onActivityActivated');
         $events->listen(ScriptTaskInterface::EVENT_SCRIPT_TASK_ACTIVATED, static::class . '@onScriptTaskActivated');
         $events->listen(ServiceTaskInterface::EVENT_SERVICE_TASK_ACTIVATED, static::class . '@onServiceTaskActivated');
-
-        $events->listen(ActivityInterface::EVENT_ACTIVITY_EXCEPTION, static::class . '@onActivityException');
 
         $events->listen(IntermediateCatchEventInterface::EVENT_CATCH_TOKEN_ARRIVES, static::class . '@onIntermediateCatchEventActivated');
     }

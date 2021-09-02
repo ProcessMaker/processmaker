@@ -73,7 +73,6 @@
 </head>
 
 <body>
-<a class="skip-navigation alert alert-info" role="link" href="#main" tabindex="1">{{ __('Skip to Content') }}</a>
 <div class="d-flex w-100 mw-100 h-100 mh-100" id="app-container">
   <div id="sidebar" class="d-print-none" :class="{expanded: expanded}">
       @yield('sidebar')
@@ -83,7 +82,7 @@
         @include('layouts.navbar')
     </div>
     <div class="flex-grow-1 d-flex flex-column overflow-hidden h-100" id="mainbody">
-      <div id="main" class="main flex-grow-1 h-100 overflow-auto {{$content_margin ?? 'py-3'}}">
+      <div class="main flex-grow-1 h-100 overflow-auto {{$content_margin ?? 'py-3'}}">
         @yield('content')
       </div>
     </div>

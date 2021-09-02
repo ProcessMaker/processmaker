@@ -355,6 +355,10 @@ ProcessMaker.EventBus.$on(
             assignmentTypes: [
               {
                 value: '',
+                label: ''
+              },
+              {
+                value: '',
                 label: 'Anonymous'
               },
               {

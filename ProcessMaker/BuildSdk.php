@@ -9,7 +9,7 @@ use ProcessMaker\Events\BuildScriptExecutor;
 class BuildSdk {
     private $debug = true;
     private $image = "openapitools/openapi-generator-cli";
-    private $tag = "v5.1.1";
+    private $tag = "v4.2.2";
     private $lang = null;
     private $outputPath = null;
     private $jsonPath = null;

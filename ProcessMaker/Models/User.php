@@ -163,14 +163,13 @@ class User extends Authenticatable implements HasMedia
         };
 
         return [
-            // The following characters where not included in the regexp: & %  ' " ? /
-            'username' => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255' , $unique, $checkUserIsDeleted],
+            'username' => ['required', 'alpha_spaces', 'min:4', 'max:255' , $unique, $checkUserIsDeleted],
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
             'email' => ['required', 'email', $unique, $checkUserIsDeleted],
-            'phone' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
-            'fax' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
-            'cell' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
+            'phone' => ['nullable', 'regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
+            'fax' => ['nullable', 'regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
+            'cell' => ['nullable', 'regex:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.\/0-9]*$/'],
             'status' => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
             'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
             'birthdate' => 'date|nullable' 
@@ -393,13 +392,10 @@ class User extends Authenticatable implements HasMedia
     public function updatePermissionsToRequests()
     {
         // Update existing request_user_permissions
-        $permissions = RequestUserPermission::with('request')
-            ->select('request_user_permissions.*')
-            ->leftJoin('process_requests', 'request_user_permissions.request_id', '=', 'process_requests.id')
-            ->where('request_user_permissions.user_id', $this->getKey())
-            ->whereRaw('process_requests.updated_at > request_user_permissions.updated_at')
-            ->get();
-
+        $permissions = RequestUserPermission::with('request')->whereHas('request', function ($query) {
+            $query->where('request_user_permissions.user_id', $this->getKey());
+            $query->whereRaw('process_requests.updated_at > request_user_permissions.updated_at');
+        })->get();
         foreach ($permissions as $permission) {
             $permission->can_view = $this->can('view', $permission->request);
             $permission->save();

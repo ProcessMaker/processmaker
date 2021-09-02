@@ -22,10 +22,8 @@ use Laravel\Passport\Passport;
 use ProcessMaker\Models\Script;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\AnonymousUser;
-use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Policies\UserPolicy;
 use ProcessMaker\Models\Screen;
-use ProcessMaker\Policies\ProcessVersionPolicy;
 use ProcessMaker\Policies\ScreenPolicy;
 use ProcessMaker\Policies\ScriptPolicy;
 
@@ -45,7 +43,6 @@ class AuthServiceProvider extends ServiceProvider
         Media::class => MediaPolicy::class,
         Notification::class => NotificationPolicy::class,
         Process::class => ProcessPolicy::class,
-        ProcessVersion::class => ProcessVersionPolicy::class,
         ProcessRequest::class => ProcessRequestPolicy::class,
         ProcessRequestToken::class => ProcessRequestTokenPolicy::class,
         User::class => UserPolicy::class,

@@ -20,15 +20,7 @@
               pagination-path="meta"
               :noDataTemplate="$t('No Data Available')"
       >
-        <template slot="name" slot-scope="props">
-          {{props.rowData.name}}
-          <i tabindex="0"
-            v-if="props.rowData.warningMessages.length > 0"
-            v-b-tooltip
-            :title="props.rowData.warningMessages.join(' ')"
-            class="text-warning fa fa-exclamation-triangle">
-          </i>
-        </template>
+        <template slot="name" slot-scope="props">{{props.rowData.name}} <i v-if="props.rowData.warnings" v-b-tooltip.hover :title="$t('BPMN validation issues. Request cannot be started.')" class="text-warning fa fa-exclamation-triangle"></i></template>
 
         <template slot="owner" slot-scope="props">
           <avatar-image
@@ -345,27 +337,14 @@
                 "&include=categories,category,user"
             )
             .then(response => {
-              const data = this.addWarningMessages(response.data);
-              this.data = this.transform(data);
+              this.data = this.transform(response.data);
               this.apiDataLoading = false;
               this.apiNoResults = false;
               this.loading = false;
             });
-      },
-      addWarningMessages(data) {
-        data.data = data.data.map(process => {
-          process.warningMessages = [];
-          if (!process.manager_id) {
-            process.warningMessages.push(this.$t('Process Manager not configured.'));
-          }
-          if (process.warnings) {
-            process.warningMessages.push(this.$t('BPMN validation issues. Request cannot be started.'));
-          }
-          return process;
-        });
-        return data;
-      },
+      }
     },
+
     computed: {}
   };
 </script>

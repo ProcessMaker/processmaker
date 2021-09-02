@@ -2,7 +2,7 @@
 
 namespace ProcessMaker\Jobs;
 
-use Exception;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -31,10 +31,6 @@ abstract class BpmnAction implements ShouldQueue
      */
     protected $instance;
 
-    protected $tokenId = null;
-
-    protected $disableGlobalEvents = false;
-
     /**
      * Execute the job.
      *
@@ -42,15 +38,15 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
+        extract($this->loadContext());
+        $this->engine = $engine;
+        $this->instance = $instance;
+
+        //Do the action
+        $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
+
+        //Run engine to the next state
         try {
-            extract($this->loadContext());
-            $this->engine = $engine;
-            $this->instance = $instance;
-
-            //Do the action
-            $response = App::call([$this, 'action'], compact('definitions', 'instance', 'token', 'process', 'element', 'data', 'processModel'));
-
-            //Run engine to the next state
             $this->engine->runToNextState();
         } catch (Throwable $exception) {
             // Change the Request to error status
@@ -79,17 +75,14 @@ abstract class BpmnAction implements ShouldQueue
         //Load the process definition
         if (isset($this->instanceId)) {
             $instance = $this->lockInstance($this->instanceId);
-            if (!$instance) {
-                throw new Exception('Unable to lock instance ' . $this->instanceId);
-            }
             $processModel = $instance->process;
             $definitions = ($instance->processVersion ?? $instance->process)->getDefinitions(true);
-            $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
+            $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
             $instance = $engine->loadProcessRequest($instance);
         } else {
             $processModel = Definitions::find($this->definitionsId);
             $definitions = $processModel->getDefinitions();
-            $engine = app(BpmnEngine::class, ['definitions' => $definitions, 'globalEvents' => !$this->disableGlobalEvents]);
+            $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
             $instance = null;
         }
 
@@ -150,31 +143,21 @@ abstract class BpmnAction implements ShouldQueue
      */
     protected function lockInstance($instanceId)
     {
-        try {
-            $instance = ProcessRequest::findOrFail($instanceId);
-            if (config('queue.default') === 'sync') {
-                return $instance;
-            }
-            $lock = $instance->requestLock($this->tokenId);
-            for ($tries=0; $tries < 120; $tries++) {
-                $currentLock = $instance->currentLock();
-                if (!$currentLock) {
-                    if (ProcessRequest::find($instanceId)) {
-                        $lock = $instance->requestLock($this->tokenId);
-                    } else {
-                        return false;
-                    }
-                } elseif ($lock->id == $currentLock->id) {
-                    $instance->unlock();
-                    $lock->activate();
-                    return $instance;
-                }
+        $instance = ProcessRequest::findOrFail($instanceId);
+        if (config('queue.default') === 'sync') {
+            return $instance;
+        }
+        $lock = $instance->lock($this->tokenId ?? null);
+        do {
+            $ready = $instance->hasLock($lock);
+            if ($ready) {
+                $instance = ProcessRequest::findOrFail($instanceId);
+                $lock->save();
+            } else {
                 usleep(500);
             }
-        } catch (Throwable $exception) {
-            return false;
-        }
-        return false;
+        } while (!$ready);
+        return $instance;
     }
 
     /**

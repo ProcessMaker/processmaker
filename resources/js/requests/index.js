@@ -2,6 +2,7 @@ import Vue from "vue";
 import CounterCard from "./components/CounterCard";
 import CounterCardGroup from "./components/CounterCardGroup";
 import RequestsListing from "./components/RequestsListing";
+import Multiselect from 'vue-multiselect'
 import AdvancedSearch from "../components/AdvancedSearch";
 import AvatarImage from "../components/AvatarImage";
 Vue.component("avatar-image", AvatarImage);
@@ -14,7 +15,7 @@ new Vue({
         requester: [],
     },
     el: "#requests-listing",
-    components: { CounterCard, CounterCardGroup, RequestsListing, AdvancedSearch },
+    components: { CounterCard, CounterCardGroup, RequestsListing, Multiselect, AdvancedSearch },
     created() {
       let params = {};
 

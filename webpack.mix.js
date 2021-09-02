@@ -29,12 +29,6 @@ mix.webpackConfig({
   node: {fs: "empty"}
 });
 
-mix.options({
-  terser: {
-    parallel: true
-  }
-});
-
 mix.extract([
   "vue",
   "vue-router",

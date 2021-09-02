@@ -9,7 +9,6 @@ use DateTimeInterface;
 use DateTimeZone;
 use Exception;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use PDOException;
@@ -550,7 +549,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function evaluateConditionals()
     {
-        $processes = Process::where('conditional_events', '!=', DB::raw("json_array()"))->get();
+        $processes = Process::where('conditional_events', '!=', '[]')->get();
         foreach ($processes as $process) {
             StartEventConditional::dispatchNow($process);
         }

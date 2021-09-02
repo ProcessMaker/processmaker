@@ -604,49 +604,4 @@ class ExportImportTest extends TestCase
         $processId = $result->process->id;
         $this->apiCall('POST', "/processes/{$processId}/export");
     }
-
-    public function testExportImportWithProcessManager()
-    {
-        $process = factory(Process::class)->create(['name' => 'Manager test']);
-        $process->manager_id = 123;
-        $process->setProperty('manager_can_cancel_request', true);
-        $process->saveOrFail();
-        
-        $response = $this->apiCall('POST', "/processes/{$process->id}/export");
-        $response = $this->webCall('GET', $response->json('url'));
-        // Get our file contents (we have to do it this way because of
-        // Symfony's weird response API)
-        ob_start();
-        $content = $response->sendContent();
-        $content = ob_get_clean();
-
-        // Save the file contents and convert them to an UploadedFile
-        $fileName = tempnam(sys_get_temp_dir(), 'exported');
-        file_put_contents($fileName, $content);
-        $file = new UploadedFile($fileName, 'test.json', null, null, null, true);
-        
-        // Import the process
-        $response = $this->apiCall('POST', "/processes/import", ['file' => $file]);
-        $process = Process::find($response->json('process')['id']);
-        
-        $this->assertNull($process->manager);
-        $this->assertTrue($process->getProperty('manager_can_cancel_request'));
-
-        $managerUser = factory(User::class)->create();
-
-        $response = $this->apiCall('POST', '/processes/' . $process->id . '/import/assignments', [
-            'assignable' => [],
-            'manager_id' => $managerUser->id,
-            'cancel_request' => [
-                'users' => [],
-                'groups' => [],
-                'pseudousers' => [] // Remove the permission
-            ],
-        ]);
-
-        $process->refresh();
-        $this->assertFalse($process->getProperty('manager_can_cancel_request'));
-        $this->assertEquals($managerUser->id, $process->manager->id);
-
-    }
 }

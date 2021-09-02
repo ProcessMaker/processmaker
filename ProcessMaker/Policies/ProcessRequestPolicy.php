@@ -66,9 +66,9 @@ class ProcessRequestPolicy
         if ($processRequest->user_id == $user->id) {
             return true;
         }
-        return $user->can('cancel', $processRequest->processVersion)
+        return $user->can('cancel', $processRequest->process)
             || $user->hasPermission('edit-request_data')
-            || $user->can('editData', $processRequest->processVersion);
+            || $user->can('editData', $processRequest->process);
     }    
 
     /**

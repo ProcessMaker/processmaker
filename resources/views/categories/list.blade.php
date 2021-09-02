@@ -16,7 +16,8 @@
             </div>
             @if ($config->permissions['create'])
                 <div class="d-flex ml-md-2 flex-column flex-md-row">
-                    <button type="button" class="btn btn-secondary" @click="showModal()" aria-label="{{ __('Create Category') }}" aria-haspopup="dialog">
+                    <button type="button" id="create_category" class="btn btn-secondary" data-toggle="modal"
+                            data-target="#createCategory" @click="emptyData">
                         <i class="fas fa-plus"></i> {{ __('Category') }}
                     </button>
                 </div>
@@ -38,23 +39,44 @@
     </categories-listing>
 
     @if ($config->permissions['create'] || $config->permissions['edit'])
-        <pm-modal ref="createCategoryModal" id="createCategoryModal" :title="getTitle()" @hidden="onClose" @ok.prevent="onSubmit" :ok-disabled="disabled" style="display: none;">
-            <div class="form-group">
-                {!!Form::label('category-name', __('Category Name'))!!}<small class="ml-1">*</small>
-                {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'id' => 'category-name',
-                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                <small class="form-text text-muted" v-if="! errors.name">
-                    {{ __('The category name must be distinct.') }}
-                </small>
-                <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+        <div class="modal fade" tabindex="-1" role="dialog" id="createCategory" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@{{ getTitle() }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}" @click="onClose">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            {!!Form::label('category-name', __('Category Name'))!!}<small class="ml-1">*</small>
+                            {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'id' => 'category-name',
+                            'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
+                            <small class="form-text text-muted" v-if="! errors.name">
+                                {{ __('The category name must be distinct.') }}
+                            </small>
+                            <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('status', __('Status')) !!}
+                            {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, ['id' => 'status',
+                            'class' => 'form-control', 'v-model' => 'status', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.status}']) !!}
+                            <div class="invalid-feedback" v-for="status in errors.status">@{{status}}</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" @click="onClose">
+                            {{ __('Cancel') }}
+                        </button>
+                        <button type="button" class="btn btn-secondary" @click="onSubmit" :disabled="disabled">
+                            {{ __('Save') }}
+                        </button>
+                    </div>
+                </div>
+
             </div>
-            <div class="form-group">
-                {!! Form::label('status', __('Status')) !!}
-                {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, ['id' => 'status',
-                'class' => 'form-control', 'v-model' => 'status', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.status}']) !!}
-                <div class="invalid-feedback" v-for="status in errors.status">@{{status}}</div>
-            </div>
-        </pm-modal>
+        </div>
     @endif
 
 </div>
@@ -93,11 +115,7 @@
             this.id = value.id;
             this.name = value.name;
             this.status = value.status;
-            this.$refs.createCategoryModal.show();
-          },
-          showModal() {
-            this.emptyData();
-            this.$refs.createCategoryModal.show();
+            $("#createCategory").modal("show");
           },
           onClose () {
             this.emptyData();
@@ -126,7 +144,7 @@
               }
             })
               .then((response) => {
-                this.$refs.createCategoryModal.hide();
+                $("#createCategory").modal("hide");
                 let message = "The category was created.";
                 if (this.id) {
                   message = "The category was saved.";

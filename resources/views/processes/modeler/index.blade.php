@@ -9,7 +9,6 @@
 @endsection
 
 @section('content')
-    <div class="sr-only">{{ __('A mouse and keyboard are required to use the modeler.') }}</div>
     <div id="modeler-app">
     </div>
 @endsection
@@ -60,18 +59,6 @@ div.main {
     xml: @json($process->bpmn),
     processName: @json($process->name),
     signalPermissions: @json($signalPermissions),
-    // list of toggles in assignment rules
-    configurables: ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT'],
-    // list of items for assignment Types dropdown list
-    assignmentTypes: [
-      { value: "user_group", label: "Users / Groups" },
-      { value: "previous_task_assignee", label: "Previous Task Assignee" },
-      { value: "requester", label: "Request Starter" },
-      { value: "user_by_id", label: "By User ID" },
-      { value: "self_service", label: "Self Service" },
-      { value: "rule_expression", label: "Rule Expression" },
-      { value: "process_manager", label: "Process Manager" },
-    ],
   }
   const warnings = @json($process->warnings);
  

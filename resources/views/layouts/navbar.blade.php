@@ -9,11 +9,11 @@
     </div>
 
     <b-collapse is-nav id="nav-collapse">
-        <confirmation-modal class="d-none d-lg-block" id="confirmModal" :show="confirmShow" :title="confirmTitle" :message="confirmMessage"
+        <confirmation-modal class="d-none d-lg-block" id="confirmModal" v-if='confirmShow' :title="confirmTitle" :message="confirmMessage"
                             :variant="confirmVariant" :callback="confirmCallback"
                             @close="confirmShow=false">
         </confirmation-modal>
-        <session-modal id="sessionModal" :shown="sessionShow" :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds"
+        <session-modal id="sessionModal" v-show='sessionShow' :title="sessionTitle" :message="sessionMessage" :time="sessionTime" :warn-seconds="sessionWarnSeconds"
                 @close="sessionShow=false">
         </session-modal>
         <div v-if="alerts.length > 0" class="alert-wrapper">
@@ -63,7 +63,7 @@
         @endphp
 
         <b-navbar-nav class="d-flex align-items-center" style="z-index:100">
-            <template v-for="item in {{ json_encode ($menuItems) }}">
+            <div v-for="item in {{ json_encode ($menuItems) }}">
                 <b-nav-item v-if="item.hasSubItems == false"
                             :href="item.link"
                             :link-classes="item.attributes.class_link"
@@ -85,15 +85,19 @@
                     </b-dropdown-item>
                 </b-nav-item-dropdown>
 
-            </template>
+            </div>
         </b-navbar-nav>
 
         <b-navbar-nav class="d-flex align-items-center ml-auto">
-            <component v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
+            <b-nav-item class="d-block">
+                <component id="navbar-request-button" v-bind:is="'request-modal'" url="{{ route('processes.index') }}" v-bind:permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"></component>
+            </b-nav-item>
 
             @can('view-notifications')
-                <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
-                </notifications>
+                <b-nav-item class="d-none d-lg-block">
+                    <notifications id="navbar-notifications-button" v-bind:is="'notifications'" v-bind:messages="messages">
+                    </notifications>
+                </b-nav-item>
             @endcan
             <li class="separator d-none d-lg-block"></li>
             <li class="d-none d-lg-block">

@@ -1,6 +1,5 @@
 <template>
   <multiselect
-    :id="'api-select-' + _uid"
     :value="selectedOption"
     @input="change"
     :placeholder="placeholder"
@@ -12,7 +11,7 @@
     :internal-search="false"
     :label="label"
     @search-change="loadOptions"
-    @open="loadOptions(null)"
+    @open="loadOptions"
   >
     <template slot="noResult">
       <slot name="noResult">{{ $t('Not found') }}</slot>

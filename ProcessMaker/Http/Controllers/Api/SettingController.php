@@ -4,8 +4,6 @@ namespace ProcessMaker\Http\Controllers\Api;
 
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\ApiResource;
@@ -230,42 +228,4 @@ class SettingController extends Controller
             ],
         ];
     }
-
-    public function upload(Request $request)
-    {
-        if (!Auth::user()->is_administrator) {
-            throw new AuthorizationException(__('Not authorized to complete this request.'));
-        }
-
-        $settingKey = $request->input('setting_key');
-        $setting = Setting::byKey($settingKey);
-        $this->uploadFile($setting->refresh(), $request, 'file', $settingKey, 'settings');
-    }
-
-    private function uploadFile(Setting $setting, Request $request, $filename, $collectionName, $diskName)
-    {
-        $data = $request->all();
-
-        if (isset($data[$filename]) && !empty($data[$filename]) && $data[$filename] != 'null') {
-            $disk = $setting->ui->is_public ? 'settings' : 'private_settings';
-            Storage::disk($disk)->put($collectionName, file_get_contents($request->file($filename)));
-            if (property_exists($setting->ui, 'copy_to') && $setting->ui->copy_to) {
-                //to use mustache replacement in destination file
-                $mustache = app(\Mustache_Engine::class);
-                $settings = Setting::all();
-                $settingsData = [];
-                foreach($settings as $item) {
-                    $settingsData[str_replace('.', '_', $item->key)] = $item->config;
-                }
-                $copyTo = $mustache->render(str_replace('.', '_', $setting->ui->copy_to), $settingsData);
-                copy (storage_path('app/private/settings/') . $collectionName, $copyTo);
-            }
-
-            if (property_exists($setting->ui, 'dispatch_event') && $setting->ui->dispatch_event) {
-                $eventClass = $setting->ui->dispatch_event;
-                event(new $eventClass($setting));
-            }
-        }
-    }
-
 }

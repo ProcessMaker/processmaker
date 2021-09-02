@@ -20,28 +20,28 @@
                     <tr>
                         <td align="center"><i class="fas fa-envelope fa-lg text-secondary pr-1"></i></td>
                         <td>{{__('Email')}}</td>
-                        <td width="100%"><a href="mailto:{{ ProcessMaker\SanitizeHelper::sanitizeEmail($user->email)}}">{{ ProcessMaker\SanitizeHelper::sanitizeEmail($user->email) }}</a></td>
+                        <td width="100%"><a href="mailto:{{ sanitizeEmail($user->email)}}">{{ sanitizeEmail($user->email) }}</a></td>
                     </tr>
                     @endif
                     @if($user->phone)
                     <tr>
                         <td align="center"><i class="fas fa-phone fa-lg text-secondary pr-1"></i></td>
                         <td>{{__('Phone')}}</td>
-                        <td><a href="{{'tel:' . ProcessMaker\SanitizeHelper::sanitizePhoneNumber($user->phone)}}">{{ ProcessMaker\SanitizeHelper::sanitizePhoneNumber($user->phone) }}</a></td>
+                        <td><a href="{{'tel:' . sanitizePhoneNumber($user->phone)}}">{{ sanitizePhoneNumber($user->phone) }}</a></td>
                     </tr>
                     @endif
                     @if ($user->fax)
                     <tr>
                         <td align="center"><i class="fas fa-fax fa-lg text-secondary pr-1"></i></td>
                         <td>{{__('Fax')}}</td>
-                        <td><a href="{{'tel:' . ProcessMaker\SanitizeHelper::sanitizePhoneNumber($user->fax)}}">{{ ProcessMaker\SanitizeHelper::sanitizePhoneNumber($user->fax) }}</a></td>
+                        <td><a href="{{'tel:' . sanitizePhoneNumber($user->fax)}}">{{ sanitizePhoneNumber($user->fax) }}</a></td>
                     </tr>
                     @endif
                     @if ($user->cell)
                     <tr>
                         <td align="center"><i class="fas fa-mobile-alt fa-lg text-secondary pr-1"></i></td>
                         <td>{{__('Cell')}}</td>
-                        <td><a href="{{'tel:' . ProcessMaker\SanitizeHelper::sanitizePhoneNumber($user->cell)}}">{{ ProcessMaker\SanitizeHelper::sanitizePhoneNumber($user->cell) }}</a></td>
+                        <td><a href="{{'tel:' . sanitizePhoneNumber($user->cell)}}">{{ sanitizePhoneNumber($user->cell) }}</a></td>
                     </tr>
                     @endif
 
