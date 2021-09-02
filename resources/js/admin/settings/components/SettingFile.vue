@@ -115,7 +115,7 @@ export default {
       this.loading = true;
       let formData = new FormData();
       formData.append('file', this.file);
-      formData.append('setting_key', 'services.ldap.certificate');
+      formData.append('setting_key', this.setting.key || 'services.ldap.certificate');
       ProcessMaker.apiClient.post('settings/upload-file',
           formData,
           {
@@ -127,18 +127,16 @@ export default {
         this.imported = true;
         this.changed = true;
       })
-          .catch((error) => {
-            console.log('ERROR', error);
-            if (error.response && error.response.data && error.response.data.error) {
-              message = this.$t(error.response.data.error);
-            }
-            ProcessMaker.alert(message, "danger");
-            this.loading = false;
-          });
+      .catch((error) => {
+        if (error.response && error.response.data && error.response.data.error) {
+          message = this.$t(error.response.data.error);
+          ProcessMaker.alert(message, "danger");
+        }
+        this.loading = false;
+      });
     },
   },
   mounted() {
-    console.log('mounted', this.value, this.setting);
     if (typeof this.value == 'object' || typeof this.value == 'array') {
       this.input = JSON.stringify(this.value, null, 2);
     } else {
@@ -148,7 +146,6 @@ export default {
     if (this.input == "null" || this.input === null) {
       this.input = '';
     }
-
 
     this.transformed = this.copy(this.input);
   }

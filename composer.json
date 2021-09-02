@@ -32,11 +32,14 @@
     "phing/phing": "^2.16",
     "pion/laravel-chunk-upload": "^1.4",
     "predis/predis": "^1.1",
+    "processmaker/connector-send-email": "^1.9",
     "processmaker/docker-executor-lua": "^1.0",
     "processmaker/docker-executor-node": "^1.0",
     "processmaker/docker-executor-php": "^1.0",
     "processmaker/laravel-i18next": "dev-master",
     "processmaker/nayra": "1.6.0",
+    "processmaker/package-advanced-user-manager": "^0.0.10",
+    "processmaker/package-auth": "^1.4",
     "processmaker/pmql": "1.4.0",
     "pusher/pusher-php-server": "^4.0",
     "ralouphie/getallheaders": "^2.0",
@@ -99,8 +102,20 @@
   },
   "repositories": [
     {
-        "type": "vcs",
-        "url": "https://github.com/ProcessMaker/SocialiteProviders"
+      "type": "vcs",
+      "url": "https://github.com/ProcessMaker/SocialiteProviders"
+    },
+    {
+      "type": "path",
+      "url": "/opt/github/package-advanced-user-manager"
+    },
+    {
+      "type": "path",
+      "url": "/opt/github/package-auth"
+    },
+    {
+      "type": "path",
+      "url": "/opt/github/connector-send-email"
     }
   ],
   "config": {
