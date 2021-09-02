@@ -228,10 +228,14 @@ export default {
             "id": this.assignedExpression.users[0].id,
           };
         } else if (this.assignedExpression.groups.length) {
+          let id = this.assignedExpression.groups[0].id;
+          if (this.assignedExpression.groups[0].id) {
+            id = this.assignedExpression.groups[0].id.replace('group-', '');
+          }
           field = {
             "type" : "group",
             "name": this.assignedExpression.groups[0].name,
-            "id": this.assignedExpression.groups[0].id.replace('group-', ''),
+            "id": id
           };
         }
         let byExpression = {
@@ -271,7 +275,7 @@ export default {
       if (this.specialAssignments[index].type == 'user') {
         assignee.users.push(this.specialAssignments[index].assignee);
       } else if (this.specialAssignments[index].type == 'group') {
-        assignee.groups.push(parseInt(this.specialAssignments[index].assignee.substr(6)));
+        assignee.groups.push(parseInt(this.specialAssignments[index].assignee.replace("group-", "")));
       }
 
       this.assignedExpression = assignee;
