@@ -28,6 +28,8 @@ class CallActivity implements CallActivityInterface
         catchSubprocessError as catchSubprocessErrorBase;
     }
 
+    private $subProcessRequestVersion;
+
     /**
      * Initialize the Call Activity element.
      *
@@ -62,12 +64,14 @@ class CallActivity implements CallActivityInterface
         $dataManager = new DataManager();
         $data = $dataManager->getData($token);
 
-        // Add info about parent
-        $data['_parent'] = [
-            'process_id' => $token->getInstance()->process_id,
-            'request_id' => $token->getInstance()->id,
-            'node_id' => $token->element_id,
-        ];
+        // Add info about parent (Note MultiInstance also adds _parent info)
+        if (!isset($data['_parent'])) {
+            $data['_parent'] = [];
+        }
+
+        $data['_parent']['process_id'] = $token->getInstance()->process_id;
+        $data['_parent']['request_id'] = $token->getInstance()->id;
+        $data['_parent']['node_id'] = $token->element_id;
 
         $configString = $this->getProperty('config');
         if ($configString) {
@@ -173,7 +177,11 @@ class CallActivity implements CallActivityInterface
             // Capability to reuse other processes inside a process
             $process = is_numeric($refs[1]) ? Process::findOrFail($refs[1]) : Process::where('package_key', $refs[1])->firstOrFail();
             $engine = $this->getProcess()->getEngine();
-            $definitions = $engine->getDefinition($process->getLatestVersion());
+            if ($this->subProcessRequestVersion) {
+                $definitions = $engine->getDefinition($this->subProcessRequestVersion);
+            } else {
+                $definitions = $engine->getDefinition($process->getLatestVersion());
+            }
             $response = $definitions->getElementInstanceById($refs[0]);
             return $response;
         }
@@ -203,6 +211,8 @@ class CallActivity implements CallActivityInterface
     public function addToken(ExecutionInstanceInterface $instance, TokenInterface $token)
     {
         if ($token->getStatus() === ActivityInterface::TOKEN_STATE_ACTIVE && !empty($token->subprocess_request_id)) {
+            // Set subprocess request (to get the right process version)
+            $this->subProcessRequestVersion = $token->subProcessRequest->processVersion;
             $subprocess = $this->getProcess()->getEngine()->loadProcessRequest($token->subProcessRequest);
             $this->linkProcesses($token, $subprocess);
         }

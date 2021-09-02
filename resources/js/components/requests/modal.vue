@@ -1,6 +1,6 @@
 <template>
-    <div v-cloak>
-        <button type="button" id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal">
+    <li class="nav-item p-2" v-cloak>
+        <button type="button" id="navbar-request-button" class="btn btn-success btn-sm" @click="showRequestModal" :aria-label="$t('New Request')" aria-haspopup="dialog">
             <i class="fas fa-plus"></i>
             {{$t('Request')}}
         </button>
@@ -70,7 +70,7 @@
             </pagination>
 
         </b-modal>
-    </div>
+    </li>
 </template>
 
 <script>

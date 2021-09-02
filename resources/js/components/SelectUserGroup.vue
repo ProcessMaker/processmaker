@@ -1,7 +1,8 @@
 <template>
     <div class="form-group">
         <label v-if="label">{{ label }}</label>
-        <multi-select
+        <multiselect
+            :id="'category-select-' + _uid"
             v-model="content"
             track-by="id"
             label="fullname"
@@ -10,13 +11,12 @@
             :class="{'border border-danger':error}"
             :loading="loading"
             :placeholder="$t('type here to search')"
-            :aria-label="$t('type here to search')"
             :options="options"
             :multiple="multiple"
             :show-labels="false"
             :searchable="true"
             :internal-search="false"
-            @open="load"
+            @open="load(null)"
             @search-change="load">
 
             <template slot="noResult">
@@ -25,7 +25,7 @@
             <template slot="noOptions">
                 <slot name="noOptions">{{ $t("No Data Available") }}</slot>
             </template>
-        </multi-select>
+        </multiselect>
 
         <small v-if="error" class="text-danger">{{ error }}</small>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
@@ -35,8 +35,6 @@
 </template>
 
 <script>
-  import MultiSelect from "vue-multiselect";
-
   const addUsernameToFullName = (user) => {
     if (!user.fullname || ! user.username)
     {
@@ -46,9 +44,6 @@
   };
 
   export default {
-    components: {
-      MultiSelect
-    },
     props: {
       value: null,
       label: {

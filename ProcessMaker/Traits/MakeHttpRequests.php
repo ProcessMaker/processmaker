@@ -149,7 +149,8 @@ trait MakeHttpRequests
      */
     private function prepareRequestWithOutboundConfig(array $requestData, array &$config)
     {
-        $data = $this->prepareData($requestData, $config['outboundConfig'], 'PARAM');
+        $outboundConfig = $config['outboundConfig'] ?? [];
+        $data = $this->prepareData($requestData, $outboundConfig, 'PARAM');
         $endpoint = $this->endpoints[$config['endpoint']];
         $method = $this->getMustache()->render($endpoint['method'], $data);
 
@@ -159,9 +160,9 @@ trait MakeHttpRequests
             ? $this->credentials['verify_certificate']
             : true;
 
-        $data = $this->prepareData($requestData, $config['outboundConfig'], 'HEADER');
+        $data = $this->prepareData($requestData, $outboundConfig, 'HEADER');
         $headers = $this->addHeaders($endpoint, $config, $data);
-        $data = $this->prepareData($requestData, $config['outboundConfig'], 'BODY');
+        $data = $this->prepareData($requestData, $outboundConfig, 'BODY');
         $body = $this->getMustache()->render($endpoint['body'], $data);
         $bodyType = null;
         if (isset($endpoint['body_type'])) {

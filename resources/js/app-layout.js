@@ -5,7 +5,7 @@ import sessionModal from "./components/Session";
 import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
-import Multiselect from "vue-multiselect/src/Multiselect";
+import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
 import SelectUser from "./components/SelectUser";
 import SelectUserGroup from "./components/SelectUserGroup";
 import CategorySelect from "./processes/categories/components/CategorySelect";

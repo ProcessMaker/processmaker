@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import ScreenListing from './components/ScreenListing'
+import CreateScreenModal from './components/CreateScreenModal'
 import CategorySelect from "../categories/components/CategorySelect";
 
 Vue.component('category-select', CategorySelect);
@@ -12,6 +13,7 @@ new Vue({
         screenId: null
     },
     components: {
+        CreateScreenModal,
         ScreenListing,
     },
     methods: {

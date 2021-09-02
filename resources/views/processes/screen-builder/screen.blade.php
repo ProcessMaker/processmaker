@@ -17,6 +17,7 @@
 @endsection
 
 @section('content')
+    <div class="sr-only">{{ __('A mouse and keyboard are required to use screen builder.') }}</div>
     <div id="screen-container" style="display: contents !important">
         <component :is="'{{ $screen->builderComponent() }}'" :screen="{{ $screen }}"
                    :permission="{{ \Auth::user()->hasPermissionsFor('screens') }}">

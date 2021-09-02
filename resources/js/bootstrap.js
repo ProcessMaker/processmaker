@@ -60,12 +60,14 @@ import Pagination from "./components/common/Pagination";
 import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
 import MonacoEditor from "vue-monaco";
 import RequestChannel from './tasks/components/ProcessRequestChannel';
+import Modal from "./components/shared/Modal";
 
 window.Vue.use(VueI18Next);
 VuetableInstall(window.Vue);
 window.Vue.component('pagination', Pagination);
 window.Vue.component('monaco-editor', MonacoEditor);
 window.Vue.component('screen-select', ScreenSelect);
+window.Vue.component('pm-modal', Modal);
 let translationsLoaded = false
 let mdates = JSON.parse(
     document.head.querySelector("meta[name=\"i18n-mdate\"]").content

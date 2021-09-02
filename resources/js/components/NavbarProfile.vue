@@ -8,50 +8,50 @@
         class-image="m-0"
         :input-data="information"
         hide-name="true"
+        popover
+        ref="userMenuButton"
       ></avatar-image>
     </div>
 
-    <b-popover target="profileMenu" placement="bottomleft" offset="3" triggers="click blur">
-      <template>
+    <b-popover container="#userMenu" :target="getTarget" placement="bottomleft" offset="3" triggers="click blur" @shown="onShown" @hidden="onHidden">
         <ul class="list-group list-group-flush px-1">
           <li class="list-group-item px-2">
-            <a :href="user_id">
+            <a :href="user_id" role="menuitem" :aria-label="viewProfileText">
               <i class="fas fa-user fa-fw fa-lg mr-1"></i>
               {{ viewProfileText  }}
             </a>
           </li>
           <li class="list-group-item px-2">
-            <a href="/profile/edit">
+            <a href="/profile/edit" role="menuitem" :aria-label="editProfileText">
               <i class="fas fa-user-cog fa-fw fa-lg mr-1"></i>
               {{ editProfileText  }}
             </a>
           </li>
           <li v-if="displayMyFilesLink" class="list-group-item px-2">
-            <a href="/file-manager">
+            <a href="/file-manager" role="menuitem" :aria-label="$t('Files')">
               <i class="fas fa-folder fa-fw fa-lg mr-1"></i>
               {{$t('Files')}}
             </a>
           </li>
           <li class="list-group-item px-2">
-            <a href="https://processmaker.gitbook.io/processmaker/" target="_blank">
+            <a href="https://processmaker.gitbook.io/processmaker/" role="menuitem" :aria-label="$t('Documentation')" target="_blank">
               <i data-v-2eb90a9e class="fas fa-question-circle fa-fw fa-lg mr-1"></i>
               {{$t('Documentation')}}
             </a>
           </li>
           <li class="list-group-item px-2">
-            <a href="/about">
+            <a href="/about" role="menuitem" :aria-label="$t('About')">
               <i class="fas fa-info-circle fa-fw fa-lg mr-1"></i>
               {{$t('About')}}
             </a>
           </li>
           <li class="list-group-item px-2">
-            <a href="/logout">
+            <a href="/logout" role="menuitem" :aria-label="$t('Log Out')">
               <i class="fas fa-sign-out-alt fa-fw fa-lg mr-1"></i>
               {{$t('Log Out')}}
             </a>
           </li>
         </ul>
-      </template>
     </b-popover>
   </div>
 </template>
@@ -94,8 +94,11 @@ export default {
     onClose() {
       this.popoverShow = false;
     },
+    onShown() {
+      this.$refs.userMenuButton.expanded(true);
+    },
     onHidden() {
-      this.popoverShow = false;
+      this.$refs.userMenuButton.expanded(false);
     },
     formatData(user) {
       if (user.avatar) {
@@ -106,6 +109,8 @@ export default {
       this.username = user.username;
       this.information = [
         {
+          id: '#',
+          tooltip: user.fullname,
           src: user.avatar
             ? user.avatar + "?" + new Date().getTime()
             : user.avatar,
@@ -123,6 +128,9 @@ export default {
         .then(response => {
           this.formatData(response.data);
         });
+    },
+    getTarget() {
+      return this.$refs.userMenuButton.getTarget();
     }
   },
   mounted() {

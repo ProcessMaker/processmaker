@@ -37,29 +37,14 @@
             v-model="specialAssignments" 
           />
             
-          <form-checkbox
-              v-if="configurables.includes('LOCK_TASK_ASSIGNMENT')"
-              :label="$t('Lock Task Assignment to User')"
-              :checked="assignmentLockGetter"
-              toggle="true"
-              @change="assignmentLockSetter">
+          <form-checkbox v-for="configurable in optionsConfigurables"
+            :key="configurable"
+            :label="configurableLabel(configurable)"
+            :checked="getConfigurableValue(configurable)"
+            toggle="true"
+            @change="setConfigurableValue($event, configurable)">
           </form-checkbox>
 
-          <form-checkbox
-              v-if="configurables.includes('ALLOW_REASSIGNMENT')"
-              :label="$t('Allow Reassignment')"
-              :checked="allowReassignmentGetter"
-              toggle="true"
-              @change="allowReassignmentSetter">
-          </form-checkbox>
-
-          <form-checkbox
-              v-if="configurables.includes('ESCALATE_TO_MANAGER')"
-              :label="$t('Escalte to Manager')"
-              :checked="escalateToManagerGetter"
-              toggle="true"
-              @change="escalateToManagerSetter">
-          </form-checkbox>
         </div>
     </div>
 </template>
@@ -79,38 +64,13 @@
       configurables: {
         type: Array,
         default() {
-          return ['LOCK_TASK_ASSIGNMENT', 'ALLOW_REASSIGNMENT', 'ASSIGN_BY_EXPRESSION', 'ESCALATE_TO_MANAGER'];
+          return ProcessMaker.modeler.configurables;
         },
       },
       assignmentTypes: {
         type: Array,
         default() {
-          return [
-            {
-              value: "user_group",
-              label: "Users / Groups"
-            },
-            {
-              value: "previous_task_assignee",
-              label: "Previous Task Assignee"
-            },
-            {
-              value: "requester",
-              label: "Request Starter"
-            },
-            {
-              value: "user_by_id",
-              label: "By User ID"
-            },
-            {
-              value: "self_service",
-              label: "Self Service"
-            },
-            {
-              value: "rule_expression",
-              label: "Rule Expression"
-            },
-          ];
+          return ProcessMaker.modeler.assignmentTypes;
         },
       },
     },
@@ -142,13 +102,6 @@
        */
       process () {
         return this.$root.$children[0].process;
-      },
-      /**
-       * Get the value of the edited property
-       */
-      escalateToManagerGetter () {
-        const config = this.node.config && JSON.parse(this.node.config) || {};
-        return config.escalateToManager || false;
       },
       assignmentLockGetter () {
         return _.get(this.node, "assignmentLock");
@@ -240,15 +193,56 @@
         const value = this.node.get("assignmentRules") || "[]";
         return JSON.parse(value);
       },
+      optionsConfigurables () {
+        let options = ['self_service', 'rule_expression'];
+
+        if (this.assignment === 'user_group' && ((this.assignments['groups'].length + this.assignments['users'].length) > 1)) {
+          options.push('user_group');
+        }
+
+        let data = [];
+        this.configurables.forEach(element => {
+          if (!(options.includes(this.assignment) && element === 'ESCALATE_TO_MANAGER')) {
+              data.push(element);
+          }
+        });
+
+        return data;
+      },
     },
     methods: {
-      /**
-       * Update escalateToManager property
-       */
-      escalateToManagerSetter (value) {
-        const config = this.node.config && JSON.parse(this.node.config) || {};
-        config.escalateToManager = value;
-        this.$set(this.node, "config", JSON.stringify(config));
+      getConfigurableValue(configurable) {
+        switch (configurable) {
+          case 'LOCK_TASK_ASSIGNMENT':
+            return this.assignmentLockGetter;
+          case 'ALLOW_REASSIGNMENT':
+            return this.allowReassignmentGetter;
+          default:
+            const config = this.node.config && JSON.parse(this.node.config) || {};
+            return config[window._.camelCase(configurable)] || false;
+        }
+      },
+      setConfigurableValue(value, configurable) {
+        switch (configurable) {
+          case 'LOCK_TASK_ASSIGNMENT':
+            return this.assignmentLockSetter(value);
+          case 'ALLOW_REASSIGNMENT':
+            return this.allowReassignmentSetter(value);
+          default:
+            const config = this.node.config && JSON.parse(this.node.config) || {};
+            config[window._.camelCase(configurable)] = value;
+            this.$set(this.node, "config", JSON.stringify(config));
+        }
+      },
+      configurableLabel(configurable) {
+        switch (configurable) {
+          case 'LOCK_TASK_ASSIGNMENT':
+            return this.$t('Lock User Assignment');
+          case 'ALLOW_REASSIGNMENT':
+            return this.$t('Allow Reassignment');
+          default:
+            return window._.startCase(configurable.toLowerCase());
+        }
       },
       /**
        * Update assignmentLock property

@@ -8,8 +8,14 @@ Login
   <div align="center" class="p-5">
     @php
       $loginLogo = \ProcessMaker\Models\Setting::getLogin();
+      $isDefault = \ProcessMaker\Models\Setting::loginIsDefault();
+      if ($isDefault) {
+          $class = 'login-logo-default';
+      } else {
+          $class = 'login-logo-custom';
+      }
     @endphp
-    <img src={{$loginLogo}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}">
+    <img src={{$loginLogo}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}" class="{{ $class }}">
   </div>
 
   <div class="row">

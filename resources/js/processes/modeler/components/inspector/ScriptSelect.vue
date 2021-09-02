@@ -1,7 +1,7 @@
 <template>
     <div class="form-group">
-        <label for="script-select">{{ $t(label) }}</label>
-        <multiselect id="script-select"
+        <label>{{ $t(label) }}</label>
+        <multiselect :aria-label="$t(label)"
                      v-model="content"
                      track-by="id"
                      label="title"
@@ -14,7 +14,7 @@
                      :searchable="true"
                      :internal-search="false"
                      :required="required"
-                     @open="load"
+                     @open="load()"
                      @search-change="load">
             <template slot="noResult" >
                 {{ $t('No elements found. Consider changing the search query.') }}
@@ -40,13 +40,8 @@
 
 
 <script>
-  import Multiselect from "vue-multiselect";
-
   export default {
     props: ["value", "label", "helper", "params", 'required'],
-    components: {
-      Multiselect
-    },
     data() {
       return {
         content: "",
@@ -148,5 +143,5 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "~vue-multiselect/dist/vue-multiselect.min.css";
+    @import "~@processmaker/vue-multiselect/dist/vue-multiselect.min.css";
 </style>

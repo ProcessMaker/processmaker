@@ -1,44 +1,70 @@
 <template>
-  <span :class="classContainer">
+  <span>
     <template v-for="(value, key) in options">
-      <a :href="value.id">
-        <template v-if="value.src" class="align-center">
-          <img
-            :src="timestamp(value.src)"
-            :width="sizeImage"
-            :height="sizeImage"
-            :class="image"
-            :title="value.tooltip"
-          >
-        </template>
-        <template v-else>
-          <button
-            class="avatar-image-button rounded-circle bg-warning border-0 align-middle text-white text-center text-uppercase text-nowrap"
-            :style="styleButton"
-            :title="value.tooltip"
-            :href="value.id"
-          >{{value.initials}}</button>
-        </template>
-      </a>
-      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1">{{value.name}}</span>
+      <b-button
+        ref="button"
+        :variant="variant(value)"
+        class="avatar-button rounded-circle overflow-hidden p-0 m-0 d-inline-flex border-0"
+        :href="href(value)"
+        :key="'link-' + key"
+        :title="value.tooltip"
+        :aria-label="value.tooltip"
+        :role="role(value)"
+        :aria-haspopup="ariaHasPopup(value)"
+        :disabled="disabled(value)"
+        :aria-expanded="ariaExpanded"
+      >
+        <img
+          v-if="value.src"
+          :src="timestamp(value.src)"
+          :width="sizeImage"
+          :height="sizeImage"
+          :class="image"
+          :alt="value.tooltip"
+        >
+        <span
+          v-else
+          :key="'button-' + key"
+          class="border-0 d-inline-flex align-items-center justify-content-center text-white text-uppercase text-nowrap font-weight-normal"
+          :style="styleButton"
+        >{{value.initials}}</span>
+      </b-button>
+      <span v-if="!hideName" class="text-center text-capitalize text-nowrap m-1" :key="'name-' + key">{{value.name}}</span>
     </template>
   </span>
 </template>
 
 <script>
 export default {
-  props: [
-    "size",
-    "rounded",
-    "classContainer",
-    "classImage",
-    "inputData",
-    "hideName"
-  ],
+  props: {
+    size: {
+      default: null,
+    },
+    rounded: {
+      default: true,
+    },
+    classContainer: {
+      default: null,
+    },
+    classImage: {
+      default: null,
+    },
+    inputData: {
+      default: null,
+    },
+    hideName: {
+      default: false,
+    },
+    popover: {
+      type: Boolean,
+      default: false,
+    }
+  },
   data() {
     return {
+      ariaExpanded: false,
       round: "circle",
-      image: "m-1",
+      image: "",
       styleButton: "width: 25px; height: 25px;",
       options: []
     };
@@ -58,6 +84,53 @@ export default {
     }
   },
   methods: {
+    getTarget() {
+      return this.$refs.button[0];
+    },
+    expanded(value) {
+      this.ariaExpanded = value;
+    },
+    href(value) {
+      if (this.popover) {
+        return null;
+      } else {
+        return value.id;
+      }
+    },
+    role(value) {
+      if (this.popover) {
+        return 'button';
+      } else {
+        if (! value.id) {
+          return 'img'
+        } else {
+          return 'link';
+        }
+      }
+    },
+    ariaHasPopup(value) {
+      if (this.popover) {
+        return 'menu';
+      } else {
+        return null;
+      }
+    },
+    disabled(value) {
+      if (! this.popover) {
+        if (! value.id) {
+          return true;
+        }
+      };
+      
+      return false;
+    },
+    variant(value) {
+      if (value.src) {
+        return 'secondary';
+      } else {
+        return 'warning';
+      }
+    },
     timestamp(src) {
       if (src.startsWith('data:image')) {
         // Do not add cache buster to base64 encoded image
@@ -93,8 +166,16 @@ export default {
         "px; padding:0; cursor: pointer;";
     },
     formatValue(value) {
+      let profileUrl = null;
+      if (value.id) {
+        if (value.id === '#') {
+          profileUrl = '#';
+        } else {
+          profileUrl = "/profile/" + value.id
+        }
+      }
       return {
-        id: value.id ? "/profile/" + value.id : null,
+        id: profileUrl,
         src: value.src ? value.src : value.avatar ? value.avatar : "",
         tooltip: value.tooltip
           ? value.tooltip
@@ -127,6 +208,11 @@ export default {
         options.push(this.formatValue(data));
       }
       this.options = options;
+    },
+    buttonClick(url) {
+      if (url && url !== '#') {
+        window.location.href = url;
+      }
     }
   },
   mounted() {
@@ -136,13 +222,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .avatar-image-button {
-    outline: 0 !important;
-    
-    &:active,
-    &:focus,
-    &:hover {
-      outline: 0;
-    }
+  .avatar-button.disabled,
+  .avatar-button:disabled {
+    opacity: 1;
+    pointer-events: none;
   }
 </style>

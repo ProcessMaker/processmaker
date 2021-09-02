@@ -167,6 +167,7 @@ class Setting extends Model implements HasMedia
         switch ($this->format) {
             case 'text':
             case 'textarea':
+            case 'file':
             case 'choice':
                 return $this->attributes['config'] = $this->attributes['config'];
             case 'boolean':
@@ -224,11 +225,20 @@ class Setting extends Model implements HasMedia
 
         return $query;
     }
+    
+    public static function loginIsDefault()
+    {
+        if (stripos(self::getLogin(), 'processmaker-login') !== false) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public static function getLogin()
     {
         //default login
-        $url = asset(env('LOGIN_LOGO_PATH', '/img/processmaker_login.png'));
+        $url = asset(env('LOGIN_LOGO_PATH', '/img/processmaker-login.svg'));
         //custom login
         $setting = self::byKey('css-override');
         if ($setting) {
@@ -245,7 +255,7 @@ class Setting extends Model implements HasMedia
     public static function getLogo()
     {
         //default logo
-        $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker_logo.png'));
+        $url = asset(env('MAIN_LOGO_PATH', '/img/processmaker-logo.svg'));
         //custom logo
         $setting = self::byKey('css-override');
         if ($setting) {
@@ -262,7 +272,7 @@ class Setting extends Model implements HasMedia
     public static function getIcon()
     {
         //default icon
-        $url = asset(env('ICON_PATH_PATH', '/img/processmaker_icon.png'));
+        $url = asset(env('ICON_PATH_PATH', '/img/processmaker-icon.svg'));
         //custom icon
         $setting = self::byKey('css-override');
         if ($setting) {

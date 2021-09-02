@@ -101,43 +101,35 @@
                                 </div>
 
                                 <user-tokens-listing :user_id="formData.id" ref="tokenList"></user-tokens-listing>
-
-                                <div class="modal" tabindex="-1" role="dialog" id="newTokenModal" ref="newTokenModal">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                                        <div class="modal-content p-3">
-                                            <div class="modal-header p-0 mb-3">
-                                                <h5 class="modal-title m-0">{{__('New Token')}}</h5>
-                                                <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-
-                                            <div class="modal-body p-0 mb-3" v-if="newToken != null">
-
-                                                <div class="alert alert-warning">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                    {{__("Make sure you copy your access token now. You won't be able to see it again.")}}
-                                                </div>
-
-                                                <div>
-                                                    <textarea id="generated-token" ref="text" style="height: 400px" class="form-control" aria-label="Generated Token">@{{ newToken.accessToken }}</textarea>
-                                                </div>
-                                            </div>
-
-                                            <div class="modal-footer p-0">
-                                                <div class="d-flex w-100">
-                                                    <button type="button" @click="copyTextArea" class="btn btn-secondary">
-                                                        <i class="fas fa-paste"></i>
-                                                        {{__('Copy Token To Clipboard')}}
-                                                    </button>
-                                                    <button type="button" @click="hideNewTokenModal" class="ml-auto btn btn-outline-secondary">
-                                                        {{__('Close')}}
-                                                    </button>
-                                                </div>
-                                            </div>
+                                
+                                <b-modal
+                                    id="newTokenModal"
+                                    ref="newTokenModal"
+                                    title="{{__('New Token')}}"
+                                    footer-class="pm-modal-footer"
+                                    no-close-on-backdrop
+                                    centered
+                                >
+                                    <template v-if="newToken != null">
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            {{__("Make sure you copy your access token now. You won't be able to see it again.")}}
                                         </div>
-                                    </div>
-                                </div>
+
+                                        <div>
+                                            <textarea id="generated-token" ref="text" style="height: 400px" class="form-control" aria-label="Generated Token">@{{ newToken.accessToken }}</textarea>
+                                        </div>
+                                    </template>
+                                    <template #modal-footer>
+                                        <button type="button" @click="copyTextArea" class="btn btn-secondary">
+                                            <i class="fas fa-paste"></i>
+                                            {{__('Copy Token To Clipboard')}}
+                                        </button>
+                                        <button type="button" @click="hideNewTokenModal" class="ml-auto btn btn-outline-secondary">
+                                            {{__('Close')}}
+                                        </button>
+                                    </template>
+                                </b-modal>
                             </div>
                         </div>
                         @can('view-security-logs')
@@ -153,49 +145,27 @@
         </div>
     </div>
 
-    <div class="modal" tabindex="-1" role="dialog" id="updateAvatarModal" ref="updateAvatarModal">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{__('Upload Avatar')}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="{{__('Close')}}">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
 
-                <div class="modal-body">
-                    <div>
-                        <div v-if="!image" class="no-avatar"
-                             align="center">{{__('Click the browse button below to get started')}}</div>
-                        <div align="center">
-                            <button type="button" @click="browse" class="btn btn-secondary mt-5 mb-2"><i class="fas fa-upload"></i>
-                                {{__('Browse')}}
-                            </button>
-                        </div>
-                        <div align="center">
-                            {{__('Image types accepted: .gif, .jpg, .jpeg, .png')}}
-                        </div>
-                        <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie"
-                                     :viewport="{ width: 380, height: 380, type: 'circle' }"
-                                     :boundary="{ width: 400, height: 400 }" :enable-orientation="false"
-                                     :enable-resize="false">
-                        </vue-croppie>
-                    </div>
-                    <input id="upload-image" type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange" aria-label="{{__('Select a file')}}">
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" @click="hideModal" class="btn btn-outline-secondary">
-                        {{__('Cancel')}}
-                    </button>
-
-                    <button type="button" @click="saveAndEmit" class="btn btn-secondary">
-                        {{__('Save')}}
-                    </button>
-                </div>
+    <pm-modal ref="updateAvatarModal" id="updateAvatarModal" title="{{__('Upload Avatar')}}" @hidden="hiddenModal" @ok.prevent="saveAndEmit" style="display: none;">
+        <div>
+            <div v-if="!image" class="no-avatar"
+                 align="center">{{__('Click the browse button below to get started')}}</div>
+            <div align="center">
+                <button type="button" @click="browse" class="btn btn-secondary mt-5 mb-2"><i class="fas fa-upload"></i>
+                    {{__('Browse')}}
+                </button>
             </div>
+            <div align="center">
+                {{__('Image types accepted: .gif, .jpg, .jpeg, .png')}}
+            </div>
+            <vue-croppie :style="{display: (image) ? 'block' : 'none' }" ref="croppie"
+                         :viewport="{ width: 380, height: 380, type: 'circle' }"
+                         :boundary="{ width: 400, height: 400 }" :enable-orientation="false"
+                         :enable-resize="false">
+            </vue-croppie>
         </div>
-    </div>
+        <input id="upload-image" type="file" class="custom-file-input" accept=".gif,.jpg,.jpeg,.png,image/jpeg,image/gif,image/png" ref="customFile" @change="onFileChange" aria-label="{{__('Select a file')}}">
+    </pm-modal>
 @endsection
 
 @section('js')
@@ -241,11 +211,11 @@
           browse() {
             this.$refs.customFile.click();
           },
-          openModal() {
-            this.$refs.updateAvatarModal.hidden = false;
-          },
           hideModal() {
-            $('#updateAvatarModal').modal("hide")
+            this.$refs.updateAvatarModal.hide();
+          },
+          hiddenModal() {
+            this.image = '';
           },
           onFileChange(e) {
             let files = e.target.files || e.dataTransfer.files;
@@ -344,6 +314,9 @@
           }
         },
         methods: {
+          openAvatarModal() {
+            modalVueInstance.$refs.updateAvatarModal.show();
+          },
           areAllPermissionsSelected() {
             return this.selectedPermissions.length === this.permissions.length;
           },
@@ -384,10 +357,10 @@
               modalVueInstance.deleteAvatar();
           },
           openNewTokenModal() {
-            $('#newTokenModal').modal("show");
+            this.$refs.newTokenModal.show();
           },
           hideNewTokenModal() {
-            $('#newTokenModal').modal("hide");
+            this.$refs.newTokenModal.hide();
           },
           validatePassword() {
             if (!this.formData.password && !this.formData.confpassword) {
