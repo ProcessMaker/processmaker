@@ -196,7 +196,7 @@
       optionsConfigurables () {
         let options = ['self_service', 'rule_expression'];
 
-        if (this.assignment === 'user_group' && (this.assignments['groups'].length > 0 || this.assignments['users'].length > 0)) {
+        if (this.assignment === 'user_group' && ((this.assignments['groups'].length + this.assignments['users'].length) > 1)) {
           options.push('user_group');
         }
 
