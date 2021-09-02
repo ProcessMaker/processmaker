@@ -22,7 +22,10 @@ class ProfileController extends Controller
         $currentUser = \Auth::user();
         $states = JsonData::states();
         $countries = JsonData::countries();
-        $status = [__('ACTIVE'), __('INACTIVE')];
+        $status = [
+            ['value' => 'ACTIVE', 'text' => __('Active')],
+            ['value' => 'INACTIVE', 'text' => __('Inactive')],
+        ];
 
         $langs = ['en'];
         if (app()->getProvider(\ProcessMaker\Package\Translations\PackageServiceProvider::class)) {

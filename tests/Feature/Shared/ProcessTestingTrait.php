@@ -51,7 +51,8 @@ trait ProcessTestingTrait
      */
     private function assignTaskUser(DOMElement $task, array &$users)
     {
-        if ($task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment') === 'user') {
+        $assignment = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignment');
+        if ($assignment === 'user' || $assignment === 'user_group') {
             $userId = $task->getAttributeNS(WorkflowServiceProvider::PROCESS_MAKER_NS, 'assignedUsers');
             if (!$userId) {
                 return;

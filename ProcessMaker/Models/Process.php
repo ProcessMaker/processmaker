@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Mustache_Engine;
 use ProcessMaker\AssignmentRules\PreviousTaskAssignee;
+use ProcessMaker\AssignmentRules\ProcessManagerAssigned;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Exception\InvalidUserAssignmentException;
@@ -18,6 +19,7 @@ use ProcessMaker\Exception\TaskDoesNotHaveRequesterException;
 use ProcessMaker\Exception\TaskDoesNotHaveUsersException;
 use ProcessMaker\Exception\UserOrGroupAssignmentEmptyException;
 use ProcessMaker\Facades\WorkflowManager;
+use ProcessMaker\Facades\WorkflowUserManager;
 use ProcessMaker\Managers\DataManager;
 use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
@@ -49,7 +51,8 @@ use Throwable;
  * @property string $description
  * @property string $name
  * @property string $status
- * @property array start_events
+ * @property array $start_events
+ * @property int $manager_id
  * @property \Carbon\Carbon $updated_at
  * @property \Carbon\Carbon $created_at
  *
@@ -70,7 +73,7 @@ use Throwable;
  *   @OA\Property(property="self_service_tasks", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="signal_events", type="array", @OA\Items(type="object")),
  *   @OA\Property(property="category", @OA\Schema(ref="#/components/schemas/ProcessCategory")),
- *
+ *   @OA\Property(property="manager_id", type="integer", format="id"),
  * ),
  * @OA\Schema(
  *   schema="Process",
@@ -188,6 +191,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'requester',
         'assignee',
         'participants',
+        'manager',
     ];
 
     public $requestNotificationTypes = [
@@ -200,6 +204,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'requester',
         'assignee',
         'participants',
+        'manager',
     ];
 
     public $taskNotificationTypes = [
@@ -218,6 +223,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         'self_service_tasks' => 'array',
         'signal_events' => 'array',
         'conditional_events' => 'array',
+        'properties' => 'array',
     ];
 
     /**
@@ -491,7 +497,8 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         if ($assignmentType === 'rule_expression') {
             $userByRule = $this->getNextUserByRule($activity, $token);
             if ($userByRule !== null) {
-                return $userByRule;
+                $user = $this->scalateToManagerIfEnabled($userByRule->id, $activity, $token, $assignmentType);
+                return $user ? User::where('id', $user)->first() : null;
             }
         }
 
@@ -524,6 +531,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 $rule = new PreviousTaskAssignee();
                 $user = $rule->getNextUser($activity, $token, $this, $token->getInstance());
                 break;
+            case 'process_manager':
+                $rule = new ProcessManagerAssigned();
+                $user = $rule->getNextUser($activity, $token, $this, $token->getInstance());
+                break;
             case 'manual':
             case 'self_service':
                 $user = null;
@@ -532,18 +543,30 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             default:
                 $user = null;
         }
+        $user = $this->scalateToManagerIfEnabled($user, $activity, $token, $assignmentType);
+        return $user ? User::where('id', $user)->first() : null;
+    }
+
+    private function scalateToManagerIfEnabled($user, $activity, $token, $assignmentType)
+    {
         if ($user) {
             $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
-            if ($assignmentProcesss) {
-                $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
-                    'user_id' => $user,
-                    'process_id' => $this->id,
-                    'request_id' => $token->getInstance()->getId(),
-                ]);
-                $user = $res['assign_to'];
+            if (app()->bound('workflow.UserManager') && $assignmentProcesss) {
+                $config = json_decode($activity->getProperty('config', '{}'), true);
+                $escalateToManager = $config['escalateToManager'] ?? false;
+                if ($escalateToManager) {
+                    $user = WorkflowUserManager::escalateToManager($token, $user);
+                } else {
+                    $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
+                        'user_id' => $user,
+                        'process_id' => $this->id,
+                        'request_id' => $token->getInstance()->getId(),
+                    ]);
+                    $user = $res['assign_to'];
+                }
             }
         }
-        return $user ? User::where('id', $user)->first() : null;
+        return $user;
     }
 
     /**
@@ -828,7 +851,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                         break;
                     }
                 }
-            } else {
+            } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'process_manager') {
+                $access = $this->manager && $this->manager->id && $this->manager->id === $user->id;
+            }
+            else {
                 $access = false;
             }
             if ($access) {
@@ -1216,4 +1242,5 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         }
         return true;
     }
+
 }
