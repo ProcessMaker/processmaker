@@ -45,7 +45,7 @@ class PermissionController extends Controller
      *
      *     @OA\Put(
      *     path="/permissions",
-     *     summary="Update the permissions of an user",
+     *     summary="Update the permissions of a user",
      *     tags={"Permissions"},
      *
      *     @OA\RequestBody(
@@ -54,11 +54,16 @@ class PermissionController extends Controller
      *          @OA\Property(
      *              property="user_id",
      *              type="integer",
-     *              description="Id of the user whose permissions are configured"),
+     *              description="ID of the user whose permissions are configured"),
      *          @OA\Property(
      *              property="group_id",
      *              type="integer",
-     *              description="Id of the group whose permissions are configured"),
+     *              description="ID of the group whose permissions are configured"),
+     *          @OA\Property(
+     *              property="is_administrator",
+     *              type="boolean",
+     *              default=false,
+     *              description="Whether the user should have Super Admin privileges"),
      *          @OA\Property(
      *              property="permission_names",
      *              type="array",
@@ -77,6 +82,10 @@ class PermissionController extends Controller
         //Obtain the requested user or group
         if ($request->input('user_id')) {
             $entity = User::findOrFail($request->input('user_id'));
+            if ($request->has('is_administrator')) {
+                $entity->is_administrator = filter_var($request->input('is_administrator'), FILTER_VALIDATE_BOOLEAN);
+                $entity->save();
+            }
         } elseif ($request->input('group_id')) {
             $entity = Group::findOrFail($request->input('group_id'));
         }

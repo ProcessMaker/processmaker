@@ -104,6 +104,7 @@
                 <xsd:attribute name="allowedUsers" type="xsd:string" use="optional"/>
                 <xsd:attribute name="allowedGroups" type="xsd:string" use="optional"/>
                 <xsd:attribute name="whitelist" type="xsd:string" use="optional"/>
+                <xsd:attribute name="config" type="xsd:string" use="optional"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
