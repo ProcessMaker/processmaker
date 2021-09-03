@@ -72,6 +72,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="birthdate", type="string", format="date"),
      *   @OA\Property(property="delegation_user_id", type="string", format="id"),
      *   @OA\Property(property="manager_id", type="string", format="id"),
+     *   @OA\Property(property="meta", type="object", additionalProperties=true),
      * ),
      * @OA\Schema(
      *   schema="users",
