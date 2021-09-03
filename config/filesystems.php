@@ -88,6 +88,11 @@ return [
             'url' => env('APP_URL').'/storage/setting',
             'visibility' => 'public',
         ],
+        'private_settings' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/settings'),
+            'visibility' => 'private',
+        ],
     ]
 
 
