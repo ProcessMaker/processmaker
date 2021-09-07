@@ -33,7 +33,7 @@ class PreviousTaskAssignee implements AssignmentRuleInterface
             ->where('element_type', 'task')
             ->orderBy('id', 'desc')->first();
         if (!$previous) {
-            throw new ThereIsNoPreviousUserAssignedException($task);
+            return null;
         }
         return $previous->user_id;
     }
