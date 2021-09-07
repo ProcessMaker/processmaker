@@ -106,10 +106,11 @@ class TaskAssignmentExecutionTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $run = function($data) {
-            $process = factory(Process::class)->create([
-                'bpmn' => file_get_contents(__DIR__ . '/processes/ByUserIdAssignment.bpmn')
-            ]);
+        $process = factory(Process::class)->create([
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ByUserIdAssignment.bpmn'),
+        ]);
+
+        $run = function($data) use ($process) {
 
             $route = route('api.process_events.trigger',
                 [$process->id, 'event' => 'node_1']);
@@ -126,19 +127,18 @@ class TaskAssignmentExecutionTest extends TestCase
 
         $this->assertEquals($user->id, $task->user_id);
 
-        // Assert it throws exception when the variable is missing
+        // Assert it throws exception when the process does not have a process manager
         $response = $run(['foo' => $user->id]);
         $this->assertEquals(
             $response['errors'][0]['message'],
-            'The variable, {{ userIdInData }}, which equals "", is not a valid User ID in the system'
+            'Task cannot be assigned since there is no Process Manager associated to the process.'
         );
 
-        // Assert it throws exception when the variable is not a valid user id
+        // Assert it does not fail when the variable is not a valid user id and a process manager is assigned
+        $process->manager_id = $user->id;
+        $process->save();
         $response = $run(['userIdInData' => 'foo']);
-        $this->assertEquals(
-            $response['errors'][0]['message'],
-            'The variable, {{ userIdInData }}, which equals "foo", is not a valid User ID in the system'
-        );
+        $this->assertFalse(array_key_exists('errors', $response));
     }
 
     public function testSelfServeAssignment()
