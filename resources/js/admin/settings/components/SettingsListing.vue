@@ -1,17 +1,6 @@
 <template>
   <div class="settings-listing data-table">
-    <settings-import ref="import" :group="group" @import="onFinishImport"></settings-import>
-    <settings-export ref="export" :group="group"></settings-export>
-    <basic-search class="mb-3" @submit="onSearch">
-      <template v-slot:buttons>
-        <b-button variant="outline-secondary" class="ml-md-2" @click="onImport">
-          <i class="fas fa-fw fa-file-import"></i> Import
-        </b-button>
-        <b-button variant="outline-secondary" class="ml-md-2 mt-3 mt-md-0" @click="onExport">
-          <i class="fas fa-fw fa-file-export"></i> Export
-        </b-button>
-      </template>
-    </basic-search>
+    <basic-search class="mb-3" @submit="onSearch"></basic-search>
     <div class="card card-body table-card">
       <b-table
         class="settings-table table table-responsive-lg text-break m-0 h-100 w-100"
@@ -325,15 +314,6 @@ export default {
     },
     settingUrl(id) {
       return `${this.url}/${id}`;
-    },
-    onImport() {
-      this.$refs.import.show();
-    },
-    onExport() {
-      this.$refs.export.show();
-    },
-    onFinishImport() {
-      window.location.reload();
     },
     /**
      * Javascript handler for configuration button
