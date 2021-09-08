@@ -21,7 +21,10 @@ import {
   eventBasedGateway,
   intermediateMessageCatchEvent,
   intermediateSignalThrowEvent,
-  signalEndEvent
+  signalEndEvent,
+  loopCharacteristicsInspector,
+  loopCharacteristicsHandler,
+  loopCharacteristicsData,
 } from '@processmaker/modeler';
 import ModelerScreenSelect from './components/inspector/ScreenSelect';
 import UserSelect from './components/inspector/UserSelect';
@@ -83,6 +86,11 @@ let nodeTypes = [
 
 ProcessMaker.nodeTypes.push(startEvent);
 ProcessMaker.nodeTypes.push(...nodeTypes);
+ProcessMaker.modelerExtensions = {
+  loopCharacteristicsInspector,
+  loopCharacteristicsHandler,
+  loopCharacteristicsData,
+};
 
 ProcessMaker.EventBus.$on('modeler-init', registerNodes);
 
