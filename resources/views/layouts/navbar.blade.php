@@ -75,7 +75,7 @@
                 <b-nav-item-dropdown v-else
                     :text="item.title"
                     toggle-class="nav-link-custom"
-                    right
+                    left
                 >
                     <b-dropdown-item v-for="subItem in item.childItems"
                         :href="subItem.url"
