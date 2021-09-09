@@ -31,7 +31,9 @@ class DockerManager
      */
     public function getDockerExecutable($timeout = 0)
     {
-        return $timeout > 0 ? "timeout -s 9 $timeout ".config('app.processmaker_scripts_docker') : config('app.processmaker_scripts_docker');
+        return $timeout > 0 ? 
+            config('app.processmaker_scripts_timeout') . " -s 9 $timeout " . config('app.processmaker_scripts_docker') : 
+            config('app.processmaker_scripts_docker');
     }
     /**
      * Returns the CLI command to execute docker in ProcessMaker, it includes all logic from configuration (timeout, remote docker, etc).
