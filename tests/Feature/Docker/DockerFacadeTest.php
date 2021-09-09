@@ -19,8 +19,8 @@ class DockerFacadeTest extends TestCase
     {
         // Set empty env variables
         config(['app.processmaker_scripts_docker_host' => '']);
-        config(['app.processmaker_scripts_docker' => '']);
-        config(['app.processmaker_scripts_timeout' => '']);
+        config(['app.processmaker_scripts_docker' => self::DEFAULT_DOCKER_COMMAND]);
+        config(['app.processmaker_scripts_timeout' => self::DEFAULT_TIMEOUT_COMMAND]);
     }
 
     public function testValidateDockerDefaultEnvironmentVariables()
