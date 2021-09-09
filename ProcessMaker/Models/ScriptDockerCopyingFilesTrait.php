@@ -6,6 +6,7 @@ use Log;
 use RuntimeException;
 use ProcessMaker\Exception\ScriptTimeoutException;
 use ProcessMaker\Exception\ScriptException;
+use ProcessMaker\Facades\Docker;
 
 /**
  * Execute a docker container copying files to interchange information.
@@ -33,7 +34,7 @@ trait ScriptDockerCopyingFilesTrait
             $outputs[$name] = $this->getFromContainer($container, $path);
         }
 
-        exec(config('app.processmaker_scripts_docker') . ' rm ' . $container);
+        exec(Docker::command() . ' rm ' . $container);
         $response['outputs'] = $outputs;
         return $response;
     }
@@ -52,7 +53,7 @@ trait ScriptDockerCopyingFilesTrait
     {
         $cidfile = tempnam(config('app.processmaker_scripts_home'), 'cid');
         unlink($cidfile);
-        $cmd = config('app.processmaker_scripts_docker') . sprintf(' create --network=host %s --cidfile %s %s %s 2>&1', $parameters, $cidfile, $image, $command);
+        $cmd = Docker::command() . sprintf(' create --network=host %s --cidfile %s %s %s 2>&1', $parameters, $cidfile, $image, $command);
         $line = exec($cmd, $output, $returnCode);
         if ($returnCode) {
             throw new RuntimeException('Unable to create a docker container: ' . implode("\n", $output));
@@ -96,8 +97,7 @@ trait ScriptDockerCopyingFilesTrait
      */
     private function execCopy($source, $container, $dest)
     {
-        $cmd = config('app.processmaker_scripts_docker')
-            . sprintf(' cp %s %s:%s 2>&1', $source, $container, $dest);
+        $cmd = Docker::command() . sprintf(' cp %s %s:%s 2>&1', $source, $container, $dest);
         exec($cmd, $output, $returnCode);
         return [$returnCode, $output];
     }
@@ -114,7 +114,7 @@ trait ScriptDockerCopyingFilesTrait
     private function getFromContainer($container, $path)
     {
         $target = tempnam(config('app.processmaker_scripts_home'), 'get');
-        $cmd = config('app.processmaker_scripts_docker') . sprintf(' cp %s:%s %s 2>&1', $container, $path, $target);
+        $cmd = Docker::command() . sprintf(' cp %s:%s %s 2>&1', $container, $path, $target);
         exec($cmd, $output, $returnCode);
         $content = file_get_contents($target);
         unlink($target);
@@ -131,13 +131,7 @@ trait ScriptDockerCopyingFilesTrait
      */
     private function startContainer($container, $timeout)
     {
-        $cmd = '';
-
-        if ($timeout > 0) {
-            $cmd .= "timeout -s 9 $timeout ";
-        }
-
-        $cmd .= config('app.processmaker_scripts_docker') . sprintf(' start %s -a 2>&1', $container);
+        $cmd = Docker::command($timeout) . sprintf(' start %s -a 2>&1', $container);
 
         Log::debug('Running Docker container', [
             'timeout' => $timeout,

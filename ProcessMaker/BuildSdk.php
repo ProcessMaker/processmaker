@@ -5,6 +5,7 @@ use \Exception;
 use \ZipArchive;
 use function GuzzleHttp\json_decode;
 use ProcessMaker\Events\BuildScriptExecutor;
+use ProcessMaker\Facades\Docker;
 
 class BuildSdk {
     private $debug = true;
@@ -54,7 +55,7 @@ class BuildSdk {
 
     private function cp($from, $to)
     {
-        $this->runCmd("docker cp " . $from . " " . $to);
+        $this->runCmd(Docker::command()." cp " . $from . " " . $to);
     }
 
     private function imageWithTag()
@@ -64,13 +65,13 @@ class BuildSdk {
 
     private function startContainer()
     {
-        $this->runCmd("docker run -t -d --entrypoint '/bin/sh' --name generator " . $this->imageWithTag());
+        $this->runCmd(Docker::command()." run -t -d --entrypoint '/bin/sh' --name generator " . $this->imageWithTag());
     }
 
     private function stopContainer()
     {
-        $this->runCmd("docker kill generator || true");
-        $this->runCmd("docker rm generator || true");
+        $this->runCmd(Docker::command()." kill generator || true");
+        $this->runCmd(Docker::command()." rm generator || true");
     }
 
     public function setLang($value)
@@ -87,12 +88,12 @@ class BuildSdk {
         if (!$this->lang) {
             throw new Exception("Language must be specified using setLang()");
         }
-        return $this->runCmd('docker run ' . $this->imageWithTag() . ' config-help -g ' . $this->lang);
+        return $this->runCmd(Docker::command().' run ' . $this->imageWithTag() . ' config-help -g ' . $this->lang);
     }
     
     public function getAvailableLanguages()
     {
-        $result = $this->runCmd('docker run ' . $this->imageWithTag() . ' list -s');
+        $result = $this->runCmd(Docker::command().' run ' . $this->imageWithTag() . ' list -s');
         return explode(",", $result);
     }
 
@@ -123,7 +124,7 @@ class BuildSdk {
 
     private function generator($cmd)
     {
-        return $this->runCmd('docker exec generator docker-entrypoint.sh ' . $cmd);
+        return $this->runCmd(Docker::command().' exec generator docker-entrypoint.sh ' . $cmd);
     }
 
     private function writeOptionsToTmpFile()

@@ -5,6 +5,7 @@ namespace ProcessMaker\Models;
 use Log;
 use ProcessMaker\Exception\ScriptException;
 use ProcessMaker\Exception\ScriptTimeoutException;
+use ProcessMaker\Facades\Docker;
 
 /**
  * Execute a docker container binding files to interchange information.
@@ -56,13 +57,7 @@ trait ScriptDockerBindingFilesTrait
      */
     private function runContainer($image, $command, $parameters, $bindings, $timeout)
     {
-        $cmd = '';
-
-        if ($timeout > 0) {
-            $cmd .= "timeout -s 9 $timeout ";
-        }
-
-        $cmd .= config('app.processmaker_scripts_docker') . sprintf(
+        $cmd = Docker::command($timeout) . sprintf(
             ' run --rm %s %s %s %s 2>&1',
             $parameters,
             $bindings,
