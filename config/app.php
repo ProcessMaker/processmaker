@@ -55,10 +55,10 @@ return [
     'web_client_application_id' => env('PM_CLIENT_ID', 'x-pm-local-client'),
 
     // The processmaker BPM scripts configuration
-    'processmaker_scripts_docker_host' => env('PROCESSMAKER_SCRIPTS_DOCKER_HOST', ''),
     'processmaker_scripts_home' => env('PROCESSMAKER_SCRIPTS_HOME', __DIR__ . '/../storage/app'),
     'processmaker_scripts_docker' => env('PROCESSMAKER_SCRIPTS_DOCKER', '/usr/bin/docker'),
     'processmaker_scripts_docker_mode' => env('PROCESSMAKER_SCRIPTS_DOCKER_MODE', 'binding'),
+    'processmaker_scripts_docker_host' => env('PROCESSMAKER_SCRIPTS_DOCKER_HOST', ''),
     'processmaker_scripts_timeout' => env('PROCESSMAKER_SCRIPTS_TIMEOUT', 'timeout'),
     'timer_events_seconds' => env('TIMER_EVENTS_SECONDS', 'truncate'),
     'bpmn_actions_max_lock_time' => intval(env('BPMN_ACTIONS_MAX_LOCK_TIME', 60)),
