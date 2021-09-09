@@ -40,8 +40,11 @@ class BoundaryEvent extends BpmnAction
      * @param CatchEventInterface $element
      * @return \ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface
      */
-    public function action(BpmnDocumentInterface $definitions, TokenInterface $token)
+    public function action(BpmnDocumentInterface $definitions, TokenInterface $token = null)
     {
+        if (!$token) {
+            return;
+        }
         $element = $definitions->getBoundaryEvent($this->boundaryEventId);
         $dataStore = $token->getInstance()->getDataStore();
 
