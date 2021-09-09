@@ -123,7 +123,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
          * to manage docker execution over the application.
          */
         $this->app->singleton(DockerManager::class, function($app) {
-            return new DocckerManager();
+            return new DockerManager();
         });
 
         $this->app->singleton(GlobalScriptsManager::class, function($app) {
