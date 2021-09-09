@@ -4,10 +4,10 @@ namespace Tests\Feature\Api;
 
 use ProcessMaker\Managers\TaskSchedulerManager;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Models\ScheduledTask;
 use Tests\Feature\Shared\ProcessTestingTrait;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
-use ProcessMaker\Models\ScheduledTask;
 
 class BoundaryEventsTest extends TestCase
 {
@@ -395,5 +395,54 @@ class BoundaryEventsTest extends TestCase
         $activeTokensSub = $subInstance->tokens()->where('status', 'ACTIVE')->get();
         $this->assertCount(1, $activeTokensSub);
         $this->assertEquals('Task 5', $activeTokensSub[0]->element_name);
+    }
+
+    /**
+     * Tests the a process with a timer boundary event on a multi-instance task
+     */
+    public function testTimerBoundaryEventMultiInstance()
+    {
+        $now = TaskSchedulerManager::fakeToday('2018-05-01T00:00:00Z');
+        // Create a process
+        $process = $this->createProcess(file_get_contents(__DIR__ . '/processes/Timer_BoundaryEvent_MultiInstance.bpmn'));
+
+        // Start a process instance
+        $instance = $this->startProcess($process, 'node_1', [
+            'input' => [
+                ['abc' => 123],
+                ['abc' => 456],
+                ['abc' => 789],
+            ]
+        ]);
+
+        // Get active tokens
+        $activeTokens = $instance->tokens()->where('status', 'ACTIVE')
+            ->get();
+
+        // "Task 1" should be active with 3 tokens
+        $this->assertCount(3, $activeTokens);
+        $this->assertEquals('Task 1', $activeTokens[0]->element_name);
+        $this->assertEquals('Task 1', $activeTokens[1]->element_name);
+        $this->assertEquals('Task 1', $activeTokens[2]->element_name);
+
+        // Move forward 1 minute
+        $now->modify('+1 minute');
+        TaskSchedulerManager::fakeToday($now);
+        $this->runScheduledTasks();
+
+        // BoundaryEvent catches timer then
+        // all the active tokens of Task 1 were closed
+        $activeTokens[0]->refresh();
+        $this->assertEquals('CLOSED', $activeTokens[0]->status);
+        $activeTokens[1]->refresh();
+        $this->assertEquals('CLOSED', $activeTokens[0]->status);
+        $activeTokens[2]->refresh();
+        $this->assertEquals('CLOSED', $activeTokens[0]->status);
+
+        // The active token goes to "Task 2"
+        $activeTokens = $instance->tokens()->where('status', 'ACTIVE')
+            ->get();
+        $this->assertCount(1, $activeTokens);
+        $this->assertEquals('Task 2', $activeTokens[0]->element_name);
     }
 }
