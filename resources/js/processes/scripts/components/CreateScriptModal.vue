@@ -8,7 +8,7 @@
         <b-form-group
           required
           :label="$t('Name')"
-          :description="formDescription('The script name must be distinct.', 'title', addError)"
+          :description="formDescription('The script name must be unique.', 'title', addError)"
           :invalid-feedback="errorMessage('title', addError)"
           :state="errorState('title', addError)"
         >
