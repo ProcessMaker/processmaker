@@ -54,12 +54,6 @@ class InstallTest extends TestCase
         $params->push(new Param('--db-name', 'DB_DATABASE', $faker->word));
         $params->push(new Param('--db-username', 'DB_USERNAME', $faker->userName));
         $params->push(new Param('--db-password', 'DB_PASSWORD', $faker->word));
-        $params->push(new Param('--data-driver', 'DATA_DB_DRIVER', $dataDriver));
-        $params->push(new Param('--data-host', 'DATA_DB_HOST', $faker->ipv4));
-        $params->push(new Param('--data-port', 'DATA_DB_PORT', $faker->numberBetween(1, 9999)));
-        $params->push(new Param('--data-name', 'DATA_DB_DATABASE', $faker->word));
-        $params->push(new Param('--data-username', 'DATA_DB_USERNAME', $faker->userName));
-        $params->push(new Param('--data-password', 'DATA_DB_PASSWORD', $faker->word));
         $params->push(new Param('--redis-client', 'REDIS_CLIENT', $faker->randomElement(['phpredis', 'predis'])));
         $params->push(new Param('--redis-prefix', 'REDIS_PREFIX', "{$faker->word}:"));
         $params->push(new Param('--horizon-prefix', 'HORIZON_PREFIX', "{$faker->word}:"));
