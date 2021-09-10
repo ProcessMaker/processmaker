@@ -15,7 +15,7 @@
     ]])
 @endsection
 @section('content')
-    <div class="container" id="editCss" v-cloak>
+    <div class="container-fluid px-3" id="editCss" v-cloak>
         <div class="row" role="document">
             <div class="col">
                 <div class="card card-body p-3">
