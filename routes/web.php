@@ -19,7 +19,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth_clients');
 
-        Route::get('customize-ui', 'CssOverrideController@edit')->name('customize-ui.edit');
+        Route::get('customize-ui/{tab?}', 'CssOverrideController@edit')->name('customize-ui.edit');
 
         Route::get('script-executors', 'ScriptExecutorController@index')->name('script-executors.index');
     });
