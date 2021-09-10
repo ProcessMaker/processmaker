@@ -111,7 +111,7 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
                                           :input-data="task.user"></avatar-image>
-                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin === 'true'">
+                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin ">
                             <br>
                             <span>
                                 <button v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'" type="button" class="btn btn-outline-secondary btn-block"
@@ -254,6 +254,7 @@
           redirectInProcess: false,
           formData: {},
           submitting: false,
+          userIsAdmin,
         },
         watch: {
           task: {
