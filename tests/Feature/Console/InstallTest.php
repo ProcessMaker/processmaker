@@ -37,9 +37,6 @@ class InstallTest extends TestCase
     {
         $faker = Faker::create();
         
-        $dataDriver = $faker->randomElement(['mysql', 'pgsql', 'sqlsrv']);
-        $dataSchema = $dataDriver == 'pgsql' ? 'public' : null;
-        
         $params = collect([]);
         $params->push(new Param('--pretend'));
         $params->push(new Param('--no-interaction'));
@@ -68,10 +65,6 @@ class InstallTest extends TestCase
         $params->push(new Param('--pusher-app-secret', 'PUSHER_APP_SECRET', $faker->sha1));
         $params->push(new Param('--pusher-cluster', 'PUSHER_CLUSTER', $faker->word));
         $params->push(new Param('--pusher-tls', 'PUSHER_TLS', $faker->boolean));
-        
-        if ($dataSchema) {
-            $params->push(new Param('--data-schema', 'DATA_DB_SCHEMA', $dataSchema));
-        }
         
         return $params;
     }
