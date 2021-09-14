@@ -259,7 +259,12 @@ class SettingController extends Controller
                 }
                 $copyTo = $mustache->render(str_replace('.', '_', $setting->ui->copy_to), $settingsData);
                 if ($copyTo) {
-                    copy (storage_path('app/private/settings/') . $collectionName, $copyTo);
+                    copy (
+                        storage_path('app/private/settings/') . $collectionName,
+                        // Saving upload file into storage folder
+                        // Note: $copyTo MUST always be a relative path
+                        storage_path($copyTo)
+                    );
                 }
             }
 
