@@ -7,6 +7,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
+        Route::get('queues', 'QueuesController@index')->name('queues.index')->middleware('can:viewHorizon');
         Route::get('settings', 'SettingsController@index')->name('settings.index')->middleware('can:view-settings');
         Route::get('ldap-logs', 'LdapLogsController@index')->name('ldap.index')->middleware('can:view-settings');
         Route::get('settings/export', 'SettingsController@export')->name('settings.export')->middleware('can:view-settings');
