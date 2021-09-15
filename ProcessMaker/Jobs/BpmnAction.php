@@ -42,6 +42,7 @@ abstract class BpmnAction implements ShouldQueue
      */
     public function handle()
     {
+        $response = null;
         try {
             extract($this->loadContext());
             $this->engine = $engine;
