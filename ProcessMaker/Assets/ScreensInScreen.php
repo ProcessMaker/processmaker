@@ -4,8 +4,10 @@ namespace ProcessMaker\Assets;
 
 use DOMXPath;
 use Illuminate\Support\Arr;
+use ProcessMaker\Contracts\ScreenInterface;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Providers\WorkflowServiceProvider;
 use ProcessMaker\Exception\MaximumRecursionException;
 use ProcessMaker\Managers\ExportManager;
@@ -14,6 +16,7 @@ class ScreensInScreen
 {
     public $type = Screen::class;
     public $owner = Screen::class;
+    private $processRequest = null;
     private $recursion = 0;
 
     /**
@@ -24,7 +27,7 @@ class ScreensInScreen
      *
      * @return array
      */
-    public function referencesToExport(Screen $screen, array $screens = [], ExportManager $manager = null, bool $recursive = true)
+    public function referencesToExport(ScreenInterface $screen, array $screens = [], ExportManager $manager = null, bool $recursive = true)
     {
         if ($this->recursion > 10) {
             throw new MaximumRecursionException(
@@ -32,7 +35,7 @@ class ScreensInScreen
             );
         }
 
-        $config = $screen->config;
+        $config = $screen->versionFor($this->processRequest)->config;
         if (is_array($config)) {
             $this->findInArray($config, function ($item) use (&$screens, $manager, $recursive) {
                 if (is_array($item) && isset($item['component']) && $item['component'] === 'FormNestedScreen' && !empty($item['config']['screen'])) {
@@ -91,5 +94,16 @@ class ScreensInScreen
                 call_user_func($callback, $item, implode('.', array_merge($path, [$key])));
             }
         }
+    }
+
+    /**
+     * Set the process requests for version context
+     *
+     * @param ProcessRequest $processRequest
+     * @return void
+     */
+    public function setProcessRequest(ProcessRequest $processRequest = null)
+    {
+        $this->processRequest = $processRequest;
     }
 }

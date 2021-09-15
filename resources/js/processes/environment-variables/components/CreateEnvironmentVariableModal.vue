@@ -7,7 +7,7 @@
       <b-form-group
         required
         :label="$t('Name')"
-        :description="formDescription('The environment variable name must be distinct.', 'name', errors)"
+        :description="formDescription('The environment variable name must be unique.', 'name', errors)"
         :invalid-feedback="errorMessage('name', errors)"
         :state="errorState('name', errors)"
       >

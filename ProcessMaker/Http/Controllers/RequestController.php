@@ -182,6 +182,11 @@ class RequestController extends Controller
             return true;
         }
 
+        // Any user with permissions Edit Request Data, Edit Task Data and view All Requests
+        if (Auth::user()->can('view-all_requests') && Auth::user()->can('edit-request_data') && Auth::user()->can('edit-task_data')) {
+            return true;
+        }
+
         return false;
     }
 

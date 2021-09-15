@@ -8,7 +8,7 @@
         <b-form-group
           required
           :label="$t('Name')"
-          :description="formDescription('The screen name must be distinct.', 'title', errors)"
+          :description="formDescription('The screen name must be unique.', 'title', errors)"
           :invalid-feedback="errorMessage('title', errors)"
           :state="errorState('title', errors)"
         >

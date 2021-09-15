@@ -66,7 +66,7 @@ class RunScriptTask extends BpmnAction implements ShouldQueue
                     'script_executor_id' => ScriptExecutor::initialExecutor($language)->id,
                 ]);
             } else {
-                $script = Script::find($scriptRef);
+                $script = Script::findOrFail($scriptRef)->versionFor($instance);
             }
 
             $this->unlockInstance($instance->getKey());

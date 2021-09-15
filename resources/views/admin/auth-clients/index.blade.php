@@ -21,7 +21,7 @@
                 {!!Form::label('name', __('Name'))!!}
                 {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'authClient.name',
                 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
-                <small class="form-text text-muted">{{ __('Name must be distinct') }}</small>
+                <small class="form-text text-muted">{{ __('Name must be unique') }}</small>
                 <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
             </div>
             <b-form-checkbox-group v-model="authClient.types">

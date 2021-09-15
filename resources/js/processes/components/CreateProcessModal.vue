@@ -8,7 +8,7 @@
         <b-form-group
           required
           :label="$t('Name')"
-          :description="formDescription('The process name must be distinct', 'name', addError)"
+          :description="formDescription('The process name must be unique', 'name', addError)"
           :invalid-feedback="errorMessage('name', addError)"
           :state="errorState('name', addError)"
         >
