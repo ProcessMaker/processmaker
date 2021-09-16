@@ -45,7 +45,11 @@ class ScriptsInScreen
         $watches = $screen->watchers;
         if (is_array($watches)) {
             foreach ($watches as &$watcher) {
-                $oldRef = explode('-', $watcher['script_id'])[1];
+                $refParts = explode('-', $watcher['script_id']);
+                if ($refParts[0] === "data_source") {
+                    continue;
+                }
+                $oldRef = $refParts[1];
                 if (isset($references[Script::class][$oldRef])) {
                     $newRef = $references[Script::class][$oldRef]->getKey();
                 } else {
@@ -62,6 +66,9 @@ class ScriptsInScreen
                 }
                 $watcher['script_id'] = $newRef;
                 $watcher['script']['id'] = "script-$newRef";
+                if ($newRef) {
+                    $watcher['script']['title'] = $references[Script::class][$oldRef]->title;
+                }
             }
         }
         $screen->watchers = $watches;

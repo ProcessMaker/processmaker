@@ -316,10 +316,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
         }
 
         $request = ProcessRequest::find($task->process_request_id);
-        $process = $request->process;
 
-        $definitions = $process->getDefinitions();
+        $definitions = $request->getVersionDefinitions();
         $catch = $definitions->getBoundaryEvent($config->element_id);
+
         if (!$catch) {
             return;
         }
@@ -331,7 +331,7 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
 
         $executed = false;
         foreach ($tokens as $token) {
-            WorkflowManager::triggerBoundaryEvent($process, $request, $token, $catch, []);
+            WorkflowManager::triggerBoundaryEvent($request->process, $request, $token, $catch, []);
             $executed = true;
         }
 

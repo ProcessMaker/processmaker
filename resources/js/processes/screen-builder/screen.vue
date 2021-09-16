@@ -587,8 +587,8 @@ export default {
       }
       this.mode = mode;
       this.previewData = this.previewInputValid ? JSON.parse(this.previewInput) : {};
+      this.rendererKey++;
       if (mode == 'preview') {
-        this.rendererKey++;
         this.preview.config = cloneDeep(this.config);
         this.preview.computed = cloneDeep(this.computed);
         this.preview.customCSS = cloneDeep(this.customCSS);
@@ -632,7 +632,14 @@ export default {
         const validator = new Validator(data, rules);
 
         // Validation will not run until you call passes/fails on it
-        if (!validator.passes()) {
+        let passes;
+        try {
+          passes = validator.passes();
+        } catch (err) {
+          // Prevent errors during validation break the screen builder loading
+          passes = false;
+        }
+        if (!passes) {
           Object.keys(validator.errors.errors).forEach(field => {
             validator.errors.errors[field].forEach(error => {
               validationErrors.push({

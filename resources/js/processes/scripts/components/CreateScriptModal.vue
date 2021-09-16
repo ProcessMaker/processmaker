@@ -34,7 +34,7 @@
         </b-form-group>
         <category-select :label="$t('Category')" api-get="script_categories"
           api-list="script_categories" v-model="script_category_id"
-          :errors="addError.script_category_id" ref="categorySelect"
+          :errors="addError.script_category_id"
         ></category-select>
         <b-form-group
           required
@@ -137,7 +137,6 @@
         this.code = '';
         this.timeout = 60;
         this.addError = {};
-        this.$refs.categorySelect.resetUncategorized();
       },
       onSubmit() {
         this.errors = Object.assign({}, {

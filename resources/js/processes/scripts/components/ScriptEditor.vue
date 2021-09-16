@@ -203,8 +203,7 @@ export default {
     let userID = document.head.querySelector('meta[name="user-id"]');
     window.Echo.private(
       `ProcessMaker.Models.User.${userID.content}`
-    ).notification(response => {
-      console.log(response);
+    ).listen('.ProcessMaker\\Events\\ScriptResponseEvent', response => {
       this.outputResponse(response);
     });
     this.loadBoilerplateTemplate();    

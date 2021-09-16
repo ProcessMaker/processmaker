@@ -2,15 +2,15 @@
 
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use ProcessMaker\Models\Script;
-use Throwable;
-use Illuminate\Queue\SerializesModels;
-use ProcessMaker\Notifications\ScriptResponseNotification;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use ProcessMaker\Events\ScriptResponseEvent;
+use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
+use Throwable;
 
 class TestScript implements ShouldQueue
 {
@@ -73,6 +73,6 @@ class TestScript implements ShouldQueue
      */
     private function sendResponse($status, array $response)
     {
-        $this->current_user->notify(new ScriptResponseNotification($status, $response, null, $this->nonce));
+        event(new ScriptResponseEvent($this->current_user, $status, $response, null, $this->nonce));
     }
 }

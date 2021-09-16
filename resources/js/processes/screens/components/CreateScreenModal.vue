@@ -44,7 +44,7 @@
             :state="errorState('type', errors)"
           ></b-form-select>
         </b-form-group>
-        <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id" ref="categorySelect"></category-select>
+        <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id"></category-select>
       </template>
       <template v-else>
         <div>{{ $t('Categories are required to create a screen') }}</div>
@@ -86,9 +86,6 @@
           type: '',
           description: null,
         });
-        if (this.$refs.categorySelect) {
-          this.$refs.categorySelect.resetUncategorized();
-        }
       },
       resetErrors() {
         this.errors = Object.assign({}, {
