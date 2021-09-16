@@ -1,6 +1,6 @@
 {
   "name": "processmaker/processmaker",
-  "version": "4.2.12-rc",
+  "version": "4.2.13-rc",
   "description": "BPM PHP Software",
   "keywords": [
     "php bpm processmaker"
