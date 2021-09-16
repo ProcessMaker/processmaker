@@ -3,14 +3,14 @@
 namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Event;
+use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\ScriptExecutor;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
 use Tests\TestCase;
-use Tests\Feature\Shared\RequestHelper;
-use Illuminate\Support\Facades\Notification;
-use ProcessMaker\Notifications\ScriptResponseNotification;
 
 /**
  *
@@ -24,16 +24,29 @@ class WatchersTest extends TestCase
 
     const API_TEST_URL = 'api.scripts.execute';
 
+    protected function setUpExecutors()
+    {
+        ScriptExecutor::setTestConfig('php');
+    }
+
+    public function setUpWithPersonalAccessClient()
+    {
+        $this->withPersonalAccessClient();
+    }
+
     /**
      * Test watcher calling script
      */
     public function testExecuteWatcherScript()
     {
-        Notification::fake();
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
         ScriptExecutor::setTestConfig('php');
         $script = factory(Script::class)->create([
             'language' => 'PHP',
             'code' => '<?php return ["language"=>"PHP","data"=>$data,"config"=>$config];',
+            'run_as_user_id' => $this->user->id
         ]);
         $watcher = uniqid();
         $data = ['a' => 1];
@@ -45,8 +58,9 @@ class WatchersTest extends TestCase
         ]);
         $response = $request->json();
         $this->assertArraySubset(['status' => 'success'], $response);
-        Notification::assertSentTo(
-            [$this->user], ScriptResponseNotification::class
-        );
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) use ($data, $config) {
+            $response = $event->response;
+            return $response['output'] == ['language'=>'PHP', 'data'=>$data, 'config'=>$config];
+        });
     }
 }

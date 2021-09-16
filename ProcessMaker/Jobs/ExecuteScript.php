@@ -2,16 +2,16 @@
 
 namespace ProcessMaker\Jobs;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use ProcessMaker\Models\Script;
-use Throwable;
-use Illuminate\Queue\SerializesModels;
-use ProcessMaker\Notifications\ScriptResponseNotification;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use ProcessMaker\Models\User;
+use Illuminate\Queue\SerializesModels;
 use ProcessMaker\Contracts\ScriptInterface;
+use ProcessMaker\Events\ScriptResponseEvent;
+use ProcessMaker\Models\Script;
+use ProcessMaker\Models\User;
+use Throwable;
 
 class ExecuteScript implements ShouldQueue
 {
@@ -56,6 +56,7 @@ class ExecuteScript implements ShouldQueue
      */
     public function handle()
     {
+        //throw new \Exception('This method must be overridden.');
         try {
             # Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
@@ -83,6 +84,6 @@ class ExecuteScript implements ShouldQueue
      */
     private function sendResponse($status, array $response)
     {
-        $this->current_user->notify(new ScriptResponseNotification($status, $response, $this->watcher));
+        event(new ScriptResponseEvent($this->current_user, $status, $response, $this->watcher));
     }
 }

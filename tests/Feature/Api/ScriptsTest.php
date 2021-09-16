@@ -6,6 +6,7 @@ use Tests\TestCase;
 use PermissionSeeder;
 use Faker\Factory as Faker;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Event;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Models\Script;
@@ -18,11 +19,11 @@ use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Facades\WorkflowManager;
 use Illuminate\Support\Facades\Notification;
 use Mockery;
+use ProcessMaker\Events\ScriptResponseEvent;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Providers\AuthServiceProvider;
 use ProcessMaker\Exception\ScriptLanguageNotSupported;
 use ProcessMaker\Models\ScriptVersion;
-use ProcessMaker\Notifications\ScriptResponseNotification;
 use ProcessMaker\PolicyExtension;
 
 class ScriptsTest extends TestCase
@@ -385,12 +386,19 @@ class ScriptsTest extends TestCase
      */
     public function testPreviewScript()
     {
-        Notification::fake();
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
         config()->set('script-runners.php.runner', 'MockRunner');
 
         $url = route('api.scripts.preview', $this->getScript('lua')->id);
         $response = $this->apiCall('POST', $url, ['data' => '{}', 'code' => 'return {response=1}']);
         $response->assertStatus(200);
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            $response = $event->response;
+            $nonce = $event->nonce;
+            return $response['output'] === ['response' => 1];
+        });
 
         $url = route('api.scripts.preview', $this->getScript('php')->id);
         $response = $this->apiCall('POST', $url, [
@@ -401,15 +409,11 @@ class ScriptsTest extends TestCase
         $response->assertStatus(200);
 
         // Assertion: The script output is sent to usr through broadcast channel
-        Notification::assertSentTo(
-            [$this->user],
-            ScriptResponseNotification::class,
-            function ($notification, $channels) {
-                $response = $notification->getResponse();
-                $nonce = $notification->getNonce();
-                return $response['output'] === ['response' => 1] && $nonce === '123abc';
-            }
-        );
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            $response = $event->response;
+            $nonce = $event->nonce;
+            return $response['output'] === ['response' => 1] && $nonce === '123abc';
+        });
     }
 
     /**
@@ -417,7 +421,9 @@ class ScriptsTest extends TestCase
      */
     public function testPreviewScriptFail()
     {
-        Notification::fake();
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
         $script = $this->getScript('php');
         // manually override language
         $script->language = 'foo';
@@ -428,14 +434,11 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('POST', $url, ['data' => 'foo', 'config' => 'foo', 'code' => 'foo']);
 
         // Assertion: An exception is notified to usr through broadcast channel
-        Notification::assertSentTo(
-            [$this->user],
-            ScriptResponseNotification::class,
-            function ($notification, $channels) {
-                $response = $notification->getResponse();
-                return $response['exception'] === ScriptLanguageNotSupported::class && in_array('broadcast', $channels);
-            }
-        );
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            $response = $event->response;
+            $nonce = $event->nonce;
+            return $response['exception'] === ScriptLanguageNotSupported::class;
+        });
     }
 
     /**
@@ -608,7 +611,9 @@ class ScriptsTest extends TestCase
 
     public function testExecuteVersion()
     {
-        Notification::fake();
+        Event::fake([
+            ScriptResponseEvent::class,
+        ]);
         config()->set('script-runners.php.runner', 'MockRunner');
 
         $script = factory(Script::class)->create([
@@ -625,17 +630,10 @@ class ScriptsTest extends TestCase
         $response = $this->apiCall('post', $url);
         $response->assertStatus(200);
 
-        Notification::assertSentTo(
-            [$this->user],
-            ScriptResponseNotification::class,
-            function ($notification, $channels) {
-                $response = $notification->getResponse();
-
-                // Assert the code executed was the version when the
-                // process request (and token) were created
-                return $response['output']['version'] === 'original';
-            }
-        );
+        Event::assertDispatched(ScriptResponseEvent::class, function ($event) {
+            $response = $event->response;
+            return $response['output']['version'] === 'original';
+        });
 
         Carbon::setTestNow();
     }
