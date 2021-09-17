@@ -162,19 +162,19 @@ class Install extends Command
             $this->fetchDatabaseCredentials();
         } while (!$this->testLocalConnection());
         // Configure the DATA connection
-        $this->infoIfInteractive(__('ProcessMaker requires a DATA database.'));
+        // $this->infoIfInteractive(__('ProcessMaker requires a DATA database.'));
         
-        if ($this->interactive()) {
-            $dataConnection = $this->choice(__('Would you like to setup different credentials or use the same ProcessMaker 
-            connection?'), ['different', 'same']);
-        } else {
-            if ($this->option('data-driver') !== 'none') {
-                $dataConnection = 'different';
-            } else {
-                $dataConnection = 'same';
-            }
-        }
-        if ($dataConnection === 'same') {
+        // if ($this->interactive()) {
+        //     $dataConnection = $this->choice(__('Would you like to setup different credentials or use the same ProcessMaker 
+        //     connection?'), ['different', 'same']);
+        // } else {
+        //     if ($this->option('data-driver') !== 'none') {
+        //         $dataConnection = 'different';
+        //     } else {
+        //         $dataConnection = 'same';
+        //     }
+        // }
+        // if ($dataConnection === 'same') {
             $this->env['DATA_DB_DRIVER'] = 'mysql';
             $this->env['DATA_DB_HOST'] = $this->env['DB_HOSTNAME'];
             $this->env['DATA_DB_PORT'] = $this->env['DB_PORT'];
@@ -182,10 +182,10 @@ class Install extends Command
             $this->env['DATA_DB_USERNAME'] = $this->env['DB_USERNAME'];
             $this->env['DATA_DB_PASSWORD'] = $this->env['DB_PASSWORD'];
             $this->env['DATA_DB_ENGINE'] = 'InnoDB';
-        }
-        do {
-            $dataConnection !== 'different' ?: $this->fetchDataConnectionCredentials();
-        } while (!$this->testDataConnection());
+        // }
+        // do {
+        //     $dataConnection !== 'different' ?: $this->fetchDataConnectionCredentials();
+        // } while (!$this->testDataConnection());
         
         if (! $this->pretending()) {
             $this->env['DATA_DB_DRIVER'] === 'sqlsrv' ? $this->checkDateFormatSqlServer() : null;            

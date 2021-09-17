@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Model;
+namespace Tests\Feature;
 
 use Tests\TestCase;
 use ProcessMaker\Models\Process;

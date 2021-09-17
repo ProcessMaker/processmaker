@@ -49,7 +49,7 @@
                                 {!!Form::text('title', null, ['class'=> 'form-control', 'v-model'=> 'title', 'v-bind:class' =>
                                 '{\'form-control\':true, \'is-invalid\':addError.title}'])!!}
                                 <small class="form-text text-muted"
-                                       v-if="! addError.title">{{ __('The script name must be distinct.') }}</small>
+                                       v-if="! addError.title">{{ __('The script name must be unique.') }}</small>
                                 <div class="invalid-feedback" v-for="title in addError.title">@{{title}}</div>
                             </div>
                             <div class="form-group">
@@ -62,7 +62,7 @@
                             </div>
                             <category-select :label="$t('Category')" api-get="script_categories"
                                              api-list="script_categories" v-model="script_category_id"
-                                             :errors="addError.script_category_id" ref="categorySelect">
+                                             :errors="addError.script_category_id">
                             </category-select>
                             <div class="form-group">
                                 {!!Form::label('script_executor_id', __('Language'))!!}<small class="ml-1">*</small>
@@ -150,7 +150,6 @@
                 this.code = '';
                 this.timeout = 60;
                 this.addError = {};
-                this.$refs.categorySelect.resetUncategorized();
               },
               onSubmit() {
                 this.errors = Object.assign({}, {

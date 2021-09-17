@@ -36,14 +36,6 @@
 <script>
   import MultiSelect from "vue-multiselect";
 
-  const addUsernameToFullName = (user) => {
-    if (!user.fullname || ! user.username)
-    {
-      return user;
-    }
-    return {...user, fullname: `${user.fullname} (${user.username})`};
-  };
-
   export default {
     components: {
       MultiSelect
@@ -96,7 +88,7 @@
             } else {
               uid = user.id;
             }
-            return addUsernameToFullName(this.results.find(item => item.id === uid));
+            return this.results.find(item => item.id === uid);
           })
             .concat(this.selected.groups.map(group => {
               let gid;
@@ -112,7 +104,13 @@
         set (value) {
           this.selected.users = [];
           this.selected.groups = [];
-          if (value.length) {
+          if (value === null) {
+            return;
+          }
+
+          // If it is array (this happens when the Select User/Group is selected)
+          // add value just if it is not empty
+          if (Array.isArray(value) && value.length) {
             value.forEach(item => {
               this.results.push(item);
               if (typeof item.id === "number") {
@@ -121,7 +119,11 @@
                 this.selected.groups.push(parseInt(item.id.substr(6)));
               }
             });
-          } else {
+          }
+
+          //If an object arrives as value (this happens with Self Service and assign by expression)
+          if (!Array.isArray(value) && value)
+          {
             this.results.push(value);
             if (typeof value.id === "number") {
               this.selected.users.push(value);
@@ -129,7 +131,7 @@
               this.selected.groups.push(value);
             }
           }
-          
+
         }
       }
     },
@@ -170,7 +172,7 @@
           )
             .then(items => {
               items.forEach(item => {
-                results.push(item.data);
+                results.push(this.addUsernameToFullName(item.data));
               });
             });
 
@@ -201,6 +203,17 @@
       }
     },
     methods: {
+      addUsernameToFullName(user) {
+        if (!user.fullname || ! user.username)
+        {
+          return user;
+        }
+        let status = '';
+        if (user.status === 'INACTIVE') {
+          status = " - " + this.$t('Inactive');
+        }
+        return {...user, fullname: `${user.fullname} (${user.username}${status})`};
+      },
       load (filter) {
         this.options = [];
         if (!this.hideUsers) {
@@ -214,7 +227,7 @@
         ProcessMaker.apiClient
           .get("users" + (typeof filter === "string" ? "?filter=" + filter : ""))
           .then(response => {
-            const users = response.data.data.map(user => addUsernameToFullName(user));
+            const users = response.data.data.map(user => this.addUsernameToFullName(user));
             this.users = users;
 
             if (response.data.data) {
@@ -246,6 +259,9 @@
           item.id = "group-" + item.id;
         }
         item.fullname = item.name;
+        if (item.status === 'INACTIVE') {
+          item.fullname += " (" + this.$t('Inactive') + ")";
+        }
         return item;
       },
       unformatGroup(groupId) {

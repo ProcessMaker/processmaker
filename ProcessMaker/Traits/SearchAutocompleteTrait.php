@@ -50,9 +50,9 @@ trait SearchAutocompleteTrait
     private function searchProcess($query)
     {
         if (empty($query)) {
-            $results = Process::limit(50)->get();
+            $results = Process::nonSystem()->limit(50)->get();
         } else {
-            $results = Process::pmql('name = "' . $query . '"', function($expression) {
+            $results = Process::nonSystem()->pmql('name = "' . $query . '"', function($expression) {
                 return function($query) use($expression) {
                     $query->where($expression->field->field(), 'LIKE',  '%' . $expression->value->value() . '%');
                 };

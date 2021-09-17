@@ -11,6 +11,15 @@ use ProcessMaker\Providers\WorkflowServiceProvider;
 class PMConfigGenericExportManagerTest extends TestCase {
 
     public function test() {
+
+        //
+        //
+        //
+        $this->markTestSkipped();
+        //
+        //
+        //
+
         $process = factory(Process::class)->create([
             'bpmn' => file_get_contents(__DIR__ . '/../Fixtures/pm_config_generic_export.bpmn')
         ]);

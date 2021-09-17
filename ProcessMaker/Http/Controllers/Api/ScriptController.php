@@ -11,6 +11,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Script as ScriptResource;
 use ProcessMaker\Jobs\ExecuteScript;
 use ProcessMaker\Jobs\TestScript;
+use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Models\User;
 
@@ -210,6 +211,10 @@ class ScriptController extends Controller
     {
         $script = count($scriptKey) === 1 && is_numeric($scriptKey[0]) ? Script::find($scriptKey[0]) : Script::where('key', implode('/', $scriptKey))->first();
         $this->authorize('execute', $script);
+        if ($request->task_id) {
+            $processRequest = ProcessRequestToken::findOrFail($request->task_id)->processRequest;
+            $script = $script->versionFor($processRequest);
+        }
         $data = json_decode($request->get('data'), true) ?: [];
         $config = json_decode($request->get('config'), true) ?: [];
         $watcher = $request->get('watcher', uniqid('scr', true));

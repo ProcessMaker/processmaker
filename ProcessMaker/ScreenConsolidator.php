@@ -4,6 +4,8 @@ namespace ProcessMaker;
 
 use ProcessMaker\Exception\MaximumRecursionException;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Contracts\ScreenInterface;
 
 class ScreenConsolidator {
     private $screen;
@@ -13,10 +15,15 @@ class ScreenConsolidator {
     private $recursion = 0;
     private $additionalPages = [];
     private $inNestedScreen = false;
+    private $processRequest = null;
 
-    public function __construct($screen)
+    public function __construct(ScreenInterface $screen, ProcessRequest $processRequest = null)
     {
         $this->screen = $screen;
+        $this->processRequest = $processRequest;
+        if ($screen instanceof Screen && $processRequest) {
+            $this->screen = $screen->versionFor($this->processRequest);
+        }
     }
 
     public function call()
@@ -90,6 +97,9 @@ class ScreenConsolidator {
 
         $screenId = $item['config']['screen'];
         $screen = Screen::findOrFail($screenId);
+        if ($this->processRequest) {
+            $screen = $screen->versionFor($this->processRequest);
+        }
 
         $this->appendWatchers($screen);
         $this->appendComputed($screen);

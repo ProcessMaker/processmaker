@@ -31,10 +31,17 @@
         <div class="d-flex flex-column flex-md-row">
             <div class="flex-grow-1">
                 <div v-if="isSelfService" class="alert alert-primary" role="alert">
-                    <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
-                    {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                    <b-row align-v="center">
+                      <b-col md="auto">
+                        <button type="button" class="btn btn-primary" @click="claimTask">{{__('Claim Task')}}</button>
+                      </b-col>
+                      <b-col>
+                        {{__('This task is unassigned, click Claim Task to assign yourself.')}}
+                        {{__('You must claim the task before you can complete it.')}}
+                      </b-col>
+                    </b-row>
                 </div>
-                <div v-else class="container-fluid h-100 d-flex flex-column">
+                <div class="container-fluid h-100 d-flex flex-column">
                     @can('editData', $task->processRequest)
                         <ul v-if="task.process_request.status === 'ACTIVE'" id="tabHeader" role="tablist" class="nav nav-tabs">
                             <li class="nav-item"><a id="pending-tab" data-toggle="tab" href="#tab-form" role="tab"
@@ -111,10 +118,10 @@
                             <h5>{{__('Assigned To')}}</h5>
                             <avatar-image v-if="task.user" size="32" class="d-inline-flex pull-left align-items-center"
                                           :input-data="task.user"></avatar-image>
-                          <div v-if="task.definition.allowReassignment === 'true'">
+                          <div v-if="task.definition.allowReassignment === 'true' || userIsAdmin">
                             <br>
                             <span>
-                                <button v-if="task.advanceStatus === 'open'" type="button" class="btn btn-outline-secondary btn-block"
+                                <button v-if="task.advanceStatus === 'open' || task.advanceStatus === 'overdue'" type="button" class="btn btn-outline-secondary btn-block"
                                         @click="show">
                                     <i class="fas fa-user-friends"></i> {{__('Reassign')}}
                                 </button>
@@ -214,6 +221,7 @@
 
     const task = @json($task);
     const userHasAccessToTask = {{ Auth::user()->can('update', $task) ? "true": "false" }};
+    const userIsAdmin = {{ Auth::user()->is_administrator ? "true": "false" }};
 
   </script>
     @foreach($manager->getScripts() as $script)
@@ -245,6 +253,8 @@
           hasErrors: false,
           redirectInProcess: false,
           formData: {},
+          userIsAdmin,
+          submitting: false,
         },
         watch: {
           task: {
@@ -396,8 +406,16 @@
             this.$set(this, 'task', val);
           },
           submit(task) {
+            if (this.isSelfService) {
+              window.ProcessMaker.alert(this.$t('You must claim the task before you can complete it.'), 'danger');
+              return;
+            }
+            if (this.submitting) {
+              return;
+            }
             let message = this.$t('Task Completed Successfully');
             const taskId = task.id;
+            this.submitting = true;
             ProcessMaker.apiClient
             .put("tasks/" + taskId, {status:"COMPLETED", data: this.formData})
             .then(() => {
@@ -406,8 +424,9 @@
             .catch(error => {
               // If there are errors, the user will be redirected to the request page
               // to view error details. This is done in loadTask in Task.vue
-            });
-
+            }).finally(() => {
+              this.submitting = false;
+            })
           },
           taskUpdated(task) {
             this.task = task;
@@ -441,10 +460,6 @@
             height: 20px;
         }
 
-        .multiselect__tags-wrap {
-            display: flex !important;
-        }
-
         .multiselect__tags-wrap img {
             height: 15px;
             border-radius: 50%;
@@ -460,12 +475,6 @@
 
         .multiselect__option--selected.multiselect__option--highlight {
             background: #00bf9c !important;
-        }
-
-        .multiselect__tags {
-            border: 1px solid #b6bfc6 !important;
-            border-radius: 0.125em !important;
-            height: calc(1.875rem + 2px) !important;
         }
 
         .multiselect__tag {

@@ -4,6 +4,7 @@ namespace ProcessMaker\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use ProcessMaker\Contracts\ScriptInterface;
 use ProcessMaker\Traits\SerializeToIso8601;
 use ProcessMaker\GenerateAccessToken;
 use ProcessMaker\Models\User;
@@ -58,7 +59,7 @@ use ProcessMaker\Exception\ScriptLanguageNotSupported;
  * )
  *
  */
-class Script extends Model
+class Script extends Model implements ScriptInterface
 {
     use SerializeToIso8601;
     use HideSystemResources;

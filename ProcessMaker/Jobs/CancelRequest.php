@@ -6,6 +6,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Notifications\ProcessCanceledNotification;
 use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Repositories\ExecutionInstanceRepository;
+use ProcessMaker\Repositories\TokenRepository;
 
 class CancelRequest extends BpmnAction implements ShouldQueue
 {
@@ -38,5 +40,11 @@ class CancelRequest extends BpmnAction implements ShouldQueue
 
         // Close all active tokens
         $instance->close();
+
+        // Persist closed tokens
+        $tokenRepo = new TokenRepository(new ExecutionInstanceRepository());
+        foreach ($instance->getTokens()->toArray() as $token) {
+            $tokenRepo->store($token);
+        }
     }
 }

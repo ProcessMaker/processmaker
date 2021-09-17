@@ -57,7 +57,7 @@
                                 {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
                                 'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
                                 <small class="form-text text-muted" v-if="! errors.title">
-                                    {{ __('The screen name must be distinct.') }}
+                                    {{ __('The screen name must be unique.') }}
                                 </small>
                                 <div class="invalid-feedback" v-for="title in errors.title">@{{title}}</div>
                             </div>
@@ -74,7 +74,7 @@
                                 <div class="invalid-feedback" v-for="description in errors.description">@{{description}}
                                 </div>
                             </div>
-                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id" ref="categorySelect">
+                            <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id">
                             </category-select>
                         </div>
                     @else
@@ -129,8 +129,8 @@
                   title: null,
                   type: '',
                   description: null,
+                  screen_category_id: '',
                 });
-                this.$refs.categorySelect.resetUncategorized();
               },
               resetErrors() {
                 this.errors = Object.assign({}, {

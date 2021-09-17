@@ -52,14 +52,14 @@ class TaskController extends Controller
             ->update(['read_at' => Carbon::now()]);
 
         $manager = app(ScreenBuilderManager::class);
-        event(new ScreenBuilderStarting($manager, $task->getScreen() ? $task->getScreen()->type : 'FORM'));
+        event(new ScreenBuilderStarting($manager, $task->getScreenVersion() ? $task->getScreenVersion()->type : 'FORM'));
 
         $submitUrl = route('api.tasks.update', $task->id);
         $task->processRequest;
         $task->user;
-        $screen = $task->getScreen();
-        $task->component = $screen ? $screen->renderComponent() : null;
-        $task->screen = $screen ? $screen->toArray() : null;
+        $screenVersion = $task->getScreenVersion();
+        $task->component = $screenVersion ? $screenVersion->parent->renderComponent() : null;
+        $task->screen = $screenVersion ? $screenVersion->toArray() : null;
         $task->request_data = $this->addUser($task->processRequest->data, $task->user);
         $task->bpmn_tag_name = $task->getBpmnDefinition()->localName;
         $interstitial = $task->getInterstitial();

@@ -346,7 +346,7 @@ class ProcessRequestsTest extends TestCase
         ]);
         //Validate the header status code
         $response->assertStatus(422);
-        $response->assertSeeText('The name has already been taken');
+        $response->assertSeeText('The Name has already been taken');
     }
 
     /**

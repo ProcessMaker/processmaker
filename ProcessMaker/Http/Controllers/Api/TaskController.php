@@ -121,8 +121,10 @@ class TaskController extends Controller
                             $user = User::find($fieldFilter);
                             $query->where(function ($query) use ($user) {
                                 foreach($user->groups as $group) {
-                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey()));
+                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups', strval($group->getKey())); // backwards compatibility
+                                    $query->orWhereJsonContains('process_request_tokens.self_service_groups->groups', strval($group->getKey()));
                                 }
+                                $query->orWhereJsonContains('process_request_tokens.self_service_groups->users', strval($user->getKey()));
                             });
                         });
                     });
@@ -273,7 +275,7 @@ class TaskController extends Controller
             }
             // Skip ConvertEmptyStringsToNull and TrimStrings middlewares
             $data = json_decode($request->getContent(), true);
-            $data = SanitizeHelper::sanitizeData($data['data'], $task->getScreen());
+            $data = SanitizeHelper::sanitizeData($data['data'], $task->getScreenVersion());
             //Call the manager to trigger the start event
             $process = $task->process;
             $instance = $task->processRequest;
@@ -345,6 +347,6 @@ class TaskController extends Controller
     public function getScreen(Request $request, ProcessRequestToken $task, Screen $screen)
     {
         // Authorized in policy
-        return new ApiResource($screen);
+        return new ApiResource($screen->versionFor($task->processRequest));
     }
 }

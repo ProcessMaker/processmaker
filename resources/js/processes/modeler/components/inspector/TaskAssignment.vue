@@ -201,7 +201,7 @@
       },
       assignment: {
         get () {
-          const value = _.get(this.node, "assignment");
+          const value = _.get(this.node, "assignment", "requester");
           return value;
         },
         set (value) {

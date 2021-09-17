@@ -122,6 +122,7 @@ export default {
             configShown: false,
             usersAndGroups: null,
             disabled: true,
+            firstRun: true,
             selectedUserOrGroup: null,
             custom_icon: false,
             dataGroups: [],
@@ -153,15 +154,14 @@ export default {
       })
     },
     watch: {
-        currentColumns: {
-            handler: function(value) {
-                this.$emit('input', this.currentColumns);
-            },
-            deep: true
-        },
         value: {
             handler: function(value) {
                 this.currentColumns = value;
+                if (! this.firstRun) {
+                  this.$emit('input', this.currentColumns);
+                } else {
+                  this.firstRun = false;
+                }
             },
             deep: true
         },

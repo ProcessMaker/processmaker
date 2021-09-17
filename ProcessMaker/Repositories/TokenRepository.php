@@ -20,6 +20,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\EventBasedGatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\GatewayInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ThrowEventInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
@@ -85,7 +86,26 @@ class TokenRepository implements TokenRepositoryInterface
         $token->process_id = $token->getInstance()->process->getKey();
         $token->process_request_id = $token->getInstance()->getKey();
         $token->user_id = $user ? $user->getKey() : null;
-        $token->is_self_service = $token->getAssignmentRule() === 'self_service' ? 1 : 0;
+
+        if ($token->getAssignmentRule() === 'self_service') {
+            // Logic duplicated from ProcessMaker/Models/Process.php getNextuser()
+            // TODO: move to shared method in token model
+            $definitions = $token->getInstance()->getVersionDefinitions();
+            $properties = $definitions->findElementById($activity->getId())->getBpmnElementInstance()->getProperties();
+            $assignmentLock = array_key_exists('assignmentLock', $properties) ? $properties['assignmentLock']  : false;
+            $isAssignmentLock = filter_var($assignmentLock, FILTER_VALIDATE_BOOLEAN) === true;
+
+            if ($isAssignmentLock && $token->user_id !== null) {
+                // It's a lock assignment and user has been assigned, so do
+                // not ask the user to claim the task again
+                $token->is_self_service = 0;
+            } else {
+                $token->is_self_service = 1;
+            }
+        } else {
+            $token->is_self_service = 0;
+        }
+
         $selfServiceTasks = $token->processRequest->processVersion->self_service_tasks;
         $token->self_service_groups = $selfServiceTasks && isset($selfServiceTasks[$activity->getId()]) ? $selfServiceTasks[$activity->getId()] : [];
         //Default 3 days of due date
@@ -331,8 +351,17 @@ class TokenRepository implements TokenRepositoryInterface
     {
     }
 
-    public function store(TokenInterface $token, $saveChildElements = false): \this
+    public function store(TokenInterface $token, $saveChildElements = false)
     {
+        // Update Nayra properties to process request token model
+        foreach ($token->getProperties() as $key => $value) {
+            if (array_key_exists($key, $token->getAttributes())) {
+                $token->{$key} = $value;
+            }
+        }
+
+        $token->saveOrFail();
+        return $this;
     }
 
     /**
@@ -402,6 +431,10 @@ class TokenRepository implements TokenRepositoryInterface
     {
         if ($activity instanceof  ScriptTaskInterface) {
             return 'scriptTask';
+        }
+
+        if ($activity instanceof  ServiceTaskInterface) {
+            return 'serviceTask';
         }
 
         if ($activity instanceof  CallActivityInterface) {

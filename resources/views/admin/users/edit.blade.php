@@ -78,7 +78,7 @@
                         <div class="tab-pane" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <div class="accordion" id="accordionPermissions">
                                 <div class="mb-2 custom-control custom-switch">
-                                    <input v-model="formData.is_administrator" type="checkbox" class="custom-control-input" id="is_administrator" @input="adminHasChanged = true">
+                                    <input v-model="formData.is_administrator" type="checkbox" class="custom-control-input" id="is_administrator">
                                     <label class="custom-control-label" for="is_administrator">{{ __('Make this user a Super Admin') }}</label>
                                 </div>
                                 <div class="mb-3 custom-control custom-switch">
@@ -276,11 +276,11 @@
         data() {
           return {
             formData: @json($user),
-            langs: @json($availableLangs),
-            timezones: @json($timezones),
-            datetimeFormats: @json($datetimeFormats),
-            countries: @json($countries),
-            states: @json($states),
+            langsValues: @json($availableLangs, true),
+            timezonesValues: @json($timezones, true),
+            datetimeFormatsValues: @json($datetimeFormats, true),
+            countriesValues: @json($countries, true),
+            statesValues: @json($states, true),
             userId: @json($user->id),
             image: '',
             status: @json($status),
@@ -298,7 +298,6 @@
             selectedPermissions: [],
             selectAll: false,
             newToken: null,
-            adminHasChanged: false,
             apiTokens: [],
             currentUserId: {{ Auth::user()->id }},
             options: [{
@@ -318,6 +317,21 @@
           isCurrentUser() {
             return this.currentUserId == this.formData.id
           },
+          langs() {
+            return this.formatDataSelect(this.langsValues);
+          },
+          timezones() {
+            return this.formatDataSelect(this.timezonesValues);
+          },
+          datetimeFormats() {
+            return this.formatDataSelect(this.datetimeFormatsValues);
+          },
+          countries() {
+            return this.formatDataSelect(this.countriesValues);
+          },
+          states() {
+            return this.formatDataSelect(this.statesValues);
+          },
         },
         mounted() {
           let created = (new URLSearchParams(window.location.search)).get('created');
@@ -328,9 +342,19 @@
         watch: {
           selectedPermissions: function () {
             this.selectAll = this.areAllPermissionsSelected();
-          }
+          },
         },
         methods: {
+          formatDataSelect (objectData) {
+            let data = [];
+            for (const property in objectData) {
+              data.push({
+                value: property,
+                text: objectData[property]
+              })
+            }
+            return data;
+          },
           areAllPermissionsSelected() {
             return this.selectedPermissions.length === this.permissions.length;
           },
@@ -405,17 +429,17 @@
             ProcessMaker.apiClient.put('users/' + this.formData.id, this.formData)
               .then(response => {
                 ProcessMaker.alert('{{__('User Updated Successfully ')}}', 'success');
-                window.ProcessMaker.events.$emit('update-profile-avatar');
+                if (this.formData.id == window.ProcessMaker.user.id) {
+                  window.ProcessMaker.events.$emit('update-profile-avatar');
+                }
               })
               .catch(error => {
                 this.errors = error.response.data.errors;
               });
           },
           permissionUpdate() {
-            if (this.adminHasChanged) {
-              this.profileUpdate(false)
-            }
             ProcessMaker.apiClient.put("/permissions", {
+              is_administrator: this.formData.is_administrator,
               permission_names: this.selectedPermissions,
               user_id: this.formData.id
             })

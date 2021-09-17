@@ -29,12 +29,11 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function() {
             $scheduleManager = new TaskSchedulerManager();
-            $scheduleManager->scheduleTasks();
-        })->everyMinute();
-        $schedule->call(function() {
-            $scheduleManager = new TaskSchedulerManager();
             $scheduleManager->evaluateConditionals();
         })->everyMinute();
+        $schedule->command('bpmn:timer')
+            ->everyMinute()
+            ->onOneServer();
     }
 
     /**

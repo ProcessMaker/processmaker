@@ -36,10 +36,7 @@ class InstallTest extends TestCase
     private function generateParameters()
     {
         $faker = Faker::create();
-        
-        $dataDriver = $faker->randomElement(['mysql', 'pgsql', 'sqlsrv']);
-        $dataSchema = $dataDriver == 'pgsql' ? 'public' : null;
-        
+
         $params = collect([]);
         $params->push(new Param('--pretend'));
         $params->push(new Param('--no-interaction'));
@@ -54,12 +51,6 @@ class InstallTest extends TestCase
         $params->push(new Param('--db-name', 'DB_DATABASE', $faker->word));
         $params->push(new Param('--db-username', 'DB_USERNAME', $faker->userName));
         $params->push(new Param('--db-password', 'DB_PASSWORD', $faker->word));
-        $params->push(new Param('--data-driver', 'DATA_DB_DRIVER', $dataDriver));
-        $params->push(new Param('--data-host', 'DATA_DB_HOST', $faker->ipv4));
-        $params->push(new Param('--data-port', 'DATA_DB_PORT', $faker->numberBetween(1, 9999)));
-        $params->push(new Param('--data-name', 'DATA_DB_DATABASE', $faker->word));
-        $params->push(new Param('--data-username', 'DATA_DB_USERNAME', $faker->userName));
-        $params->push(new Param('--data-password', 'DATA_DB_PASSWORD', $faker->word));
         $params->push(new Param('--redis-client', 'REDIS_CLIENT', $faker->randomElement(['phpredis', 'predis'])));
         $params->push(new Param('--redis-prefix', 'REDIS_PREFIX', "{$faker->word}:"));
         $params->push(new Param('--horizon-prefix', 'HORIZON_PREFIX', "{$faker->word}:"));
@@ -74,10 +65,6 @@ class InstallTest extends TestCase
         $params->push(new Param('--pusher-app-secret', 'PUSHER_APP_SECRET', $faker->sha1));
         $params->push(new Param('--pusher-cluster', 'PUSHER_CLUSTER', $faker->word));
         $params->push(new Param('--pusher-tls', 'PUSHER_TLS', $faker->boolean));
-        
-        if ($dataSchema) {
-            $params->push(new Param('--data-schema', 'DATA_DB_SCHEMA', $dataSchema));
-        }
         
         return $params;
     }
