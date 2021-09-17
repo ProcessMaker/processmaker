@@ -168,7 +168,7 @@ class User extends Authenticatable implements HasMedia
             'username' => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255' , $unique, $checkUserIsDeleted],
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
-            'email' => ['required', 'email', $unique, $checkUserIsDeleted],
+            'email' => ['required', 'email', $checkUserIsDeleted],
             'phone' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'fax' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'cell' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
