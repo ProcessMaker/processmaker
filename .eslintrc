@@ -30,6 +30,7 @@
     "standard"
   ],
   "rules": {
+    "comma-dangle": ["error", "always-multiline"],
     "indent": [
       1,
       2,
@@ -42,7 +43,8 @@
       "unix"
     ],
     "quotes": [
-      1,
+      2,
+      "double",
       "single"
     ],
     "semi": [

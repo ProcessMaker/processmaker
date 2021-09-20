@@ -78,7 +78,7 @@ class GenerateMenus
             }
             if (\Auth::check() && \Auth::user()->is_administrator) {
                 $submenu->add(__('Queue Management'), [
-                    'route' => 'horizon.index',
+                    'route' => 'queues.index',
                     'icon' => 'fa-infinity',
                 ]);
             }

@@ -7,6 +7,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
     Route::namespace('Admin')->prefix('admin')->group(function () {
+        Route::get('queues', 'QueuesController@index')->name('queues.index');
         Route::get('settings', 'SettingsController@index')->name('settings.index')->middleware('can:view-settings');
         Route::get('ldap-logs', 'LdapLogsController@index')->name('ldap.index')->middleware('can:view-settings');
         Route::get('settings/export', 'SettingsController@export')->name('settings.export')->middleware('can:view-settings');
@@ -19,7 +20,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
 
         Route::get('auth-clients', 'AuthClientController@index')->name('auth-clients.index')->middleware('can:view-auth_clients');
 
-        Route::get('customize-ui', 'CssOverrideController@edit')->name('customize-ui.edit');
+        Route::get('customize-ui/{tab?}', 'CssOverrideController@edit')->name('customize-ui.edit');
 
         Route::get('script-executors', 'ScriptExecutorController@index')->name('script-executors.index');
     });

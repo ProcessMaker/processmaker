@@ -98,14 +98,6 @@ class UsersTest extends TestCase
             $response->json()['errors']['username'][1]
         );
 
-        $params['username'] = 'foobar';
-        $params['email'] = $deletedUser->email;
-        
-        $response = $this->apiCall('POST', $url, $params);
-        $this->assertEquals(
-            "A user with the username {$deletedUser->username} and email {$deletedUser->email} was previously deleted.",
-            $response->json()['errors']['email'][1]
-        );
     }
 
     public function testDefaultValuesOfUser()

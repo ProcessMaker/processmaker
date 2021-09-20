@@ -62,13 +62,9 @@
       content: {
         handler() {
           this.validate();
-          if (this.content) {
+          if (this.content && this.content.id != this.value) {
             this.error = '';
-            if (this.node) {
-              this.$set(this.definition, "scriptRef", this.content.id);
-            } else  {
-              this.$emit('input', this.content.id);
-            }
+            this.$emit('input', this.content.id);
           }
         }
       },

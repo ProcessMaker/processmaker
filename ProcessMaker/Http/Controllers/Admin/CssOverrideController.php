@@ -10,7 +10,7 @@ use ProcessMaker\Models\Setting;
 
 class CssOverrideController extends Controller
 {
-    public function edit()
+    public function edit($tab = 'design')
     {
         if (!Auth::user()->is_administrator) {
             throw new AuthorizationException(__('Not authorized to complete this request.'));
@@ -20,6 +20,6 @@ class CssOverrideController extends Controller
         $loginFooter = Setting::byKey('login-footer');
         $altText = config('logo-alt-text', 'ProcessMaker');
 
-        return view('admin.cssOverride.edit', compact('config', 'loginFooter', 'altText'));
+        return view('admin.cssOverride.edit', compact('config', 'loginFooter', 'altText', 'tab'));
     }
 }

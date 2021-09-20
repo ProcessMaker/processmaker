@@ -11,6 +11,7 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Jobs\BuildScriptExecutor;
 use ProcessMaker\Models\ScriptExecutor;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Facades\Docker;
 
 class ScriptExecutorController extends Controller
 {
@@ -58,10 +59,10 @@ class ScriptExecutorController extends Controller
             throw ValidationException::withMessages(['delete' => __('Can not delete the only executor for this language.')]);
         }
 
-        $cmd = 'docker images -q ' . $scriptExecutor->dockerImageName(); 
+        $cmd = Docker::command().' images -q ' . $scriptExecutor->dockerImageName(); 
         exec($cmd, $out, $return);
         if (count($out) > 0) {
-            $cmd = 'docker rmi ' . $scriptExecutor->dockerImageName(); 
+            $cmd = Docker::command().' rmi ' . $scriptExecutor->dockerImageName(); 
             exec($cmd, $out, $return);
 
             if ($return !== 0) {
