@@ -12,6 +12,7 @@ use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Query\SyntaxError;
 
@@ -73,8 +74,17 @@ class ScreenController extends Controller
     public function index(Request $request)
     {
         $query = Screen::nonSystem()
-                    ->select('screens.*')
-                    ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id');
+            ->select('screens.*')
+            ->distinct()
+            ->leftJoin('category_assignments as assig', function($join) {
+                $join->on('assig.assignable_id', '=',  'screens.id');
+                $join->where('assig.assignable_type', '=', Screen::class);
+            })
+            ->leftJoin('screen_categories as screenCat', function($join) {
+                $join->on('screenCat.id', '=',  'assig.category_id');
+                $join->where('assig.category_type', '=', ScreenCategory::class);
+            });
+
         $include = $request->input('include', '');
 
         if ($include) {
@@ -89,7 +99,6 @@ class ScreenController extends Controller
             }
         }
 
-
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
         if (!empty($filter)) {
@@ -98,7 +107,7 @@ class ScreenController extends Controller
                 $query->where(function ($query) use ($filter) {
                     $query->where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
-                        ->orWhere('category.name', 'like', $filter);
+                        ->orWhere('screenCat.name', 'like', $filter);
                 });
             } else {
                 $query->where(function ($query) use ($filter) {
