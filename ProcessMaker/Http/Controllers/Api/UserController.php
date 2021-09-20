@@ -282,7 +282,7 @@ class UserController extends Controller
      *         description="success",
      *     ),
      *     ),
-     * 
+     *
      * @OA\Schema(
      *     schema="updateUserGroups",
      *     @OA\Property(
