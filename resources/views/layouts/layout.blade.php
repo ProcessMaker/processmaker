@@ -69,7 +69,14 @@
             @endif
         @endforeach
     @endisset
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J207X7GBTF"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
+  gtag('config', 'G-J207X7GBTF');
+</script>
 </head>
 
 <body>
