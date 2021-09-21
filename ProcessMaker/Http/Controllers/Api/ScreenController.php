@@ -74,16 +74,7 @@ class ScreenController extends Controller
     public function index(Request $request)
     {
         $query = Screen::nonSystem()
-            ->select('screens.*')
-            ->distinct()
-            ->leftJoin('category_assignments as assig', function($join) {
-                $join->on('assig.assignable_id', '=',  'screens.id');
-                $join->where('assig.assignable_type', '=', Screen::class);
-            })
-            ->leftJoin('screen_categories as screenCat', function($join) {
-                $join->on('screenCat.id', '=',  'assig.category_id');
-                $join->where('assig.category_type', '=', ScreenCategory::class);
-            });
+            ->select('screens.*');
 
         $include = $request->input('include', '');
 
@@ -107,7 +98,16 @@ class ScreenController extends Controller
                 $query->where(function ($query) use ($filter) {
                     $query->where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
-                        ->orWhere('screenCat.name', 'like', $filter);
+                        ->orWhereIn('id', function($qry) use ($filter) {
+                            $qry->select('assignable_id')
+                                ->from('category_assignments')
+                                ->leftJoin('screen_categories', function($join) {
+                                    $join->on('screen_categories.id', '=',  'category_assignments.category_id');
+                                    $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                                    $join->where('category_assignments.assignable_type', '=', Screen::class);
+                                })
+                                ->where ('screen_categories.name', 'like', $filter);
+                        });
                 });
             } else {
                 $query->where(function ($query) use ($filter) {

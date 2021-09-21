@@ -14,6 +14,7 @@ use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Resources\Process as Resource;
 use ProcessMaker\Http\Resources\ProcessRequests;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessPermission;
 use ProcessMaker\Models\Script;
 use ProcessMaker\Jobs\ExportProcess;
@@ -78,7 +79,6 @@ class ProcessController extends Controller
      */
     public function index(Request $request)
     {
-        $where = $this->getRequestFilterBy($request, ['processes.name', 'processes.description', 'processes.status', 'category.name', 'user.firstname', 'user.lastname']);
         $orderBy = $this->getRequestSortBy($request, 'name');
         $perPage = $this->getPerPage($request);
         $include = $this->getRequestInclude($request);
@@ -88,13 +88,28 @@ class ProcessController extends Controller
         if ($status === 'inactive') {
             $processes = Process::inactive()->with($include);
         }
-
+        $filter = $request->input('filter');
         $processes = $processes->select('processes.*')
             ->leftJoin('process_categories as category', 'processes.process_category_id', '=', 'category.id')
             ->leftJoin('users as user', 'processes.user_id', '=', 'user.id')
             ->orderBy(...$orderBy)
-            ->where($where)
-            ->get();
+            ->where(function($query) use($filter) {
+                $query->where('processes.name', 'like', '%' . $filter . '%')
+                    ->orWhere('processes.description', 'like', '%' . $filter. '%')
+                    ->orWhere('processes.status', '=', $filter)
+                    ->orWhere('user.firstname', 'like', '%' . $filter. '%')
+                    ->orWhere('user.lastname', 'like', '%' . $filter. '%')
+                    ->orWhereIn('processes.id', function($qry) use ($filter) {
+                        $qry->select('assignable_id')
+                            ->from('category_assignments')
+                            ->leftJoin('process_categories', function($join) {
+                                $join->on('process_categories.id', '=',  'category_assignments.category_id');
+                                $join->where('category_assignments.category_type', '=', ProcessCategory::class);
+                                $join->where('category_assignments.assignable_type', '=', Process::class);
+                            })
+                            ->where ('process_categories.name', 'like', '%' . $filter. '%');
+                    });
+            })->get();
 
         return new ApiCollection($processes);
     }
