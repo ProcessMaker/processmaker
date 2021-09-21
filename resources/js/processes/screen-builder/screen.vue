@@ -276,15 +276,6 @@ export default {
         section: "right",
         items: [
           {
-            id: "button_calcs",
-            type: "button",
-            title: this.$t("Calculated Properties"),
-            name: this.$t("Calcs"),
-            variant: "secondary",
-            icon: "fas fa-flask",
-            action: 'openComputedProperties()'
-          },
-          {
             id: "button_custom_css",
             type: "button",
             title: this.$t("Custom CSS"),
@@ -327,6 +318,16 @@ export default {
         }
       }
     ];
+
+    const calcsOption = {
+      id: "button_calcs",
+      type: "button",
+      title: this.$t("Calculated Properties"),
+      name: this.$t("Calcs"),
+      variant: "secondary",
+      icon: "fas fa-flask",
+      action: 'openComputedProperties()'
+    };
 
     return {
       numberOfElements: 0,
@@ -372,6 +373,7 @@ export default {
       mockMagicVariables,
       previewComponents: [],
       optionsMenu: options,
+      calcsOption: calcsOption,
       rendererKey: 0,
       renderComponent: 'task-screen'
     };
@@ -463,8 +465,15 @@ export default {
     this.countElements = debounce(this.countElements, 2000);
     this.mountWhenTranslationAvailable();
     this.countElements();
+    this.addCalcsButton();
   },
   methods: {
+    addCalcsButton() {
+      if (this.type !== formTypes.form) {
+        return;
+      }
+      this.optionsMenu[1].items.unshift(this.calcsOption);
+    },
     countElements() {
       this.$refs.renderer.countElements(this.config).then(allElements => {
         this.numberOfElements = allElements.length;
