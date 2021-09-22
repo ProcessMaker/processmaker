@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use DOMElement;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +22,7 @@ use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
@@ -1185,11 +1187,15 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             foreach ($processes as $process) {
                 $process->getBpmnElementInstance()->getTransitions($engine->getRepository());
             }
+            $callActivities = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'callActivity');
+            foreach ($callActivities as $callActivity) {
+                $this->validateCallActivity($callActivity->getBpmnElementInstance());
+            }
         } catch (Throwable $exception) {
             throw $exception;
             $warning = [
-                'title' => __('Process invalid for execution'),
-                'text' => __('Process invalid for execution'),
+                'title' => __('Invalid process'),
+                'text' => $exception->getMessage(),
             ];
             if ($addWarnings) {
                 $warnings = $this->warnings;
@@ -1199,5 +1205,32 @@ class Process extends Model implements HasMedia, ProcessModelInterface
             return false;
         }
         return true;
+    }
+
+    /**
+     * Validates a call activity configuration.
+     *
+     * @param CallActivity $callActivity
+     * @throw \Exception if the call activity is not properly configured.
+     */
+    private function validateCallActivity(CallActivity $callActivity)
+    {
+        $targetProcess = $callActivity->getCalledElement();
+        $config = json_decode($callActivity->getProperty('config'), true);
+        $startId = is_array($config) && isset($config['startEvent']) ? $config['startEvent'] : null;
+        if ($startId) {
+            $startEvent = $targetProcess->getOwnerDocument()->findElementById($startId)->getBpmnElementInstance();
+            if (!($startEvent instanceof StartEventInterface)) {
+                throw new Exception(__('The start event of the call activity is not a start event'));
+            }
+            $eventDefinitions = $startEvent->getEventDefinitions();
+            if ($eventDefinitions && $eventDefinitions->count() > 0) {
+                throw new Exception(__('The start event of the call activity is not empty'));
+            }
+            $config = json_decode($startEvent->getProperty('config'), true);
+            if ($config && isset($config['web_entry'])) {
+                throw new Exception(__('The start event of the call activity can not be a web entry'));
+            }
+        }
     }
 }
