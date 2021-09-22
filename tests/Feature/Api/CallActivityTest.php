@@ -218,4 +218,21 @@ class CallActivityTest extends TestCase
         $this->assertEquals('COMPLETED', $instance->status);
         $this->assertEquals('COMPLETED', $subInstance->status);
     }
+
+    public function testCallActivityValidation()
+    {
+        $child = $this->createProcess([
+            'id' => 29,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/SignalStartEvent.bpmn')
+        ]);
+        $parent = $this->createProcess([
+            'id' => 30,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn')
+        ]);
+        // Process should hve one warning related to "The start event of the call activity is not empty"
+        $this->assertEquals([[
+            'title' => 'Invalid process',
+            'text' => 'The start event of the call activity is not empty',
+        ]], $parent->warnings);
+    }
 }
