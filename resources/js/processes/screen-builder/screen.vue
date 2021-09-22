@@ -276,15 +276,6 @@ export default {
         section: "right",
         items: [
           {
-            id: "button_custom_css",
-            type: "button",
-            title: this.$t("Custom CSS"),
-            name: this.$t("CSS"),
-            variant: "secondary",
-            icon: "fab fa-css3",
-            action: 'openCustomCSS()'
-          },
-          {
             id: "button_watchers",
             type: "button",
             title: this.$t("Watchers"),
@@ -327,6 +318,16 @@ export default {
       variant: "secondary",
       icon: "fas fa-flask",
       action: 'openComputedProperties()'
+    };
+
+    const customCssOption = {
+      id: "button_custom_css",
+      type: "button",
+      title: this.$t("Custom CSS"),
+      name: this.$t("CSS"),
+      variant: "secondary",
+      icon: "fab fa-css3",
+      action: 'openCustomCSS()'
     };
 
     return {
@@ -374,6 +375,7 @@ export default {
       previewComponents: [],
       optionsMenu: options,
       calcsOption: calcsOption,
+      customCssOption: customCssOption,
       rendererKey: 0,
       renderComponent: 'task-screen'
     };
@@ -466,6 +468,7 @@ export default {
     this.mountWhenTranslationAvailable();
     this.countElements();
     this.addCalcsButton();
+    this.addCustomCssBtn();
   },
   methods: {
     addCalcsButton() {
@@ -473,6 +476,12 @@ export default {
         return;
       }
       this.optionsMenu[1].items.unshift(this.calcsOption);
+    },
+    addCustomCssBtn() {
+      if (this.type !== formTypes.form) {
+        return;
+      }
+      this.optionsMenu[1].items.splice(1, 0, this.customCssOption);
     },
     countElements() {
       this.$refs.renderer.countElements(this.config).then(allElements => {
