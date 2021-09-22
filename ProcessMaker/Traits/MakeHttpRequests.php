@@ -295,7 +295,7 @@ trait MakeHttpRequests
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
-            return ["response" => $bodyContent, "status" => $status];
+            return ["status" => $status];
         }
 
         switch (true) {
@@ -311,7 +311,6 @@ trait MakeHttpRequests
         $mapped = [];
         !is_array($content) ?: $merged = array_merge($data, $content);
         $mapped['status'] = $status;
-        $mapped['response'] = $content;
 
         if (isset($config['dataMapping'])) {
             foreach ($config['dataMapping'] as $map) {
@@ -331,7 +330,7 @@ trait MakeHttpRequests
         $status = $response->getStatusCode();
         $bodyContent = $response->getBody()->getContents();
         if (!$this->isJson($bodyContent)) {
-            return ["response" => $bodyContent, "status" => $status];
+            return ["status" => $status];
         }
 
         switch (true) {
@@ -347,7 +346,6 @@ trait MakeHttpRequests
 
         $mapped = [];
         $mapped['status'] = $status;
-        $mapped['response'] = $content;
 
         if (!isset($config['dataMapping'])) {
             return $mapped;
