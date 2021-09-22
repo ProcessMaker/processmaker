@@ -229,10 +229,27 @@ class CallActivityTest extends TestCase
             'id' => 30,
             'bpmn' => file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn')
         ]);
-        // Process should hve one warning related to "The start event of the call activity is not empty"
+        // Process should have one warning related to "The start event of the call activity is not empty"
         $this->assertEquals([[
             'title' => 'Invalid process',
             'text' => 'The start event of the call activity is not empty',
+        ]], $parent->warnings);
+    }
+
+    public function testCallActivityValidationToWebEntryStartEvent()
+    {
+        $child = $this->createProcess([
+            'id' => 29,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn')
+        ]);
+        $parent = $this->createProcess([
+            'id' => 30,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn')
+        ]);
+        // Process should have one warning related to "The start event of the call activity can not be a web entry"
+        $this->assertEquals([[
+            'title' => 'Invalid process',
+            'text' => 'The start event of the call activity can not be a web entry',
         ]], $parent->warnings);
     }
 }
