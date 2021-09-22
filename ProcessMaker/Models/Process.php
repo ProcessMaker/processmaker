@@ -31,6 +31,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
@@ -1259,8 +1260,10 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      */
     public function validateBpmnDefinition($addWarnings = false, &$warning = [])
     {
+        $warnings = [];
         try {
             $definitions = $this->getDefinitions();
+            $warnings = $this->validateSchema($definitions);
             $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
             $processes = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
             foreach ($processes as $process) {
@@ -1276,7 +1279,6 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 'text' => $exception->getMessage(),
             ];
             if ($addWarnings) {
-                $warnings = $this->warnings;
                 $warnings[] = $warning;
                 $this->warnings = $warnings;
             }
@@ -1310,5 +1312,32 @@ class Process extends Model implements HasMedia, ProcessModelInterface
                 throw new Exception(__('The start event of the call activity can not be a web entry'));
             }
         }
+    }
+
+    /**
+     * Validates the Bpmn content of the process.
+     *
+     * @param BpmnDocument $request
+     * @return array
+     */
+    private function validateSchema(BpmnDocument $document)
+    {
+        $schemaErrors = [];
+        try {
+            $document->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
+        } catch (Exception $e) {
+            $schemaErrors = $document->getValidationErrors();
+            $schemaErrors[] = $e->getMessage();
+        }
+        $rulesValidation = new BPMNValidation;
+        if(!$rulesValidation->passes('document', $document)) {
+            $errors = $rulesValidation->errors('document', $document)->getMessages();
+            $schemaErrors[] = [
+                'title' => 'BPMN Validation failed',
+                'text' => __('Some bpmn elements do not comply with the validation'),
+                'errors' => $errors,
+            ];
+        }
+        return $schemaErrors;
     }
 }
