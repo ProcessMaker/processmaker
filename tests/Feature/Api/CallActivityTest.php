@@ -252,4 +252,44 @@ class CallActivityTest extends TestCase
             'text' => 'The start event of the call activity can not be a web entry',
         ]], $parent->warnings);
     }
+
+    public function testCallActivityValidationToNonStartEventElement()
+    {
+        $child = $this->createProcess([
+            'id' => 29,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn')
+        ]);
+        $parentBpmn = file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn');
+        // Point to a EndEvent instead of StartEvent
+        $parentBpmn = str_replace('&#34;startEvent&#34;:&#34;node_2&#34;', '&#34;startEvent&#34;:&#34;node_3&#34;', $parentBpmn);
+        $parent = $this->createProcess([
+            'id' => 30,
+            'bpmn' => $parentBpmn
+        ]);
+        // Process should have one warning related to "The start event of the call activity is not a start event"
+        $this->assertEquals([[
+            'title' => 'Invalid process',
+            'text' => 'The start event of the call activity is not a start event',
+        ]], $parent->warnings);
+    }
+
+    public function testCallActivityValidationToDeletedElement()
+    {
+        $child = $this->createProcess([
+            'id' => 29,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/WebEntryStartEvent.bpmn')
+        ]);
+        $parentBpmn = file_get_contents(__DIR__ . '/processes/ParentCallActivity.bpmn');
+        // Point to a EndEvent instead of StartEvent
+        $parentBpmn = str_replace('&#34;startEvent&#34;:&#34;node_2&#34;', '&#34;startEvent&#34;:&#34;deleted_node_id&#34;', $parentBpmn);
+        $parent = $this->createProcess([
+            'id' => 30,
+            'bpmn' => $parentBpmn
+        ]);
+        // Process should have one warning related to "The start event with id "deleted_node_id" does not exist"
+        $this->assertEquals([[
+            'title' => 'Invalid process',
+            'text' => 'The start event with id "deleted_node_id" does not exist',
+        ]], $parent->warnings);
+    }
 }
