@@ -73,7 +73,15 @@ export default {
             data.meta.last_page = data.meta.total_pages;
             data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
             data.meta.to = data.meta.from + data.meta.count;
+            data.data = this.jsonRows(data.data);
             return data;
+        },
+        // Some controllers return each row as a json object to preserve integer keys (ie saved search)
+        jsonRows(rows) {
+            if (rows.length === 0 || !('_json' in rows[0])) {
+                return rows;
+            }
+            return rows.map(row => JSON.parse(row._json));
         },
         // Handler to set pagination data on our pagination based off of data passed into vuetable
         onPaginationData(data) {
