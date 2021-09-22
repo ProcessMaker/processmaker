@@ -38,6 +38,7 @@ $factory->define(User::class, function (Faker $faker) use($onePassword) {
         'loggedin_at' => null,
 
         'is_administrator' => false,
+        'force_change_password' => 0,
 
     ];
 });

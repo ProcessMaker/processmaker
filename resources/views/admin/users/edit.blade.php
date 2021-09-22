@@ -101,7 +101,7 @@
                                 </div>
 
                                 <user-tokens-listing :user_id="formData.id" ref="tokenList"></user-tokens-listing>
-                                
+
                                 <b-modal
                                     id="newTokenModal"
                                     ref="newTokenModal"

@@ -363,6 +363,7 @@ class UsersTest extends TestCase
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
             'password' => $faker->password(6, 6),
+            'force_change_password' => $faker->boolean,
         ]);
 
         //Validate the header status code
@@ -373,6 +374,36 @@ class UsersTest extends TestCase
 
         //Check that it has changed
         $this->assertNotEquals($verify, $verify_new);
+
+    }
+
+    /**
+     * Update user in process
+     */
+    public function testUpdateUserForceChangePasswordFlag()
+    {
+        $faker = Faker::create();
+
+        $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
+
+        //Post saved success
+        $response = $this->apiCall('PUT', $url, [
+            'username' => 'updatemytestusername',
+            'email' => $faker->email,
+            'firstname' => $faker->firstName,
+            'lastname' => $faker->lastName,
+            'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
+            'password' => $faker->password(6, 6),
+            'force_change_password' => 0,
+        ]);
+
+        //Validate the header status code
+        $response->assertStatus(204);
+
+        //Validate Flag force_change_password was changed
+        $this->assertDatabaseHas('users', [
+            'force_change_password' => 0
+        ]);
 
     }
 
@@ -473,13 +504,13 @@ class UsersTest extends TestCase
     */
     public function testRestoreSoftDeletedUser()
     {
-        // create an user 
+        // create an user
         $user = factory(User::class)->create([
             'email' => 'test@email.com',
             'username' => 'mytestusername'
         ]);
         $id = $user->id;
-        
+
         // Assert that the user is listed
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $response->assertJsonFragment(['id' => $id]);
@@ -540,7 +571,7 @@ class UsersTest extends TestCase
         $response->assertStatus(422);
         $json = $response->json();
         $this->assertEquals('The Password must be at least 6 characters.', $json['errors']['password'][0]);
-        
+
         $payload['password'] = 'abc123';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(201);
@@ -554,11 +585,11 @@ class UsersTest extends TestCase
         $response->assertStatus(422);
         $json = $response->json();
         $this->assertEquals('The Password must be at least 6 characters.', $json['errors']['password'][0]);
-        
+
         $payload['password'] = 'abc123';
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(204);
-        
+
         // It's OK to update a user without the password
         unset($payload['password']);
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
@@ -597,8 +628,8 @@ class UsersTest extends TestCase
             'mailhost!username@example.org',
             // (local part ending with non-alphanumeric character from the list of allowed printable characters)
             'user-@example.org',
-            '123', 
-            'abc', 
+            '123',
+            'abc',
         ];
 
         $faker = Faker::create();

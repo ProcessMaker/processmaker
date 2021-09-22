@@ -33,7 +33,7 @@ new Vue({
                 direction: 'desc'
             }]);
         },
-        validatePassword() {  
+        validatePassword() {
             if (this.config.password.trim().length > 0 && this.config.password.trim().length < 8) {
                 this.config.addError.password = ['Password must be at least 8 characters']
                 this.$refs.passwordStrength.updatePassword('');
@@ -78,7 +78,7 @@ new Vue({
 
  new Vue({
     el: '#deleted-users-listing',
-    components: {DeletedUsersListing}, 
+    components: {DeletedUsersListing},
     data: {
         filter: ''
     },

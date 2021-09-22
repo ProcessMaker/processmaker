@@ -2,7 +2,7 @@
 
 use ProcessMaker\Http\Controllers\Api\Requests\RequestsController;
 
-Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], function () {
+Route::group(['middleware' => ['auth', 'sanitize', 'external.connection', 'force_change_password']], function () {
 
     // Routes related to Authentication (password reset, etc)
     // Auth::routes();
@@ -62,7 +62,7 @@ Route::group(['middleware' => ['auth', 'sanitize', 'external.connection']], func
     Route::get('processes/{process}', 'ProcessController@show')->name('processes.show')->middleware('can:view-processes');
     Route::put('processes/{process}', 'ProcessController@update')->name('processes.edit')->middleware('can:edit-processes');
     Route::delete('processes/{process}', 'ProcessController@destroy')->name('processes.destroy')->middleware('can:archive-processes');
-    
+
     Route::get('process_events/{process}', 'ProcessController@triggerStartEventApi')->middleware('can:start,process');
 
     Route::get('about', 'AboutController@index')->name('about.index');
@@ -114,6 +114,7 @@ Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm'
 Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+Route::get('password/change', 'Auth\ChangePasswordController@edit')->name('password.change');
 
 //overwrite laravel passport
 Route::get('oauth/clients', 'Auth\ClientController@index')->name('passport.clients.index')->middleware('can:view-auth_clients');
@@ -125,6 +126,5 @@ Route::delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->nam
 Route::get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
-
 
 Route::get('/unavailable', 'UnavailableController@show')->name('error.unavailable');

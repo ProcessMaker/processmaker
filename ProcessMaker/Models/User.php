@@ -73,6 +73,7 @@ class User extends Authenticatable implements HasMedia
      *   @OA\Property(property="delegation_user_id", type="string", format="id"),
      *   @OA\Property(property="manager_id", type="string", format="id"),
      *   @OA\Property(property="meta", type="object", additionalProperties=true),
+	 *   @OA\Property(property="force_change_password", type="boolean"),
      * ),
      * @OA\Schema(
      *   schema="users",
@@ -112,6 +113,7 @@ class User extends Authenticatable implements HasMedia
         'delegation_user_id',
         'manager_id',
         'schedule',
+        'force_change_password',
     ];
 
     protected $appends = [
@@ -174,7 +176,7 @@ class User extends Authenticatable implements HasMedia
             'cell' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'status' => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
             'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
-            'birthdate' => 'date|nullable' 
+            'birthdate' => 'date|nullable'
         ];
     }
 
@@ -426,10 +428,10 @@ class User extends Authenticatable implements HasMedia
         while ($query->count() > 0) {
             // Retrieve this chunk
             $requests = $query->get();
-            
+
             // Declare our batch array
             $batch = [];
-            
+
             // Process each request
             foreach ($requests as $request) {
                 $batch[] = [
@@ -443,14 +445,14 @@ class User extends Authenticatable implements HasMedia
 
             // Batch insert the new permissions
             RequestUserPermission::query()->insert($batch);
-        }        
+        }
     }
 
     public function removeFromGroups()
     {
         $this->groups()->detach();
     }
-    
+
     public function availableSelfServiceTaskIds()
     {
         $groupIds = $this->groups()->pluck('groups.id');

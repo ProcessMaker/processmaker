@@ -68,6 +68,7 @@ mix.extract([
 mix.js("resources/js/app-layout.js", "public/js")
   .js("resources/js/processes/modeler/index.js", "public/js/processes/modeler")
   .js("resources/js/processes/modeler/initialLoad.js", "public/js/processes/modeler")
+  .js("resources/js/admin/auth/passwords/change.js", "public/js/admin/auth/passwords/change.js")
   .js("resources/js/admin/settings/index.js", "public/js/admin/settings")
   .js("resources/js/admin/settings/ldaplogs.js", "public/js/admin/settings")
   .js("resources/js/admin/users/index.js", "public/js/admin/users")

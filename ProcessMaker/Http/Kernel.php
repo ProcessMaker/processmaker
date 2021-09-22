@@ -34,12 +34,12 @@ class Kernel extends HttpKernel
             \ProcessMaker\Http\Middleware\SessionStarted::class,
             \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,  
+            //\ProcessMaker\Http\Middleware\VerifyCsrfToken::class,
             \ProcessMaker\Http\Middleware\SetLocale::class,       // This is disabled until all routes are handled by our new engine
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \ProcessMaker\Http\Middleware\GenerateMenus::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
-            
+
 
 
         ],
@@ -60,6 +60,7 @@ class Kernel extends HttpKernel
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'force_change_password' => \ProcessMaker\Http\Middleware\VerifyChangePasswordNeeded::class,
         'guest' => \ProcessMaker\Http\Middleware\RedirectIfAuthenticated::class,
         'permission' => \ProcessMaker\Http\Middleware\PermissionCheck::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,

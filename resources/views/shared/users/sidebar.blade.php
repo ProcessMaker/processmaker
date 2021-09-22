@@ -44,11 +44,22 @@
                 </div>
             </vue-password>
         </div>
+
         <div class="form-group">
             {!! Form::label('confPassword', __('Confirm Password')) !!}
             {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
             => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
             <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" v-if="errors.password">@{{errors.password[0]}}</div>
+        </div>
+
+        <div class="form-group">
+            {!! Form::label('forceChangePassword', __('User must change password at next login')) !!}
+            <div class="grouped">
+                <div class="custom-control custom-switch">
+                    <input v-model="formData.force_change_password" value="1" type="checkbox" class="custom-control-input" :id="'switch_force_change_password'">
+                    <label class="custom-control-label" :for="'switch_force_change_password'"></label>
+                </div>
+            </div>
         </div>
     </div>
 
