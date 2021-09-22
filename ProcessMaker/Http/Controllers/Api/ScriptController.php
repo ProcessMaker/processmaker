@@ -13,6 +13,7 @@ use ProcessMaker\Jobs\ExecuteScript;
 use ProcessMaker\Jobs\TestScript;
 use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\Script;
+use ProcessMaker\Models\ScriptCategory;
 use ProcessMaker\Models\User;
 
 class ScriptController extends Controller
@@ -70,8 +71,7 @@ class ScriptController extends Controller
         // Do not return results when a key is set. Those are for connectors.
         $query = Script::nonSystem()
                     ->select('scripts.*')
-                    ->where('key', null)
-                    ->leftJoin('script_categories as category', 'scripts.script_category_id', '=', 'category.id');
+                    ->where('key', null);
 
         $include = $request->input('include', '');
 
@@ -96,7 +96,16 @@ class ScriptController extends Controller
                     $query->Where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
                         ->orWhere('language', 'like', $filter)
-                        ->orWhere('category.name', 'like', $filter);
+                        ->orWhereIn('id', function($qry) use ($filter) {
+                            $qry->select('assignable_id')
+                                ->from('category_assignments')
+                                ->leftJoin('script_categories', function($join) {
+                                    $join->on('script_categories.id', '=',  'category_assignments.category_id');
+                                    $join->where('category_assignments.category_type', '=', ScriptCategory::class);
+                                    $join->where('category_assignments.assignable_type', '=', Script::class);
+                                })
+                                ->where ('script_categories.name', 'like', $filter);
+                        });
                 });    
             } else  {
                 $query->where(function ($query) use ($filter) {
@@ -104,7 +113,6 @@ class ScriptController extends Controller
                 });
             }
         }
-
 
         $response =
             $query->orderBy(

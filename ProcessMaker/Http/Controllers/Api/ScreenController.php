@@ -12,6 +12,7 @@ use ProcessMaker\Http\Resources\Screen as ScreenResource;
 use ProcessMaker\Jobs\ExportScreen;
 use ProcessMaker\Jobs\ImportScreen;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Models\ScreenCategory;
 use ProcessMaker\Models\ScreenType;
 use ProcessMaker\Query\SyntaxError;
 
@@ -73,8 +74,8 @@ class ScreenController extends Controller
     public function index(Request $request)
     {
         $query = Screen::nonSystem()
-                    ->select('screens.*')
-                    ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id');
+            ->select('screens.*');
+
         $include = $request->input('include', '');
 
         if ($include) {
@@ -89,7 +90,6 @@ class ScreenController extends Controller
             }
         }
 
-
         $filter = $request->input('filter', '');
         $isSelectList = $request->input('selectList', '');
         if (!empty($filter)) {
@@ -98,7 +98,16 @@ class ScreenController extends Controller
                 $query->where(function ($query) use ($filter) {
                     $query->where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
-                        ->orWhere('category.name', 'like', $filter);
+                        ->orWhereIn('id', function($qry) use ($filter) {
+                            $qry->select('assignable_id')
+                                ->from('category_assignments')
+                                ->leftJoin('screen_categories', function($join) {
+                                    $join->on('screen_categories.id', '=',  'category_assignments.category_id');
+                                    $join->where('category_assignments.category_type', '=', ScreenCategory::class);
+                                    $join->where('category_assignments.assignable_type', '=', Screen::class);
+                                })
+                                ->where ('screen_categories.name', 'like', $filter);
+                        });
                 });
             } else {
                 $query->where(function ($query) use ($filter) {
