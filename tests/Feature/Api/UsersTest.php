@@ -386,11 +386,6 @@ class UsersTest extends TestCase
 
         $url = self::API_TEST_URL . '/' . factory(User::class)->create()->id;
 
-        //Validate Flag force_change_password is 1 by default
-        $this->assertDatabaseHas('users', [
-            'force_change_password' => 1
-        ]);
-
         //Post saved success
         $response = $this->apiCall('PUT', $url, [
             'username' => 'updatemytestusername',

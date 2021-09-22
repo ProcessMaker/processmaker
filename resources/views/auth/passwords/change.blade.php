@@ -1,6 +1,6 @@
-@extends('layouts.password')
+@extends('layouts.minimal')
 @section('title')
-Change Password
+{{ __('Change Password') }}
 @endsection
 @section('content')
 <div class="d-flex flex-column" style="min-height: 100vh" id="changePassword">
@@ -24,9 +24,9 @@ Change Password
                     <form method="PUT" class="form" action="" ref="changePasswordForm">
                         <div class="text-center pb-4">
                             <avatar-image size="75" :input-data="{{ $user }}" hide-name="true"></avatar-image>
-                            <h5 class="mt-3">Welcome, <b>{{ $user->fullname }}</b></h5>
+                            <h5 class="mt-3">{{ __('Welcome', ['name' => $user->fullname]) }}</h5>
                         </div>
-                        <h5 class="mb-3">Please change your account password</h5>
+                        <h5 class="mb-3">{{ __('Please change your account password') }}</h5>
                         @if (session()->has('timeout'))
                         <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
                         @endif
@@ -64,6 +64,9 @@ Change Password
 
 @section('js')
 
+<script src="{{ mix('js/manifest.js') }}"></script>
+<script src="{{ mix('js/vendor.js') }}"></script>
+<script src="{{ mix('js/app.js') }}"></script>
 <script src="{{mix('js/admin/auth/passwords/change.js')}}"></script>
 
 <script>

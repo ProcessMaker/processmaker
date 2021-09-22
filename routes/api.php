@@ -18,7 +18,7 @@ Route::group(
     Route::put('users/restore', 'UserController@restore')->name('users.restore')->middleware('can:create-users');
     Route::put('users/{user}', 'UserController@update')->name('users.update'); //Permissions handled in the controller
     Route::delete('users/{user}', 'UserController@destroy')->name('users.destroy')->middleware('can:delete-users');
-	Route::put('password/change', 'ChangePasswordController@update')->name('password.update');
+    Route::put('password/change', 'ChangePasswordController@update')->name('password.update');
     // User Groups
     Route::put('users/{user}/groups', 'UserController@updateGroups')->name('users.groups.update')->middleware('can:edit-users');
     // User personal access tokens
