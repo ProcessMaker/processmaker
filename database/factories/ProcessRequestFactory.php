@@ -15,7 +15,7 @@ $factory->define(ProcessRequest::class, function (Faker $faker) {
     return [
         'name' => $faker->sentence(3),
         'data' => [],
-        'status' => $faker->randomElement(['DRAFT', 'ACTIVE', 'COMPLETED']),
+        'status' => 'ACTIVE',
         'callable_id' => function () use ($process) {
             $process->save();
             $bpmnProcess = $process->getDefinitions()->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process')->item(0);
