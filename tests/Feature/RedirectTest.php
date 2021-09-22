@@ -27,8 +27,23 @@ class RedirectTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('requests.index');
         Auth::logout();
-        $response = $this->get('/requests'); 
+        $response = $this->get('/requests');
         //302 because we want to make sure they are being redirected
         $response->assertStatus(302);
+    }
+    /**
+     * Redirect to password change when user has flag to true
+     */
+    public function testRedirectToForcePasswordChange()
+    {
+        $user = factory(User::class)->create([
+            'force_change_password' => 1,
+        ]);
+
+        Auth::login($user);
+
+        $this->get('/requests')
+            ->assertStatus(302)
+            ->assertRedirect('password/change');
     }
 }
