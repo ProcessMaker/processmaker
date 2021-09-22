@@ -1221,7 +1221,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $config = json_decode($callActivity->getProperty('config'), true);
         $startId = is_array($config) && isset($config['startEvent']) ? $config['startEvent'] : null;
         if ($startId) {
-            $startEvent = $targetProcess->getOwnerDocument()->findElementById($startId)->getBpmnElementInstance();
+            $element = $targetProcess->getOwnerDocument()->findElementById($startId);
+            if (!$element) {
+                throw new Exception(__('The start event with id ":node_id" does not exist', ['node_id' => $startId]));
+            }
+            $startEvent = $element->getBpmnElementInstance();
             if (!($startEvent instanceof StartEventInterface)) {
                 throw new Exception(__('The start event of the call activity is not a start event'));
             }
