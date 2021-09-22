@@ -339,7 +339,7 @@ export default {
                 pmql = `(${pmql}) and (${filter})`;
                 filter = '';
               } else {
-                let filterParams =
+                filterParams =
                     "&user_id=" +
                     window.ProcessMaker.user.id +
                     "&filter=" +
