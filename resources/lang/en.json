@@ -1443,5 +1443,6 @@
   "Specify Request Variable": "Specify Data Variable",
   "Specify Expression": "Specify Expression",
   "You must claim the task before you can complete it.": "You must claim the task before you can complete it.",
+  "Some bpmn elements do not comply with the validation": "Some bpmn elements do not comply with the validation",
   "Data Sources Package not installed.": "Data Sources Package not installed."
 }
