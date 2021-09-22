@@ -115,7 +115,7 @@ Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail'
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::get('password/change', 'Auth\ChangePasswordController@edit')->name('password.change');
-Route::put('password/change', 'Auth\ChangePasswordController@update')->name('password.change');
+
 //overwrite laravel passport
 Route::get('oauth/clients', 'Auth\ClientController@index')->name('passport.clients.index')->middleware('can:view-auth_clients');
 Route::get('oauth/clients/{client_id}', 'Auth\ClientController@show')->name('passport.clients.show')->middleware('can:view-auth_clients');
@@ -126,6 +126,5 @@ Route::delete('oauth/clients/{client_id}', 'Auth\ClientController@destroy')->nam
 Route::get('password/success', function () {
     return view('auth.passwords.success', ['title' => __('Password Reset')]);
 })->name('password-success');
-
 
 Route::get('/unavailable', 'UnavailableController@show')->name('error.unavailable');

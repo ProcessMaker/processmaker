@@ -53,7 +53,7 @@
         </div>
 
         <div class="form-group">
-            {!! Form::label('force_change_password', __('User must change password at next login')) !!}
+            {!! Form::label('forceChangePassword', __('User must change password at next login')) !!}
             <div class="grouped">
                 <div class="custom-control custom-switch">
                     <input v-model="formData.force_change_password" value="1" type="checkbox" class="custom-control-input" :id="'switch_force_change_password'">

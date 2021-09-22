@@ -13,11 +13,12 @@ Route::group(
     // Users
     Route::get('users', 'UserController@index')->name('users.index');//Permissions handled in the controller
     Route::get('users/{user}', 'UserController@show')->name('users.show'); //Permissions handled in the controller
-    Route::get('deleted_users', 'UserController@deletedUsers')->name('users.deletedUsers')->middleware('can:view-users'); 
+    Route::get('deleted_users', 'UserController@deletedUsers')->name('users.deletedUsers')->middleware('can:view-users');
     Route::post('users', 'UserController@store')->name('users.store')->middleware('can:create-users');
     Route::put('users/restore', 'UserController@restore')->name('users.restore')->middleware('can:create-users');
     Route::put('users/{user}', 'UserController@update')->name('users.update'); //Permissions handled in the controller
     Route::delete('users/{user}', 'UserController@destroy')->name('users.destroy')->middleware('can:delete-users');
+	Route::put('password/change', 'ChangePasswordController@update')->name('password.update');
     // User Groups
     Route::put('users/{user}/groups', 'UserController@updateGroups')->name('users.groups.update')->middleware('can:edit-users');
     // User personal access tokens
