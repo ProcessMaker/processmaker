@@ -8,8 +8,10 @@ use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Helper\Table;
 use ProcessMaker\Traits\SupportsNonInteraction;
+
 use UserSeeder;
 use Validator;
 
@@ -21,7 +23,7 @@ use Validator;
 class Install extends Command
 {
     use SupportsNonInteraction;
-    
+
     /**
      * The name and signature of the console command.
      *
@@ -86,14 +88,14 @@ class Install extends Command
      * The encryption key we will use for for fresh install and any encryption during install
      */
     private $key;
-    
+
     /**
      * Installs a fresh copy of ProcessMaker
      *
      * @return mixed If the command succeeds, true
      */
     public function handle()
-    {        
+    {
         // Setup our initial encryption key and set our running laravel app key to it
         $this->key = 'base64:' . base64_encode(Encrypter::generateKey($this->laravel['config']['app.cipher']));
         config(['app.key' => $this->key]);
@@ -163,9 +165,9 @@ class Install extends Command
         } while (!$this->testLocalConnection());
         // Configure the DATA connection
         // $this->infoIfInteractive(__('ProcessMaker requires a DATA database.'));
-        
+
         // if ($this->interactive()) {
-        //     $dataConnection = $this->choice(__('Would you like to setup different credentials or use the same ProcessMaker 
+        //     $dataConnection = $this->choice(__('Would you like to setup different credentials or use the same ProcessMaker
         //     connection?'), ['different', 'same']);
         // } else {
         //     if ($this->option('data-driver') !== 'none') {
@@ -186,11 +188,11 @@ class Install extends Command
         // do {
         //     $dataConnection !== 'different' ?: $this->fetchDataConnectionCredentials();
         // } while (!$this->testDataConnection());
-        
+
         if (! $this->pretending()) {
-            $this->env['DATA_DB_DRIVER'] === 'sqlsrv' ? $this->checkDateFormatSqlServer() : null;            
+            $this->env['DATA_DB_DRIVER'] === 'sqlsrv' ? $this->checkDateFormatSqlServer() : null;
         }
-        
+
         // Ask for URL and validate
         $invalid = false;
         do {
@@ -212,13 +214,26 @@ class Install extends Command
 
         // Set laravel echo server settings
         $this->env['LARAVEL_ECHO_SERVER_AUTH_HOST'] = $this->option('echo-host') ? $this->option('echo-host') : $this->env['APP_URL'];
-        
+
         // Set path and Docker settings
         Storage::disk('local')->makeDirectory('scripts');
         $this->env['PROCESSMAKER_SCRIPTS_HOME'] = storage_path('app/scripts');
         $this->env['DOCKER_HOST_URL'] = $this->env['APP_URL'];
         $this->env['HOME'] = base_path();
-        
+
+        // Check for docker installation path if not under Win OS and set docker env path var
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            $dockerBinPath = exec('which docker');
+
+            // If which docker command not found or installation path not found set default
+            if ($dockerBinPath == "" || Str::contains($dockerBinPath, 'not found')) {
+                $this->error(__("Docker not found."));
+                $dockerBinPath = '/usr/bin/docker';
+            }
+
+            $this->env['PROCESSMAKER_SCRIPTS_DOCKER'] = $dockerBinPath;
+        }
+
         if ($this->pretending()) {
             $headers = ['Key', 'Value'];
             $rows = [];
@@ -271,14 +286,14 @@ class Install extends Command
             //Create a symbolic link from "public/storage" to "storage/app/public"
             $this->call('storage:link');
 
-            $this->call('vendor:publish', ['--tag'=>'telescope-assets', '--force' =>true]);            
+            $this->call('vendor:publish', ['--tag'=>'telescope-assets', '--force' =>true]);
 
             $this->info(__("Installing the :lang script executor", ['lang' => 'php']));
             \Artisan::call('docker-executor-php:install');
             $this->info(__("Installing the :lang script executor", ['lang' => 'lua']));
             \Artisan::call('docker-executor-lua:install');
             $this->info(__("Installing the :lang script executor", ['lang' => 'node']));
-            \Artisan::call('docker-executor-node:install'); 
+            \Artisan::call('docker-executor-node:install');
 
             $this->info(__("ProcessMaker installation is complete. Please visit the URL in your browser to continue."));
             $this->info(__("Installer completed. Consult ProcessMaker documentation on how to configure email, jobs and notifications."));
@@ -402,7 +417,7 @@ class Install extends Command
     {
         $this->infoIfInteractive(__('Configure the DATA connection.'));
         $this->env['DATA_DB_DRIVER'] = $this->choiceOptional('data-driver', __('Enter the DB driver'), ['mysql', 'pgsql', 'sqlsrv']);
-        
+
         switch($this->env['DATA_DB_DRIVER']) {
             case 'pgsql':
                 $this->fetchPostgreCredentials();
