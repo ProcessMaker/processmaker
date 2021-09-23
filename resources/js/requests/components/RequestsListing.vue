@@ -238,6 +238,7 @@ export default {
       data.meta.last_page = data.meta.total_pages;
       data.meta.from = (data.meta.current_page - 1) * data.meta.per_page;
       data.meta.to = data.meta.from + data.meta.count;
+      data.data = this.jsonRows(data.data);
       for (let record of data.data) {
         //Format dates
         record["initiated_at"] = this.formatDate(record["initiated_at"]);
