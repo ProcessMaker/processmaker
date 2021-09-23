@@ -120,7 +120,8 @@ export default {
         }
       ],
       fields: [],
-      previousFilter: ""
+      previousFilter: "",
+      previousPmql: "",
     };
   },
   computed: {
@@ -338,7 +339,7 @@ export default {
                 pmql = `(${pmql}) and (${filter})`;
                 filter = '';
               } else {
-                let filterParams =
+                filterParams =
                     "&user_id=" +
                     window.ProcessMaker.user.id +
                     "&filter=" +
@@ -352,6 +353,12 @@ export default {
             }
 
             this.previousFilter = filter;
+            
+            if (this.previousPmql !== pmql) {
+              this.page = 1;
+            }
+            
+            this.previousPmql = pmql;
             
             // Load from our api client
             ProcessMaker.apiClient

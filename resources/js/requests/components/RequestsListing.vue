@@ -91,7 +91,8 @@ export default {
         }
       ],
       fields: [],
-      previousFilter: ""
+      previousFilter: "",
+      previousPmql: "",
     };
   },
   computed: {
@@ -272,6 +273,12 @@ export default {
             }
 
             this.previousFilter = filter;
+            
+            if (this.previousPmql !== pmql) {
+              this.page = 1;
+            }
+            
+            this.previousPmql = pmql;
 
             // Load from our api client
             ProcessMaker.apiClient
