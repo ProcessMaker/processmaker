@@ -2,9 +2,12 @@
 
 namespace ProcessMaker\Traits;
 
+use Carbon\Carbon;
+use Carbon\CarbonTimeZone;
 use ProcessMaker\Query\Expression;
 use ProcessMaker\Query\Traits\PMQL;
 use Illuminate\Database\Eloquent\Builder;
+use Throwable;
 
 trait ExtendedPMQL
 {
@@ -51,12 +54,9 @@ trait ExtendedPMQL
         $model = $builder->getModel();
         
         if (is_string($field)) {
-            // Check the type of our value; set as string if possible
-            if (is_a($expression->value, 'ProcessMaker\\Query\\LiteralValue')) {
-                $value = $expression->value->value();
-            } else {
-                $value = $expression->value;
-            }
+            // Parse our value
+            $value = $this->parseValue($expression);
+            $expression->value->setValue($value);
             
             // Title case our field name so we can suffix it to our method names
             $fieldMethodName = ucfirst(strtolower($field));
@@ -84,5 +84,36 @@ trait ExtendedPMQL
                 return $model->{$method}($value, $expression, $builder);
             }    
         }
+    }
+    
+    /**
+     * Set the value as a string if possible. Also convert to the logged-in
+     * user's timezone if the value is parsable by Carbon as a date.
+     *
+     * @param \ProcessMaker\Query\Expression $expression
+     *
+     * @return mixed
+     */
+    private function parseValue($expression)
+    {
+        // Check the type of our value; set as string if possible
+        if (is_a($expression->value, 'ProcessMaker\\Query\\LiteralValue')) {
+            $value = $expression->value->value();
+        } else {
+            $value = $expression->value;
+        }
+        
+        // Check to see if the value is parsable as a date
+        if (! is_numeric($value)) {
+            try {
+                $parsed = Carbon::parse($value);
+                $timezone = CarbonTimeZone::create(auth()->user()->timezone);
+                $value = $parsed->shiftTimezone($timezone)->toIso8601String();
+            } catch (Throwable $e) {
+                //Ignore parsing errors and just return the original
+            }
+        }
+        
+        return $value;
     }
 }

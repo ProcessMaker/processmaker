@@ -1,5 +1,5 @@
 <template>
-    <div id="search-bar" class="search mb-3">
+    <div id="search-bar" class="search advanced-search mb-3">
         <div class="d-flex">
             <div class="flex-grow-1">
                 <div v-if="! advanced" class="search-bar-advanced d-flex flex-column flex-md-row w-100">
@@ -16,7 +16,7 @@
                                      :multiple="true"
                                      :placeholder="$t('Process')">
                             <template slot="noResult">
-                                {{ $t('No elements found. Consider changing the search query.') }}
+                                {{ $t('No Results') }}
                             </template>
                             <template slot="noOptions">
                                 {{ $t('No Data Available') }}
@@ -36,7 +36,7 @@
                                      :multiple="true"
                                      :placeholder="$t('Status')">
                             <template slot="noResult">
-                                {{ $t('No elements found. Consider changing the search query.') }}
+                                {{ $t('No Results') }}
                             </template>
                             <template slot="noOptions">
                                 {{ $t('No Data Available') }}
@@ -57,7 +57,7 @@
                                      :multiple="true"
                                      :placeholder="$t('Requester')">
                             <template slot="noResult">
-                                {{ $t('No elements found. Consider changing the search query.') }}
+                                {{ $t('No Results') }}
                             </template>
                             <template slot="noOptions">
                                 {{ $t('No Data Available') }}
@@ -84,7 +84,7 @@
                                      :multiple="true"
                                      :placeholder="$t('Participants')">
                             <template slot="noResult">
-                                {{ $t('No elements found. Consider changing the search query.') }}
+                                {{ $t('No Results') }}
                             </template>
                             <template slot="noOptions">
                                 {{ $t('No Data Available') }}
@@ -113,7 +113,7 @@
                                      :multiple="true"
                                      :placeholder="$t('Request')">
                             <template slot="noResult">
-                                {{ $t('No elements found. Consider changing the search query.') }}
+                                {{ $t('No Results') }}
                             </template>
                             <template slot="noOptions">
                                 {{ $t('No Data Available') }}
@@ -134,7 +134,7 @@
                                      :multiple="true"
                                      :placeholder="$t('Task')">
                             <template slot="noResult">
-                                {{ $t('No elements found. Consider changing the search query.') }}
+                                {{ $t('No Results') }}
                             </template>
                             <template slot="noOptions">
                                 {{ $t('No Data Available') }}
@@ -154,7 +154,7 @@
                                      :multiple="true"
                                      :placeholder="$t('Status')">
                             <template slot="noResult">
-                                {{ $t('No elements found. Consider changing the search query.') }}
+                                {{ $t('No Results') }}
                             </template>
                             <template slot="noOptions">
                                 {{ $t('No Data Available') }}
@@ -501,13 +501,34 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-    .multiselect__placeholder {
-        padding-top: 1px;
-    }
-
-    .multiselect__single {
-        padding-bottom: 2px;
-        padding-top: 2px;
+<style lang="scss">
+    .advanced-search {
+        .multiselect__placeholder {
+            padding-top: 1px;
+        }
+        
+        .multiselect,
+        .multiselect__input,
+        .multiselect__single {
+            font-size: 14px;
+        }
+        
+        .multiselect__input {
+            left: 1px;
+            padding: 2px 0 2px 10px;
+            position: absolute;
+            top: 8px;
+        }
+        
+        .multiselect--active {
+            .multiselect__input {
+                width: 99% !important;
+            }
+        }
+        
+        .multiselect__single {
+            padding-bottom: 2px;
+            padding-top: 2px;
+        }
     }
 </style>
