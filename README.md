@@ -26,7 +26,7 @@ If you are new to ProcessMaker 4 and would like to load the software locally, we
 
 ## Install
 
-Before installing, Nginx needs to be configured to use php-fpm and point to the public folder 
+Before installing, Nginx needs to be configured to use php-fpm and point to the public folder
 
 1. Download and unzip a version from the releases page https://github.com/ProcessMaker/processmaker/releases
 1. Configure Nginx to use php-fpm and point to the public folder in the unzipped code. See https://laravel.com/docs/6.x/deployment#nginx
@@ -79,6 +79,7 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
   * Specify `homestead` as your local database username
   * Specify `secret` as your local database password
   * Specify `https://processmaker.local.processmaker.com` as your application url
+* Check your .env file to ensure the `PROCESSMAKER_SCRIPTS_DOCKER` variable has the right Docker installation path, especially if you are under macOS (Docker on macOs installs under /usr/local/bin/docker).
 * Visit `https://processmaker.local.processmaker.com` in your browser to access the application
   * Login with the username of `admin` and password of `admin`
 
@@ -90,12 +91,12 @@ APP_DEBUG=TRUE
 
 Optionally, trust the self-signed certificate on your host machine so you don't get the "Not Secure" warnings in chrome and postman.
 
-For macOS: 
+For macOS:
 
-1. In `your-repository-root/storage/ssl`, double-click on `processmaker.local.processmaker.com.crt` 
-2. Click on "Add" to add it to your login keychain 
-3. In the Keychain Access window click on the Certificates category on the bottom left. 
-4. Double-click on the processmaker certificate 
+1. In `your-repository-root/storage/ssl`, double-click on `processmaker.local.processmaker.com.crt`
+2. Click on "Add" to add it to your login keychain
+3. In the Keychain Access window click on the Certificates category on the bottom left.
+4. Double-click on the processmaker certificate
 5. Open the Trust section. For `"When using this certificate"`, select `"always trust"`
 6. Close the window. You will be asked for your password. Close and reopen the processmaker tab in chrome.
 
@@ -118,8 +119,8 @@ LOGIN_LOGO_PATH={{LOGIN PAGE LOGO PATH HERE}}
 
 #### Scheduled tasks/events
 
-To run time based BPMN events like Timer Start Events or Intermediate Timer Events, the laravel scheduler should be enabled. To do this open a console and: 
-1. Execute crontab -e 
+To run time based BPMN events like Timer Start Events or Intermediate Timer Events, the laravel scheduler should be enabled. To do this open a console and:
+1. Execute crontab -e
 2. Add to the cron tab the following line \(replacing the upper cased text with the directory where your proyecto is located \):
 
 ```text
@@ -145,7 +146,7 @@ To keep things dry, you can define 2 schemas. One that inherits the other.
 ```php
 /**
  * ...existing comments above...
- * 
+ *
  * @OA\Schema(
  *   schema="ProcessEditable",
  *   @OA\Property(property="process_category_uuid", type="string", format="uuid"),
@@ -165,7 +166,7 @@ To keep things dry, you can define 2 schemas. One that inherits the other.
  *           @OA\Property(property="updated_at", type="string", format="date-time"),
  *       ),
  *   },
- *   
+ *
  * )
  */
 class Process extends Model implements HasMedia
@@ -187,7 +188,7 @@ Now you can use the reference to the schema when annotating the controllers. See
      *     @OA\Parameter(ref="#/components/parameters/order_direction"),
      *     @OA\Parameter(ref="#/components/parameters/per_page"),
      *     @OA\Parameter(ref="#/components/parameters/"),
-     * 
+     *
      *     @OA\Response(
      *         response=200,
      *         description="list of processes",
