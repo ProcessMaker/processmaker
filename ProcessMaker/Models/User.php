@@ -151,26 +151,12 @@ class User extends Authenticatable implements HasMedia
     {
         $unique = Rule::unique('users')->ignore($existing);
 
-        $checkUserIsDeleted = function ($attribute, $value, $fail) use ($existing) {
-            if (!$existing) {
-                $user = User::onlyTrashed()->where($attribute, $value)->first();
-                if ($user) {
-                    $fail(
-                        __(
-                            'A user with the username :username and email :email was previously deleted.',
-                            ['username' => $user->username, 'email' => $user->email]
-                        )
-                    );
-                }
-            }
-        };
-
         return [
             // The following characters where not included in the regexp: & %  ' " ? /
-            'username' => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255' , $unique, $checkUserIsDeleted],
+            'username' => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255' , $unique],
             'firstname' => ['required', 'max:50'],
             'lastname' => ['required', 'max:50'],
-            'email' => ['required', 'email', $checkUserIsDeleted],
+            'email' => ['required', 'email'],
             'phone' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'fax' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
             'cell' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],

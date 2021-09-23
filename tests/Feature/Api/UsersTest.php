@@ -78,6 +78,7 @@ class UsersTest extends TestCase
     public function testCreatePreviouslyDeletedUser()
     {
         $url = self::API_TEST_URL;
+
         $deletedUser = factory(User::class)->create([
             'deleted_at' => '2019-01-01',
             'status' => 'ACTIVE'
@@ -87,17 +88,18 @@ class UsersTest extends TestCase
             'username' => $deletedUser->username,
             'firstname' => 'foo',
             'lastname' => 'bar',
-            'email' => 'test@test.com',
+            'email' => $deletedUser->email,
             'status' => 'ACTIVE',
             'password' => 'password123'
         ];
 
         $response = $this->apiCall('POST', $url, $params);
-        $this->assertEquals(
-            "A user with the username {$deletedUser->username} and email {$deletedUser->email} was previously deleted.",
-            $response->json()['errors']['username'][1]
-        );
 
+        $this->assertArrayHasKey('errors', $response->json());
+
+        $this->assertArrayHasKey('username', $response->json()['errors']);
+
+        $this->assertEquals('The Username has already been taken.', $response->json()['errors']['username'][0]);
     }
 
     public function testDefaultValuesOfUser()

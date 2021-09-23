@@ -145,6 +145,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate(User::rules());
+
         $user = new User();
         $fields = $request->json()->all();
 
@@ -154,6 +155,7 @@ class UserController extends Controller
 
         $user->fill($fields);
         $user->saveOrFail();
+
         return new UserResource($user->refresh());
     }
 
@@ -431,22 +433,33 @@ class UserController extends Controller
     *     ),
     * ),
     */
-
     public function restore(Request $request) {
-        $email = $request->input('email');
-        $username = $request->input('username');
+        $user = null;
 
-        $userByName =  $userByEmail = null;
-        if ($username) {
-            $userByName = User::withTrashed()->where('username', $username)->first();
+        // Look through the request data for one of these
+        // keys and search trashed users with the value
+        foreach (['id', 'email', 'username'] as $input) {
+            // If the key isn't present,
+            // skip ahead
+            if (!$request->has($input)) {
+                continue;
+            }
+
+            // If we already found the user to
+            // restore, skip ahead
+            if ($user instanceof User) {
+                continue;
+            }
+
+            // Otherwise, search trashed users
+            // for the user to restore
+            $user = User::onlyTrashed()->where($input, $request->input($input))
+                                       ->first();
         }
-        if ($email) {
-            $userByEmail = User::withTrashed()->where('email', $email)->first();
+
+        if ($user instanceof User) {
+            $user->restore();
         }
-
-        $user = $userByName ?: $userByEmail;
-
-        $user->restore();
 
         return response([], 200);
     }
