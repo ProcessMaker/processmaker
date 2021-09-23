@@ -152,8 +152,9 @@ export default {
     },
     restoreUser(data, index) {
       const $body = {
-        "email" : data.email
+        id: data.id
       };
+
       ProcessMaker.confirmModal(
         this.$t('Caution!'),
         this.$t('Are you sure you want to restore the user {{item}}?', {item: data.fullname}),
