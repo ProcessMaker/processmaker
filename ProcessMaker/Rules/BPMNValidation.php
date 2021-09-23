@@ -14,6 +14,7 @@ class BPMNValidation implements Rule
         AssignPreviousUser::class,
     ];
 
+    /** @var \Illuminate\Support\MessageBag $errors */
     protected $errors = [];
 
     /**

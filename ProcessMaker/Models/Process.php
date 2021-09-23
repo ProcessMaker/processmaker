@@ -3,6 +3,7 @@
 namespace ProcessMaker\Models;
 
 use DOMElement;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
@@ -21,9 +22,11 @@ use ProcessMaker\Nayra\Bpmn\Models\Activity;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ScriptTaskInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ServiceTaskInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\StartEventInterface;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Nayra\Storage\BpmnDocument;
 use ProcessMaker\Query\Traits\PMQL;
+use ProcessMaker\Rules\BPMNValidation;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\HasVersioning;
@@ -1178,26 +1181,88 @@ class Process extends Model implements HasMedia, ProcessModelInterface
      */
     public function validateBpmnDefinition($addWarnings = false, &$warning = [])
     {
+        $warnings = [];
         try {
             $definitions = $this->getDefinitions();
+            $warnings = $this->validateSchema($definitions);
             $engine = app(BpmnEngine::class, ['definitions' => $definitions]);
             $processes = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'process');
             foreach ($processes as $process) {
                 $process->getBpmnElementInstance()->getTransitions($engine->getRepository());
             }
+            $callActivities = $definitions->getElementsByTagNameNS(BpmnDocument::BPMN_MODEL, 'callActivity');
+            foreach ($callActivities as $callActivity) {
+                $this->validateCallActivity($callActivity->getBpmnElementInstance());
+            }
         } catch (Throwable $exception) {
-            throw $exception;
             $warning = [
-                'title' => __('Process invalid for execution'),
-                'text' => __('Process invalid for execution'),
+                'title' => __('Invalid process'),
+                'text' => $exception->getMessage(),
             ];
             if ($addWarnings) {
-                $warnings = $this->warnings;
                 $warnings[] = $warning;
                 $this->warnings = $warnings;
             }
             return false;
         }
         return true;
+    }
+
+    /**
+     * Validates a call activity configuration.
+     *
+     * @param CallActivity $callActivity
+     * @throw \Exception if the call activity is not properly configured.
+     */
+    private function validateCallActivity(CallActivity $callActivity)
+    {
+        $targetProcess = $callActivity->getCalledElement();
+        $config = json_decode($callActivity->getProperty('config'), true);
+        $startId = is_array($config) && isset($config['startEvent']) ? $config['startEvent'] : null;
+        if ($startId) {
+            $element = $targetProcess->getOwnerDocument()->findElementById($startId);
+            if (!$element) {
+                throw new Exception(__('The start event with id ":node_id" does not exist', ['node_id' => $startId]));
+            }
+            $startEvent = $element->getBpmnElementInstance();
+            if (!($startEvent instanceof StartEventInterface)) {
+                throw new Exception(__('The start event of the call activity is not a start event'));
+            }
+            $eventDefinitions = $startEvent->getEventDefinitions();
+            if ($eventDefinitions && $eventDefinitions->count() > 0) {
+                throw new Exception(__('The start event of the call activity is not empty'));
+            }
+            $config = json_decode($startEvent->getProperty('config'), true);
+            if ($config && isset($config['web_entry'])) {
+                throw new Exception(__('The start event of the call activity can not be a web entry'));
+            }
+        }
+    }
+
+    /**
+     * Validates the Bpmn content of the process.
+     *
+     * @param BpmnDocument $request
+     * @return array
+     */
+    private function validateSchema(BpmnDocument $document)
+    {
+        $schemaErrors = [];
+        try {
+            $document->validateBPMNSchema(public_path('definitions/ProcessMaker.xsd'));
+        } catch (Exception $e) {
+            $schemaErrors = $document->getValidationErrors();
+            $schemaErrors[] = $e->getMessage();
+        }
+        $rulesValidation = new BPMNValidation;
+        if(!$rulesValidation->passes('document', $document)) {
+            $errors = $rulesValidation->errors('document', $document)->getMessages();
+            $schemaErrors[] = [
+                'title' => 'BPMN Validation failed',
+                'text' => __('Some bpmn elements do not comply with the validation'),
+                'errors' => $errors,
+            ];
+        }
+        return $schemaErrors;
     }
 }

@@ -1319,6 +1319,10 @@
   "Subscriber": "Subscriber",
   "The version was saved.": "The version was saved.",
   "The Process field is required.": "The Process field is required.",
+  "The start event of the call activity is not a start event": "The start event of the call activity is not a start event",
+  "The start event of the call activity is not empty": "The start event of the call activity is not empty",
+  "The start event of the call activity can not be a web entry": "The start event of the call activity can not be a web entry",
+  "The start event with id \":node_id\" does not exist": "The start event with id \":node_id\" does not exist",
   "Toggle Notifications": "Toggle Notifications",
   "Variable Name for Callback URL": "Variable Name for Callback URL",
   "View Process Categories": "View Process Categories",
@@ -1440,5 +1444,6 @@
   "Specify Request Variable": "Specify Data Variable",
   "Specify Expression": "Specify Expression",
   "You must claim the task before you can complete it.": "You must claim the task before you can complete it.",
+  "Some bpmn elements do not comply with the validation": "Some bpmn elements do not comply with the validation",
   "Data Sources Package not installed.": "Data Sources Package not installed."
 }
