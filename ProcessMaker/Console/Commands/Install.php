@@ -223,7 +223,7 @@ class Install extends Command
 
         // Check for docker installation path if not under Win OS and set docker env path var
         if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
-            $dockerBinPath = system('which docker');
+            $dockerBinPath = exec('which docker');
 
             // If which docker command not found or installation path not found set default
             if ($dockerBinPath == "" || Str::contains($dockerBinPath, 'not found')) {

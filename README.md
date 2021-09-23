@@ -79,7 +79,7 @@ You can develop ProcessMaker as well as ProcessMaker packages locally. In order 
   * Specify `homestead` as your local database username
   * Specify `secret` as your local database password
   * Specify `https://processmaker.local.processmaker.com` as your application url
-* Check your .env file to ensure the `PROCESSMAKER_SCRIPTS_DOCKER` variable has the right Docker installation path, especially if you are under macOS (Docker on macOs installs under /usr/local/bin/docker).
+* Check your .env file to ensure the `PROCESSMAKER_SCRIPTS_DOCKER` variable has the right Docker installation path, especially if you are under macOS (Docker on macOS installs under /usr/local/bin/docker).
 * Visit `https://processmaker.local.processmaker.com` in your browser to access the application
   * Login with the username of `admin` and password of `admin`
 
