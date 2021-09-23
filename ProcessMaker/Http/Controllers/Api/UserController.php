@@ -434,32 +434,32 @@ class UserController extends Controller
     * ),
     */
     public function restore(Request $request) {
-		$user = null;
+        $user = null;
 
-		// Look through the request data for one of these
-	    // keys and search trashed users with the value
-		foreach (['id', 'email', 'username'] as $input) {
-			// If the key isn't present,
-			// skip ahead
-			if (!$request->has($input)) {
-				continue;
-			}
+        // Look through the request data for one of these
+        // keys and search trashed users with the value
+        foreach (['id', 'email', 'username'] as $input) {
+            // If the key isn't present,
+            // skip ahead
+            if (!$request->has($input)) {
+                continue;
+            }
 
-			// If we already found the user to
-			// restore, skip ahead
-			if ($user instanceof User) {
-				continue;
-			}
+            // If we already found the user to
+            // restore, skip ahead
+            if ($user instanceof User) {
+                continue;
+            }
 
-			// Otherwise, search trashed users
-			// for the user to restore
-			$user = User::onlyTrashed()->where($input, $request->input($input))
-			                           ->first();
-		}
+            // Otherwise, search trashed users
+            // for the user to restore
+            $user = User::onlyTrashed()->where($input, $request->input($input))
+                                       ->first();
+        }
 
-		if ($user instanceof User) {
-			$user->restore();
-		}
+        if ($user instanceof User) {
+            $user->restore();
+        }
 
         return response([], 200);
     }

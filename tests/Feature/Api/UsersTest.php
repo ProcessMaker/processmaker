@@ -95,11 +95,11 @@ class UsersTest extends TestCase
 
         $response = $this->apiCall('POST', $url, $params);
 
-		$this->assertArrayHasKey('errors', $response->json());
+        $this->assertArrayHasKey('errors', $response->json());
 
-		$this->assertArrayHasKey('username', $response->json()['errors']);
+        $this->assertArrayHasKey('username', $response->json()['errors']);
 
-		$this->assertEquals('The Username has already been taken.', $response->json()['errors']['username'][0]);
+        $this->assertEquals('The Username has already been taken.', $response->json()['errors']['username'][0]);
     }
 
     public function testDefaultValuesOfUser()
