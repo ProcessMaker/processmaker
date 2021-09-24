@@ -31,7 +31,7 @@ jobs:
       - run:
           name: Install node@14.4.0
           command: |
-            set +e             
+            set +e
             curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
             echo 'export NVM_DIR="$HOME/.nvm"' >> $BASH_ENV
             echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
@@ -120,7 +120,7 @@ jobs:
 
       # Enable xdebug to support code coverage
       #- run: sudo docker-php-ext-enable xdebug
-      
+
       - setup_remote_docker:
           docker_layer_caching: true
 
@@ -336,3 +336,6 @@ jobs:
       - run:
           name: 'Final QA Artisan DB Migration'
           command: 'ssh -o "StrictHostKeyChecking no" -o "ProxyCommand ssh buildbot.processmaker.net -A -W %h:%p" qa-processmakerbuilds "php ~/builds/$BUILD_NAME/artisan migrate:fresh --seed --force"'
+      - run:
+          name: Execute Endtest Test Suites
+          command: bash ./tests/Endtest/test.sh
