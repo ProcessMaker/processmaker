@@ -22,6 +22,12 @@ class Build extends Command
             'type' => 'php',
         ],
         [
+            'slug' => 'bpmnlint-plugin',
+            'name' => 'BMPN Lint Plugin',
+            'branch' => 'master',
+            'type' => 'js',
+        ],
+        [
             'slug' => 'modeler',
             'name' => 'Modeler',
             'branch' => 'develop',
@@ -378,13 +384,24 @@ class Build extends Command
         $this->info('Creating new NPM release...');
         system("
             cd {$this->getPath()} &&
+            {$this->npmBin} install &&
             {$this->npmBin} version {$this->getVersionNumber(false)} &&
             git push &&
-            git push origin refs/tags/{$this->getVersionNumber(true)}:refs/tags/{$this->getVersionNumber(true)} &&
-            {$this->npmBin} install &&
-            {$this->npmBin} run build-bundle &&
-            {$this->npmBin} publish
+            git push origin refs/tags/{$this->getVersionNumber(true)}:refs/tags/{$this->getVersionNumber(true)}
         ");
+        
+        if ($this->package['slug'] !== 'bpmnlint-plugin') {
+            system("
+                cd {$this->getPath()} &&
+                {$this->npmBin} run build-bundle &&
+                {$this->npmBin} publish
+            ");
+        } else {
+            system("
+                cd {$this->getPath()} &&
+                {$this->npmBin} publish
+            ");
+        }
     }
     
     private function createBranch()
