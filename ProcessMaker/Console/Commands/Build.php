@@ -6,145 +6,194 @@ use Illuminate\Console\Command;
 
 class Build extends Command
 {
-    private $package, $version, $previousVersion, $pre, $composer;
+    private $package, $version, $previousVersion, $pre, $meta;
     
     private $path = '/Users/ryancooley/Sites/processmaker';
+    
+    private $nodeBin = '/Users/ryancooley/.nvm/versions/node/v14.17.6/bin/node';
+    
+    private $npmBin = '/Users/ryancooley/.nvm/versions/node/v14.17.6/bin/npm';
     
     private $packages = [
         [ 
             'slug' => 'core',
             'name' => 'Core',
             'branch' => 'develop',
+            'type' => 'php',
+        ],
+        [
+            'slug' => 'modeler',
+            'name' => 'Modeler',
+            'branch' => 'develop',
+            'type' => 'js',
+        ],
+        [
+            'slug' => 'screen-builder',
+            'name' => 'Screen Builder',
+            'branch' => 'develop',
+            'type' => 'js',
+        ],
+        [
+            'slug' => 'vue-form-elements',
+            'name' => 'Vue Form Elements',
+            'branch' => 'master',
+            'type' => 'js',
         ],
         [ 
             'slug' => 'package-actions-by-email',
             'name' => 'Actions By Email',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-advancedforms',
             'name' => 'Advanced Forms',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-auth',
             'name' => 'Auth',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-auth-auth0',
             'name' => 'Auth: Auth 0',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-auth-saml',
             'name' => 'Auth: SAML',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-collections',
             'name' => 'Collections',
             'branch' => 'develop',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-comments',
             'name' => 'Comments',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'connector-docusign',
             'name' => 'Connector DocuSign',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'connector-pdf-print',
             'name' => 'Connector PDF Print',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'connector-send-email',
             'name' => 'Connector Send Email',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-conversational-forms',
             'name' => 'Conversational Forms',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-data-sources',
             'name' => 'Data Sources',
             'branch' => 'develop',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-dynamic-ui',
             'name' => 'Dynamic UI',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-files',
             'name' => 'Files',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-googleplaces',
             'name' => 'Google Places',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'nayra',
             'name' => 'Nayra',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-process-documenter',
             'name' => 'Process Documenter',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-process-optimization',
             'name' => 'Process Optimization',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-savedsearch',
             'name' => 'Saved Search',
             'branch' => 'develop',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-sentry',
             'name' => 'Sentry',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-signature',
             'name' => 'Signature',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'connector-slack',
             'name' => 'Slack Connector',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-translations',
             'name' => 'Translations',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-versions',
             'name' => 'Versions',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-vocabularies',
             'name' => 'Vocabularies',
             'branch' => 'master',
+            'type' => 'php',
         ],
         [ 
             'slug' => 'package-webentry',
             'name' => 'Web Entry',
             'branch' => 'master',
+            'type' => 'php',
         ],
     ];
     
@@ -197,16 +246,26 @@ class Build extends Command
         
         $this->switchBranches();
         
-        $this->composer = json_decode(file_get_contents($this->getPath('composer.json')));
-        $this->previousVersion = $this->composer->version;
+        switch ($this->package['type']) {
+            case 'php':
+                return $this->handlePhp();
+            case 'js':
+                return $this->handleJs();
+        }
+    }
+    
+    private function askVersion()
+    {
+        $this->previousVersion = $this->meta->version;
         if ($version = $this->option('version-number')) {
             $this->version = $version;
         } else {
             $this->version = $this->ask("What version number would you like to use (current version is {$this->previousVersion})?");
         }
-        
-        $this->verifyVersionNumber();
-        
+    }
+    
+    private function askPre()
+    {
         if ($pre = $this->option('pre')) {
             $this->pre = $pre;
         } else {
@@ -214,11 +273,44 @@ class Build extends Command
                     $this->pre = $this->confirm("Will this be a pre-release version?", true);
             }
         }
-        
+    }
+    
+    private function confirmBuild()
+    {
         $type = $this->pre ? 'pre-release' : 'full release';
         $confirm = $this->confirm("Create a new {$type} of {$this->package['name']} with version number {$this->getVersionNumber()}?");
         
         if (! $confirm) exit;
+    }
+    
+    private function handleJs()
+    {
+        $this->meta = json_decode(file_get_contents($this->getPath('package.json')));
+        
+        $this->askVersion();
+        
+        $this->verifyVersionNumber();
+        
+        $this->pre = false;
+        
+        $this->confirmBuild();
+        
+        $this->clearNodeModules();
+        
+        $this->createJsBuild();
+    }
+    
+    private function handlePhp()
+    {
+        $this->meta = json_decode(file_get_contents($this->getPath('composer.json')));
+        
+        $this->askVersion();
+        
+        $this->verifyVersionNumber();
+        
+        $this->askPre();
+        
+        $this->confirmBuild();
         
         if ($this->package['slug'] !== 'core') {
             $this->createBranch();
@@ -240,7 +332,7 @@ class Build extends Command
             cd {$this->getPath()} &&
             git stash &&
             git checkout $branch &&
-            git pull
+            git pull --ff-only
         ");
     }
     
@@ -267,6 +359,32 @@ class Build extends Command
                 exit;
             }
         }
+    }
+
+    private function clearNodeModules()
+    {
+        $this->info('Clearing Node modules directory...');
+        system("
+            cd {$this->getPath()} &&
+            rm -rf node_modules
+        ", $code);
+        if ($code !== 0) {
+            $this->clearNodeModules();
+        }
+    }
+
+    private function createJsBuild()
+    {
+        $this->info('Creating new NPM release...');
+        system("
+            cd {$this->getPath()} &&
+            {$this->npmBin} version {$this->getVersionNumber(false)} &&
+            git push &&
+            git push origin refs/tags/{$this->getVersionNumber(true)}:refs/tags/{$this->getVersionNumber(true)} &&
+            {$this->npmBin} install &&
+            {$this->npmBin} run build-bundle &&
+            {$this->npmBin} publish
+        ");
     }
     
     private function createBranch()
