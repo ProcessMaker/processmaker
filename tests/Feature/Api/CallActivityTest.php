@@ -26,8 +26,8 @@ class CallActivityTest extends TestCase
         ScriptExecutor::setTestConfig('php');
 
         // Script task requires passport installed (oauth token)
-        Artisan::call('passport:install',['-vvv' => true]);
-        
+        Artisan::call('passport:install', ['-vvv' => true]);
+
         // Create the processes
         $child = $this->createProcess([
             'id' => 2,
@@ -37,7 +37,7 @@ class CallActivityTest extends TestCase
         $parent = $this->createProcess([
             'id' => 1,
             'bpmn' => str_replace(
-                ['[child_id]','[start_event_id]'],
+                ['[child_id]', '[start_event_id]'],
                 [$child->id, 'node_8'],
                 file_get_contents(__DIR__ . '/processes/parent.bpmn')
             )
@@ -68,7 +68,7 @@ class CallActivityTest extends TestCase
         $parent = $this->createProcess([
             'id' => 1,
             'bpmn' => str_replace(
-                ['[child_id]','[start_event_id]'],
+                ['[child_id]', '[start_event_id]'],
                 [$child->id, 'startevent'],
                 file_get_contents(__DIR__ . '/processes/parent-files.bpmn')
             )
@@ -101,7 +101,7 @@ class CallActivityTest extends TestCase
         $this->assertCount(2, $childInstance->getMedia());
         $copiedFile1 = $childInstance->getMedia()[0];
         $copiedFile2 = $childInstance->getMedia()[1];
-        
+
         $this->assertEquals('photo1', $copiedFile1->getCustomProperty('data_name'));
         $this->assertEquals(99, $copiedFile1->getCustomProperty('parent'));
         $this->assertEquals('photo1', $copiedFile2->getCustomProperty('data_name'));
@@ -123,7 +123,7 @@ class CallActivityTest extends TestCase
             'parent' => 99,
             'row_id' => 0,
         ]);
-        
+
         $this->completeTask($childTask);
 
         $instance->refresh();
@@ -150,8 +150,8 @@ class CallActivityTest extends TestCase
         ScriptExecutor::setTestConfig('php');
 
         // Script task requires passport installed (oauth token)
-        Artisan::call('passport:install',['-vvv' => true]);
-        
+        Artisan::call('passport:install', ['-vvv' => true]);
+
         // Create the processes
         $child = $this->createProcess([
             'id' => 2,
@@ -161,7 +161,7 @@ class CallActivityTest extends TestCase
         $parent = $this->createProcess([
             'id' => 1,
             'bpmn' => str_replace(
-                ['[child_id]','[start_event_id]'],
+                ['[child_id]', '[start_event_id]'],
                 [$child->id, 'node_8'],
                 file_get_contents(__DIR__ . '/processes/parent.bpmn')
             )
@@ -176,7 +176,7 @@ class CallActivityTest extends TestCase
             'status' => 'COMPLETED',
             'data' => [],
         ]);
-        
+
         $activeTokens = $instance->refresh()->tokens()->where('status', 'ACTIVE')->get();
         $activeSubTokens = $subInstance->refresh()->tokens()->where('status', 'ACTIVE')->get();
 
@@ -198,17 +198,17 @@ class CallActivityTest extends TestCase
         // Update the process to create a new process version
         $child->description = 'updated';
         $child->saveOrFail();
-        
+
         // Now complete the task, same as before
         $activeTask = $subInstance->tokens()->where('status', 'ACTIVE')->firstOrFail();
         $response = $this->apiCall('PUT', route('api.tasks.update', [$activeTask]), [
             'status' => 'COMPLETED',
             'data' => [],
         ]);
-        
+
         $activeTokens = $instance->refresh()->tokens()->where('status', 'ACTIVE')->get();
         $activeSubTokens = $subInstance->refresh()->tokens()->where('status', 'ACTIVE')->get();
-        
+
         /**
          * Fails. Active token count should be zero like the first instance.
          * This passes if you comment out `$child->saveOrFail();` above
@@ -291,5 +291,54 @@ class CallActivityTest extends TestCase
             'title' => 'Invalid process',
             'text' => 'The start event with id "deleted_node_id" does not exist',
         ]], $parent->warnings);
+    }
+
+    public function testProcessLoop()
+    {
+        ScriptExecutor::setTestConfig('php');
+
+        // Script task requires passport installed (oauth token)
+        Artisan::call('passport:install', ['-vvv' => true]);
+
+        // Create the processes
+        $process = $this->createProcess([
+            'id' => 2,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/ProcessLoop.bpmn')
+        ]);
+
+        // Start a process instance
+        $instance = $this->startProcess($process, 'node_1');
+
+        // Get active tokens
+        $activeTokens = $instance->tokens()->where('status', 'ACTIVE')->get();
+
+        $this->completeTask($activeTokens[0], ['input_1' => 1]);
+
+        // Get active tokens
+        $activeTokens = $instance->tokens()->where('status', 'ACTIVE')->get();
+
+        $this->completeTask($activeTokens[0], ['input_2' => 2]);
+
+        // Get active tokens
+        $activeTokens = $instance->tokens()->where('status', 'ACTIVE')->get();
+
+        $this->completeTask($activeTokens[0], ['input_3' => 3]);
+
+        $activeTokens[0]->refresh();
+
+        // Get active tokens
+        $instance->refresh();
+        $activeTokens = $instance->tokens()->where('status', 'ACTIVE')->get();
+
+        // Assert both processes are COMPLETED
+        $this->assertCount(0, $activeTokens);
+        $this->assertEquals('COMPLETED', $instance->status);
+
+        //Remove parameter loopCharateristics
+        $data = $instance->data;
+        unset($data['loopCharacteristics']);
+
+        // verify data
+        $this->assertEquals(['input_1' => 1, 'input_2' => 2, 'input_3' => 3], $data);
     }
 }
