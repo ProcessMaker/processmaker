@@ -2,6 +2,8 @@
 
 namespace ProcessMaker\Traits;
 
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
@@ -45,5 +47,117 @@ trait ProcessTrait
         $document = new BpmnDocument($this);
         $document->loadXML($this->bpmn);
         return $document;
+    }
+
+    /**
+     * Set a value on the properties json column
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return void
+     */
+    public function setProperty($name, $value)
+    {
+        $properties = $this->properties;
+        $properties[$name] = $value;
+        $this->properties = $properties;
+    }
+
+    /**
+     * Get a value from the properties json column
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getProperty($name)
+    {
+       return isset($this->properties[$name]) ? $this->properties[$name] : null;
+    }
+
+    /**
+     * Set the manager id
+     *
+     * @param int $value
+     * @return void
+     */
+    public function setManagerIdAttribute($value)
+    {
+        $this->setProperty('manager_id', $value);
+    }
+
+    /**
+     * Get the the manager id
+     *
+     * @return int|null
+     */
+    public function getManagerIdAttribute()
+    {
+        return $this->getProperty('manager_id');
+    }
+
+    /**
+     * Get the process manager
+     *
+     * @return User|null
+     */
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    /**
+     * Get the users who can start this process
+     *
+     */
+    public function usersCanCancel()
+    {
+        $query = $this->morphedByMany(User::class, 'processable')
+                      ->wherePivot('method', 'CANCEL');
+
+        return $this instanceof Process
+            ? $query->wherePivot('process_version_id', '=', null)
+            : $query;
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */
+    public function groupsCanCancel()
+    {
+        $query = $this->morphedByMany(Group::class, 'processable')
+                      ->wherePivot('method', 'CANCEL');
+
+        return $this instanceof Process
+            ? $query->wherePivot('process_version_id', '=', null)
+            : $query;
+    }
+
+    /**
+     * Get the users who can start this process
+     *
+     */
+    public function usersCanEditData()
+    {
+        $query = $this->morphedByMany(User::class, 'processable')
+                      ->wherePivot('method', 'EDIT_DATA');
+
+        return $this instanceof Process
+            ? $query->wherePivot('process_version_id', '=', null)
+            : $query;
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */
+    public function groupsCanEditData()
+    {
+        $query = $this->morphedByMany(Group::class, 'processable')
+                      ->wherePivot('method', 'EDIT_DATA');
+
+        return $this instanceof Process
+            ? $query->wherePivot('process_version_id', '=', null)
+            : $query;
     }
 }
