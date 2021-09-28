@@ -86,7 +86,7 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = Process::nonSystem()->active()->with($include);
+        $processes = Process::nonSystem()->notArchived()->with($include);
         if ($status === 'archived') {
             $processes = Process::archived()->with($include);
         }

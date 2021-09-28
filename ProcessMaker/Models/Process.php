@@ -415,6 +415,15 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     }
 
     /**
+     * Scope a query to include only active and inactive but not archived processes
+     *
+     */
+    public function scopeNotArchived($query)
+    {
+        return $query->whereIn('processes.status', ['ACTIVE', 'INACTIVE']);
+    }
+
+    /**
      * Scope a query to include only active processes
      *
      */
