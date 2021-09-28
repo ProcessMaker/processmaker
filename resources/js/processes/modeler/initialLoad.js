@@ -208,8 +208,7 @@ ProcessMaker.EventBus.$on(
       config: {
         label: 'Script Configuration',
         helper: 'Enter the JSON to configure the Script',
-        name: 'scriptConfiguration',
-        property: 'config'
+        name: 'config',
       }
     });
     registerInspectorExtension(endEvent, {
