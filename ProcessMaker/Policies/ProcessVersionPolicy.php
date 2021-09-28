@@ -16,7 +16,7 @@ class ProcessVersionPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @return mixed
-     */    
+     */
     public function before(User $user)
     {
         if ($user->is_administrator) {
@@ -28,25 +28,24 @@ class ProcessVersionPolicy
      * Determine whether the user can cancel the process version.
      *
      * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\ProcessVersion  $process
-     * @return mixed
+     * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
+     *
+     * @return bool
      */
     public function cancel(User $user, ProcessVersion $processVersion)
     {
         $groupIds = $user->groups->pluck('id');
-        
-        // TODO: get from current version
-        if ($processVersion->process->groupsCanCancel->whereIn('id', $groupIds)->count()) {
+
+        if ($processVersion->groupsCanCancel()->whereIn('id', $groupIds)->exists()) {
             return true;
         }
-        
-        // TODO: get from current version
-        if ($processVersion->process->usersCanCancel->where('id', $user->id)->count()) {
+
+        if ($processVersion->usersCanCancel()->where('id', $user->id)->exists()) {
             return true;
         }
 
         if (
-            $processVersion->manager_id === $user->id && 
+            $processVersion->manager_id === $user->id &&
             $processVersion->getProperty('manager_can_cancel_request') === true
         ) {
             return true;
@@ -56,27 +55,25 @@ class ProcessVersionPolicy
     }
 
     /**
-     * Determine whether the user can edit data.
+     * Determine whether the user can edit data
      *
      * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\ProcessVersion  $processVersion
-     * @return mixed
+     * @param  \ProcessMaker\Models\ProcessVersion  $processVersion
+     *
+     * @return bool
      */
     public function editData(User $user, ProcessVersion $processVersion)
     {
         $groupIds = $user->groups->pluck('id');
-        
-        // TODO: get from current version
-        if ($processVersion->process->groupsCanEditData->whereIn('id', $groupIds)->count()) {
+
+        if ($processVersion->groupsCanEditData()->whereIn('id', $groupIds)->exists()) {
             return true;
         }
 
-        // TODO: get from current version
-        if ($processVersion->process->usersCanEditData->where('id', $user->id)->count()) {
+        if ($processVersion->usersCanEditData()->where('id', $user->id)->exists()) {
             return true;
         }
 
         return false;
     }
-
 }
