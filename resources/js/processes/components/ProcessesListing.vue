@@ -25,8 +25,8 @@
             v-if="props.rowData.status == 'ACTIVE' || props.rowData.status == 'INACTIVE'"
             v-b-tooltip
             :title="props.rowData.status"
-            class="text-dark fa"
-            :class="{ 'fa-check-circle': props.rowData.status == 'ACTIVE', 'fa-circle': props.rowData.status == 'INACTIVE' }">
+            class="mr-2"
+            :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
           </i>
           {{props.rowData.name}}
           <i tabindex="0"
