@@ -13,7 +13,7 @@ class ChangeStatusProcessesTable extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE processes MODIFY COLUMN status ENUM('ACTIVE', 'INACTIVE', 'ARCHIVED') DEFAULT 'ACTIVE'");
+        DB::statement("ALTER TABLE processes MODIFY COLUMN status ENUM('ACTIVE', 'INACTIVE', 'ARCHIVED') DEFAULT 'ACTIVE' NOT NULL");
 
         DB::table('processes')
             ->where('status', 'INACTIVE')
@@ -31,6 +31,6 @@ class ChangeStatusProcessesTable extends Migration
             ->where('status', 'ARCHIVED')
             ->update(['status' => 'INACTIVE']);
 
-        DB::statement("ALTER TABLE processes MODIFY COLUMN status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE'");
+        DB::statement("ALTER TABLE processes MODIFY COLUMN status ENUM('ACTIVE', 'INACTIVE') DEFAULT 'ACTIVE' NOT NULL");
     }
 }
