@@ -151,6 +151,11 @@
                                 </multiselect>
                                 <div class="invalid-feedback" v-if="errors.request_detail_screen_id">@{{errors.request_detail_screen_id[0]}}</div>
                             </div>
+                            <div class="form-group">
+                                {!! Form::label('status', __('Status')) !!}
+                                {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, ['id' => 'status',
+                                'class' => 'form-control', 'v-model' => 'formData.status']) !!}
+                            </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
@@ -234,7 +239,7 @@
                                             <td class="notify">{{__('Notify Participants')}}</td>
                                             <td class="action">
                                                 <div class="custom-control custom-switch">
-    
+
                                                 </div>
                                             </td>
                                             <td class="action">
@@ -306,7 +311,7 @@
             screenCancel: @json($screenCancel),
             activeUsersAndGroups: @json($list),
             pause_timer_start_events: false,
-            manager: @json($process->manager),
+            manager: @json($process->manager)
           }
         },
         mounted() {
@@ -356,7 +361,7 @@
               if (item.type == 'group') {
                 response['groups'].push(parseInt(item.id));
               }
-              
+
               if (item.type === 'pseudouser') {
                 response['pseudousers'].push(item.id);
               }
