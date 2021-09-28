@@ -25,12 +25,9 @@
 </template>
 
 <script>
-    import MonacoEditor from "vue-monaco";
-
     export default {
         props: ["value", "label", "helper", "property"],
         data() {
-            const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
             return {
                 monacoOptions: {
                     automaticLayout: true,
@@ -39,28 +36,20 @@
                 monacoLargeOptions: {
                     automaticLayout: true,
                 },
-                code: _.get(node, this.property, ''),
+                code: '',
                 showPopup: false,
             };
         },
         watch: {
-            value() {
-                this.code = this.propertyGetter;
+            value: {
+                handler() {
+                    this.code = this.value;
+                },
+                immediate: true,
             },
             code() {
-                const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
-                _.set(node, this.property, this.code);
+                this.$emit('input', this.code)
             },
-        },
-        computed: {
-            /**
-             * Get the value of the edited property
-             */
-            propertyGetter() {
-                const node = this.$root.$children[0].$refs.modeler.highlightedNode.definition;
-                const value = _.get(node, this.property);
-                return value;
-            }
         },
         methods: {
             /**
