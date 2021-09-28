@@ -21,7 +21,7 @@
         <archived-processes-list
             ref="processListing"
             :filter="filter"
-            status="inactive"
+            status="archived"
             v-on:reload="reload"
             :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}"
         ></archived-processes-list>
