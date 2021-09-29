@@ -153,8 +153,7 @@
                             </div>
                             <div class="form-group">
                                 {!! Form::label('status', __('Status')) !!}
-                                {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, ['id' => 'status',
-                                'class' => 'form-control', 'v-model' => 'formData.status']) !!}
+                                <select-status v-model="formData.status" :multiple="false"></select-status>
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}

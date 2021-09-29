@@ -36,7 +36,8 @@
                             </div>
 
                             <input id="import-file" type="file" ref="file" class="d-none" @change="handleFile" accept=".spark,.json" aria-label="{{__('Select a file')}}">
-                            <button @click="$refs.file.click()" class="btn btn-secondary ml-2">
+
+                            <button @click="$refs.file.click()" class="btn btn-secondary">
                                 <i class="fas fa-upload"></i>
                                 {{__('Browse')}}
                             </button>
@@ -264,6 +265,16 @@
                                                 </multiselect>
                                             </td>
                                         </tr>
+                                        <tr>
+                                            <td class="assignable-name text-right">
+                                                {{ __('Assign') }} <strong>{{ __('Status') }}</strong> {{ __('to') }}
+                                                <i class="assignable-arrow fas fa-long-arrow-alt-right"></i>
+                                            </td>
+                                            <td class="assignable-entity">
+                                                <label for="search-status-text" class="d-none">{{__('Type to search status')}}</label>
+                                                <select-status v-model="status" :multiple="false"></select-status>
+                                            </td>
+                                        </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -377,6 +388,7 @@
           importingCode: importingCode ? importingCode[1] : null,
           dataSources: [],
           dataSourcesInstalled: true,
+          status: 'ACTIVE'
         },
         filters: {
           titleCase: function (value) {
@@ -505,6 +517,7 @@
                 'cancel_request': this.formatAssignee(this.cancelRequest),
                 'edit_data': this.formatAssignee(this.processEditData),
                 'manager_id': this.manager,
+                'status': this.status,
               })
               .then(response => {
                 ProcessMaker.alert(this.$t('All assignments were saved.'), 'success');
