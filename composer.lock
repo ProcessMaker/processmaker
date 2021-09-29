@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "709e66ee228d06ee15dc8f5c2684f786",
+    "content-hash": "1640b1ccc60f5d6cc5f9d61d7c600930",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4732,20 +4732,20 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.2.0",
+            "version": "1.7.0-RC3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "ee72116200b39a4685d1ce2c75cdd86bc6d488bf"
+                "reference": "6f4bf27782a3fb210c04b98033ffc1556115edba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/ee72116200b39a4685d1ce2c75cdd86bc6d488bf",
-                "reference": "ee72116200b39a4685d1ce2c75cdd86bc6d488bf",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/6f4bf27782a3fb210c04b98033ffc1556115edba",
+                "reference": "6f4bf27782a3fb210c04b98033ffc1556115edba",
                 "shasum": ""
             },
             "require-dev": {
-                "phpunit/phpunit": "^5.7"
+                "phpunit/phpunit": "^7.5"
             },
             "type": "library",
             "autoload": {
@@ -4760,9 +4760,9 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.2.0"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.7.0-RC3"
             },
-            "time": "2021-01-08T15:04:14+00:00"
+            "time": "2021-09-28T23:28:17+00:00"
         },
         {
             "name": "processmaker/pmql",
@@ -11407,5 +11407,5 @@
         "php": ">=7.2.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }
