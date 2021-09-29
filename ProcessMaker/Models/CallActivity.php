@@ -10,10 +10,10 @@ use ProcessMaker\Nayra\Bpmn\Events\ActivityCompletedEvent;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\CallActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\ErrorInterface;
-use ProcessMaker\Nayra\Contracts\Bpmn\FlowInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Nayra\Contracts\Engine\ExecutionInstanceInterface;
 use ProcessMaker\Jobs\CopyRequestFiles;
+use ProcessMaker\Managers\DataManager;
 
 /**
  * Call Activity model
@@ -38,11 +38,13 @@ class CallActivity implements CallActivityInterface
     {
         $this->attachEvent(
             ActivityInterface::EVENT_ACTIVITY_ACTIVATED,
-            function ($self, TokenInterface $token, FlowInterface $sequenceFlow) {
-                $instance = $this->callSubprocess($token, $sequenceFlow);
+            function (ActivityInterface $callActivity, TokenInterface $token) {
+                $config = json_decode($callActivity->getProperty('config'), true);
+                $startId = is_array($config) && isset($config['startEvent']) ? $config['startEvent'] : null;
+                $instance = $this->callSubprocess($token, $startId);
                 $this->getRepository()
                     ->getTokenRepository()
-                    ->persistCallActivityActivated($token, $instance, $sequenceFlow);
+                    ->persistCallActivityActivated($token, $instance, $startId);
                 $this->linkProcesses($token, $instance);
                 $this->syncronizeInstances($token->getInstance(), $instance);
             }
@@ -54,39 +56,41 @@ class CallActivity implements CallActivityInterface
      *
      * @return ExecutionInstanceInterface
      */
-    protected function callSubprocess(TokenInterface $token, FlowInterface $sequenceFlow)
+    protected function callSubprocess(TokenInterface $token, $startId)
     {
-        $callable = $this->getCalledElement();
-        // Capability to specify the target start event on the sequence flow to the call activity.
-        $startId = $sequenceFlow->getProperty('startEvent');
-        $dataStore = $callable->getRepository()->createDataStore();
-        // The entire data model is sent to the target
-        $data = $token->getInstance()->getDataStore()->getData();
+        try {
+            $callable = $this->getCalledElement();
+            $dataStore = $callable->getRepository()->createDataStore();
+            // The entire data model is sent to the target
+            $dataManager = new DataManager();
+            $data = $dataManager->getData($token);
 
-        // Add info about parent
-        $data['_parent'] = [
-            'process_id' => $token->getInstance()->process_id,
-            'request_id' => $token->getInstance()->id,
-            'node_id' => $token->element_id,
-        ];
-
-        $configString = $this->getProperty('config');
-        if ($configString) {
-            $config = json_decode($configString, true);
-            $data['_parent']['config'] = $config;
-            if (isset($config['startEvent'])) {
-                $startId = $config['startEvent'];
+            // Add info about parent (Note MultiInstance also adds _parent info)
+            if (!isset($data['_parent'])) {
+                $data['_parent'] = [];
             }
+
+            $data['_parent']['process_id'] = $token->getInstance()->process_id;
+            $data['_parent']['request_id'] = $token->getInstance()->id;
+            $data['_parent']['node_id'] = $token->element_id;
+
+            $configString = $this->getProperty('config');
+            if ($configString) {
+                $config = json_decode($configString, true);
+                $data['_parent']['config'] = $config;
+            }
+
+            $startEvent = $startId ? $callable->getOwnerDocument()->getElementInstanceById($startId) : null;
+
+            $dataStore->setData($data);
+            $instance = $callable->call($dataStore, $startEvent);
+
+            CopyRequestFiles::dispatch($token->getInstance(), $instance);
+
+            return $instance;
+        } catch (Exception $e) {
+            \error_log($e->getMessage());
         }
-
-        $startEvent = $startId ? $callable->getOwnerDocument()->getElementInstanceById($startId) : null;
-
-        $dataStore->setData($data);
-        $instance = $callable->call($dataStore, $startEvent);
-
-        CopyRequestFiles::dispatch($token->getInstance(), $instance);
-
-        return $instance;
     }
 
     /**
@@ -101,11 +105,9 @@ class CallActivity implements CallActivityInterface
     protected function completeSubprocess(TokenInterface $token, ExecutionInstanceInterface $closedInstance, ExecutionInstanceInterface $instance)
     {
         // Copy data from subprocess to main process
-        $dataStore = $token->getInstance()->getDataStore();
         $data = $closedInstance->getDataStore()->getData();
-        foreach ($data as $key => $value) {
-            $dataStore->putData($key, $value);
-        }
+        $dataManager = new DataManager();
+        $dataManager->updateData($token, $data);
         $token->getInstance()->getProcess()->getEngine()->runToNextState();
 
         // Complete the sub process call
