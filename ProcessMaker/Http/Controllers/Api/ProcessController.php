@@ -959,6 +959,11 @@ class ProcessController extends Controller
             $process->manager_id = $request->input('manager_id');
         }
 
+        //If we are specifying a status
+        if ($request->has('status')) {
+            $process->status = $request->input('status');
+        }
+
         $process->saveOrFail();
 
         return response([
