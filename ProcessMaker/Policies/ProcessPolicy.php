@@ -18,25 +18,25 @@ class ProcessPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @return mixed
-     */    
+     */
     public function before(User $user)
     {
         if ($user->is_administrator) {
             return true;
         }
     }
-    
+
     /**
      * Determine whether the user can start the process.
      *
      * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Process  $process
+     * @param  \ProcessMaker\Models\Process  $process
      * @return mixed
      */
     public function start(User $user, Process $process)
     {
         $groupIds = $user->groups->pluck('id');
-        
+
         if ($process->groupsCanStart(request()->query('event'))->whereIn('id', $groupIds)->count()) {
             return true;
         }
@@ -45,9 +45,19 @@ class ProcessPolicy
             request()->query('event')
         )->pluck('id');
 
+        $userCanStartAsProcessManager = array_reduce($process->getStartEvents(),
+            function ($carry, $item) use($process, $user) {
+                if (array_key_exists('assignment', $item)) {
+                    $carry = $carry || ($item['assignment'] === 'process_manager' && $process->manager_id === $user->id);
+                }
+                return $carry;
+            },
+            False);
+
         if (
             $usersCanStart->contains($user->id) ||
-            $usersCanStart->contains(app(AnonymousUser::class)->id)
+            $usersCanStart->contains(app(AnonymousUser::class)->id) ||
+            $userCanStartAsProcessManager
         ) {
             return true;
         }
@@ -59,18 +69,26 @@ class ProcessPolicy
      * Determine whether the user can cancel the process.
      *
      * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Process  $process
-     * @return mixed
+     * @param  \ProcessMaker\Models\Process  $process
+     *
+     * @return bool
      */
     public function cancel(User $user, Process $process)
     {
         $groupIds = $user->groups->pluck('id');
-        
-        if ($process->groupsCanCancel->whereIn('id', $groupIds)->count()) {
+
+        if ($process->groupsCanCancel()->whereIn('id', $groupIds)->exists()) {
             return true;
         }
-        
-        if ($process->usersCanCancel->where('id', $user->id)->count()) {
+
+        if ($process->usersCanCancel()->where('id', $user->id)->exists()) {
+            return true;
+        }
+
+        if (
+            $process->manager_id === $user->id &&
+            $process->getProperty('manager_can_cancel_request') === true
+        ) {
             return true;
         }
 
@@ -81,18 +99,19 @@ class ProcessPolicy
      * Determine whether the user can edit data.
      *
      * @param  \ProcessMaker\Models\User  $user
-     * @param  \ProcessMaker\Process  $process
-     * @return mixed
+     * @param  \ProcessMaker\Models\Process  $process
+     *
+     * @return bool
      */
     public function editData(User $user, Process $process)
     {
         $groupIds = $user->groups->pluck('id');
-        
-        if ($process->groupsCanEditData->whereIn('id', $groupIds)->count()) {
+
+        if ($process->groupsCanEditData()->whereIn('id', $groupIds)->exists()) {
             return true;
         }
 
-        if ($process->usersCanEditData->where('id', $user->id)->count()) {
+        if ($process->usersCanEditData()->where('id', $user->id)->exists()) {
             return true;
         }
 

@@ -16,7 +16,7 @@ class ProcessRequestPolicy
      *
      * @param  \ProcessMaker\Models\User  $user
      * @return mixed
-     */    
+     */
     public function before(User $user)
     {
         if ($user->is_administrator) {
@@ -42,10 +42,10 @@ class ProcessRequestPolicy
         }
 
         if ($user->hasPermission('edit-request_data')) {
-                return true;
+            return true;
         }
 
-        if ($processRequest->process->usersCanEditData->where('id', $user->id)->count() > 0) {
+        if ($processRequest->processVersion->usersCanEditData()->where('id', $user->id)->exists()) {
             return true;
         }
 
@@ -66,10 +66,11 @@ class ProcessRequestPolicy
         if ($processRequest->user_id == $user->id) {
             return true;
         }
-        return $user->can('cancel', $processRequest->process)
+
+        return $user->can('cancel', $processRequest->processVersion)
             || $user->hasPermission('edit-request_data')
-            || $user->can('editData', $processRequest->process);
-    }    
+            || $user->can('editData', $processRequest->processVersion);
+    }
 
     /**
      * Determine whether the user can update the process request.
@@ -84,27 +85,25 @@ class ProcessRequestPolicy
             return true;
         }
     }
-    
+
     /**
      * Determine whether the user can edit request data.
      *
      * @param  \ProcessMaker\Models\User  $user
      * @param  \ProcessMaker\Process  $process
      * @return boolean
-     */    
+     */
     public function editData(User $user, ProcessRequest $request)
     {
-        if ($request->status === 'ACTIVE') {
-            $permission = 'edit-task_data';
-        } else {
-            $permission = 'edit-request_data';
-        }
-        
+        $permission = $request->status === 'ACTIVE'
+            ? 'edit-task_data'
+            : 'edit-request_data';
+
         if ($user->can($permission)) {
             return true;
         }
-        
-        return $user->can('editData', $request->process);
+
+        return $user->can('editData', $request->processVersion);
     }
 
     /**
