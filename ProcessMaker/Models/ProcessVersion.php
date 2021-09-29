@@ -88,22 +88,16 @@ class ProcessVersion extends Model implements ProcessModelInterface
 
         foreach ($processables as $relationshipName => $methodName) {
 
-            $process = $this->process;
-
-            if (!$process->$relationshipName() instanceof MorphToMany) {
-                continue;
-            }
-
-            if (!$process->$relationshipName()->exists()) {
+            if (!$this->process->$relationshipName()->exists()) {
                 continue;
             }
 
             $includeWithPivot = [
-                'process_id' => $process->id,
+                'process_id' => $this->process->id,
                 'method' => $methodName
             ];
 
-            $updateWith = $process->$relationshipName->keyBy('id')->map(
+            $updateWith = $this->process->$relationshipName->keyBy('id')->map(
                 function ($model) use ($includeWithPivot) {
                     return $includeWithPivot;
                 }

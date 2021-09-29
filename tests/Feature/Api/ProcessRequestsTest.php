@@ -243,7 +243,7 @@ class ProcessRequestsTest extends TestCase
         $json = $response->json();
         $this->assertEquals($process->id, $json['data'][0]['process']['id']);
     }
-    
+
     /**
      * Get a list of requests with a user that has view all permission
      */
@@ -258,7 +258,7 @@ class ProcessRequestsTest extends TestCase
 
         $this->user->giveDirectPermission('view-all_requests');
         $this->user->refresh();
-        
+
         $response = $this->apiCall('GET', self::API_TEST_URL);
         $json = $response->json();
         $this->assertEquals($processRequest->id, $json['data'][0]['id']);
@@ -356,18 +356,27 @@ class ProcessRequestsTest extends TestCase
     {
         // We need an admin user and a non-admin user
         $admin = $this->user;
-        $nonAdmin = factory(User::class)->create(['is_administrator' => false]);
 
-        // Create a process and a process request
-        $request = factory(ProcessRequest::class)->create(['user_id' => $nonAdmin->id]);
-        $process = $request->process;
+        $nonAdmin = factory(User::class)->create([
+            'is_administrator' => false
+        ]);
+
+        // Create a single process in order to create
+        // two process requests with the same process
+        $process = factory(Process::class)->create([
+            'user_id' => $admin->id
+        ]);
+
+        // Create the initial process request
+        $initialProcessVersionRequest = factory(ProcessRequest::class)->create([
+            'user_id' => $nonAdmin->id,
+            'process_id' => $process->id
+        ]);
 
         // Attempt to cancel a request
         $this->user = $nonAdmin;
-        $route = route('api.requests.update', [$request->id]);
-        $response = $this->apiCall('PUT', $route, [
-            'status' => 'CANCELED',
-        ]);
+        $route = route('api.requests.update', [$initialProcessVersionRequest->id]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED',]);
 
         // Confirm the user does not have access
         $response->assertStatus(403);
@@ -381,15 +390,18 @@ class ProcessRequestsTest extends TestCase
             'cancel_request' => ['users' => [$nonAdmin->id], 'groups' => []]
         ]);
 
-        // Assert that the API returned a valid response
-        $response->assertStatus(200, $response);
-
-        // Attempt to cancel the request
-        $this->user = $nonAdmin;
-        $route = route('api.requests.update', [$request->id]);
-        $response = $this->apiCall('PUT', $route, [
-            'status' => 'CANCELED',
+        // Create a second process request with the
+        // same process, this time the process request
+        // will honor the new process configuration
+        $secondProcessVersionRequest = factory(ProcessRequest::class)->create([
+            'user_id' => $nonAdmin->id,
+            'process_id' => $process->id
         ]);
+
+        // Attempt to cancel a request
+        $this->user = $nonAdmin;
+        $route = route('api.requests.update', [$secondProcessVersionRequest->id]);
+        $response = $this->apiCall('PUT', $route, ['status' => 'CANCELED',]);
 
         // Assert that the API updated
         $response->assertStatus(204);
@@ -537,13 +549,13 @@ class ProcessRequestsTest extends TestCase
             'process_request_id' => $request->id,
             'user_id' => $participant->id
         ]);
-        
+
         $url = route('api.requests.show', $request);
         $this->user = $otherUser;
 
         $response = $this->apiCall('get', $url);
         $response->assertStatus(403);
-        
+
         $this->user = $participant;
 
         $response = $this->apiCall('get', $url);
@@ -555,41 +567,63 @@ class ProcessRequestsTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testUserCanEditCompletedData() {
-        $user = factory(User::class)->create();
-        $this->user = $user;
-
+    public function testUserCanEditCompletedData()
+    {
+        $this->user = factory(User::class)->create();
         $process = factory(Process::class)->create();
-        $request = factory(ProcessRequest::class)->create([
+
+        $initialProcessRequest = factory(ProcessRequest::class)->create([
             'status' => 'COMPLETED',
             'data' => ['foo' => 'bar'],
             'process_id' => $process->id,
         ]);
-        
-        $url = route('api.requests.update', $request);
 
+        $url = route('api.requests.update', $initialProcessRequest);
+
+        // Attempt to edit ProcessRequest completed data
         $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
+
+        // Verify we can't (yet)
         $response->assertStatus(403);
 
         $editAllRequestsData = Permission::where('name', 'edit-request_data')->first();
-        $user->permissions()->attach($editAllRequestsData);
-        $user->refresh();
+        $this->user->permissions()->attach($editAllRequestsData);
+        $this->user->refresh();
         session()->forget('permissions');
-
         $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
-        $response->assertStatus(204); 
-        
-        $user->permissions()->detach($editAllRequestsData);
-        $user->refresh();
+
+        // Attempt to edit complete data with the permissions
+        // fo the user now set
+        $response->assertStatus(204);
+
+        $this->user->permissions()->detach($editAllRequestsData);
+        $this->user->refresh();
         session()->forget('permissions');
-
         $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
+
+        // Try again after removing the permissions
+        // from the user
         $response->assertStatus(403);
 
         // Add process level permission
-        $process->usersCanEditData()->sync([$user->id => ['method' => 'EDIT_DATA']]);
-        
+        $process->usersCanEditData()->sync(
+            [$this->user->id => ['method' => 'EDIT_DATA']]
+        );
+
+        // Create a new process request with the update process
+        // configuration since the process request now honors
+        // the process configuration how it existed when the
+        // process request was initiated
+        $secondProcessRequest = factory(ProcessRequest::class)->create([
+            'status' => 'COMPLETED',
+            'data' => ['foo' => 'bar'],
+            'process_id' => $process->id,
+        ]);
+
+        $url = route('api.requests.update', $secondProcessRequest);
         $response = $this->apiCall('put', $url, ['data' => ['foo' => '123']]);
+
+        // Verify we can now edit the completed ProcessRequest data
         $response->assertStatus(204);
     }
 
