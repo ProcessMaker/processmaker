@@ -23,7 +23,7 @@ use Tests\TestCase;
 class EditDataTest extends TestCase
 {
     use RequestHelper;
-    
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -34,7 +34,7 @@ class EditDataTest extends TestCase
             'is_administrator' => true,
         ]);
 
-        // Creates an user
+        // Creates a user
         $this->user = factory(User::class)->create([
             'password' => Hash::make('password'),
             'is_administrator' => false,
@@ -42,13 +42,14 @@ class EditDataTest extends TestCase
 
         // Create a group
         $this->group = factory(Group::class)->create(['name' => 'group']);
+
         factory(GroupMember::class)->create([
             'member_id' => $this->user->id,
             'member_type' => User::class,
             'group_id' => $this->group->id,
         ]);
 
-        //Run the permission seeder
+        // Run the permission seeder
         (new PermissionSeeder)->run();
 
         // Reboot our AuthServiceProvider. This is necessary so that it can
@@ -83,17 +84,19 @@ class EditDataTest extends TestCase
             $editDataUsers[$item] = ['method' => 'EDIT_DATA'];
         }
 
-        //Adding method to groups array            
+        //Adding method to groups array
         $editDataGroups = [];
         foreach ($groups as $item) {
             $editDataGroups[$item] = ['method' => 'EDIT_DATA'];
         }
 
-        //Syncing users and groups that can cancel this process            
+        //Syncing users and groups that can cancel this process
         $process->usersCanEditData()->sync($editDataUsers,
             ['method' => 'EDIT_DATA']);
         $process->groupsCanEditData()->sync($editDataGroups,
             ['method' => 'EDIT_DATA']);
+
+        $process->save();
     }
 
     /**
@@ -262,12 +265,12 @@ class EditDataTest extends TestCase
         $process = $this->createSingleTaskProcessUserAssignment($this->user);
         $request = $this->startProcess($process, 'StartEventUID');
         $task = $request->tokens()->where('element_id', 'UserTaskUID')->first();
-        
+
         //Assign global edit task permission to user
         $this->user->permissions()->attach(Permission::byName('edit-task_data')->id);
         $this->user->refresh();
         $this->flushSession();
-        
+
         //Perform web call and make assertions
         $response = $this->webCall('GET', 'tasks/' . $task->id . '/edit');
         $response->assertStatus(200);
