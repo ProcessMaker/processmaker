@@ -24,7 +24,7 @@ class ConditionalStartEventTest extends TestCase
         $manager->evaluateConditionals();
     }
 
-    public function testConditionalEventMustNotTriggeredWhenActive()
+    public function testConditionalEventMustNotTriggeredWhenInactive()
     {
         //Create a conditional process with ACTIVE status by default
         ImportProcess::dispatchNow(
