@@ -2,6 +2,9 @@
 
 namespace ProcessMaker\Traits;
 
+use ProcessMaker\Models\User;
+use ProcessMaker\Models\Group;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Nayra\Contracts\Storage\BpmnDocumentInterface;
 use ProcessMaker\Repositories\BpmnDocument;
@@ -45,5 +48,61 @@ trait ProcessTrait
         $document = new BpmnDocument($this);
         $document->loadXML($this->bpmn);
         return $document;
+    }
+
+    /**
+     * Get the users who can start this process
+     *
+     */
+    public function usersCanCancel()
+    {
+        $query = $this->morphedByMany(User::class, 'processable')
+                      ->wherePivot('method', 'CANCEL');
+
+        return $this instanceof Process
+            ? $query->wherePivot('process_version_id', '=', null)
+            : $query;
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */
+    public function groupsCanCancel()
+    {
+        $query = $this->morphedByMany(Group::class, 'processable')
+                      ->wherePivot('method', 'CANCEL');
+
+        return $this instanceof Process
+            ? $query->wherePivot('process_version_id', '=', null)
+            : $query;
+    }
+
+    /**
+     * Get the users who can start this process
+     *
+     */
+    public function usersCanEditData()
+    {
+        $query = $this->morphedByMany(User::class, 'processable')
+                      ->wherePivot('method', 'EDIT_DATA');
+
+        return $this instanceof Process
+            ? $query->wherePivot('process_version_id', '=', null)
+            : $query;
+    }
+
+    /**
+     * Get the groups who can start this process
+     *
+     */
+    public function groupsCanEditData()
+    {
+        $query = $this->morphedByMany(Group::class, 'processable')
+                      ->wherePivot('method', 'EDIT_DATA');
+
+        return $this instanceof Process
+            ? $query->wherePivot('process_version_id', '=', null)
+            : $query;
     }
 }

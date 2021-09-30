@@ -369,42 +369,6 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     }
 
     /**
-     * Get the users who can start this process
-     *
-     */
-    public function usersCanCancel()
-    {
-        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'CANCEL');
-    }
-
-    /**
-     * Get the groups who can start this process
-     *
-     */
-    public function groupsCanCancel()
-    {
-        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'CANCEL');
-    }
-
-    /**
-     * Get the users who can start this process
-     *
-     */
-    public function usersCanEditData()
-    {
-        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'EDIT_DATA');
-    }
-
-    /**
-     * Get the groups who can start this process
-     *
-     */
-    public function groupsCanEditData()
-    {
-        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'EDIT_DATA');
-    }
-
-    /**
      * Scope a query to include only active processes
      *
      */
