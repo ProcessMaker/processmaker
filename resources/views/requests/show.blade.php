@@ -37,7 +37,7 @@
                                    data-toggle="tab" @click="switchTab('pending')" href="#pending" role="tab"
                                    aria-controls="pending" aria-selected="true">{{__('Tasks')}}</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item" v-if="showSummary">
                                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
                                    aria-controls="summary" @click="switchTab('summary')" aria-selected="false"
                                    v-bind:class="{ 'nav-link':true, active: showSummary }">
@@ -137,31 +137,6 @@
                                         </div>
                                     </template>
 
-                                </template>
-                            </template>
-                            <template v-else>
-                                <template v-if="showScreenRequestDetail">
-                                    <div class="card">
-                                        <div class="card-body">
-                                          <vue-form-renderer ref="screenRequestDetail" :config="screenRequestDetail" v-model="dataSummary"/>
-                                        </div>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <div class="card border-0">
-                                        <div class="card-header bg-white">
-                                            <h5 class="m-0">
-                                                {{ __('Request In Progress') }}
-                                            </h5>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <p class="card-text">
-                                                {{__('This Request is currently in progress.')}}
-                                                {{__('This screen will be populated once the Request is completed.')}}
-                                            </p>
-                                        </div>
-                                    </div>
                                 </template>
                             </template>
                         </div>
@@ -412,18 +387,6 @@
               options[option.key] = option.value
             });
             return options;
-          },
-          /**
-           * If the screen request detail is configured.
-           **/
-          showScreenRequestDetail() {
-            return !!this.request.request_detail_screen;
-          },
-          /**
-           * Get Screen request detail
-           * */
-          screenRequestDetail() {
-            return this.request.request_detail_screen ? this.request.request_detail_screen.config : null;
           },
           classStatusCard() {
             let header = {
