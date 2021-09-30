@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Traits;
 
+use ProcessMaker\Models\User;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessVersion;
