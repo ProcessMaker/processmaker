@@ -27,6 +27,13 @@
                             <h5 class="mt-3">{{ __('Welcome', ['name' => $user->fullname]) }}</h5>
                         </div>
                         <h5 class="mb-3">{{ __('Please change your account password') }}</h5>
+                        <div class="alert alert-primary">Password Requirements:
+                            <ul>
+                                <li>{{ __('8 characters in length') }}</li>
+                                <li>{{ __('Contains an uppercase letter') }}</li>
+                                <li>{{ __('Contains a number or symbol') }}</li>
+                            </ul>
+                        </div>
                         @if (session()->has('timeout'))
                         <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
                         @endif
