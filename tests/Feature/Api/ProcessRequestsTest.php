@@ -416,8 +416,13 @@ class ProcessRequestsTest extends TestCase
         $this->user->saveOrFail();
         $request = factory(ProcessRequest::class)->create(['status' => 'ACTIVE']);
 
-        // give the user editData permission to get passed the route check
-        $request->process->usersCanEditData()->sync([$this->user->id => ['method' => 'EDIT_DATA']]);
+        // give the user editData permission to get past the route check
+        $request->processVersion->usersCanEditData()->sync([
+            $this->user->id => [
+                'method' => 'EDIT_DATA',
+                'process_id' => $request->process->id
+            ]
+        ]);
 
         $route = route('api.requests.update', [$request->id]);
         $response = $this->apiCall('PUT', $route, ['status' => 'COMPLETED']);
@@ -433,8 +438,7 @@ class ProcessRequestsTest extends TestCase
 
         // Confirm only ERROR status can be changed
         $response->assertStatus(422);
-        $this->assertEquals(
-            'Only requests with status: ERROR can be manually completed',
+        $this->assertEquals('Only requests with status: ERROR can be manually completed',
             $response->json()['errors']['status'][0]
         );
 
