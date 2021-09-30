@@ -434,6 +434,7 @@
         },
         mounted() {
           this.prepareData();
+          window.ProcessMaker.isSelfService = this.isSelfService;
         }
       });
       window.ProcessMaker.breadcrumbs.taskTitle = @json($task->element_name)
