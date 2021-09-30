@@ -22,6 +22,12 @@
       >
         <template slot="name" slot-scope="props">
           <i tabindex="0"
+            v-b-tooltip
+            :title="props.rowData.warningMessages.join(' ')"
+            class="text-warning fa fa-exclamation-triangle"
+            :class="{'invisible': props.rowData.warningMessages.length == 0}">
+          </i>
+          <i tabindex="0"
             v-if="props.rowData.status == 'ACTIVE' || props.rowData.status == 'INACTIVE'"
             v-b-tooltip
             :title="props.rowData.status"
@@ -29,12 +35,6 @@
             :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
           </i>
           {{props.rowData.name}}
-          <i tabindex="0"
-            v-if="props.rowData.warningMessages.length > 0"
-            v-b-tooltip
-            :title="props.rowData.warningMessages.join(' ')"
-            class="text-warning fa fa-exclamation-triangle">
-          </i>
         </template>
 
         <template slot="owner" slot-scope="props">
