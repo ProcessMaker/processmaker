@@ -51,62 +51,6 @@ trait ProcessTrait
     }
 
     /**
-     * Set a value on the properties json column
-     *
-     * @param string $name
-     * @param mixed $value
-     * @return void
-     */
-    public function setProperty($name, $value)
-    {
-        $properties = $this->properties;
-        $properties[$name] = $value;
-        $this->properties = $properties;
-    }
-
-    /**
-     * Get a value from the properties json column
-     *
-     * @param string $name
-     * @return mixed
-     */
-    public function getProperty($name)
-    {
-       return isset($this->properties[$name]) ? $this->properties[$name] : null;
-    }
-
-    /**
-     * Set the manager id
-     *
-     * @param int $value
-     * @return void
-     */
-    public function setManagerIdAttribute($value)
-    {
-        $this->setProperty('manager_id', $value);
-    }
-
-    /**
-     * Get the the manager id
-     *
-     * @return int|null
-     */
-    public function getManagerIdAttribute()
-    {
-        return $this->getProperty('manager_id');
-    }
-
-    /**
-     * Get the process manager
-     *
-     * @return User|null
-     */
-    public function manager()
-    {
-        return $this->belongsTo(User::class, 'manager_id');
-    }
-
-    /**
      * Get the users who can start this process
      *
      */

@@ -44,13 +44,6 @@ class ProcessVersionPolicy
             return true;
         }
 
-        if (
-            $processVersion->manager_id === $user->id &&
-            $processVersion->getProperty('manager_can_cancel_request') === true
-        ) {
-            return true;
-        }
-
         return false;
     }
 
