@@ -614,6 +614,8 @@ class ProcessRequestsTest extends TestCase
             [$this->user->id => ['method' => 'EDIT_DATA']]
         );
 
+        $process->save();
+
         // Create a new process request with the update process
         // configuration since the process request now honors
         // the process configuration how it existed when the
