@@ -406,7 +406,7 @@ class User extends Authenticatable implements HasMedia
             'id not in (select request_id from request_user_permissions where user_id=?)',
             [$this->getKey()]
         )->select(
-            'id', 'process_id', 'user_id', 'parent_request_id', 'callable_id'
+            'id', 'process_id', 'user_id', 'parent_request_id', 'callable_id', 'process_version_id'
         );
 
         // Process the results in chunks
