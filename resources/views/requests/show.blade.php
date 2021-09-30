@@ -37,7 +37,7 @@
                                    data-toggle="tab" @click="switchTab('pending')" href="#pending" role="tab"
                                    aria-controls="pending" aria-selected="true">{{__('Tasks')}}</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item" v-if="showSummary">
                                 <a id="summary-tab" data-toggle="tab" href="#summary" role="tab"
                                    aria-controls="summary" @click="switchTab('summary')" aria-selected="false"
                                    v-bind:class="{ 'nav-link':true, active: showSummary }">
