@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Jobs\CancelRequest;
 use ProcessMaker\Models\Group;
 use ProcessMaker\Models\GroupMember;
 use ProcessMaker\Models\Permission;
@@ -900,5 +901,47 @@ class ProcessTest extends TestCase
         ];
         $response = $this->apiCall('PUT', $url, $params);
         $response->assertStatus(200);
+    }
+
+    public function testUpdateCanCancelPermission()
+    {
+        $adminUser = $this->user;
+        $regularUser = factory(User::class)->create();
+        $process = factory(Process::class)->create(['name' => 'test']);
+
+        $updateProcess = function($usersCanCancel) use ($adminUser, $process) {
+            $this->user = $adminUser;
+            $url = route('api.processes.update', $process);
+            $params = [
+                'name' => 'test',
+                'description' => 'test',
+                'cancel_request' => [
+                    'users' => $usersCanCancel,
+                    'groups' => [],
+                ]
+            ];
+            return $this->apiCall('PUT', $url, $params);
+        };
+
+        $cancelRequest = function() use ($regularUser, $process) {
+            $this->user = $regularUser;
+            $request = factory(ProcessRequest::class)->create([
+                'process_id' => $process->id
+            ]);
+            $url = route('api.requests.update', $request);
+            return $this->apiCall('PUT', $url, ['status' => 'CANCELED']);
+        };
+        
+        // Give $regularUser permission to cancel
+        $updateProcess([$regularUser->id]);
+
+        $response = $cancelRequest();
+        $response->assertStatus(204);
+        
+        // Remove $regularUser's permission
+        $updateProcess([]);
+        
+        $response = $cancelRequest();
+        $response->assertStatus(403);
     }
 }
