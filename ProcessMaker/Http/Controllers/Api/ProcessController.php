@@ -277,17 +277,6 @@ class ProcessController extends Controller
 
         $process->fill($request->except('notifications', 'task_notifications', 'notification_settings', 'cancel_request', 'cancel_request_id', 'start_request_id', 'edit_data', 'edit_data_id'));
 
-        // Catch errors to send more specific status
-        try {
-            $process->saveOrFail();
-        } catch (TaskDoesNotHaveUsersException $e) {
-            return response(
-                ['message' => $e->getMessage(),
-                    'errors' => ['bpmn' => $e->getMessage()]],
-                422
-            );
-        }
-
         //If we are specifying cancel assignments...
         if ($request->has('cancel_request')) {
             $this->cancelRequestAssignment($process, $request);
@@ -306,6 +295,17 @@ class ProcessController extends Controller
         //Save any task notification settings...
         if ($request->has('task_notifications')) {
             $this->saveTaskNotifications($process, $request);
+        }
+        
+        // Catch errors to send more specific status
+        try {
+            $process->saveOrFail();
+        } catch (TaskDoesNotHaveUsersException $e) {
+            return response(
+                ['message' => $e->getMessage(),
+                    'errors' => ['bpmn' => $e->getMessage()]],
+                422
+            );
         }
 
         return new Resource($process->refresh());

@@ -929,19 +929,24 @@ class ProcessTest extends TestCase
                 'process_id' => $process->id
             ]);
             $url = route('api.requests.update', $request);
-            return $this->apiCall('PUT', $url, ['status' => 'CANCELED']);
+            return [
+                $this->apiCall('PUT', $url, ['status' => 'CANCELED']),
+                $request->refresh()
+            ];
         };
         
         // Give $regularUser permission to cancel
         $updateProcess([$regularUser->id]);
 
-        $response = $cancelRequest();
+        list($response, $request) = $cancelRequest();
         $response->assertStatus(204);
+        $this->assertEquals('CANCELED', $request->status);
         
         // Remove $regularUser's permission
         $updateProcess([]);
         
-        $response = $cancelRequest();
+        list($response, $request) = $cancelRequest();
         $response->assertStatus(403);
+        $this->assertEquals('ACTIVE', $request->status);
     }
 }
