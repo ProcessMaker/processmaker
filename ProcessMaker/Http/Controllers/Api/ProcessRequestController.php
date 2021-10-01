@@ -119,11 +119,11 @@ class ProcessRequestController extends Controller
                 $query->get();
                 break;
         }
-        
+
         $filter = $request->input('filter', '');
         if (!empty($filter)) {
             $query->filter($filter);
-        }        
+        }
 
         $pmql = $request->input('pmql', '');
         if (!empty($pmql)) {
@@ -158,7 +158,7 @@ class ProcessRequestController extends Controller
             }
             return response(['message' => $message], 400);
         }
-        
+
         if (isset($response)) {
             //Map each item through its resource
             $response = $response->map(function ($processRequest) use ($request) {
@@ -242,7 +242,7 @@ class ProcessRequestController extends Controller
     public function update(ProcessRequest $request, Request $httpRequest)
     {
         if ($httpRequest->post('status') === 'CANCELED') {
-            if (!Auth::user()->can('cancel', $request->process)) {
+            if (!Auth::user()->can('cancel', $request->processVersion)) {
                 throw new AuthorizationException(__('Not authorized to cancel this request.'));
             }
             $this->cancelRequestToken($request);
@@ -345,7 +345,7 @@ class ProcessRequestController extends Controller
      * @param ProcessRequest $request
      * @param string $event
      * @return void
-     * 
+     *
      * @OA\Post(
      *     path="/requests/{process_request_id}/events/{event_id}",
      *     summary="Update a process request event",
