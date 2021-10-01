@@ -117,7 +117,7 @@
                       @click="onAction('restore-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Restore')"
-                      v-if="permission.includes('archive-processes') && props.rowData.status === 'INACTIVE' && false"
+                      v-if="permission.includes('archive-processes') && props.rowData.status === 'ARCHIVED'"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
               </b-btn>
