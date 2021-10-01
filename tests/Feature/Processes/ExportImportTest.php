@@ -379,6 +379,7 @@ class ExportImportTest extends TestCase
             'users' => [$ediUser1->id],
             'groups' => [$ediGroup1->id]
         ];
+        $status = $faker->randomElement(['ACTIVE', 'INACTIVE']);
 
         $processId = $response->json('process')['id'];
 
@@ -386,7 +387,8 @@ class ExportImportTest extends TestCase
         $response = $this->apiCall('POST', '/processes/' . $processId . '/import/assignments', [
             'assignable' => $assignable,
             'cancel_request' => $cancelRequest,
-            'edit_data' => $editData
+            'edit_data' => $editData,
+            'status' => $status
         ]);
 
         //Validate the header status code
@@ -444,6 +446,9 @@ class ExportImportTest extends TestCase
                 $this->assertEquals($assign['value']['id'], $script->run_as_user_id);
             }
         }
+
+        //Verify status assigned correctly
+        $this->assertEquals($process->status, $status);
     }
 
     /**

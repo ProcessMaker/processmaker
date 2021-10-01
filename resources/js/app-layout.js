@@ -6,6 +6,7 @@ import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
+import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
 import SelectUserGroup from "./components/SelectUserGroup";
 import CategorySelect from "./processes/categories/components/CategorySelect";
@@ -42,6 +43,7 @@ window.moment = moment;
 
 Vue.component("multiselect", Multiselect);
 Vue.component("Sidebaricon", Sidebaricon);
+Vue.component("select-status", SelectStatus);
 Vue.component("select-user", SelectUser);
 Vue.component("select-user-group", SelectUserGroup);
 Vue.component("category-select", CategorySelect);

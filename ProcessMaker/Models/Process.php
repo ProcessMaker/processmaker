@@ -65,7 +65,7 @@ use Throwable;
  *   @OA\Property(property="process_category_id", type="integer", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
- *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "ARCHIVED"}),
  *   @OA\Property(property="pause_timer_start", type="integer"),
  *   @OA\Property(property="cancel_screen_id", type="integer"),
  *   @OA\Property(property="has_timer_start_events", type="boolean"),
@@ -337,7 +337,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         return [
             'name' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
-            'status' => 'in:ACTIVE,INACTIVE',
+            'status' => 'in:ACTIVE,INACTIVE,ARCHIVED',
             'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
         ];
@@ -379,6 +379,15 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     }
 
     /**
+     * Scope a query to include only active and inactive but not archived processes
+     *
+     */
+    public function scopeNotArchived($query)
+    {
+        return $query->whereIn('processes.status', ['ACTIVE', 'INACTIVE']);
+    }
+
+    /**
      * Scope a query to include only active processes
      *
      */
@@ -394,6 +403,15 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     public function scopeInactive($query)
     {
         return $query->where('processes.status', 'INACTIVE');
+    }
+
+    /**
+     * Scope a query to include only archived processes
+     *
+     */
+    public function scopeArchived($query)
+    {
+        return $query->where('processes.status', 'ARCHIVED');
     }
 
     public function getCollaborations()

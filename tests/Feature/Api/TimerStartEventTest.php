@@ -1,16 +1,12 @@
 <?php
 namespace Tests\Feature\Api;
 
-use Faker\Provider\DateTime;
 use Illuminate\Foundation\Testing\WithFaker;
 use ProcessMaker\Managers\TaskSchedulerManager;
-use ProcessMaker\Managers\WorkflowEventManager;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessRequest;
-use ProcessMaker\Models\ProcessRequestToken;
 use ProcessMaker\Models\ScheduledTask;
-use ProcessMaker\Models\User;
 use Tests\Feature\Shared\ResourceAssertionsTrait;
+use ProcessMaker\Facades\WorkflowManager;
 use Tests\TestCase;
 use Tests\Feature\Shared\RequestHelper;
 
@@ -188,8 +184,16 @@ class TimerStartEventTest extends TestCase
 
     public function testScheduleStartEvent()
     {
+        //Check triggerStartEvent should be called when process is ACTIVE
+        WorkflowManager::shouldReceive('triggerStartEvent')
+            ->once()
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any());
+
+        //Prepare process data from template
         $data = [];
         $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
+
+        //Create process
         $process = factory(Process::class)->create($data);
 
         $manager = new TaskSchedulerManager();
@@ -198,8 +202,30 @@ class TimerStartEventTest extends TestCase
         $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
         $task->type= 'TIMER_START_EVENT';
         $manager->executeTimerStartEvent($task, json_decode($task->configuration));
+    }
 
-        // If no exception has been thrown, this assertion will be executed
-        $this->assertTrue(true);
+    public function testScheduleMustNotStartTimerEventWhenProcessInactive()
+    {
+        //Check triggerStartEvent should NEVER be called when process is INACTIVE
+        WorkflowManager::shouldReceive('triggerStartEvent')
+            ->never()
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any());
+
+        //Prepare process data from template
+        $data = [];
+        $data['bpmn'] = Process::getProcessTemplate('TimerStartEvent.bpmn');
+
+        //Set status to INACTIVE
+        $data['status'] = 'INACTIVE';
+
+        //Create process
+        $process = factory(Process::class)->create($data);
+
+        $manager = new TaskSchedulerManager();
+        $task = new ScheduledTask();
+        $task->process_id = $process->id;
+        $task->configuration = '{"type":"TimeCycle","interval":"R4\/2019-02-13T13:08:00Z\/PT1M", "element_id" : "_9"}';
+        $task->type= 'TIMER_START_EVENT';
+        $manager->executeTimerStartEvent($task, json_decode($task->configuration));
     }
 }

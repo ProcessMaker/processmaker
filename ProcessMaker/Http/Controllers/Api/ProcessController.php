@@ -86,9 +86,9 @@ class ProcessController extends Controller
         $include = $this->getRequestInclude($request);
         $status = $request->input('status');
 
-        $processes = Process::nonSystem()->active()->with($include);
-        if ($status === 'inactive') {
-            $processes = Process::inactive()->with($include);
+        $processes = Process::nonSystem()->notArchived()->with($include);
+        if ($status === 'archived') {
+            $processes = Process::archived()->with($include);
         }
         $filter = $request->input('filter');
         $processes = $processes->select('processes.*')
@@ -565,7 +565,7 @@ class ProcessController extends Controller
                         ->filter(function ($eventDefinition) {
                             return $eventDefinition['$type'] == 'timerEventDefinition';
                         })->count() > 0;
-                
+
                 // Filter out web entry start events
                 $eventIsWebEntry = false;
                 if (isset($event['config'])) {
@@ -667,7 +667,7 @@ class ProcessController extends Controller
      */
     public function destroy(Process $process)
     {
-        $process->status = 'INACTIVE';
+        $process->status = 'ARCHIVED';
         $process->save();
 
         return response('', 204);
@@ -958,7 +958,12 @@ class ProcessController extends Controller
         if ($request->has('manager_id')) {
             $process->manager_id = $request->input('manager_id');
         }
-            
+
+        //If we are specifying a status
+        if ($request->has('status')) {
+            $process->status = $request->input('status');
+        }
+
         $process->saveOrFail();
 
         return response([

@@ -21,13 +21,20 @@
               :noDataTemplate="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">
-          {{props.rowData.name}}
           <i tabindex="0"
-            v-if="props.rowData.warningMessages.length > 0"
             v-b-tooltip
             :title="props.rowData.warningMessages.join(' ')"
-            class="text-warning fa fa-exclamation-triangle">
+            class="text-warning fa fa-exclamation-triangle"
+            :class="{'invisible': props.rowData.warningMessages.length == 0}">
           </i>
+          <i tabindex="0"
+            v-if="props.rowData.status == 'ACTIVE' || props.rowData.status == 'INACTIVE'"
+            v-b-tooltip
+            :title="props.rowData.status"
+            class="mr-2"
+            :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
+          </i>
+          {{props.rowData.name}}
         </template>
 
         <template slot="owner" slot-scope="props">
@@ -74,7 +81,7 @@
                       @click="onAction('edit-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Configure')"
-                      v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
+                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
@@ -101,7 +108,7 @@
                       @click="onAction('remove-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Archive')"
-                      v-if="permission.includes('archive-processes') && props.rowData.status === 'ACTIVE'"
+                      v-if="permission.includes('archive-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
               >
                 <i class="fas fa-download fa-lg fa-fw"></i>
               </b-btn>
@@ -110,7 +117,7 @@
                       @click="onAction('restore-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Restore')"
-                      v-if="permission.includes('archive-processes') && props.rowData.status === 'INACTIVE'"
+                      v-if="permission.includes('archive-processes') && props.rowData.status === 'ARCHIVED'"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
               </b-btn>
