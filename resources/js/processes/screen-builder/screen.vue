@@ -484,6 +484,9 @@ export default {
       this.optionsMenu[1].items.splice(1, 0, this.customCssOption);
     },
     countElements() {
+      if (!this.$refs.renderer) {
+        return;
+      }
       this.$refs.renderer.countElements(this.config).then(allElements => {
         this.numberOfElements = allElements.length;
       });
