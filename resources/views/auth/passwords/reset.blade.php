@@ -1,4 +1,5 @@
 @extends('layouts.minimal')
+@section('title', __('Reset Your Password'))
 
 @section('content')
 <div align="center">

@@ -1,4 +1,6 @@
 @extends('layouts.minimal')
+@section('title', __('Forgot Your Password?'))
+
 @section('content')
 
 <div align="container">
