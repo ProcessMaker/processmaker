@@ -88,7 +88,7 @@ class ExtendedPMQLTest extends TestCase
         $this->assertContains(\DB::select("select @@time_zone as tz")[0]->tz, ['+00:00', 'UTC']);
 
         // Ensure the app timezone is set to UTC
-        \Config::set('timezone', 'UTC');
+        config(['app.timezone' => 'UTC']);
 
         $this->user->timezone = 'America/Los_Angeles';
         $this->user->save();
