@@ -862,11 +862,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $response = [];
         foreach ($this->start_events as $startEvent) {
             if (isset($startEvent['assignment']) && $startEvent['assignment'] === 'user' && isset($startEvent['assignedUsers'])) {
-                $users = explode(',', $startEvent['assignedUsers']);
+                $users = explode(',', ($startEvent['assignedUsers'] ?? ''));
                 $access = in_array($user->id, $users);
             } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'group' && isset($startEvent['assignedGroups'])) {
                 $access = false;
-                foreach (explode(',', $startEvent['assignedGroups']) as $groupId) {
+                foreach (explode(',', ($startEvent['assignedGroups'] ?? '')) as $groupId) {
                     $access = $this->doesUserBelongsGroup($user->id, $groupId);
                     if ($access) {
                         break;
