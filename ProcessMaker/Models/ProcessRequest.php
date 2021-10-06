@@ -271,6 +271,29 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     }
 
     /**
+     * Check is user can claim an active self service task.
+     *
+     * @link https://processmaker.atlassian.net/browse/FOUR-4126
+     * @param User $user
+     * @return boolean
+     */
+    public function canUserClaimASelfServiceTask(User $user)
+    {
+        // Get active self service tasks
+        $tasks = $this->tokens()
+            ->where('status', 'ACTIVE')
+            ->where('is_self_service', 1)
+            ->get();
+        // Check if user can claim any of the active self service tasks
+        foreach ($tasks as $task) {
+            if ($user->canSelfServe($task)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns the id of the summary screen that is associated with the end event in which the request
      * finished
      *
