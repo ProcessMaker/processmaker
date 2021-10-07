@@ -23,7 +23,7 @@
     <div id="request" class="container d-print-block">
         <div class="row">
             <div class="col-sm-12">
-                <screen-detail :row-data="config" v-bind:can-print="true">
+                <screen-detail :row-data="config" v-bind:can-print="true" :timeout-on-load="true">
                 </screen-detail>
             </div>
         </div>
