@@ -53,7 +53,7 @@
             'v-model' => 'formData.phone',
             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.phone}'])
             !!}
-            <div class="invalid-feedback" v-if="errors.phone">@{{errors.phone}}
+            <div class="invalid-feedback" v-if="errors.phone">@{{errors.phone[0]}}
             </div>
         </div>
 
@@ -63,7 +63,7 @@
             'v-model' => 'formData.fax',
             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.fax}'])
             !!}
-            <div class="invalid-feedback" v-if="errors.fax">@{{errors.fax}}
+            <div class="invalid-feedback" v-if="errors.fax">@{{errors.fax[0]}}
             </div>
         </div>
 
@@ -73,7 +73,7 @@
             'v-model' => 'formData.cell',
             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.cell}'])
             !!}
-            <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell}}
+            <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell[0]}}
             </div>
         </div>
     <hr>
