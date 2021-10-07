@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Carbon\Carbon;
 use DB;
 use Faker\Factory;
 use Tests\TestCase;
@@ -79,5 +80,45 @@ class ExtendedPMQLTest extends TestCase
 
         // Assert that the models match
         $this->assertTrue($processRequestToken->is($pmqlResult));        
+    }
+
+    public function testInUsersTimezone()
+    {
+        // Ensure the mysql server timezone is set to UTC
+        $this->assertContains(\DB::select("select @@time_zone as tz")[0]->tz, ['+00:00', 'UTC']);
+
+        // Ensure the app timezone is set to UTC
+        config(['app.timezone' => 'UTC']);
+
+        $this->user->timezone = 'America/Los_Angeles';
+        $this->user->save();
+
+        $processRequest1 = factory(ProcessRequest::class)->create([
+            'completed_at' => '2021-10-05 16:00:00', // UTC
+        ]);
+        $processRequest2 = factory(ProcessRequest::class)->create([
+            'completed_at' => '2021-10-05 18:00:00', // UTC
+        ]);
+
+        $url = route('api.requests.index', ['pmql' => 'completed_at > "2021-10-05 10:00:00"']); // America/Los_Angeles
+        $result = $this->apiCall('GET', $url);
+        $this->assertCount(1, $result->json()['data']); // Match only the one created at 11am Los Angeles Time (18:00/6pm UTC)
+        $this->assertEquals($processRequest2->id, $result->json()['data'][0]['id'] );
+
+    }
+
+    public function testRelativeDate()
+    {
+        $processRequest1 = factory(ProcessRequest::class)->create([
+            'data' => ['date' => Carbon::parse('-10 minutes')->toDateTimeString()],
+        ]);
+        $processRequest2 = factory(ProcessRequest::class)->create([
+            'data' => ['date' => Carbon::parse('-2 hours')->toDateTimeString()],
+        ]);
+
+        $url = route('api.requests.index', ['pmql' => 'data.date > now -1 hour']);
+        $result = $this->apiCall('GET', $url);
+        $this->assertCount(1, $result->json()['data']); // Match only the one that completed 10 minutes ago 
+        $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id'] );
     }
 }

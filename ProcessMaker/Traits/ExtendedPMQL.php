@@ -56,7 +56,11 @@ trait ExtendedPMQL
         if (is_string($field)) {
             // Parse our value
             $value = $this->parseValue($expression);
-            $expression->value->setValue($value);
+            
+            // PMQL Interval expressions do not have values
+            if (method_exists($expression->value, 'setValue')) {
+                $expression->value->setValue($value);
+            }
             
             // Title case our field name so we can suffix it to our method names
             $fieldMethodName = ucfirst(strtolower($field));
@@ -106,9 +110,9 @@ trait ExtendedPMQL
         // Check to see if the value is parsable as a date
         if (! is_numeric($value)) {
             try {
-                $parsed = Carbon::parse($value);
-                $timezone = CarbonTimeZone::create(auth()->user()->timezone);
-                $value = $parsed->shiftTimezone($timezone)->toIso8601String();
+                $parsed = Carbon::parse($value, auth()->user()->timezone);
+                $parsed->setTimezone(config('app.timezone'));
+                $value = $parsed->toDateTimeString();
             } catch (Throwable $e) {
                 //Ignore parsing errors and just return the original
             }
