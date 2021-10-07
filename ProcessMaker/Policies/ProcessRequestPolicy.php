@@ -45,6 +45,10 @@ class ProcessRequestPolicy
             return true;
         }
 
+        if ($processRequest->canUserClaimASelfServiceTask($user)) {
+            return true;
+        }
+
         if ($processRequest->processVersion->usersCanEditData()->where('id', $user->id)->exists()) {
             return true;
         }
