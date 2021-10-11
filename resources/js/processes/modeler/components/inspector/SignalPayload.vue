@@ -105,6 +105,7 @@ export default {
   methods: {
     payloadChange(selectedObject) {
       this.config.payload[0].id = selectedObject.id;
+      this.$set(this.node().eventDefinitions[0], "config", JSON.stringify(this.config));
     },
     node() {
       const modeler =  this.$root.$children[0].$refs.modeler;
