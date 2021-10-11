@@ -72,7 +72,7 @@
                       @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Edit')"
-                      v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
+                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
