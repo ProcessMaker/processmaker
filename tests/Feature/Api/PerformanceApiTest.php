@@ -24,7 +24,7 @@ class PerformanceApiTest extends TestCase
     use PerformanceReportTrait;
 
     /**
-     * Time unit base for the performce tests
+     * Time unit base for the performance tests
      *
      * @param integer $times
      *
@@ -66,9 +66,9 @@ class PerformanceApiTest extends TestCase
     ];
 
     // High values ​​improve measurement accuracy and reduce the effect of database caches
-    private $repetitions = 25;
-    // Inicial size of database
-    private $dbSize = 50;
+    private $repetitions = 5;
+    // Initial size of database
+    private $dbSize = 1;
     const MIN_ROUTE_SPEED = 0.1;
     const ACCEPTABLE_ROUTE_SPEED = 1;
     const DESIRABLE_ROUTE_SPEED = 11;
@@ -97,12 +97,15 @@ class PerformanceApiTest extends TestCase
         $path = route($route, $params);
         $fn = (substr($route, 0, 4) === 'api.') ? 'apiCall' : 'webCall';
         $times = $this->repetitions;
+        error_log('init calls');
         $t = microtime(true);
         for ($i = 0;$i < $times;$i++) {
             $this->$fn('GET', $path);
         }
         $time = microtime(true) - $t;
+        error_log('end calls');
 
+        error_log('init report');
         $requestsPerSecond = round($times / $time * 10) / 10;
         $speed = $times / ($time / $baseTime);
         $this->addMeasurement('routes', [
@@ -116,13 +119,16 @@ class PerformanceApiTest extends TestCase
             'time' => round($time / $times * 100000) / 100,
         ]);
         $this->writeReport('routes', 'coverage/api_performance.html', 'routes.performance.template.php');
+        error_log('end report');
         $this->assertGreaterThanOrEqual(self::MIN_ROUTE_SPEED, $speed, "Slow route response [$route]\n             Speed ~ $requestsPerSecond [reqs/sec]");
     }
 
     public function testGetProcessStartEvents()
     {
+        \error_log('create group with 1000 users');
         // Create a group (id=10) with 1000 non admin users
         $group = factory(Group::class)->create(['id' => 10]);
+        // This factory takes to much time
         $users = factory(User::class, 1000)->create(['is_administrator' => false]);
         foreach($users as $user) {
             $group->groupMembers()->create([
@@ -131,12 +137,14 @@ class PerformanceApiTest extends TestCase
                 'member_type' => User::class,
             ]);
         }
+        \error_log('create process assigned to created group');
         // Create a process assigned to group (id=10)
         $bpmn = file_get_contents(__DIR__ . '/processes/AssignedToGroup.bpmn');
         factory(Process::class)->create(['bpmn' => $bpmn]);
         $tInit = microtime(true);
         // Call API with a non admin user
         $this->user = $user;
+        \error_log('run process');
         $path = route('api.processes.start');
         $res = $this->apiCall('GET', $path);
         $response = $res->json();

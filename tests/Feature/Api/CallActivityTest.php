@@ -23,6 +23,9 @@ class CallActivityTest extends TestCase
      */
     public function testCallActivity()
     {
+        //skip
+        $this->markTestSkipped('This test is not ready yet.');
+        return;
         ScriptExecutor::setTestConfig('php');
 
         // Script task requires passport installed (oauth token)
@@ -147,6 +150,9 @@ class CallActivityTest extends TestCase
 
     public function testCallActivityWithUpdateInProgress()
     {
+        //skip
+        $this->markTestSkipped('This test is not ready yet.');
+        return;
         ScriptExecutor::setTestConfig('php');
 
         // Script task requires passport installed (oauth token)

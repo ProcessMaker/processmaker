@@ -21,6 +21,9 @@ class CallActivityMultilevelTest extends TestCase
      */
     public function testCallActivity()
     {
+        //skip
+        $this->markTestSkipped('This test is not ready yet.');
+        return;
         // Script task requires passport installed (oauth token)
         Artisan::call('passport:install', ['-vvv' => true]);
 
