@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\BpmnEngine;
 use ProcessMaker\Models\Process as Definitions;
 use ProcessMaker\Models\ProcessRequest;
@@ -59,7 +60,7 @@ abstract class BpmnAction implements ShouldQueue
             if ($request) {
                 $request->logError($exception, $element);
             } else {
-                throw $exception;
+                Log::error($exception->getMessage());
             }
         } finally {
             if (isset($this->instanceId)) {
