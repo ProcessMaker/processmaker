@@ -74,7 +74,8 @@ class ScreenController extends Controller
     public function index(Request $request)
     {
         $query = Screen::nonSystem()
-            ->select('screens.*');
+            ->select('screens.*')
+            ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id');
 
         $include = $request->input('include', '');
 
@@ -98,7 +99,7 @@ class ScreenController extends Controller
                 $query->where(function ($query) use ($filter) {
                     $query->where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
-                        ->orWhereIn('id', function($qry) use ($filter) {
+                        ->orWhereIn('screens.id', function($qry) use ($filter) {
                             $qry->select('assignable_id')
                                 ->from('category_assignments')
                                 ->leftJoin('screen_categories', function($join) {
@@ -209,7 +210,7 @@ class ScreenController extends Controller
         $request->validate(Screen::rules());
         $screen = new Screen();
         $screen->fill($request->input());
-        
+
         $screen->saveOrFail();
         return new ApiResource($screen);
     }

@@ -71,6 +71,7 @@ class ScriptController extends Controller
         // Do not return results when a key is set. Those are for connectors.
         $query = Script::nonSystem()
                     ->select('scripts.*')
+                    ->leftJoin('script_categories as category', 'scripts.script_category_id', '=', 'category.id')
                     ->where('key', null);
 
         $include = $request->input('include', '');
@@ -96,7 +97,7 @@ class ScriptController extends Controller
                     $query->Where('title', 'like', $filter)
                         ->orWhere('description', 'like', $filter)
                         ->orWhere('language', 'like', $filter)
-                        ->orWhereIn('id', function($qry) use ($filter) {
+                        ->orWhereIn('scripts.id', function($qry) use ($filter) {
                             $qry->select('assignable_id')
                                 ->from('category_assignments')
                                 ->leftJoin('script_categories', function($join) {
@@ -106,7 +107,7 @@ class ScriptController extends Controller
                                 })
                                 ->where ('script_categories.name', 'like', $filter);
                         });
-                });    
+                });
             } else  {
                 $query->where(function ($query) use ($filter) {
                     $query->Where('title', 'like', $filter);
@@ -228,7 +229,11 @@ class ScriptController extends Controller
         $watcher = $request->get('watcher', uniqid('scr', true));
         $code = $script->code;
 
-        ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
+        if ($request->get('sync') === true) {
+            return ExecuteScript::dispatchNow($script, $request->user(), $code, $data, $watcher, $config, true);
+        } else {
+            ExecuteScript::dispatch($script, $request->user(), $code, $data, $watcher, $config)->onQueue('bpmn');
+        }
         return ['status' => 'success', 'key' => $watcher];
     }
 
