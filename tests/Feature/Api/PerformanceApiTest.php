@@ -68,7 +68,7 @@ class PerformanceApiTest extends TestCase
     // High values ​​improve measurement accuracy and reduce the effect of database caches
     private $repetitions = 5;
     // Initial size of database
-    private $dbSize = 1;
+    private $dbSize = 10;
     const MIN_ROUTE_SPEED = 0.1;
     const ACCEPTABLE_ROUTE_SPEED = 1;
     const DESIRABLE_ROUTE_SPEED = 11;

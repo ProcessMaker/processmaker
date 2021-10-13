@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\ProcessCategory;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -26,6 +27,11 @@ abstract class TestCase extends BaseTestCase
                 $this->$method();
             }
         }
+
+        $q = \DB::table('INFORMATION_SCHEMA.TABLES')->select('AUTO_INCREMENT')->where('TABLE_SCHEMA', 'test')->where('TABLE_NAME', 'screens');
+        $autoIncrement = $q->first()->AUTO_INCREMENT;
+        error_log('screens: ' . $autoIncrement);
+
     }
 
     /**
@@ -41,6 +47,7 @@ abstract class TestCase extends BaseTestCase
                 $this->$method();
             }
         }
+        //error_log('categories: ' . ProcessCategory::count());
     }
 
     protected function withPersonalAccessClient()

@@ -44,7 +44,9 @@ class ScreenConsolidatorTest extends TestCase
             'file' => $file,
         ]);
 
-        $consolidator = new ScreenConsolidator(Screen::find(2));
+        $aa = Screen::find(2);
+        dump($aa->toArray());
+        $consolidator = new ScreenConsolidator($aa);
         $expectedResponse = [
             'config' => [
                 [

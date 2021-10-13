@@ -35,6 +35,10 @@ class HideSystemCategoriesTest extends TestCase
         $json = $response->json();
         $ids = array_map(function($d) { return $d['id']; }, $json['data']);
 
+        if (\count($ids) > 1) {
+            dump(['total' => ProcessCategory::count()]);
+            \dump($json['data'], $ids);
+        }
         $this->assertCount(1, $ids);
         $this->assertNotContains($hiddenCategory->id, $ids);
         $this->assertContains($category->id, $ids);

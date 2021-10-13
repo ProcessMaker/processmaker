@@ -42,7 +42,6 @@ class PerformanceModelsTest extends TestCase
      */
     public function FactoryListProvider()
     {
-        file_exists('coverage') ?: mkdir('coverage');
         $factories = app(EloquentFactory::class);
         $reflection = new ReflectionObject($factories);
         $property = $reflection->getProperty('definitions');
@@ -59,7 +58,7 @@ class PerformanceModelsTest extends TestCase
     }
 
     /**
-     * Time unit base for the performce tests
+     * Time unit base for the performance tests
      *
      * @param integer $times
      *

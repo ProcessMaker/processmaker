@@ -10,6 +10,7 @@ use ProcessMaker\Facades\WorkflowManager;
 use ProcessMaker\Models\Comment;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessCollaboration;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Models\ProcessRequestToken;
@@ -241,7 +242,7 @@ class ClearRequestsTest extends TestCase
         $fileUpload = UploadedFile::fake()->create('request_test_file456.txt', 1);
   
         // We create a model (in this case a user) and associate to him the file
-        $model = ProcessRequest::find(1);
+        $model = ProcessRequest::first();
         $model->addMedia($fileUpload)
             ->withCustomProperties(['data_name' => 'test'])
             ->toMediaCollection('local');
@@ -306,6 +307,7 @@ class ClearRequestsTest extends TestCase
         // 3 comments about Process should remain
         $this->assertEquals(3, Comment::count());
         $this->assertEquals(1, Media::count());
+        ProcessCategory::query()->delete();
     }
 
     /**
