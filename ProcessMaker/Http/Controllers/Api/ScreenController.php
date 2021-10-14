@@ -142,8 +142,6 @@ class ScreenController extends Controller
                 $request->input('order_direction', 'ASC')
             )->paginate($request->input('per_page', 10));
 
-        $response->makeHidden($exclusions);
-
         return new ApiCollection($response);
     }
 

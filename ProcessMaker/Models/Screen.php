@@ -157,8 +157,9 @@ class Screen extends Model implements ScreenInterface
 
     public function scopeExclude($query, $value = [])
     {
-        $columns = array_map(function($column) { return $this->table . '.' . $column; } , $this->columns);
-        return $query->select(array_diff($columns, (array) $value));
+        $columns = array_diff($this->columns, (array) $value);
+        $columns = array_map(function($column) { return $this->table . '.' . $column; } , $columns);
+        return $query->select($columns);
     }
 
     /**
