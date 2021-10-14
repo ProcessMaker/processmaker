@@ -364,7 +364,7 @@ class UsersTest extends TestCase
             'timezone' => $faker->timezone,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
             'birthdate' => $faker->dateTimeThisCentury->format('Y-m-d'),
-            'password' => $faker->password(6, 6),
+            'password' => $faker->password(8).'A'.'1',
             'force_change_password' => $faker->boolean,
         ]);
 
@@ -395,7 +395,7 @@ class UsersTest extends TestCase
             'firstname' => $faker->firstName,
             'lastname' => $faker->lastName,
             'status' => $faker->randomElement(['ACTIVE', 'INACTIVE']),
-            'password' => $faker->password(6, 6),
+            'password' => $faker->password(8).'A'.'1',
             'force_change_password' => 0,
         ]);
 
@@ -572,9 +572,9 @@ class UsersTest extends TestCase
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password must be at least 6 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The Password must be at least 8 characters.', $json['errors']['password'][0]);
 
-        $payload['password'] = 'abc123';
+        $payload['password'] = 'Abc12345';
         $response = $this->apiCall('POST', self::API_TEST_URL, $payload);
         $response->assertStatus(201);
         $json = $response->json();
@@ -586,9 +586,9 @@ class UsersTest extends TestCase
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(422);
         $json = $response->json();
-        $this->assertEquals('The Password must be at least 6 characters.', $json['errors']['password'][0]);
+        $this->assertEquals('The Password must be at least 8 characters.', $json['errors']['password'][0]);
 
-        $payload['password'] = 'abc123';
+        $payload['password'] = 'Abc12345';
         $response = $this->apiCall('PUT', route('api.users.update', $userId), $payload);
         $response->assertStatus(204);
 
