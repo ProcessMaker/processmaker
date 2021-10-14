@@ -75,6 +75,13 @@ class Screen extends Model implements ScreenInterface
 
     protected $connection = 'processmaker';
 
+    /**
+     * The table attribute
+     *
+     * @var array
+     */
+    protected $table = 'screens';
+
     protected $casts = [
         'config' => 'array',
         'computed' => 'array',
@@ -90,6 +97,27 @@ class Screen extends Model implements ScreenInterface
         'id',
         'created_at',
         'updated_at',
+    ];
+
+    /**
+     * Table columns.
+     *
+     * @var array
+     */
+    protected $columns = [
+        'id',
+        'screen_category_id',
+        'title',
+        'description',
+        'type',
+        'config',
+        'computed',
+        'custom_css',
+        'created_at',
+        'updated_at',
+        'status',
+        'key',
+        'watchers',
     ];
 
     /**
@@ -127,6 +155,13 @@ class Screen extends Model implements ScreenInterface
         return $this->belongsTo(ScreenCategory::class, 'screen_category_id');
     }
 
+    public function scopeExclude($query, $value = [])
+    {
+        $columns = array_diff($this->columns, (array) $value);
+        $columns = array_map(function($column) { return $this->table . '.' . $column; } , $columns);
+        return $query->select($columns);
+    }
+
     /**
      * Set multiple|single categories to the screen
      *
@@ -154,7 +189,7 @@ class Screen extends Model implements ScreenInterface
         }
         return 'ScreenBuilder';
     }
-    
+
     public function renderComponent()
     {
         if (isset($this->config['renderComponent'])) {
@@ -175,7 +210,7 @@ class Screen extends Model implements ScreenInterface
 
     /**
      * Get a recursive list of nested screens IDs in this screen
-     * 
+     *
      * @return int[] nested screen IDs
      */
     public function nestedScreenIds(ProcessRequest $processRequest = null)
