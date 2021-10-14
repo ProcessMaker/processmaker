@@ -26,6 +26,7 @@ class ExecuteScript implements ShouldQueue
     protected $data;
     protected $configuration;
     protected $watcher;
+    protected $sync;
 
     /**
      * Create a new job instance to execute a script.
@@ -37,7 +38,7 @@ class ExecuteScript implements ShouldQueue
      * @param $watcher
      * @param array $configuration
      */
-    public function __construct(ScriptInterface $script, User $current_user, $code, array $data, $watcher, array $configuration = [])
+    public function __construct(ScriptInterface $script, User $current_user, $code, array $data, $watcher, array $configuration = [], $sync = false)
     {
         $this->script = $script;
         $this->current_user = $current_user;
@@ -46,6 +47,7 @@ class ExecuteScript implements ShouldQueue
         $this->configuration = $configuration;
         $this->watcher = $watcher;
         $this->configuration = $configuration;
+        $this->sync = $sync;
     }
 
     /**
@@ -60,9 +62,9 @@ class ExecuteScript implements ShouldQueue
             # Just set the code but do not save the object (preview only)
             $this->script->code = $this->code;
             $response = $this->script->runScript($this->data, $this->configuration);
-            $this->sendResponse(200, $response);
+            return $this->sendResponse(200, $response);
         } catch (Throwable $exception) {
-            $this->sendResponse(500, [
+            return $this->sendResponse(500, [
                 'exception' => get_class($exception),
                 'message' => $exception->getMessage(),
             ]);
@@ -77,6 +79,9 @@ class ExecuteScript implements ShouldQueue
      */
     private function sendResponse($status, array $response)
     {
+        if ($this->sync) {
+            return $response;
+        }
         event(new ScriptResponseEvent($this->current_user, $status, $response, $this->watcher));
     }
 }
