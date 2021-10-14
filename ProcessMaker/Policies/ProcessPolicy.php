@@ -8,6 +8,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Http\Request;
 use ProcessMaker\Models\AnonymousUser;
 use ProcessMaker\Models\GroupMember;
+use ProcessMaker\Models\Group;
 
 class ProcessPolicy
 {
@@ -37,7 +38,7 @@ class ProcessPolicy
     public function start(User $user, Process $process)
     {
         $userGroupIds = $user->groups->pluck('id')->all();
-        $nestedGroupIds = GroupMember::whereIn('member_id', $userGroupIds)->pluck('group_id')->all();
+        $nestedGroupIds = GroupMember::where('member_type', Group::class)->whereIn('member_id', $userGroupIds)->pluck('group_id')->all();
         $groupIds = array_merge($userGroupIds, $nestedGroupIds);
         
         if ($process->groupsCanStart(request()->query('event'))->whereIn('id', $groupIds)->count()) {
