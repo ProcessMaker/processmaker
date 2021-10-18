@@ -6,7 +6,7 @@
     <div v-else>
       {{ display }}
     </div>
-    <b-modal class="setting-object-modal" v-model="showModal" size="lg" @hidden="onModalHidden">
+    <b-modal class="setting-object-modal" v-model="showModal" size="lg" @shown="setFocusWithin" @hidden="onModalHidden">
       <template v-slot:modal-header class="d-block">
         <div>
           <h5 class="mb-0" v-if="setting.name">{{ $t(setting.name) }}</h5>
@@ -34,9 +34,10 @@
 
 <script>
 import settingMixin from "../mixins/setting";
+import Accessibility from "../../../components/common/mixins/accessibility";
 
 export default {
-  mixins: [settingMixin],
+  mixins: [settingMixin, Accessibility],
   props: ['value', 'setting'],
   data() {
     return {

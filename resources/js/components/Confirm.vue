@@ -1,5 +1,5 @@
 <template>
-    <b-modal dialog-class="top-20" v-model="showModal" @hide="onClose" :title="title">
+    <b-modal dialog-class="top-20" v-model="showModal" @hide="onClose" @shown="setFocusWithin" :title="title">
         <div class="my-3" :class="classMessage" v-html="message"></div>
         <template #modal-footer>
             <b-button class="m-0" variant="outline-secondary" @click="onDeny">Cancel</b-button>
@@ -10,8 +10,11 @@
 
 
 <script>
+import Accessibility from "../components/common/mixins/accessibility";
+
     export default {
         props: ["title", "message", "variant", "callback", "show"],
+        mixins: [Accessibility],
         data() {
             return {
                 'classMessage': '',

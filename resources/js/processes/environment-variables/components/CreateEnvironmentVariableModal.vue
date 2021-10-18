@@ -3,7 +3,11 @@
     <b-button :aria-label="$t('Create Environment Variable')" v-b-modal.createEnvironmentVariable class="mb-3 mb-md-0 ml-md-2">
       <i class="fas fa-plus"></i> {{ $t('Environment Variable') }}
     </b-button>
-    <modal id="createEnvironmentVariable" :title="$t('Create Environment Variable')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
+    <modal id="createEnvironmentVariable"
+           :title="$t('Create Environment Variable')"
+           :ok-disabled="disabled"
+           @ok.prevent="onSubmit"
+           @hidden="onClose">
       <b-form-group
         required
         :label="$t('Name')"

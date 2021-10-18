@@ -16,7 +16,7 @@
               @change.prevent="onFileChangeLogin"
           ></b-form-file>
       </b-form-group>
-    
+
       <b-form-group
           :description="$t('Use a transparent PNG at {{size}} pixels for best results.', { size: '150x40'})"
           :label="$t('Custom Logo')"
@@ -33,7 +33,7 @@
               @change.prevent="onFileChangeLogo"
           ></b-form-file>
       </b-form-group>
-    
+
       <b-form-group
           :description="$t('Use a transparent PNG at {{size}} pixels for best results.', { size: '40x40'})"
           :label="$t('Custom Icon')"
@@ -50,7 +50,7 @@
               @change.prevent="onFileChangeIcon"
           ></b-form-file>
       </b-form-group>
-      
+
       <b-form-group
           :description="$t('Enter the alt text that should accompany the logos and icon.')"
           label="Alternative Text"
@@ -61,7 +61,7 @@
       >
           <b-form-input v-model="altText" id="alt-text"></b-form-input>
       </b-form-group>
-      
+
       <b-form-group
           :description="$t('Click on the color value to select custom colors.')"
           :label="$t('Custom Colors')"
@@ -74,9 +74,9 @@
               <li class="list-group-item" v-for="item in customColors">
                   <color-picker :color="item.value" :title="item.title" v-model="item.value"></color-picker>
               </li>
-          </ul>                        
+          </ul>
       </b-form-group>
-    
+
       <b-form-group
           :description="$t('Select which font to use throughout the system.')"
           :label="$t('Custom Font')"
@@ -110,7 +110,7 @@
               </template>
           </multiselect>
       </b-form-group>
-    
+
       <b-form-group
           :description="$t('Enter footer HTML to display on the login page.')"
           :label="$t('Login Page Footer')"
@@ -121,17 +121,17 @@
       >
           <editor id="login-footer" v-model="loginFooter" :init="editorSettings"></editor>
       </b-form-group>
-      
+
       <br>
       <div class="d-flex">
           <b-button variant="outline-danger" @click="onReset">
               <i class="fas fa-undo"></i> {{ $t('Reset') }}
           </b-button>
-          
+
           <b-button variant="outline-secondary" class="ml-auto" @click="onClose">
               {{ $t('Cancel') }}
           </b-button>
-          
+
           <b-button variant="secondary" class="ml-3" @click="onSubmit">
               {{ $t('Save') }}
           </b-button>
@@ -361,7 +361,7 @@ export default {
   methods: {
     placeholder(object, string) {
       let filename = _.get(object, 'selectedFile');
-      
+
       if (filename) {
         return filename;
       } else {

@@ -10,6 +10,7 @@
                  ref="requestModalAdd"
                  :title="$t('New Request')"
                  header-close-content="&times;"
+                 @shown="setFocusWithin"
                  hide-footer>
             <b-row no-gutters>
                 <b-col cols="8">
@@ -76,9 +77,10 @@
 <script>
   import card from "./card";
   import datatableMixin from "../common/mixins/datatable";
+  import Accessibility from "../common/mixins/accessibility"
 
   export default {
-    mixins: [datatableMixin],
+    mixins: [datatableMixin, Accessibility],
     props: {
       permission: Array,
       url: ''

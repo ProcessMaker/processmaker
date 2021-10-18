@@ -1,5 +1,9 @@
 <template>
-    <b-modal id="addUserModal" :title="title" header-close-content="&times;">
+    <b-modal
+        id="addUserModal"
+        :title="title"
+        header-close-content="&times;"
+        @shown="setFocusWithin">
         <template v-slot:default>
             <slot name="default"></slot>
         </template>
@@ -10,8 +14,11 @@
 </template>
 
 <script>
+import Accessibility from "../../../components/common/mixins/accessibility";
+
 export default {
     props: ['title'],
+    mixins: [Accessibility],
     data() {
         return {
             username: '',

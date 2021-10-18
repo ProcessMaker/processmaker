@@ -25,11 +25,18 @@
 </template>
 
 <script>
+import Accessibility from '../common/mixins/accessibility';
+
   export default {
     props: ["id", "title", "ok-disabled"],
+    mixins: [Accessibility],
     methods: {
       onEvent(name, event) {
         this.$emit(name, event);
+
+        if ('shown' === name) {
+          this.setFocusWithin(event);
+        }
       },
       show() {
         this.$refs.pmModal.show();

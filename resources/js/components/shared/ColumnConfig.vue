@@ -5,6 +5,7 @@
       :title="title"
       v-model="show"
       header-close-content="&times;"
+      @shown="setFocusWithin"
   >
     <b-form-group :label="$t('Label')" class="mb-4">
       <b-input v-model="column.label" ref="labelInput"></b-input>
@@ -38,8 +39,10 @@
 <script>
 import DataFormatSelector from './DataFormatSelector';
 import DataMaskSelector from './DataMaskSelector';
+import Accessibility from '../common/mixins/accessibility';
 
 export default {
+  mixins: [Accessibility],
   components: {
     DataFormatSelector,
     DataMaskSelector
@@ -90,7 +93,7 @@ export default {
         if (this.original.format !== this.column.format) changed = true;
         if (this.original.mask !== this.column.mask) changed = true;
         this.changed = changed;
-        
+
         if (this.column.format !== 'currency') {
           this.column.mask = null;
         }
@@ -101,7 +104,7 @@ export default {
   methods: {
     onShow() {
       this.index = this.$parent.columnToConfig.index;
-      
+
       this.original.label = this.$parent.columnToConfig.data.label;
       this.original.field = this.$parent.columnToConfig.data.field;
       this.original.sortable = this.$parent.columnToConfig.data.sortable;
@@ -113,13 +116,13 @@ export default {
       } else {
         this.title = this.$t('Configure {{name}}', {name: this.original.label});
       }
-      
+
       this.column.label = this.original.label;
       this.column.field = this.original.field;
       this.column.sortable = this.original.sortable;
       this.column.format = this.original.format;
       this.column.mask = this.original.mask;
-      
+
       setTimeout(() => {
         this.$refs.labelInput.focus();
       }, 0);
@@ -141,7 +144,7 @@ export default {
   .modal-title {
     margin-left: 0;
   }
-  
+
   .modal-footer {
     padding: 10px 15px 15px 15px;
   }

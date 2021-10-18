@@ -44,9 +44,10 @@
 
 <script>
 import settingMixin from "../mixins/setting";
+import Accessibility from "../../../components/common/mixins/accessibility";
 
 export default {
-  mixins: [settingMixin],
+  mixins: [settingMixin, Accessibility],
   props: ['value', 'setting'],
   data() {
     return {
@@ -102,10 +103,11 @@ export default {
     onModalHidden() {
       this.transformed = this.copy(this.input);
     },
-    onModalShown() {
+    onModalShown(event) {
       this.changed = false;
       this.loading = false;
       this.imported = false;
+      this.setFocusWithin(event);
     },
     onSave() {
       this.showModal = false;

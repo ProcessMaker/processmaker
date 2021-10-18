@@ -3,6 +3,7 @@
         id="sessionModal"
         ref="sessionModal"
         :title="title"
+        @shown="setFocusWithin"
         footer-class="pm-modal-footer"
         no-close-on-backdrop
         centered
@@ -20,11 +21,12 @@
     </b-modal>
 </template>
 
-
 <script>
+    import Accessibility from "../components/common/mixins/accessibility";
 
     export default {
         props: ["title", "message", "time", "warnSeconds", "shown"],
+        mixins: [Accessibility],
         data() {
             return {
               errors: {},

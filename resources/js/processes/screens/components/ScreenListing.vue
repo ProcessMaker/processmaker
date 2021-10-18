@@ -89,7 +89,7 @@
         ref="pagination"
       ></pagination>
     </div>
-    <b-modal ref="myModalRef" :title="$t('Copy Screen')" centered header-close-content="&times;">
+    <b-modal ref="myModalRef" @shown="setFocusWithin" :title="$t('Copy Screen')" centered header-close-content="&times;">
       <form>
         <div class="form-group">
           <label for="title">{{$t('Name')}}<small class="ml-1">*</small></label>
@@ -132,9 +132,10 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import Accessibility from "../../../components/common/mixins/accessibility";
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, Accessibility],
   props: ["filter", "id", "permission"],
   data() {
     return {

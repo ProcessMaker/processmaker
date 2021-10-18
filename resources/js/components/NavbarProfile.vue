@@ -59,6 +59,7 @@
 <script>
 import Vue from "vue";
 import AvatarImage from "../components/AvatarImage";
+import Accessibility from "../components/common/mixins/accessibility"
 import VueCroppie from "vue-croppie";
 
 Vue.component("avatar-image", AvatarImage);
@@ -76,6 +77,7 @@ export default {
     };
   },
   props: ["info", "items"],
+  mixins: [Accessibility],
   computed: {
     displayMyFilesLink() {
       return window.ProcessMaker.packages.includes('package-files');
@@ -94,8 +96,9 @@ export default {
     onClose() {
       this.popoverShow = false;
     },
-    onShown() {
+    onShown(event) {
       this.$refs.userMenuButton.expanded(true);
+      this.setFocusWithin(event);
     },
     onHidden() {
       this.$refs.userMenuButton.expanded(false);

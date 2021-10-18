@@ -67,6 +67,7 @@
       :title="modalTitle"
       @hidden="reset()"
       @hide="doNotHideIfRunning"
+      @shown="setFocusWithin"
       size="lg"
       header-close-content="&times;"
     >
@@ -200,9 +201,10 @@
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import Accessibility from "../../components/common/mixins/accessibility";
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, Accessibility],
   props: ["filter", "permission"],
   data() {
     return {
@@ -441,7 +443,6 @@ export default {
       this.$refs.edit.show();
     },
     edit(row) {
-      console.log(row);
       this.formData = _.cloneDeep(row);
       this.$refs.edit.show();
     },
