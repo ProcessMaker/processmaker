@@ -20,6 +20,9 @@
         pagination-path="meta"
         :noDataTemplate="$t('No Data Available')"
       >
+        <template slot="name" slot-scope="props">
+          <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name }}</span>
+        </template>
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
@@ -29,6 +32,7 @@
                 v-b-tooltip.hover
                 :title="$t('Edit')"
                 v-if="permission.includes('edit-processes')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -38,6 +42,7 @@
                 v-b-tooltip.hover
                 :title="isCollection(props.rowData) ? $t('View Collection') : $t('Delete')"
                 :disabled="(!isDeletable(props.rowData) || !permission.includes('edit-processes')) && !isCollection(props.rowData)"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i v-if="isCollection(props.rowData)" class="fas fa-external-link-alt fa-lg fa-fw"></i>
                 <i v-else class="fas fa-trash-alt fa-lg fa-fw"></i>
@@ -61,9 +66,11 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
     return {
@@ -84,7 +91,7 @@ export default {
         },
         {
           title: () => this.$t("Name"),
-          name: "name",
+          name: "__slot:name",
           sortField: "Name",
         },
         {
