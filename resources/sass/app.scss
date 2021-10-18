@@ -89,6 +89,14 @@ button:focus.navbar-toggler {
   color: $primary;
 }
 
+.navbar-light .navbar-nav .nav-link {
+    color: rgba(0,0,0,0.65);
+}
+
+.navbar-light .navbar-nav .nav-link:hover:not(.active) {
+    color: rgba(0, 0, 0, 0.85);
+}
+
 .nav-badge {
   background: fade-out(darken($primary, 20%), 0.5);
   border: 1px solid fade-out($light, 0.5);
