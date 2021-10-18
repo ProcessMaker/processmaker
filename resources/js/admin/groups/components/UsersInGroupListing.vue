@@ -12,7 +12,9 @@
                     data-path="data"
                     pagination-path="meta"
                     :noDataTemplate="$t('No Data Available')"
-            >
+            >   <template slot="username" slot-scope="props">
+                  <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.username }}</span>
+                </template>
                 <template slot="actions" slot-scope="props">
                     <div class="actions">
                         <div class="popout">
@@ -21,6 +23,7 @@
                                     @click="onDelete( props.rowData, props.rowIndex)"
                                     v-b-tooltip.hover
                                     :title="$t('Remove from Group')"
+                                    v-uni-aria-describedby="props.rowData.id.toString()"
                             >
                                 <i class="fas fa-minus-circle fa-lg fa-fw"></i>
                             </b-btn>
@@ -42,9 +45,11 @@
 
 <script>
   import datatableMixin from "../../../components/common/mixins/datatable";
+  import { createUniqIdsMixin } from "vue-uniq-ids";
+  const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    mixins: [datatableMixin],
+    mixins: [datatableMixin, uniqIdsMixin],
     props: ["filter", "groupId"],
     data() {
       return {
@@ -64,7 +69,7 @@
           },
           {
             title: () => this.$t("Username"),
-            name: "username",
+            name: "__slot:username",
             sortField: "username"
           },
           {
