@@ -17,6 +17,7 @@
             v-model="name"
             autocomplete="off"
             :state="errorState('name', addError)"
+            name="name"
           ></b-form-input>
         </b-form-group>
         <b-form-group
@@ -30,11 +31,13 @@
             autocomplete="off"
             rows="3"
             :state="errorState('description', addError)"
+            name="description"
           ></b-form-textarea>
         </b-form-group>
         <category-select :label="$t('Category')" api-get="process_categories"
           api-list="process_categories" v-model="process_category_id"
           :errors="addError.process_category_id"
+          name="category"
         ></category-select>
         <b-form-group
           :label="$t('Upload BPMN File (optional)')"

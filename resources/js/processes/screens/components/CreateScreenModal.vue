@@ -17,6 +17,7 @@
             v-model="formData.title"
             autocomplete="off"
             :state="errorState('title', errors)"
+            name="title"
           ></b-form-input>
         </b-form-group>
         <b-form-group
@@ -30,6 +31,7 @@
             autocomplete="off"
             rows="3"
             :state="errorState('description', errors)"
+            name="description"
           ></b-form-textarea>
         </b-form-group>
         <b-form-group
@@ -42,6 +44,7 @@
             v-model="formData.type"
             :options="types"
             :state="errorState('type', errors)"
+            name="type"
           ></b-form-select>
         </b-form-group>
         <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id"></category-select>

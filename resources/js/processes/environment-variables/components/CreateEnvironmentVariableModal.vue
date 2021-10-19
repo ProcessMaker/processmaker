@@ -16,6 +16,7 @@
           v-model="name"
           autocomplete="off"
           :state="errorState('name', errors)"
+          name="name"
         ></b-form-input>
       </b-form-group>
       <b-form-group
@@ -29,6 +30,7 @@
           autocomplete="off"
           rows="3"
           :state="errorState('description', errors)"
+          name="description"
         ></b-form-textarea>
       </b-form-group>
       <b-form-group
@@ -41,6 +43,7 @@
           autocomplete="off"
           rows="10"
           :state="errorState('value', errors)"
+          name="value"
         ></b-form-textarea>
       </b-form-group>
     </modal>

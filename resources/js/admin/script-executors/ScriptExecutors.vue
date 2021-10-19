@@ -78,6 +78,7 @@
                 :class="{ 'is-invalid': getError('title') }"
                 v-model="formData.title"
                 :placeholder="$t('Name')"
+                name="title"
               >
               </b-input>
               <div v-if="getError('title')" class="invalid-feedback">
@@ -89,6 +90,7 @@
                 :class="{ 'is-invalid': getError('language') }"
                 v-model="formData.language"
                 :options="languagesSelect"
+                name="language"
               >
               </b-form-select>
               <div v-if="getError('language')" class="invalid-feedback">
@@ -101,6 +103,7 @@
               v-model="formData.description"
               :placeholder="$t('Description')"
               class="flex-grow-1"
+              name="description"
             ></b-textarea>
           </b-col>
         </b-row>

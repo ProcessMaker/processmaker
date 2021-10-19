@@ -42,8 +42,8 @@
                         <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
                             <div class="form-group">
-                                {!!Form::label('processTitle', __('Name') . '<small class="ml-1">*</small>', [], false)!!}
-                                {!!Form::text('processTitle', null,
+                                {!!Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false)!!}
+                                {!!Form::text('name', null,
                                     [ 'id'=> 'name',
                                         'class'=> 'form-control',
                                         'v-model'=> 'formData.name',
@@ -52,7 +52,7 @@
                                 !!}
                                 <small class="form-text text-muted"
                                        v-if="! errors.name">{{ __('The process name must be unique.') }}</small>
-                                <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
+                                <div class="invalid-feedback" v-if="errors.name">@{{errors.name[0]}}</div>
                             </div>
                             <div class="form-group">
                                 {!! Form::label('description', __('Description')  . '<small class="ml-1">*</small>', [], false) !!}
@@ -141,7 +141,7 @@
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
                         </div>
-                        <div class="tab-pane fade show" id="nav-notifications" role="tabpanel"
+                        <div class="tab-pane fade show p-3" id="nav-notifications" role="tabpanel"
                              aria-labelledby="nav-notifications-tab">
                             <div class="form-group p-0">
 

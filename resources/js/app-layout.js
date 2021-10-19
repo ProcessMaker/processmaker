@@ -13,6 +13,8 @@ import CategorySelect from "./processes/categories/components/CategorySelect";
 import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from './components/TimelineItem';
+import Required from './components/shared/Required';
+import focusInvalidField from './focus-invalid-field';
 
 import { FileUpload, FileDownload } from './processes/screen-builder/components'
 import RequiredCheckbox from './processes/screen-builder/components/inspector/RequiredCheckbox'
@@ -53,6 +55,7 @@ Vue.component("FileDownload", FileDownload);
 Vue.component("RequiredCheckbox", RequiredCheckbox);
 Vue.component("Breadcrumbs", Breadcrumbs);
 Vue.component("timeline-item", TimelineItem);
+Vue.component("required", Required);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();
@@ -219,6 +222,7 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
   return response;
 }, (error) => {
     window.ProcessMaker.EventBus.$emit("api-client-error", error);
+    focusInvalidField(error);
     if (error.response && error.response.status && error.response.status === 401) {
         //stop 401 error consuming endpoints with data-sources
         if (error.config.url.includes('requests/') && error.config.url.includes('/data_sources/')) {
