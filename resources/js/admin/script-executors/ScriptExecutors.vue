@@ -110,7 +110,11 @@
 
       <div class="d-flex flex-row mb-1">
         <div class="mr-1">
-          <a @click="showDockerfile = !showDockerfile">
+          <a
+            @click="showDockerfile = !showDockerfile"
+            :aria-expanded="showDockerfile ? 'true' : 'false'"
+            :title="$t('Display contents of docker file that will be prepended to your customizations below.')"
+          >
             <i
               class="fa"
               :class="{
@@ -127,7 +131,7 @@
             @click="
               showDockerfile = !showDockerfile
             ">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
-          <b-collapse id="dockerfile" v-model="showDockerfile">
+          <b-collapse id="dockerfile" v-model="showDockerfile" :aria-hidden="showDockerfile ? 'false' : 'true'">
             <pre>{{ initDockerfile.split("\n").slice(1).join("\n") }}</pre>
           </b-collapse>
         </div>
