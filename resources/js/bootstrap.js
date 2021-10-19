@@ -61,6 +61,7 @@ import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.
 import MonacoEditor from "vue-monaco";
 import RequestChannel from './tasks/components/ProcessRequestChannel';
 import Modal from "./components/shared/Modal";
+import AccessibilityMixin from "./components/common/mixins/accessibility";
 
 window.Vue.use(VueI18Next);
 VuetableInstall(window.Vue);
@@ -75,6 +76,7 @@ let mdates = JSON.parse(
 
 // Make $t available to all vue instances
 Vue.mixin({ i18n: new VueI18Next(i18next) })
+Vue.mixin(AccessibilityMixin)
 
 window.ProcessMaker = {
     i18n: i18next,
