@@ -325,3 +325,6 @@ Vue.use({
         })
     }
 });
+
+// Send an event when the global Vue and ProcessMaker instance is available
+window.dispatchEvent(new Event('app-bootstrapped'));
