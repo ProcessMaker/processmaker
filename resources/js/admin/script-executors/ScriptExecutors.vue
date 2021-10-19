@@ -71,37 +71,42 @@
       header-close-content="&times;"
     >
       <b-container class="mb-2">
+        <required></required>
         <b-row>
           <b-col>
-            <b-row class="mb-1">
-              <b-input
-                :class="{ 'is-invalid': getError('title') }"
-                v-model="formData.title"
-                :placeholder="$t('Name')"
-                name="title"
-              >
-              </b-input>
-              <div v-if="getError('title')" class="invalid-feedback">
-                {{ getError("title") }}
-              </div>
-            </b-row>
             <b-row>
+              <b-col class="p-0">
+              <b-form-group
+                required
+                :label="$t('Name')"
+                :state="!getError('title')"
+                :invalid-feedback="getError('title') || ''"
+              >
+                <b-input
+                  v-model="formData.title"
+                  name="title"
+                ></b-input>
+              </b-form-group>
+              <b-form-group
+                required
+                :label="$t('Language')"
+                :state="!getError('language')"
+                :invalid-feedback="getError('language') || ''"
+              >
               <b-form-select
-                :class="{ 'is-invalid': getError('language') }"
                 v-model="formData.language"
                 :options="languagesSelect"
                 name="language"
               >
               </b-form-select>
-              <div v-if="getError('language')" class="invalid-feedback">
-                {{ getError("language") }}
-              </div>
+              </b-form-group>
+              </b-col>
             </b-row>
           </b-col>
           <b-col class="d-flex flex-column">
+            <label>{{ $t('Description') }}</label>
             <b-textarea
               v-model="formData.description"
-              :placeholder="$t('Description')"
               class="flex-grow-1"
               name="description"
             ></b-textarea>

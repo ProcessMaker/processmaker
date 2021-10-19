@@ -5,6 +5,7 @@
     </b-button>
     <modal id="createScreen" :title="$t('Create Screen')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
       <template v-if="countCategories">
+        <required></required>
         <b-form-group
           required
           :label="$t('Name')"

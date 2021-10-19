@@ -33,6 +33,7 @@
     @can('create-users')
     <add-user-modal ref="addUserModal" title="{{__('Create User')}}">
             <template v-slot:default>
+                <required></required>
                 <div class="form-group">
                     {!!Form::label('username', __('Username'))!!}<small class="ml-1">*</small>
                     {!!Form::text('username', null, ['class'=> 'form-control', 'v-model'=> 'config.username', 'v-bind:class'
@@ -52,7 +53,7 @@
                 <div class="form-group">
                     {!!Form::label('lastname', __('Last Name'))!!}<small class="ml-1">*</small>
                     {!!Form::text('lastname', null, ['class'=> 'form-control', 'v-model'=> 'config.lastname', 'v-bind:class'
-                    => '{\'form-control\':true, \'is-invalid\':config.addError.lastname}'])!!}
+                    => '{\'form-control\':true, \'is-invalid\':config.addError.lastname}', 'required'])!!}
                     <div class="invalid-feedback" v-for="lastname in config.addError.lastname">@{{lastname}}</div>
                 </div>
                 <div class="form-group">

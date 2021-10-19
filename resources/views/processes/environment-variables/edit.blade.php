@@ -20,6 +20,7 @@
         <div class="row">
             <div class="col">
                 <div class="card card-body">
+                    <required></required>
                     <div class="form-group">
                         {!!Form::label('name', __('Name')  . '<small class="ml-1">*</small>', [], false)!!}
                         {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'formData.name',

@@ -4,6 +4,7 @@
       <i class="fas fa-plus"></i> {{ $t('Environment Variable') }}
     </b-button>
     <modal id="createEnvironmentVariable" :title="$t('Create Environment Variable')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
+      <required></required>
       <b-form-group
         required
         :label="$t('Name')"

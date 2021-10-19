@@ -1,4 +1,5 @@
 <div class="card card-body">
+    <required></required>
     <h5 class="mb-3 font-weight-bold">{{__('Profile')}}</h5>
     <h5 class="mb-3">{{__('General Information')}}</h5>
         <div class="row">

@@ -17,6 +17,7 @@
 @section('content')
     <div id="authClients">
         <pm-modal ref="createEditAuthClient" id="createEditAuthClient" :title="title" @hidden="onClose" @ok.prevent="onSave" style="display: none;">
+            <required></required>
             <div class="form-group" required>
                 {!!Form::label('name', __('Name'))!!}
                 {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'authClient.name',

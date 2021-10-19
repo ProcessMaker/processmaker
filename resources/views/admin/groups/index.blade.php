@@ -34,6 +34,7 @@
                             <i class="fas fa-plus"></i> {{__('Group')}}
                         </button>
                         <pm-modal ref="createGroupModal" id="createGroupModal" title="{{__('Create Group')}}" @hidden="onClose" @ok.prevent="onSubmit" :ok-disabled="disabled" style="display: none;">
+                            <required></required>
                             <div class="form-group">
                                 {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
                                 {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>

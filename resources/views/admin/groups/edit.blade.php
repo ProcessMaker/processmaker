@@ -36,6 +36,7 @@
                 <div class="tab-content" id="nav-tabContent">
                     <div class="card card-body border-top-0 tab-pane p-3 show active" id="nav-home" role="tabpanel"
                          aria-labelledby="nav-home-tab">
+                        <required></required>
                         <div class="form-group">
                             {!! Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false) !!}
                             {!! Form::text('name', null, [

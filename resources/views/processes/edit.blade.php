@@ -41,6 +41,7 @@
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
+                            <required></required>
                             <div class="form-group">
                                 {!!Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false)!!}
                                 {!!Form::text('name', null,
