@@ -2,6 +2,7 @@ export default {
   mounted() {
     // Listen only on the root Vue instance
     if (!this.$parent) {
+      // Set the focus within any modal or popover that is instantiated
       this.$root.$on('bv::modal::shown', this.setFocusWithin)
       this.$root.$on('bv::popover::shown', this.setFocusWithin)
     }
@@ -34,6 +35,6 @@ export default {
       if (focusableElement instanceof HTMLElement) {
         focusableElement.focus()
       }
-    },
+    }
   }
 }

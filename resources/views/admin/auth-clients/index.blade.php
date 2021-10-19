@@ -22,7 +22,7 @@
                 {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'authClient.name',
                 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
                 <small class="form-text text-muted">{{ __('Name must be unique') }}</small>
-                <div class="invalid-feedback" v-if="errors.name">@{{ errors.name[0] }}</div>
+                <div class="invalid-feedback" role="alert" v-if="errors.name">@{{ errors.name[0] }}</div>
             </div>
             <b-form-checkbox-group v-model="authClient.types">
               <div class="form-group">
@@ -33,7 +33,7 @@
                   {!!Form::label('redirect', __('Redirect URL'))!!}
                   {!!Form::text('redirect', null, ['class'=> 'form-control', 'v-model'=> 'authClient.redirect',
                   'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.redirect}','rows'=>3])!!}
-                  <div class="invalid-feedback" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
+                  <div class="invalid-feedback" role="alert" v-if="errors.redirect">@{{ errors.redirect[0] }}</div>
                 </template>
               </div>
               <div class="form-group">
