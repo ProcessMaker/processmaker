@@ -11,7 +11,7 @@
       >{{tablePagination.total}} {{title}}</div>
     </div>
     <div class="justify-content-end button-pagination">
-      <div v-show="tablePagination" :class="css.wrapperClass">
+      <div v-show="tablePagination" :class="css.wrapperClass" role="navigation" :aria-label="$t('Pagination')">
         <div
           @click="loadPage(1)"
           :class="['pagination-nav-item', css.linkClass, isOnFirstPage ? css.disabledClass : '']"
@@ -29,6 +29,7 @@
             <div
               @click="loadPage(n)"
               :class="['pagination-nav-item', css.pageClass, isCurrentPage(n) ? css.activeClass : '']"
+              :aria-current="(isCurrentPage(n) ? $t('Page') : '')"
               v-html="n"
             ></div>
           </template>
@@ -38,6 +39,7 @@
             <div
               @click="loadPage(windowStart+n-1)"
               :class="['pagination-nav-item', css.pageClass, isCurrentPage(windowStart+n-1) ? css.activeClass : '']"
+              :aria-current="(isCurrentPage(windowStart+n-1) ? $t('Page') : '')"
               v-html="windowStart+n-1"
             ></div>
           </template>
