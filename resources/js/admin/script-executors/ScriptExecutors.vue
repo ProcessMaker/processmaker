@@ -80,7 +80,7 @@
                 :placeholder="$t('Name')"
               >
               </b-input>
-              <div v-if="getError('title')" class="invalid-feedback">
+              <div v-if="getError('title')" class="invalid-feedback" role="alert">
                 {{ getError("title") }}
               </div>
             </b-row>
@@ -91,7 +91,7 @@
                 :options="languagesSelect"
               >
               </b-form-select>
-              <div v-if="getError('language')" class="invalid-feedback">
+              <div v-if="getError('language')" class="invalid-feedback" role="alert">
                 {{ getError("language") }}
               </div>
             </b-row>
@@ -163,7 +163,7 @@
             $t("Executor Successfully Built. You can now close this window. ")
           }}
         </p>
-        <div v-if="exitCode > 0" class="invalid-feedback d-block">
+        <div v-if="exitCode > 0" class="invalid-feedback d-block" role="alert">
           {{ $t("Error Building Executor. See Output Above.") }}
         </div>
       </div>
