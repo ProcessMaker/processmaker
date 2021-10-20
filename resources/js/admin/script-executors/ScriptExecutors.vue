@@ -3,7 +3,7 @@
     <div class="d-flex mb-2" v-show="!shouldShowLoader">
       <div class="mr-auto"></div>
       <div>
-        <b-button type="button" @click="add()">
+        <b-button :aria-label="$('Add New Script Executor')" type="button" @click="add()">
           <i class="fa fa-plus" /> {{ $t("Script Executor") }}
         </b-button>
       </div>
