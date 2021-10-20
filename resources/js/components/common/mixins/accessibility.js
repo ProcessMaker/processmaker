@@ -58,13 +58,11 @@ export default {
     },
     listenForApiClientError() {
       if (typeof window.ProcessMaker._focusErrorsIntitalized === 'undefined') {
-        console.log("listenForApiClientError");
         window.ProcessMaker.EventBus.$on("api-client-error", this.onApiClientError);
         window.ProcessMaker._focusErrorsIntitalized = true;
       }
     },
     dontListenForApiClientError() {
-      console.log("dontListenForApiClientError");
       window.ProcessMaker.EventBus.$off("api-client-error", this.onApiClientError);
       window.ProcessMaker._focusErrorsIntitalized = true;
     },
