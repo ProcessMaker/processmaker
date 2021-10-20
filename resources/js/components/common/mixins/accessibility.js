@@ -1,10 +1,26 @@
 export default {
+  data() {
+    return {
+      focusErrors: null,
+    }
+  },
   mounted() {
     // Listen only on the root Vue instance
     if (!this.$parent) {
       this.$root.$on('bv::modal::shown', this.setFocusWithin)
       this.$root.$on('bv::popover::shown', this.setFocusWithin)
     }
+
+
+    if (this.focusErrors) { 
+      // watch an object for form errors
+      this.$watch(this.focusErrors, this.focusErrorsChanged, { deep: true });
+      this.dontListenForApiClientError();
+    } else {
+      // default api error focusing
+      this.listenForApiClientError();
+    }
+
   },
   methods: {
     /**
@@ -35,5 +51,43 @@ export default {
         focusableElement.focus()
       }
     },
+    hasCustomFocusErrors() {
+      if (this.$root._hasCustomFocusErrors) {
+        this.$off
+      }
+    },
+    listenForApiClientError() {
+      if (typeof window.ProcessMaker._focusErrorsIntitalized === 'undefined') {
+        console.log("listenForApiClientError");
+        window.ProcessMaker.EventBus.$on("api-client-error", this.onApiClientError);
+        window.ProcessMaker._focusErrorsIntitalized = true;
+      }
+    },
+    dontListenForApiClientError() {
+      console.log("dontListenForApiClientError");
+      window.ProcessMaker.EventBus.$off("api-client-error", this.onApiClientError);
+      window.ProcessMaker._focusErrorsIntitalized = true;
+    },
+    onApiClientError(error) {
+      const errors = _.get(error, 'response.data.errors', false);
+      if (errors) {
+        this.focusErrorsChanged(errors);
+      }
+    },
+    focusErrorsChanged(newValue) {
+      const selector = Object.entries(newValue)
+        .filter(([_, value]) => value !== null)   // Filter out null values
+        .map(([field, _]) => `[name='${field}']`) // Select elements matching the name attribute
+        .join(', ');
+
+      if (!selector) {
+        return;
+      }
+
+      let firstInput = document.querySelector(selector); // Find the first match
+      if (firstInput) {
+          firstInput.focus();
+      }
+    }
   }
 }

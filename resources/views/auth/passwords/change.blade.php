@@ -84,6 +84,7 @@
                     title: @json($user['fullname']),
                     initials: @json(mb_substr($user['firstname'], 0, 1)) + @json(mb_substr($user['lastname'], 0, 1))
                 }],
+                focusErrors: 'errors',
             }
         },
         methods: {
