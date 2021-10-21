@@ -185,7 +185,7 @@ trait MakeHttpRequests
 
         // Prepare Body
         $data = $this->prepareData($requestData, $outboundConfig, 'BODY');
-        $body = $this->getMustache()->render($endpoint['body'], $data);
+        $body = $this->getMustache()->render($endpoint['body'], $requestData);
         $bodyType = null;
         if (isset($endpoint['body_type'])) {
             $bodyType = $this->getMustache()->render($endpoint['body_type'], $data);
