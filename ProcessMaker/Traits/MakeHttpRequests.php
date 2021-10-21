@@ -457,6 +457,13 @@ trait MakeHttpRequests
             }
         }
 
+        // Add params to query ..
+        foreach ($params as $key => $value) {
+            if ($value !== '') {
+                $query[$key] = $value;
+            }
+        }
+
         // If exists a query string in the call, add/replace it into the URL
         if (array_key_exists('queryString', $config)) {
             parse_str($config['queryString'], $fromSelectListPmql);
