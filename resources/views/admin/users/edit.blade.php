@@ -95,7 +95,7 @@
                         <div class="tab-pane" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
                             <div>
                                 <div class="d-flex justify-content-end mb-3">
-                                    <button type="button" class="btn btn-secondary" @click="generateToken">
+                                    <button type="button" aria-label="{{__('New Token')}}" class="btn btn-secondary" @click="generateToken">
                                         <i class="fas fa-plus"></i> {{__('Token')}}
                                     </button>
                                 </div>

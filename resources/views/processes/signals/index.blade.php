@@ -32,7 +32,7 @@
                     </div>
                     @can('create-signals')
                     <div class="d-flex ml-md-2 flex-column flex-md-row">
-                        <button class="btn btn-secondary" aria-label="{{ __('Create Signal') }}" @click="$refs.createSignal.show()">
+                        <button class="btn btn-secondary" aria-label="{{ __('New Signal') }}" @click="$refs.createSignal.show()">
                             <i class="fas fa-plus"></i>
                             {{__('Signal')}}
                         </button>
