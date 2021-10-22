@@ -11,4 +11,4 @@
 @if ($type == 'text')
     {!! Form::text($name, null, ['id' => $name,'class'=> 'form-control', 'v-model' => $model, 'v-bind:class' => '{\'form-control\':true,\'is-invalid\':errors.' . $name . '}']) !!}
 @endif
-<div class="invalid-feedback" v-if="errors.{{ $name }}">{{ $mustache }}</div>
+<div class="invalid-feedback" role="alert" v-if="errors.{{ $name }}">{{ $mustache }}</div>

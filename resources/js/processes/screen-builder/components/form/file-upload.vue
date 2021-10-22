@@ -37,7 +37,7 @@
       </uploader-list>
     </uploader>
 
-    <div class="invalid-feedback" v-if="error">{{error}}</div>
+    <div class="invalid-feedback" role="alert" v-if="error">{{error}}</div>
     <small v-if="helper" class="form-text text-muted">{{helper}}</small>
   </div>
 </template>
@@ -64,7 +64,7 @@ export default {
         (recordList, index, id) => this.listenRecordList(recordList, index, id));
 
     this.removeDefaultClasses();
-    
+
     this.checkIfInRecordList();
 
     this.setPrefix();
@@ -294,7 +294,7 @@ export default {
       if (_.has(window, 'PM4ConfigOverrides.postFileEndpoint')) {
         return window.PM4ConfigOverrides.postFileEndpoint;
       }
-      
+
       if (this.endpoint) {
         return this.endpoint;
       }

@@ -3,7 +3,7 @@
     <div class="d-flex mb-2" v-show="!shouldShowLoader">
       <div class="mr-auto"></div>
       <div>
-        <b-button type="button" @click="add()">
+        <b-button :aria-label="$('Add New Script Executor')" type="button" @click="add()">
           <i class="fa fa-plus" /> {{ $t("Script Executor") }}
         </b-button>
       </div>
@@ -81,6 +81,7 @@
                 :label="$t('Name')"
                 :state="!getError('title')"
                 :invalid-feedback="getError('title') || ''"
+                role="alert"
               >
                 <b-input
                   v-model="formData.title"
@@ -118,7 +119,11 @@
 
       <div class="d-flex flex-row mb-1">
         <div class="mr-1">
-          <a @click="showDockerfile = !showDockerfile">
+          <a
+            @click="showDockerfile = !showDockerfile"
+            :aria-expanded="showDockerfile ? 'true' : 'false'"
+            :title="$t('Display contents of docker file that will be prepended to your customizations below.')"
+          >
             <i
               class="fa"
               :class="{
@@ -135,7 +140,7 @@
             @click="
               showDockerfile = !showDockerfile
             ">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
-          <b-collapse id="dockerfile" v-model="showDockerfile">
+          <b-collapse id="dockerfile" v-model="showDockerfile" :aria-hidden="showDockerfile ? 'false' : 'true'">
             <pre>{{ initDockerfile.split("\n").slice(1).join("\n") }}</pre>
           </b-collapse>
         </div>
@@ -167,7 +172,7 @@
             $t("Executor Successfully Built. You can now close this window. ")
           }}
         </p>
-        <div v-if="exitCode > 0" class="invalid-feedback d-block">
+        <div v-if="exitCode > 0" class="invalid-feedback d-block" role="alert">
           {{ $t("Error Building Executor. See Output Above.") }}
         </div>
       </div>
