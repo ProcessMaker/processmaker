@@ -455,12 +455,11 @@ trait MakeHttpRequests
                     $query[$key] = $value;
                 }
             }
-        }
-
-        // Add params to query ..
-        foreach ($params as $key => $value) {
-            if ($value !== '') {
-                $query[$key] = $value;
+        } else {
+            foreach ($params as $key => $value) {
+                if ($value !== '') {
+                    $query[$key] = $value;
+                }
             }
         }
 
