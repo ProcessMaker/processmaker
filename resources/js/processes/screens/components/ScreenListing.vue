@@ -104,7 +104,7 @@
             v-model="dupScreen.title"
             v-bind:class="{ 'is-invalid': errors.title }"
           />
-          <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
+          <div class="invalid-feedback" role="alert" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
           <label for="type">{{$t('Type')}}</label>

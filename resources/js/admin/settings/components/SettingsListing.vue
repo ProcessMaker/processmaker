@@ -111,6 +111,7 @@
           :per-page="perPage"
           hide-ellipsis
           limit="3"
+          :aria-label="$t('Pagination')"
         >
           <template v-slot:first-text><i class="fas fa-step-backward fa-sm"></i></template>
           <template v-slot:last-text><i class="fas fa-step-forward fa-sm"></i></template>
@@ -350,7 +351,7 @@ export default {
     },
     /**
      * Javascript handler for configuration button
-     * 
+     *
      *  props: Properties of the button
      *  handler: JavaScript global function
      *
@@ -359,7 +360,7 @@ export default {
      *   format=button
      *   hidden=true
      *   ui={"props":{"variant":"primary"},"handler":"mailTest"}
-     * 
+     *
      */
     handler(btn) {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {
