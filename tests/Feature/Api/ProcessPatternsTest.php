@@ -59,6 +59,7 @@ class ProcessPatternsTest extends TestCase
         $tests = $this->prepareTestCases('Conditional_StartEvent.bpmn', $tests);
         $tests = $this->prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
         $tests = $this->prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
+        $tests = $this->prepareTestCases('Loop_Task.bpmn', $tests);
         return $tests;
     }
 
