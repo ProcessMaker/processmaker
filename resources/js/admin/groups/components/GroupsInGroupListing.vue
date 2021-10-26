@@ -70,7 +70,7 @@
           },
           {
             title: () => this.$t("Name"),
-            name: "name",
+            name: "__slot:name",
             sortField: "name"
           },
           {
