@@ -68,6 +68,7 @@ class Install extends Command
             {--pusher-cluster=                  : The Pusher cluster}
             {--pusher-tls                       : Enable TLS for pusher}
             {--p|pretend                        : Dump the env file variables that would be saved}
+            {--session-domain=                  : the cookie used to identify a session in your application}
     ";
 
     /**
@@ -131,6 +132,7 @@ class Install extends Command
             'PROXIES' => '*',
             'LOGOUT_OTHER_DEVICES' => 'false',
             'BROWSER_CACHE' => 'true',
+            'SESSION_DOMAIN' => $this->option('session-domain'),
         ];
 
         if ($this->option('redis-host')) {
@@ -205,6 +207,8 @@ class Install extends Command
             FILTER_VALIDATE_URL
         )
             || ($this->env['APP_URL'][strlen($this->env['APP_URL']) - 1] == '/')));
+
+        $this->env['SESSION_DOMAIN'] = $this->askOptional('url', __('Configure the Session Cookie Domain'));
 
         // Set telescope enabled
         $this->env['TELESCOPE_ENABLED'] = $this->confirmOptional('telescope', 'Would you like to enable Telescope debugging?') ? 'TRUE' : 'FALSE';
