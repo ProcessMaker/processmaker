@@ -24,8 +24,8 @@
           <b-link
             @click="onAction('edit-screen', props.rowData, props.rowIndex)"
             v-if="permission.includes('edit-screens')"
-          >{{props.rowData.title}}</b-link>
-          <span v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
+          ><span v-uni-id="props.rowData.id.toString()">{{props.rowData.title}}</span></b-link>
+          <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-screens')">{{props.rowData.title}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
@@ -37,6 +37,7 @@
                 v-b-tooltip.hover
                 :title="$t('Edit')"
                 v-if="permission.includes('edit-screens')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -46,6 +47,7 @@
                 v-b-tooltip.hover
                 :title="$t('Configure')"
                 v-if="permission.includes('edit-screens')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
@@ -55,6 +57,7 @@
                 v-b-tooltip.hover
                 :title="$t('Copy')"
                 v-if="permission.includes('create-screens')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>
               </b-btn>
@@ -64,6 +67,7 @@
                 v-b-tooltip.hover
                 :title="$t('Export')"
                 v-if="permission.includes('export-screens')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-file-export fa-lg fa-fw"></i>
               </b-btn>
@@ -73,6 +77,7 @@
                 v-b-tooltip.hover
                 :title="$t('Delete')"
                 v-if="permission.includes('delete-screens')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -132,9 +137,11 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "id", "permission"],
   data() {
     return {
