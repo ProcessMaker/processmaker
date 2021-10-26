@@ -844,9 +844,9 @@ class ProcessRequestToken extends Model implements TokenInterface
             $this->escalateToManager();
             return $this;
         }
-        $assignmentProcesss = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
-        if ($assignmentProcesss) {
-            $res = WorkflowManager::runProcess($assignmentProcesss, 'assign', [
+        $assignmentProcess = Process::where('name', Process::ASSIGNMENT_PROCESS)->first();
+        if ($assignmentProcess) {
+            $res = WorkflowManager::runProcess($assignmentProcess, 'assign', [
                 'task_id' => $this->id,
                 'user_id' => $userId,
                 'process_id' => $this->process_id,
@@ -858,7 +858,7 @@ class ProcessRequestToken extends Model implements TokenInterface
     }
 
     /**
-     * Returns True is the tokens belongs to a MiltiInstance Task
+     * Returns True is the tokens belongs to a MultiInstance Task
      *
      * @return boolean
      */
