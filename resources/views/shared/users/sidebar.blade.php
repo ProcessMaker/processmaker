@@ -26,7 +26,7 @@
         <div class="form-group">
             {!! Form::label('username', __('Username')) !!}
             {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-            => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}']) !!}
+            => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}', 'required', 'aria-required' => 'true']) !!}
             <div class="invalid-feedback" role="alert" v-if="errors.username">@{{errors.username[0]}}</div>
         </div>
         <div class="form-group">
