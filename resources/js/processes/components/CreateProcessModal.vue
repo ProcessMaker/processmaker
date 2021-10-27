@@ -19,6 +19,7 @@
             autocomplete="off"
             :state="errorState('name', addError)"
             name="name"
+            required
           ></b-form-input>
         </b-form-group>
         <b-form-group
@@ -28,6 +29,7 @@
           :state="errorState('description', addError)"
         >
           <b-form-textarea
+            required
             v-model="description"
             autocomplete="off"
             rows="3"
