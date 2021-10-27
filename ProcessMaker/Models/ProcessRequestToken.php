@@ -17,6 +17,7 @@ use ProcessMaker\Models\User;
 use ProcessMaker\Nayra\Bpmn\TokenTrait;
 use ProcessMaker\Nayra\Contracts\Bpmn\ActivityInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
+use ProcessMaker\Nayra\Contracts\Bpmn\MultiInstanceLoopCharacteristicsInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
@@ -867,7 +868,7 @@ class ProcessRequestToken extends Model implements TokenInterface
         $definition = $this->getDefinition(true);
         if ($definition instanceof ActivityInterface) {
             $loop = $definition->getLoopCharacteristics();
-            return $loop && $loop->isExecutable();
+            return $loop && $loop->isExecutable() && $loop instanceof MultiInstanceLoopCharacteristicsInterface;
         }
         return false;
     }
