@@ -13,6 +13,7 @@
         :state="errorState('name', errors)"
       >
         <b-form-input
+          required
           autofocus
           v-model="name"
           autocomplete="off"
@@ -27,6 +28,7 @@
         :state="errorState('description', errors)"
       >
         <b-form-textarea
+          required
           v-model="description"
           autocomplete="off"
           rows="3"
