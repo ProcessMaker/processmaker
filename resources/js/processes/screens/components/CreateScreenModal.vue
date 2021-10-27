@@ -14,6 +14,7 @@
           :state="errorState('title', errors)"
         >
           <b-form-input
+            required
             autofocus
             v-model="formData.title"
             autocomplete="off"
@@ -28,6 +29,7 @@
           :state="errorState('description', errors)"
         >
           <b-form-textarea
+            required
             v-model="formData.description"
             autocomplete="off"
             rows="3"
@@ -42,6 +44,7 @@
           :state="errorState('type', errors)"
         >
           <b-form-select
+            required
             v-model="formData.type"
             :options="types"
             :state="errorState('type', errors)"
