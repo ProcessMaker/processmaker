@@ -39,6 +39,7 @@
 
     @if ($config->permissions['create'] || $config->permissions['edit'])
         <pm-modal ref="createCategoryModal" id="createCategoryModal" :title="getTitle()" @hidden="onClose" @ok.prevent="onSubmit" :ok-disabled="disabled" style="display: none;">
+            <required></required>
             <div class="form-group">
                 {!!Form::label('category-name', __('Category Name'))!!}<small class="ml-1">*</small>
                 {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'name', 'id' => 'category-name',
