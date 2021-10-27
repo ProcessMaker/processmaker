@@ -84,6 +84,7 @@
                 role="alert"
               >
                 <b-input
+                  required
                   v-model="formData.title"
                   name="title"
                 ></b-input>
@@ -95,6 +96,7 @@
                 :invalid-feedback="getError('language') || ''"
               >
               <b-form-select
+                required
                 v-model="formData.language"
                 :options="languagesSelect"
                 name="language"
