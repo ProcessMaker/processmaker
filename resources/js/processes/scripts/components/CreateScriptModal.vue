@@ -14,6 +14,7 @@
           :state="errorState('title', addError)"
         >
           <b-form-input
+            required
             autofocus
             v-model="title"
             autocomplete="off"
@@ -28,6 +29,7 @@
           :state="errorState('description', addError)"
         >
           <b-form-textarea
+            required
             v-model="description"
             autocomplete="off"
             rows="2"
@@ -47,6 +49,7 @@
           :state="errorState('script_executor_id', addError)"
         >
           <b-form-select
+            required
             v-model="script_executor_id"
             :options="scriptExecutors"
             :state="errorState('script_executor_id', addError)"
