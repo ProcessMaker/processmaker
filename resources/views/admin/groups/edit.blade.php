@@ -142,6 +142,7 @@
 
             <pm-modal ref="addUser" id="addUser" title="{{__('Add Users')}}" @hidden="onCloseAddUser" @ok.prevent="onSave" style="display: none;">
                 <div class="form-user">
+                    <required></required>
                     {!!Form::label('users', __('Users') . '<small class="ml-1">*</small>', [], false)!!}
                     <multiselect id="users"
                                  v-model="selectedUsers"
@@ -186,6 +187,7 @@
 
             <pm-modal ref="addGroup" id="addGroup" title="{{__('Add Groups')}}" @hidden="onCloseAddGroup" @ok.prevent="onSaveGroups" style="display: none;">
                 <div class="form-user">
+                    <required></required>
                     {!!Form::label('groups', __('Groups') . '<small class="ml-1">*</small>', [], false)!!}
                     <multiselect id="groups"
                                  v-model="selectedGroups"
