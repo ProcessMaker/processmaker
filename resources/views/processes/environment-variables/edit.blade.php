@@ -24,14 +24,14 @@
                     <div class="form-group">
                         {!!Form::label('name', __('Name')  . '<small class="ml-1">*</small>', [], false)!!}
                         {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'formData.name',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true'])!!}
                         <small class="form-text text-muted" v-if="! errors.name">{{__('The environment variable name must be unique.') }}</small>
                         <div class="invalid-feedback" role="alert" v-for="name in errors.name">@{{name}}</div>
                     </div>
                     <div class="form-group">
                         {!!Form::label('description', __('Description')  . '<small class="ml-1">*</small>', [], false)!!}
                         {!!Form::textArea('description', null, ['class'=> 'form-control', 'v-model'=> 'formData.description',
-                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}','rows'=>3])!!}
+                        'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}','rows'=>3, 'required', 'aria-required' => 'true'])!!}
                         <div class="invalid-feedback" role="alert" v-for="description in errors.description">@{{description}}</div>
                     </div>
                     <div class="form-group">
