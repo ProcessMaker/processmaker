@@ -44,7 +44,7 @@
                             <div class="form-group">
                             {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
                             {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
-                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
+                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}', 'required', 'aria-required' => 'true']) !!}
                             <small class="form-text text-muted"
                                   v-if="! errors.title">{{ __('The script name must be unique.') }}</small>
                             <div class="invalid-feedback" role="alert" v-if="errors.title">@{{errors.title[0]}}</div>
@@ -62,14 +62,14 @@
                             {!!Form::label('script_executor_id', __('Script Executor'))!!}<small class="ml-1">*</small>
                             {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutors, null, ['class'=>
                             'form-control', 'v-model'=> 'formData.script_executor_id', 'v-bind:class' => '{\'form-control\':true,
-                            \'is-invalid\':errors.script_executor_id}']);!!}
+                            \'is-invalid\':errors.script_executor_id}', 'required', 'aria-required' => 'true']);!!}
                             <div class="invalid-feedback" role="alert" v-if="errors.script_executor_id">@{{errors.script_executor_id[0]}}</div>
                         </div>
 
                         <div class="form-group">
                             {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
                             {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
-                            'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
+                            'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}', 'required', 'aria-required' => 'true']) !!}
                             <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
                         <div class="form-group">
