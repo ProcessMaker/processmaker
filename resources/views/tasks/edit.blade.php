@@ -50,6 +50,7 @@
                         <div id="tab-form" role="tabpanel" aria-labelledby="tab-form" class="tab-pane active show h-100">
                           @can('update', $task)
                             <task
+                              class="card border-0"
                               v-model="formData"
                               :initial-task-id="{{ $task->id }}"
                               :initial-request-id="{{ $task->process_request_id }}"

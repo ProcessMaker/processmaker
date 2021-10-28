@@ -95,7 +95,7 @@
                         <div class="tab-pane" id="nav-tokens" role="tabpanel" aria-labelledby="nav-tokens-tab">
                             <div>
                                 <div class="d-flex justify-content-end mb-3">
-                                    <button type="button" class="btn btn-secondary" @click="generateToken">
+                                    <button type="button" aria-label="{{__('New Token')}}" class="btn btn-secondary" @click="generateToken">
                                         <i class="fas fa-plus"></i> {{__('Token')}}
                                     </button>
                                 </div>
@@ -430,7 +430,7 @@
               user_id: this.formData.id
             })
               .then(response => {
-                ProcessMaker.alert('{{__('User Permissions Updated Successfully ')}}', 'success');
+                ProcessMaker.alert('{{__('User Permissions Updated Successfully')}}', 'success');
                 if (this.userId === this.currentUserId) {
                   ProcessMaker.alert('{{__('Please logout and login again to reflect permission changes')}}', 'warning');
                 }

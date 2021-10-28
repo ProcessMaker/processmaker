@@ -52,7 +52,7 @@
                                 !!}
                                 <small class="form-text text-muted"
                                        v-if="! errors.name">{{ __('The process name must be unique.') }}</small>
-                                <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.processTitle">@{{errors.name[0]}}</div>
                             </div>
                             <div class="form-group">
                                 {!! Form::label('description', __('Description')  . '<small class="ml-1">*</small>', [], false) !!}
@@ -64,7 +64,7 @@
                                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
                                     ])
                                 !!}
-                                <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                             </div>
                             <category-select :label="$t('Category')" api-get="process_categories"
                                 api-list="process_categories" v-model="formData.process_category_id"
@@ -75,7 +75,7 @@
                                 <label class="typo__label">{{__('Process Manager')}}</label>
                                 <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
                                 </select-user>
-                                <div class="invalid-feedback" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
                             </div>
                             <div class="form-group p-0">
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
@@ -112,7 +112,7 @@
                                         {{ __('No Data Available') }}
                                     </template>
                                 </multiselect>
-                                <div class="invalid-feedback" v-if="errors.screens">@{{errors.screens[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.screens">@{{errors.screens[0]}}</div>
                             </div>
                             <div class="form-group p-0">
                                 {!! Form::label('editData', __('Edit Data')) !!}
@@ -131,6 +131,10 @@
                                         {{ __('No Data Available') }}
                                     </template>
                                 </multiselect>
+                            </div>
+                            <div class="form-group">
+                                {!! Form::label('status', __('Status')) !!}
+                                <select-status v-model="formData.status" :multiple="false"></select-status>
                             </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
@@ -215,7 +219,7 @@
                                             <td class="notify">{{__('Notify Participants')}}</td>
                                             <td class="action">
                                                 <div class="custom-control custom-switch">
-    
+
                                                 </div>
                                             </td>
                                             <td class="action">
@@ -286,7 +290,7 @@
             screenCancel: @json($screenCancel),
             activeUsersAndGroups: @json($list),
             pause_timer_start_events: false,
-            manager: @json($process->manager),
+            manager: @json($process->manager)
           }
         },
         mounted() {
@@ -336,7 +340,7 @@
               if (item.type == 'group') {
                 response['groups'].push(parseInt(item.id));
               }
-              
+
               if (item.type === 'pseudouser') {
                 response['pseudousers'].push(item.id);
               }

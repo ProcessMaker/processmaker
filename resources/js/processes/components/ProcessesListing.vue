@@ -21,13 +21,20 @@
               :noDataTemplate="$t('No Data Available')"
       >
         <template slot="name" slot-scope="props">
-          {{props.rowData.name}}
           <i tabindex="0"
-            v-if="props.rowData.warningMessages.length > 0"
             v-b-tooltip
             :title="props.rowData.warningMessages.join(' ')"
-            class="text-warning fa fa-exclamation-triangle">
+            class="text-warning fa fa-exclamation-triangle"
+            :class="{'invisible': props.rowData.warningMessages.length == 0}">
           </i>
+          <i tabindex="0"
+            v-if="props.rowData.status == 'ACTIVE' || props.rowData.status == 'INACTIVE'"
+            v-b-tooltip
+            :title="props.rowData.status"
+            class="mr-2"
+            :class="{ 'fas fa-check-circle text-success': props.rowData.status == 'ACTIVE', 'far fa-circle': props.rowData.status == 'INACTIVE' }">
+          </i>
+          <span v-uni-id="props.rowData.id.toString()">{{props.rowData.name}}</span>
         </template>
 
         <template slot="owner" slot-scope="props">
@@ -48,6 +55,7 @@
                       v-b-tooltip.hover
                       :title="$t('Unpause Start Timer Events')"
                       v-if="props.rowData.has_timer_start_events && props.rowData.pause_timer_start"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-play fa-lg fa-fw"></i>
               </b-btn>
@@ -57,6 +65,7 @@
                       v-b-tooltip.hover
                       :title="$t('Pause Start Timer Events')"
                       v-if="props.rowData.has_timer_start_events && !props.rowData.pause_timer_start"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-pause fa-lg fa-fw"></i>
               </b-btn>
@@ -65,7 +74,8 @@
                       @click="onAction('edit-designer', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Edit')"
-                      v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
+                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -74,7 +84,8 @@
                       @click="onAction('edit-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Configure')"
-                      v-if="permission.includes('edit-processes') && props.rowData.status === 'ACTIVE'"
+                      v-if="permission.includes('edit-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
@@ -84,6 +95,7 @@
                       v-b-tooltip.hover
                       :title="$t('View Documentation')"
                       v-if="permission.includes('view-processes') && isDocumenterInstalled"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-map-signs fa-lg fa-fw"></i>
               </b-btn>
@@ -93,6 +105,7 @@
                       v-b-tooltip.hover
                       :title="$t('Export')"
                       v-if="permission.includes('export-processes')"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-file-export fa-lg fa-fw"></i>
               </b-btn>
@@ -101,7 +114,8 @@
                       @click="onAction('remove-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Archive')"
-                      v-if="permission.includes('archive-processes') && props.rowData.status === 'ACTIVE'"
+                      v-if="permission.includes('archive-processes') && (props.rowData.status === 'ACTIVE' || props.rowData.status === 'INACTIVE')"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-download fa-lg fa-fw"></i>
               </b-btn>
@@ -110,7 +124,8 @@
                       @click="onAction('restore-item', props.rowData, props.rowIndex)"
                       v-b-tooltip.hover
                       :title="$t('Restore')"
-                      v-if="permission.includes('archive-processes') && props.rowData.status === 'INACTIVE'"
+                      v-if="permission.includes('archive-processes') && props.rowData.status === 'ARCHIVED'"
+                      v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-upload fa-lg fa-fw"></i>
               </b-btn>
@@ -134,9 +149,11 @@
 <script>
   import datatableMixin from "../../components/common/mixins/datatable";
   import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+  import { createUniqIdsMixin } from "vue-uniq-ids";
+  const uniqIdsMixin = createUniqIdsMixin();
 
   export default {
-    mixins: [datatableMixin, dataLoadingMixin],
+    mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
     props: ["filter", "id", "status", "permission", "isDocumenterInstalled"],
     data() {
       return {

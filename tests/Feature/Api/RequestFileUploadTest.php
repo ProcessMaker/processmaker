@@ -110,4 +110,58 @@ class RequestFileUploadTest extends TestCase
         // Check the file was not uploaded
         $this->assertEquals(0, $request->getMedia()->count());
     }
+
+    /**
+     * Test a user that can claim a self task can view the requests uploaded files.
+     *
+     */
+    public function testViewUploadedRequestFile()
+    {
+        $this->loadTestProcess(
+            file_get_contents(__DIR__ . '/processes/ViewFileUpload.bpmn'),
+            [
+                '2' => factory(User::class)->create([
+                    'status' => 'ACTIVE',
+                    'is_administrator' => false,
+                ])
+            ]
+        );
+        // Create the user assigned to the task (as self service)
+        $selfServiceUser = factory(User::class)->create([
+            'id' => 15,
+            'status' => 'ACTIVE',
+            'is_administrator' => false,
+        ]);
+        $anotherUser = factory(User::class)->create([
+            'status' => 'ACTIVE',
+            'is_administrator' => false,
+        ]);
+
+        // Start a process request
+        $route = route('api.process_events.trigger', [$this->process->id, 'event' => 'node_1']);
+        $data = [];
+        $response = $this->apiCall('POST', $route, $data);
+        $requestJson = $response->json();
+        $request = ProcessRequest::find($requestJson['id']);
+
+        // Upload a file to the request
+        $route = route('api.requests.files.store', [$request->id, 'event' => 'node_1']);
+        $response = $this->actingAs($request->user, 'api')
+            ->json('POST', $route, [
+                'file' => File::image('photo.jpg'),
+                'data_name' => 'photo'
+            ]);
+
+        // User assigned to the self service task can view the file
+        $route = route('api.requests.files.index', [$request->id, 'name' => 'photo']);
+        $response = $this->actingAs($selfServiceUser, 'api')
+            ->json('GET', $route);
+        $response->assertStatus(200);
+
+        // User NOT assigned to the self service task can not view the file
+        $route = route('api.requests.files.index', [$request->id, 'name' => 'photo']);
+        $response = $this->actingAs($anotherUser, 'api')
+            ->json('GET', $route);
+        $response->assertStatus(403);
+    }
 }

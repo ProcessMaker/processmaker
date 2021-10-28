@@ -10,14 +10,6 @@
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
 @yield('css')
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-J207X7GBTF"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-J207X7GBTF');
-</script>
 </head>
 <body>
     <div class="container" id="app">

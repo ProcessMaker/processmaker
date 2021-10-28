@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e59f9a38820c9a27e9dc12befd5f4e17",
+    "content-hash": "6bdbf6d5f7f6e7e36a0f87bc70c816e9",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -2632,16 +2632,16 @@
         },
         {
             "name": "lcobucci/jwt",
-            "version": "3.4.5",
+            "version": "3.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lcobucci/jwt.git",
-                "reference": "511629a54465e89a31d3d7e4cf0935feab8b14c1"
+                "reference": "3ef8657a78278dfeae7707d51747251db4176240"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/511629a54465e89a31d3d7e4cf0935feab8b14c1",
-                "reference": "511629a54465e89a31d3d7e4cf0935feab8b14c1",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/3ef8657a78278dfeae7707d51747251db4176240",
+                "reference": "3ef8657a78278dfeae7707d51747251db4176240",
                 "shasum": ""
             },
             "require": {
@@ -2693,7 +2693,7 @@
             ],
             "support": {
                 "issues": "https://github.com/lcobucci/jwt/issues",
-                "source": "https://github.com/lcobucci/jwt/tree/3.4.5"
+                "source": "https://github.com/lcobucci/jwt/tree/3.4.6"
             },
             "funding": [
                 {
@@ -2705,7 +2705,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2021-02-16T09:40:01+00:00"
+            "time": "2021-09-28T19:18:28+00:00"
         },
         {
             "name": "league/commonmark",
@@ -4690,16 +4690,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.7.0-RC3",
+            "version": "1.7.0-RC4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "6f4bf27782a3fb210c04b98033ffc1556115edba"
+                "reference": "c7b94f15edbdee11a8c963d592b599dba26a2db1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/6f4bf27782a3fb210c04b98033ffc1556115edba",
-                "reference": "6f4bf27782a3fb210c04b98033ffc1556115edba",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/c7b94f15edbdee11a8c963d592b599dba26a2db1",
+                "reference": "c7b94f15edbdee11a8c963d592b599dba26a2db1",
                 "shasum": ""
             },
             "require-dev": {
@@ -4718,9 +4718,9 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.7.0-RC3"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.7.0-RC4"
             },
-            "time": "2021-09-28T23:28:17+00:00"
+            "time": "2021-10-27T15:49:10+00:00"
         },
         {
             "name": "processmaker/pmql",

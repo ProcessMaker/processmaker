@@ -3,7 +3,7 @@
     <div class="d-flex mb-2" v-show="!shouldShowLoader">
       <div class="mr-auto"></div>
       <div>
-        <b-button type="button" @click="add()">
+        <b-button :aria-label="$('Add New Script Executor')" type="button" @click="add()">
           <i class="fa fa-plus" /> {{ $t("Script Executor") }}
         </b-button>
       </div>
@@ -28,6 +28,10 @@
         :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
+        <template slot="title" slot-scope="props">
+          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.title }}</span>
+        </template>
+
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
@@ -36,6 +40,7 @@
                 @click="edit(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Edit')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -44,6 +49,7 @@
                 @click="deleteExecutor(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -80,7 +86,7 @@
                 :placeholder="$t('Name')"
               >
               </b-input>
-              <div v-if="getError('title')" class="invalid-feedback">
+              <div v-if="getError('title')" class="invalid-feedback" role="alert">
                 {{ getError("title") }}
               </div>
             </b-row>
@@ -91,7 +97,7 @@
                 :options="languagesSelect"
               >
               </b-form-select>
-              <div v-if="getError('language')" class="invalid-feedback">
+              <div v-if="getError('language')" class="invalid-feedback" role="alert">
                 {{ getError("language") }}
               </div>
             </b-row>
@@ -110,7 +116,11 @@
 
       <div class="d-flex flex-row mb-1">
         <div class="mr-1">
-          <a @click="showDockerfile = !showDockerfile">
+          <a
+            @click="showDockerfile = !showDockerfile"
+            :aria-expanded="showDockerfile ? 'true' : 'false'"
+            :title="$t('Display contents of docker file that will be prepended to your customizations below.')"
+          >
             <i
               class="fa"
               :class="{
@@ -127,7 +137,7 @@
             @click="
               showDockerfile = !showDockerfile
             ">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
-          <b-collapse id="dockerfile" v-model="showDockerfile">
+          <b-collapse id="dockerfile" v-model="showDockerfile" :aria-hidden="showDockerfile ? 'false' : 'true'">
             <pre>{{ initDockerfile.split("\n").slice(1).join("\n") }}</pre>
           </b-collapse>
         </div>
@@ -159,7 +169,7 @@
             $t("Executor Successfully Built. You can now close this window. ")
           }}
         </p>
-        <div v-if="exitCode > 0" class="invalid-feedback d-block">
+        <div v-if="exitCode > 0" class="invalid-feedback d-block" role="alert">
           {{ $t("Error Building Executor. See Output Above.") }}
         </div>
       </div>
@@ -200,9 +210,11 @@
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
     return {
@@ -246,7 +258,7 @@ export default {
         },
         {
           title: () => this.$t("Title"),
-          name: "title",
+          name: "__slot:title",
           sortField: "title",
         },
         {

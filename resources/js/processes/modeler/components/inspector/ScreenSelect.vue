@@ -24,7 +24,7 @@
                 {{ $t('No Data Available') }}
             </template>
         </multiselect>
-        <div v-if="error" class="invalid-feedback">
+        <div v-if="error" class="invalid-feedback" role="alert">
           <div>{{ error }}</div>
         </div>
         <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>

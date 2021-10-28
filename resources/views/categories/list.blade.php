@@ -46,13 +46,13 @@
                 <small class="form-text text-muted" v-if="! errors.name">
                     {{ __('The category name must be unique.') }}
                 </small>
-                <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+                <div class="invalid-feedback" role="alert" v-for="name in errors.name">@{{name}}</div>
             </div>
             <div class="form-group">
                 {!! Form::label('status', __('Status')) !!}
                 {!! Form::select('status', ['ACTIVE' => __('Active'), 'INACTIVE' => __('Inactive')], null, ['id' => 'status',
                 'class' => 'form-control', 'v-model' => 'status', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.status}']) !!}
-                <div class="invalid-feedback" v-for="status in errors.status">@{{status}}</div>
+                <div class="invalid-feedback" role="alert" v-for="status in errors.status">@{{status}}</div>
             </div>
         </pm-modal>
     @endif

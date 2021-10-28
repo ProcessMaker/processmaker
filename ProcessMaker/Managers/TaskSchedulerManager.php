@@ -250,6 +250,10 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
             return;
         }
 
+        if ($process->status != 'ACTIVE') {
+            return;
+        }
+
         // If a process is configured to pause timer start events we do nothing
         if ($process->pause_timer_start === 1) {
             return;
@@ -557,7 +561,9 @@ class TaskSchedulerManager implements JobManagerInterface, EventBusInterface
      */
     public function evaluateConditionals()
     {
-        $processes = Process::where('conditional_events', '!=', DB::raw("json_array()"))->get();
+        $processes = Process::where('conditional_events', '!=', DB::raw("json_array()"))
+            ->where('status', 'ACTIVE')
+            ->get();
         foreach ($processes as $process) {
             StartEventConditional::dispatchNow($process);
         }
