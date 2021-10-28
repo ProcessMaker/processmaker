@@ -88,7 +88,6 @@
         "luxon": "^1.25.0",
         "monaco-editor": "^0.20.0",
         "monaco-editor-webpack-plugin": "^1.9.1",
-        "npm": "^6.14.8",
         "npm-font-open-sans": "^1.1.0",
         "phpunserialize": "^1.0.1",
         "popper.js": "^1.16.1",
