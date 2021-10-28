@@ -24,8 +24,9 @@
           <b-link
             v-if="permission.includes('edit-scripts')"
             @click="onAction('edit-script', props.rowData, props.rowIndex)"
+            v-uni-id="props.rowData.id.toString()"
           >{{props.rowData.title}}</b-link>
-          <span v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
+          <span v-uni-id="props.rowData.id.toString()" v-else="permission.includes('edit-scripts')">{{props.rowData.title}}</span>
         </template>
 
         <template slot="actions" slot-scope="props">
@@ -37,6 +38,7 @@
                 v-b-tooltip.hover
                 :title="$t('Edit')"
                 v-if="permission.includes('edit-scripts')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -46,6 +48,7 @@
                 v-b-tooltip.hover
                 :title="$t('Configure')"
                 v-if="permission.includes('edit-scripts')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-cog fa-lg fa-fw"></i>
               </b-btn>
@@ -55,6 +58,7 @@
                 v-b-tooltip.hover
                 :title="$t('Copy')"
                 v-if="permission.includes('create-scripts')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-copy fa-lg fa-fw"></i>
               </b-btn>
@@ -64,6 +68,7 @@
                 v-b-tooltip.hover
                 :title="$t('Delete')"
                 v-if="permission.includes('delete-scripts')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -90,7 +95,7 @@
             v-model="dupScript.title"
             v-bind:class="{ 'is-invalid': errors.title }"
           />
-          <div class="invalid-feedback" v-if="errors.title">{{errors.title[0]}}</div>
+          <div class="invalid-feedback" role="alert" v-if="errors.title">{{errors.title[0]}}</div>
         </div>
         <div class="form-group">
           <category-select
@@ -117,9 +122,11 @@
 <script>
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "id", "permission", "scriptExecutors"],
   data() {
     return {

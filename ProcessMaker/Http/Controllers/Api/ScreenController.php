@@ -73,9 +73,11 @@ class ScreenController extends Controller
      */
     public function index(Request $request)
     {
+        $exclusions = ($request->input('exclude', '') ? explode(',', $request->input('exclude', '')) : []);
+
         $query = Screen::nonSystem()
-            ->select('screens.*')
-            ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id');
+            ->leftJoin('screen_categories as category', 'screens.screen_category_id', '=', 'category.id')
+            ->exclude($exclusions);
 
         $include = $request->input('include', '');
 
@@ -139,12 +141,6 @@ class ScreenController extends Controller
                 $request->input('order_by', 'title'),
                 $request->input('order_direction', 'ASC')
             )->paginate($request->input('per_page', 10));
-
-        $exclude = $request->input('exclude', '');
-        if ($exclude) {
-            $exclusions = explode(',', $exclude);
-            $response->makeHidden($exclusions);
-        }
 
         return new ApiCollection($response);
     }

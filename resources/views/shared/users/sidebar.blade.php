@@ -24,10 +24,10 @@
     <div class="card card-body mt-3">
         <h5 class="mb-3 font-weight-bold">{{__('Login Information')}}</h5>
         <div class="form-group">
-            {!! Form::label('username', __('Username')) !!}
+            {!! Form::label('username', __('Username') . '<small class="ml-1">*</small>',  [], false) !!}
             {!! Form::text('username', null, ['id' => 'username', 'rows' => 4, 'class'=> 'form-control', 'v-model'
-            => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}']) !!}
-            <div class="invalid-feedback" v-if="errors.username">@{{errors.username[0]}}</div>
+            => 'formData.username', 'autocomplete' => 'off', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.username}', 'required', 'aria-required' => 'true']) !!}
+            <div class="invalid-feedback" role="alert" v-if="errors.username">@{{errors.username[0]}}</div>
         </div>
         <div class="form-group">
             <small class="form-text text-muted">
@@ -49,7 +49,7 @@
             {!! Form::label('confPassword', __('Confirm Password')) !!}
             {!! Form::password('confPassword', ['id' => 'confPassword', 'rows' => 4, 'class'=> 'form-control', 'v-model'
             => 'formData.confPassword', 'autocomplete' => 'new-password', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
-            <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" v-if="errors.password">@{{errors.password[0]}}</div>
+            <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert" v-if="errors.password">@{{errors.password[0]}}</div>
         </div>
 
         <div class="form-group">
@@ -75,7 +75,7 @@
                 {!!Form::label('datetime_format', __('Date Format'));!!}
                 <b-form-select id="datetime_format" v-model="formData.datetime_format" class="form-control" :options="datetimeFormats">
                 </b-form-select>
-                <div class="invalid-feedback" v-if="errors.email">
+                <div class="invalid-feedback" role="alert" v-if="errors.email">
                     @{{errors.datetime_format}}
                 </div>
             </div>
@@ -83,7 +83,7 @@
                 {!!Form::label('timezone', __('Time Zone'));!!}
                 <b-form-select id="timezone" v-model="formData.timezone" class="form-control" :options="timezones">
                 </b-form-select>
-                <div class="invalid-feedback" v-if="errors.email">@{{errors.timezone}}
+                <div class="invalid-feedback" role="alert" v-if="errors.email">@{{errors.timezone}}
                 </div>
             </div>
 
@@ -91,7 +91,7 @@
                 {!! Form::label('language', __('Language')) !!}
                 <b-form-select id="language" v-model="formData.language" class="form-control" :options="langs">
                 </b-form-select>
-                <div class="invalid-feedback" v-if="errors.language">
+                <div class="invalid-feedback" role="alert" v-if="errors.language">
                     @{{errors.language}}
                 </div>
             </div>
@@ -100,7 +100,7 @@
                 {!! Form::label('status', __('Status')) !!}
                 <b-form-select id="status" v-model="formData.status" class="form-control" :options="status">
                 </b-form-select>
-                <div class="invalid-feedback" v-if="errors.status">
+                <div class="invalid-feedback" role="alert" v-if="errors.status">
                     @{{errors.status}}
                 </div>
             </div>

@@ -42,7 +42,7 @@
                 ></counter-card>
                 @can('view-all_requests')
                     <counter-card
-                        color="warning"
+                        color="secondary"
                         icon="clipboard"
                         link="{{ route('requests_by_type', ['type' => 'all']) }}"
                         title="All Requests"

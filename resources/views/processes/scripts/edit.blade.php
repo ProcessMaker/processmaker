@@ -40,13 +40,14 @@
                 <div class="card card-body card-body-nav-tabs">
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-config" role="tabpanel" aria-labelledby="nav-config-tab">
+                            <required></required>
                             <div class="form-group">
                             {!! Form::label('title', __('Name')  . '<small class="ml-1">*</small>', [], false) !!}
                             {!! Form::text('title', null, ['id' => 'title','class'=> 'form-control', 'v-model' => 'formData.title',
-                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}']) !!}
+                            'v-bind:class' => '{"form-control":true, "is-invalid":errors.title}', 'required', 'aria-required' => 'true']) !!}
                             <small class="form-text text-muted"
                                   v-if="! errors.title">{{ __('The script name must be unique.') }}</small>
-                            <div class="invalid-feedback" v-if="errors.title">@{{errors.title[0]}}</div>
+                            <div class="invalid-feedback" role="alert" v-if="errors.title">@{{errors.title[0]}}</div>
                         </div>
                         <category-select :label="$t('Category')" api-get="script_categories" api-list="script_categories" v-model="formData.script_category_id" :errors="errors.script_category_id">
                         </category-select>
@@ -54,22 +55,22 @@
                             <label class="typo__label">{{__('Run script as')}}<small class="ml-1">*</small></label>
                             <select-user v-model="selectedUser" :multiple="false" :class="{'is-invalid': errors.run_as_user_id}">
                             </select-user>
-                            <div class="invalid-feedback" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
+                            <div class="invalid-feedback" role="alert" v-if="errors.run_as_user_id">@{{errors.run_as_user_id[0]}}</div>
                         </div>
 
                         <div class="form-group">
                             {!!Form::label('script_executor_id', __('Script Executor'))!!}<small class="ml-1">*</small>
                             {!!Form::select('script_executor_id', [''=>__('Select')] + $scriptExecutors, null, ['class'=>
                             'form-control', 'v-model'=> 'formData.script_executor_id', 'v-bind:class' => '{\'form-control\':true,
-                            \'is-invalid\':errors.script_executor_id}']);!!}
-                            <div class="invalid-feedback" v-if="errors.script_executor_id">@{{errors.script_executor_id[0]}}</div>
+                            \'is-invalid\':errors.script_executor_id}', 'required', 'aria-required' => 'true']);!!}
+                            <div class="invalid-feedback" role="alert" v-if="errors.script_executor_id">@{{errors.script_executor_id[0]}}</div>
                         </div>
 
                         <div class="form-group">
                             {!! Form::label('description', __('Description') . '<small class="ml-1">*</small>', [], false) !!}
                             {!! Form::textarea('description', null, ['id' => 'description', 'rows' => 4, 'class'=> 'form-control',
-                            'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}']) !!}
-                            <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                            'v-model' => 'formData.description', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.description}', 'required', 'aria-required' => 'true']) !!}
+                            <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                         </div>
                         <div class="form-group">
                             {!! Form::label('timeout', __('Timeout')) !!}
@@ -79,7 +80,7 @@
                                 {!! Form::range(null, null, ['id' => 'timeout-range', 'class'=> 'custom-range col ml-1 mt-2',
                                 'aria-label' => __('Use the slider to select a range'),
                                 'v-model' => 'formData.timeout', 'min' => 0, 'max' => 300]) !!}
-                                <div class="invalid-feedback" v-if="errors.timeout">@{{errors.timeout[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.timeout">@{{errors.timeout[0]}}</div>
                             </div>
                             <small class="form-text text-muted"
                                   v-if="! errors.timeout">{{ __('How many seconds the script should be allowed to run (0 is unlimited).') }}</small>
@@ -106,7 +107,7 @@
                         @endisset
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>

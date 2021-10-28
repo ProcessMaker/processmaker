@@ -16,6 +16,8 @@ use ProcessMaker\Models\RequestUserPermission;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use ProcessMaker\Traits\HideSystemResources;
+use ProcessMaker\Rules\StringHasNumberOrSpecialCharacter;
+use ProcessMaker\Rules\StringHasAtLeastOneUpperCaseCharacter;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -143,27 +145,45 @@ class User extends Authenticatable implements HasMedia
     /**
      * Validation rules
      *
-     * @param $existing
+     * @param  \ProcessMaker\Models\User|null  $existing
      *
      * @return array
      */
-    public static function rules($existing = null)
+    public static function rules(User $existing = null)
     {
         $unique = Rule::unique('users')->ignore($existing);
 
         return [
             // The following characters where not included in the regexp: & %  ' " ? /
-            'username' => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255' , $unique],
-            'firstname' => ['required', 'max:50'],
-            'lastname' => ['required', 'max:50'],
-            'email' => ['required', 'email'],
-            'phone' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
-            'fax' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
-            'cell' => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
-            'status' => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
-            'password' => $existing ? 'required|sometimes|min:6' : 'required|min:6',
-            'birthdate' => 'date|nullable'
+            'username' /****/ => ['required', 'regex:/^[a-zA-Z0-9.!#$*+=^_`|~\-@]+$/', 'min:3', 'max:255' , $unique],
+            'firstname' /***/ => ['required', 'max:50'],
+            'lastname' /****/ => ['required', 'max:50'],
+            'email' /*******/ => ['required', 'email'],
+            'birthdate' /***/ => ['nullable', 'date'],
+            'phone' /*******/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
+            'fax' /*********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
+            'cell' /********/ => ['nullable', 'regex:/^[+\.0-9x\)\(\-\s\/]*$/'],
+            'status' /******/ => ['required', 'in:ACTIVE,INACTIVE,OUT_OF_OFFICE,SCHEDULED'],
+            'password' /****/ => static::passwordRules($existing)
         ];
+    }
+
+    /**
+     * Validation rules specifically for the password
+     *
+     * @param  \ProcessMaker\Models\User|null  $existing
+     *
+     * @return array
+     */
+    public static function passwordRules(User $existing = null)
+    {
+        return array_filter([
+            'required',
+            $existing ? 'sometimes' : '',
+            'min:8',
+            new StringHasNumberOrSpecialCharacter(),
+            new StringHasAtLeastOneUpperCaseCharacter(),
+        ]);
     }
 
     /**

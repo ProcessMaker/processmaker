@@ -41,9 +41,10 @@
                     <div class="tab-content" id="nav-tabContent">
                         <div class="tab-pane fade show active" id="nav-config" role="tabpanel"
                              aria-labelledby="nav-config-tab">
+                            <required></required>
                             <div class="form-group">
-                                {!!Form::label('processTitle', __('Name') . '<small class="ml-1">*</small>', [], false)!!}
-                                {!!Form::text('processTitle', null,
+                                {!!Form::label('name', __('Name') . '<small class="ml-1">*</small>', [], false)!!}
+                                {!!Form::text('name', null,
                                     [ 'id'=> 'name',
                                         'class'=> 'form-control',
                                         'v-model'=> 'formData.name',
@@ -52,7 +53,7 @@
                                 !!}
                                 <small class="form-text text-muted"
                                        v-if="! errors.name">{{ __('The process name must be unique.') }}</small>
-                                <div class="invalid-feedback" v-if="errors.processTitle">@{{errors.name[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.name">@{{errors.name[0]}}</div>
                             </div>
                             <div class="form-group">
                                 {!! Form::label('description', __('Description')  . '<small class="ml-1">*</small>', [], false) !!}
@@ -64,7 +65,7 @@
                                         'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.description}'
                                     ])
                                 !!}
-                                <div class="invalid-feedback" v-if="errors.description">@{{errors.description[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.description">@{{errors.description[0]}}</div>
                             </div>
                             <category-select :label="$t('Category')" api-get="process_categories"
                                 api-list="process_categories" v-model="formData.process_category_id"
@@ -75,7 +76,7 @@
                                 <label class="typo__label">{{__('Process Manager')}}</label>
                                 <select-user v-model="manager" :multiple="false" :class="{'is-invalid': errors.manager_id}">
                                 </select-user>
-                                <div class="invalid-feedback" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.manager_id">@{{errors.manager_id[0]}}</div>
                             </div>
                             <div class="form-group p-0">
                                 {!! Form::label('cancelRequest', __('Cancel Request')) !!}
@@ -112,7 +113,7 @@
                                         {{ __('No Data Available') }}
                                     </template>
                                 </multiselect>
-                                <div class="invalid-feedback" v-if="errors.screens">@{{errors.screens[0]}}</div>
+                                <div class="invalid-feedback" role="alert" v-if="errors.screens">@{{errors.screens[0]}}</div>
                             </div>
                             <div class="form-group p-0">
                                 {!! Form::label('editData', __('Edit Data')) !!}
@@ -141,7 +142,7 @@
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
                             </div>
                         </div>
-                        <div class="tab-pane fade show" id="nav-notifications" role="tabpanel"
+                        <div class="tab-pane fade show p-3" id="nav-notifications" role="tabpanel"
                              aria-labelledby="nav-notifications-tab">
                             <div class="form-group p-0">
 
