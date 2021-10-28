@@ -59,6 +59,7 @@ class ProcessPatternsTest extends TestCase
         $tests = $this->prepareTestCases('Conditional_StartEvent.bpmn', $tests);
         $tests = $this->prepareTestCases('Conditional_IntermediateEvent.bpmn', $tests);
         $tests = $this->prepareTestCases('MultiInstance_SequentialCallActivity.bpmn', $tests);
+        $tests = $this->prepareTestCases('Loop_Task.bpmn', $tests);
         return $tests;
     }
 
@@ -73,18 +74,20 @@ class ProcessPatternsTest extends TestCase
     private function prepareTestCases($bpmnFile, array $tests)
     {
         $file = "{$this->basePath}{$bpmnFile}";
+        $name = basename($bpmnFile, '.bpmn');
         $jsonFile = substr($file, 0, -4) . 'json';
         if (file_exists($jsonFile)) {
             $contexts = json_decode(file_get_contents($jsonFile), true);
             foreach ($contexts as $context) {
-                $tests[] = [
+                $comment = $context['comment'] ?? '';
+                $tests["$name:$comment"] = [
                     'runProcessWithContext',
                     $bpmnFile,
                     $context,
                 ];
             }
         } else {
-            $tests[] = [
+            $tests[$name] = [
                 'runProcessWithoutContext',
                 $bpmnFile,
             ];
