@@ -455,6 +455,12 @@ trait MakeHttpRequests
                     $query[$key] = $value;
                 }
             }
+        } else {
+            foreach ($params as $key => $value) {
+                if ($value !== '') {
+                    $query[$key] = $value;
+                }
+            }
         }
 
         // If exists a query string in the call, add/replace it into the URL
