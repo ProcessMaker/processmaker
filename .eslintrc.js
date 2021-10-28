@@ -11,18 +11,15 @@ module.exports = {
 		Snap: true,
 		Dispatcher: true
 	},
-	extends: ['plugin:vue/base', 'eslint:recommended', 'airbnb', 'plugin:flowtype/recommended', 'standard'],
+	extends: ['eslint:recommended', 'plugin:vue/base','airbnb-base', 'plugin:flowtype/recommended'],
 	parserOptions: {
-		parser: 'babel-eslint',
+		parser: '@babel/eslint-parser',
 		ecmaVersion: 2017,
-		ecmaFeatures: {
-			experimentalObjectRestSpread: true
-		},
 		sourceType: 'module'
 	},
 	plugins: [
 		'flowtype',
-		'standard'
+		'vue'
 	],
 	rules: {
 		'comma-dangle': ['error', 'always-multiline'],
