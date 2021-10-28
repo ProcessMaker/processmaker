@@ -17,14 +17,15 @@
 @section('content')
     <div id="authClients">
         <pm-modal ref="createEditAuthClient" id="createEditAuthClient" :title="title" @hidden="onClose" @ok.prevent="onSave" style="display: none;">
+            <required></required>
             <div class="form-group" required>
                 {!!Form::label('name', __('Name'))!!}
                 {!!Form::text('name', null, ['class'=> 'form-control', 'v-model'=> 'authClient.name',
-                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}'])!!}
+                'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true'])!!}
                 <small class="form-text text-muted">{{ __('Name must be unique') }}</small>
                 <div class="invalid-feedback" role="alert" v-if="errors.name">@{{ errors.name[0] }}</div>
             </div>
-            <b-form-checkbox-group v-model="authClient.types">
+            <b-form-checkbox-group v-model="authClient.types" required>
               <div class="form-group">
                 <div class="invalid-feedback d-block" v-if="errors.types">@{{ errors.types[0] }}</div>
                 <b-form-checkbox value="authorization_code_grant">{{__('Enable Authorization Code Grant')}}</b-form-checkbox>

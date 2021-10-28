@@ -34,10 +34,11 @@
                             <i class="fas fa-plus"></i> {{__('Group')}}
                         </button>
                         <pm-modal ref="createGroupModal" id="createGroupModal" title="{{__('Create Group')}}" @hidden="onClose" @ok.prevent="onSubmit" :ok-disabled="disabled" style="display: none;">
+                            <required></required>
                             <div class="form-group">
                                 {!! Form::label('name', __('Name')) !!}<small class="ml-1">*</small>
                                 {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
-                                'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
+                                'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true']) !!}
                                 <small id="emailHelp"
                                        class="form-text text-muted">{{__('Group name must be unique')}}</small>
                                 <div class="invalid-feedback" role="alert" v-for="name in errors.name">@{{name}}</div>

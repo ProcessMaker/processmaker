@@ -10,6 +10,7 @@ import FileUploadButton from './FileUploadButton';
 import FormErrorsMixin from './FormErrorsMixin';
 import IconSelector from './IconSelector';
 import Modal from './Modal';
+import Required from './Required';
 
 export {
   BasicSearch,
@@ -24,4 +25,5 @@ export {
   FormErrorsMixin,
   IconSelector,
   Modal,
+  Required,
 };

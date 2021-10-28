@@ -5,6 +5,7 @@
     </b-button>
     <modal id="createScreen" :title="$t('Create Screen')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
       <template v-if="countCategories">
+        <required></required>
         <b-form-group
           required
           :label="$t('Name')"
@@ -13,10 +14,12 @@
           :state="errorState('title', errors)"
         >
           <b-form-input
+            required
             autofocus
             v-model="formData.title"
             autocomplete="off"
             :state="errorState('title', errors)"
+            name="title"
           ></b-form-input>
         </b-form-group>
         <b-form-group
@@ -26,10 +29,12 @@
           :state="errorState('description', errors)"
         >
           <b-form-textarea
+            required
             v-model="formData.description"
             autocomplete="off"
             rows="3"
             :state="errorState('description', errors)"
+            name="description"
           ></b-form-textarea>
         </b-form-group>
         <b-form-group
@@ -39,9 +44,11 @@
           :state="errorState('type', errors)"
         >
           <b-form-select
+            required
             v-model="formData.type"
             :options="types"
             :state="errorState('type', errors)"
+            name="type"
           ></b-form-select>
         </b-form-group>
         <category-select :label="$t('Category')" api-get="screen_categories" api-list="screen_categories" v-model="formData.screen_category_id" :errors="errors.screen_category_id"></category-select>
