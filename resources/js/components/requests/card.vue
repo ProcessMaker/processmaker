@@ -11,6 +11,7 @@
             <div class="col-2 text-right">
               <a :href="getNewRequestLinkHref(process, event)" @click.prevent="newRequestLink(process, event);" class="btn btn-primary btn-sm">
                 <i class="fas fa-caret-square-right"></i> {{ $t('Start') }}
+              </a>
               <span v-uni-id="event.id.toString()">{{transformedName}}</span>
               <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
               <a href="#" @click="showRequestDetails">...</a>
