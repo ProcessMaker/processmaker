@@ -17,6 +17,9 @@ use Tests\Feature\Shared\RequestHelper;
 use ProcessMaker\Facades\WorkflowManager;
 use PermissionSeeder;
 use ProcessMaker\Providers\AuthServiceProvider;
+use ProcessMaker\Models\ProcessNotificationSetting;
+use Illuminate\Support\Facades\Notification;
+use ProcessMaker\Notifications\ActivityActivatedNotification;
 
 /**
  * Tests routes related to tokens list and show
@@ -526,5 +529,37 @@ class TasksTest extends TestCase
         $actualIds = collect($response->json()['data'])->pluck('id');
 
         $this->assertEquals($expectedTaskIds, $actualIds);
+    }
+
+    public function testSelfServeNotifications()
+    {
+        Notification::fake();
+
+        $bpmn = str_replace(
+            '[self_serve_user_id]',
+            $this->user->id,
+            file_get_contents(__DIR__ . '/../../Fixtures/self_serve_notifications_process.bpmn')
+        );
+        $process = factory(Process::class)->create([
+            'bpmn' => $bpmn,
+        ]);
+        factory(ProcessNotificationSetting::class)->create([
+            'process_id' => $process->id,
+            'element_id' => 'node_3',
+            'notifiable_type' => 'requester',
+            'notification_type' => 'assigned',
+        ]);
+
+        $route = route('api.process_events.trigger', [$process->id, 'event' => 'node_1']);
+        $response = $this->apiCall('POST', $route, []);
+        $processRequest = ProcessRequest::findOrFail($response->json()['id']);
+
+        Notification::assertNothingSent();
+        
+        $task = $processRequest->tokens->where('status', 'ACTIVE')->first();
+        $route = route('api.tasks.update', [$task->id]);
+        $response = $this->apiCall('PUT', $route, ['user_id' => $this->user->id]);
+
+        Notification::assertSentTo([$this->user], ActivityActivatedNotification::class);
     }
 }
