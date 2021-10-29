@@ -1,6 +1,6 @@
 const {VueLoaderPlugin} = require("vue-loader");
 const path = require("path");
-const MiniCssExtractPlugin = requir("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const autoprefixer = require("autoprefixer");
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
@@ -8,9 +8,12 @@ const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 module.exports = {
   entry: {
     main: "./resources/js/app.js",
+
   },
   output: {
+    filename: "[name].[contenthash:8].js",
     path: path.resolve(__dirname, "public"),
+    chunkFilename: "[name].[contenthash:8].js",
   },
   module: {
     rules: [
@@ -46,12 +49,7 @@ module.exports = {
           "style-loader",
           MiniCssExtractPlugin.loader,
           "css-loader",
-          {
-            loader: "postcss-loader",
-            options: {
-              plugins: () => [autoprefixer()],
-            },
-          },
+          "postcss-loader",
           "sass-loader",
         ],
       },
@@ -59,7 +57,12 @@ module.exports = {
   },
   plugins: [
     new VueLoaderPlugin(),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin(
+      {
+        filename: "[name].[contenthash:8].css",
+        chunkFilename: "[name].[contenthash:8].css",
+      },
+    ),
     // new CleanWebpackPlugin(),
   ],
   resolve: {
@@ -68,4 +71,22 @@ module.exports = {
     },
     extensions: ["*", ".js", ".vue", ".json"],
   },
+  optimization: {
+    moduleIds: "deterministic",
+    runtimeChunk: "single",
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          priority: -10,
+          chunks: "all",
+        },
+      },
+    },
+  },
+  devServer: {
+    historyApiFallback: true,
+  },
+
 };

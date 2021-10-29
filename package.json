@@ -8,8 +8,8 @@
     "private": true,
     "scripts": {
         "postinstall": "mkdir -p public/css/precompiled && cp -rf node_modules/npm-font-open-sans public/css/precompiled/npm-font-open-sans && cp -rf node_modules/bootstrap/scss public/css/precompiled/bootstrap && cp -rf node_modules/@fortawesome/fontawesome-free public/css/precompiled/fontawesome-free && cp -rf node_modules/@processmaker/vue-multiselect/dist/vue-multiselect.min.css public/css/precompiled",
-        "build": "webpack --mode production",
-        "start": "webpack-dev-server --mode development",
+        "build": "webpack --progress --mode production",
+        "start": "webpack-dev-server --progress --mode development",
         "test": "cross-env NODE_ENV=test jest",
         "test-watch": "npm run test -- --watch --notify",
         "lint": "eslint --fix --ignore-path .eslintignore resources/**"
