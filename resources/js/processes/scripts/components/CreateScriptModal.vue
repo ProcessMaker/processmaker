@@ -5,6 +5,7 @@
     </b-button>
     <modal id="createScript" :title="$t('Create Script')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
       <template v-if="countCategories">
+        <required></required>
         <b-form-group
           required
           :label="$t('Name')"
@@ -13,10 +14,12 @@
           :state="errorState('title', addError)"
         >
           <b-form-input
+            required
             autofocus
             v-model="title"
             autocomplete="off"
             :state="errorState('title', addError)"
+            name="title"
           ></b-form-input>
         </b-form-group>
         <b-form-group
@@ -26,15 +29,18 @@
           :state="errorState('description', addError)"
         >
           <b-form-textarea
+            required
             v-model="description"
             autocomplete="off"
             rows="2"
             :state="errorState('description', addError)"
+            name="description"
           ></b-form-textarea>
         </b-form-group>
         <category-select :label="$t('Category')" api-get="script_categories"
           api-list="script_categories" v-model="script_category_id"
           :errors="addError.script_category_id"
+          name="script_category_id"
         ></category-select>
         <b-form-group
           required
@@ -43,9 +49,11 @@
           :state="errorState('script_executor_id', addError)"
         >
           <b-form-select
+            required
             v-model="script_executor_id"
             :options="scriptExecutors"
             :state="errorState('script_executor_id', addError)"
+            name="script_executor_id"
           ></b-form-select>
         </b-form-group>
         <b-form-group
@@ -59,6 +67,7 @@
             v-model="selectedUser"
             :multiple="false"
             :class="{'is-invalid': errorState('run_as_user_id', addError) == false}"
+            name="run_as_user_id"
           ></select-user>
         </b-form-group>
         <b-form-group
@@ -74,6 +83,7 @@
               class="w-25"
               type="number"
               id="script-timeout-text"
+              name="timeout"
             ></b-form-input>
             <b-form-input
               v-model="timeout"

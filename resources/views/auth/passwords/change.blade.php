@@ -9,13 +9,9 @@
             @php
             $loginLogo = \ProcessMaker\Models\Setting::getLogin();
             $isDefault = \ProcessMaker\Models\Setting::loginIsDefault();
-            if ($isDefault) {
-                $class = 'login-logo-default';
-            } else {
-                $class = 'login-logo-custom';
-            }
+            $class = $isDefault ? 'login-logo-default' : 'login-logo-custom';
             @endphp
-            <img src={{$loginLogo}} alt="{{ config('logo-alt-text', 'ProcessMaker') }}" class="{{ $class }}">
+            <img src={{ $loginLogo }} alt="{{ config('logo-alt-text', 'ProcessMaker') }}" class="{{ $class }}">
         </div>
 
         <div class="row">
@@ -27,6 +23,13 @@
                             <h5 class="mt-3">{{ __('Welcome', ['name' => $user->fullname]) }}</h5>
                         </div>
                         <h5 class="mb-3">{{ __('Please change your account password') }}</h5>
+                        <div class="alert alert-primary">Password Requirements:
+                            <ul>
+                                <li>{{ __('Minimum of 8 characters in length') }}</li>
+                                <li>{{ __('Contains an uppercase letter') }}</li>
+                                <li>{{ __('Contains a number or symbol') }}</li>
+                            </ul>
+                        </div>
                         @if (session()->has('timeout'))
                         <div class="alert alert-danger">{{ __("Your account has been timed out for security.") }}</div>
                         @endif
@@ -42,7 +45,6 @@
                                     'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.password}']) !!}
                                 </div>
                             </vue-password>
-
                             <small v-if="errors && errors.password && errors.password.length" class="text-danger">@{{ errors.password[0] }}</small>
                         </div>
                         <div class="form-group">
@@ -50,7 +52,6 @@
                             {!!Form::password('confpassword', ['class'=> 'form-control', 'v-model'=> 'formData.confpassword',
                             'v-bind:class' => '{\'form-control\':true}', 'autocomplete' => 'new-password'])!!}
                         </div>
-
                         <div class="form-group pt-3 pb-2">
                             <button type="button" @click.prevent="submit" name="changepassword" class="btn btn-primary btn-block text-uppercase" dusk="changepassword">{{ __('Change Password') }}</button>
                         </div>
@@ -63,14 +64,11 @@
 @endsection
 
 @section('js')
-
 <script src="{{ mix('js/manifest.js') }}"></script>
 <script src="{{ mix('js/vendor.js') }}"></script>
 <script src="{{ mix('js/app.js') }}"></script>
-<script src="{{mix('js/admin/auth/passwords/change.js')}}"></script>
-
+<script src="{{ mix('js/admin/auth/passwords/change.js') }}"></script>
 <script>
-
     var formVueInstance = new Vue({
         el: '#changePassword',
         data() {
@@ -86,6 +84,7 @@
                     title: @json($user['fullname']),
                     initials: @json(mb_substr($user['firstname'], 0, 1)) + @json(mb_substr($user['lastname'], 0, 1))
                 }],
+                focusErrors: 'errors',
             }
         },
         methods: {
@@ -99,33 +98,39 @@
                     this.errors.password = ['Password is too weak']
                     return false
                 }
+
                 if (!this.formData.password && !this.formData.confpassword) {
                     return false;
                 }
+
                 if (this.formData.password.trim() === '' && this.formData.confpassword.trim() === '') {
                     return false
                 }
+
                 if (this.formData.password.trim().length > 0 && this.formData.password.trim().length < 8) {
                     this.errors.password = ['Password must be at least 8 characters']
                     this.formData.password = ''
                     return false
                 }
+
                 if (this.formData.password !== this.formData.confpassword) {
                     this.errors.password = ['Passwords must match']
                     return false
                 }
 
                 this.errors.password = null
-
                 return true
             },
             submit($event) {
                 this.resetErrors();
-                if (!this.validatePassword()) return false;
+
+                if (!this.validatePassword()) {
+                    return false;
+                }
 
                 ProcessMaker.apiClient.put('password/change', this.formData)
                     .then(response => {
-                        if (response.status == 200) {
+                        if (response.status === 200) {
                             window.location.href = '/requests';
                         }
                     })
@@ -140,13 +145,13 @@
 
 @section('css')
   <style media="screen">
-  .formContainer {
-      width:504px;
-  }
-  .formContainer .form {
-    margin-top:85px;
-    text-align: left
-  }
-  </style>
+      .formContainer {
+          width:504px;
+      }
 
+      .formContainer .form {
+        margin-top:85px;
+        text-align: left
+      }
+  </style>
 @endsection

@@ -32,7 +32,7 @@
                     </div>
                     @can('create-signals')
                     <div class="d-flex ml-md-2 flex-column flex-md-row">
-                        <button class="btn btn-secondary" aria-label="{{ __('Create Signal') }}" @click="$refs.createSignal.show()">
+                        <button class="btn btn-secondary" aria-label="{{ __('New Signal') }}" @click="$refs.createSignal.show()">
                             <i class="fas fa-plus"></i>
                             {{__('Signal')}}
                         </button>
@@ -44,26 +44,27 @@
                 <signals-listing ref="signalList" :filter="filter" :permission="{{ \Auth::user()->hasPermissionsFor('processes') }}" v-on:reload="reload"/>
             </div>
         </div>
-        
+
         @can('create-processes')
             <pm-modal ref="createSignal" id="createSignal" title="{{__('New Signal')}}" @hidden="onClose" @ok.prevent="onSubmit" :ok-disabled="disabled" style="display: none;">
+                <required></required>
                 <div class="form-group">
-                    {!! Form::label('name', __('Signal Name')) !!}
+                    {!! Form::label('name', __('Signal Name') . '<small class="ml-1">*</small>', [], false) !!}
                     {!! Form::text('name', null, ['id' => 'name','class'=> 'form-control', 'v-model' =>
-                    'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}']) !!}
-                    <div class="invalid-feedback" v-for="name in errors.name">@{{name}}</div>
+                    'formData.name', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.name}', 'required', 'aria-required' => 'true']) !!}
+                    <div class="invalid-feedback" role="alert" v-for="name in errors.name">@{{name}}</div>
                 </div>
                 <div class="form-group">
-                    {!! Form::label('id', __('Signal ID')) !!}
+                    {!! Form::label('id', __('Signal ID') . '<small class="ml-1">*</small>', [], false) !!}
                     {!! Form::text('id', null, ['id' => 'id','class'=> 'form-control', 'v-model' =>
-                    'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}']) !!}
-                    <div class="invalid-feedback" v-for="id in errors.id">@{{id}}</div>
+                    'formData.id', 'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.id}', 'required', 'aria-required' => 'true']) !!}
+                    <div class="invalid-feedback" role="alert" v-for="id in errors.id">@{{id}}</div>
                 </div>
                 <div class="form-group">
                     {!! Form::textarea('detail', null, ['id' => 'detail', 'rows' => 4, 'class'=> 'form-control', 'v-bind:placeholder' => '$t("Additional Details (optional)")',
                     'aria-label' => __('Additional Details (optional)'),
                     'v-model' => 'formData.detail', 'v-bind:class' => '{"form-control":true, "is-invalid":errors.detail}']) !!}
-                    <div class="invalid-feedback" v-if="errors.detail">@{{errors.detail[0]}}</div>
+                    <div class="invalid-feedback" role="alert" v-if="errors.detail">@{{errors.detail[0]}}</div>
                 </div>
             </pm-modal>
         @endcan

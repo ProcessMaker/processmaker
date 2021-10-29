@@ -25,9 +25,9 @@
       </template>
     </multiselect>
     <div class="invalid-feedback d-block" v-for="(error, index) in errors" :key="index">
-      <small v-if="error" class="text-danger">{{ error }}</small>
+      <small v-if="error" role="alert" class="text-danger">{{ error }}</small>
     </div>
-    <small v-if="error" class="text-danger">{{ error }}</small>
+    <small v-if="error" role="alert" class="text-danger">{{ error }}</small>
     <small v-if="helper" class="form-text text-muted">{{ $t(helper) }}</small>
   </div>
 </template>

@@ -341,4 +341,31 @@ class CallActivityTest extends TestCase
         // verify data
         $this->assertEquals(['input_1' => 1, 'input_2' => 2, 'input_3' => 3], $data);
     }
+
+    public function testCallActivityWithError()
+    {
+        $this->withPersonalAccessClient();
+        $child = $this->createProcess([
+            'id' => 4,
+            'bpmn' => file_get_contents(__DIR__ . '/processes/SubProcessWithError.bpmn')
+        ]);
+        $parentBpmn = file_get_contents(__DIR__ . '/processes/ParentCallActivityBoundaryError.bpmn');
+        $parent = $this->createProcess([
+            'id' => 5,
+            'bpmn' => $parentBpmn
+        ]);
+
+        // Start a process request
+        $request = $this->startProcess($parent, 'node_1');
+
+        // Catch SubProcess is closed by boundary event
+        $childRequest = ProcessRequest::get()[1];
+        $this->assertEquals('COMPLETED', $childRequest->status);
+
+        // Error is catch by boundary event and continue to task "Error Catch"
+        $request->refresh();
+        $activeTokens = $request->tokens()->where('status', 'ACTIVE')->get();
+        $this->assertCount(1, $activeTokens);
+        $this->assertEquals('Error Catch', $activeTokens[0]->element_name);
+    }
 }

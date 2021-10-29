@@ -16,8 +16,8 @@
         responsive
       >
         <template v-slot:cell(name)="row">
-          <div v-if="row.item.name">{{ $t(row.item.name) }}</div>
-          <div v-else>{{ row.item.key }}</div>
+          <div v-if="row.item.name" v-uni-id="row.item.id.toString()">{{ $t(row.item.name) }}</div>
+          <div v-else v-uni-id="row.item.id.toString()">{{ row.item.key }}</div>
           <b-form-text v-if="row.item.helper">{{ $t(row.item.helper) }}</b-form-text>
         </template>
         <template v-slot:cell(config)="row">
@@ -28,15 +28,45 @@
         <template v-slot:cell(actions)="row">
           <template v-if="row.item && row.item.format !== 'boolean'">
             <span v-b-tooltip.hover :title="getTooltip(row)">
-              <b-button :aria-label="$t('Edit')" :disabled="row.item.readonly" @click="onEdit(row)" variant="link" size="lg"><i class="fa fa-pen-square"></i></b-button>
+              <b-button 
+                :aria-label="$t('Edit')" 
+                v-uni-aria-describedby="row.item.id.toString()"
+                :disabled="row.item.readonly" 
+                @click="onEdit(row)" 
+                variant="link" 
+                size="lg">
+                  <i class="fa fa-pen-square"></i>
+                </b-button>
             </span>
-            <b-button :aria-label="$t('Copy to Clipboard')" @click="onCopy(row)" variant="link" size="lg" v-b-tooltip.hover :title="$t('Copy to Clipboard')"><i class="fa fa-paste"></i></b-button>
+            <b-button 
+              :aria-label="$t('Copy to Clipboard')"
+              v-uni-aria-describedby="row.item.id.toString()"
+              @click="onCopy(row)"
+              variant="link"
+              size="lg"
+              v-b-tooltip.hover
+              :title="$t('Copy to Clipboard')">
+                <i class="fa fa-paste"></i>
+              </b-button>
 
             <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
-              <b-button :aria-label="$t('Clear')" :disabled="row.item.readonly" @click="onClear(row)" variant="link" size="lg"><i class="fas fa-trash-alt"></i></b-button>
+              <b-button 
+              :aria-label="$t('Clear')"
+              v-uni-aria-describedby="row.item.id.toString()"
+              :disabled="row.item.readonly" 
+              @click="onClear(row)" 
+              variant="link" 
+              size="lg">
+                <i class="fas fa-trash-alt"></i>
+              </b-button>
             </span>
             <span v-else class="invisible">
-              <b-button variant="link" size="lg"><i class="fas fa-trash-alt"></i></b-button>
+              <b-button 
+                variant="link" 
+                size="lg"
+                v-uni-aria-describedby="row.item.id.toString()">
+                  <i class="fas fa-trash-alt"></i>
+              </b-button>
             </span>
           </template>
         </template>
@@ -81,6 +111,7 @@
           :per-page="perPage"
           hide-ellipsis
           limit="3"
+          :aria-label="$t('Pagination')"
         >
           <template v-slot:first-text><i class="fas fa-step-backward fa-sm"></i></template>
           <template v-slot:last-text><i class="fas fa-step-forward fa-sm"></i></template>
@@ -106,6 +137,8 @@ import SettingText from './SettingText';
 import SettingTextArea from './SettingTextArea';
 import SettingsImport from './SettingsImport';
 import SettingsExport from './SettingsExport';
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
   components: {
@@ -121,6 +154,7 @@ export default {
     SettingsImport,
     SettingsExport
   },
+  mixins:[uniqIdsMixin],
   props: ['group'],
   data() {
     return {
@@ -317,7 +351,7 @@ export default {
     },
     /**
      * Javascript handler for configuration button
-     * 
+     *
      *  props: Properties of the button
      *  handler: JavaScript global function
      *
@@ -326,7 +360,7 @@ export default {
      *   format=button
      *   hidden=true
      *   ui={"props":{"variant":"primary"},"handler":"mailTest"}
-     * 
+     *
      */
     handler(btn) {
       if (btn.ui && btn.ui.handler && window[btn.ui.handler]) {

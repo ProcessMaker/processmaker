@@ -25,6 +25,7 @@ new Vue({
             disabled: false
         },
         configCopy: '',
+        focusErrors: 'config.addError'
     },
     methods: {
         reload() {
@@ -35,6 +36,9 @@ new Vue({
         },
         validatePassword() {
             if (this.config.password.trim().length > 0 && this.config.password.trim().length < 8) {
+                if (!('password' in this.config.addError)) {
+                    this.$set(this.config.addError, 'password', null);
+                }
                 this.config.addError.password = ['Password must be at least 8 characters']
                 this.$refs.passwordStrength.updatePassword('');
                 this.config.password = ''
@@ -43,6 +47,9 @@ new Vue({
                 return false
             }
             if (this.config.password !== this.config.confpassword) {
+                if (!('password' in this.config.addError)) {
+                    this.$set(this.config.addError, 'password', null);
+                }
                 this.config.addError.password = ['Passwords must match']
                 this.$refs.passwordStrength.updatePassword('')
                 this.config.password = ''
@@ -60,6 +67,7 @@ new Vue({
             this.$refs['addUserModal'].hideAddUserModal();
         },
         onSubmit() {
+            this.config.addError = {};
             if (this.validatePassword()) {
                 this.$refs['addUserModal'].onSubmit(this.config);
             }

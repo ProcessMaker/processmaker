@@ -6,12 +6,14 @@ import Sidebaricon from "./components/Sidebaricon";
 import ConfirmationModal from "./components/Confirm";
 import NavbarProfile from "./components/NavbarProfile";
 import Multiselect from "@processmaker/vue-multiselect/src/Multiselect";
+import SelectStatus from "./components/SelectStatus";
 import SelectUser from "./components/SelectUser";
 import SelectUserGroup from "./components/SelectUserGroup";
 import CategorySelect from "./processes/categories/components/CategorySelect";
 import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from './components/TimelineItem';
+import Required from './components/shared/Required';
 
 import { FileUpload, FileDownload } from './processes/screen-builder/components'
 import RequiredCheckbox from './processes/screen-builder/components/inspector/RequiredCheckbox'
@@ -42,6 +44,7 @@ window.moment = moment;
 
 Vue.component("multiselect", Multiselect);
 Vue.component("Sidebaricon", Sidebaricon);
+Vue.component("select-status", SelectStatus);
 Vue.component("select-user", SelectUser);
 Vue.component("select-user-group", SelectUserGroup);
 Vue.component("category-select", CategorySelect);
@@ -51,6 +54,7 @@ Vue.component("FileDownload", FileDownload);
 Vue.component("RequiredCheckbox", RequiredCheckbox);
 Vue.component("Breadcrumbs", Breadcrumbs);
 Vue.component("timeline-item", TimelineItem);
+Vue.component("required", Required);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();

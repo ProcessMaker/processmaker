@@ -34,7 +34,7 @@ Login
                 <div>
                   <input id="username" type="text" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" name="username" value="{{ old('username') }}" required>
                   @if ($errors->has('username'))
-                    <span class="invalid-feedback">
+                    <span class="invalid-feedback" role="alert">
                       <strong>{{ $errors->first('username') }}</strong>
                     </span>
                   @endif
@@ -45,7 +45,7 @@ Login
                 <div class="">
                   <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
                   @if ($errors->has('password'))
-                    <span class="invalid-feedback">
+                    <span class="invalid-feedback" role="alert">
                       <strong>{{ $errors->first('password') }}</strong>
                     </span>
                   @endif

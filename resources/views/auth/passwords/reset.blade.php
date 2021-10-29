@@ -12,21 +12,22 @@
         <label for="email">{{__('Email Address')}}</label>
         <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email">
         @if ($errors->has('email'))
-        <span class="invalid-feedback">
+        <span class="
+        invalid-feedback" role="alert">
           <strong>{{ $errors->first('email') }}</strong>
         </span>
         @endif
- 
+
       </div>
       <div class="form-group">
         <label for="password">{{__('New Password')}}</label>
         <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password">
         @if ($errors->has('password'))
-        <span class="invalid-feedback">
+        <span class="invalid-feedback" role="alert">
           <strong>{{ $errors->first('password') }}</strong>
         </span>
         @endif
- 
+
       </div>
       <div class="form-group">
         <label for="password-confirm">{{__('Confirm New Password')}}</label>

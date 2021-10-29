@@ -23,6 +23,9 @@
         <template slot="ids" slot-scope="props">
           <b-link :href="openRequest(props.rowData, props.rowIndex)">#{{props.rowData.id}}</b-link>
         </template>
+        <template slot="name" slot-scope="props">
+          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.name }}</span>
+        </template>
         <template slot="participants" slot-scope="props">
           <avatar-image
             v-for="participant in props.rowData.participants"
@@ -40,6 +43,7 @@
                 :href="openRequest(props.rowData, props.rowIndex)"
                 v-b-tooltip.hover
                 :title="$t('Open Request')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-caret-square-right fa-lg fa-fw"></i>
               </b-btn>
@@ -65,11 +69,13 @@ import dataLoadingMixin from "../../components/common/mixins/apiDataLoading.js";
 import AvatarImage from "../../components/AvatarImage";
 import isPMQL from "../../modules/isPMQL";
 import moment from "moment";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
 
 Vue.component("avatar-image", AvatarImage);
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: {
     filter: {},
     columns: {},
@@ -124,6 +130,9 @@ export default {
           case 'participants':
             field.name = '__slot:participants';
             break;
+          case 'name':
+            field.name = '__slot:name';
+            break
           default:
             field.name = column.field;
         }

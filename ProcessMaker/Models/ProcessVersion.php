@@ -7,6 +7,7 @@ use ProcessMaker\Contracts\ProcessModelInterface;
 use ProcessMaker\Traits\HasCategories;
 use ProcessMaker\Traits\HasSelfServiceTasks;
 use ProcessMaker\Traits\ProcessTrait;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * ProcessVersion is used to store the historical version of a process.
@@ -61,6 +62,50 @@ class ProcessVersion extends Model implements ProcessModelInterface
     protected $hidden = [
         'bpmn'
     ];
+
+    protected static function boot()
+    {
+        static::saved(static function (ProcessVersion $processVersion) {
+            $processVersion->saveProcessableVersions();
+        });
+
+        parent::boot();
+    }
+
+    /**
+     * Ensures there is a matching processable for each process version
+     *
+     * @return void
+     */
+    protected function saveProcessableVersions()
+    {
+        $processables = [
+            'usersCanCancel' => 'CANCEL',
+            'usersCanEditData' => 'EDIT_DATA',
+            'groupsCanCancel' => 'CANCEL',
+            'groupsCanEditData' => 'EDIT_DATA'
+        ];
+
+        foreach ($processables as $relationshipName => $methodName) {
+
+            if (!$this->process->$relationshipName()->exists()) {
+                continue;
+            }
+
+            $includeWithPivot = [
+                'process_id' => $this->process->id,
+                'method' => $methodName
+            ];
+
+            $updateWith = $this->process->$relationshipName->keyBy('id')->map(
+                function ($model) use ($includeWithPivot) {
+                    return $includeWithPivot;
+                }
+            );
+
+            $this->$relationshipName()->sync($updateWith->toArray(), false);
+        }
+    }
 
     /**
      * Set multiple|single categories to the process

@@ -20,6 +20,9 @@
         :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
+        <template slot="username" slot-scope="props">
+          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.username }}</span>
+        </template>
         <template slot="avatar" slot-scope="props">
           <avatar-image size="25" :input-data="props.rowData" hide-name="true"></avatar-image>
         </template>
@@ -32,6 +35,7 @@
                 v-b-tooltip.hover
                 :title="$t('Edit')"
                 v-if="permission.includes('edit-users')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -41,6 +45,7 @@
                 v-b-tooltip.hover
                 :title="$t('Delete')"
                 v-if="permission.includes('delete-users')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -65,10 +70,12 @@
 import datatableMixin from "../../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../../components/common/mixins/apiDataLoading";
 import AvatarImage from "../../../components/AvatarImage";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
 Vue.component("avatar-image", AvatarImage);
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
     return {
@@ -91,7 +98,7 @@ export default {
         },
         {
           title: () => this.$t("Username"),
-          name: "username",
+          name: "__slot:username",
           sortField: "username"
         },
         {

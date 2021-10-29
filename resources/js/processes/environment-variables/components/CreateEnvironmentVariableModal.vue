@@ -4,6 +4,7 @@
       <i class="fas fa-plus"></i> {{ $t('Environment Variable') }}
     </b-button>
     <modal id="createEnvironmentVariable" :title="$t('Create Environment Variable')" :ok-disabled="disabled" @ok.prevent="onSubmit" @hidden="onClose">
+      <required></required>
       <b-form-group
         required
         :label="$t('Name')"
@@ -12,10 +13,12 @@
         :state="errorState('name', errors)"
       >
         <b-form-input
+          required
           autofocus
           v-model="name"
           autocomplete="off"
           :state="errorState('name', errors)"
+          name="name"
         ></b-form-input>
       </b-form-group>
       <b-form-group
@@ -25,10 +28,12 @@
         :state="errorState('description', errors)"
       >
         <b-form-textarea
+          required
           v-model="description"
           autocomplete="off"
           rows="3"
           :state="errorState('description', errors)"
+          name="description"
         ></b-form-textarea>
       </b-form-group>
       <b-form-group
@@ -41,6 +46,7 @@
           autocomplete="off"
           rows="10"
           :state="errorState('value', errors)"
+          name="value"
         ></b-form-textarea>
       </b-form-group>
     </modal>

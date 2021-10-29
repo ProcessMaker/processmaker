@@ -65,7 +65,7 @@ use Throwable;
  *   @OA\Property(property="process_category_id", type="integer", format="id"),
  *   @OA\Property(property="name", type="string"),
  *   @OA\Property(property="description", type="string"),
- *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE"}),
+ *   @OA\Property(property="status", type="string", enum={"ACTIVE", "INACTIVE", "ARCHIVED"}),
  *   @OA\Property(property="pause_timer_start", type="integer"),
  *   @OA\Property(property="cancel_screen_id", type="integer"),
  *   @OA\Property(property="has_timer_start_events", type="boolean"),
@@ -337,7 +337,7 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         return [
             'name' => ['required', $unique, 'alpha_spaces'],
             'description' => 'required',
-            'status' => 'in:ACTIVE,INACTIVE',
+            'status' => 'in:ACTIVE,INACTIVE,ARCHIVED',
             'process_category_id' => 'exists:process_categories,id',
             'bpmn' => 'nullable',
         ];
@@ -379,39 +379,12 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     }
 
     /**
-     * Get the users who can start this process
+     * Scope a query to include only active and inactive but not archived processes
      *
      */
-    public function usersCanCancel()
+    public function scopeNotArchived($query)
     {
-        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'CANCEL');
-    }
-
-    /**
-     * Get the groups who can start this process
-     *
-     */
-    public function groupsCanCancel()
-    {
-        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'CANCEL');
-    }
-
-    /**
-     * Get the users who can start this process
-     *
-     */
-    public function usersCanEditData()
-    {
-        return $this->morphedByMany('ProcessMaker\Models\User', 'processable')->wherePivot('method', 'EDIT_DATA');
-    }
-
-    /**
-     * Get the groups who can start this process
-     *
-     */
-    public function groupsCanEditData()
-    {
-        return $this->morphedByMany('ProcessMaker\Models\Group', 'processable')->wherePivot('method', 'EDIT_DATA');
+        return $query->whereIn('processes.status', ['ACTIVE', 'INACTIVE']);
     }
 
     /**
@@ -430,6 +403,15 @@ class Process extends Model implements HasMedia, ProcessModelInterface
     public function scopeInactive($query)
     {
         return $query->where('processes.status', 'INACTIVE');
+    }
+
+    /**
+     * Scope a query to include only archived processes
+     *
+     */
+    public function scopeArchived($query)
+    {
+        return $query->where('processes.status', 'ARCHIVED');
     }
 
     public function getCollaborations()
@@ -880,11 +862,11 @@ class Process extends Model implements HasMedia, ProcessModelInterface
         $response = [];
         foreach ($this->start_events as $startEvent) {
             if (isset($startEvent['assignment']) && $startEvent['assignment'] === 'user' && isset($startEvent['assignedUsers'])) {
-                $users = explode(',', $startEvent['assignedUsers']);
+                $users = explode(',', ($startEvent['assignedUsers'] ?? ''));
                 $access = in_array($user->id, $users);
             } elseif (isset($startEvent['assignment']) && $startEvent['assignment'] === 'group' && isset($startEvent['assignedGroups'])) {
                 $access = false;
-                foreach (explode(',', $startEvent['assignedGroups']) as $groupId) {
+                foreach (explode(',', ($startEvent['assignedGroups'] ?? '')) as $groupId) {
                     $access = $this->doesUserBelongsGroup($user->id, $groupId);
                     if ($access) {
                         break;

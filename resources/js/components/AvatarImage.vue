@@ -121,14 +121,14 @@ export default {
           return true;
         }
       };
-      
+
       return false;
     },
     variant(value) {
       if (value.src) {
         return 'secondary';
       } else {
-        return 'warning';
+        return 'info';
       }
     },
     timestamp(src) {

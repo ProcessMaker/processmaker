@@ -387,8 +387,9 @@ class ProcessTest extends TestCase
     public function testFiltering()
     {
         $perPage = 10;
-        $initialActiveCount = Process::active()->count();
-        $initialInactiveCount = Process::inactive()->count();
+        
+        $initialNotArchivedCount = Process::notArchived()->count();
+        $initialArchivedCount = Process::archived()->count();
 
         // Create some processes
         $processActive = [
@@ -399,14 +400,19 @@ class ProcessTest extends TestCase
             'num' => 15,
             'status' => 'INACTIVE'
         ];
+        $processArchived = [
+            'num' => 20,
+            'status' => 'ARCHIVED'
+        ];
         factory(Process::class, $processActive['num'])->create(['status' => $processActive['status']]);
         factory(Process::class, $processInactive['num'])->create(['status' => $processInactive['status']]);
+        factory(Process::class, $processArchived['num'])->create(['status' => $processArchived['status']]);
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
             '?status=active&include=category&per_page=' . $perPage,
             [
-                'total' => $initialActiveCount + $processActive['num'],
+                'total' => $initialNotArchivedCount + $processActive['num'] + $processInactive['num'],
                 'count' => $perPage,
                 'per_page' => $perPage,
             ]
@@ -416,9 +422,9 @@ class ProcessTest extends TestCase
 
         //Get active processes
         $response = $this->assertCorrectModelListing(
-            '?status=inactive&include=category,user&per_page=' . $perPage,
+            '?status=archived&include=category,user&per_page=' . $perPage,
             [
-                'total' => $initialInactiveCount + $processInactive['num'],
+                'total' => $initialArchivedCount + $processArchived['num'],
                 'count' => $perPage,
                 'per_page' => $perPage,
             ]
@@ -817,7 +823,7 @@ class ProcessTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
 
         // Assert that the process is not listed in the archive
-        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response = $this->apiCall('GET', '/processes?status=archived');
         $response->assertJsonMissing(['id' => $id]);
 
         // Archive the process
@@ -825,7 +831,7 @@ class ProcessTest extends TestCase
         $response->assertStatus(204);
 
         // Assert that the process is listed in the archive
-        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response = $this->apiCall('GET', '/processes?status=archived');
         $response->assertJsonFragment(['id' => $id]);
 
         // Assert that the process is not listed on the main index
@@ -841,7 +847,7 @@ class ProcessTest extends TestCase
         $response->assertJsonFragment(['id' => $id]);
 
         // Assert that the process is not listed in the archive
-        $response = $this->apiCall('GET', '/processes?status=inactive');
+        $response = $this->apiCall('GET', '/processes?status=archived');
         $response->assertJsonMissing(['id' => $id]);
     }
 

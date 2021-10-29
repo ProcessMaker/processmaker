@@ -1,4 +1,5 @@
 <div class="card card-body">
+    <required></required>
     <h5 class="mb-3 font-weight-bold">{{__('Profile')}}</h5>
     <h5 class="mb-3">{{__('General Information')}}</h5>
         <div class="row">
@@ -7,8 +8,8 @@
                 {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
                 'form-control', 'v-model' => 'formData.firstname',
                 'v-bind:class' => '{\'form-control\':true,
-                \'is-invalid\':errors.firstname}']) !!}
-                <div class="invalid-feedback" v-if="errors.firstname">
+                \'is-invalid\':errors.firstname}', 'required', 'aria-required' => 'true']) !!}
+                <div class="invalid-feedback" role="alert" v-if="errors.firstname">
                     @{{errors.firstname[0]}}
                 </div>
             </div>
@@ -17,8 +18,8 @@
                 {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4,
                 'class'=> 'form-control', 'v-model'
                 => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true,
-                \'is-invalid\':errors.lastname}']) !!}
-                <div class="invalid-feedback" v-if="errors.lastname">
+                \'is-invalid\':errors.lastname}', 'required', 'aria-required' => 'true']) !!}
+                <div class="invalid-feedback" role="alert" v-if="errors.lastname">
                     @{{errors.lastname[0]}}
                 </div>
             </div>
@@ -43,8 +44,8 @@
             {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
             'form-control', 'v-model'
             => 'formData.email', 'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.email}']) !!}
-            <div class="invalid-feedback" v-if="errors.email">@{{errors.email[0]}}
+            \'is-invalid\':errors.email}', 'required', 'aria-required' => 'true']) !!}
+            <div class="invalid-feedback" role="alert" v-if="errors.email">@{{errors.email[0]}}
             </div>
         </div>
         <div class="form-group">
@@ -53,7 +54,7 @@
             'v-model' => 'formData.phone',
             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.phone}'])
             !!}
-            <div class="invalid-feedback" v-if="errors.phone">@{{errors.phone}}
+            <div class="invalid-feedback" role="alert" v-if="errors.phone">@{{errors.phone[0]}}
             </div>
         </div>
 
@@ -63,7 +64,7 @@
             'v-model' => 'formData.fax',
             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.fax}'])
             !!}
-            <div class="invalid-feedback" v-if="errors.fax">@{{errors.fax}}
+            <div class="invalid-feedback" role="alert" v-if="errors.fax">@{{errors.fax[0]}}
             </div>
         </div>
 
@@ -73,7 +74,7 @@
             'v-model' => 'formData.cell',
             'v-bind:class' => '{\'form-control\':true, \'is-invalid\':errors.cell}'])
             !!}
-            <div class="invalid-feedback" v-if="errors.cell">@{{errors.cell}}
+            <div class="invalid-feedback" role="alert" v-if="errors.cell">@{{errors.cell[0]}}
             </div>
         </div>
     <hr>
@@ -86,7 +87,7 @@
                     <option :value="null" disabled>{{__('Select')}}</option>
                 </template>
             </b-form-select>
-            <div class="invalid-feedback" v-if="errors.country">
+            <div class="invalid-feedback" role="alert" v-if="errors.country">
                 @{{errors.country}}
             </div>
         </div>
@@ -98,7 +99,7 @@
             'form-control', 'v-model' => 'formData.address',
             'v-bind:class' => '{\'form-control\':true,
             \'is-invalid\':errors.address}']) !!}
-            <div class="invalid-feedback" v-if="errors.address">
+            <div class="invalid-feedback" role="alert" v-if="errors.address">
                 @{{errors.address}}
             </div>
         </div>
@@ -110,7 +111,7 @@
             'form-control', 'v-model'
             => 'formData.city', 'v-bind:class' => '{\'form-control\':true,
             \'is-invalid\':errors.city}']) !!}
-            <div class="invalid-feedback" v-if="errors.city">@{{errors.city}}</div>
+            <div class="invalid-feedback" role="alert" v-if="errors.city">@{{errors.city}}</div>
         </div>
     </div>
     <div class="row">
@@ -121,7 +122,7 @@
                     <option :value="null" disabled>{{__('Select')}}</option>
                 </template>
             </b-form-select>
-            <div class="invalid-feedback" v-if="errors.state">@{{errors.state}}
+            <div class="invalid-feedback" role="alert" v-if="errors.state">@{{errors.state}}
             </div>
         </div>
         <div class="form-group col" v-else>
@@ -130,7 +131,7 @@
             'form-control', 'v-model'
             => 'formData.state', 'v-bind:class' => '{\'form-control\':true,
             \'is-invalid\':errors.state}']) !!}
-            <div class="invalid-feedback" v-if="errors.state">@{{errors.state}}
+            <div class="invalid-feedback" role="alert" v-if="errors.state">@{{errors.state}}
             </div>
         </div>
         <div class="form-group col">
@@ -139,7 +140,7 @@
             'form-control', 'v-model'
             => 'formData.postal', 'v-bind:class' => '{\'form-control\':true,
             \'is-invalid\':errors.postal}']) !!}
-            <div class="invalid-feedback" v-if="errors.postal">@{{errors.postal}}
+            <div class="invalid-feedback" role="alert" v-if="errors.postal">@{{errors.postal}}
             </div>
         </div>
     </div>

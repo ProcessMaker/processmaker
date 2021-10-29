@@ -3,7 +3,7 @@
     <div class="d-flex mb-2" v-show="!shouldShowLoader">
       <div class="mr-auto"></div>
       <div>
-        <b-button type="button" @click="add()">
+        <b-button :aria-label="$t('Add New Script Executor')" type="button" @click="add()">
           <i class="fa fa-plus" /> {{ $t("Script Executor") }}
         </b-button>
       </div>
@@ -28,6 +28,10 @@
         :noDataTemplate="$t('No Data Available')"
         pagination-path="meta"
       >
+        <template slot="title" slot-scope="props">
+          <span v-uni-id="props.rowData.id.toString()">{{ props.rowData.title }}</span>
+        </template>
+
         <template slot="actions" slot-scope="props">
           <div class="actions">
             <div class="popout">
@@ -36,6 +40,7 @@
                 @click="edit(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Edit')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-pen-square fa-lg fa-fw"></i>
               </b-btn>
@@ -44,6 +49,7 @@
                 @click="deleteExecutor(props.rowData)"
                 v-b-tooltip.hover
                 :title="$t('Delete')"
+                v-uni-aria-describedby="props.rowData.id.toString()"
               >
                 <i class="fas fa-trash-alt fa-lg fa-fw"></i>
               </b-btn>
@@ -71,36 +77,47 @@
       header-close-content="&times;"
     >
       <b-container class="mb-2">
+        <required></required>
         <b-row>
           <b-col>
-            <b-row class="mb-1">
-              <b-input
-                :class="{ 'is-invalid': getError('title') }"
-                v-model="formData.title"
-                :placeholder="$t('Name')"
-              >
-              </b-input>
-              <div v-if="getError('title')" class="invalid-feedback">
-                {{ getError("title") }}
-              </div>
-            </b-row>
             <b-row>
+              <b-col class="p-0">
+              <b-form-group
+                required
+                :label="$t('Name')"
+                :state="!getError('title')"
+                :invalid-feedback="getError('title') || ''"
+                role="alert"
+              >
+                <b-input
+                  required
+                  v-model="formData.title"
+                  name="title"
+                ></b-input>
+              </b-form-group>
+              <b-form-group
+                required
+                :label="$t('Language')"
+                :state="!getError('language')"
+                :invalid-feedback="getError('language') || ''"
+              >
               <b-form-select
-                :class="{ 'is-invalid': getError('language') }"
+                required
                 v-model="formData.language"
                 :options="languagesSelect"
+                name="language"
               >
               </b-form-select>
-              <div v-if="getError('language')" class="invalid-feedback">
-                {{ getError("language") }}
-              </div>
+              </b-form-group>
+              </b-col>
             </b-row>
           </b-col>
           <b-col class="d-flex flex-column">
+            <label>{{ $t('Description') }}</label>
             <b-textarea
               v-model="formData.description"
-              :placeholder="$t('Description')"
               class="flex-grow-1"
+              name="description"
             ></b-textarea>
           </b-col>
         </b-row>
@@ -110,7 +127,11 @@
 
       <div class="d-flex flex-row mb-1">
         <div class="mr-1">
-          <a @click="showDockerfile = !showDockerfile">
+          <a
+            @click="showDockerfile = !showDockerfile"
+            :aria-expanded="showDockerfile ? 'true' : 'false'"
+            :title="$t('Display contents of docker file that will be prepended to your customizations below.')"
+          >
             <i
               class="fa"
               :class="{
@@ -127,7 +148,7 @@
             @click="
               showDockerfile = !showDockerfile
             ">{{ initDockerfile.split("\n")[0] }} <template v-if="!showDockerfile">...</template></pre>
-          <b-collapse id="dockerfile" v-model="showDockerfile">
+          <b-collapse id="dockerfile" v-model="showDockerfile" :aria-hidden="showDockerfile ? 'false' : 'true'">
             <pre>{{ initDockerfile.split("\n").slice(1).join("\n") }}</pre>
           </b-collapse>
         </div>
@@ -159,7 +180,7 @@
             $t("Executor Successfully Built. You can now close this window. ")
           }}
         </p>
-        <div v-if="exitCode > 0" class="invalid-feedback d-block">
+        <div v-if="exitCode > 0" class="invalid-feedback d-block" role="alert">
           {{ $t("Error Building Executor. See Output Above.") }}
         </div>
       </div>
@@ -200,9 +221,11 @@
 <script>
 import datatableMixin from "../../components/common/mixins/datatable";
 import dataLoadingMixin from "../../components/common/mixins/apiDataLoading";
+import { createUniqIdsMixin } from "vue-uniq-ids";
+const uniqIdsMixin = createUniqIdsMixin();
 
 export default {
-  mixins: [datatableMixin, dataLoadingMixin],
+  mixins: [datatableMixin, dataLoadingMixin, uniqIdsMixin],
   props: ["filter", "permission"],
   data() {
     return {
@@ -246,7 +269,7 @@ export default {
         },
         {
           title: () => this.$t("Title"),
-          name: "title",
+          name: "__slot:title",
           sortField: "title",
         },
         {

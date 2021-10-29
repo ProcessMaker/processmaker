@@ -14,6 +14,7 @@
         @click="print"
         class="btn btn-secondary ml-2"
         :aria-label="$t('Print')"
+        v-if="canPrint"
         :disabled="disabled"
       >
         <i class="fas fa-print"></i> {{ $t("Print") }}
@@ -38,6 +39,7 @@
       <button
         type="button"
         @click="print"
+        v-if="canPrint"
         class="btn btn-secondary ml-2"
         :aria-label="$t('Print')"
         :disabled="disabled"
@@ -71,6 +73,10 @@
         type: Boolean,
         default: false
       },
+      timeoutOnLoad:{
+        type: Boolean,
+        default: false
+      }
     },
     data() {
       return {
@@ -109,18 +115,22 @@
       $('#cover-spin').show(0);
       window.ProcessMaker.apiClient.requestCount = 0;
       window.ProcessMaker.apiClient.requestCountFlag = true;
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          this.interval = setInterval(this.printWhenNoRequestsArePending, 1000);
-        }, 750);
+      if (this.timeoutOnLoad) {
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            this.interval = setInterval(this.printWhenNoRequestsArePending, 1000);
+          }, 750);
 
-        setTimeout(() => {
-          this.closeRequestCount();
-          if (window.ProcessMaker.apiClient.requestCountFlag) {
-            this.disabled = false;
-          }
-        }, 30000);
-      });
+          setTimeout(() => {
+            this.closeRequestCount();
+            if (window.ProcessMaker.apiClient.requestCountFlag) {
+              this.disabled = false;
+            }
+          }, 30000);
+        });
+      } else {
+          this.disabled = false;
+      }
       this.loadPages();
     },
     methods: {
