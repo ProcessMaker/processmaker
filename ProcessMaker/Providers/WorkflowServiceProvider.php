@@ -188,6 +188,7 @@ class WorkflowServiceProvider extends ServiceProvider
             $op = new MustacheOptions;
             return new Mustache_Engine([
                 'helpers' => $op->helpers,
+                'pragmas' => [Mustache_Engine::PRAGMA_FILTERS],
             ]);
         });
 
