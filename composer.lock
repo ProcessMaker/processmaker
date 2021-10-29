@@ -4725,10 +4725,16 @@
         {
             "name": "processmaker/pmql",
             "version": "1.5.0",
-            "dist": {
-                "type": "path",
-                "url": "/Users/ryancooley/Sites/processmaker/4.2/packages/pmql",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ProcessMaker/pmql.git",
                 "reference": "58abde79a2154b8232fe0435e09d7aa98031210b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ProcessMaker/pmql/zipball/58abde79a2154b8232fe0435e09d7aa98031210b",
+                "reference": "58abde79a2154b8232fe0435e09d7aa98031210b",
+                "shasum": ""
             },
             "require": {
                 "laravel/framework": "^5.7|^6"
@@ -4748,11 +4754,7 @@
                     "ProcessMaker\\Query\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "ProcessMaker\\Query\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Taylor Dondich",
@@ -4760,9 +4762,11 @@
                 }
             ],
             "description": "An Eloquent trait that provides the pmql scope to allow converting simple sql criteria clauses to Eloquent",
-            "transport-options": {
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/ProcessMaker/pmql/issues",
+                "source": "https://github.com/ProcessMaker/pmql/tree/v1.5.0"
+            },
+            "time": "2021-10-28T23:35:57+00:00"
         },
         {
             "name": "psr/cache",
