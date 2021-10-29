@@ -4,25 +4,18 @@
         <div class="card-body">
           <div class="row">
             <div class="col-10">
-              {{ transformedName }}
+              <span v-uni-id="event.id.toString()">{{transformedName}}</span>
               <span v-if="process.startEvents.length > 1">: {{ event.name }}</span>
               <a href="#" @click="showRequestDetails" :aria-expanded="ariaExpanded" :aria-controls="getComputedId(process)">...</a>
             </div>
             <div class="col-2 text-right">
-              <a :href="getNewRequestLinkHref(process, event)" @click.prevent="newRequestLink(process, event);" class="btn btn-primary btn-sm">
-                <i class="fas fa-caret-square-right"></i> {{ $t('Start') }}
-              </a>
-              <span v-uni-id="event.id.toString()">{{transformedName}}</span>
-              <span v-if="process.startEvents.length > 1">: {{event.name}}</span>
-              <a href="#" @click="showRequestDetails">...</a>
-            </div>
-            <div class="col-2 text-right">
               <a 
-                :href="getNewRequestLinkHref(process, event)" 
-                @click.prevent="newRequestLink(process, event);" 
-                class="btn btn-primary btn-sm"
-                v-uni-aria-describedby="event.id.toString()">
-                <i class="fas fa-caret-square-right"></i> {{$t('Start')}}
+              :href="getNewRequestLinkHref(process, event)" 
+              @click.prevent="newRequestLink(process, event);" 
+              class="btn btn-primary btn-sm"
+              v-uni-aria-describedby="event.id.toString()"
+              >
+                <i class="fas fa-caret-square-right"></i> {{ $t('Start') }}
               </a>
             </div>
           </div>
