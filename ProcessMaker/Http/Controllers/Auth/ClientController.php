@@ -49,7 +49,7 @@ class ClientController extends PassportClientController
         $redirect = in_array('authorization_code_grant', $request->types) ? $request->redirect : '';
 
         $client = $this->clients->create(
-            $request->user()->getKey(), $request->name, $redirect, $personalAccess, $password
+            $request->user()->getKey(), $request->name, $redirect, null, $personalAccess, $password
         )->makeVisible('secret');
 
         return new AuthClientResource($client);
