@@ -85,8 +85,12 @@ class BpmnSubscriber
         }
         Log::info('Activity activated: ' . json_encode($token->getProperties()));
 
-        $notifiables = $token->getNotifiables('assigned');
-        Notification::send($notifiables, new ActivityActivatedNotification($token));
+        // Do not send activated notification for self service tasks since
+        // they do not have a user assigned yet.
+        if ($token->user_id) {
+            $token->sendActivityActivatedNotifications();
+        }
+
         event(new ActivityAssigned($event->token));
     }
 

@@ -7,6 +7,7 @@ use DB;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Scout\Searchable;
 use Log;
 use ProcessMaker\Facades\WorkflowManager;
@@ -20,6 +21,7 @@ use ProcessMaker\Nayra\Contracts\Bpmn\FlowElementInterface;
 use ProcessMaker\Nayra\Contracts\Bpmn\TokenInterface;
 use ProcessMaker\Traits\ExtendedPMQL;
 use ProcessMaker\Traits\SerializeToIso8601;
+use ProcessMaker\Notifications\ActivityActivatedNotification;
 use Throwable;
 
 /**
@@ -870,5 +872,16 @@ class ProcessRequestToken extends Model implements TokenInterface
             return $loop && $loop->isExecutable();
         }
         return false;
+    }
+    
+    /**
+     * Send notifications when the task activates
+     *
+     * @return void
+     */
+    public function sendActivityActivatedNotifications()
+    {
+        $notifiables = $this->getNotifiables('assigned');
+        Notification::send($notifiables, new ActivityActivatedNotification($this));
     }
 }

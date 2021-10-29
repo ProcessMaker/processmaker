@@ -309,11 +309,13 @@ class TaskController extends Controller
             return new Resource($task->refresh());
         } elseif (!empty($request->input('user_id'))) {
             $userToAssign = $request->input('user_id');
+            $sendActivityActivatedNotifications = false;
             if ($task->is_self_service && $userToAssign == Auth::id() && !$task->user_id) {
                 // Claim task
                 $task->is_self_service = 0;
                 $task->user_id = $userToAssign;
                 $task->persistUserData($userToAssign);
+                $sendActivityActivatedNotifications = true;
             } elseif ($userToAssign === '#manager') {
                 // Reassign to manager
                 $task->authorizeAssigneeEscalateToManager();
@@ -327,6 +329,10 @@ class TaskController extends Controller
                 $task->persistUserData($userToAssign);
             }
             $task->save();
+            
+            if ($sendActivityActivatedNotifications) {
+                $task->sendActivityActivatedNotifications();
+            }
 
             // Send a notification to the user
             $notification = new TaskReassignmentNotification($task);
