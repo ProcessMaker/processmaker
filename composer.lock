@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1640b1ccc60f5d6cc5f9d61d7c600930",
+    "content-hash": "10cc884812073ae8b5f0081cc469d0ee",
     "packages": [
         {
             "name": "babenkoivan/elastic-adapter",
@@ -4732,16 +4732,16 @@
         },
         {
             "name": "processmaker/nayra",
-            "version": "1.7.0-RC3",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProcessMaker/nayra.git",
-                "reference": "6f4bf27782a3fb210c04b98033ffc1556115edba"
+                "reference": "65962803c987baef008ed84921b9385489c8b9a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/6f4bf27782a3fb210c04b98033ffc1556115edba",
-                "reference": "6f4bf27782a3fb210c04b98033ffc1556115edba",
+                "url": "https://api.github.com/repos/ProcessMaker/nayra/zipball/65962803c987baef008ed84921b9385489c8b9a1",
+                "reference": "65962803c987baef008ed84921b9385489c8b9a1",
                 "shasum": ""
             },
             "require-dev": {
@@ -4760,9 +4760,9 @@
             "description": "BPMN compliant engine",
             "support": {
                 "issues": "https://github.com/ProcessMaker/nayra/issues",
-                "source": "https://github.com/ProcessMaker/nayra/tree/v1.7.0-RC3"
+                "source": "https://github.com/ProcessMaker/nayra/tree/v1.7.0"
             },
-            "time": "2021-09-28T23:28:17+00:00"
+            "time": "2021-11-01T22:39:38+00:00"
         },
         {
             "name": "processmaker/pmql",
