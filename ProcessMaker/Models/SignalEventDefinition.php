@@ -23,13 +23,22 @@ class SignalEventDefinition extends ModelsSignalEventDefinition
      */
     public function getPayloadData(TokenInterface $token = null, CatchEventInterface $startEvent = null)
     {
-        $sourceEventDefinition = $token->getOwnerElement()->getEventDefinitions()->item(0);
-        $requestData = $token ? $token->getInstance()->getDataStore()->getData() : [];
-        $eventConfig = json_decode($sourceEventDefinition->getProperty('config') ?? null);
-        $payload = $eventConfig && $eventConfig->payload ? $eventConfig->payload[0] : null;
-        $payloadId = $payload && $payload->id ? $payload->id : null;
+        if ($token) {
+            $sourceEventDefinition = $token->getOwnerElement()->getEventDefinitions()->item(0);
+            $requestData = $token ? $token->getInstance()->getDataStore()->getData() : [];
+            $eventConfig = json_decode($sourceEventDefinition->getProperty('config') ?? null);
+            $payload = $eventConfig && $eventConfig->payload ? $eventConfig->payload[0] : null;
+            $payloadId = $payload && $payload->id ? $payload->id : null;
+        } else {
+            $requestData = [];
+            $payloadId = null;
+        }
 
-        $targetVariable = $startEvent->getProperty('config', false);
+        if ($startEvent) {
+            $targetVariable = $startEvent->getProperty('config', false);
+        } else {
+            $targetVariable = null;
+        }
 
         $data = [];
 
