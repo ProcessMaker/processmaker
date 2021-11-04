@@ -7,6 +7,7 @@ use Carbon\CarbonTimeZone;
 use ProcessMaker\Query\Expression;
 use ProcessMaker\Query\Traits\PMQL;
 use Illuminate\Database\Eloquent\Builder;
+use ProcessMaker\Query\IntervalExpression;
 use Throwable;
 
 trait ExtendedPMQL
@@ -24,7 +25,7 @@ trait ExtendedPMQL
      * @param callable $callback
      *
      * @return mixed
-     */    
+     */
     public function scopePMQL(Builder $builder, string $query, callable $callback = null)
     {
         if (! $callback) {
@@ -46,22 +47,22 @@ trait ExtendedPMQL
      * @param \Illuminate\Database\Eloquent\Builder $builder
      *
      * @return mixed
-     */    
+     */
     private function handle(Expression $expression, Builder $builder)
     {
         // Setup our needed variables
         $field = $expression->field->field();
         $model = $builder->getModel();
-        
+
         if (is_string($field)) {
             // Parse our value
             $value = $this->parseValue($expression);
-            
+
             // PMQL Interval expressions do not have values
             if (method_exists($expression->value, 'setValue')) {
                 $expression->value->setValue($value);
             }
-            
+
             // Title case our field name so we can suffix it to our method names
             $fieldMethodName = ucfirst(strtolower($field));
 
@@ -86,10 +87,10 @@ trait ExtendedPMQL
             $method = "fieldWildcard";
             if (method_exists($model, $method)) {
                 return $model->{$method}($value, $expression, $builder);
-            }    
+            }
         }
     }
-    
+
     /**
      * Set the value as a string if possible. Also convert to the logged-in
      * user's timezone if the value is parsable by Carbon as a date.
@@ -106,9 +107,9 @@ trait ExtendedPMQL
         } else {
             $value = $expression->value;
         }
-        
+
         // Check to see if the value is parsable as a date
-        if (! is_numeric($value)) {
+        if ($value instanceof IntervalExpression || (is_string($value) && strlen($value) > 1)) {
             try {
                 $parsed = Carbon::parse($value, auth()->user()->timezone);
                 $parsed->setTimezone(config('app.timezone'));
@@ -117,7 +118,7 @@ trait ExtendedPMQL
                 //Ignore parsing errors and just return the original
             }
         }
-        
+
         return $value;
     }
 }
