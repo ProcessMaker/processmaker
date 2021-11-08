@@ -83,7 +83,8 @@
                         title: @json($currentUser['fullname']),
                         initials: @json($currentUser['firstname'][0]) + @json($currentUser['lastname'][0])
                     }
-                ]
+                ],
+                focusErrors: 'errors',
             },
             created() {
               if (this.meta) {

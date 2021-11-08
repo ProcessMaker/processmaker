@@ -18,43 +18,43 @@ class ExtendedPMQLTest extends TestCase
     {
         // Instantiate Faker
         $faker = Factory::create();
-        
+
         // Set our fake date
         $date = $faker->dateTime();
-        
+
         // Create a process request with our fake created_at date
         $processRequest = factory(ProcessRequest::class)->create([
             'created_at' => $date,
         ]);
-        
+
         // Construct & run a PMQL query using the "created" field alias
         $query = 'created = "' . $date->format('Y-m-d H:i:s') . '"';
         $pmqlResult = ProcessRequest::pmql($query)->first();
-        
+
         // Assert that the models match
         $this->assertTrue($processRequest->is($pmqlResult));
     }
-    
+
     public function testHandleValueAlias()
     {
         // Create a process request
         $processRequest = factory(ProcessRequest::class)->create([
             'status' => 'ACTIVE',
         ]);
-        
+
         // Construct & run a PMQL query using the "status" value alias
         $query = 'status = "In Progress"';
         $pmqlResult = ProcessRequest::pmql($query)->get();
-        
+
         // Assert that the model is returned in our search
         $ids = $pmqlResult->pluck('id');
         $this->assertContains($processRequest->id, $ids);
     }
-    
+
     public function testHandleFieldWildcard()
     {
         $this->markTestSkipped('PMQL does not yet support JSON fields on Microsoft SQL Server.');
-        
+
         // Instantiate Faker
         $faker = Factory::create();
 
@@ -68,18 +68,18 @@ class ExtendedPMQLTest extends TestCase
         $processRequest = factory(ProcessRequest::class)->create([
             'data' => $data,
         ]);
-        
+
         // Create a process request token tied to the above request
         $processRequestToken = factory(ProcessRequestToken::class)->create([
             'process_request_id' => $processRequest->id,
         ]);
-        
+
         // Construct & run a PMQL query using the "data" field wildcard
         $query = "data.first_name = \"{$data['first_name']}\" AND data.last_name = \"{$data['last_name']}\"";
         $pmqlResult = ProcessRequestToken::pmql($query)->first();
 
         // Assert that the models match
-        $this->assertTrue($processRequestToken->is($pmqlResult));        
+        $this->assertTrue($processRequestToken->is($pmqlResult));
     }
 
     public function testInUsersTimezone()
@@ -118,7 +118,23 @@ class ExtendedPMQLTest extends TestCase
 
         $url = route('api.requests.index', ['pmql' => 'data.date > now -1 hour']);
         $result = $this->apiCall('GET', $url);
-        $this->assertCount(1, $result->json()['data']); // Match only the one that completed 10 minutes ago 
+        $this->assertCount(1, $result->json()['data']); // Match only the one that completed 10 minutes ago
+        $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id'] );
+    }
+
+    public function testCharComparison()
+    {
+        $processRequest1 = factory(ProcessRequest::class)->create([
+            'data' => ['gender' => 'F']
+        ]);
+
+        $processRequest2 = factory(ProcessRequest::class)->create([
+            'data' => ['gender' => 'M']
+        ]);
+
+        $url = route('api.requests.index', ['pmql' => 'data.gender = "F"']);
+        $result = $this->apiCall('GET', $url);
+        $this->assertCount(1, $result->json()['data']); // Match only F
         $this->assertEquals($processRequest1->id, $result->json()['data'][0]['id'] );
     }
 }

@@ -13,6 +13,7 @@ import CategorySelect from "./processes/categories/components/CategorySelect";
 import SelectFromApi from "./components/SelectFromApi";
 import Breadcrumbs from "./components/Breadcrumbs";
 import TimelineItem from './components/TimelineItem';
+import Required from './components/shared/Required';
 
 import { FileUpload, FileDownload } from './processes/screen-builder/components'
 import RequiredCheckbox from './processes/screen-builder/components/inspector/RequiredCheckbox'
@@ -53,6 +54,7 @@ Vue.component("FileDownload", FileDownload);
 Vue.component("RequiredCheckbox", RequiredCheckbox);
 Vue.component("Breadcrumbs", Breadcrumbs);
 Vue.component("timeline-item", TimelineItem);
+Vue.component("required", Required);
 
 // Event bus ProcessMaker
 window.ProcessMaker.events = new Vue();

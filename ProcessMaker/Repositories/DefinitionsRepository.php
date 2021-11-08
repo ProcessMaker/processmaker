@@ -7,6 +7,7 @@ use ProcessMaker\Models\DataStore;
 use ProcessMaker\Models\FormalExpression;
 use ProcessMaker\Models\Message;
 use ProcessMaker\Models\MessageEventDefinition;
+use ProcessMaker\Models\SignalEventDefinition;
 use ProcessMaker\Models\TimerExpression;
 use ProcessMaker\Nayra\Contracts\RepositoryInterface;
 use ProcessMaker\Nayra\RepositoryTrait;
@@ -79,5 +80,15 @@ class DefinitionsRepository implements RepositoryInterface
         $process = new Process();
         $process->setRepository($this);
         return $process;
+    }
+
+    /**
+     * Create instance of SignalEventDefinition.
+     *
+     * @return \ProcessMaker\Nayra\Contracts\Bpmn\SignalEventDefinitionInterface
+     */
+    public function createSignalEventDefinition()
+    {
+        return new SignalEventDefinition();
     }
 }

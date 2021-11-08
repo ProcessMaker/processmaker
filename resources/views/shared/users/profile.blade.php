@@ -1,4 +1,5 @@
 <div class="card card-body">
+    <required></required>
     <h5 class="mb-3 font-weight-bold">{{__('Profile')}}</h5>
     <h5 class="mb-3">{{__('General Information')}}</h5>
         <div class="row">
@@ -7,7 +8,7 @@
                 {!! Form::text('firstname', null, ['id' => 'firstname','class'=>
                 'form-control', 'v-model' => 'formData.firstname',
                 'v-bind:class' => '{\'form-control\':true,
-                \'is-invalid\':errors.firstname}']) !!}
+                \'is-invalid\':errors.firstname}', 'required', 'aria-required' => 'true']) !!}
                 <div class="invalid-feedback" role="alert" v-if="errors.firstname">
                     @{{errors.firstname[0]}}
                 </div>
@@ -17,7 +18,7 @@
                 {!! Form::text('lastname', null, ['id' => 'lastname', 'rows' => 4,
                 'class'=> 'form-control', 'v-model'
                 => 'formData.lastname', 'v-bind:class' => '{\'form-control\':true,
-                \'is-invalid\':errors.lastname}']) !!}
+                \'is-invalid\':errors.lastname}', 'required', 'aria-required' => 'true']) !!}
                 <div class="invalid-feedback" role="alert" v-if="errors.lastname">
                     @{{errors.lastname[0]}}
                 </div>
@@ -43,7 +44,7 @@
             {!! Form::email('email', null, ['id' => 'email', 'rows' => 4, 'class'=>
             'form-control', 'v-model'
             => 'formData.email', 'v-bind:class' => '{\'form-control\':true,
-            \'is-invalid\':errors.email}']) !!}
+            \'is-invalid\':errors.email}', 'required', 'aria-required' => 'true']) !!}
             <div class="invalid-feedback" role="alert" v-if="errors.email">@{{errors.email[0]}}
             </div>
         </div>

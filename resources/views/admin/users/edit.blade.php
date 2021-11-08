@@ -280,6 +280,7 @@
             selectedGroup: [],
             groups: [],
             userGroupsFilter: '',
+            focusErrors: 'errors',
           }
         },
         created() {
