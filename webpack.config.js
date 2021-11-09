@@ -1,8 +1,8 @@
 const {VueLoaderPlugin} = require("vue-loader");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
-const autoprefixer = require("autoprefixer");
+const {WebpackManifestPlugin} = require("webpack-manifest-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 
 module.exports = {
@@ -12,6 +12,7 @@ module.exports = {
   },
   output: {
     filename: "[name].[contenthash:8].js",
+    publicPath: "",
     path: path.resolve(__dirname, "public"),
     chunkFilename: "[name].[contenthash:8].js",
   },
@@ -64,6 +65,9 @@ module.exports = {
       },
     ),
     // new CleanWebpackPlugin(),
+    new WebpackManifestPlugin({
+      fileName: "manifest.json",
+    }),
   ],
   resolve: {
     alias: {
@@ -72,6 +76,17 @@ module.exports = {
     extensions: ["*", ".js", ".vue", ".json"],
   },
   optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false,
+          },
+        },
+        extractComments: false,
+      }),
+    ],
     moduleIds: "deterministic",
     runtimeChunk: "single",
     splitChunks: {
