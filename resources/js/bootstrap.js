@@ -2,10 +2,25 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import BootstrapVue from "bootstrap-vue";
 import Echo from "laravel-echo";
 import Router from "vue-router";
-import datetime_format from "../js/data/datetime_formats.json"
-import translator from "./modules/lang.js"
-import ScreenBuilder from '@processmaker/screen-builder';
+import datetime_format from "../js/data/datetime_formats.json";
+import translator from "./modules/lang.js";
+import ScreenBuilder from "@processmaker/screen-builder";
 import * as VueDeepSet from "vue-deepset";
+/**
+ * Setup Translations
+ */
+import i18next from "i18next";
+import Backend from "i18next-chained-backend";
+import LocalStorageBackend from "i18next-localstorage-backend";
+import XHR from "i18next-xhr-backend";
+import VueI18Next from "@panter/vue-i18next";
+import {install as VuetableInstall} from "vuetable-2";
+import Pagination from "./components/common/Pagination";
+import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
+import MonacoEditor from "vue-monaco";
+import RequestChannel from "./tasks/components/ProcessRequestChannel";
+import Modal from "./components/shared/Modal";
+import AccessibilityMixin from "./components/common/mixins/accessibility";
 
 window.__ = translator;
 window._ = require("lodash");
@@ -47,24 +62,24 @@ window.ScreenBuilder = require('@processmaker/screen-builder');
 
 window.VueRouter = Router;
 
-/**
- * Setup Translations
- */
-import i18next from 'i18next';
-import Backend from 'i18next-chained-backend';
-import LocalStorageBackend from 'i18next-localstorage-backend';
-import XHR from 'i18next-xhr-backend';
-import VueI18Next from '@panter/vue-i18next';
-import {install as VuetableInstall} from 'vuetable-2';
-import Pagination from "./components/common/Pagination";
-import ScreenSelect from "./processes/modeler/components/inspector/ScreenSelect.vue";
-import MonacoEditor from "vue-monaco";
-import RequestChannel from './tasks/components/ProcessRequestChannel';
-import Modal from "./components/shared/Modal";
-import AccessibilityMixin from "./components/common/mixins/accessibility";
-
 window.Vue.use(VueI18Next);
 VuetableInstall(window.Vue);
+const vueComponents = require.context("./", true, /\.(vue|js)$/);
+
+console.log('Vue Components', vueComponents);
+
+// vueComponents.keys().forEach((key) => {
+//     const component = vueComponents(key).default;
+//
+//     // if a component has a name defined use the name, else use the path as the component name
+//     const name = component.name
+//       ? component.name
+//       : key
+//         .replace(/\.(\/|vue|js)/g, '')
+//         .replace(/(\/|-|_|\s)\w/g, (match) => match.slice(1).toUpperCase());
+//
+//     Vue.component(name, component);
+// });
 window.Vue.component('pagination', Pagination);
 window.Vue.component('monaco-editor', MonacoEditor);
 window.Vue.component('screen-select', ScreenSelect);
