@@ -70,8 +70,12 @@ module.exports = {
     }),
   ],
   resolve: {
+    fallback: {
+      path: false
+    },
     alias: {
       vue$: "vue/dist/vue.runtime.esm.js",
+      "@horizon": path.resolve(__dirname, "vendor/laravel/horizon/resources/js"),
     },
     extensions: ["*", ".js", ".vue", ".json"],
   },
