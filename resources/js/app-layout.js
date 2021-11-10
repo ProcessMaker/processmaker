@@ -223,8 +223,11 @@ window.ProcessMaker.apiClient.interceptors.response.use((response) => {
     window.ProcessMaker.EventBus.$emit("api-client-error", error);
     if (error.response && error.response.status && error.response.status === 401) {
         //stop 401 error consuming endpoints with data-sources
-        if (error.config.url.includes('requests/') && error.config.url.includes('/data_sources/')) {
-          return;
+        const url = error.config.url;
+        if (url.includes('/data_sources/')) {
+          if (url.includes('requests/') || url.includes('/test')) {
+            throw error;
+          }
         }
         window.location = "/login";
     } else {
