@@ -49,7 +49,7 @@
 
 <script>
   import datatableMixin from "../../../components/common/mixins/datatable";
-  import { BasicSearch } from "SharedComponents";
+  import { BasicSearch } from "../../../components/shared";
   import isPMQL from "../../../modules/isPMQL";
 
   export default {
@@ -59,20 +59,20 @@
     computed: {
       pmql: function() {
         let pmql = `user_id = ${this.userId}`;
-        
+
         if (this.query.isPMQL()) {
           pmql += ` AND (${this.query})`;
         }
-        
+
         return pmql;
       },
       searchFilter: function() {
         let searchFilter = '';
-        
+
         if (!this.query.isPMQL()) {
           searchFilter = this.query;
         }
-        
+
         return searchFilter;
       }
     },

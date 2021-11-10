@@ -1,9 +1,9 @@
-<script type="text/ecmascript-6">
-    import Status from 'Horizon/components/Status/Status.vue'
-    import MainSidebar from 'Horizon/layouts/MainSidebar.vue'
+<script>
+    // import Status from 'Horizon/components/Status/Status.vue'
+    // import MainSidebar from 'Horizon/layouts/MainSidebar.vue'
 
     export default {
-        components: {Status, MainSidebar}
+        // components: {Status, MainSidebar}
     }
 </script>
 
@@ -12,7 +12,7 @@
         <main class="mt-4 mb-4">
             <div class="row">
                 <div class="col-md-2">
-                    <main-sidebar/>
+<!--                    <main-sidebar/>-->
                 </div>
 
                 <div class="col-md-10">

@@ -16,10 +16,10 @@
 </template>
 
 <script>
-    import CreateScreen from "../fields-screen";
+    // import CreateScreen from "../fields-screen";
 
     export default {
-        components: {CreateScreen},
+        // components: {CreateScreen},
         props: ['show'],
         data() {
             return {

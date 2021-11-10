@@ -114,7 +114,7 @@
 </template>
 
 <script>
-  import { FormErrorsMixin, Modal, Required } from "SharedComponents";
+  import { FormErrorsMixin, Modal, Required } from "../../../components/shared";
 
   export default {
     components: { Modal, Required },

@@ -28,17 +28,17 @@
         <template v-slot:cell(actions)="row">
           <template v-if="row.item && row.item.format !== 'boolean'">
             <span v-b-tooltip.hover :title="getTooltip(row)">
-              <b-button 
-                :aria-label="$t('Edit')" 
+              <b-button
+                :aria-label="$t('Edit')"
                 v-uni-aria-describedby="row.item.id.toString()"
-                :disabled="row.item.readonly" 
-                @click="onEdit(row)" 
-                variant="link" 
+                :disabled="row.item.readonly"
+                @click="onEdit(row)"
+                variant="link"
                 size="lg">
                   <i class="fa fa-pen-square"></i>
                 </b-button>
             </span>
-            <b-button 
+            <b-button
               :aria-label="$t('Copy to Clipboard')"
               v-uni-aria-describedby="row.item.id.toString()"
               @click="onCopy(row)"
@@ -50,19 +50,19 @@
               </b-button>
 
             <span v-b-tooltip.hover v-if="!['boolean', 'object', 'button'].includes(row.item.format)" :title="$t('Clear')">
-              <b-button 
+              <b-button
               :aria-label="$t('Clear')"
               v-uni-aria-describedby="row.item.id.toString()"
-              :disabled="row.item.readonly" 
-              @click="onClear(row)" 
-              variant="link" 
+              :disabled="row.item.readonly"
+              @click="onClear(row)"
+              variant="link"
               size="lg">
                 <i class="fas fa-trash-alt"></i>
               </b-button>
             </span>
             <span v-else class="invisible">
-              <b-button 
-                variant="link" 
+              <b-button
+                variant="link"
                 size="lg"
                 v-uni-aria-describedby="row.item.id.toString()">
                   <i class="fas fa-trash-alt"></i>
@@ -125,7 +125,7 @@
 
 
 <script>
-import { BasicSearch } from "SharedComponents";
+import { BasicSearch } from "../../../components/shared";
 import isPMQL from "../../../modules/isPMQL";
 import SettingBoolean from './SettingBoolean';
 import SettingCheckboxes from './SettingCheckboxes';

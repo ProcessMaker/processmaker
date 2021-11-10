@@ -3,7 +3,7 @@ import _ from "lodash";
 import axios from "axios";
 import moment from "moment";
 import router from "./router";
-import App from "Horizon/components/App";
+import App from "@horizon/app";
 
 window.$ = window.jQuery = require("jquery");
 window.Popper = require("popper.js").default;
@@ -40,7 +40,8 @@ Vue.prototype.$http.interceptors.response.use(function (response, req) {
 
 window.Bus = new Vue({name: "Bus"});
 
-Vue.component("loader", require("Horizon/components/Status/Loader.vue"));
+// Doesn't exist
+// Vue.component("loader", import("@horizon/components/status/Loader.vue"));
 
 Vue.config.errorHandler = function (err, vm, info) {
     console.error(err);
