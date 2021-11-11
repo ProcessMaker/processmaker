@@ -60,6 +60,11 @@ trait HasVersioning
      */
     public function versionFor(ProcessRequest $processRequest = null)
     {
+        // Skip version locking for now
+        // It will be re-added with more configurable options in a future version
+        return $this->getLatestVersion();
+
+        /*
         if (!$processRequest) {
             return $this->getLatestVersion();
         }
@@ -69,5 +74,6 @@ trait HasVersioning
             ->orderBy('created_at', 'desc')
             ->orderBy('id', 'desc')
             ->first();
+        */
     }
 }
