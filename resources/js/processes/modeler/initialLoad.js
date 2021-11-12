@@ -229,6 +229,16 @@ ProcessMaker.EventBus.$on(
         params: { type: 'DISPLAY' }
       }
     });
+    registerInspectorExtension(signalEndEvent, {
+      component: 'ModelerScreenSelect',
+      config: {
+        label: 'Summary Screen',
+        helper:
+          'Select Display-type Screen to show the summary of this Request when it completes',
+        name: 'screenRef',
+        params: { type: 'DISPLAY' }
+      }
+    });
     registerInspectorExtension(terminateEndEvent, {
       component: 'ModelerScreenSelect',
       config: {
