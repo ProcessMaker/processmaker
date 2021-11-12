@@ -611,6 +611,8 @@ class ScriptsTest extends TestCase
 
     public function testExecuteVersion()
     {
+        $this->markTestSkipped('Skip version locking for now');
+        
         Event::fake([
             ScriptResponseEvent::class,
         ]);
