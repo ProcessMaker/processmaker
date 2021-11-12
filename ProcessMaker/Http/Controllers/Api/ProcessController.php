@@ -875,8 +875,8 @@ class ProcessController extends Controller
             $watcherDataSources = [];
             foreach ($assignable as $assign) {
                 if ($assign['type'] === 'script' && array_key_exists('value', $assign) && array_key_exists('id', $assign['value'])) {
-                    Script::where('id', $assign['id'])
-                        ->update(['run_as_user_id' => $assign['value']['id']]);
+                    $script = Script::where('id', $assign['id'])->firstOrFail();
+                    $script->update(['run_as_user_id' => $assign['value']['id']]);
                 } elseif ($assign['type'] === 'callActivity') {
                     $callActivity[] = $assign;
                 } elseif ($assign['type'] === 'watcherDataSource') {
