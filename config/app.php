@@ -58,6 +58,7 @@ return [
     'processmaker_scripts_home' => env('PROCESSMAKER_SCRIPTS_HOME', __DIR__ . '/../storage/app'),
     'processmaker_scripts_docker' => env('PROCESSMAKER_SCRIPTS_DOCKER', '/usr/bin/docker'),
     'processmaker_scripts_docker_mode' => env('PROCESSMAKER_SCRIPTS_DOCKER_MODE', 'binding'),
+    'processmaker_system_scripts_timeout_seconds' => env('PROCESSMAKER_SYSTEM_SCRIPTS_TIMEOUT_SECONDS', 300),
     'timer_events_seconds' => env('TIMER_EVENTS_SECONDS', 'truncate'),
     'bpmn_actions_max_lock_time' => intval(env('BPMN_ACTIONS_MAX_LOCK_TIME', 60)),
 
