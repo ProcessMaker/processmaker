@@ -1,6 +1,6 @@
 {
     "name": "@processmaker/processmaker",
-    "version": "4.2.18-RC",
+    "version": "4.2.19",
     "description": "ProcessMaker 4",
     "author": "DevOps <devops@processmaker.com>",
     "license": "ISC",
@@ -62,8 +62,8 @@
         "@panter/vue-i18next": "^0.15.2",
         "@processmaker/modeler": "1.18.4",
         "@processmaker/processmaker-bpmn-moddle": "0.12.0",
-        "@processmaker/screen-builder": "2.17.0",
-        "@processmaker/vue-form-elements": "0.25.5",
+        "@processmaker/screen-builder": "2.18.1",
+        "@processmaker/vue-form-elements": "0.26.2",
         "@processmaker/vue-multiselect": "2.2.0",
         "babel-eslint": "^10.1.0",
         "babel-plugin-transform-object-rest-spread": "^6.26.0",
