@@ -56,21 +56,15 @@ if (!function_exists('flush_settings')) {
     {
         cache()->tags('setting')->flush();
 
-        $configuration_is_cached = app()->configurationIsCached();
-        $routes_are_cached = app()->routesAreCached();
-        $events_are_cached = app()->eventsAreCached();
-
-        Artisan::call('optimize:clear');
-
-        if ($configuration_is_cached) {
+        if (app()->configurationIsCached()) {
             Artisan::call('config:cache');
         }
 
-        if ($routes_are_cached) {
+        if (app()->routesAreCached()) {
             Artisan::call('route:cache');
         }
 
-        if ($events_are_cached) {
+        if (app()->eventsAreCached()) {
             Artisan::call('event:cache');
         }
     }
