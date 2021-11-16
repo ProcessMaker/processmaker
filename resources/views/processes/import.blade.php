@@ -181,6 +181,9 @@
                                                         </template>
                                                     </template>
                                                 </multiselect>
+                                                <p class="small text-danger mt-1" v-if="item.type == 'watcherDataSource' && item.value">
+                                                    Please make sure the selected DataSource has the exact same endpoints
+                                                </p>
                                             </td>
                                         </tr>
                                         <tr>
