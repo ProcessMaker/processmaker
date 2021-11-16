@@ -3,6 +3,7 @@
 namespace ProcessMaker\Providers;
 
 use Blade;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Managers\DockerManager;
@@ -79,7 +80,7 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton(PackageManager::class, function () {
             return new PackageManager();
         });
-        
+
         $this->app->singleton(LoginManager::class, function () {
             return new LoginManager();
         });
@@ -129,11 +130,11 @@ class ProcessMakerServiceProvider extends ServiceProvider
         $this->app->singleton(GlobalScriptsManager::class, function($app) {
             return new GlobalScriptsManager();
         });
-        
+
         $this->app->singleton(AnonymousUser::class, function($app) {
             return AnonymousUser::where('username', AnonymousUser::ANONYMOUS_USERNAME)->firstOrFail();
         });
-        
+
         $this->app->singleton(PolicyExtension::class, function($app) {
             return new PolicyExtension();
         });
