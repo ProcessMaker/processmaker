@@ -820,6 +820,8 @@ class ImportProcess implements ShouldQueue
             $this->file = base64_decode($this->fileContents);
             $this->file = json_decode($this->file);
         }
+
+        $this->standardizeBpmnNodePrefix();
     }
 
     /**
