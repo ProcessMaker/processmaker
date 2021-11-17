@@ -30,6 +30,11 @@ class ImportProcess implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, PluginServiceProviderTrait;
 
     /**
+     * @var int
+     */
+    public $tries = 1;
+
+    /**
      * The original contents of the imported file.
      *
      * @var string
