@@ -235,7 +235,7 @@ class ProcessController extends Controller
 
     private function checkAuth()
     {
-        $perm = 'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables';
+        $perm = 'view-processes|view-process-categories|view-scripts|view-screens|view-environment_variables|view-data-sources';
         switch (\Auth::user()->canAny($perm)) {
             case 'view-processes':
                 return false; // already on index, continue with it
@@ -247,6 +247,8 @@ class ProcessController extends Controller
                 return 'screens.index';
             case 'view-environment_variables':
                 return 'environment-variables.index';
+              case 'view-data-sources':
+                return 'data-sources.index';
             default:
                 throw new AuthorizationException();
         }
