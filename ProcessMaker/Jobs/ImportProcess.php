@@ -335,7 +335,7 @@ class ImportProcess implements ShouldQueue
             ]);
         }
     }
-    
+
     /**
      * Look for any watchers in screens and add them to the assignable list.
      *
@@ -429,7 +429,7 @@ class ImportProcess implements ShouldQueue
             $this->finishStatus('screens', true);
         }
     }
-    
+
     /**
      * Create a new Screen model for an individual screen, then save it.
      *
@@ -459,12 +459,12 @@ class ImportProcess implements ShouldQueue
                     $new->categories()->save($category);
                 }
             }
-            
+
             return $new;
         } catch (\Exception $e) {
             return false;
         }
-    }    
+    }
 
     /**
      * Pass an old script ID and a new script ID, then replace any references
@@ -815,6 +815,35 @@ class ImportProcess implements ShouldQueue
             $this->file = base64_decode($this->fileContents);
             $this->file = json_decode($this->file);
         }
+    }
+
+    /**
+     * Some processes are exported with bpmn2: as the bpmn namespace prefix which is
+     * not recognized by the package-actions-by-email. This finds and replaces those
+     * instances in the BPMN XML to the standard bpmn:.
+     *
+     * @return void
+     */
+    protected function standardizeBpmnNodePrefix()
+    {
+        if (!is_object($this->file)) {
+            return;
+        }
+
+        if (!property_exists($this->file, 'process')) {
+            return;
+        }
+
+        if (!property_exists($this->file->process, 'bpmn')) {
+            return;
+        }
+
+        if (!is_string($this->file->process->bpmn)) {
+            return;
+        }
+
+        $this->file->process->bpmn = str_replace('bpmn2:', 'bpmn:', $this->file->process->bpmn);
+        $this->file->process->bpmn = str_replace('bpmn2=', 'bpmn=', $this->file->process->bpmn);
     }
 
     /**
