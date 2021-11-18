@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Models\Setting;
 
@@ -17,6 +19,7 @@ class AboutController extends Controller
     {
         $root = base_path('');
         $vendor_path = base_path('vendor/processmaker');
+
         // version from composer
         $composer_json_path = json_decode(file_get_contents($root . '/composer.json'));
         $version = 'ProcessMaker 4 v' . $composer_json_path->version ?? '4.0.0';
@@ -24,14 +27,14 @@ class AboutController extends Controller
         $dependencies = $package_json_path->dependencies;
         $vendor_directories = \File::directories($vendor_path);
         $string = '@processmaker';
-
         $setting = Setting::byKey('indexed-search');
+
         if ($setting && $setting->config['enabled'] === true) {
             $indexedSearch = true;
         } else {
             $indexedSearch = false;
         }
-        
+
         $packages = array();
 
         foreach($vendor_directories as $directory) {
@@ -48,7 +51,19 @@ class AboutController extends Controller
                 array_push($packages, $content);
             }
         }
-        
-        return view('about.index', compact('packages', 'indexedSearch', 'version'));
+
+        $commit_hash = false;
+
+        try {
+            if (is_string($composer_json_path->extra->processmaker->build)) {
+                $commit_hash = $composer_json_path->extra->processmaker->build;
+            }
+        } catch (Exception $exception) {
+            Log::warning('Commit hash missing from composer.json', [
+                'composer.json' => $composer_json_path
+            ]);
+        }
+
+        return view('about.index', compact('packages', 'indexedSearch', 'version', 'commit_hash'));
     }
 }
