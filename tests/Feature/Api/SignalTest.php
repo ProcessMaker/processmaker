@@ -61,7 +61,6 @@ class SignalTest extends TestCase
 
     /**
      * Get a list of Signals on first page.
-     * @group agustin
      */
     public function testListSignalOnFirstPage()
     {
@@ -94,7 +93,6 @@ class SignalTest extends TestCase
 
     /**
      * Get a list of Signals on second page.
-     * @group agustin
      */
     public function testListSignalOnSecondPage()
     {
