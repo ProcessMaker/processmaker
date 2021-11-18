@@ -37,9 +37,6 @@ class AboutTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('about.index');
 
-        // test the commit hash it reads from composer.json
-        $response->assertSeeText('Build #');
-
         // Make sure we can find composer.json
         $composer_json_file = base_path('composer.json');
         $this->assertFileExists($composer_json_file);
@@ -50,10 +47,14 @@ class AboutTest extends TestCase
         // Test and make sure our custom property is present
         // and contains a string value
         $this->assertIsObject($composer_json);
-        $this->assertObjectHasAttribute('extra', $composer_json);
-        $this->assertObjectHasAttribute('processmaker', $composer_json->extra);
-        $this->assertObjectHasAttribute('build', $composer_json->extra->processmaker);
-        $this->assertIsString($composer_json->extra->processmaker->build);
+        $this->assertObjectHasAttribute('extra', $composer_json, 'The composer.json file is missing the "extra" attribute.');
+        $this->assertObjectHasAttribute('processmaker', $composer_json->extra, 'The composer.json file is missing the "extra->processmaker" attribute.');
+        $this->assertObjectHasAttribute('build', $composer_json->extra->processmaker, 'The composer.json file is missing the "extra->processmaker->build" attribute.');
+        $this->assertIsString($composer_json->extra->processmaker->build, 'The composer.json file "extra->processmaker->build" attribute is not a string.');
+        $this->assertNotEmpty($composer_json->extra->processmaker->build, 'The composer.json file "extra->processmaker->build" attribute is empty.');
+
+        // Test the commit hash it reads from composer.json
+        $response->assertSeeText('Build #');
 
         // Copy composer.json over to a new backup file
         $composer_json_file_backup = base_path('composer.json.bak');
