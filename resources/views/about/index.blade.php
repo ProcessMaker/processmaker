@@ -45,6 +45,7 @@
         </ul>
         @endif
         &copy; {{date('Y')}} - {{__('All Rights Reserved')}}
+        @if($commit_hash)<br><small>Build #{{ $commit_hash }}</small>@endif
       </div>
     </div>
   </div>
