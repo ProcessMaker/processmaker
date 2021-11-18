@@ -96,9 +96,9 @@ if (env('POPULATE_DATABASE')) {
 }
 
 if (ScriptExecutor::where('language', 'php')->count() === 0) {
-//    Artisan::call('docker-executor-php:install');
+    Artisan::call('docker-executor-php:install');
 }
 
 if (ScriptExecutor::where('language', 'lua')->count() === 0) {
-//    Artisan::call('docker-executor-lua:install');
+    Artisan::call('docker-executor-lua:install');
 }
