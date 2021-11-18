@@ -83,6 +83,9 @@
         "laravel/dusk",
         "laravel/passport"
       ]
+    },
+    "processmaker": {
+      "build": "1cd9b17f9"
     }
   },
   "scripts": {
