@@ -894,7 +894,8 @@ class ImportProcess implements ShouldQueue
      */
     protected function finishStatus($element, $error = false)
     {
-        $this->status[$element]['label'] = __($element);
+        $label = ucwords(implode(" ", explode('_', $element)));
+        $this->status[$element]['label'] = __($label);
         $this->status[$element]['success'] = true;
         $this->status[$element]['message'] = __('Successfully imported');
         if ($error) {
