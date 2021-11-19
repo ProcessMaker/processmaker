@@ -2,9 +2,9 @@
 
 namespace ProcessMaker\Http\Controllers;
 
-use Illuminate\Http\Request;
-use ProcessMaker\Http\Controllers\Controller;
+use Exception;
 use ProcessMaker\Models\Setting;
+use Illuminate\Support\Facades\Log;
 
 class AboutController extends Controller
 {
@@ -31,7 +31,7 @@ class AboutController extends Controller
         } else {
             $indexedSearch = false;
         }
-        
+
         $packages = array();
 
         foreach($vendor_directories as $directory) {
@@ -48,7 +48,19 @@ class AboutController extends Controller
                 array_push($packages, $content);
             }
         }
-        
-        return view('about.index', compact('packages', 'indexedSearch', 'version'));
+
+        $commit_hash = false;
+
+        try {
+            if (is_string($composer_json_path->extra->processmaker->build)) {
+                $commit_hash = $composer_json_path->extra->processmaker->build;
+            }
+        } catch (Exception $exception) {
+            Log::warning('Commit hash missing from composer.json', [
+                'composer.json' => $composer_json_path
+            ]);
+        }
+
+        return view('about.index', compact('packages', 'indexedSearch', 'version', 'commit_hash'));
     }
 }
