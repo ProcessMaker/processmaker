@@ -12,7 +12,6 @@ class SanitizeHelperTest extends TestCase
 {
     /**
      * Test to ensure not sanitizing rich text data
-     * @group agustin
      */
     public function testScreenWillNotSanitizeRichTextData()
     {
@@ -29,7 +28,6 @@ class SanitizeHelperTest extends TestCase
 
     /**
      * Test to ensure IS sanitizing rich text data
-     * @group agustin
      */
     public function testScreenWillSanitizeRichTextDataIfIsEmptyDoNotSanitizeVariable()
     {
