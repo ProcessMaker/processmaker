@@ -339,7 +339,7 @@ class CallActivityTest extends TestCase
         unset($data['loopCharacteristics']);
 
         // verify data
-        $this->assertEquals(['input_1' => 1, 'input_2' => 2, 'input_3' => 3], $data);
+        $this->assertEquals(['input_1' => 1, 'input_2' => 2, 'input_3' => 3, '_DO_NOT_SANITIZE' => '[]'], $data);
     }
 
     public function testCallActivityWithError()
