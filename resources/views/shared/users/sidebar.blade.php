@@ -52,6 +52,7 @@
             <div class="invalid-feedback" :style="{display: (errors.password) ? 'block' : 'none' }" role="alert" v-if="errors.password">@{{errors.password[0]}}</div>
         </div>
 
+        @if (!\Request::is('profile/edit'))
         <div class="form-group">
             {!! Form::label('forceChangePassword', __('User must change password at next login')) !!}
             <div class="grouped">
@@ -61,6 +62,7 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
 
     @isset($addons)
