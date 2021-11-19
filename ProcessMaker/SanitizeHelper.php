@@ -78,6 +78,10 @@ class SanitizeHelper {
     public static function sanitizeData($data, $screen)
     {
         $except = self::getExceptions($screen);
+        if (isset($data['_DO_NOT_SANITIZE'])) {
+           $except = array_unique(array_merge(json_decode($data['_DO_NOT_SANITIZE']), $except));
+        }
+        $data['_DO_NOT_SANITIZE'] = json_encode($except);
         return self::sanitizeWithExceptions($data, $except);
     }
 

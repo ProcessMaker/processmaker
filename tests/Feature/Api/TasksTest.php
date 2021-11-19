@@ -228,12 +228,12 @@ class TasksTest extends TestCase
         //Get tasks
         $route = route('api.' . $this->resource . '.index', ['per_page' => 100]);
         $response = $this->apiCall('GET', $route);
-        
+
         //Verify the status
         $response->assertStatus(200);
-        
+
         //Verify the element types
-        $types = collect($response->json()['data'])->pluck('element_type')->unique()->toArray();        
+        $types = collect($response->json()['data'])->pluck('element_type')->unique()->toArray();
         $this->assertEquals($types, ['task']);
     }
 
@@ -387,14 +387,14 @@ class TasksTest extends TestCase
             'user_id' => $this->user->id,
             'status' => 'ACTIVE',
         ]);
-        $params = ['status' => 'COMPLETED', 'data' => ['foo' => '<p>bar</p>']];
+        $params = ['status' => 'COMPLETED', 'data' => ['foo' => '<p>bar</p>', '_DO_NOT_SANITIZE' => '[]']];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
-            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar']);
+            ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), ['foo' => 'bar', '_DO_NOT_SANITIZE' => '[]']);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
     }
-    
+
     public function testUpdateTaskRichText()
     {
         // $this->user = factory(User::class)->create(); // normal user
@@ -405,7 +405,7 @@ class TasksTest extends TestCase
                 )
             )
         ]);
-        
+
         $bpmn = file_get_contents(base_path('tests/Fixtures/single_task_with_screen.bpmn'));
         $bpmn = str_replace('pm:screenRef="1"', 'pm:screenRef="' . $screen->id .'"', $bpmn);
         $process = factory(Process::class)->create([
@@ -423,14 +423,16 @@ class TasksTest extends TestCase
         $params = ['status' => 'COMPLETED', 'data' => [
             'input1' => '<p>foo</p>',
             'richtext1' => '<p>bar</p>',
-            'richtext2' => '<p>another</p>'
+            'richtext2' => '<p>another</p>',
+            '_DO_NOT_SANITIZE' => '["richtext1","richtext2"]'
         ]];
         WorkflowManager::shouldReceive('completeTask')
             ->once()
             ->with(\Mockery::any(), \Mockery::any(), \Mockery::any(), [
                 'input1' => 'foo',
                 'richtext1' => '<p>bar</p>', // do not sanitize rich text
-                'richtext2' => '<p>another</p>'
+                'richtext2' => '<p>another</p>',
+                '_DO_NOT_SANITIZE' => '["richtext1","richtext2"]'
             ]);
         $response = $this->apiCall('PUT', '/tasks/' . $token->id, $params);
         $this->assertStatus(200, $response);
@@ -555,7 +557,7 @@ class TasksTest extends TestCase
         $processRequest = ProcessRequest::findOrFail($response->json()['id']);
 
         Notification::assertNothingSent();
-        
+
         $task = $processRequest->tokens->where('status', 'ACTIVE')->first();
         $route = route('api.tasks.update', [$task->id]);
         $response = $this->apiCall('PUT', $route, ['user_id' => $this->user->id]);
