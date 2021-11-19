@@ -42,7 +42,7 @@ class SignalController extends Controller
 
         if(hasPackage('package-collections')) {
             $collection = \ProcessMaker\Plugins\Collections\Models\Collection::get();
-            
+
             foreach ($collection as $item) {
                 $collectionsEnabled[] = $item->id;
                 if (!$item->signal_create) {
@@ -114,7 +114,7 @@ class SignalController extends Controller
         $meta['count'] = $signals->count();
 
         return response()->json([
-            'data' => $signals,
+            'data' => $signals->values(),
             'meta' => $meta
         ]);
     }
