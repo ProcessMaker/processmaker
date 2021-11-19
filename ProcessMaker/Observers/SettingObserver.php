@@ -2,8 +2,10 @@
 
 namespace ProcessMaker\Observers;
 
-use Artisan;
+use Exception;
 use ProcessMaker\Models\Setting;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
 
 class SettingObserver
 {
@@ -63,29 +65,15 @@ class SettingObserver
                 $setting->config = $return;
                 break;
         }
-
-        try {
-            $settings = Setting::select('key', 'config', 'format')->get();
-            foreach ($settings as $setting) {
-                config([$setting->key => $setting->config]);
-            }
-            config(['settings_loaded' => true]);
-        } catch (Exception $e) {
-            Log::error('Unable to load settings from database', [
-                'message' => $e->getMessage(),
-            ]);
-        }
     }
 
-    /**
-     * Handle the setting "updated" event.
-     *
-     * @param  \ProcessMaker\Models\Setting  $setting
-     * @return void
-     */
-    public function updated(Setting $setting)
+    public function saved(Setting $setting)
     {
-        Artisan::call('config:cache');
+        try {
+            cache_settings(true);
+        } catch (Exception $exception) {
+            Log::error('Could not cache configuration.', [$exception]);
+        }
     }
 
     /**
@@ -96,6 +84,10 @@ class SettingObserver
      */
     public function deleted(Setting $setting)
     {
-        Artisan::call('config:cache');
+        try {
+            cache_settings(true);
+        } catch (Exception $exception) {
+            Log::error('Could not cache configuration.', [$exception]);
+        }
     }
 }
