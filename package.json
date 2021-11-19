@@ -81,7 +81,7 @@
         "i18next-xhr-backend": "^2.0.1",
         "imports-loader": "^0.8.0",
         "install": "^0.12.2",
-        "jointjs": "^3.1.1",
+        "jointjs": "^3.4.2",
         "laravel-echo": "^1.9.0",
         "laravel-echo-server": "^1.6.1",
         "lodash": "^4.17.20",
