@@ -335,7 +335,7 @@ class ImportProcess implements ShouldQueue
             ]);
         }
     }
-    
+
     /**
      * Look for any watchers in screens and add them to the assignable list.
      *
@@ -429,7 +429,7 @@ class ImportProcess implements ShouldQueue
             $this->finishStatus('screens', true);
         }
     }
-    
+
     /**
      * Create a new Screen model for an individual screen, then save it.
      *
@@ -459,12 +459,12 @@ class ImportProcess implements ShouldQueue
                     $new->categories()->save($category);
                 }
             }
-            
+
             return $new;
         } catch (\Exception $e) {
             return false;
         }
-    }    
+    }
 
     /**
      * Pass an old script ID and a new script ID, then replace any references
@@ -894,6 +894,8 @@ class ImportProcess implements ShouldQueue
      */
     protected function finishStatus($element, $error = false)
     {
+        $label = ucwords(implode(" ", explode('_', $element)));
+        $this->status[$element]['label'] = __($label);
         $this->status[$element]['success'] = true;
         $this->status[$element]['message'] = __('Successfully imported');
         if ($error) {
