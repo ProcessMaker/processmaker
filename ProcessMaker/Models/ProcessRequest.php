@@ -889,4 +889,22 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
     {
         return $this->hasOne(ProcessRequestToken::class, 'subprocess_request_id', 'id');
     }
+
+    /**
+     * Media files formatted for screen builder file controls
+     *
+     * @return Object
+     */
+    public function requestFiles()
+    {
+        return (object) $this->getMedia()->mapToGroups(function($file) {
+            $dataName = $file->getCustomProperty('data_name');
+            return [
+                $dataName => [
+                    'id' => $file->id,
+                    'file_name' => $file->file_name
+                ]
+            ];
+        })->toArray();
+    }
 }

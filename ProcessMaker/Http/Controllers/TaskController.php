@@ -74,25 +74,6 @@ class TaskController extends Controller
         $task->requestor = $task->processRequest->user;
         $element = $task->getDefinition(true);
 
-        $files = [];
-        foreach ($task->processRequest->getMedia() as $file) {
-            $dataName = $file->getCustomProperty('data_name');
-            if (isset($files[$dataName])) {
-                if (isset($files[$dataName]['id'])) {
-                    $files[$dataName] = [$files[$dataName]];
-                }
-                $files[$dataName][] = [
-                    'id' => $file->id,
-                    'file_name' => $file->file_name
-                ];
-            } else {
-                $files[$dataName] = [
-                    'id' => $file->id,
-                    'file_name' => $file->file_name,
-                ];
-            }
-        }
-
         if ($element instanceof ScriptTaskInterface) {
             return redirect(route('requests.show', ['request' => $task->processRequest->getKey()]));
         } else {
@@ -101,7 +82,7 @@ class TaskController extends Controller
                 'dueLabels' => self::$dueLabels,
                 'manager' => $manager,
                 'submitUrl' => $submitUrl,
-                'files' => $files,
+                'files' => $task->processRequest->requestFiles(),
                 'addons' => $this->getPluginAddons('edit', []),
                 'assignedToAddons' => $this->getPluginAddons('edit.assignedTo', []),
             ]);

@@ -1548,5 +1548,6 @@
   "Assignee Manager Escalation": "Assignee Manager Escalation",
   "Data Sources Package not installed.": "Data Sources Package not installed.",
   "Signal Payload": "Signal Payload",
-  "Display contents of docker file that will be prepended to your customizations below.": "Display contents of docker file that will be prepended to your customizations below."
+  "Display contents of docker file that will be prepended to your customizations below.": "Display contents of docker file that will be prepended to your customizations below.",
+  "Downloading files is not available.": "Downloading files is not available."
 }
