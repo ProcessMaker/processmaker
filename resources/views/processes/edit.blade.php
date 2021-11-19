@@ -123,6 +123,24 @@
                                     </template>
                                 </multiselect>
                             </div>
+                            <div class="form-group">
+                                {!! Form::label('requestDetailScreen', __('Request Detail Screen')) !!}
+                                <multiselect v-model="screenRequestDetail"
+                                             :options="screens"
+                                             :multiple="false"
+                                             :show-labels="false"
+                                             placeholder="{{ __('Type to search') }}"
+                                             @search-change="loadScreens($event)"
+                                             @open="loadScreens"
+                                             track-by="id"
+                                             label="title">
+                                    <span slot="noResult">{{ __('Oops! No elements found. Consider changing the search query.') }}</span>
+                                    <template slot="noOptions">
+                                        {{ __('No Data Available') }}
+                                    </template>
+                                </multiselect>
+                                <div class="invalid-feedback" v-if="errors.request_detail_screen_id">@{{errors.request_detail_screen_id[0]}}</div>
+                            </div>
                             <div class="d-flex justify-content-end mt-2">
                                 {!! Form::button(__('Cancel'), ['class'=>'btn btn-outline-secondary', '@click' => 'onClose']) !!}
                                 {!! Form::button(__('Save'), ['class'=>'btn btn-secondary ml-2', '@click' => 'onUpdate']) !!}
@@ -244,6 +262,7 @@
             screens: [],
             canCancel: @json($canCancel),
             canEditData: @json($canEditData),
+            screenRequestDetail: @json($screenRequestDetail),
             screenCancel: @json($screenCancel),
             activeUsersAndGroups: @json($list),
             pause_timer_start_events: false
@@ -295,6 +314,7 @@
             this.formData.cancel_request = this.formatAssigneePermissions(this.canCancel);
             this.formData.edit_data = this.formatAssigneePermissions(this.canEditData);
             this.formData.cancel_screen_id = this.formatValueScreen(this.screenCancel);
+            this.formData.request_detail_screen_id = this.formatValueScreen(this.screenRequestDetail);
             ProcessMaker.apiClient.put('processes/' + that.formData.id, that.formData)
               .then(response => {
                 ProcessMaker.alert('{{__('The process was saved.')}}', 'success', 5, true);
