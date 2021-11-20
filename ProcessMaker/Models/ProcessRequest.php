@@ -895,16 +895,18 @@ class ProcessRequest extends Model implements ExecutionInstanceInterface, HasMed
      *
      * @return Object
      */
-    public function requestFiles()
+    public function requestFiles(bool $includeToken = false)
     {
-        return (object) $this->getMedia()->mapToGroups(function($file) {
+        return (object) $this->getMedia()->mapToGroups(function($file) use ($includeToken) {
             $dataName = $file->getCustomProperty('data_name');
-            return [
-                $dataName => [
-                    'id' => $file->id,
-                    'file_name' => $file->file_name
-                ]
+            $info = [
+                'id' => $file->id,
+                'file_name' => $file->file_name
             ];
+            if ($includeToken) {
+                $info['token'] = md5($dataName . $file->id . $file->created_at);
+            }
+            return [ $dataName => $info ];
         })->toArray();
     }
 }
