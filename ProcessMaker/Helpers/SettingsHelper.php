@@ -94,6 +94,7 @@ if (!function_exists('cache_settings')) {
                 // are available if they aren't cached yet
                 if (!$cache->has('all')) {
                     $settings = settings();
+                    $cache = cache()->tags('setting');
                 }
 
                 // Iterating through each and calling the byKey()
