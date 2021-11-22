@@ -83,6 +83,10 @@ class TaskTest extends TestCase {
         $this->assertCount(2, $r->multiple);
         $this->assertEquals(['id' => $media2->id, 'file_name' => 'file2.txt'], $r->multiple[0]);
         $this->assertEquals(['id' => $media3->id, 'file_name' => 'file3.txt'], $r->multiple[1]);
+
+        // Include token
+        $r = $processRequest->requestFiles(true);
+        $this->assertEquals($r->single[0]['token'], md5('single' . $media1->id . $media1->created_at));
     }
 
     public function tearDown() : void {
