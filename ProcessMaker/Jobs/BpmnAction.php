@@ -68,9 +68,7 @@ abstract class BpmnAction implements ShouldQueue
             }
             throw $exception;
         } finally {
-            if (isset($this->instanceId)) {
-                $this->unlock();
-            };
+            $this->unlock();
         }
 
         return $response;
