@@ -171,8 +171,10 @@ abstract class BpmnAction implements ShouldQueue
             $lock = $this->requestLock($ids);
             // If the processes are going to have thousands of parallel instances,
             // the lock will be released after a while.
-            //$numSeconds = config('app.bpmn_actions_max_lock_time', 1) ?: 60;
-            for ($tries=0; $tries < 6000; $tries++) {
+            $timeout = config('app.bpmn_actions_max_lock_timeout', 6000) ?: 6000;
+            $interval = config('app.bpmn_actions_lock_check_interval', 1000) ?: 1000;
+            $maxRetries = ceil($timeout / $interval * 1000);
+            for ($tries=0; $tries < $maxRetries; $tries++) {
                 $currentLock = $this->currentLock($ids);
                 if (!$currentLock) {
                     if (ProcessRequest::find($instanceId)) {
@@ -186,7 +188,7 @@ abstract class BpmnAction implements ShouldQueue
                     return $instance;
                 }
                 // average of lock time is 1 second
-                usleep(1000);
+                usleep($interval);
             }
         } catch (Throwable $exception) {
             Log::error($exception->getMessage());
