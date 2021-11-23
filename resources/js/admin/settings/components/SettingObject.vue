@@ -24,7 +24,7 @@
         <template #cell(key)="data">
           <div v-if="ui('fixedKeys') === false">
             <div class="d-flex w-100 flex-wrap">
-              <b-form-input class="ml-2 mr-2" v-model="data.item.key.name" @keyup.enter="onSave()" spellcheck="false" autocomplete="off"></b-form-input>
+              <b-form-input class="ml-2 mr-2" :class="{'is-invalid': !data.item.isValid}" v-model="data.item.key.name" @keyup.enter="onSave()" spellcheck="false" autocomplete="off"></b-form-input>
               <small class="form-text text-danger mx-2" v-if="!data.item.isValid">
                 {{ $t('Invalid variable name') }}
               </small>
@@ -164,14 +164,12 @@ export default {
             });
             this.haveInvalid = false;
             value.forEach(item => {
-              this.keys.forEach(key => {
-                if (item.key && item.key.name == key.name) {
-                  item.isValid = this.isValid(item.key.name);
-                  if (!item.isValid) {
-                    this.haveInvalid = true;
-                  }
+              if (item.key) {
+                item.isValid = this.isValid(item.key.name);
+                if (!item.isValid) {
+                  this.haveInvalid = true;
                 }
-              });
+              }
             });
           }
         }
@@ -182,7 +180,7 @@ export default {
   methods: {
     isValid(key) {
       let pattern = /^[a-zA-Z_-][a-zA-Z0-9_-]*$/g;
-      return pattern.test(key);
+      return pattern.test(key) && key != '';
     },
     keyLabel() {
       if (this.ui('keyLabel')) {
@@ -214,6 +212,7 @@ export default {
             $isDisabled: false,
           },
           value: null,
+          isValid: false,
         });
       }
     },
