@@ -110,7 +110,15 @@ class Setting extends Model implements HasMedia
 
         return [
             'key' => ['required', $unique],
-            'config' => 'required',
+            'config' => ['required'],
+            'config.*' => ['required', 'valid_variable']
+        ];
+    }
+
+    public static function messages()
+    {
+        return [
+            'config.*.valid_variable' => trans('environmentVariables.validation.name.invalid_variable_name'),
         ];
     }
 

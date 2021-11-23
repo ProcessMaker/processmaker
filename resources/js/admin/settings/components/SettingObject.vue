@@ -22,8 +22,13 @@
       </div>
       <b-table class="setting-object-table" :items="table" :fields="fields" striped>
         <template #cell(key)="data">
-          <div class="d-flex w-100" v-if="ui('fixedKeys') === false">
-            <b-form-input class="ml-2 mr-2" v-model="data.item.key.name" @keyup.enter="onSave()" spellcheck="false" autocomplete="off"></b-form-input>
+          <div v-if="ui('fixedKeys') === false">
+            <div class="d-flex w-100 flex-wrap">
+              <b-form-input class="ml-2 mr-2" :class="{'is-invalid': !data.item.isValid}" v-model="data.item.key.name" @keyup.enter="onSave()" spellcheck="false" autocomplete="off"></b-form-input>
+              <small class="form-text text-danger mx-2" v-if="!data.item.isValid">
+                {{ $t('Invalid variable name') }}
+              </small>
+            </div>
           </div>
           <div v-else>
             <multiselect
@@ -48,7 +53,7 @@
         <button type="button" class="btn btn-outline-secondary ml-auto" @click="onCancel">
             {{ $t('Cancel') }}
         </button>
-        <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="! changed">
+        <button type="button" class="btn btn-secondary ml-3" @click="onSave" :disabled="! changed || haveInvalid">
             {{ $t('Save')}}
         </button>
       </div>
@@ -69,6 +74,7 @@ export default {
       showModal: false,
       table: [],
       transformed: null,
+      haveInvalid: false,
       fields: [
         {
           key: 'key',
@@ -156,6 +162,15 @@ export default {
                 this.transformed[row.key.name] = row.value;
               }
             });
+            this.haveInvalid = false;
+            value.forEach(item => {
+              if (item.key) {
+                item.isValid = this.isValid(item.key.name);
+                if (!item.isValid) {
+                  this.haveInvalid = true;
+                }
+              }
+            });
           }
         }
       },
@@ -163,6 +178,10 @@ export default {
     }
   },
   methods: {
+    isValid(key) {
+      let pattern = /^[a-zA-Z_-][a-zA-Z0-9_-]*$/g;
+      return pattern.test(key) && key != '';
+    },
     keyLabel() {
       if (this.ui('keyLabel')) {
         return this.$t(this.ui('keyLabel'));
@@ -193,6 +212,7 @@ export default {
             $isDisabled: false,
           },
           value: null,
+          isValid: false,
         });
       }
     },
@@ -227,6 +247,7 @@ export default {
           this.table.push({
             key: key,
             value: this.input[key.name],
+            isValid: this.isValid(key.name)
           })
         }
       });
@@ -313,6 +334,6 @@ export default {
       min-width: 0;
       margin-bottom: 0;
     }
-    
+
   }
 </style>
