@@ -107,10 +107,19 @@ class SignalController extends Controller
             'sort_order' => strtolower($orderDirection),
             'to' => $perPage * ($page - 1) + $perPage,
             'total' => $signals->count(),
-            'total_pages' => $lastPage
+            'total_pages' => ceil($signals->count() / $perPage)
         ];
 
-        $signals = $signals->count() === 0 ? $signals : $signals->chunk($perPage)[$page - 1];
+        if ($signals->count() === 0) {
+            $signals = $signals;
+        } else {
+            $chunked = $signals->chunk($perPage);
+            if (isset($chunked[$page - 1])) {
+                $signals = $chunked[$page - 1];
+            } else {
+                $signals = collect([]);
+            }
+        }
         $meta['count'] = $signals->count();
 
         return response()->json([
